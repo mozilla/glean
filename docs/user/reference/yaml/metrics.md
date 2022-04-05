@@ -26,6 +26,9 @@ section of this book.
 # Schema
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
+$tags:
+  - frontend
+
 # Category
 toolbar:
   # Name
@@ -34,6 +37,9 @@ toolbar:
     type: event
     description: |
       Event to record toolbar clicks.
+    metadata:
+      tags:
+        - Interaction
     notification_emails:
       - CHANGE-ME@example.com
     bugs:
@@ -50,6 +56,10 @@ toolbar:
 
 Declaring the schema at the top of a metrics definitions file is required,
 as it is what indicates that the current file is a metrics definitions file.
+
+# `$tags`
+
+You may optionally declare [tags](tags.md) at the file level that apply to all metrics in that file.
 
 ## Category
 
@@ -94,16 +104,12 @@ See the list of [supported metric types](../metrics/index.md).
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Types should not be changed after release
+##### Types must not be changed after release
 
-> Once a metric is released in a product, its `type` should not be changed.
-> If any data was collected locally with the older `type`, and hasn't yet been sent in a ping,
-> recording data with the new `type` may cause any old persisted data to be lost for that metric.
-> See [this comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1621757#c1) for an extended
-> explanation of the different scenarios.
->
-> This does not apply to users on the Glean JavaScript SDK. The issues on changing a
-> metrics type described above, do not apply for that SDK.
+> Once a metric is defined in a product, its `type` must not be changed.
+> The ingestion pipeline will not be able to handle such a change.
+> If a type change is required a new metric must be added with a new name and the new type.
+> This will require an additional data review, in which you can also reference the old data review.
 
 #### `description`
 
@@ -169,6 +175,13 @@ May be one of the following values:
 
 ### Optional parameters
 
+#### `tags`
+
+_default: `[]`_
+
+A list of tag names associated with this metric.
+Must correspond to an entry specified in a [tags file](./tags.md).
+
 #### `lifetime`
 
 _default: `ping`_
@@ -182,10 +195,26 @@ Defines the lifetime of the metric. Different lifetimes affect when the metrics 
 _default: `events`|`metrics`_
 
 Defines which pings the metric should be sent on.
-If not specified, the metric is sent on the "default ping",
+If not specified, the metric is sent on the default ping,
 which is the `events` ping for events and the `metrics` ping for everything else.
 
 Most metrics don't need to specify this unless they are sent on [custom pings](../../user/pings/custom.md).
+
+The special value `default` may be used, in case it's required for a metric to be sent
+on the default ping as well as in a custom ping.
+
+{{#include ../../../shared/blockquote-info.html}}
+
+##### Adding metrics to every ping
+
+> For the small number of metrics that should be in every ping the Glean SDKs will eventually provide a solution.
+> See [bug 1695236](https://bugzilla.mozilla.org/show_bug.cgi?id=1695236) for details.
+
+```yaml
+send_in_pings:
+  - my-custom-ping
+  - default
+```
 
 #### `disabled`
 

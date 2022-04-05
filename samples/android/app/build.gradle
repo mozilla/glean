@@ -16,6 +16,8 @@ android {
         applicationId "org.mozilla.samples.gleancore"
         minSdkVersion rootProject.ext.build['minSdkVersion']
         targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        // Keep the version in sync with gleanExpireByVersion which is
+        // set below, near the end of the file.
         versionCode 1
         versionName "1.0"
 
@@ -58,6 +60,11 @@ dependencies {
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
+// Fixed build date so we can test for it
+ext.gleanBuildDate = "2020-11-06T11:30:50+00:00"
+// Enable expiration by major version. The sample is at version 1,
+// see versionName.
+ext.gleanExpireByVersion = 1
 
 // Include the glean-gradle-plugin. This is slightly different than what is
 // recommended for external users since we are loading it from the same root Gradle

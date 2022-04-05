@@ -25,3 +25,8 @@ For a full reference on the `metrics.yaml` format, refer to the
 
 For a full reference on the `pings.yaml` format, refer to the
 [Pings YAML Registry Format](pings.md) page.
+
+## `tags.yaml` file
+
+For a full reference on the `tags.yaml` format, refer to the
+[Tags YAML Registry Format](tags.md) page.

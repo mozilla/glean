@@ -200,8 +200,7 @@ afterEvaluate {
       }
 
       def buildType = "${variant.buildType.name.capitalize()}"
-      def nativeCargoBuildTask = "cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}"
-      tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks[nativeCargoBuildTask])
+      tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks["cargoBuild"])
   }
 }
 

@@ -55,7 +55,7 @@ for arch in $ARCHS; do
         $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target aarch64-apple-ios
       else
         # M1 iOS simulator -- currently in Nightly only and requires to build `libstd`
-        $HOME/.cargo/bin/cargo +nightly build -p $FFI_TARGET --lib $RELFLAG --target aarch64-apple-ios-sim
+        $HOME/.cargo/bin/cargo build -p $FFI_TARGET --lib $RELFLAG --target aarch64-apple-ios-sim
       fi
   esac
 done

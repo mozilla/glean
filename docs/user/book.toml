@@ -1,5 +1,5 @@
 [book]
-title = "Glean - Cross-platform Telemetry library"
+title = "Glean SDKs - Cross-platform Telemetry Libraries"
 authors = ["Glean Team"]
 src = "."
 

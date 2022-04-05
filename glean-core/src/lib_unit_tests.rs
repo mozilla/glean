@@ -407,7 +407,7 @@ fn correct_order() {
         Counter(0),
         CustomDistributionExponential(Histogram::exponential(1, 500, 10)),
         CustomDistributionLinear(Histogram::linear(1, 500, 10)),
-        Datetime(local_now_with_offset().0, TimeUnit::Second),
+        Datetime(local_now_with_offset(), TimeUnit::Second),
         Experiment(RecordedExperiment { branch: "branch".into(), extra: None, }),
         Quantity(0),
         String("glean".into()),
@@ -799,8 +799,8 @@ fn timing_distribution_truncation_accumulate() {
             1000,
             100000,
             max_sample_time,
-            max_sample_time * 1000,
-            max_sample_time * 1000000,
+            max_sample_time * 1_000,
+            max_sample_time * 1_000_000,
         ];
         let timer_id = 4; // xkcd#221
 
@@ -941,21 +941,4 @@ fn test_activity_api() {
 
     // Check that we set everything we needed for the 'inactuve' status.
     assert!(!glean.is_dirty_flag_set());
-}
-
-/// We explicitly test that NO invalid timezone offset was recorded.
-/// If it _does_ happen and fails on a developer machine or CI, we better know about it.
-#[test]
-fn handles_local_now_gracefully() {
-    let _ = env_logger::builder().is_test(true).try_init();
-
-    let dir = tempfile::tempdir().unwrap();
-    let (glean, _) = new_glean(Some(dir));
-
-    let metric = &glean.additional_metrics.invalid_timezone_offset;
-    assert_eq!(
-        None,
-        metric.get_value(&glean, Some("metrics")),
-        "Timezones should be valid"
-    );
 }

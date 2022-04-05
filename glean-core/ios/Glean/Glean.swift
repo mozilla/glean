@@ -45,6 +45,14 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 }
 
+public struct BuildInfo {
+    var buildDate: DateComponents
+
+    public init(buildDate: DateComponents) {
+        self.buildDate = buildDate
+    }
+}
+
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -64,6 +72,7 @@ public class Glean {
     internal var testingMode = AtomicBoolean(false)
 
     var configuration: Configuration?
+    private var buildInfo: BuildInfo?
     fileprivate var observer: GleanLifecycleObserver?
 
     // This struct is used for organizational purposes to keep the class constants in a single place
@@ -105,7 +114,8 @@ public class Glean {
     ///       first_run_date and first_run_hour) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
-                           configuration: Configuration = Configuration()) {
+                           configuration: Configuration = Configuration(),
+                           buildInfo: BuildInfo) {
         // In certain situations Glean.initialize may be called from a process other than the main
         // process such as an embedded extension. In this case we want to just return.
         // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
@@ -119,6 +129,7 @@ public class Glean {
             return
         }
 
+        self.buildInfo = buildInfo
         self.configuration = configuration
         let cfg = InternalConfiguration(
             dataPath: getGleanDirectory().relativePath,
@@ -394,6 +405,18 @@ public class Glean {
         // Enable ping logging for all tests
         setLogPings(true)
 
-        initialize(uploadEnabled: uploadEnabled, configuration: configuration)
+        let buildInfo = BuildInfo(
+            buildDate: DateComponents(
+                calendar: Calendar.current,
+                timeZone: TimeZone(abbreviation: "UTC"),
+                year: 2020,
+                month: 1,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        )
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration, buildInfo: buildInfo)
     }
 }

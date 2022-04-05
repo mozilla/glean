@@ -10,7 +10,7 @@ These environment variables must be set on the device that is running the applic
 
 ## Enabling debugging features in iOS through a custom URL scheme
 
-For debugging and validation purposes on iOS, the Glean SDK makes use of a custom URL scheme which is implemented _within the application_ that is consuming the Glean SDK.  The Glean SDK provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this Glean SDK feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
+For debugging and validation purposes on iOS, the Glean Swift SDK makes use of a custom URL scheme which is implemented _within the application_. The Glean Swift SDK provides some convenience functions to facilitate this, but it's up to the consuming application to enable this functionality.  Applications that enable this feature will be able to launch the application from a URL with the Glean debug commands embedded in the URL itself.
 
 ### Available commands and query format
 
@@ -28,7 +28,7 @@ The structure of the custom URL uses the following format:
 Where:
 
 - `<protocol>` is the "URL Scheme" that has been added for your app (see Instrumenting the application below), such as `glean-sample-app`.
-- This is followed by `://` and then `glean` which is required for the Glean SDK to recognize the command is meant for it to process.
+- This is followed by `://` and then `glean` which is required for the Glean Swift SDK to recognize the command is meant for it to process.
 - Following standard URL query format, the next character after `glean` is the `?` indicating the beginning of the query.
 - This is followed by one or more queries in the form of `<command>=<parameter>`, where the command is one of the commands listed above, followed by an `=` and then the value or parameter to be used with the command.
 
@@ -40,9 +40,9 @@ There are a few things to consider when creating the custom URL:
 - The `logPings` command doesn't trigger ping submission and you won't see any output until a ping has been submitted. You can use the `sendPing` command to force a ping to be sent, but it could be more desirable to trigger the pings submission on their normal schedule. For instance, the `baseline` and `events` pings can be triggered by moving the app out of the foreground and the `metrics` ping can be triggered normally if it is overdue for the current calendar day. See the [ping documentation](../pings/index.md) for more information on ping scheduling to learn when pings are sent.
 - Enabling debugging features through custom URLs overrides any debugging features set through environment variables.
 
-### Instrumenting the application for Glean SDK debug functionality
+### Instrumenting the application for Glean Swift SDK debug functionality
 
-In order to enable the debugging features in a Glean SDK consuming iOS application, it is necessary to add some information to the application's `Info.plist`, and add a line and possibly an override for a function in the `AppDelegate.swift`.
+In order to enable the debugging features in an iOS application, it is necessary to add some information to the application's `Info.plist`, and add a line and possibly an override for a function in the `AppDelegate.swift`.
 
 #### Register custom URL scheme in `Info.plist`
 
@@ -60,7 +60,7 @@ Click on the disclosure icon of `URL Schemes` to expand the item, double-click t
 
 #### Add the `Glean.handleCustomUrl()` convenience function and necessary overrides
 
-In order to handle the incoming Glean SDK debug commands, it is necessary to implement the override in the application's `AppDelegate.swift` file.  Within that function, you can make use of the convenience function provided in Glean `handleCustomUrl(url: URL)`.
+In order to handle the incoming debug commands, it is necessary to implement the override in the application's `AppDelegate.swift` file.  Within that function, you can make use of the convenience function provided in Glean `handleCustomUrl(url: URL)`.
 
 An example of a simple implementation of this would look like this:
 
@@ -83,11 +83,11 @@ If you need additional help setting up a custom URL scheme in your application, 
 
 ### Invoking the Glean-iOS debug commands
 
-Now that the app has the Glean SDK debug functionality enabled, there are a few ways in which we can invoke the debug commands.
+Now that the app has the debug functionality enabled, there are a few ways in which we can invoke the debug commands.
 
 #### Using a web browser
 
-Perhaps the simplest way to invoke the Glean SDK debug functionality is to open a web browser and type/paste the custom URL into the address bar.  This is especially useful on an actual device because there isn't a good way to launch from the command line and process the URL for an actual device.
+Perhaps the simplest way to invoke the debug functionality is to open a web browser and type/paste the custom URL into the address bar.  This is especially useful on an actual device because there isn't a good way to launch from the command line and process the URL for an actual device.
 
 Using the glean-sample-app as an example: to activate ping logging, tag the pings to go to the Glean Debug View, and force the `events` ping to be sent, enter the following URL in a web browser on the iOS device:
 
@@ -113,7 +113,7 @@ This will launch the simulator and again prompt the user with a dialog box askin
 
 ### Glean log messages
 
-The Glean SDK integrates with the [unified logging system](https://developer.apple.com/documentation/os/logging/) available on iOS.
+The Glean Swift SDK integrates with the [unified logging system](https://developer.apple.com/documentation/os/logging/) available on iOS.
 There are various ways to retrieve log information, see the [official documentation](https://developer.apple.com/documentation/os/logging/viewing_log_messages).
 
 If debugging in the simulator, the logging messages can be seen in the console window within Xcode.

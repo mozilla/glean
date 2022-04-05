@@ -19,8 +19,8 @@ buildscript {
         mockito: '3.11.2',  // This is different than a-c, but we're fine, it's only tests.
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.5.20',
-        robolectric: '4.5.1', // This is different than a-c, but we're fine, it's only tests.
-        rust_android_plugin: '0.9.0',
+        robolectric: '4.7.3', // This is different than a-c, but we're fine, it's only tests.
+        rust_android_plugin: '0.9.1',
 
         // Android X dependencies
         androidx_annotation: '1.1.0',
@@ -128,8 +128,10 @@ ext.rustTargets = [
 switch (DefaultPlatform.RESOURCE_PREFIX) {
     case 'darwin':
     case 'darwin-x86-64':
+        ext.nativeRustTarget = 'darwin-x86-64'
+        break
     case 'darwin-aarch64':
-        ext.nativeRustTarget = 'darwin'
+        ext.nativeRustTarget = 'darwin-aarch64'
         break
     case 'linux-x86-64':
         ext.nativeRustTarget = 'linux-x86-64'

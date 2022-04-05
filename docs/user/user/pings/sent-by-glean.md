@@ -1,9 +1,9 @@
 # Pings sent by Glean
 
-If data collection is enabled, the Glean SDK provides a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
+If data collection is enabled, the Glean SDKs provide a set of built-in pings that are assembled out of the box without any developer intervention.  The following is a list of these built-in pings:
 
 - [`baseline` ping](baseline.md): A small ping sent every time the application goes to foreground and background. Going to foreground also includes when the application starts.
-- [`deletion-request` ping](deletion_request.md): Sent when the user disables telemetry in order to request a deletion of their data.
+- [`deletion-request` ping](deletion-request.md): Sent when the user disables telemetry in order to request a deletion of their data.
 - [`events` ping](events.md): The default ping for events. Sent every time the application goes to background or a certain number of events is reached.
 - [`metrics` ping](metrics.md): The default ping for metrics. Sent approximately daily.
 
@@ -13,14 +13,18 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 
 ### Available pings per platform
 
-| Language Binding | [`baseline`](baseline.md) | [`deletion-request`](deletion_request.md) | [`events`](events.md) | [`metrics`](metrics.md) |
+| SDK | [`baseline`](baseline.md) | [`deletion-request`](deletion-request.md) | [`events`](events.md) | [`metrics`](metrics.md) |
 |-:|:-:|:-:|:-:|:-:|
 | Kotlin | ✅ | ✅ | ✅ | ✅ |
 | Swift | ✅ | ✅ | ✅ | ✅ |
-| Python | | ✅ | | |
+| Python | ✅ [^1] | ✅ | ✅ [^2] | ❌ |
 | Rust | ✅ | ✅ | ✅ | ✅ |
-| JavaScript | | ✅ | | |
+| JavaScript | ❌ | ✅ | ✅ | ❌ |
 | Firefox Desktop | ✅ | ✅ | ✅ | ✅ |
+
+[^1]: Not sent automatically. Use the [`handle_client_active`](../../../python/glean/#glean.Glean.handle_client_active) and [`handle_client_inactive`](../../../python/glean/#glean.Glean.handle_client_inactive) API.
+
+[^2]: Sent on startup when pending events are stored. Additionally sent when [`handle_client_inactive`](../../../python/glean/#glean.Glean.handle_client_inactive) is called.
 
 ## Defining foreground and background state
 
@@ -51,7 +55,7 @@ The system may also call `onStop()` when the activity has finished running, and 
 
 ### Foreground
 
-For iOS, the Glean SDK attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
+For iOS, the Glean Swift SDK attaches to the [`willEnterForegroundNotification`](https://developer.apple.com/documentation/uikit/uiapplication/1622944-willenterforegroundnotification).
 This notification is posted by the OS shortly before an app leaves the background state on its way to becoming the active app.
 
 ### Background

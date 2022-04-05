@@ -19,7 +19,7 @@
     - [Testing custom pings](user/pings/testing-custom-pings.md)
     - [Pings sent by Glean](user/pings/sent-by-glean.md)
         - [Baseline Ping](user/pings/baseline.md)
-        - [Deletion Request Ping](user/pings/deletion_request.md)
+        - [Deletion Request Ping](user/pings/deletion-request.md)
         - [Events Ping](user/pings/events.md)
         - [Metrics Ping](user/pings/metrics.md)
         - [Schedules and timings overview](user/pings/ping-schedules-and-timings.md)
@@ -33,6 +33,7 @@
 - [YAML Registry Format](reference/yaml/index.md)
     - [Metrics](reference/yaml/metrics.md)
     - [Pings](reference/yaml/pings.md)
+    - [Tags](reference/yaml/tags.md)
 - [General API](reference/general/index.md)
     - [Initializing](reference/general/initializing.md)
     - [Toggling upload status](reference/general/toggling-upload-status.md)
@@ -64,21 +65,24 @@
     - [Text](reference/metrics/text.md)
 - [Pings](reference/pings/index.md)
 
-# Language Bindings Information
+# SDK Specific Information
 
 - [Overview](language-bindings/index.md)
 - [Android](language-bindings/android/index.md)
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
-    - [Instrumenting Android crashes with the Glean SDK](language-bindings/android/instrument-android-crashes-example.md)
+    - [Instrumenting Android crashes with Glean](language-bindings/android/instrument-android-crashes-example.md)
+- [iOS](language-bindings/ios/index.md)
+    - [iOS build configuration options](language-bindings/ios/ios-build-configuration-options.md)
 - [JavaScript](language-bindings/javascript/index.md)
+    - [Command Line Interface](language-bindings/javascript/cli.md)
     - [Plugins](language-bindings/javascript/plugins/index.md)
         - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
 # Appendix
 
 - [Glossary](appendix/glossary.md)
 - [Changelog](appendix/changelog/index.md)
-    - [Glean SDK](appendix/changelog/sdk.md)
-    - [Glean.js](appendix/changelog/js.md)
+    - [mozilla/glean](appendix/changelog/sdk.md)
+    - [mozilla/glean.js](appendix/changelog/js.md)
 - [This Week in Glean](appendix/twig.md)
 - [Contribution Guidelines](appendix/contribution-guidelines.md)

@@ -109,7 +109,9 @@ class ProcessDispatcher:
             # that Glean controls. This approach may need to change to pass over a pipe
             # if it becomes too large.
 
-            payload = base64.b64encode(pickle.dumps((func, args))).decode("ascii")
+            payload = base64.b64encode(
+                pickle.dumps((Glean._simple_log_level, func, args))
+            ).decode("ascii")
 
             if len(payload) > 4096:
                 log.warning("data payload to subprocess is greater than 4096 bytes")
@@ -120,8 +122,18 @@ class ProcessDispatcher:
                     Path(".coveragerc").absolute()
                 )
 
+            # Explicitly pass the contents of `sys.path` as `PYTHONPATH` to the
+            # subprocess so that there aren't any module search path
+            # differences.
+            python_path = ":".join(sys.path)
+
+            # We re-use the existing environment and overwrite only the `PYTHONPATH`
+            env = os.environ.copy()
+            env["PYTHONPATH"] = python_path
+
             p = subprocess.Popen(
-                [sys.executable, _process_dispatcher_helper.__file__, payload]
+                [sys.executable, _process_dispatcher_helper.__file__, payload],
+                env=env,
             )
 
             cls._last_process = p

@@ -13,6 +13,7 @@ ambiguity between the `glean` and `glean.glean` import paths.
 
 if __name__ == "__main__":  # pragma: no cover
     import base64
+    import logging
     import os
     import pickle
     import sys
@@ -31,7 +32,10 @@ if __name__ == "__main__":  # pragma: no cover
 
     __builtins__.IN_GLEAN_SUBPROCESS = True  # type: ignore
 
-    func, args = pickle.loads(base64.b64decode(sys.argv[1]))
+    simple_log_level, func, args = pickle.loads(base64.b64decode(sys.argv[1]))
+
+    if simple_log_level is not None:
+        logging.basicConfig(level=simple_log_level)
 
     success = func(*args)
 

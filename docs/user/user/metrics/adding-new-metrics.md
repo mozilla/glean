@@ -34,6 +34,13 @@ If you need to store multiple string values in a metric, use a [string list metr
 
 For all of the metric types in this section that measure single values, it is especially important to consider how the lifetime of the value relates to the ping it is being sent in. Since these metrics don't perform any aggregation on the client side, when a ping containing the metric is submitted, it will contain only the "last known" value for the metric, potentially resulting in **data loss**.  There is further discussion of [metric lifetimes](#when-should-the-glean-sdk-automatically-clear-the-measurement) below.
 
+
+### Are you measuring user behavior?
+
+For tracking user behavior, it is usually meaningful to know the over of events that lead to the use of a feature.  Therefore, for user behavior, an [event metric](../../reference/metrics/event.html) is usually the best choice.
+
+Be aware, however, that events can be particularly expensive to transmit, store and analyze, so should not be used for higher-frequency measurements.
+
 ### Are you counting things?
 
 If you want to know how many times something happened, use a [counter metric](../../reference/metrics/counter.html).  If you are counting a group of related things, or you don't know what all of the things to count are at build time, use a [labeled counter metric](../../reference/metrics/labeled_counters.html).
@@ -55,10 +62,6 @@ Note that this metric should only be used to measure time on a single thread. If
 If you need to measure the relative occurrences of many timings, use a [timing distribution](../../reference/metrics/timing_distribution.html). It builds a histogram of timing measurements, and is safe to record multiple concurrent timespans on different threads.
 
 If you need to know the time between multiple distinct actions that aren't a simple "begin" and "end" pair, consider using an [event](../../reference/metrics/event.html).
-
-### Do you need to know the order of events relative to other events?
-
-If you need to know the order of actions relative to other actions, such as, the user performed tasks A, B, and then C, and this is meaningfully different from the user performing tasks A, C and then B, (in other words, the order is meaningful beyond just the *fact* that a set of tasks were performed), use an [event metric](../../reference/metrics/event.html).
 
 ## For how long do you need to collect this data?
 
@@ -89,7 +92,7 @@ Let's work through an example to see how these lifetimes play out in practice. L
 
 In this diagram, the ping measurement windows are represented as rectangles, but the moment the ping is "submitted" is represented by its right edge. The user changes the "turbo mode" setting from `false` to `true` in the first run, and then toggles it again twice in the second run.
   
-![Metric lifetime timeline](metric-lifetime-timeline.svg)
+![Metric lifetime timeline](../metric-lifetime-timeline.svg)
 
 - **A. Ping lifetime, set on change**: The value isn't included in Ping 1, because Glean doesn't know about it yet.  It is included in the first ping after being recorded (Ping 2), which causes it to be cleared.
 
@@ -138,7 +141,7 @@ For example, if defining a set of events related to search, put them in a catego
 
 ## What if none of these metric types is the right fit?
 
-The current set of metrics the Glean SDK supports is based on known common use cases, but new use cases are discovered all the time.
+The current set of metrics the Glean SDKs support is based on known common use cases, but new use cases are discovered all the time.
 
 Please reach out to us on [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org). If you think you need a new metric type, we [have a process for that](../../reference/metrics/index.html#adding-or-changing-metric-types).
 
@@ -161,7 +164,7 @@ dashboard when that's ready
 
 ## Adding the metric to the `metrics.yaml` file
 
-The [`metrics.yaml` file](https://mozilla.github.io/glean_parser/metrics-yaml.html) defines the metrics your application or library will send.
+The [`metrics.yaml` file](../../reference/yaml/metrics.md) defines the metrics your application or library will send.
 They are organized into categories.
 The overall organization is:
 
@@ -174,6 +177,9 @@ toolbar:
     type: event
     description: |
       Event to record toolbar clicks.
+    metadata:
+      tags:
+        - Interaction
     notification_emails:
       - CHANGE-ME@example.com
     bugs:

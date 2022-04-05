@@ -123,7 +123,7 @@ override fun onCreate() {
 
 ```
 
-This completes the registration of the custom ping with the Glean SDK so that it knows about it and can manage the storage and
+This completes the registration of the custom ping with the Glean Kotlin SDK so that it knows about it and can manage the storage and
 other important details of it like sending it when `send()` is called.
 
 ### Instrument The App To Record The Event

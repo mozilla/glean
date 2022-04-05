@@ -60,7 +60,7 @@ Labeled metrics come in two forms:
   The number of static labels is limited to 100 per metric.
 
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
-  Only the first 16 labels seen by the Glean SDK will be tracked. After that, any additional labels are converted to the special label `__other__`.
+  Only the first 16 labels seen by Glean will be tracked. After that, any additional labels are converted to the special label `__other__`.
 
 > **Note**: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).
 
@@ -80,3 +80,8 @@ Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_chan
 1.  Glean consumers need to file a bug in the [Data platforms & tools::Glean Metric Types](https://bugzilla.mozilla.org/enter_bug.cgi?product=Data%20Platform%20and%20Tools&component=Glean%20Metric%20Types) component, filling in the provided form;
 2.  The triage owner of the Bugzilla component prioritizes this within 6 business days and kicks off the [decision making process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types#The_decision_making_process).
 3.  Once the decision process is completed, the bug is closed with a comment outlining the decision that was made.
+
+
+## Deprecated metrics
+
+- [JWE](https://docs.google.com/document/d/1nntNIiE6braTGzoKf-lx21OVDd8ssyeIeJu3jnQQfEE/edit?usp=sharing): Deprecated in [v37.0.0](https://github.com/mozilla/glean/blob/main/CHANGELOG.md#v3700-2021-04-30)

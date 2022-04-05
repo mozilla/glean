@@ -1,6 +1,6 @@
 # Error reporting
 
-The Glean SDK records the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly.
+The Glean SDKs record the number of errors that occur when metrics are passed invalid data or are otherwise used incorrectly.
 This information is reported back in special labeled counter metrics in the `glean.error` category.
 Error metrics are included in the same pings as the metric that caused the error.
 Additionally, error metrics are always sent in the [`metrics` ping](../pings/metrics.md) ping.
@@ -11,6 +11,7 @@ The following categories of errors are recorded:
 - `invalid_label`: The label on a labeled metric was invalid.
 - `invalid_state`: The metric caught an invalid state while recording.
 - `invalid_overflow`: The metric value to be recorded overflows the metric-specific upper range.
+- `invalid_type`: The metric value is not of the expected type. This error type is only recorded by the Glean JavaScript SDK. This error may only happen in dynamically typed languages.
 
 For example, if you had a string metric and passed it a string that was too long:
 

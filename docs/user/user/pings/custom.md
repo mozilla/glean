@@ -8,7 +8,7 @@ This is especially useful when metrics need to be tightly related to one another
 
 ## Defining a custom ping
 
-Custom pings must be defined in a [`pings.yaml` file](https://mozilla.github.io/glean_parser/pings-yaml.html), placed in the same directory alongside your app's `metrics.yaml` file.
+Custom pings must be defined in a [`pings.yaml` file](../../reference/yaml/pings.md), placed in the same directory alongside your app's `metrics.yaml` file.
 
 For example, to define a custom ping called `search` specifically for search information:
 
@@ -18,6 +18,9 @@ $schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 search:
   description: >
     A ping to record search data.
+  metadata:
+    tags:
+      - Search
   include_client_id: false
   notification_emails:
     - CHANGE-ME@example.com
@@ -26,6 +29,9 @@ search:
   data_reviews:
     - http://example.com/path/to/data-review
 ```
+
+Tags are an optional feature you can use to provide an additional layer of categorization to pings.
+Any tags specified in the `metadata` section of a ping *must* have a corresponding entry in a [tags YAML registry](../../reference/yaml/tags.md) for your project.
 
 Refer to the [pings YAML registry format](../../reference/yaml/pings.md) for a full reference
 on the `pings.yaml` file structure.
@@ -89,7 +95,7 @@ so it has timestamp `1000`.
 
 The application is restarted one hour after the first event and a `glean.restarted` event is
 recorded, timestamp `3600000`. Finally, an event is recorded during the second application run
-two seconds after restart, timestamp `3800000`.
+two seconds after restart, timestamp `3602000`.
 
 ```json
 {
@@ -111,7 +117,7 @@ two seconds after restart, timestamp `3800000`.
       "name": "restarted"
     },
     {
-      "timestamp": 3800000,
+      "timestamp": 3602000,
       "category": "examples",
       "name": "event_example"
     },

@@ -90,7 +90,7 @@ commands:
       - run:
           name: Setup custom environment variables
           command: |
-              echo "export PATH=$HOME/.cargo/bin:$PATH" >> $BASH_ENV
+              echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
   install-android-targets:
     steps:
@@ -112,7 +112,6 @@ commands:
 
   android-setup:
     steps:
-      - checkout
       - install-rustup
       - setup-rust-toolchain:
           rust-version: stable
@@ -221,9 +220,10 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.13.0_darwin_amd64
-            GHR_SHA256=319988a001462f80b37cf40fbc41b9de60b0a1cffa2a338b47b9fe5eef25f60e
-            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.zip"
+            GHR_VERSION=v0.14.0
+            GHR=ghr_${GHR_VERSION}_darwin_amd64
+            GHR_SHA256=33e9c89d611b049a2cb7ace8334108e8c586ea37a713f59c8503df582710b679
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
             cp ./${GHR}/ghr ghr
@@ -233,9 +233,10 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR=ghr_v0.13.0_linux_amd64
-            GHR_SHA256=c428627270ae26e206cb526cb8c7bdfba475dd278f6691ddaf863355adadfa13
-            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/v0.13.0/${GHR}.tar.gz"
+            GHR_VERSION=v0.14.0
+            GHR=ghr_${GHR_VERSION}_linux_amd64
+            GHR_SHA256=08fd71402df6aace23403ef3757dabc7e261d6b24fed5a0634e2275c71303c31
+            curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
             cp ./${GHR}/ghr ghr
@@ -252,9 +253,9 @@ jobs:
       - run:
           name: Install cargo-deny
           command: |
-            DENY_VERSION=0.7.3
+            DENY_VERSION=0.11.0
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=5456fed7c90f8658c085fac6a602f495fbb6107b62c9f8f54e90cad4ea33a61b
+            DENY_SHA256=bdac664b436fd8501b3bea5461bbf8566086ab0cf5555d83178c3209a848f9f8
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
@@ -285,10 +286,10 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
-      - run: sudo pip install yamllint
+      - run: pip install yamllint
       - run: make lint-yaml
 
   ###########################################################################
@@ -311,7 +312,9 @@ jobs:
       - setup-uniffi-bindgen
       - run: rustup component add clippy
       - run: cargo clippy --version
-      - run: cargo clippy --all --all-targets --all-features -- -D warnings
+      - run:
+          name: Clippy
+          command: make lint-rust
 
   Rust tests - stable:
     docker:
@@ -347,9 +350,9 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.9.0
+              MDBOOK_VERSION=0.10.0
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=c83f0df5b3104b283b6a6156c4394bb496f3a9c1368d90760313c98887267610
+              MDBOOK_SHA256=96d30648b21cf443d64bd181cc58c8f2ba0d98b1e390e96d4639ae1ec5985ae3
               curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
@@ -419,8 +422,9 @@ jobs:
     docker:
       - image: circleci/android:api-28
     steps:
-      - android-setup
+      - checkout
       - skip-if-doc-only
+      - android-setup
       - run:
           name: Restrict to Linux builds only
           command: |
@@ -473,7 +477,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
@@ -489,7 +493,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
@@ -499,27 +503,22 @@ jobs:
             gem env
       - install-rustup
       - setup-rust-toolchain
-      - run:
-          name: Install Rust Nightly toolchain
-          command: |
-            rustup toolchain add nightly --profile minimal
-            rustup target add aarch64-apple-ios-sim --toolchain nightly
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v10
+          key: swift-docs-gems-v11
           paths:
-            - ~/.gem/ruby/2.7.4
+            - ~/.gem/ruby/2.7.5
       - run:
           name: Setup build environment
           command: |
-            rustup target add aarch64-apple-ios x86_64-apple-ios
+            rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
             # Bootstrap dependencies
             bin/bootstrap.sh
@@ -577,16 +576,6 @@ jobs:
           paths: docs/swift
       - skip-if-doc-only
       - run:
-          name: Build Carthage archive
-          no_output_timeout: 20m
-          command: |
-            if [ -z "${CIRCLE_TAG}" ]; then
-              # No need to build the framework archive unless we build for a tagged release.
-              circleci-agent step halt
-            else
-              bash bin/build-carthage.sh Glean
-            fi
-      - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
           command: |
@@ -599,12 +588,11 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - Glean.framework.zip
             - Glean.xcframework.zip
 
   iOS integration test:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - skip-if-doc-only
@@ -613,7 +601,7 @@ jobs:
       - run:
           name: Setup build environment
           command: |
-            rustup target add aarch64-apple-ios x86_64-apple-ios
+            rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -622,29 +610,36 @@ jobs:
             UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
       - run:
-          name: Install Rust Nightly toolchain
+          name: Reduce dependencies in Cartfile for caching
           command: |
-            # Need a nightly toolchain and the source code for targetting the arm64 iOS simulator
-            # We don't need that build on CI, but its hard to exclude it from the build
-            # while still allowing it in developer builds.
-            rustup toolchain add nightly --profile minimal
-            rustup target add aarch64-apple-ios-sim --toolchain nightly
+            sed -i.bak "/mozilla\/glean/d" "samples/ios/app/Cartfile"
+      - restore_cache:
+          name: Restore carthage dep cache
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
+      - run:
+          name: Bootstrap dependencies
+          command: |
+            pushd samples/ios/app
+            ./bootstrap.sh
+            popd
+      - save_cache:
+          paths:
+            - samples/ios/app/Carthage
+          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
       - run:
           name: Use current commit of Glean
           command: |
             GLEAN_PATH="$(pwd)"
             CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
 
-            echo "Current Cartfile:"
-            cat "${CARTFILE_PATH}"
-            echo "================="
             echo "New Cartfile:"
-            sed -i.bak "/mozilla\/glean/s#.*#git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" "$CARTFILE_PATH"
+            echo "git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" >> "$CARTFILE_PATH"
             cat "${CARTFILE_PATH}"
       - run:
-          name: Bootstrap dependencies
+          name: Bootstrap Glean dependency
           command: |
             pushd samples/ios/app
+            carthage update --no-build --verbose
             ./bootstrap.sh
             popd
       - run:
@@ -677,16 +672,15 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - attach_workspace:
           at: .
       - install-ghr-darwin
       - run:
-          name: Release framework archives on GitHub
+          name: Release framework archive on GitHub
           command: |
-            ./ghr -replace "${CIRCLE_TAG}" Glean.framework.zip
             ./ghr -replace "${CIRCLE_TAG}" Glean.xcframework.zip
 
   glean-swift release:
@@ -708,7 +702,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -717,7 +711,7 @@ jobs:
 
   Python 3_6 tests:
     docker:
-      - image: circleci/python:3.6.12
+      - image: cimg/python:3.6
     steps:
       - checkout
       - skip-if-doc-only
@@ -725,7 +719,7 @@ jobs:
 
   Python 3_6 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.6.12
+      - image: cimg/python:3.6
     steps:
       - checkout
       - skip-if-doc-only
@@ -736,18 +730,15 @@ jobs:
 
   Python 3_7 tests:
     docker:
-      - image: circleci/python:3.7.9
+      - image: cimg/python:3.7
     steps:
       - checkout
       - skip-if-doc-only
       - test-python
-      - persist_to_workspace:
-          root: glean-core/python/
-          paths: .venv3.7
 
   Python 3_8 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - test-python
@@ -757,17 +748,14 @@ jobs:
 
   Python 3_9 tests:
     docker:
-      - image: circleci/python:3.9.0
+      - image: cimg/python:3.9
     steps:
       - checkout
       - test-python
-      - persist_to_workspace:
-          root: glean-core/python/
-          paths: .venv3.9
 
   Python 3_9 tests minimum dependencies:
     docker:
-      - image: circleci/python:3.9.0
+      - image: cimg/python:3.9
     steps:
       - checkout
       - skip-if-doc-only
@@ -790,9 +778,16 @@ jobs:
       - checkout
       - test-python
 
+  Python 3_10 tests:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - test-python
+
   Python Windows x86_64 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -800,7 +795,7 @@ jobs:
       - run:
           name: Install Wine
           command: |
-            sudo apt install wine
+            sudo apt install wine-stable
       - run:
           name: Install Python for Windows
           command: |
@@ -816,7 +811,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8.5
     steps:
       - checkout
       - skip-if-doc-only
@@ -842,7 +837,7 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - attach_workspace:
@@ -856,7 +851,7 @@ jobs:
 
   pypi-source-release:
     docker:
-      - image: circleci/python:3.8.2
+      - image: cimg/python:3.8
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -864,7 +859,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -887,7 +882,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo "export PATH=/opt/python/cp38-cp38/bin:$PATH" >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
       - run:
           name: Build Python extension
           command: |
@@ -914,7 +909,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -946,7 +941,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "13.0.0"
+      xcode: "13.2.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -977,7 +972,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -997,7 +992,7 @@ jobs:
 
   pypi-windows-i686-release:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - build-windows-i686-wheel
@@ -1020,7 +1015,7 @@ jobs:
 
   Docs internal metrics check:
     docker:
-      - image: circleci/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -1138,6 +1133,7 @@ workflows:
       - Python 3_9 tests
       - Python 3_9 tests minimum dependencies
       - Python 3_9 on Alpine tests
+      - Python 3_10 tests
       - Python Windows x86_64 tests
       - Python Windows i686 tests
 

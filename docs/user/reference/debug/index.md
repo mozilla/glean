@@ -11,14 +11,14 @@ enabled
 
 Check out the platform specific guides on how to use Glean's debug functionalities.
 
-1. [Debugging Android applications using the Glean SDK](../../user/debugging/android.md)
-2. [Debugging iOS applications using the Glean SDK](../../user/debugging/ios.md)
-3. [Debugging Python applications using the Glean SDK](../../user/debugging/python.md)
-4. [Debugging JavaScript applications using Glean.js](../../user/debugging/javascript.md)
+1. [Debugging applications using the Glean Android SDK](../../user/debugging/android.md)
+2. [Debugging applications using the Glean iOS SDK](../../user/debugging/ios.md)
+3. [Debugging applications using the Glean Python SDK](../../user/debugging/python.md)
+4. [Debugging applications using the Glean JavaScript SDK](../../user/debugging/javascript.md)
 
 ## Features
 
-The Glean SDK provides four debugging features.
+The Glean SDKs provides four debugging features.
 
 ### [Log Pings](./logPings.md)
 
@@ -34,6 +34,6 @@ This will tag all subsequent outgoing pings with a maximum of 5 comma-separated 
 
 ### Send Pings
 
-_This feature is only available through the Android and iOS debug tools._
+_This feature is only available for the Kotlin and Swift SDKs._
 
 This expects the name of a ping and forces its immediate submission.

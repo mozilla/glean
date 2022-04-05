@@ -655,7 +655,7 @@ The following text applies to code linked from these dependencies:
 * [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
 * [cfg-if 0.1.10]( https://github.com/alexcrichton/cfg-if )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.1]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.2]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.8.4]( https://github.com/env-logger-rs/env_logger/ )
 * [ffi-support 0.4.4]( https://github.com/mozilla/ffi-support )
@@ -3247,9 +3247,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 41.1.1]( https://github.com/mozilla/glean )
-* [glean-core 41.1.1]( https://github.com/mozilla/glean )
-* [glean-ffi 41.1.1]( https://github.com/mozilla/glean )
+* [glean 44.0.0]( https://github.com/mozilla/glean )
+* [glean-core 44.0.0]( https://github.com/mozilla/glean )
+* [glean-ffi 44.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 

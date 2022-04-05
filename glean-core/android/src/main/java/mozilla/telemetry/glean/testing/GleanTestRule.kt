@@ -63,7 +63,7 @@ class GleanTestRule(
         SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
 
         // Set the last sent date to yesterday.
-        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
         val mps = MetricsPingScheduler(context, buildInfo)
 
         mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))

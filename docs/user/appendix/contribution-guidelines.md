@@ -23,8 +23,7 @@ _Is the content you want to add an essay or high level explanation on some aspec
 
 The overview section is the place to provide important higher level context for
 users of Glean. This section may include essays about Glean’s views, principles,
-data practices, etc. It also contains primers on information such as what is the Glean
-SDK and Glean.js.
+data practices, etc. It also contains primers on information such as what are the Glean SDKs
 
 ### User Guides
 
@@ -37,7 +36,7 @@ how to create pings, and so on.
 Pages on this section may link to the API Reference pages, but should not
 themselves be API References.
 
-Guides can be quite long, thus we should favor having one page per language binding instead
+Guides can be quite long, thus we should favor having one page per SDK instead
 of using tabs.
 
 ### API Reference
@@ -52,25 +51,24 @@ Each API description contains:
 - A title with the name of the API.
   - It’s important to use titles, because they automatically generate links to that API.
 - A brief description of what the API does.
-- Tabs with examples for using that API in each language binding.
-  - Even if a certain language binding do not contain a given API, the tab will be included in
+- Tabs with examples for using that API in each SDK.
+  - Even if a certain SDK does not contain a given API, the tab will be included in
   the tabs bar in the disabled state.
 
 The API Reference pages should not contain any guides in prose format, they should all be linked from the User’s Guide when convenient.
 
-### Language Binding Information
+### SDK Specific Information
 
-_Is the content you want to add a language binding specific guide on a Glean feature?_
+_Is the content you want to add a SDK specific guide on a Glean feature?_
 
-Language bindings may require some dedicated pages, these section contains these pages.
-Each language binding has a top level section under this section, specific pages live
-under these titles.
+Different SDKs may require some dedicated pages, these section contains these pages.
+Each SDK has a top level section under this section, specific pages live under these titles.
 
 ### Appendix
 
 _Is the content you want to add support content for the rest of the content on book?_
 
-The appendix contains support information related to the Glean SDK or the content of this book.
+The appendix contains support information related to the Glean SDKs or the content of this book.
 
 ## In which format to present content?
 
@@ -96,16 +94,16 @@ This makes it easier to find content through the Summary.
 
 #### Tabs
 
-Tabs are useful for providing small code examples of Glean's APIs for each language binding.
+Tabs are useful for providing small code examples of Glean's APIs for each SDK.
 A tabs section starts with the `tab_header` [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files) and ends with the `tab_footer` [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files).
 Each tab is declared in between these [include](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files) statements.
 
 Each tab content is placed inside an html `div` tag with the `data-lang` and `class="tab"` attributes.
 The `data-lang` attribute contains the title of the tab. Titles must match for different tabs on the
-same language binding. Whenever a user clicks in a tab with a specific title, all tabs with that same
+same SDK. Whenever a user clicks in a tab with a specific title, all tabs with that same
 title will be opened by default, until the user clicks in a tab with a different title.
 
-Every tab section should contain tabs for all Glean language bindings, even if a language binding does not
+Every tab section should contain tabs for all Glean SDKs, even if an SDK does not
 provide the API in question. In this case, the tab div should still be there without any inner HTML.
 When that is the case that tab will be rendered in a disabled state.
 

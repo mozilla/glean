@@ -1,6 +1,4 @@
 # Changelog
 
-This section contains the changelog for both Glean clients.
-
-- [The Glean SDK](./sdk.md)
-- [Glean.js](./js.md)
+- [`mozilla/glean`](./sdk.md)
+- [`mozilla/glean.js`](./js.md)
