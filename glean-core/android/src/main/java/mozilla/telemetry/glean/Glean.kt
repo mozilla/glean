@@ -24,6 +24,7 @@ import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
+import java.util.Calendar
 
 /**
  * Public exported type identifying individual timers for
@@ -31,7 +32,7 @@ import java.io.File
  */
 data class GleanTimerId internal constructor(internal val id: Long)
 
-data class BuildInfo(val versionCode: String, val versionName: String)
+data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
 
 internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     override fun onInitializeFinished() {
@@ -147,8 +148,6 @@ open class GleanInternalAPI internal constructor() {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        this.buildInfo = buildInfo
-
         // Glean initialization must be called on the main thread, or lifecycle
         // registration may fail. This is also enforced at build time by the
         // @MainThread decorator, but this run time check is also performed to
@@ -167,6 +166,7 @@ open class GleanInternalAPI internal constructor() {
             return
         }
 
+        this.buildInfo = buildInfo
         this.applicationContext = applicationContext
 
         this.configuration = configuration
@@ -429,7 +429,7 @@ open class GleanInternalAPI internal constructor() {
         // Always log pings for tests
         Glean.setLogPings(true)
 
-        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1")
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
         Glean.initialize(context, uploadEnabled, config, buildInfo)
     }
 

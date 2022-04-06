@@ -36,12 +36,23 @@ To contact us you can:
 * Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 * To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
 * Send an email to *glean-team@mozilla.com*.
-* The Glean Core team is: *:dexter*, *:janerik*, *:mdroettboom*, *:travis_*, *:gfritzsche*, *:chutten*, *:brizental*.
+* The Glean Core team is: *:dexter*, *:janerik*, *:travis_*, *:chutten*, *:brizental*.
 
 ## Credits
 
 The [Glean logo artwork](https://dianaciufo.wordpress.com/2019/10/11/glean-graphic-identity-for-mozilla-firefox/) was contributed by [Diana Ciufo](https://dianaciufo.wordpress.com/).
 It's licensed under MPL.
+
+### Alumni contributors
+
+* Georg Fritzsche
+* Michael Droettboom
+
+See the full list of contributors for:
+
+* the [Glean SDK](https://github.com/mozilla/glean/graphs/contributors)
+* the [Glean.js SDK](https://github.com/mozilla/glean.js/graphs/contributors)
+* the [glean_parser](https://github.com/mozilla/glean_parser/graphs/contributors)
 
 ## License
 

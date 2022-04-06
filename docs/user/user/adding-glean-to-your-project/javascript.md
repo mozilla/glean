@@ -1,17 +1,12 @@
 # Adding Glean to your JavaScript project
 
-This page provides a step-by-step guide on how to integrate the [Glean.js](https://github.com/mozilla/glean.js/) library into a JavaScript project.
+This page provides a step-by-step guide on how to integrate
+the Glean JavaScript SDK into a JavaScript project.
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-Currently, these bindings support collecting data from [Browser Extensions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) (cross-browser), [Node.js](https://nodejs.org/en/)[^1] applications or scripts and [Qt/QML applications](https://doc.qt.io/qt-5/qtqml-index.html)[^2].
-
-[^1]: The Node.js SDK does not have persistent storage yet. This means, Glean does not persist
-state throughout application runs. For updates on the implementation of this feature in Node.js,
-follow [Bug 1728807](https://bugzilla.mozilla.org/show_bug.cgi?id=1728807).
-
-[^2]: For information on adding Glean to a Qt/QML application, refer to the
-[Qt specific documentation](./qt.md).
+The Glean JavaScript SDK allows integration with three distinct JavaScript environments:
+**websites, web extension and Node.js.**
 
 ## Requirements
 
@@ -30,8 +25,7 @@ follow [Bug 1728807](https://bugzilla.mozilla.org/show_bug.cgi?id=1728807).
 * [Host permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#host_permissions) to the telemetry server
   * Only necessary if the defined server endpoint denies
   [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) requests
-  * The default `incoming.telemetry.mozilla.org` server does require this type of permission.
-  Follow [Bug 1676676](https://bugzilla.mozilla.org/show_bug.cgi?id=1676676) for updates on this requirement
+  * Not necessary if using the default `https://incoming.telemetry.mozilla.org`.
 * ["storage"](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions#api_permissions) API permissions
 
 {{#include ../../../shared/blockquote-info.html}}
@@ -45,10 +39,20 @@ follow [Bug 1728807](https://bugzilla.mozilla.org/show_bug.cgi?id=1728807).
 
 ## Setting up the dependency
 
-The Glean.js package is distributed as an npm package
+The Glean JavaScript SDK is distributed as an npm package
 [`@mozilla/glean`](https://www.npmjs.com/package/@mozilla/glean).
 
-Install Glean.js in your JavaScript project, by running:
+This package has different entry points to access the different SDKs.
+
+- `@mozilla/glean/web` gives access to the websites SDK
+- `@mozilla/glean/webext` gives access to the web extension SDK
+- `@mozilla/glean/node` gives access to the Node.js SDK[^1]
+
+[^1]: The Node.js SDK does not have persistent storage yet. This means, Glean does not persist
+state throughout application runs. For updates on the implementation of this feature in Node.js,
+follow [Bug 1728807](https://bugzilla.mozilla.org/show_bug.cgi?id=1728807).
+
+Install Glean in your JavaScript project, by running:
 
 ```bash
 npm install @mozilla/glean
@@ -57,25 +61,27 @@ npm install @mozilla/glean
 Then import Glean into your project:
 
 ```js
-// Glean.js for browser extensions
+// Importing the Glean JavaScript SDK for use in **web extensions**
 //
 // esm
 import Glean from "@mozilla/glean/webext";
 // cjs
 const { default: Glean } = require("@mozilla/glean/webext");
 
-// Glean.js for Node.js
+// Importing the Glean JavaScript SDK for use in **websites**
+//
+// esm
+import Glean from "@mozilla/glean/web";
+// cjs
+const { default: Glean } = require("@mozilla/glean/web");
+
+// Importing the Glean JavaScript SDK for use in **Node.js**
 //
 // esm
 import Glean from "@mozilla/glean/node";
 // cjs
 const { default: Glean } = require("@mozilla/glean/node");
 ```
-
-The currently available entry points are:
-
-* `@mozilla/glean/webext`
-* `@mozilla/glean/node`
 
 {{#include ../../../shared/blockquote-warning.html}}
 
@@ -139,7 +145,8 @@ npm run build:glean
 
 #### Prefer using the Glean Dictionary
 
-> While it is still possible to generate Markdown documentation, if working on a public Mozilla project rely on the [Glean Dictionary] for documentation.
+> While it is still possible to generate Markdown documentation,
+> if working on a public Mozilla project rely on the [Glean Dictionary] for documentation.
 > Your product will be automatically indexed by the Glean Dictionary after it gets enabled in the pipeline.
 
 One of the commands provided by `glean_parser` allows users to generate Markdown documentation based on the contents of their YAML registry files.

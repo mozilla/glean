@@ -159,7 +159,7 @@ impl Glean {
             let _scanning_thread = upload_manager.scan_pending_pings_directories();
         }
 
-        let (start_time, start_time_is_corrected) = local_now_with_offset();
+        let start_time = local_now_with_offset();
         let mut this = Self {
             upload_enabled: cfg.upload_enabled,
             // In the subprocess, we want to avoid accessing the database entirely.
@@ -189,13 +189,6 @@ impl Glean {
         this.register_ping_type(&pings.metrics);
         this.register_ping_type(&pings.events);
         this.register_ping_type(&pings.deletion_request);
-
-        // Can't use `local_now_with_offset_and_record` above, because we needed a valid `Glean` first.
-        if start_time_is_corrected {
-            this.additional_metrics
-                .invalid_timezone_offset
-                .add_sync(&this, 1);
-        }
 
         Ok(this)
     }

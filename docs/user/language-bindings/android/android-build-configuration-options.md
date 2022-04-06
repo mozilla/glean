@@ -1,13 +1,26 @@
 # Android build script configuration options
 
-This chapter describes build configuration options that control the behavior of the Glean SDK's Gradle plugin.
+This chapter describes build configuration options that control the behavior of the Glean Kotlin SDK's Gradle plugin.
 These options are not usually required for normal use.
 
 Options can be turned on by setting a variable on the Gradle [`ext`](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html) object *before* applying the Glean Gradle plugin.
 
+## `gleanBuildDate`
+
+Overwrite the auto-generated build date.
+
+If set to `0` a static UNIX epoch time will be used.
+If set to a ISO8601 datetime string it will use that date.
+Note that any timezone offset will be ignored and UTC will be used.
+For other values it will throw an error.
+
+```groovy
+ext.gleanBuildDate = "2022-01-03T17:30:00"
+```
+
 ## `allowMetricsFromAAR`
 
-Normally, the Glean SDK looks for `metrics.yaml` and `pings.yaml` files in the root directory of the Glean-using project.
+Normally, the Glean Kotlin SDK looks for `metrics.yaml` and `pings.yaml` files in the root directory of the Glean-using project.
 However, in some cases, these files may need to ship inside the dependencies of the project.
 For example, this is used in the `engine-gecko` component to grab the `metrics.yaml` from the `geckoview` AAR.
 
@@ -26,7 +39,8 @@ variant.packageLibraryProvider.get().from("${topsrcdir}/path/metrics.yaml")
 
 ## `gleanGenerateMarkdownDocs`
 
-The Glean SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
+
+The Glean Kotlin SDK can automatically generate Markdown documentation for metrics and pings defined in the registry files, in addition to the metrics API code.
 
 ```groovy
 ext.gleanGenerateMarkdownDocs = true
@@ -52,3 +66,17 @@ To override this, `ext.gleanYamlFiles` may be set to a list of explicit paths.
 ```groovy
 ext.gleanYamlFiles = ["$rootDir/glean-core/metrics.yaml", "$rootDir/glean-core/pings.yaml"]
 ```
+
+## `gleanExpireByVersion`
+
+Expire the metrics and pings by version, using the provided major version.
+
+If enabled, expiring metrics or pings by date will produce an error.
+
+```groovy
+ext.gleanExpireByVersion = 25
+```
+
+Different products have different ways to compute the product version at build-time.
+For this reason the Glean Gradle plugin cannot provide an automated way to detect the product major version at build time.
+When using the expiration by version feature in Android, products must provide the major version by themselves.

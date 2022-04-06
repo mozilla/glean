@@ -13,12 +13,25 @@ such as `pings.custom_ping.submit()`, will send it.
 
 ## Logging pings
 
-If the `GLEAN_LOG_PINGS` environment variable is set to `true`, pings are
-logged to the console on `DEBUG` level whenever they are submitted.
+Glean offers two options for logging from Python:
 
-Make sure that when you configure logging in your application, you set the level
-for the Python logging library to `DEBUG` or higher. Otherwise pings won't be
-logged even if `GLEAN_LOG_PINGS` is set to `true`.
+- **Simple logging API:** A simple API that only allows for setting the logging level, but includes all Glean log messages, including those from its networking subprocess. This is also the only mode in which [`GLEAN_LOG_PINGS`](../../reference/debug/logPings.md) can be used to display ping contents in the log.
+- **Flexible logging API:** Full use of the Python `logging` module, including its features for redirecting to files and custom handling of messages, but does not include messages from the networking subprocess about HTTP requests.
+
+### Simple logging API
+
+You can set the logging level for Glean log messages by passing `logging.DEBUG` to `Glean.initialize` as follows:
+
+```python
+import logging
+from glean import Glean
+
+Glean.initialize(..., log_level=logging.DEBUG)
+```
+
+If you want to see ping contents as well, set the `GLEAN_LOG_PINGS` environment variable to `true`.
+
+### Flexible logging API
 
 You can set the logging level for the Python logging to `DEBUG` as follows:
 
@@ -28,11 +41,13 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-All log messages from the Glean SDK are on the `glean` logger, so if you need to control it independently, you can set a level for just the Glean SDK (but note that the global Python logging level also needs to be set as above):
+All log messages from the Glean Python SDK are on the `glean` logger, so if you need to control it independently, you can set a level for just the Glean Python SDK (but note that the global Python logging level also needs to be set as above):
 
 ```python
 logging.getLogger("glean").setLevel(logging.DEBUG)
 ```
+
+The flexible logging API is unable to display networking-related log messages or ping contents with `GLEAN_LOG_PINGS` set to true.
 
 See the [Python logging documentation][python-logging] for more information.
 

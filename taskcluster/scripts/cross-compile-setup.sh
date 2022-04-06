@@ -3,14 +3,26 @@
 set -eux
 
 export PATH=$PATH:/builds/worker/clang/bin
+
+# x86_64 Darwin
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CC=/builds/worker/clang/bin/clang
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/builds/worker/cctools/bin
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/x86_64-apple-darwin-ar
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/x86_64-apple-darwin-ranlib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=x86_64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-dead_strip"
-# For ring's use of `cc`.
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CFLAGS_x86_64_apple_darwin="-B /builds/worker/cctools/bin -target x86_64-apple-darwin -isysroot /tmp/MacOSX10.12.sdk -Wl,-syslibroot,/tmp/MacOSX10.12.sdk -Wl,-dead_strip"
+
+# aarch64 Darwin (M1/Silicon)
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CC=/builds/worker/clang/bin/clang
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_TOOLCHAIN_PREFIX=/builds/worker/cctools/bin
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/aarch64-apple-darwin-ar
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/aarch64-apple-darwin-ranlib
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-dead_strip"
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CFLAGS_aarch64_apple_darwin="-B /builds/worker/cctools/bin -target aarch64-apple-darwin -isysroot /tmp/MacOSX11.0.sdk -Wl,-syslibroot,/tmp/MacOSX11.0.sdk -Wl,-dead_strip"
+
+# x86_64 Windows
 # The wrong linker gets used otherwise: https://github.com/rust-lang/rust/issues/33465.
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS="-C linker=x86_64-w64-mingw32-gcc"
 
@@ -33,12 +45,12 @@ export TARGET_CFLAGS="-DNDEBUG"
 #   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
 pushd /builds/worker
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-11.hash.0605c7bc8e4a474ee8ffa6d9e075f57d5063ff31793516d9f62dc6e7dcec41c3/artifacts/public/build/cctools.tar.xz > cctools.tar.xz && \
-tar -xf cctools.tar.xz && \
-rm cctools.tar.xz && \
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-11.hash.25231a75e67a889cf0049c296d3a8a440439f0a14c845da0dd574c2ca3b732b2/artifacts/public/build/cctools.tar.xz > cctools.tar.xz
+tar -xf cctools.tar.xz
+rm cctools.tar.xz
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-11-macosx-cross.hash.8da28431c601f847cd59f8582181836e1acbb263c434cb6151d361d835812afb/artifacts/public/build/clang.tar.zst > clang.tar.zst && \
-tar -I zstd -xf clang.tar.zst && \
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-11-macosx-cross.hash.efe2cd570200f7093d9081c41875f79571e7ace17786de15c0d34ab2f5f795c7/artifacts/public/build/clang.tar.zst > clang.tar.zst
+tar -I zstd -xf clang.tar.zst
 rm clang.tar.zst
 popd
 
@@ -46,10 +58,14 @@ pushd /tmp
 
 tooltool.py \
   --url=http://taskcluster/tooltool.mozilla-releng.net/ \
-  --manifest="/builds/worker/checkouts/src/taskcluster/scripts/macos.manifest" \
+  --manifest="/builds/worker/checkouts/vcs/taskcluster/scripts/macos.manifest" \
   fetch
+# tooltool doesn't know how to unpack zstd-files,
+# so we do it manually.
+tar -I zstd -xf "MacOSX11.0.sdk.tar.zst"
 
 rustup target add x86_64-apple-darwin
+rustup target add aarch64-apple-darwin
 rustup target add x86_64-pc-windows-gnu
 
 popd

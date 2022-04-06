@@ -81,7 +81,7 @@ class DeletionRequestPingTests: XCTestCase {
         expectation = expectation(description: "Completed upload")
 
         // Init Glean.
-        glean.initialize(uploadEnabled: false)
+        glean.initialize(uploadEnabled: false, buildInfo: stubBuildInfo())
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

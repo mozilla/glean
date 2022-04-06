@@ -4,8 +4,7 @@ This page provides a step-by-step guide on how to integrate the Glean library in
 
 Nevertheless this is just one of the required steps for integrating Glean successfully into a project. Check you the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-
-Currently, these bindings only support the iOS platform.
+Currently, this SDK only supports the iOS platform.
 
 ## Requirements
 
@@ -13,73 +12,20 @@ Currently, these bindings only support the iOS platform.
 
 ## Setting up the dependency
 
-The Glean SDK can be consumed through [Carthage](https://github.com/Carthage/Carthage), a dependency manager for macOS and iOS.
-For consuming the latest version of the Glean SDK, add the following line to your `Cartfile`:
+The Glean Swift SDK can be consumed as a Swift Package.
+In your Xcode project add a new package dependency:
 
 ```
-github "mozilla/glean" "{latest-version}"
+https://github.com/mozilla/glean-swift
 ```
 
-{{#include ../../../shared/blockquote-warning.html}}
+Use the dependency rule "Up to Next Major Version".
+Xcode will automatically fetch the latest version for you.
 
-##### Pick the correct version
+The Glean library will be automatically available to your code when you import it:
 
-> The `{latest-version}` placeholder should be replaced with the version number of the latest Glean SDK release.
-> You can find the version number on the [release page](https://github.com/mozilla/glean/releases/latest).
-
-Then check out and build the new dependency:
-
-```
-carthage update --platform iOS
-```
-
-## Integrating with the build system
-
-For integration with the build system you can follow the [Carthage Quick Start steps](https://github.com/Carthage/Carthage#quick-start).
-
-1. After building the dependency one drag the built `.framework` binaries from `Carthage/Build/iOS` into your application's Xcode project.
-2. On your application targets' Build Phases settings tab, click the `+` icon and choose `New Run Script Phase`.
-   If you already use Carthage for other dependencies, extend the existing step.
-   Create a Run Script in which you specify your shell (ex: `/bin/sh`), add the following contents to the script area below the shell:
-
-   ```
-   /usr/local/bin/carthage copy-frameworks
-   ```
-
-3. Add the path to the Glean framework under "Input Files":
-
-   ```
-   $(SRCROOT)/Carthage/Build/iOS/Glean.framework
-   ```
-
-4. Add the paths to the copied framework to the "Output Files":
-
-   ```
-   $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Glean.framework
-   ```
-
-## Combined usage with application-services
-
-If your application uses both the Glean SDK and [application-services](https://github.com/mozilla/application-services)
-you can use a combined release to reduce the memory usage and startup time impact.
-
-In your `Cartfile` require only `application-services`, e.g.:
-
-```
-github "mozilla/application-services" ~> "{latest-version}"
-```
-
-{{#include ../../../shared/blockquote-warning.html}}
-
-##### Pick the correct version
-
-> The `{latest-version}` placeholder should be replaced with the version number of the latest application-services release.
-> You can find the version number on the [release page](https://github.com/mozilla/application-services/releases/latest).
-
-Then check out and build the new dependency:
-
-```
-carthage update --platform iOS
+```swift
+import Glean
 ```
 
 ## Setting up metrics and pings code generation
@@ -98,7 +44,7 @@ Follow these steps to automatically run the parser at build time:
 
 ##### Pick the correct version
 
-> As above, the `{latest-version}` placeholder should be replaced with the version number of Glean SDK release used in this project.
+> As above, the `{latest-version}` placeholder should be replaced with the version number of Glean Swift SDK release used in this project.
 
 2. Add the `sdk_generator.sh` file to your Xcode project.
 3. On your application targets' Build Phases settings tab, click the `+` icon and choose `New Run Script Phase`.
@@ -108,36 +54,23 @@ Follow these steps to automatically run the parser at build time:
    bash $PWD/sdk_generator.sh
    ```
 
-{{#include ../../../shared/blockquote-warning.html}}
+   Set [additional options](../../language-bindings/ios/ios-build-configuration-options.md) to control the behavior of the script.
 
-##### Using with application-services
-
-> If you are using the combined release of application-services and the Glean SDK you need to set the namespace to `MozillaAppServices`, e.g.:
->
-> ```
-> bash $PWD/sdk_generator.sh --glean-namespace MozillaAppServices
-> ```
-
-3. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` under "Input files":
+4. Add the path to your `metrics.yaml` and (optionally) `pings.yaml` and `tags.yaml` under "Input files":
 
    ```
    $(SRCROOT)/{project-name}/metrics.yaml
    $(SRCROOT)/{project-name}/pings.yaml
+   $(SRCROOT)/{project-name}/tags.yaml
    ```
 
-4. Add the path to the generated code file to the "Output Files":
+5. Add the path to the generated code file to the "Output Files":
 
    ```
    $(SRCROOT)/{project-name}/Generated/Metrics.swift
    ```
 
-{{#include ../../../shared/blockquote-info.html}}
-
-##### The generated API
-
-> The parser now generates a single file called `Metrics.swift` (since Glean v31.0.0).
-
-5. If you are using Git, add the following lines to your `.gitignore` file:
+6. If you are using Git, add the following lines to your `.gitignore` file:
 
    ```
    .venv/

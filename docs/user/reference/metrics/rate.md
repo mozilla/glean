@@ -22,14 +22,14 @@ A rate with a numerator of 0 is valid and will be sent to ensure we capture the
 
 ### `addToNumerator` / `addToDenominator`
 
+Numerators and denominators need to be counted individually.
+
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab"></div>
 <div data-lang="Java" class="tab"></div>
 <div data-lang="Swift" class="tab"></div>
 <div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
-
-Count numerator and denominator individually:
 
 ```Rust
 use glean_metrics::*;
@@ -58,7 +58,19 @@ network::http_connections.add(1);
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as network from "./path/to/generated/files/network.js";
+
+if (connectionHadError) {
+  network.httpConnectionError.addToNumerator(1);
+}
+
+network.httpConnectionError.addToDenominator(1);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
   **C++**
@@ -67,9 +79,9 @@ network::http_connections.add(1);
   #include "mozilla/glean/GleanMetrics.h"
 
   if (aHadError) {
-    mozilla::glean::network::http_connection_error.add_to_numerator(1);
+    mozilla::glean::network::http_connection_error.AddToNumerator(1);
   }
-  mozilla::glean::network::http_connection_error.add_to_denominator(1);
+  mozilla::glean::network::http_connection_error.AddToDenominator(1);
   ```
 
   **JavaScript**
@@ -85,7 +97,8 @@ network::http_connections.add(1);
 
 #### Recorded errors
 
-* `invalid_value`: If either numerator or denominator is incremented by a negative value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If either numerator or denominator is incremented by a negative value.
+* [`invalid_type`](../../user/metrics/error-reporting.md): If a floating point or non-number value is given.
 
 #### Limits
 
@@ -110,7 +123,17 @@ assert_eq!((1, 1), network::http_connection_error.test_get_value(None).unwrap())
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+```js
+import * as network from "./path/to/generated/files/network.js";
+
+const { numerator, denominator } = await network.httpConnectionError.testGetValue();
+assert.strictEqual(numerator, 1);
+assert.strictEqual(denominator, 1);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
   **C++**
@@ -169,7 +192,20 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="Javascript" class="tab"></div>
+<div data-lang="Javascript" class="tab">
+
+
+```js
+import * as network from "./path/to/generated/files/network.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+assert.strictEqual(
+  1,
+  await network.httpConnectionError.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 {{#include ../../../shared/tab_footer.md}}
 
@@ -195,7 +231,7 @@ network:
 For a full reference on metrics parameters common to all metric types,
 refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
-### External Denominators
+## External Denominators
 
 If several rates share the same denominator
 then the denominator should be defined as a `counter` and shared between
@@ -223,6 +259,12 @@ network:
     denominator_metric: network.http_connections
     ...
 ```
+
+{{#include ../../../shared/blockquote-info.html}}
+
+> The Glean JavaScript SDK does not support external denominators for Rate metrics, yet.
+> Follow [Bug 1745753](https://bugzilla.mozilla.org/show_bug.cgi?id=1745753) for updates
+> on that features development.
 
 ## Data Questions
 

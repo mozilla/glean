@@ -41,7 +41,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "4.0.0"
+    private String GLEAN_PARSER_VERSION = "5.0.1"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -53,9 +53,6 @@ class GleanPlugin implements Plugin<Project> {
     /* This script runs a given Python module as a "main" module, like
      * `python -m module`. However, it first checks that the installed
      * package is at the desired version, and if not, upgrades it using `pip`.
-     *
-     * ** IMPORTANT**
-     * Keep this script in sync with the one in `glean-core/csharp/GleanTasks/GleanParser.cs`.
      *
      * Note: Groovy doesn't support embedded " in multi-line strings, so care
      * should be taken to use ' everywhere in this code snippet.
@@ -110,7 +107,8 @@ except:
         } else {
             return [
                 "${project.projectDir}/metrics.yaml",
-                "${project.projectDir}/pings.yaml"
+                "${project.projectDir}/pings.yaml",
+                "${project.projectDir}/tags.yaml"
             ]
         }
     }
@@ -197,6 +195,17 @@ except:
                 if (!isApplication) {
                     args "-s"
                     args "with_buildinfo=false"
+                } else {
+                    // For applications check if they overwrote the build date.
+                    if (project.ext.has("gleanBuildDate")) {
+                        args "-s"
+                        args "build_date=${project.ext.get("gleanBuildDate")}"
+                    }
+                }
+
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
                 }
 
                 doFirst {
@@ -266,6 +275,11 @@ except:
                 // use metrics in the "glean..." category
                 if (project.ext.has("allowGleanInternal")) {
                     args "--allow-reserved"
+                }
+
+                // Enable expiration by major version, if a major version is provided.
+                if (project.ext.has("gleanExpireByVersion")) {
+                    args "--expire-by-version=${project.ext.get("gleanExpireByVersion")}"
                 }
 
                 doFirst {
@@ -480,7 +494,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "41.1.1"
+        project.ext.glean_version = "44.0.0"
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline

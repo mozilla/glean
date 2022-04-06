@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import mozilla.telemetry.glean.testing.GleanTestLocalServer
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -39,8 +40,15 @@ class BaselinePingTest {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.waitForIdle()
 
+        // Set as a glean_parser parameter in build.gradle
+        val expectedBuildDate = "2020-11-06T11:30:50+00:00"
+
         var baselinePing = waitForPingContent("baseline", "active", server)
         assertNotNull(baselinePing)
+
+        var clientInfo = baselinePing!!.getJSONObject("client_info")
+        var buildDate = clientInfo.getString("build_date")
+        assertEquals(expectedBuildDate, buildDate)
 
         // Wait for 1 second: this should guarantee we have some valid duration in the
         // ping.
@@ -53,6 +61,10 @@ class BaselinePingTest {
         baselinePing = waitForPingContent("baseline", "inactive", server)!!
 
         val metrics = baselinePing.getJSONObject("metrics")
+
+        clientInfo = baselinePing.getJSONObject("client_info")
+        buildDate = clientInfo.getString("build_date")
+        assertEquals(expectedBuildDate, buildDate)
 
         // Make sure we have a 'duration' field with a reasonable value: it should be >= 1, since
         // we slept for 1000ms.

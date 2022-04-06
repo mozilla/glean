@@ -12,12 +12,12 @@ Additionally, it is undesirable to mix metric recording from different versions 
 
 ### Platform availability
 
-| Language Binding | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
+| SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| [`metrics` ping](metrics.md) | ✅ | ✅ | | ✅ | | ✅ |
+| [`metrics` ping](metrics.md) | ✅ | ✅ | ❌ | ✅ | ❌ | ✅ |
 
 ## Scheduling
-The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running. 
+The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running.
 This breaks down into three scenarios:
 
 1. the application was just installed;
@@ -42,11 +42,11 @@ See also the [ping schedules and timing overview](ping-schedules-and-timings.htm
 
 ## Contents
 
-The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](https://mozilla.github.io/glean_parser/metrics-yaml.html#send-in-pings) property.
+The `metrics` ping contains all of the metrics defined in `metrics.yaml` (except events) that don't specify a ping or where `default` is specified in their [`send in pings`](../../reference/yaml/metrics.md#send_in_pings) property.
 
 Additionally, error metrics in the `glean.error` category are included in the `metrics` ping.
 
-The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.  It also includes a number of [metrics defined in the Glean SDK itself](../collected-metrics/metrics.html#metrics-1).
+The `metrics` ping shall also include the common [`ping_info`](index.md#the-ping_info-section) and ['client_info'](index.md#the-client_info-section) sections.  It also includes a number of [metrics defined in the Glean SDKs themselves](../collected-metrics/metrics.html#metrics-1).
 
 ### Querying ping contents
 

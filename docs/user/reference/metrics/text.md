@@ -52,6 +52,7 @@ article.content.set(extractedText);
 #### Recorded errors
 
 * [`invalid_overflow`](../../user/metrics/error-reporting.md): if the text is too long.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 ## Testing API
 

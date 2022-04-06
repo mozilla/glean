@@ -2,7 +2,8 @@
 
 String metrics allow recording a Unicode string value with arbitrary content.
 
-This metric type does not support recording JSON blobs - please get in contact with the Glean SDK team if you're missing a type.
+This metric type does not support recording JSON blobs
+- please get in contact with the Glean team if you're missing a type.
 
 {{#include ../../../shared/blockquote-warning.html}}
 
@@ -120,6 +121,7 @@ Glean.searchDefault.name.set("wikipedia");
 #### Recorded errors
 
 * [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 ## Testing API
 

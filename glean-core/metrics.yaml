@@ -199,6 +199,25 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  build_date:
+    type: datetime
+    time_unit: second
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The date & time the application was built.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1742448
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1742448#c17
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
   first_run_date:
     type: datetime
     lifetime: user
@@ -640,27 +659,3 @@ glean.validation:
       - glean-team@mozilla.com
     expires:
       never
-
-glean.time:
-  invalid_timezone_offset:
-    type: counter
-    description: |
-      Counts the number of times we encountered an invalid timezone offset
-      when trying to get the current time.
-      A timezone offset is invalid if it is outside [-24h, +24h].
-      If invalid a UTC offset is used (+0h).
-    lifetime: ping
-    send_in_pings:
-      - metrics
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1717402#c1
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1611770#c9
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1717402#c4
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - jrediger@mozilla.com
-      - glean-team@mozilla.com
-    expires: 2021-12-31

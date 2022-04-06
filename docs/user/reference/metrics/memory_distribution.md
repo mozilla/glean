@@ -9,39 +9,13 @@ That is, the function from a value \\( x \\) to a bucket index is:
 
 This makes them suitable for measuring memory sizes on a number of different scales without any configuration.
 
-> **Note** Check out how this bucketing algorithm would behave on the [Simulator](#simulator)
+> **Note** Check out how this bucketing algorithm would behave on the [Simulator](#simulator).
 
-## Configuration
+## Recording API
 
-Memory distributions have a required `memory_unit` parameter, which specifies
-the unit the incoming memory size values are recorded in. The units are the
-power-of-2 units, so "kilobyte" is more correctly a "kibibyte".
+### `accumulate`
 
-```
-- kilobyte == 2^10 ==         1,024 bytes
-- megabyte == 2^20 ==     1,048,576 bytes
-- gigabyte == 2^30 == 1,073,741,824 bytes
-```
-
-If you wanted to create a memory distribution to measure the amount of heap memory allocated, first you need to add an entry for it to the `metrics.yaml` file:
-
-```YAML
-memory:
-  heap_allocated:
-    type: memory_distribution
-    description: >
-      The heap memory allocated
-    memory_unit: kilobyte
-    ...
-```
-
-## API
-
-Now you can use the memory distribution from the application's code.
-
-> **Note** The data _provided_ to the `accumulate` method is in the configured memory unit specified in the `metrics.yaml` file. The data _recorded_, on the other hand, is always in **bytes**.
-
-For example, to measure the distribution of heap allocations:
+Accumulates the provided sample in the metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -56,65 +30,31 @@ fun allocateMemory(nbytes: Int) {
 }
 ```
 
-There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
+</div>
+<div data-lang="Java" class="tab">
 
-Continuing the `heapAllocated` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Memory;
 
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Memory
-
-// Was anything recorded?
-assertTrue(Memory.heapAllocated.testHasValue())
-
-// Get snapshot
-val snapshot = Memory.heapAllocated.testGetValue()
-
-// Does the sum have the expected value?
-assertEquals(11, snapshot.sum)
-
-// Usually you don't know the exact memory values, but how many should have been recorded.
-assertEquals(2L, snapshot.count)
-
-// Did this record a negative value?
-assertEquals(1, Memory.heapAllocated.testGetNumRecordedErrors(ErrorType.InvalidValue))
+fun allocateMemory(nbytes: Int) {
+    // ...
+    Memory.INSTANCE.heapAllocated().accumulate(nbytes / 1024);
+}
 ```
 
 </div>
-
 <div data-lang="Swift" class="tab">
 
 ```Swift
+import Glean
+
 func allocateMemory(nbytes: UInt64) {
     // ...
     Memory.heapAllocated.accumulate(nbytes / 1024)
 }
 ```
 
-There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
-
-Continuing the `heapAllocated` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
-
-```Swift
-@testable import Glean
-
-// Was anything recorded?
-XCTAssert(Memory.heapAllocated.testHasValue())
-
-// Get snapshot
-let snapshot = try! Memory.heapAllocated.testGetValue()
-
-// Does the sum have the expected value?
-XCTAssertEqual(11, snapshot.sum)
-
-// Usually you don't know the exact memory values, but how many should have been recorded.
-XCTAssertEqual(2, snapshot.count)
-
-// Did this record a negative value?
-XCTAssertEqual(1, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
-```
-
 </div>
-
 <div data-lang="Python" class="tab">
 
 ```Python
@@ -126,101 +66,23 @@ def allocate_memory(nbytes):
     metrics.memory.heap_allocated.accumulate(nbytes / 1024)
 ```
 
-There are test APIs available too.  For convenience, properties `sum` and `count` are exposed to facilitate validating that data was recorded correctly.
-
-Continuing the `heapAllocated` example above, at this point the metric should have a `sum == 11` and a `count == 2`:
-
-```Python
-# Was anything recorded?
-assert metrics.memory.head_allocated.test_has_value()
-
-# Get snapshot
-snapshot = metrics.memory.heap_allocated.test_get_value()
-
-# Does the sum have the expected value?
-assert 11 == snapshot.sum
-
-# Usually you don't know the exact memory values, but how many should have been recorded.
-assert 2 == snapshot.count
-
-# Did this record a negative value?
-assert 1 == metrics.memory.heap_allocated.test_get_num_recorded_errors(
-    ErrorType.INVALID_VALUE
-)
-```
-
 </div>
-
-<div data-lang="C#" class="tab">
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Memory;
-
-fun allocateMemory(ulong nbytes) {
-    // ...
-    Memory.heapAllocated.Accumulate(nbytes / 1024);
-}
-```
-
-There are test APIs available too.  For convenience, properties `Sum` and `Count` are exposed to facilitate validating that data was recorded correctly.
-
-Continuing the `heapAllocated` example above, at this point the metric should have a `Sum == 11` and a `Count == 2`:
-
-```C#
-using static Mozilla.YourApplication.GleanMetrics.Memory;
-
-// Was anything recorded?
-Assert.True(Memory.heapAllocated.TestHasValue());
-
-// Get snapshot
-var snapshot = Memory.heapAllocated.TestGetValue();
-
-// Does the sum have the expected value?
-Assert.Equal(11, snapshot.Sum);
-
-// Usually you don't know the exact memory values, but how many should have been recorded.
-Assert.Equal(2L, snapshot.Count);
-
-// Did this record a negative value?
-Assert.Equal(1, Memory.heapAllocated.TestGetNumRecordedErrors(ErrorType.InvalidValue));
-```
-
-</div>
-
 <div data-lang="Rust" class="tab">
 
 ```rust
-use glean_metrics;
+use glean_metrics::memory;
 
 fn allocate_memory(bytes: u64) {
+    // ...
     memory::heap_allocated.accumulate(bytes / 1024);
 }
 ```
 
-There are test APIs available too:
-
-```rust
-use glean::{DistributionData, ErrorType};
-use glean_metrics;
-
-// Was anything recorded?
-assert!(memory::heap_allocated.test_get_value(None).is_some());
-
-// Is the sum as expected?
-let data = memory::heap_allocated.test_get_value(None).unwrap();
-assert_eq!(11, data.sum)
-// The actual buckets and counts live in `data.values`.
-
-// Were there any errors?
-assert_eq!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue));
-
-```
-
 </div>
+<div data-lang="JavaScript" class="tab" data-bug="1716952"></div>
+<div data-lang="Firefox Desktop" class="tab">
 
-<div data-lang="C++" class="tab">
-
-> **Note**: C++ APIs are only available in Firefox Desktop.
+**C++**
 
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
@@ -228,50 +90,311 @@ assert_eq!(1, memory::heap_allocated.test_get_num_recorded_errors(InvalidValue))
 mozilla::glean::memory::heap_allocated.Accumulate(bytes / 1024);
 ```
 
-There are test APIs available too:
-
-```c++
-#include "mozilla/glean/GleanMetrics.h"
-
-// Does it have the expected value?
-ASSERT_EQ(11 * 1024, mozilla::glean::memory::heap_allocated.TestGetValue().unwrap().value().sum);
-```
-
-</div>
-
-<div data-lang="JS" class="tab">
-
-> **Note**: JS APIs are only available in Firefox Desktop.
+**JavaScript**
 
 ```js
 Glean.memory.heapAllocated.accumulate(bytes / 1024);
-```
-
-There are test APIs available too:
-
-```js
-const data = Glean.memory.heapAllocated.testGetValue();
-Assert.equal(11 * 1024, data.sum);
-// Does it have the right number of samples?
-Assert.equal(1, Object.entries(data.values).reduce(([bucket, count], sum) => count + sum, 0));
 ```
 
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
 
+#### Recorded errors
+
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative memory size.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a size larger than 1 TB.
+
+## Testing API
+
+### `testGetValue`
+
+Gets the recorded value for a given memory distribution metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Memory
+
+// Get snapshot
+val snapshot = Memory.heapAllocated.testGetValue()
+
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum)
+
+// Usually you don't know the exact memory values,
+// but how many should have been recorded.
+assertEquals(2L, snapshot.count)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Memory;
+
+// Get snapshot
+val snapshot = Memory.INSTANCE.heapAllocated().testGetValue();
+
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum);
+
+// Usually you don't know the exact memory values,
+// but how many should have been recorded.
+assertEquals(2L, snapshot.getCount());
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Get snapshot
+let snapshot = try! Memory.heapAllocated.testGetValue()
+
+// Does the sum have the expected value?
+XCTAssertEqual(11, snapshot.sum)
+
+// Usually you don't know the exact memory values,
+// but how many should have been recorded.
+XCTAssertEqual(2, snapshot.count)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Get snapshot.
+snapshot = metrics.memory.heap_allocated.test_get_value()
+
+# Does the sum have the expected value?
+assert 11 == snapshot.sum
+
+# Usually you don't know the exact memory values,
+# but how many should have been recorded.
+assert 2 == snapshot.count
+```
+
+</div>
+<div data-lang="Rust" class="tab">
+
+```rust
+use glean::ErrorType;
+use glean_metrics::memory;
+
+// Get snapshot
+let snapshot = memory::heap_allocated.test_get_value(None).unwrap();
+
+// Does the sum have the expected value?
+assert_eq!(11, snapshot.sum);
+
+// Usually you don't know the exact timing values,
+// but how many should have been recorded.
+assert_eq!(2, snapshot.values.len());
+```
+
+
+</div>
+<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+// Does it have an expected values?
+const data = mozilla::glean::memory::heap_allocated.TestGetValue().value().unwrap()
+ASSERT_EQ(11 * 1024, data.sum);
+```
+
+**JavaScript**
+
+```js
+const data = Glean.memory.heapAllocated.testGetValue();
+Assert.equal(11 * 1024, data.sum);
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testHasValue`
+
+Whether or not **any** value was recorded for a given memory distribution metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Pages
+
+// Get snapshot
+assertTrue(Memory.heapAllocated.testHasValue())
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Pages;
+
+// Was anything recorded?
+assertTrue(Memory.INSTANCE.heapAllocated().testHasValue());
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Was anything recorded?
+XCTAssert(Memory.heapAllocated.testHasValue())
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Was anything recorded?
+assert metrics.memory.head_allocated.test_has_value()
+```
+
+</div>
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testGetNumRecordedErrors`
+
+Gets number of errors recorded for a given memory distribution metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Memory
+
+// Did this record a negative value?
+assertEquals(
+    0,
+    Memory.heapAllocated.testGetNumRecordedErrors(ErrorType.InvalidValue)
+)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Memory;
+
+// Assert that no errors were recorded.
+assertEquals(
+    0,
+    Memory.INSTANCE.heapAllocated().testGetNumRecordedErrors(
+        ErrorType.InvalidValue
+    )
+);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+@testable import Glean
+
+// Did this record a negative value?
+XCTAssertEqual(0, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Did this record a negative value?
+assert 0 == metrics.memory.heap_allocated.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics::pages;
+
+assert_eq!(
+    0,
+    pages::page_load.test_get_num_recorded_errors(ErrorType::InvalidValue)
+);
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+## Metric parameters
+
+Example memory distribution metric definition:
+
+```YAML
+memory:
+  heap_allocated:
+    type: memory_distribution
+    memory_unit: kilobyte
+    description: >
+      The heap memory allocated
+    bugs:
+      - https://bugzilla.mozilla.org/000000
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=000000#c3
+    notification_emails:
+      - me@mozilla.com
+    expires: 2020-10-01
+```
+
+### Extra metric parameters
+
+#### `memory_unit`
+
+Memory distributions have a required `memory_unit` parameter,
+which specifies the unit the incoming memory size values are recorded in.
+The allowed values for `time_unit` are:
+
+- `byte`
+- `kilobyte` (`= 2^10 = 1,024 bytes`)
+- `megabyte` (`= 2^20 = 1,048,576 bytes`)
+- `gigabyte` (`= 2^30 = 1,073,741,824 bytes`)
+
 ## Limits
 
-* The maximum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes). Larger sizes will be truncated to 1 Terabyte.
+* The maximum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes).
+  Larger sizes will be truncated to 1 Terabyte.
 
-## Examples
+## Data questions
 
 * What is the distribution of the size of heap allocations?
-
-## Recorded errors
-
-* `invalid_value`: If recording a negative memory size.
-* `invalid_value`: If recording a size larger than 1TB.
 
 ## Reference
 

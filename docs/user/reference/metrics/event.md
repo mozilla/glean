@@ -14,12 +14,9 @@ Each event contains the following data:
 
 ## Are you sure you need an event metric?
 
-> Event metrics are able to carry a lot of information. As such, they can be used in place
-> of other metric types. However, their complexity means they are an
-> expensive metric type to record, transmit, store and, most importantly, analyze.
+> Events are best-suited to measuring user behavior, where the frequency of events is relatively low and the order of the events matters. Therefore, events should be the default choice for most user-behavior telemetry.
 >
-> Make sure to use events only when their complexity is unavoidable,
-> e.g. when it is necessary to know the order of events relative to one another.
+> For other types of telemetry (e.g. performance or stability), events may be too expensive metric type to record, transmit, store and, most importantly, analyze. In those cases, consider lighter metrics, such as [counters](counter.md).
 >  
 > When in doubt, refer to the
 > [metric type choosing guide](../../user/metrics/adding-new-metrics.mdl#choosing-a-metric-type).
@@ -206,6 +203,8 @@ views.loginOpened.record({ sourceOfLogin: "toolbar" });
 #### Recorded errors
 
 * [`invalid_overflow`](../../user/metrics/error-reporting.md): if any of the values in the `extras` object are greater than 50 bytes in length.  (Prior to Glean 31.5.0, this recorded an `invalid_value`).
+* [`invalid_value`](../../user/metrics/error-reporting.md): if there is an attempt to record to an extra key which is not allowed i.e. an extra key that has not been listed in the YAML registry file.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if the extra value given is not the expected type.
 
 ## Testing API
 
@@ -509,7 +508,7 @@ Each extra key contains additional metadata:
 * When 500 events are queued on the client an events ping is immediately sent.
 * The `extra_keys` allows for a maximum of 10 keys.
 * The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40 bytes, when encoded as UTF-8.
-* The values in the `extras` object have a maximum of 50 bytes, when encoded as UTF-8.
+* The values in the `extras` object have a maximum length of 100 bytes, when serialized and encoded as UTF-8.
   
 ## Reference
 

@@ -112,7 +112,8 @@ Glean.install.firstRun.set(value.getTime() * 1000);
 
 #### Recorded errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md): Setting the date time to an invalid value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): setting the date time to an invalid value.
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-Date object is given.
 
 ## Testing API
 

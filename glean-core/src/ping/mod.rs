@@ -15,7 +15,7 @@ use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
 use crate::upload::HeaderMap;
-use crate::util::{get_iso_time_string, local_now_with_offset_and_record};
+use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::{Glean, Result, DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 /// Holds everything you need to store or send a ping.
@@ -110,7 +110,7 @@ impl PingMaker {
         let start_time_data = start_time
             .get_value(glean, INTERNAL_STORAGE)
             .unwrap_or_else(|| glean.start_time());
-        let end_time_data = local_now_with_offset_and_record(glean);
+        let end_time_data = local_now_with_offset();
 
         // Update the start time with the current time.
         start_time.set_sync(glean, Some(end_time_data));

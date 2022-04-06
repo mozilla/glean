@@ -2,7 +2,7 @@
 
 URL metrics allow recording URL-like[^1] strings.
 
-This metric type does not support recording [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) - please get in contact with the Glean SDK team if you're missing a type.
+This metric type does not support recording [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) - please get in contact with the Glean team if you're missing a type.
 
 {{#include ../../../shared/blockquote-warning.html}}
 
@@ -116,7 +116,8 @@ search.template.setUrl(new URL("https://mysearchengine.com/"));
 * [`invalid_value`](../../user/metrics/error-reporting.md):
   * If the URL passed does not start with a [scheme](https://url.spec.whatwg.org/#url-representation) followed by a `:` character.
   * If the URL passed uses the `data:` protocol.
-* [`invalid_overflow`](../../user/metrics/error-reporting.md): If the URL passed is longer than 2048 characters (before encoding).
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the URL passed is longer than 2048 characters (before encoding).
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 #### Limits
 
