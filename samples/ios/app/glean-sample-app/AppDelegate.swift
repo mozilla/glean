@@ -40,6 +40,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("using default config for Glean")
             glean.initialize(uploadEnabled: true, buildInfo: GleanMetrics.GleanBuild.info)
         }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.glean.setExperimentActive(experimentId: "test_experiment", branch: "test_branch", extra: nil)
+        }
 
         Test.timespan.start()
 

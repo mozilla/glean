@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		60FA8F0427DF840000948E08 /* ExperimentInfoTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FA8F0327DF840000948E08 /* ExperimentInfoTest.swift */; };
+		60FA8F0F27DFA3B400948E08 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 60FA8F0E27DFA3B400948E08 /* Swifter */; };
+		60FA8F1127DFA3B900948E08 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 60FA8F1027DFA3B900948E08 /* Gzip */; };
+		60FA8F1327DFA3BD00948E08 /* Glean in Frameworks */ = {isa = PBXBuildFile; productRef = 60FA8F1227DFA3BD00948E08 /* Glean */; };
 		BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7CC0A72473F68C003B166D /* Metrics.swift */; };
 		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
 		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
@@ -18,16 +22,8 @@
 		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
 		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
-		BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; };
-		BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
-		BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
 		CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99D84525F131D600BD5339 /* EventPingTest.swift */; };
-		CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
-		CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
-		CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,23 +43,8 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		BFEA24B825CC39B200110728 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */,
-				BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */,
-				CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		60FA8F0327DF840000948E08 /* ExperimentInfoTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentInfoTest.swift; sourceTree = "<group>"; };
 		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
 		BF7CC0A72473F68C003B166D /* Metrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
@@ -86,9 +67,6 @@
 		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
 		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
-		BFEA24B525CC39B200110728 /* Glean.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Glean.xcframework; path = Carthage/Build/Glean.xcframework; sourceTree = "<group>"; };
-		BFEA24BB25CC39BF00110728 /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
-		BFEA24C025CC39CB00110728 /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
 		BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionRequestPingTest.swift; sourceTree = "<group>"; };
 		CD99D84525F131D600BD5339 /* EventPingTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventPingTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -98,9 +76,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */,
-				BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */,
-				CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */,
+				60FA8F1327DFA3BD00948E08 /* Glean in Frameworks */,
+				60FA8F1127DFA3B900948E08 /* Gzip in Frameworks */,
+				60FA8F0F27DFA3B400948E08 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,8 +93,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */,
-				BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +166,7 @@
 				BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */,
 				BFD3AB4F224D475E00AD9255 /* Info.plist */,
 				BFDA7AD12371D2BA00575C7B /* MockServer.swift */,
+				60FA8F0327DF840000948E08 /* ExperimentInfoTest.swift */,
 			);
 			path = "glean-sample-appUITests";
 			sourceTree = "<group>";
@@ -197,9 +174,6 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BFEA24C025CC39CB00110728 /* Swifter.xcframework */,
-				BFEA24BB25CC39BF00110728 /* Gzip.xcframework */,
-				BFEA24B525CC39B200110728 /* Glean.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -215,13 +189,17 @@
 				BFD3AB26224D475E00AD9255 /* Sources */,
 				BFD3AB27224D475E00AD9255 /* Frameworks */,
 				BFD3AB28224D475E00AD9255 /* Resources */,
-				BFEA24B825CC39B200110728 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "glean-sample-app";
+			packageProductDependencies = (
+				60FA8F0E27DFA3B400948E08 /* Swifter */,
+				60FA8F1027DFA3B900948E08 /* Gzip */,
+				60FA8F1227DFA3BD00948E08 /* Glean */,
+			);
 			productName = "glean-sample-app";
 			productReference = BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */;
 			productType = "com.apple.product-type.application";
@@ -255,6 +233,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				60FA8F1927DFA50000948E08 /* PBXTargetDependency */,
+				60FA8F1727DFA4FB00948E08 /* PBXTargetDependency */,
+				60FA8F1527DFA4F600948E08 /* PBXTargetDependency */,
 				BFD3AB4B224D475E00AD9255 /* PBXTargetDependency */,
 			);
 			name = "glean-sample-appUITests";
@@ -269,7 +250,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					BFD3AB29224D475E00AD9255 = {
 						CreatedOnToolsVersion = 10.1;
@@ -296,6 +277,11 @@
 				Base,
 			);
 			mainGroup = BFD3AB21224D475E00AD9255;
+			packageReferences = (
+				60FA8F0527DFA2A400948E08 /* XCRemoteSwiftPackageReference "swifter" */,
+				60FA8F0827DFA30600948E08 /* XCRemoteSwiftPackageReference "GzipSwift" */,
+				60FA8F0B27DFA35800948E08 /* XCRemoteSwiftPackageReference "glean-swift" */,
+			);
 			productRefGroup = BFD3AB2B224D475E00AD9255 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -385,6 +371,7 @@
 				BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */,
 				BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */,
 				CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */,
+				60FA8F0427DF840000948E08 /* ExperimentInfoTest.swift in Sources */,
 				BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -392,6 +379,18 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		60FA8F1527DFA4F600948E08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 60FA8F1427DFA4F600948E08 /* Swifter */;
+		};
+		60FA8F1727DFA4FB00948E08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 60FA8F1627DFA4FB00948E08 /* Gzip */;
+		};
+		60FA8F1927DFA50000948E08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 60FA8F1827DFA50000948E08 /* Glean */;
+		};
 		BFD3AB40224D475E00AD9255 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BFD3AB29224D475E00AD9255 /* glean-sample-app */;
@@ -450,6 +449,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -511,6 +511,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -546,9 +547,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -566,15 +568,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -587,8 +591,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -609,8 +614,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -618,6 +624,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
@@ -629,11 +636,13 @@
 			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -642,6 +651,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "glean-sample-app";
@@ -653,11 +663,13 @@
 			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = G9EAK7RA89;
+				DEVELOPMENT_TEAM = G9KJ4SHPHD;
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -666,6 +678,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "glean-sample-app";
@@ -712,6 +726,66 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		60FA8F0527DFA2A400948E08 /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+		60FA8F0827DFA30600948E08 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/1024jp/GzipSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		60FA8F0B27DFA35800948E08 /* XCRemoteSwiftPackageReference "glean-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mozilla/glean-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 44.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		60FA8F0E27DFA3B400948E08 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0527DFA2A400948E08 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+		60FA8F1027DFA3B900948E08 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0827DFA30600948E08 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+		60FA8F1227DFA3BD00948E08 /* Glean */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0B27DFA35800948E08 /* XCRemoteSwiftPackageReference "glean-swift" */;
+			productName = Glean;
+		};
+		60FA8F1427DFA4F600948E08 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0527DFA2A400948E08 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+		60FA8F1627DFA4FB00948E08 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0827DFA30600948E08 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+		60FA8F1827DFA50000948E08 /* Glean */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60FA8F0B27DFA35800948E08 /* XCRemoteSwiftPackageReference "glean-swift" */;
+			productName = Glean;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFD3AB22224D475E00AD9255 /* Project object */;
 }

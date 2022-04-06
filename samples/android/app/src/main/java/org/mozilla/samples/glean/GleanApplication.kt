@@ -43,6 +43,13 @@ class GleanApplication : Application() {
         // Set a sample value for a metric.
         Basic.os.set("Android")
 
+        // Set a test experiment
+        Glean.setExperimentActive(
+            "test_experiment",
+            "test_branch",
+            null
+        )
+
         Log.i(TAG, "Glean initialized")
     }
 }

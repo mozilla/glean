@@ -67,6 +67,12 @@ class BaselinePingTest {
         buildDate = clientInfo.getString("build_date")
         assertEquals(expectedBuildDate, buildDate)
 
+        var pingInfo = baselinePing.getJSONObject("ping_info")
+        var experiments = pingInfo.getJSONObject("experiments")
+        assertEquals(1, experiments.length())
+        var testExperiment = experiments.getJSONObject("test_experiment")
+        assertEquals("test_branch", testExperiment.getString("branch"))
+
         // Make sure we have a 'duration' field with a reasonable value: it should be >= 1, since
         // we slept for 1000ms.
         val timespans = metrics.getJSONObject("timespan")
@@ -77,5 +83,23 @@ class BaselinePingTest {
         errors?.forEach {
             assertFalse(it.startsWith("glean.error."))
         }
+
+//        device.pressRecentApps()
+//        Thread.sleep(1000)
+//        device.click(device.displayWidth/2, device.displayHeight/2)
+//        device.waitForIdle()
+//
+//        // Validate the received data.
+//        baselinePing = waitForPingContent("baseline", "active", server)!!
+//
+//        clientInfo = baselinePing.getJSONObject("client_info")
+//        buildDate = clientInfo.getString("build_date")
+//        assertEquals(expectedBuildDate, buildDate)
+//
+//        pingInfo = baselinePing.getJSONObject("ping_info")
+//        experiments = pingInfo.getJSONObject("experiments")
+//        assertEquals(1, experiments.length())
+//        testExperiment = experiments.getJSONObject("test_experiment")
+//        assertEquals("test_branch", testExperiment.getString("branch"))
     }
 }
