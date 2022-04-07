@@ -218,7 +218,7 @@ Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 The locale of the application during initialization (e.g. "es-ES").
 If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
 
-[`build.model`]: https://developer.android.com/reference/android/os/Build.html#MODEL
+[`Build.MODEL`]: https://developer.android.com/reference/android/os/Build.html#MODEL
 
 ## Ping submission
 
@@ -236,7 +236,7 @@ A typical submission URL looks like
 where:
 
 - `<server-address>`: the address of the server that receives the pings;
-- `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](<http://developer.android.com/reference/android/content/Context.html#getPackageName()>);
+- `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
 - `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with the Glean SDK, or a custom ping;
 - `<glean-schema-version>`: the version of the Glean ping schema;
 - `<document-id>`: a unique identifier for this ping.
