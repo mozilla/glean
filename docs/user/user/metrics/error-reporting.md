@@ -11,6 +11,7 @@ The following categories of errors are recorded:
 - `invalid_label`: The label on a labeled metric was invalid.
 - `invalid_state`: The metric caught an invalid state while recording.
 - `invalid_overflow`: The metric value to be recorded overflows the metric-specific upper range.
+- `invalid_type`: The metric value is not of the expected type. This error type is only recorded by the Glean JavaScript SDK. This error may only happen in dynamically typed languages.
 
 For example, if you had a string metric and passed it a string that was too long:
 

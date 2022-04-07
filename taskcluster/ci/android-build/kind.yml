@@ -25,7 +25,7 @@ jobs:
         # Store the test report as an artifact for later analysis
         - name: public/test
           type: directory
-          path: /builds/worker/checkouts/src/glean-core/android/build/reports/tests
+          path: /builds/worker/checkouts/vcs/glean-core/android/build/reports/tests
     run:
       pre-gradlew:
         # XXX: scripts subshell at runtime so we need to source this here

@@ -17,10 +17,14 @@ There is also a [high-level overview](ping-schedules-and-timings.html) of how th
 |-:|:-:|:-:|:-:|:-:|
 | Kotlin | ✅ | ✅ | ✅ | ✅ |
 | Swift | ✅ | ✅ | ✅ | ✅ |
-| Python | | ✅ | | |
+| Python | ✅ [^1] | ✅ | ✅ [^2] | ❌ |
 | Rust | ✅ | ✅ | ✅ | ✅ |
-| JavaScript | | ✅ | | |
+| JavaScript | ❌ | ✅ | ✅ | ❌ |
 | Firefox Desktop | ✅ | ✅ | ✅ | ✅ |
+
+[^1]: Not sent automatically. Use the [`handle_client_active`](../../../python/glean/#glean.Glean.handle_client_active) and [`handle_client_inactive`](../../../python/glean/#glean.Glean.handle_client_inactive) API.
+
+[^2]: Sent on startup when pending events are stored. Additionally sent when [`handle_client_inactive`](../../../python/glean/#glean.Glean.handle_client_inactive) is called.
 
 ## Defining foreground and background state
 

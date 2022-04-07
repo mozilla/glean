@@ -23,7 +23,8 @@ REQUIRED_FILES_AAR=(
     jni/x86_64/libglean_ffi.so
 )
 REQUIRED_FILES_TEST=(
-    darwin/libglean_ffi.dylib
+    darwin-aarch64/libglean_ffi.dylib
+    darwin-x86-64/libglean_ffi.dylib
     linux-x86-64/libglean_ffi.so
     win32-x86-64/glean_ffi.dll
 )

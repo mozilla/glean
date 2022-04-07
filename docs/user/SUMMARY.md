@@ -75,6 +75,7 @@
 - [iOS](language-bindings/ios/index.md)
     - [iOS build configuration options](language-bindings/ios/ios-build-configuration-options.md)
 - [JavaScript](language-bindings/javascript/index.md)
+    - [Command Line Interface](language-bindings/javascript/cli.md)
     - [Plugins](language-bindings/javascript/plugins/index.md)
         - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
 # Appendix

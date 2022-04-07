@@ -1,4 +1,4 @@
-personal_ws-1.1 en 241 utf-8
+personal_ws-1.1 en 246 utf-8
 AAR
 AARs
 ABI
@@ -20,12 +20,15 @@ DOM
 Datetime
 Datetimes
 Dependabot
+Droettboom
 FOG
 FTE
 Fenix
 Frictionless
+Fritzsche
 Funday
 GeckoView
+Georg
 GitFlow
 GitHub
 Glean's
@@ -84,6 +87,7 @@ UUID
 UUIDs
 Unbreak
 Underflowing
+Uploaders
 Wasm
 WebRender
 Webpack
@@ -233,6 +237,7 @@ unhandled
 uniffi
 unminified
 uploader
+uploaders
 vendored
 webextension
 webpages

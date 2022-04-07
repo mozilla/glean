@@ -63,3 +63,5 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2021-12-17: [Looking back at Glean in 2021](https://blog.mozilla.org/data/2021/12/17/this-week-in-glean-looking-back-at-glean-in-2021/)
 * 2022-01-31: [Building and Deploying a Rust library on iOS](https://blog.mozilla.org/data/2022/01/31/this-week-in-glean-building-and-deploying-a-rust-library-on-ios/)
 * 2022-02-09: [Migrating Legacy Telemetry Collections to Glean](https://blog.mozilla.org/data/2022/02/09/this-week-in-glean-migrating-legacy-telemetry-collections-to-glean/)
+* 2022-02-16: [What If I Want To Collect All The Data?](https://blog.mozilla.org/data/2022/02/16/this-week-in-glean-what-if-i-want-to-collect-all-the-data/)
+* 2022-02-25: [Your personal Glean data pipeline](https://blog.mozilla.org/data/2022/02/25/this-week-in-glean-your-personal-glean-data-pipeline/)

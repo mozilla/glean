@@ -14,10 +14,10 @@ Additionally, it is undesirable to mix metric recording from different versions 
 
 | SDK | Kotlin | Swift | Python | Rust | JavaScript | Firefox Desktop |
 |-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| [`metrics` ping](metrics.md) | ✅ | ✅ | | ✅ | | ✅ |
+| [`metrics` ping](metrics.md) | ✅ | ✅ | ❌ | ✅ | ❌ | ✅ |
 
 ## Scheduling
-The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running. 
+The desired behavior is to collect the ping at the first available opportunity after 04:00 local time on a new calendar day, but given constraints of the platform, it can only be submitted while the application is running.
 This breaks down into three scenarios:
 
 1. the application was just installed;
