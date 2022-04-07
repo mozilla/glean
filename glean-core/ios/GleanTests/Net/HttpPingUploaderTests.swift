@@ -51,7 +51,7 @@ class HttpPingUploaderTests: XCTestCase {
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
         let request = HttpPingUploader(configuration: Configuration())
-            .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Client-Type": "Glean"])
+            .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Test-Only": "Glean"])
 
         XCTAssertEqual(
             request?.url?.path,
@@ -74,9 +74,9 @@ class HttpPingUploaderTests: XCTestCase {
             "Request cookie policy set correctly"
         )
         XCTAssertEqual(
-            request?.value(forHTTPHeaderField: "X-Client-Type"),
+            request?.value(forHTTPHeaderField: "X-Test-Only"),
             "Glean",
-            "Request X-Client-Type set correctly"
+            "Request header set correctly"
         )
     }
 }

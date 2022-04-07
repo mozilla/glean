@@ -49,9 +49,6 @@ public class HttpPingUploader {
     ///     * data: The serialized text data to send
     ///     * callback: A callback to return the success/failure of the upload
     ///
-    /// Note that the `X-Client-Type`: `Glean` and `X-Client-Version`: <SDK version>
-    /// headers are added to the HTTP request in addition to the UserAgent. This allows
-    /// us to easily handle pings coming from Glean on the legacy Mozilla pipeline.
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         // Build the request and create an async upload operation using a background URLSession
         if let request = self.buildRequest(path: path, data: data, headers: headers) {

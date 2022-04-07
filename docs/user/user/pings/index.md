@@ -218,7 +218,7 @@ Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 The locale of the application during initialization (e.g. "es-ES").
 If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
 
-[`Build.MODEL`]: https://developer.android.com/reference/android/os/Build.html#MODEL
+[`build.model`]: https://developer.android.com/reference/android/os/Build.html#MODEL
 
 ## Ping submission
 
@@ -236,7 +236,7 @@ A typical submission URL looks like
 where:
 
 - `<server-address>`: the address of the server that receives the pings;
-- `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](http://developer.android.com/reference/android/content/Context.html#getPackageName());
+- `<application-id>`: a unique application id, automatically detected by the Glean SDK; this is the value returned by [`Context.getPackageName()`](<http://developer.android.com/reference/android/content/Context.html#getPackageName()>);
 - `<doc-type>`: the name of the ping; this can be one of the pings available out of the box with the Glean SDK, or a custom ping;
 - `<glean-schema-version>`: the version of the Glean ping schema;
 - `<document-id>`: a unique identifier for this ping.
@@ -305,18 +305,6 @@ as it describes the application and the Glean SDK used for sending the ping.
 It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean Kotlin SDK version number
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
-
-#### `X-Client-Type` (deprecated)
-
-Custom header to support handling of Glean pings in the legacy pipeline. Values is always `Glean`.
-
-This header is deprecated and will soon be removed from all Glean SDKs.
-
-#### `X-Client-Version` (deprecated)
-
-The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling of Glean pings in the legacy pipeline.
-
-This header is deprecated and will soon be removed from all Glean SDKs.
 
 #### `X-Debug-Id` _(optional)_
 
