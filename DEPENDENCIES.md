@@ -655,7 +655,7 @@ The following text applies to code linked from these dependencies:
 * [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
 * [cfg-if 0.1.10]( https://github.com/alexcrichton/cfg-if )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.2]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.4]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.0]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.8.4]( https://github.com/env-logger-rs/env_logger/ )
 * [ffi-support 0.4.4]( https://github.com/mozilla/ffi-support )
@@ -670,7 +670,7 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.44]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.14]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.0]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.8.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.10.0]( https://github.com/matklad/once_cell )
 * [paste 0.1.18]( https://github.com/dtolnay/paste )
 * [paste-impl 0.1.18]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
@@ -2064,7 +2064,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [log 0.4.14]( https://github.com/rust-lang/log )
+* [log 0.4.16]( https://github.com/rust-lang/log )
 * [uuid 0.8.2]( https://github.com/uuid-rs/uuid )
 
 
@@ -3247,9 +3247,9 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 44.0.0]( https://github.com/mozilla/glean )
-* [glean-core 44.0.0]( https://github.com/mozilla/glean )
-* [glean-ffi 44.0.0]( https://github.com/mozilla/glean )
+* [glean 44.1.0]( https://github.com/mozilla/glean )
+* [glean-core 44.1.0]( https://github.com/mozilla/glean )
+* [glean-ffi 44.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
