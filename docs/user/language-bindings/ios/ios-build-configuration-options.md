@@ -26,6 +26,23 @@ For other values it will throw an error.
 bash sdk_generator.sh --build-date 2022-01-03T17:30:00
 ```
 
+## `--expire-by-version <INTEGER>`
+
+Default: none.
+
+Expire the metrics and pings by version, using the provided major version.
+
+If enabled, expiring metrics or pings by date will produce an error.
+
+```sh
+bash sdk_generator.sh --expire-by-version 95
+```
+
+Different products have different ways to compute the product version at build-time.
+For this reason the `sdk_generator.sh` script cannot provide an automated way to detect the product major version at build time.
+When using the expiration by version feature in iOS,
+products must provide the major version by themselves.
+
 ## `--markdown <PATH>` / `-m <PATH>`
 
 Default: unset.
