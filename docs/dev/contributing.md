@@ -61,8 +61,7 @@ Before submitting a PR:
 - "Work in progress" pull requests are allowed to be submitted, but should be clearly labeled as such and should not be merged until all tests pass and the code has been reviewed.
 - For changes to Rust code
   - `make test-rust` produces no test failures
-  - `make clippy` runs without emitting any warnings or errors.
-  - `make rustfmt` does not produce any changes to the code.
+  - `make lint-rust` runs without emitting any warnings or errors.
 - For changes to Kotlin code
   - `make test-kotlin` runs without emitting any warnings or errors.
   - `make ktlint` runs without emitting any warnings.
