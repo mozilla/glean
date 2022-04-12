@@ -49,7 +49,6 @@ public class HttpPingUploader {
     ///     * data: The serialized text data to send
     ///     * headers: Map of headers from Glean to annotate ping with
     ///     * callback: A callback to return the success/failure of the upload
-    ///
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         // Build the request and create an async upload operation using a background URLSession
         if let request = self.buildRequest(path: path, data: data, headers: headers) {
