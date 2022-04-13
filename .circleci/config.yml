@@ -69,6 +69,7 @@ commands:
       - run:
           name: Upload coverage report
           command: |
+            sudo apt update
             sudo apt install python3-pip
             pip3 install glean_parser
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
@@ -239,7 +240,7 @@ jobs:
 
   License check:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -251,15 +252,15 @@ jobs:
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
-            mv "${DENY}/cargo-deny" /usr/local/cargo/bin/cargo-deny
-            chmod +x /usr/local/cargo/bin/cargo-deny
+            mv "${DENY}/cargo-deny" ~/.cargo/bin/cargo-deny
+            chmod +x ~/.cargo/bin/cargo-deny
       - run:
           name: Run license check
           command: cargo deny check licenses
 
   Check vendored schema:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -289,7 +290,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -298,7 +299,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run: rustup component add clippy
@@ -309,21 +310,21 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     resource_class: "medium+"
     steps:
       - test-rust
 
   Rust tests - beta:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - test-rust:
           rust-version: "beta"
 
   Rust tests - minimum version:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.53
     resource_class: "medium+"
     steps:
       - test-rust:
@@ -331,7 +332,7 @@ jobs:
 
   Rust FFI header check:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - skip-if-doc-only
@@ -345,8 +346,8 @@ jobs:
             CBINDGEN_SHA256=aef0a9e8a7ef57ee71fe877f32424e6581e54200ad7b6d62f0ab0dd881911191
             curl -sfSL --retry 5 -O "https://github.com/eqrion/cbindgen/releases/download/${CBINDGEN_VERSION}/${CBINDGEN}"
             echo "${CBINDGEN_SHA256} *${CBINDGEN}" | shasum -a 256 -c -
-            mv cbindgen /usr/local/cargo/bin/cbindgen
-            chmod +x /usr/local/cargo/bin/cbindgen
+            mv cbindgen ~/.cargo/bin/cbindgen
+            chmod +x ~/.cargo/bin/cbindgen
             make cbindgen
             if ! git diff --exit-code HEAD -- glean-core/ios/Glean/GleanFfi.h; then
               echo "=================================================="
@@ -360,7 +361,7 @@ jobs:
 
   C tests:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - skip-if-doc-only
@@ -383,7 +384,7 @@ jobs:
 
   Generate Rust documentation:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -399,7 +400,7 @@ jobs:
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
               # We rename it to mdbook here, so other tools keep working as expected
-              mv mdbook-dtmo /usr/local/cargo/bin/mdbook
+              mv mdbook-dtmo ~/.cargo/bin/mdbook
               mdbook --version
       - run:
           name: Build Rust documentation
@@ -415,7 +416,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -445,7 +446,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28
+      - image: cimg/android:2022.03.1
     steps:
       - checkout
       - install-android-ndk
@@ -462,7 +463,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: circleci/android:api-28
+      - image: cimg/android:2022.03.1
     steps:
       - checkout
       - skip-if-doc-only
@@ -727,7 +728,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - attach_workspace:
@@ -1076,12 +1077,12 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: circleci/node
+      - image: cimg/node:17.9
     steps:
       - checkout
       - run:
           name: Install linkchecker
-          command: sudo npm install -g link-checker
+          command: npm install -g link-checker
       - attach_workspace:
           at: build/
       - run:
@@ -1091,8 +1092,7 @@ jobs:
 
   docs-spellcheck:
     docker:
-      # Use Ubuntu Focal (20.04) so we get aspell 0.60.8 or later (which contains markdown support)
-      - image: circleci/buildpack-deps:focal
+      - image: cimg/base:2022.03
     steps:
       - checkout
       - run:
