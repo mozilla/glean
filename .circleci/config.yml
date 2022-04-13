@@ -85,15 +85,6 @@ commands:
           command: |
               echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
-  install-android-targets:
-    steps:
-      - run:
-          command: |
-            rustup target add aarch64-linux-android
-            rustup target add armv7-linux-androideabi
-            rustup target add i686-linux-android
-            rustup target add x86_64-linux-android
-
   install-android-ndk:
     steps:
       - run:
@@ -108,8 +99,11 @@ commands:
       - install-rustup
       - setup-rust-toolchain:
           rust-version: stable
-      - install-android-targets
       - install-android-ndk
+      - run:
+          name: Restrict to Linux builds only
+          command: |
+              echo "rust.targets=linux-x86-64" > local.properties
 
   test-python:
     steps:
@@ -449,14 +443,7 @@ jobs:
       - image: cimg/android:2022.03.1
     steps:
       - checkout
-      - install-android-ndk
-      - install-rustup
-      - setup-rust-toolchain:
-          rust-version: stable
-      - run:
-          name: Restrict to Linux builds only
-          command: |
-              echo "rust.targets=linux-x86-64" > local.properties
+      - android-setup
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
@@ -468,10 +455,6 @@ jobs:
       - checkout
       - skip-if-doc-only
       - android-setup
-      - run:
-          name: Restrict to Linux builds only
-          command: |
-              echo "rust.targets=linux-x86-64" > local.properties
       - run:
           name: Remove coredump file restriction
           command: |
