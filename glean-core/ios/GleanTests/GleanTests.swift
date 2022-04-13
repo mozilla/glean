@@ -506,8 +506,9 @@ class GleanTests: XCTestCase {
         Glean.shared.testDestroyGleanHandle()
 
         Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo("2020-11-06T11:30:50+0000"))
+        let expected = Date.fromISO8601String(dateString: "2020-11-06T11:30:50+00:00", precision: .second)
         XCTAssertEqual(
-            "2020-11-06T11:30:50+00:00",
+            expected,
             GleanInternalMetrics.buildDate.testGetValue()
         )
     }

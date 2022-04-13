@@ -216,7 +216,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Glean.shared.initialize(uploadEnabled: true)
         Glean.shared.enableTestingMode()
         Glean.shared.setLogPings(true)
-        Glean.shared.initialize(uploadEnabled: true)
+        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
         // Enable ping logging for all tests
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
