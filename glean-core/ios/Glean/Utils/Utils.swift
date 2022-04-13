@@ -18,6 +18,21 @@ extension UInt8 {
     }
 }
 
+extension Datetime {
+    init(from components: DateComponents) {
+        self.init(
+            year: Int32(components.year ?? 0),
+            month: UInt32(components.month ?? 0),
+            day: UInt32(components.day ?? 0),
+            hour: UInt32(components.hour ?? 0),
+            minute: UInt32(components.minute ?? 0),
+            second: UInt32(components.second ?? 0),
+            nanosecond: UInt32(components.nanosecond ?? 0),
+            offsetSeconds: Int32(components.timeZone!.secondsFromGMT(for: components.date!))
+        )
+    }
+}
+
 /// Turn a string into an error, so that it can be thrown as an exception.
 ///
 /// This should only be used in tests.

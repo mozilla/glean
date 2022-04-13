@@ -884,7 +884,7 @@ class GleanTest {
     }
 
     @Test
-    fun `test passing in explicit BuildInfo`() {
+    fun jer() { // }`test passing in explicit BuildInfo`() {
         Glean.testDestroyGleanHandle()
 
         val buildDate = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"))

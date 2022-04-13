@@ -478,14 +478,14 @@ impl Glean {
             if let Some(existing_first_run_date) = existing_first_run_date {
                 self.core_metrics
                     .first_run_date
-                    .set_sync(self, Some(existing_first_run_date));
+                    .set_sync_chrono(self, existing_first_run_date);
             }
 
             // Restore the first_run_hour.
             if let Some(existing_first_run_hour) = existing_first_run_hour {
                 self.core_metrics
                     .first_run_hour
-                    .set_sync(self, Some(existing_first_run_hour));
+                    .set_sync_chrono(self, existing_first_run_hour);
             }
 
             self.upload_enabled = false;

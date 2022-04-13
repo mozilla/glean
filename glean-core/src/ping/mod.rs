@@ -113,7 +113,7 @@ impl PingMaker {
         let end_time_data = local_now_with_offset();
 
         // Update the start time with the current time.
-        start_time.set_sync(glean, Some(end_time_data));
+        start_time.set_sync_chrono(glean, end_time_data);
 
         // Format the times.
         let start_time_data = get_iso_time_string(start_time_data, time_unit);

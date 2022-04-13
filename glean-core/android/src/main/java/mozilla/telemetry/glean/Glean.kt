@@ -22,6 +22,7 @@ import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.ThreadUtils
+import mozilla.telemetry.glean.utils.calendarToDatetime
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import java.util.Calendar
@@ -283,6 +284,7 @@ open class GleanInternalAPI internal constructor() {
         return ClientInfoMetrics(
             appBuild = buildInfo.versionCode,
             appDisplayVersion = buildInfo.versionName,
+            appBuildDate = calendarToDatetime(buildInfo.buildDate),
 
             architecture = Build.SUPPORTED_ABIS[0],
             osVersion = Build.VERSION.RELEASE,

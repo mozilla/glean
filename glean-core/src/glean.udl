@@ -69,6 +69,7 @@ dictionary InternalConfiguration {
 dictionary ClientInfoMetrics {
     string app_build;
     string app_display_version;
+    Datetime app_build_date;
     string architecture;
     string os_version;
 

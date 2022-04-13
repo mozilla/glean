@@ -6,6 +6,7 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.internal.DatetimeMetric
+import mozilla.telemetry.glean.utils.calendarToDatetime
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
@@ -40,18 +41,7 @@ class DatetimeMetricType(meta: CommonMetricData, timeUnit: TimeUnit = TimeUnit.M
      * @param value The [Calendar] value to set. If not provided, will record the current time.
      */
     internal fun set(cal: Calendar) {
-        val dt = Datetime(
-            year = cal.get(Calendar.YEAR),
-            month = (cal.get(Calendar.MONTH) + 1).toUInt(),
-            day = cal.get(Calendar.DAY_OF_MONTH).toUInt(),
-            hour = cal.get(Calendar.HOUR_OF_DAY).toUInt(),
-            minute = cal.get(Calendar.MINUTE).toUInt(),
-            second = cal.get(Calendar.SECOND).toUInt(),
-            nanosecond = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()).toUInt(),
-            offsetSeconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
-                cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET)
-            ).toInt()
-        )
+        val dt = calendarToDatetime(cal)
         inner.set(dt)
     }
 

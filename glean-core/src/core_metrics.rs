@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::metrics::{StringMetric, TimeUnit, TimespanMetric};
+use crate::metrics::{Datetime, DatetimeMetric, StringMetric, TimeUnit, TimespanMetric};
 use crate::{CommonMetricData, Lifetime};
 
 use once_cell::sync::Lazy;
@@ -14,6 +14,8 @@ pub struct ClientInfoMetrics {
     pub app_build: String,
     /// The user visible version string (e.g. "1.0.3").
     pub app_display_version: String,
+    /// The app's build date
+    pub app_build_date: Datetime,
 
     /// The architecture of the device (e.g. "arm", "x86").
     pub architecture: String,
@@ -43,6 +45,7 @@ impl ClientInfoMetrics {
         ClientInfoMetrics {
             app_build: "Unknown".to_string(),
             app_display_version: "Unknown".to_string(),
+            app_build_date: Datetime::default(),
             architecture: "Unknown".to_string(),
             os_version: "Unknown".to_string(),
             channel: Some("Unknown".to_string()),
@@ -78,6 +81,20 @@ pub mod internal_metrics {
             disabled: false,
             ..Default::default()
         })
+    });
+
+    pub static app_build_date: Lazy<DatetimeMetric> = Lazy::new(|| {
+        DatetimeMetric::new(
+            CommonMetricData {
+                name: "build_date".into(),
+                category: "".into(),
+                send_in_pings: vec!["glean_client_info".into()],
+                lifetime: Lifetime::Application,
+                disabled: false,
+                ..Default::default()
+            },
+            TimeUnit::Second,
+        )
     });
 
     pub static app_channel: Lazy<StringMetric> = Lazy::new(|| {

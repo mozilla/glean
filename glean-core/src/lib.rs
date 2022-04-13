@@ -510,6 +510,7 @@ fn initialize_core_metrics(glean: &Glean, client_info: &ClientInfoMetrics) {
     core_metrics::internal_metrics::app_build.set_sync(glean, &client_info.app_build[..]);
     core_metrics::internal_metrics::app_display_version
         .set_sync(glean, &client_info.app_display_version[..]);
+    core_metrics::internal_metrics::app_build_date.set_sync(glean, Some(client_info.app_build_date.clone()));
     if let Some(app_channel) = client_info.channel.as_ref() {
         core_metrics::internal_metrics::app_channel.set_sync(glean, app_channel);
     }

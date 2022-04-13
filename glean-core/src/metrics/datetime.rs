@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::fmt;
 use std::sync::Arc;
 
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -21,6 +22,7 @@ use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
 pub type ChronoDatetime = DateTime<FixedOffset>;
 
 /// Representation of a date, time and timezone.
+#[derive(Clone)]
 pub struct Datetime {
     /// The year, e.g. 2021.
     pub year: i32,
@@ -39,6 +41,40 @@ pub struct Datetime {
     /// The timezone offset from UTC in seconds.
     /// Negative for west, positive for east of UTC.
     pub offset_seconds: i32,
+}
+
+impl fmt::Debug for Datetime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Datetime({:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{}{:02}{:02})",
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.nanosecond,
+            if self.offset_seconds < 0 { "-" } else { "+" },
+            self.offset_seconds / 3600, // hour part
+            (self.offset_seconds % 3600) / 60, // minute part
+        )
+    }
+}
+
+impl Default for Datetime {
+    fn default() -> Self {
+        Datetime {
+            year: 1970,
+            month: 1,
+            day: 1,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            nanosecond: 0,
+            offset_seconds: 0
+        }
+    }
 }
 
 /// A datetime metric.
@@ -96,41 +132,7 @@ impl DatetimeMetric {
     pub fn set(&self, dt: Option<Datetime>) {
         let metric = self.clone();
         crate::launch_with_glean(move |glean| {
-            if !metric.should_record(glean) {
-                return;
-            }
-
-            if dt.is_none() {
-                return metric.set_sync(glean, None);
-            }
-
-            let dt = dt.unwrap();
-
-            let timezone_offset = FixedOffset::east_opt(dt.offset_seconds);
-            if timezone_offset.is_none() {
-                let msg = format!(
-                    "Invalid timezone offset {}. Not recording.",
-                    dt.offset_seconds
-                );
-                record_error(glean, &metric.meta, ErrorType::InvalidValue, msg, None);
-                return;
-            };
-
-            let datetime_obj = FixedOffset::east(dt.offset_seconds)
-                .ymd_opt(dt.year, dt.month, dt.day)
-                .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
-
-            if let Some(dt) = datetime_obj.single() {
-                metric.set_sync(glean, Some(dt))
-            } else {
-                record_error(
-                    glean,
-                    &metric.meta,
-                    ErrorType::InvalidValue,
-                    "Invalid input data. Not recording.",
-                    None,
-                );
-            }
+            metric.set_sync(glean, dt);
         })
     }
 
@@ -138,12 +140,47 @@ impl DatetimeMetric {
     ///
     /// Use [`set`](Self::set) instead.
     #[doc(hidden)]
-    pub fn set_sync(&self, glean: &Glean, value: Option<ChronoDatetime>) {
+    pub fn set_sync(&self, glean: &Glean, value: Option<Datetime>) {
         if !self.should_record(glean) {
             return;
         }
 
-        let value = value.unwrap_or_else(local_now_with_offset);
+        let value = match value {
+            None => local_now_with_offset(),
+            Some(dt) => {
+                let timezone_offset = FixedOffset::east_opt(dt.offset_seconds);
+                if timezone_offset.is_none() {
+                    let msg = format!(
+                        "Invalid timezone offset {}. Not recording.",
+                        dt.offset_seconds
+                    );
+                    record_error(glean, &self.meta, ErrorType::InvalidValue, msg, None);
+                    return;
+                };
+
+                let datetime_obj = FixedOffset::east(dt.offset_seconds)
+                    .ymd_opt(dt.year, dt.month, dt.day)
+                    .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
+
+                if let Some(dt) = datetime_obj.single() {
+                    dt
+                } else {
+                    record_error(
+                        glean,
+                        &self.meta,
+                        ErrorType::InvalidValue,
+                        "Invalid input data. Not recording.",
+                        None,
+                    );
+                    return;
+                }
+            }
+        };
+
+        self.set_sync_chrono(glean, value);
+    }
+
+    pub(crate) fn set_sync_chrono(&self, glean: &Glean, value: ChronoDatetime) {
         let value = Metric::Datetime(value, self.time_unit);
         glean.storage().record(glean, &self.meta, &value)
     }

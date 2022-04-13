@@ -38,16 +38,7 @@ public class DatetimeMetricType {
     /// - parameters:
     ///     * components: The [DateComponents] value to set.
     func set(components: DateComponents) {
-        let dt = Datetime(
-            year: Int32(components.year ?? 0),
-            month: UInt32(components.month ?? 0),
-            day: UInt32(components.day ?? 0),
-            hour: UInt32(components.hour ?? 0),
-            minute: UInt32(components.minute ?? 0),
-            second: UInt32(components.second ?? 0),
-            nanosecond: UInt32(components.nanosecond ?? 0),
-            offsetSeconds: Int32(components.timeZone!.secondsFromGMT(for: components.date!))
-        )
+        let dt = Datetime(from: components)
         inner.set(dt)
     }
 

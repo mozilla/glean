@@ -5,11 +5,13 @@
 package mozilla.telemetry.glean.utils
 
 import mozilla.telemetry.glean.private.TimeUnit
+import mozilla.telemetry.glean.private.Datetime
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 @Suppress("TopLevelPropertyNaming")
 internal val DATE_FORMAT_PATTERNS = mapOf(
@@ -122,4 +124,21 @@ internal fun parseISOTimeString(date: String): Date? {
     }
 
     return null
+}
+
+internal fun calendarToDatetime(cal: Calendar): Datetime {
+    val dt = Datetime(
+        year = cal.get(Calendar.YEAR),
+        month = (cal.get(Calendar.MONTH) + 1).toUInt(),
+        day = cal.get(Calendar.DAY_OF_MONTH).toUInt(),
+        hour = cal.get(Calendar.HOUR_OF_DAY).toUInt(),
+        minute = cal.get(Calendar.MINUTE).toUInt(),
+        second = cal.get(Calendar.SECOND).toUInt(),
+        nanosecond = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()).toUInt(),
+        offsetSeconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
+            cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET)
+        ).toInt()
+    )
+
+    return dt
 }

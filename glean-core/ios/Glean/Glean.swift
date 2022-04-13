@@ -141,16 +141,17 @@ public class Glean {
             appBuild: "0.0.0",
             useCoreMps: false
         )
-        let clientInfo = getClientInfo(configuration)
+        let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
         gleanInitialize(cfg, clientInfo, callbacks)
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
-    internal func getClientInfo(_ configuration: Configuration) -> ClientInfoMetrics {
+    internal func getClientInfo(_ configuration: Configuration, buildInfo: BuildInfo) -> ClientInfoMetrics {
         return ClientInfoMetrics(
             appBuild: AppInfo.buildId,
             appDisplayVersion: AppInfo.displayVersion,
+            appBuildDate: Datetime(from: buildInfo.buildDate),
             architecture: Sysctl.machine,
             osVersion: UIDevice.current.systemVersion,
             channel: configuration.channel,
