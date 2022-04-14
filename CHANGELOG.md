@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v44.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...main)
+
+# v44.1.1 (2022-04-14)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v44.1.0...v44.1.1)
 
 * Rust
   * Raise the global dispatcher queue limit from 100 to 1000 tasks. ([bug 1764549](https://bugzilla.mozilla.org/show_bug.cgi?id=1764549))
