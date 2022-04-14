@@ -918,8 +918,7 @@ checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
 [[package]]
 name = "uniffi"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c70e9d90cc703c4bfa842b5be1647c039578f00e3fd575f796d5acb90bae3fa"
+source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
 dependencies = [
  "anyhow",
  "bytes",
@@ -933,8 +932,7 @@ dependencies = [
 [[package]]
 name = "uniffi_build"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7b35d8e19c773c42176343a92ce8480443e5aa19f02deb75572acf7f8a51bbb"
+source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
 dependencies = [
  "anyhow",
 ]
@@ -942,8 +940,7 @@ dependencies = [
 [[package]]
 name = "uniffi_macros"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fb8e1cc005baa085499d4802f9ffe5137f8d251b1fc75045b0767372199b21d"
+source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
 dependencies = [
  "glob",
  "proc-macro2",

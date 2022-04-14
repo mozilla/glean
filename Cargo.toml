@@ -19,3 +19,8 @@ exclude = [
 opt-level = "s"
 debug = false
 lto = true
+
+[patch.crates-io]
+uniffi = { git = "https://github.com/mozilla/uniffi-rs/" }
+uniffi_macros = { git = "https://github.com/mozilla/uniffi-rs/" }
+uniffi_build = { git = "https://github.com/mozilla/uniffi-rs/" }
