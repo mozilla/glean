@@ -41,6 +41,7 @@ commands:
           command: |
               echo "export RUST_BACKTRACE=1" >> $BASH_ENV
               echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
+              echo "export CARGO_NET_GIT_FETCH_WITH_CLI=1" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
@@ -54,7 +55,7 @@ commands:
       - run:
           name: Install uniffi-bindgen
           command: |
-            cargo install uniffi_bindgen --version 0.17.0
+            cargo install --git https://github.com/mozilla/uniffi-rs
 
   test-rust:
     parameters:
