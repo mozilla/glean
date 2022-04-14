@@ -4,8 +4,8 @@
 
 package mozilla.telemetry.glean.utils
 
-import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.private.Datetime
+import mozilla.telemetry.glean.private.TimeUnit
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.Calendar
