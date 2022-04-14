@@ -27,6 +27,8 @@ To get started adding Glean to your project, choose one of the following guides:
 - **[Firefox Desktop](TODO)**
   - Get started adding Glean to a Firefox Desktop component. -->
 
+For development documentation on the `Glean SDK`, refer to [the Glean SDK development book](../dev/index.html).
+
 ## Sections
 
 ### [User Guides](./user/adding-glean-to-your-project/index.html)

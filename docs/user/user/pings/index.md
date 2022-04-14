@@ -306,18 +306,6 @@ It's looks like `Glean/40.0.0 (Kotlin on Android)`, where `40.0.0` is the Glean 
 and `Kotlin on Android` is the name of the language used by the SDK that sent the request
 plus the name of the platform it is running on.
 
-#### `X-Client-Type` (deprecated)
-
-Custom header to support handling of Glean pings in the legacy pipeline. Values is always `Glean`.
-
-This header is deprecated and will soon be removed from all Glean SDKs.
-
-#### `X-Client-Version` (deprecated)
-
-The Glean SDK version e.g. `0.40.0`, sent as a custom header to support handling of Glean pings in the legacy pipeline.
-
-This header is deprecated and will soon be removed from all Glean SDKs.
-
 #### `X-Debug-Id` _(optional)_
 
 Debug header attached to Glean pings by using the [debug APIs](../../reference/debug/debugViewTag.md),
