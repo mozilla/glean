@@ -56,7 +56,7 @@ impl fmt::Debug for Datetime {
             self.second,
             self.nanosecond,
             if self.offset_seconds < 0 { "-" } else { "+" },
-            self.offset_seconds / 3600, // hour part
+            self.offset_seconds / 3600,        // hour part
             (self.offset_seconds % 3600) / 60, // minute part
         )
     }
@@ -72,7 +72,7 @@ impl Default for Datetime {
             minute: 0,
             second: 0,
             nanosecond: 0,
-            offset_seconds: 0
+            offset_seconds: 0,
         }
     }
 }
