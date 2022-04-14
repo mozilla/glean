@@ -263,6 +263,10 @@ jobs:
             mv "${DENY}/cargo-deny" /usr/local/cargo/bin/cargo-deny
             chmod +x /usr/local/cargo/bin/cargo-deny
       - run:
+          name: Use Git CLI from cargo
+          command: |
+              echo "export CARGO_NET_GIT_FETCH_WITH_CLI=true" >> $BASH_ENV
+      - run:
           name: Run license check
           command: cargo deny check licenses
 
