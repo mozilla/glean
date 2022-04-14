@@ -167,8 +167,8 @@ def test_measure():
     snapshot = metric.test_get_value()
     # more than 0.1s = 100ms = 10^8 nanoseconds
     # less than 0.2s = 200ms = 2*10^8 nanoseconds
-    assert 10 ** 8 < snapshot.sum
-    assert 2 * 10 ** 8 > snapshot.sum
+    assert 10**8 < snapshot.sum
+    assert 2 * 10**8 > snapshot.sum
 
 
 def test_measure_exception():
