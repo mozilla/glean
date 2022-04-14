@@ -194,9 +194,21 @@ class Glean:
             else:
                 cls._application_build_id = application_build_id
 
+        # FIXME: Require user to pass in build-date
+        dt = _uniffi.Datetime(
+            year=1970,
+            month=1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            nanosecond=0,
+            offset_seconds=0,
+        )
         client_info = _uniffi.ClientInfoMetrics(
             app_build=cls._application_build_id,
             app_display_version=cls._application_version,
+            app_build_date=dt,
             channel=configuration.channel,
             architecture="Unknown",
             os_version="Unknown",
