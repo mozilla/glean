@@ -664,7 +664,7 @@ impl PingUploadManager {
         }
 
         match status {
-             HttpStatus { code } if (200..=299).contains(&code) => {
+            HttpStatus { code } if (200..=299).contains(&code) => {
                 log::info!("Ping {} successfully sent {}.", document_id, code);
                 self.directory_manager.delete_file(document_id);
             }
