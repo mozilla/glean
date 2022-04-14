@@ -179,14 +179,17 @@ def test_rapidly_recreating_labeled_metrics_does_not_crash():
     leading to exhausting the available storage in that map, which finally results in a panic.
     """
 
-    labeled_counter_metric = metrics.LabeledCounterMetricType(CommonMetricData(
-        category="telemetry",
-        name="labeled_nocrash",
-        send_in_pings=["metrics"],
-        lifetime=Lifetime.APPLICATION,
-        disabled=False,
-        dynamic_label=None,
-    ), labels=["foo"])
+    labeled_counter_metric = metrics.LabeledCounterMetricType(
+        CommonMetricData(
+            category="telemetry",
+            name="labeled_nocrash",
+            send_in_pings=["metrics"],
+            lifetime=Lifetime.APPLICATION,
+            disabled=False,
+            dynamic_label=None,
+        ),
+        labels=["foo"],
+    )
 
     # We go higher than the maximum of `(1<<15)-1 = 32767`.
     # Python is slow, so we only go a tiny bit higher.

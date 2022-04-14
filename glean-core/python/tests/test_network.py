@@ -183,6 +183,7 @@ def test_unknown_url_no_exception():
 
     assert isinstance(response, ping_uploader.UploadResult.RECOVERABLE_FAILURE)
 
+
 def test_log_on_success(safe_httpserver, capfd):
     # We can't use caplog to catch log messages from the subprocess, but we can
     # use capsys to catch its stderr.
