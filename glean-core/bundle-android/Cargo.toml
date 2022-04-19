@@ -1,0 +1,29 @@
+[package]
+name = "glean-bundle-android"
+# No need to ever change this version
+version = "1.0.0"
+authors = ["The Glean Team <glean-team@mozilla.com>"]
+edition = "2018"
+description = "Static/Dynamic library build of glean-ffi, for use in Android builds"
+repository = "https://github.com/mozilla/glean"
+license = "MPL-2.0"
+
+# This crate is never published to crates.io
+publish = false
+
+# We use the name `xul` for now, because we ship this through mozilla-central
+# and it is consumed as `libxul.so`.
+[lib]
+name = "xul"
+crate-type = ["cdylib"]
+# We re-use the source from `glean-bundle`,
+# no need to duplicate it, no risk of diverging
+path = "../bundle/src/lib.rs"
+
+[dependencies.glean-core]
+# No version specified, we build against what's available here.
+path = ".."
+
+[features]
+# Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
+rkv-safe-mode = ["glean-core/rkv-safe-mode"]
