@@ -4,6 +4,7 @@ members = [
   "glean-core",
   "glean-core/rlb",
   "glean-core/bundle",
+  "glean-core/bundle-android",
   "tools/embedded-uniffi-bindgen",
 ]
 
