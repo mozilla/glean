@@ -10,7 +10,7 @@ private typealias GleanValidation = GleanMetrics.GleanValidation
 private typealias Pings = GleanMetrics.Pings
 
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
-public typealias GleanTimerId = UInt64
+public typealias GleanTimerId = TimerId
 
 class OnGleanEventsImpl: OnGleanEvents {
     let glean: Glean

@@ -8,7 +8,7 @@ import time
 
 
 from glean import metrics
-from glean.metrics import Lifetime, TimeUnit, CommonMetricData
+from glean.metrics import Lifetime, TimeUnit, TimerId, CommonMetricData
 from glean import testing
 
 
@@ -108,7 +108,7 @@ def test_stopping_a_non_existent_timer_records_an_error():
         time_unit=TimeUnit.NANOSECOND,
     )
 
-    metric.stop_and_accumulate(-1)
+    metric.stop_and_accumulate(TimerId(0))
     assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
 
 

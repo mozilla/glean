@@ -31,7 +31,7 @@ import java.util.Calendar
  * Public exported type identifying individual timers for
  * [TimingDistributionMetricType][mozilla.telemetry.glean.private.TimingDistributionMetricType].
  */
-data class GleanTimerId internal constructor(internal val id: Long)
+typealias GleanTimerId = mozilla.telemetry.glean.internal.TimerId
 
 data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
 

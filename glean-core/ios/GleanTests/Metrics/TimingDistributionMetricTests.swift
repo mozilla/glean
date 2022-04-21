@@ -127,7 +127,7 @@ class TimingDistributionTypeTests: XCTestCase {
             ), .nanosecond
         )
 
-        metric.stopAndAccumulate(0)
+        metric.stopAndAccumulate(TimerId(id: 0))
 
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidState))
     }

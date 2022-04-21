@@ -11,6 +11,7 @@ This module contains all of the metric types.
 from .._uniffi import CommonMetricData
 from .._uniffi import Lifetime
 from .._uniffi import MemoryUnit
+from .._uniffi import TimerId
 from .._uniffi import TimeUnit
 from .._uniffi import RecordedExperiment
 
@@ -58,6 +59,7 @@ __all__ = [
     "StringListMetricType",
     "TimespanMetricType",
     "TimeUnit",
+    "TimerId",
     "TimingDistributionMetricType",
     "UrlMetricType",
     "UuidMetricType",

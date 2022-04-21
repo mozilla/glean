@@ -741,7 +741,7 @@ fn timing_distribution_truncation() {
             max_sample_time * 1_000,
             max_sample_time * 1_000_000,
         ] {
-            let timer_id = 4;
+            let timer_id = 4u64.into();
             dist.set_start(timer_id, 0);
             dist.set_stop_and_accumulate(&glean, timer_id, value);
         }
@@ -801,7 +801,7 @@ fn timing_distribution_truncation_accumulate() {
             max_sample_time * 1_000,
             max_sample_time * 1_000_000,
         ];
-        let timer_id = 4; // xkcd#221
+        let timer_id = 4u64.into(); // xkcd#221
 
         for sample in samples {
             dist.set_start(timer_id, 0);

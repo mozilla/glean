@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.internal.TimingDistributionMetric
 import mozilla.telemetry.glean.testing.ErrorType
 
@@ -22,8 +23,8 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
      */
 
     fun start() = inner.start()
-    fun stopAndAccumulate(timerId: ULong) = inner.stopAndAccumulate(timerId)
-    fun cancel(timerId: ULong) = inner.cancel(timerId)
+    fun stopAndAccumulate(timerId: GleanTimerId) = inner.stopAndAccumulate(timerId)
+    fun cancel(timerId: GleanTimerId) = inner.cancel(timerId)
 
     /**
      * Additional functionality
