@@ -201,3 +201,12 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     main = "com.github.shyiko.ktlint.Main"
     args "-F", "${projectDir}/components/**/*.kt", "${projectDir}/gradle-plugin/**/*.kt", "buildSrc/**/*.kt", "!**/build"
 }
+
+// Extremely unsophisticated way to publish a local development version while hiding implementation details.
+//
+// This shells out to a python script that tries to detect whether the working directory has changed since the last
+// time it was run, and it so then it shells out to `./gradlew publishToMavenLocal -Plocal=<timestamp>` to publish
+// a new version of of the code with an auto-incrementing version number.
+task autoPublishForLocalDevelopment(type: Exec) {
+  commandLine "./build-scripts/publish_to_maven_local_if_modified.py"
+}
