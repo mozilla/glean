@@ -30,7 +30,26 @@ const BUCKETS_PER_MAGNITUDE: f64 = 8.0;
 const MAX_SAMPLE_TIME: u64 = 1000 * 1000 * 1000 * 60 * 10;
 
 /// Identifier for a running timer.
-pub type TimerId = u64;
+///
+/// Its internals are considered private,
+/// but due to UniFFI's behavior we expose its field for now.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub struct TimerId {
+    /// This timer's id.
+    pub id: u64,
+}
+
+impl From<u64> for TimerId {
+    fn from(val: u64) -> TimerId {
+        TimerId { id: val }
+    }
+}
+
+impl From<usize> for TimerId {
+    fn from(val: usize) -> TimerId {
+        TimerId { id: val as u64 }
+    }
+}
 
 /// A timing distribution metric.
 ///
@@ -96,10 +115,10 @@ impl TimingDistributionMetric {
     /// A unique [`TimerId`] for the new timer.
     pub fn start(&self) -> TimerId {
         let start_time = time::precise_time_ns();
-        let id = self.next_id.fetch_add(1, Ordering::SeqCst) as TimerId;
+        let id = self.next_id.fetch_add(1, Ordering::SeqCst).into();
         let metric = self.clone();
         crate::launch_with_glean(move |_glean| metric.set_start(id, start_time));
-        id as TimerId
+        id
     }
 
     /// **Test-only API (exported for testing purposes).**

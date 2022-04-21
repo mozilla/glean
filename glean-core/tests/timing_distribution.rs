@@ -39,7 +39,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
             time_unit,
         );
 
-        let id = 4;
+        let id = 4u64.into();
         metric.set_start(id, 0);
         metric.set_stop_and_accumulate(&glean, id, duration);
 
@@ -84,7 +84,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         TimeUnit::Nanosecond,
     );
 
-    let id = 4;
+    let id = 4u64.into();
     metric.set_start(id, 0);
     metric.set_stop_and_accumulate(&glean, id, duration);
 
@@ -125,7 +125,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
 
     // Flip around the timestamps, this should result in a negative value which should be
     // discarded.
-    let id = 4;
+    let id = 4u64.into();
     metric.set_start(id, duration);
     metric.set_stop_and_accumulate(&glean, id, 0);
 
@@ -297,7 +297,7 @@ fn large_nanoseconds_values() {
     let time = Duration::from_secs(10).as_nanos() as u64;
     assert!(time > u64::from(u32::max_value()));
 
-    let id = 4;
+    let id = 4u64.into();
     metric.set_start(id, 0);
     metric.set_stop_and_accumulate(&glean, id, time);
 
@@ -325,7 +325,7 @@ fn stopping_non_existing_id_records_an_error() {
         TimeUnit::Nanosecond,
     );
 
-    let id = 3785;
+    let id = 3785u64.into();
     metric.set_stop_and_accumulate(&glean, id, 60);
 
     // 1 error should be reported.

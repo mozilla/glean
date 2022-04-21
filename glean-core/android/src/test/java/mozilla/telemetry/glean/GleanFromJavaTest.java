@@ -19,6 +19,7 @@ import java.util.Map;
 
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics;
 import mozilla.telemetry.glean.GleanMetrics.Pings;
+import mozilla.telemetry.glean.internal.TimerId;
 import mozilla.telemetry.glean.config.Configuration;
 
 import static org.junit.Assert.assertEquals;
@@ -71,7 +72,11 @@ public class GleanFromJavaTest {
     public void testCanAccessGleanTimerId() {
         // Users are not really meant to instantiate this. Moreover, the constructor
         // visibility is `internal`, but looks like Java ignores it.
-        GleanTimerId testId = new GleanTimerId(100);
+        // FIXME: Java has no access to Kotlin typealias'd types,
+        // so above we import the internal name.
+        // Additionally we can't create it, because the constructor is private.
+        // But that's ok, users should never create their own TimerId.
+        TimerId testId;
     }
 
     @Test

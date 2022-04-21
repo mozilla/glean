@@ -375,14 +375,22 @@ dictionary DistributionData {
     i64 sum;
 };
 
+// Identifier for a running timer.
+//
+// Its internals are considered private,
+// but due to UniFFI's behavior we expose it as a dictionary for now.
+dictionary TimerId {
+    u64 id;
+};
+
 interface TimingDistributionMetric {
     constructor(CommonMetricData meta, TimeUnit time_unit);
 
-    u64 start();
+    TimerId start();
 
-    void stop_and_accumulate(u64 timer_id);
+    void stop_and_accumulate(TimerId timer_id);
 
-    void cancel(u64 timer_id);
+    void cancel(TimerId timer_id);
 
     void accumulate_samples(sequence<i64> samples);
 

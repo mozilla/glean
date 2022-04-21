@@ -9,6 +9,7 @@ from typing import Optional
 from .._uniffi import CommonMetricData
 from .._uniffi import DistributionData
 from .._uniffi import TimeUnit
+from .._uniffi import TimerId
 from .._uniffi import TimingDistributionMetric
 from ..testing import ErrorType
 
@@ -30,7 +31,7 @@ class TimingDistributionMetricType:
     ):
         self._inner = TimingDistributionMetric(common_metric_data, time_unit)
 
-    def start(self) -> int:
+    def start(self) -> TimerId:
         """
         Start tracking time for the provided metric.
         Multiple timers can run simultaneously.
@@ -40,7 +41,7 @@ class TimingDistributionMetricType:
         """
         return self._inner.start()
 
-    def stop_and_accumulate(self, timer_id: int) -> None:
+    def stop_and_accumulate(self, timer_id: TimerId) -> None:
         """
         Stop tracking time for the provided metric and associated timer id. Add a
         count to the corresponding bucket in the timing distribution.
@@ -53,7 +54,7 @@ class TimingDistributionMetricType:
         """
         self._inner.stop_and_accumulate(timer_id)
 
-    def cancel(self, timer_id: Optional[int]) -> None:
+    def cancel(self, timer_id: TimerId) -> None:
         """
         Abort a previous `start` call. No error is recorded if no `start` was called.
 
