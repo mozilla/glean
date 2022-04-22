@@ -918,7 +918,7 @@ checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
 [[package]]
 name = "uniffi"
 version = "0.17.0"
-source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
+source = "git+https://github.com/mozilla/uniffi-rs/#4c998c76061bdea71ac3b3698e3cadbbec6fee70"
 dependencies = [
  "anyhow",
  "bytes",
@@ -932,7 +932,7 @@ dependencies = [
 [[package]]
 name = "uniffi_build"
 version = "0.17.0"
-source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
+source = "git+https://github.com/mozilla/uniffi-rs/#4c998c76061bdea71ac3b3698e3cadbbec6fee70"
 dependencies = [
  "anyhow",
 ]
@@ -940,7 +940,7 @@ dependencies = [
 [[package]]
 name = "uniffi_macros"
 version = "0.17.0"
-source = "git+https://github.com/mozilla/uniffi-rs/#b62225822ec018c1717f778e5aaf841e19bd10cb"
+source = "git+https://github.com/mozilla/uniffi-rs/#4c998c76061bdea71ac3b3698e3cadbbec6fee70"
 dependencies = [
  "glob",
  "proc-macro2",
