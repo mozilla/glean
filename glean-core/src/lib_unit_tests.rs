@@ -707,15 +707,15 @@ fn timing_distribution_truncation() {
     for (unit, expected_keys) in &[
         (
             TimeUnit::Nanosecond,
-            HashSet::<u64>::from_iter(vec![961_548, 939, 599_512_966_122, 1]),
+            HashSet::<i64>::from_iter(vec![961_548, 939, 599_512_966_122, 1]),
         ),
         (
             TimeUnit::Microsecond,
-            HashSet::<u64>::from_iter(vec![939, 562_949_953_421_318, 599_512_966_122, 961_548]),
+            HashSet::<i64>::from_iter(vec![939, 562_949_953_421_318, 599_512_966_122, 961_548]),
         ),
         (
             TimeUnit::Millisecond,
-            HashSet::<u64>::from_iter(vec![
+            HashSet::<i64>::from_iter(vec![
                 961_548,
                 576_460_752_303_431_040,
                 599_512_966_122,
@@ -751,12 +751,11 @@ fn timing_distribution_truncation() {
         let mut keys = HashSet::new();
         let mut recorded_values = 0;
 
-        for (key, &value) in &snapshot.values {
-            let key = key.parse().unwrap();
+        for (&key, &value) in &snapshot.values {
             // A snapshot potentially includes buckets with a 0 count.
             // We can ignore them here.
             if value > 0 {
-                assert!(key < max_sample_time * unit.as_nanos(1));
+                assert!((key as u64) < max_sample_time * unit.as_nanos(1));
                 keys.insert(key);
                 recorded_values += 1;
             }

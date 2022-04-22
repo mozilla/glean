@@ -177,9 +177,9 @@ class TimingDistributionMetricTypeTest {
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`,
         // which lives in the Rust code.
-        assertEquals(1L, snapshot.values["984625593"])
-        assertEquals(1L, snapshot.values["1969251187"])
-        assertEquals(1L, snapshot.values["2784941737"])
+        assertEquals(1L, snapshot.values[984625593])
+        assertEquals(1L, snapshot.values[1969251187])
+        assertEquals(1L, snapshot.values[2784941737])
     }
 
     @Test
