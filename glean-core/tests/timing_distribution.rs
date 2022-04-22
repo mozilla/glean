@@ -99,7 +99,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         );
         assert_eq!(
             json!(1),
-            snapshot["timing_distribution"]["telemetry.distribution"]["values"]["1"]
+            snapshot["timing_distribution"]["telemetry.distribution"]["values"][&1]
         );
     }
 }
@@ -175,9 +175,9 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`.
-    assert_eq!(1, snapshot.values["984625593"]);
-    assert_eq!(1, snapshot.values["1969251187"]);
-    assert_eq!(1, snapshot.values["2784941737"]);
+    assert_eq!(1, snapshot.values[&984625593]);
+    assert_eq!(1, snapshot.values[&1969251187]);
+    assert_eq!(1, snapshot.values[&2784941737]);
 
     // No errors should be reported.
     assert!(test_get_num_recorded_errors(
@@ -216,9 +216,9 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
     assert_eq!(snapshot.sum, 6);
 
     // We should get a sample in each of the first 3 buckets.
-    assert_eq!(1, snapshot.values["1"]);
-    assert_eq!(1, snapshot.values["2"]);
-    assert_eq!(1, snapshot.values["3"]);
+    assert_eq!(1, snapshot.values[&1]);
+    assert_eq!(1, snapshot.values[&2]);
+    assert_eq!(1, snapshot.values[&3]);
 
     // 1 error should be reported.
     assert_eq!(
@@ -262,9 +262,9 @@ fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
     assert_eq!(snapshot.sum as u64, MAX_SAMPLE_TIME + 6);
 
     // We should get a sample in each of the first 3 buckets.
-    assert_eq!(1, snapshot.values["1"]);
-    assert_eq!(1, snapshot.values["2"]);
-    assert_eq!(1, snapshot.values["3"]);
+    assert_eq!(1, snapshot.values[&1]);
+    assert_eq!(1, snapshot.values[&2]);
+    assert_eq!(1, snapshot.values[&3]);
 
     // 1 error should be reported.
     assert_eq!(
@@ -372,9 +372,9 @@ fn the_accumulate_raw_samples_api_correctly_stores_timing_values() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`.
-    assert_eq!(1, snapshot.values["984625593"]);
-    assert_eq!(1, snapshot.values["1969251187"]);
-    assert_eq!(1, snapshot.values["2784941737"]);
+    assert_eq!(1, snapshot.values[&984625593]);
+    assert_eq!(1, snapshot.values[&1969251187]);
+    assert_eq!(1, snapshot.values[&2784941737]);
 
     // No errors should be reported.
     assert!(test_get_num_recorded_errors(
@@ -424,8 +424,8 @@ fn raw_samples_api_error_cases() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = {1, max_sample_time}`.
-    assert_eq!(2, snapshot.values["1"]);
-    assert_eq!(1, snapshot.values["599512966122"]);
+    assert_eq!(2, snapshot.values[&1]);
+    assert_eq!(1, snapshot.values[&599512966122]);
 
     // No errors should be reported.
     assert_eq!(

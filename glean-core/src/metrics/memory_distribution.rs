@@ -41,7 +41,7 @@ pub(crate) fn snapshot(hist: &Histogram<Functional>) -> DistributionData {
         values: hist
             .snapshot()
             .into_iter()
-            .map(|(k, v)| (k.to_string(), v as i64))
+            .map(|(k, v)| (k as i64, v as i64))
             .collect(),
         sum: hist.sum() as i64,
     }

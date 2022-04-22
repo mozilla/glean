@@ -97,7 +97,7 @@ mod linear {
             );
             assert_eq!(
                 json!(1),
-                snapshot["custom_distribution"]["telemetry.distribution"]["values"]["50"]
+                snapshot["custom_distribution"]["telemetry.distribution"]["values"][&50]
             );
         }
     }
@@ -138,9 +138,9 @@ mod linear {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values["1"]);
-        assert_eq!(1, snapshot.values["2"]);
-        assert_eq!(1, snapshot.values["3"]);
+        assert_eq!(1, snapshot.values[&1]);
+        assert_eq!(1, snapshot.values[&2]);
+        assert_eq!(1, snapshot.values[&3]);
 
         // No errors should be reported.
         assert!(test_get_num_recorded_errors(
@@ -184,9 +184,9 @@ mod linear {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values["1"]);
-        assert_eq!(1, snapshot.values["2"]);
-        assert_eq!(1, snapshot.values["3"]);
+        assert_eq!(1, snapshot.values[&1]);
+        assert_eq!(1, snapshot.values[&2]);
+        assert_eq!(1, snapshot.values[&3]);
 
         // 1 error should be reported.
         assert_eq!(
@@ -308,7 +308,7 @@ mod exponential {
             );
             assert_eq!(
                 json!(1),
-                snapshot["custom_distribution"]["telemetry.distribution"]["values"]["29"]
+                snapshot["custom_distribution"]["telemetry.distribution"]["values"][&29]
             );
         }
     }
@@ -349,9 +349,9 @@ mod exponential {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values["1"]);
-        assert_eq!(1, snapshot.values["2"]);
-        assert_eq!(1, snapshot.values["3"]);
+        assert_eq!(1, snapshot.values[&1]);
+        assert_eq!(1, snapshot.values[&2]);
+        assert_eq!(1, snapshot.values[&3]);
 
         // No errors should be reported.
         assert!(test_get_num_recorded_errors(
@@ -395,9 +395,9 @@ mod exponential {
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
         // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-        assert_eq!(1, snapshot.values["1"]);
-        assert_eq!(1, snapshot.values["2"]);
-        assert_eq!(1, snapshot.values["3"]);
+        assert_eq!(1, snapshot.values[&1]);
+        assert_eq!(1, snapshot.values[&2]);
+        assert_eq!(1, snapshot.values[&3]);
 
         // 1 error should be reported.
         assert_eq!(

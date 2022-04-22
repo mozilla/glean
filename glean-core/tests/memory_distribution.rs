@@ -91,7 +91,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         );
         assert_eq!(
             json!(1),
-            snapshot["memory_distribution"]["telemetry.distribution"]["values"]["96785"]
+            snapshot["memory_distribution"]["telemetry.distribution"]["values"][&96785]
         );
     }
 }
@@ -131,9 +131,9 @@ fn the_accumulate_samples_api_correctly_stores_memory_values() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-    assert_eq!(1, snapshot.values["1023"]);
-    assert_eq!(1, snapshot.values["2047"]);
-    assert_eq!(1, snapshot.values["3024"]);
+    assert_eq!(1, snapshot.values[&1023]);
+    assert_eq!(1, snapshot.values[&2047]);
+    assert_eq!(1, snapshot.values[&3024]);
 
     // No errors should be reported.
     assert!(test_get_num_recorded_errors(
@@ -176,9 +176,9 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
-    assert_eq!(1, snapshot.values["1023"]);
-    assert_eq!(1, snapshot.values["2047"]);
-    assert_eq!(1, snapshot.values["3024"]);
+    assert_eq!(1, snapshot.values[&1023]);
+    assert_eq!(1, snapshot.values[&2047]);
+    assert_eq!(1, snapshot.values[&3024]);
 
     // 1 error should be reported.
     assert_eq!(

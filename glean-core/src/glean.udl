@@ -369,11 +369,7 @@ interface QuantityMetric {
 // A snapshot of all buckets and the accumulated sum of a distribution.
 dictionary DistributionData {
     // A map containig the bucket index mapped to the accumulated count.
-    //
-    // This can contain buckets with a count of `0`.
-    //
-    // Note: UniFFI does not support integer keys right now.
-    record<DOMString, i64> values;
+    record<i64, i64> values;
 
     // The accumulated sum of all the samples in the distribution.
     i64 sum;

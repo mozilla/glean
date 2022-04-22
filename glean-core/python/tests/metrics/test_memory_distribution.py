@@ -27,9 +27,9 @@ def test_the_api_saves_to_its_storage_engine():
 
     snapshot = metric.test_get_value()
     assert 1 * kb + 2 * kb + 3 * kb == snapshot.sum
-    assert 1 == snapshot.values["1023"]
-    assert 1 == snapshot.values["2047"]
-    assert 1 == snapshot.values["3024"]
+    assert 1 == snapshot.values[1023]
+    assert 1 == snapshot.values[2047]
+    assert 1 == snapshot.values[3024]
 
 
 def test_values_are_truncated_to_1tb():
@@ -49,7 +49,7 @@ def test_values_are_truncated_to_1tb():
 
     snapshot = metric.test_get_value()
     assert 1 << 40 == snapshot.sum
-    assert 1 == snapshot.values[str((1 << 40) - 1)]
+    assert 1 == snapshot.values[(1 << 40) - 1]
     assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE)
 
 
@@ -106,6 +106,6 @@ def test_the_api_saves_to_secondary_pings():
     for store in ["store1", "store2", "store3"]:
         snapshot = metric.test_get_value(store)
         assert 6144 == snapshot.sum
-        assert 1 == snapshot.values["1023"]
-        assert 1 == snapshot.values["2047"]
-        assert 1 == snapshot.values["3024"]
+        assert 1 == snapshot.values[1023]
+        assert 1 == snapshot.values[2047]
+        assert 1 == snapshot.values[3024]
