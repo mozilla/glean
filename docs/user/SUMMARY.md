@@ -8,6 +8,7 @@
   - [Python](user/adding-glean-to-your-project/python.md)
   - [JavaScript](user/adding-glean-to-your-project/javascript.md)
   - [Qt/QML](user/adding-glean-to-your-project/qt.md)
+  - [Enable Glean Dictionary](user/adding-glean-to-your-project/enable-glean-dictionary.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
