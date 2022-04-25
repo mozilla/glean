@@ -398,7 +398,9 @@ public class Glean {
         // But we can go as far as simply removing all files.
         if clearStores {
             let dataPath = getGleanDirectory()
-            try! FileManager.default.removeItem(at: dataPath)
+            // Don't care if we can't remove the directory.
+            // It might just not exist.
+            _ = try? FileManager.default.removeItem(at: dataPath)
         }
 
         // Enable test mode.

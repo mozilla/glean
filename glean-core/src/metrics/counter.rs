@@ -72,14 +72,24 @@ impl CounterMetric {
             return;
         }
 
-        glean
-            .storage()
-            .record_with(glean, &self.meta, |old_value| match old_value {
+        // Let's be defensive here:
+        // The uploader tries to store a counter metric,
+        // but in tests that storage might be gone already.
+        // Let's just ignore those.
+        // This should never happen in real app usage.
+        if let Some(storage) = glean.storage_opt() {
+            storage.record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::Counter(old_value)) => {
                     Metric::Counter(old_value.saturating_add(amount))
                 }
                 _ => Metric::Counter(amount),
             })
+        } else {
+            log::warn!(
+                "Couldn't get storage. Can't record counter '{}'.",
+                self.meta.base_identifier()
+            );
+        }
     }
 
     /// Increases the counter by `amount`.
