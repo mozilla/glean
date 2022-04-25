@@ -507,6 +507,11 @@ impl Glean {
         self.data_store.as_ref().expect("No database found")
     }
 
+    /// Gets an optional handle to the database.
+    pub fn storage_opt(&self) -> Option<&Database> {
+        self.data_store.as_ref()
+    }
+
     /// Gets a handle to the event database.
     pub fn event_storage(&self) -> &EventDatabase {
         &self.event_data_store
