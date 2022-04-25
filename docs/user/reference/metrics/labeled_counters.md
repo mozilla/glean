@@ -143,8 +143,6 @@ assertEquals(3, Stability.INSTANCE.crashCount["native_code_crash"].testGetValue(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Do the counters have the expected values?
 XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
 XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
@@ -239,8 +237,6 @@ assertTrue(Stability.INSTANCE.crashCount["native_code_crash"].testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(Stability.crashCount["uncaught_exception"].testHasValue())
 XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
@@ -296,8 +292,6 @@ assertEquals(0, Stability.INSTANCE.crashCount.testGetNumRecordedErrors(ErrorType
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Were there any invalid labels?
 XCTAssertEqual(0, Stability.crashCount.testGetNumRecordedErrors(.invalidLabel))
 ```

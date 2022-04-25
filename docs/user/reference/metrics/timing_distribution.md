@@ -393,8 +393,6 @@ assertEquals(1L, snapshot.getCount());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Get snapshot.
 let snapshot = try! pages.pageLoad.testGetValue()
 
@@ -488,8 +486,6 @@ assertTrue(Pages.INSTANCE.pageLoad().testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(pages.pageLoad.testHasValue())
 ```
@@ -546,8 +542,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Assert that no errors were recorded.
 XCTAssertEqual(0, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 ```

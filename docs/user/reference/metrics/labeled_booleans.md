@@ -128,8 +128,6 @@ assertEquals(False, Acessibility.INSTANCE.features["high_contrast"].testGetValue
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Do the booleans have the expected values?
 XCTAssertEqual(true, try Accessibility.features["screen_reader"].testGetValue())
 XCTAssertEqual(false, try Accessibility.features["high_contrast"].testGetValue())
@@ -224,8 +222,6 @@ assertEquals(True, Acessibility.INSTANCE.features["high_contrast"].testHasValue(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(Accessibility.features["screen_reader"].testHasValue())
 XCTAssert(Accessibility.features["high_contrast"].testHasValue())
@@ -281,8 +277,6 @@ assertEquals(0, Acessibility.INSTANCE.features.testGetNumRecordedErrors());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Were there any invalid labels?
 XCTAssertEqual(0, Accessibility.features.testGetNumRecordedErrors(.invalidLabel))
 ```

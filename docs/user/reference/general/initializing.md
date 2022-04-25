@@ -382,7 +382,6 @@ Activate it by resetting Glean in your test's setup:
 ```swift
 // All pings and metrics testing APIs are marked as `internal`
 // so you need to import `Glean` explicitly in test mode.
-@testable import Glean
 import XCTest
 
 class GleanUsageTests: XCTestCase {

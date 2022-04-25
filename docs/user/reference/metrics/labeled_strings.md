@@ -123,8 +123,6 @@ assertTrue(Login.INSTANCE.errorsByStage["server_auth"].testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Does the metric have the expected value?
 XCTAssert(Login.errorsByStage["server_auth"].testGetValue())
 ```
@@ -212,8 +210,6 @@ assertTrue(Login.INSTANCE.errorsByStage["server_auth"].testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
 ```
@@ -265,8 +261,6 @@ assertEquals(0, Login.INSTANCE.errorsByStage.testGetNumRecordedErrors(ErrorType.
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Were there any invalid labels?
 XCTAssertEqual(0, Login.errorsByStage.testGetNumRecordedErrors(.invalidLabel))
 ```

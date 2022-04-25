@@ -125,8 +125,6 @@ assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
 ```
 
@@ -212,8 +210,6 @@ assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertTrue(try Flags.a11yEnabled.testHasValue())
 ```
 

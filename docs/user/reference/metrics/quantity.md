@@ -132,8 +132,6 @@ assertEquals(6, Display.INSTANCE.width.testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Does the quantity have the expected value?
 XCTAssertEqual(6, try Display.width.testGetValue())
 ```
@@ -222,8 +220,6 @@ assertTrue(Display.INSTANCE.width.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(Display.width.testHasValue())
 ```
@@ -280,8 +276,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Did the quantity record a negative value?
 XCTAssertEqual(1, Display.width.testGetNumRecordedErrors(.invalidValue))
 ```

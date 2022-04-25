@@ -175,8 +175,6 @@ assertTrue(validatorRun);
 <div data-lang="Swift" class="tab">
 
 ```swift
-@testable import Glean
-
 // Record some data.
 Search.defaultEngine.add(5)
 

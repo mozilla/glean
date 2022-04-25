@@ -154,8 +154,6 @@ assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValu
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual("https://mysearchengine.com/", try Search.template.testGetValue())
 ```
 
@@ -223,8 +221,6 @@ assertTrue(Search.INSTANCE.template.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssert(try Search.template.testHasValue())
 ```
 
@@ -292,8 +288,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidValue))
 XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidOverflow))
 ```
