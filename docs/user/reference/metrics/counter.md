@@ -140,8 +140,6 @@ assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
 ```
 
@@ -229,8 +227,6 @@ assertTrue(Controls.INSTANCE.refreshPressed.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssert(Controls.refreshPressed.testHasValue())
 ```
 

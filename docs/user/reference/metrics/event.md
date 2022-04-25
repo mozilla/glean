@@ -240,8 +240,6 @@ assertEquals(Views.INSTANCE.loginOpened.testGetValue().size)
 <div data-lang="Swift" class="tab">
 
 ```swift
-@testable import Glean
-
 val snapshot = try! Views.loginOpened.testGetValue()
 XCTAssertEqual(2, snapshot.size)
 val first = snapshot[0]
@@ -344,8 +342,6 @@ assertTrue(Views.INSTANCE.loginOpened.testHasValue())
 <div data-lang="Swift" class="tab">
 
 ```swift
-@testable import Glean
-
 XCTAssert(Views.loginOpened.testHasValue())
 ```
 
@@ -401,8 +397,6 @@ assertEquals(0, Views.INSTANCE.loginOpened.testGetNumRecordedErrors(ErrorType.In
 <div data-lang="Swift" class="tab">
 
 ```swift
-@testable import Glean
-
 XCTAssertEqual(0, Views.loginOpened.testGetNumRecordedErrors(.invalidOverflow))
 ```
 </div>

@@ -221,8 +221,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual(["Google", "DuckDuckGo"], try Search.engines.testGetValue())
 ```
 
@@ -310,8 +308,6 @@ assertTrue(Search.INSTANCE.engines().testHasValue())
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssert(Search.engines.testHasValue())
 ```
 
@@ -359,8 +355,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Were any of the values too long, and thus an error was recorded?
 XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 ```
