@@ -69,14 +69,13 @@ impl Builder {
     pub fn new(language_binding_name: &str, body_max_size: usize) -> Self {
         let mut headers = HashMap::new();
         headers.insert("Date".to_string(), create_date_header_value(Utc::now()));
-        headers.insert(
-            "X-Telemetry-Agent".to_string(),
-            create_x_telemetry_agent_header_value(
-                crate::GLEAN_VERSION,
-                language_binding_name,
-                system::OS,
-            ),
+        let ua = create_x_telemetry_agent_header_value(
+            crate::GLEAN_VERSION,
+            language_binding_name,
+            system::OS,
         );
+        headers.insert("User-Agent".to_string(), ua.clone());
+        headers.insert("X-Telemetry-Agent".to_string(), ua);
         headers.insert(
             "Content-Type".to_string(),
             "application/json; charset=utf-8".to_string(),
