@@ -1,0 +1,42 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+  - taskgraph.transforms.job:transforms
+  - taskgraph.transforms.task:transforms
+
+jobs:
+  pr:
+    attributes:
+      run-on-pr-type: normal-ci
+    needs-sccache: false # TODO: Bug 1623426 deal with this once we're in prod
+    run-on-tasks-for: [github-pull-request]
+    description: Build and test (Android - linux-x86-64)
+    worker-type: b-linux
+    worker:
+      docker-image: { in-tree: linux }
+      max-run-time: 1800
+      env: {}
+      artifacts:
+        # Store the test report as an artifact for later analysis
+        - name: public/test
+          type: directory
+          path: /builds/worker/checkouts/vcs/glean-core/android/build/reports/tests
+    run:
+      pre-gradlew:
+        # XXX: scripts subshell at runtime so we need to source this here
+        # to be able to access `rustup` and `rustc` from within the cc script
+        # and the gradle command. Another options could be to set those env vars
+        # here like: [export, 'PATH=$HOME/.cargo/bin:$PATH'
+        - [source, taskcluster/scripts/rustup-setup.sh]
+        - [bash, '-c', 'echo "rust.targets=linux-x86-64\n" > local.properties']
+      gradlew:
+        - 'clean'
+        - 'assembleDebugUnitTest'
+        - 'testDebugUnitTest'
+      using: gradlew
+      use-caches: true

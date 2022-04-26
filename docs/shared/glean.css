@@ -1,0 +1,335 @@
+
+/* API Reference Titles */
+
+a.header code {
+    background-color: rgba(230, 230, 230, 0.8);
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    color: black;
+    font-weight: bold;
+    transition: all 150ms ease-in-out;
+}
+
+a.header code:hover {
+    background-color: rgba(230, 230, 230, 1);
+}
+
+/* Style the tab */
+.tabs {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+}
+
+.tabbar {
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tabbar button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tabbar button:hover {
+    background-color: #ddd;
+}
+
+.tabbar button.disabled:hover {
+    background-color: inherit;
+}
+
+/* Create an active/current tablink class */
+.tabbar button.active {
+    background-color: #ccc;
+}
+
+.tabbar button.disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+/* The container that holds all of the tab contents */
+.tabcontents {
+    display: flex;
+}
+
+/* The container for each individual language */
+.tab {
+    display: none;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 6px 12px;
+    box-sizing: border-box;
+}
+
+.tab.active {
+    display: block;
+}
+
+/* The footer with the "Open on GitHub" link */
+footer#open-on-gh {
+  font-size: 0.8em;
+  text-align: center;
+  border-top: 1px solid black;
+  padding: 5px 0;
+}
+
+/* Distribution simulator styles */
+
+#simulator-container {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+#simulator-container h3 {
+    margin-top: 20px;
+}
+
+#simulator-container .input-group {
+    width: 100%;
+}
+
+#simulator-container .input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+#simulator-container .input-group input,
+#simulator-container .input-group select,
+#custom-data-modal textarea {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
+}
+
+#histogram-props,
+#data-options {
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#data-options {
+    padding-right: 50px;
+}
+
+#data-options .input-group {
+    margin-bottom: 10px;
+}
+
+#data-options .input-group:first-of-type {
+    margin-top: 20px;
+}
+
+#data-options .input-group:last-of-type {
+    margin-bottom: 0;
+}
+
+#data-options .input-group label {
+    display: inline-block;
+}
+
+#data-options .input-group input {
+    display: inline;
+    width: auto;
+}
+
+#histogram-chart-container {
+    width: 100%;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    margin: 30px 0;
+    overflow: hidden;
+    position: relative;
+}
+
+#histogram-chart {
+    margin-top: 50px;
+    width: 100%;
+}
+
+#histogram-chart-legend {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+#histogram-functional-props,
+#histogram-non-functional-props {
+    display: none;
+}
+
+#custom-data-modal-overlay {
+    background-color: rgba(0, 0, 0, .5);
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    display: none;
+}
+
+#custom-data-modal {
+    width: 50%;
+    background-color: white;
+    border-radius: 5px;
+    position: relative;
+    top: 15%;
+    left: 25%;
+    padding: 50px;
+}
+
+.hide {
+    display: none !important;
+}
+
+/* Special block quotes */
+
+.special-quote  {
+    font-size: 20px;
+    padding: 20px 20px 20px;
+    border-top: 3px solid rgba(200, 200, 200, .3);
+    border-left: 3px solid rgba(200, 200, 200, .3);
+    border-right: 3px solid rgba(200, 200, 200, .3);
+    display: block;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-top: 40px;
+}
+
+.special-quote+h1,
+.special-quote+h2,
+.special-quote+h3,
+.special-quote+h4,
+.special-quote+h5 {
+    margin: -40px 0 17px;
+    margin-top: -40px;
+    padding-left: 55px;
+    font-size: 1.6rem;
+}
+
+.special-quote+h1::before,
+.special-quote+h2::before,
+.special-quote+h3::before,
+.special-quote+h4::before,
+.special-quote+h5::before {
+    display: none;
+}
+
+.special-quote+blockquote,
+.special-quote+h1+blockquote,
+.special-quote+h2+blockquote,
+.special-quote+h3+blockquote,
+.special-quote+h4+blockquote,
+.special-quote+h5+blockquote {
+    margin-top: 0;
+    background-color: transparent !important;
+    border-bottom: 3px solid rgba(200, 200, 200, .3) !important;
+    border-left: 3px solid rgba(200, 200, 200, .3) !important;
+    border-right: 3px solid rgba(200, 200, 200, .3) !important;
+    border-top: none !important;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-bottom: 7px;
+    margin-bottom: 40px;
+}
+
+.special-quote+blockquote *:first-child,
+.special-quote+h1+blockquote *:first-child,
+.special-quote+h2+blockquote *:first-child,
+.special-quote+h3+blockquote *:first-child,
+.special-quote+h4+blockquote *:first-child,
+.special-quote+h5+blockquote *:first-child   {
+    margin-top: 0 !important;
+}
+
+.special-quote+h3+blockquote {
+    margin-top: 17px;
+}
+
+.special-quote.special-quote-info {
+    color: #005aa8;
+}
+
+.special-quote.special-quote-warning {
+    color: #fdc008;
+}
+
+.special-quote.special-quote-stop {
+    color: #fd0808;
+}
+
+.special-quote.special-quote-stop,
+.special-quote.special-quote-stop+blockquote,
+.special-quote.special-quote-stop+h1+blockquote,
+.special-quote.special-quote-stop+h2+blockquote,
+.special-quote.special-quote-stop+h3+blockquote,
+.special-quote.special-quote-stop+h4+blockquote,
+.special-quote.special-quote-stop+h5+blockquote {
+    border-color: #fd0808 !important;
+}
+
+/* Tab tooltips */
+
+.tablinks {
+    position: relative;
+}
+
+.tablinks .tooltip {
+    display: none;
+    position: absolute;
+    padding: 7px;
+    border-radius: 3px;
+    z-index: 999;
+    background-color: #333;
+    color: #eee;
+    font-size: .9em;
+    width: 200px;
+    top: 40px;
+    left: calc(50% - 100px);
+    box-sizing: border-box;
+    user-select: text;
+}
+
+.tablinks .tooltip a {
+    color: #048dc2 !important;
+}
+
+.tablinks .tooltip::after {
+    bottom: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: "";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(240, 240, 240, 0);
+    border-bottom-color: #333;
+    border-width: 7px;
+    margin-left: -7px;
+}
+
+.tablinks:hover .tooltip,
+.tablinks .tooltip:hover {
+    display: block;
+}

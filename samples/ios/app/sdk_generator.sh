@@ -1,0 +1,1 @@
+../../../glean-core/ios/sdk_generator.sh

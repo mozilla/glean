@@ -1,0 +1,21 @@
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+
+test:
+  client_id:
+    type: counter
+    description: >
+      A metric in the glean category should be a glinter error.
+    bugs:
+      - 1137353
+    data_reviews:
+      - http://example.com/reviews
+      - http://example.com/other_reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01

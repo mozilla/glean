@@ -1,0 +1,25 @@
+# Licenses for Third-Party Dependencies
+
+Binary distributions of this software incorporate code from a number of third-party dependencies.
+These dependencies are available under a variety of free and open source licenses,
+the details of which are reproduced below.
+
+{{#each overview ~}}
+* [{{{name}}}](#{{id}})
+{{/each}}
+-------------
+
+{{#each licenses ~}}
+## {{name}}
+<span id="{{id}}"></span>
+
+The following text applies to code linked from these dependencies:
+
+{{#each used_by~}}
+* [{{crate.name}} {{crate.version}}]({{#if crate.repository}} {{crate.repository}} {{else}} https://crates.io/crates/{{crate.name}} {{/if}})
+{{/each}}
+
+```
+{{{text}}}
+```
+{{/each ~}}

@@ -1,0 +1,43 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+trust-domain: glean
+task-priority: highest
+
+taskgraph:
+  register: glean_taskgraph:register
+  repositories:
+    glean:
+      name: "Glean"
+  cached-task-prefix: project.glean
+  decision-parameters: 'glean_taskgraph:get_decision_parameters'
+
+workers:
+  aliases:
+    b-linux:
+      provisioner: 'glean-{level}'
+      implementation: docker-worker
+      os: linux
+      worker-type: 'b-linux'
+    images:
+      provisioner: 'glean-{level}'
+      implementation: docker-worker
+      os: linux
+      worker-type: 'images'
+    signing:
+      provisioner: scriptworker-k8s
+      implementation: scriptworker-signing
+      os: scriptworker
+      worker-type:
+        by-level:
+          "3": glean-3-signing
+          default: glean-t-signing
+    beetmover:
+      provisioner: scriptworker-k8s
+      implementation: scriptworker-beetmover
+      os: scriptworker
+      worker-type: 'glean-{level}-beetmover'
+
+scriptworker:
+  scope-prefix: project:mozilla:glean:releng

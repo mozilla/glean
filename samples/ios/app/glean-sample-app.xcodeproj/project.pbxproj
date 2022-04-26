@@ -1,0 +1,717 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7CC0A72473F68C003B166D /* Metrics.swift */; };
+		BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */ = {isa = PBXBuildFile; fileRef = BF8966592371C82E0097B7F2 /* pings.yaml */; };
+		BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */; };
+		BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB2F224D475E00AD9255 /* ViewController.swift */; };
+		BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB31224D475E00AD9255 /* Main.storyboard */; };
+		BFD3AB35224D475E00AD9255 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB34224D475E00AD9255 /* Assets.xcassets */; };
+		BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */; };
+		BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */; };
+		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
+		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
+		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
+		BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; };
+		BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
+		BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
+		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
+		CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99D84525F131D600BD5339 /* EventPingTest.swift */; };
+		CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
+		CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
+		CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BFD3AB3F224D475E00AD9255 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFD3AB22224D475E00AD9255 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BFD3AB29224D475E00AD9255;
+			remoteInfo = "glean-sample-app";
+		};
+		BFD3AB4A224D475E00AD9255 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFD3AB22224D475E00AD9255 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BFD3AB29224D475E00AD9255;
+			remoteInfo = "glean-sample-app";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BFEA24B825CC39B200110728 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */,
+				BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */,
+				CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BF6F41C4234346A000E222A8 /* metrics.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = metrics.yaml; sourceTree = "<group>"; };
+		BF7CC0A72473F68C003B166D /* Metrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
+		BF8966592371C82E0097B7F2 /* pings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pings.yaml; sourceTree = "<group>"; };
+		BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "glean-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BFD3AB2F224D475E00AD9255 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BFD3AB32224D475E00AD9255 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BFD3AB34224D475E00AD9255 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BFD3AB37224D475E00AD9255 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BFD3AB39224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BFD3AB3E224D475E00AD9255 /* glean-sample-appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = glean_sample_appTests.swift; sourceTree = "<group>"; };
+		BFD3AB44224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "glean-sample-appUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselinePingTest.swift; sourceTree = "<group>"; };
+		BFD3AB4F224D475E00AD9255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BFD3AB5B224D490000AD9255 /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
+		BFD3AB5C224D490000AD9255 /* base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = base.xcconfig; sourceTree = "<group>"; };
+		BFD3AB5D224D490000AD9255 /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
+		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
+		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
+		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
+		BFEA24B525CC39B200110728 /* Glean.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Glean.xcframework; path = Carthage/Build/Glean.xcframework; sourceTree = "<group>"; };
+		BFEA24BB25CC39BF00110728 /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
+		BFEA24C025CC39CB00110728 /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
+		BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionRequestPingTest.swift; sourceTree = "<group>"; };
+		CD99D84525F131D600BD5339 /* EventPingTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventPingTest.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BFD3AB27224D475E00AD9255 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */,
+				BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */,
+				CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB3B224D475E00AD9255 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB46224D475E00AD9255 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */,
+				BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BF6F41CA23434A1700E222A8 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				BF7CC0A72473F68C003B166D /* Metrics.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		BFD3AB21224D475E00AD9255 = {
+			isa = PBXGroup;
+			children = (
+				BF6F41C4234346A000E222A8 /* metrics.yaml */,
+				BF8966592371C82E0097B7F2 /* pings.yaml */,
+				BFE1E7D523435A600067A12A /* sdk_generator.sh */,
+				BFD3AB5C224D490000AD9255 /* base.xcconfig */,
+				BFD3AB5B224D490000AD9255 /* debug.xcconfig */,
+				BFD3AB5D224D490000AD9255 /* release.xcconfig */,
+				BFD3AB2C224D475E00AD9255 /* glean-sample-app */,
+				BFD3AB41224D475E00AD9255 /* glean-sample-appTests */,
+				BFD3AB4C224D475E00AD9255 /* glean-sample-appUITests */,
+				BFD3AB2B224D475E00AD9255 /* Products */,
+				BFD3AB68224D4F9500AD9255 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		BFD3AB2B224D475E00AD9255 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */,
+				BFD3AB3E224D475E00AD9255 /* glean-sample-appTests.xctest */,
+				BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BFD3AB2C224D475E00AD9255 /* glean-sample-app */ = {
+			isa = PBXGroup;
+			children = (
+				BF6F41CA23434A1700E222A8 /* Generated */,
+				BFD3AB2D224D475E00AD9255 /* AppDelegate.swift */,
+				BFD3AB2F224D475E00AD9255 /* ViewController.swift */,
+				BFD3AB31224D475E00AD9255 /* Main.storyboard */,
+				BFD3AB34224D475E00AD9255 /* Assets.xcassets */,
+				BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */,
+				BFD3AB39224D475E00AD9255 /* Info.plist */,
+			);
+			path = "glean-sample-app";
+			sourceTree = "<group>";
+		};
+		BFD3AB41224D475E00AD9255 /* glean-sample-appTests */ = {
+			isa = PBXGroup;
+			children = (
+				BFD3AB42224D475E00AD9255 /* glean_sample_appTests.swift */,
+				BFD3AB44224D475E00AD9255 /* Info.plist */,
+			);
+			path = "glean-sample-appTests";
+			sourceTree = "<group>";
+		};
+		BFD3AB4C224D475E00AD9255 /* glean-sample-appUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */,
+				BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */,
+				CD99D84525F131D600BD5339 /* EventPingTest.swift */,
+				BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */,
+				BFD3AB4F224D475E00AD9255 /* Info.plist */,
+				BFDA7AD12371D2BA00575C7B /* MockServer.swift */,
+			);
+			path = "glean-sample-appUITests";
+			sourceTree = "<group>";
+		};
+		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BFEA24C025CC39CB00110728 /* Swifter.xcframework */,
+				BFEA24BB25CC39BF00110728 /* Gzip.xcframework */,
+				BFEA24B525CC39B200110728 /* Glean.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BFD3AB29224D475E00AD9255 /* glean-sample-app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */;
+			buildPhases = (
+				BF6F41C6234346AA00E222A8 /* ShellScript */,
+				BFD3AB26224D475E00AD9255 /* Sources */,
+				BFD3AB27224D475E00AD9255 /* Frameworks */,
+				BFD3AB28224D475E00AD9255 /* Resources */,
+				BFEA24B825CC39B200110728 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "glean-sample-app";
+			productName = "glean-sample-app";
+			productReference = BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BFD3AB3D224D475E00AD9255 /* glean-sample-appTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFD3AB55224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appTests" */;
+			buildPhases = (
+				BFD3AB3A224D475E00AD9255 /* Sources */,
+				BFD3AB3B224D475E00AD9255 /* Frameworks */,
+				BFD3AB3C224D475E00AD9255 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BFD3AB40224D475E00AD9255 /* PBXTargetDependency */,
+			);
+			name = "glean-sample-appTests";
+			productName = "glean-sample-appTests";
+			productReference = BFD3AB3E224D475E00AD9255 /* glean-sample-appTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BFD3AB48224D475E00AD9255 /* glean-sample-appUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFD3AB58224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appUITests" */;
+			buildPhases = (
+				BFD3AB45224D475E00AD9255 /* Sources */,
+				BFD3AB46224D475E00AD9255 /* Frameworks */,
+				BFD3AB47224D475E00AD9255 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BFD3AB4B224D475E00AD9255 /* PBXTargetDependency */,
+			);
+			name = "glean-sample-appUITests";
+			productName = "glean-sample-appUITests";
+			productReference = BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BFD3AB22224D475E00AD9255 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1130;
+				TargetAttributes = {
+					BFD3AB29224D475E00AD9255 = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
+					};
+					BFD3AB3D224D475E00AD9255 = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
+						TestTargetID = BFD3AB29224D475E00AD9255;
+					};
+					BFD3AB48224D475E00AD9255 = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1030;
+						TestTargetID = BFD3AB29224D475E00AD9255;
+					};
+				};
+			};
+			buildConfigurationList = BFD3AB25224D475E00AD9255 /* Build configuration list for PBXProject "glean-sample-app" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BFD3AB21224D475E00AD9255;
+			productRefGroup = BFD3AB2B224D475E00AD9255 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BFD3AB29224D475E00AD9255 /* glean-sample-app */,
+				BFD3AB3D224D475E00AD9255 /* glean-sample-appTests */,
+				BFD3AB48224D475E00AD9255 /* glean-sample-appUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BFD3AB28224D475E00AD9255 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF89665A2371C82E0097B7F2 /* pings.yaml in Resources */,
+				BFD3AB38224D475E00AD9255 /* LaunchScreen.storyboard in Resources */,
+				BFD3AB35224D475E00AD9255 /* Assets.xcassets in Resources */,
+				BFD3AB33224D475E00AD9255 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB3C224D475E00AD9255 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB47224D475E00AD9255 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BF6F41C6234346AA00E222A8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/metrics.yaml",
+				"$(SRCROOT)/pings.yaml",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/glean-sample-app/Generated/Metrics.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash $PWD/sdk_generator.sh --build-date \"2020-11-06T11:30:50+00:00\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BFD3AB26224D475E00AD9255 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFD3AB30224D475E00AD9255 /* ViewController.swift in Sources */,
+				BF7CC0A82473F68C003B166D /* Metrics.swift in Sources */,
+				BFD3AB2E224D475E00AD9255 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB3A224D475E00AD9255 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFD3AB43224D475E00AD9255 /* glean_sample_appTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFD3AB45224D475E00AD9255 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */,
+				BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */,
+				BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */,
+				CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */,
+				BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BFD3AB40224D475E00AD9255 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BFD3AB29224D475E00AD9255 /* glean-sample-app */;
+			targetProxy = BFD3AB3F224D475E00AD9255 /* PBXContainerItemProxy */;
+		};
+		BFD3AB4B224D475E00AD9255 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BFD3AB29224D475E00AD9255 /* glean-sample-app */;
+			targetProxy = BFD3AB4A224D475E00AD9255 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BFD3AB31224D475E00AD9255 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BFD3AB32224D475E00AD9255 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BFD3AB36224D475E00AD9255 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BFD3AB37224D475E00AD9255 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BFD3AB50224D475E00AD9255 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BFD3AB51224D475E00AD9255 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BFD3AB53224D475E00AD9255 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "glean-sample-app/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BFD3AB54224D475E00AD9255 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "glean-sample-app/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BFD3AB56224D475E00AD9255 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
+			};
+			name = Debug;
+		};
+		BFD3AB57224D475E00AD9255 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				INFOPLIST_FILE = "glean-sample-appTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/glean-sample-app.app/glean-sample-app";
+			};
+			name = Release;
+		};
+		BFD3AB59224D475E00AD9255 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5B224D490000AD9255 /* debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "glean-sample-app";
+			};
+			name = Debug;
+		};
+		BFD3AB5A224D475E00AD9255 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFD3AB5D224D490000AD9255 /* release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G9EAK7RA89;
+				FRAMEWORK_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "glean-sample-appUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.glean-sample-appUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "glean-sample-app";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BFD3AB25224D475E00AD9255 /* Build configuration list for PBXProject "glean-sample-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFD3AB50224D475E00AD9255 /* Debug */,
+				BFD3AB51224D475E00AD9255 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BFD3AB52224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFD3AB53224D475E00AD9255 /* Debug */,
+				BFD3AB54224D475E00AD9255 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BFD3AB55224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFD3AB56224D475E00AD9255 /* Debug */,
+				BFD3AB57224D475E00AD9255 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BFD3AB58224D475E00AD9255 /* Build configuration list for PBXNativeTarget "glean-sample-appUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFD3AB59224D475E00AD9255 /* Debug */,
+				BFD3AB5A224D475E00AD9255 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BFD3AB22224D475E00AD9255 /* Project object */;
+}

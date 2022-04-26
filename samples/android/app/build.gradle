@@ -1,0 +1,70 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.ext.build.compileSdkVersion
+
+    defaultConfig {
+        applicationId "org.mozilla.samples.gleancore"
+        minSdkVersion rootProject.ext.build['minSdkVersion']
+        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        // Keep the version in sync with gleanExpireByVersion which is
+        // set below, near the end of the file.
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation project(':glean')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.versions.kotlin"
+
+    implementation "androidx.appcompat:appcompat:$rootProject.versions.androidx_appcompat"
+    implementation "androidx.browser:browser:$rootProject.versions.androidx_browser"
+
+    androidTestImplementation "androidx.test:core-ktx:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test:runner:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test:rules:$rootProject.versions.androidx_test"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.versions.androidx_junit"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:$rootProject.versions.androidx_uiautomator"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.versions.androidx_espresso"
+    androidTestImplementation "androidx.work:work-testing:$rootProject.versions.androidx_work"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$rootProject.versions.mockwebserver"
+}
+
+ext.gleanNamespace = "mozilla.telemetry.glean"
+// Fixed build date so we can test for it
+ext.gleanBuildDate = "2020-11-06T11:30:50+00:00"
+// Enable expiration by major version. The sample is at version 1,
+// see versionName.
+ext.gleanExpireByVersion = 1
+
+// Include the glean-gradle-plugin. This is slightly different than what is
+// recommended for external users since we are loading it from the same root Gradle
+// build.
+apply from: '../../../gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy'
+ext.glean_plugin.apply(project)

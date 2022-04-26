@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: glean_taskgraph.loader.multi_dep:loader
+
+transforms:
+  - glean_taskgraph.transforms.multi_dep:transforms
+  - glean_taskgraph.transforms.beetmover:transforms
+  - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+  - module-build
+  - signing
+
+primary-dependency: module-build
+group-by: component
+
+job-template:
+  run-on-tasks-for: [github-release]
+  description: 'Publish release module {}'
+  worker-type: beetmover
+  worker:
+    app-name: telemetry
+    bucket:
+      by-level:
+        "3":
+          maven-production
+        default:
+          maven-staging
+  routes:
+    - notify.email.glean-team@mozilla.com.on-failed

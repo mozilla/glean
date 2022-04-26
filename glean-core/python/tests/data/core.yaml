@@ -1,0 +1,342 @@
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/1-0-0
+
+telemetry:
+  client_id:
+    type: uuid
+    lifetime: user
+    description: >
+      A UUID identifying a profile and allowing user-oriented
+      Correlation of data.
+      Some Unicode: جمع 搜集
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+      - http://example.com/other_reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+core_ping:
+  seq:
+    type: counter
+    lifetime: application
+    description: >
+      Running ping counter for this ping. This works as a sequence
+      number to allow detecting for missing send_in_pings.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  created:
+    type: datetime
+    time_unit: day
+    description: >
+      The date the ping was created.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  sessions:
+    type: counter
+    description: >
+      The number of sessions since the last upload.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  durations:
+    type: timespan
+    description: >
+      The combined duration, in seconds, of all the sessions
+      since the last upload.
+    time_unit: second
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  searches:
+    type: labeled_counter
+    description: >
+      The search use counts for each search source and engine
+      combination, e.g. “engine.source” = 3.
+    labels:
+      - this.is.fine
+      - this_is_fine_too
+      - this.is_still_fine
+      - thisisfine
+      - _.is_fine
+      - this.is-fine
+      - this-is-fine
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  flash_usage:
+    type: counter
+    description: >
+      The number of times the flash plugin was used since the last
+      upload.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  default_browser:
+    type: boolean
+    description: >
+      True if the user has set Firefox as the default browser.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+environment:
+  locale:
+    type: string
+    lifetime: application
+    description: The application locale, e.g. “en-US”.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  os:
+    type: string
+    lifetime: application
+    description: The name of the operating system.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  os_version:
+    type: string
+    lifetime: application
+    description: The version of the operating system.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  device:
+    type: string
+    lifetime: application
+    description: >
+      Build.MANUFACTURER + " - " + Build.MODEL, where manufacturer is
+      truncated to 12 characters & model is truncated to 19
+      characters.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  arch:
+    type: string
+    lifetime: application
+    description: The architecture of the device.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+
+  profile_date:
+    type: datetime
+    lifetime: user
+    description: Profile creation date.
+    time_unit: day
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  default_search:
+    type: string
+    lifetime: application
+    description: >
+      Identifier of the default search engine, e.g. “yahoo”.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  display_version:
+    type: string
+    lifetime: application
+    description: >
+      Version displayed to the user, e.g. “57.0b2”.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  distribution_id:
+    type: string
+    lifetime: application
+    description: >
+      Distribution identifier, e.g. “lollipop”.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  campaign_id:
+    type: string
+    lifetime: application
+    description: >
+      Adjust’s campaign identifier.
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    send_in_pings:
+      - core
+    expires: 2100-01-01
+
+  event_example:
+    type: event
+    description: >
+      Just testing events
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    extra_keys:
+      key1:
+        description: "This is key one"
+      key2:
+        description: "This is key two"
+    expires: 2100-01-01
+
+  event_no_keys:
+    type: event
+    description: >
+      Just testing events
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+
+dotted.category:
+  metric:
+    type: string
+    lifetime: application
+    description: >
+      dummy metric
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+
+glean.internal.metrics:
+  internal:
+    type: string
+    lifetime: application
+    description: >
+      internal metric
+    bugs:
+      - https://bugzilla.mozilla.org/1137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01

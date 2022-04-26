@@ -1,0 +1,3 @@
+#include "../../xcconfig/common.xcconfig"
+
+INFOPLIST_FILE = Glean/Info.plist

@@ -1,0 +1,31 @@
+libraryVersion: 44.1.1
+groupId: org.mozilla.telemetry
+projects:
+  glean:
+    path: glean-core/android
+    artifactId: glean
+    publications:
+      - name: glean
+        type: aar
+    description: 'The Glean SDK is a modern approach for a Telemetry library and is part of the Glean project.'
+  glean-native:
+    path: glean-core/android-native
+    artifactId: glean-native
+    publications:
+      - name: glean-native
+        type: aar
+      - name: glean-native-forUnitTests
+        type: jar
+    description: 'The native libglean_ffi library for use with the Glean SDK.'
+  glean-sample-app:
+    path: samples/android/app
+    artifactId: glean-sample-app
+    description: 'An app demoing how to use the Glean library to collect and send telemetry data.'
+    publications: []
+  glean-gradle-plugin:
+    path: gradle-plugin
+    artifactId: glean-gradle-plugin
+    publications:
+      - name: glean-gradle-plugin
+        type: jar
+    description: 'A Gradle plugin to enable Glean SDK build-time support (metrics and pings API, docs, ...)'

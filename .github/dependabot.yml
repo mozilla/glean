@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # glean
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    versioning-strategy: lockfile-only
+
+  # glean-python
+  - package-ecosystem: "pip"
+    directory: "/glean-core/python"
+    schedule:
+      interval: "daily"
+    ignore:
+      # Updated in lockstep across all implementations
+      - dependency-name: "glean_parser"

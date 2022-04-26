@@ -1,0 +1,39 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+loader: glean_taskgraph.loader.build_config:loader
+
+transforms:
+  - glean_taskgraph.transforms.module_build:transforms
+  - taskgraph.transforms.job:transforms
+  - taskgraph.transforms.task:transforms
+
+job-defaults:
+  attributes:
+    run-on-pr-type: full-ci
+  run-on-tasks-for: [github-pull-request, github-push]
+  description: "{module_name} - Build and test"
+  scopes:
+    - project:releng:services/tooltool/api/download/internal
+  worker-type: b-linux
+  worker:
+    chain-of-trust: true
+    docker-image: { in-tree: linux }
+    max-run-time: 1800
+  run:
+    pre-gradlew:
+      # XXX: scripts subshell at runtime so we need to source this here
+      # to be able to access `rustup` and `rustc` from within the cc script
+      # and the gradle command. Another options could be to set those env vars
+      # here like: [export, 'PATH=$HOME/.cargo/bin:$PATH'
+      - [source, taskcluster/scripts/rustup-setup.sh]
+      - [source, taskcluster/scripts/cross-compile-setup.sh]
+      - [bash, '-c', 'echo "rust.targets=arm,arm64,x86_64,x86,darwin-x86-64,darwin-aarch64,linux-x86-64,win32-x86-64-gnu\n" > local.properties']
+    gradlew:
+      - ':{module_name}:assembleRelease'
+      - ':{module_name}:publish'
+      - ':{module_name}:checkMavenArtifacts'
+    using: gradlew
+    use-caches: true

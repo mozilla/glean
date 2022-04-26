@@ -1,0 +1,71 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+plugins {
+    id 'java'
+    id 'java-gradle-plugin'
+    id 'groovy'
+    id 'maven-publish'
+}
+
+group = "org.mozilla.telemetry.glean-gradle-plugin"
+
+gradlePlugin {
+    plugins {
+        create("gleanPlugins") {
+            id = "org.mozilla.telemetry.glean-gradle-plugin"
+            implementationClass = "GleanPlugin"
+        }
+    }
+}
+
+dependencies {
+    compileOnly(gradleApi())
+    implementation localGroovy()
+}
+
+if (project.name == 'glean-gradle-plugin') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+                pom {
+                    groupId = rootProject.ext.library.groupId
+                    artifactId = project.ext.artifactId
+                    description = project.ext.description
+                    version = rootProject.ext.library.version
+
+                    licenses {
+                        license {
+                            name = properties.libLicense
+                            url = properties.libLicenseUrl
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Mozilla Glean Team'
+                            email = 'glean-team@mozilla.com'
+                        }
+                    }
+
+                    scm {
+                        connection = properties.libVcsUrl
+                        developerConnection = properties.libVcsUrl
+                        url = properties.libUrl
+                    }
+                }
+            }
+        }
+    }
+
+    // Task alias to match the main glean module's tasks.
+    // For simpler use on CI.
+    task assembleRelease {
+      dependsOn assemble
+    }
+
+    // Empty task to have the same one as the main build
+    task checkMavenArtifacts
+}

@@ -1,0 +1,33 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these metrics are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# Metrics in this file may make use of SDK reserved ping names. See
+# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
+# for additional information.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+glean.internal.metrics:
+  android_sdk_version:
+    type: string
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The optional Android specific SDK version of the software running on this
+      hardware device.
+    bugs:
+      - https://bugzilla.mozilla.org/1525606
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1525606#c14
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never

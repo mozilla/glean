@@ -1,0 +1,23 @@
+[workspace]
+
+members = [
+  "glean-core",
+  "glean-core/ffi",
+  "glean-core/rlb",
+  "glean-core/bundle",
+]
+
+default-members = [
+  "glean-core",
+  "glean-core/ffi",
+  "glean-core/rlb",
+]
+
+exclude = [
+  "samples/multi-bindings"
+]
+
+[profile.release]
+opt-level = "s"
+debug = false
+lto = true

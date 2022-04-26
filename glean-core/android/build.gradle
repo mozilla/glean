@@ -1,0 +1,238 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+// This is based off:
+// https://github.com/mozilla/application-services/blob/c40e2ccb422cf4af9ffdf095149cec34de1d4bef/components/fxa-client/android/build.gradle
+
+import groovy.json.JsonOutput
+
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'jacoco'
+
+/*
+ * This defines the location of the JSON schema used to validate the pings
+ * created during unit testing. This uses the vendored schema.
+ *
+ * Use `bin/update-schema.sh latest` to update it to the latest upstream version.`
+ */
+File GLEAN_PING_SCHEMA_PATH = file("$rootDir/glean.1.schema.json")
+
+// Set configuration for the glean_parser
+ext.allowGleanInternal = true
+ext.gleanNamespace = "mozilla.telemetry.glean"
+
+android {
+    compileSdkVersion rootProject.ext.build.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.build['minSdkVersion']
+        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+
+        // Carefully escape the string here so it will support `\` in
+        // Windows paths correctly.
+        buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            // Export our rules in debug, as a consumer might still enable proguard/r8
+            consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
+        }
+
+        withoutLib {
+            initWith release
+        }
+    }
+
+    sourceSets {
+        test.resources.srcDirs += "$buildDir/rustJniLibs/desktop"
+        // Add glean-native's build directory to our resource path so that
+        // we can actually find it during tests. (Unfortunately, each project
+        // has their own build dir)
+        test.resources.srcDirs += "${project(':glean-native').buildDir}/rustJniLibs/desktop"
+    }
+
+    // Uncomment to include debug symbols in native library builds.
+    // packagingOptions { doNotStrip "**/*.so" }
+
+    // This is required to support new AndroidX support libraries.
+    // See mozilla-mobile/android-components#842
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                showStandardStreams = true
+            }
+
+            maxHeapSize = "1024m"
+        }
+
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+afterEvaluate {
+    jacoco {
+      toolVersion = "0.8.7"
+    }
+
+    task jacocoTestReport(type: JacocoReport) {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+                          '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
+        def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+        def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+        def mainSrc = "$project.projectDir/src/main/java"
+
+        sourceDirectories.from = files([mainSrc])
+        classDirectories.from = files([kotlinDebugTree, javaDebugTree])
+        executionData.from = fileTree(dir: project.buildDir, includes: [
+                'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+        ])
+    }
+
+    tasks.withType(Test) {
+      jacoco.includeNoLocationClasses = true
+      // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+      jacoco.excludes = ['jdk.internal.*']
+
+      finalizedBy jacocoTestReport
+    }
+}
+
+configurations {
+    // There's an interaction between Gradle's resolution of dependencies with different types
+    // (@jar, @aar) for `implementation` and `testImplementation` and with Android Studio's built-in
+    // JUnit test runner.  The runtime classpath in the built-in JUnit test runner gets the
+    // dependency from the `implementation`, which is type @aar, and therefore the JNA dependency
+    // doesn't provide the JNI dispatch libraries in the correct Java resource directories.  I think
+    // what's happening is that @aar type in `implementation` resolves to the @jar type in
+    // `testImplementation`, and that it wins the dependency resolution battle.
+    //
+    // A workaround is to add a new configuration which depends on the @jar type and to reference
+    // the underlying JAR file directly in `testImplementation`.  This JAR file doesn't resolve to
+    // the @aar type in `implementation`.  This works when invoked via `gradle`, but also sets the
+    // correct runtime classpath when invoked with Android Studio's built-in JUnit test runner.
+    // Success!
+    jnaForTest
+}
+
+dependencies {
+    jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
+    implementation "net.java.dev.jna:jna:$versions.jna@aar"
+
+    implementation project(":glean-native")
+
+    // Note: the following version must be kept in sync
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
+
+    implementation "androidx.annotation:annotation:$versions.androidx_annotation"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle_extensions"
+    implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
+
+    // We need a compileOnly dependency on the following block of testing
+    // libraries in order to expose the GleanTestRule to applications/libraries
+    // using the Glean SDK.
+    // We can't simply create a separate package otherwise we would need
+    // to provide a public API for the testing package to access the
+    // Glean internals, which is something we would not want to do.
+    compileOnly "junit:junit:$versions.junit"
+    compileOnly "androidx.work:work-testing:$versions.androidx_work"
+
+    // For reasons unknown, resolving the jnaForTest configuration directly
+    // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
+    // change attributes of configuration ':PROJECT:kapt' after it has been
+    // resolved`.  I think that the configuration is being made a
+    // super-configuration of the testImplementation and then the `.files` is
+    // causing it to be resolved.  Cloning first dissociates the configuration,
+    // avoiding other configurations from being resolved.  Tricky!
+    testImplementation files(configurations.jnaForTest.copyRecursive().files)
+    testImplementation "androidx.test.ext:junit:$versions.androidx_junit"
+    testImplementation "org.robolectric:robolectric:$versions.robolectric"
+    testImplementation "org.mockito:mockito-core:$versions.mockito"
+    testImplementation "androidx.test:core-ktx:$versions.androidx_core"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver"
+    testImplementation "androidx.work:work-testing:$versions.androidx_work"
+
+    androidTestImplementation "androidx.test:runner:$versions.androidx_test"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
+}
+
+evaluationDependsOn(":glean-native")
+afterEvaluate {
+  // The `cargoBuild` task isn't available until after evaluation.
+  android.libraryVariants.all { variant ->
+      def productFlavor = ""
+      variant.productFlavors.each {
+          productFlavor += "${it.name.capitalize()}"
+      }
+
+      def buildType = "${variant.buildType.name.capitalize()}"
+      tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(project(':glean-native').tasks["cargoBuild"])
+  }
+}
+
+apply from: "$projectDir/publish.gradle"
+ext.configurePublish()
+
+// Generate markdown docs for the collected metrics.
+ext.gleanDocsDirectory = "$rootDir/docs/user/user/collected-metrics"
+ext.gleanYamlFiles = [
+    "$rootDir/glean-core/metrics.yaml",
+    "$rootDir/glean-core/pings.yaml",
+    "$rootDir/glean-core/android/metrics.yaml"
+]
+// Include the glean-gradle-plugin. This is slightly different than what is
+// recommended for external users since we are loading it from the same root Gradle
+// build.
+apply from: '../../gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy'
+ext.glean_plugin.apply(project)
+
+// Store the path to the Glean Miniconda installation in a buildConfigField
+// so that unit tests can validate JSON schema.
+// Note that despite the name of this variable it isn't strictly for Miniconda
+// anymore, it's for any sort of Python environment.
+android {
+    defaultConfig {
+        buildConfigField(
+            "String",
+            "GLEAN_MINICONDA_DIR",
+            // Carefully escape the string here so it will support `\` in
+            // Windows paths correctly.
+            JsonOutput.toJson(project.ext.gleanPythonEnvDir.path)
+        )
+    }
+}
