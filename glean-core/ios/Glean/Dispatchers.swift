@@ -209,7 +209,7 @@ class Dispatchers {
         // This must happen after `queueInitialTasks.set(false)` is run, or it
         // would be added to a full task queue and be silently dropped.
         if preInitTaskCount > Constants.maxQueueSize {
-            GleanMetrics.GleanError.preinitTasksOverflow.add(preInitTaskCount)
+            GleanMetrics.GleanError.preinitTasksOverflow.add(Constants.maxQueueSize - preInitTaskCount)
         }
 
         // Now that the metric has been recorded, it is safe to reset the counter here.  We do
