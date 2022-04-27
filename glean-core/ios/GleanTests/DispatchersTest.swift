@@ -252,7 +252,7 @@ class DispatchersTest: XCTestCase {
         resetGleanDiscardingInitialPings(testCase: self, tag: "DispatchersTest", clearStores: false)
 
         XCTAssertEqual(
-            Dispatchers.Constants.maxQueueSize + 10,
+            10,
             try GleanMetrics.GleanError.preinitTasksOverflow.testGetValue(),
             "preInitTaskCount is correct"
         )
