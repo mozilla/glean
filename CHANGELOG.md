@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...main)
 
+* Kotlin
+  * (Development only) Allow to override the used `glean_parser` in the Glean Gradle Plugin ([#2029](https://github.com/mozilla/glean/pull/2029))
+
 # v44.1.1 (2022-04-14)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.0...v44.1.1)

@@ -70,15 +70,21 @@ except ImportError:
     found_version = None
 else:
     found_version = getattr(module, '__version__')
+
 if found_version != expected_version:
     if not offline:
+        if "git" in expected_version:
+            target=expected_version
+        else:
+            target=f'{module_name}=={expected_version}'
+
         subprocess.check_call([
             sys.executable,
             '-m',
             'pip',
             'install',
             '--upgrade',
-            f'{module_name}=={expected_version}'
+            target
         ])
     else:
         print(f'Using Python environment at {sys.executable},')
@@ -130,7 +136,7 @@ except:
     /*
      * Adds tasks that generates the Glean metrics API for a project.
      */
-    def setupTasks(Project project, File envDir, boolean isApplication) {
+    def setupTasks(Project project, File envDir, boolean isApplication, String parserVersion) {
         return { variant ->
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
             // Get the name of the package as if it were to be used in the R or BuildConfig
@@ -184,7 +190,7 @@ except:
                 args runPythonScript
                 args isOffline ? "offline" : "online"
                 args "glean_parser"
-                args GLEAN_PARSER_VERSION
+                args parserVersion
                 args "translate"
                 args "--allow-missing-files"
                 args "-f"
@@ -276,7 +282,7 @@ except:
                 args runPythonScript
                 args isOffline ? "offline" : "online"
                 args "glean_parser"
-                args GLEAN_PARSER_VERSION
+                args parserVersion
                 args "translate"
                 args "--allow-missing-files"
                 args "-f"
@@ -344,7 +350,7 @@ except:
         }
     }
 
-    File setupPythonEnvironmentTasks(Project project) {
+    File setupPythonEnvironmentTasks(Project project, String parserVersion) {
         // For offline mode:
         //     1. We use the system Python on the PATH, for one set by GLEAN_PYTHON
         //     2. We create a virtual environment in ~/.gradle/glean/pythonenv based on
@@ -443,7 +449,11 @@ except:
 
                 // Setup a miniconda environment. conda is used because it works
                 // non-interactively on Windows, unlike the standard Python installers
-                conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${GLEAN_PARSER_VERSION}"]
+                if (parserVersion.matches("git")) {
+                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", [parserVersion]
+                } else {
+                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${parserVersion}"]
+                }
             }
             File envDir = new File(
                 condaBootstrapDir,
@@ -505,17 +515,27 @@ except:
         }
     }
 
+    def gleanParserVersion(Project project) {
+        if (project.ext.has("gleanParserOverride")) {
+            println("glean_parser override detected. Using ${project.ext.gleanParserOverride}")
+            return project.ext.gleanParserOverride
+        } else {
+            return GLEAN_PARSER_VERSION
+        }
+    }
+
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
         project.ext.glean_version = "44.1.1"
+        def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
         // builds.
-        println("Requires glean_parser==${GLEAN_PARSER_VERSION}")
+        println("Requires ${parserVersion}")
 
-        File envDir = setupPythonEnvironmentTasks(project)
+        File envDir = setupPythonEnvironmentTasks(project, parserVersion)
         // Store in both gleanCondaDir (for backward compatibility reasons) and
         // the more accurate gleanPythonEnvDir variables.
         project.ext.set("gleanCondaDir", envDir)
@@ -544,9 +564,9 @@ except:
         }
 
         if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.all(setupTasks(project, envDir, true))
+            project.android.applicationVariants.all(setupTasks(project, envDir, true, parserVersion))
         } else {
-            project.android.libraryVariants.all(setupTasks(project, envDir, false))
+            project.android.libraryVariants.all(setupTasks(project, envDir, false, parserVersion))
         }
     }
 }
