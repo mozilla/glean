@@ -223,18 +223,6 @@ pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperim
 /// Destroy the global Glean state.
 pub(crate) fn destroy_glean(clear_stores: bool) {
     glean_core::glean_test_destroy_glean(clear_stores)
-    /*
-    // Wait for any background uploader thread to finish.
-    // This needs to be done before the check below,
-    // as the uploader will also try to acquire a lock on the global Glean.
-    //
-    // Note: requires the block here, so we drop the lock again.
-    {
-        let state = global_state().lock().unwrap();
-        state.upload_manager.test_wait_for_upload();
-    }
-    state.upload_manager.test_clear_upload_thread();
-    */
 }
 
 /// TEST ONLY FUNCTION.

@@ -68,27 +68,6 @@ impl UploadManager {
         }
     }
 
-    /// Wait for the last upload thread to end and ensure no new one is started.
-    pub(crate) fn test_wait_for_upload(&self) {
-        // Spin-waiting is fine, this is for tests only.
-        while self
-            .inner
-            .thread_running
-            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-            .is_err()
-        {
-            thread::yield_now();
-        }
-    }
-
-    /// Clear the flag of a running thread.
-    ///
-    /// This should only be called after `test_wait_for_upload` returned
-    /// and the global Glean object is fully destroyed.
-    pub(crate) fn test_clear_upload_thread(&self) {
-        self.inner.thread_running.store(false, Ordering::SeqCst);
-    }
-
     /// Signals Glean to upload pings at the next best opportunity.
     pub(crate) fn trigger_upload(&self) {
         // If no other upload proces is running, we're the one starting it.
