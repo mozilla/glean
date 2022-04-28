@@ -38,4 +38,7 @@ else
     rustup default "${TOOLCHAIN}"
 fi
 
+# Install uniffi-bindgen
+cargo install --git https://github.com/mozilla/uniffi-rs
+
 set +eux
