@@ -168,7 +168,8 @@ linkcheck-raw:
     --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
-    --url-ignore ".*/docs/glean_.*"
+    --url-ignore ".*/docs/glean_.*" \
+    --url-ignore ".*/docs/glean/.*"
 .PHONY: linkcheck linkcheck-raw
 
 spellcheck: ## Spellcheck the docs
