@@ -51,7 +51,13 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 build-python: python-setup ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
 
-.PHONY: build build-rust build-kotlin build-swift build-apk
+bindgen-python: glean-core/python/glean/_uniffi.py  # Generate the uniffi wrapper code manually
+
+glean-core/python/glean/_uniffi.py: glean-core/src/glean.udl
+	uniffi-bindgen generate $< --language python --out-dir target
+	cp target/glean.py $@
+
+.PHONY: build build-rust build-kotlin build-swift build-apk build-python bindgen-python
 
 # All tests
 
