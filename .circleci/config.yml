@@ -710,6 +710,11 @@ jobs:
       - image: cimg/python:3.8
     steps:
       - checkout
+      - install-rustup
+      - setup-uniffi-bindgen
+      - run:
+          name: Run uniffi-bindgen
+          command: make bindgen-python
       - run:
           name: Python lints
           command: make lint-python
