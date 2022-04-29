@@ -819,7 +819,7 @@ pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>)
 
 /// **TEST-ONLY Method**
 ///
-/// Enable test mode
+/// Set test mode
 pub fn glean_set_test_mode(enabled: bool) {
     dispatcher::global::TESTING_MODE.store(enabled, Ordering::SeqCst);
 }
@@ -858,7 +858,9 @@ pub fn glean_process_ping_upload_response(uuid: String, result: UploadResult) {
     core::with_glean(|glean| glean.process_ping_upload_response(&uuid, result))
 }
 
-/// test re-export
+/// **TEST-ONLY Method**
+///
+/// Set the dirty flag
 pub fn glean_set_dirty_flag(new_value: bool) {
     core::with_glean(|glean| glean.set_dirty_flag(new_value))
 }

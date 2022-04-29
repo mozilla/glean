@@ -728,10 +728,9 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `test sending of startup baseline ping with application lifetime metric`() {
         // Set the dirty flag.
-        // LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+        Glean.setDirtyFlag(true)
 
         val stringMetric = StringMetricType(
             CommonMetricData(
@@ -774,17 +773,6 @@ class GleanTest {
         } finally {
             server.shutdown()
         }
-    }
-
-    @Test
-    @Ignore("needs a Rust test, as we don't have this API on the Kotlin side anymore")
-    fun `test dirty flag is reset to false`() {
-        // Set the dirty flag.
-        // LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
-
-        resetGlean(context, Glean.configuration, false)
-
-        // assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
     }
 
     @Test

@@ -413,6 +413,11 @@ open class GleanInternalAPI internal constructor() {
         gleanSetTestMode(enabled)
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    internal fun setDirtyFlag(flag: Boolean) {
+        gleanSetDirtyFlag(flag)
+    }
+
     /**
      * TEST ONLY FUNCTION.
      * Resets the Glean state and trigger init again.
