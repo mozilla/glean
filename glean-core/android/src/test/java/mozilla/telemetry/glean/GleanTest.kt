@@ -445,7 +445,6 @@ class GleanTest {
     }
 
     @Test
-    @Ignore("needs UniFFI migration")
     fun `ping collection must happen after currently scheduled metrics recordings`() {
         // Given the following block of code:
         //
@@ -487,6 +486,7 @@ class GleanTest {
         // real-world async behaviour of this. We don't need to care about clearing it,
         // the test-unit hooks will call `resetGlean` anyway.
         // Dispatchers.API.setTestingMode(false)
+        Glean.setTestingMode(false)
 
         // This is the important part of the test. Even though both the metrics API and
         // sendPings are async and off the main thread, "SomeTestValue" should be recorded,

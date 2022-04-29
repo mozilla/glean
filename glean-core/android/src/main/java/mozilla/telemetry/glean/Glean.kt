@@ -96,6 +96,7 @@ open class GleanInternalAPI internal constructor() {
 
     // Are we in testing mode?
     internal var testingMode: Boolean = false
+        private set // Keep the setter private to this class.
 
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
@@ -399,8 +400,17 @@ open class GleanInternalAPI internal constructor() {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun enableTestingMode() {
-        this.testingMode = true
-        gleanSetTestMode(true)
+        this.setTestingMode(true)
+    }
+
+    /**
+     * TEST ONLY FUNCTION.
+     * This can be called by tests to change test mode on-the-fly.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    internal fun setTestingMode(enabled: Boolean) {
+        this.testingMode = enabled
+        gleanSetTestMode(enabled)
     }
 
     /**
