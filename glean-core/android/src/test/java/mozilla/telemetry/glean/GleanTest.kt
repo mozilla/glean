@@ -324,6 +324,7 @@ class GleanTest {
     }
 
     @Test
+    @Ignore("this causes some subsequent tests to intermittently fail")
     fun `initialize() must not crash the app if Glean's data dir is messed up`() {
         // Remove the Glean's data directory.
         val gleanDir = File(
