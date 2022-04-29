@@ -42,6 +42,8 @@ namespace glean {
     void glean_set_test_mode(boolean enabled);
     void glean_test_destroy_glean(boolean clear_stores);
 
+    void glean_set_dirty_flag(boolean flag);
+
     PingUploadTask glean_get_upload_task();
     void glean_process_ping_upload_response(string uuid, UploadResult result);
 };
