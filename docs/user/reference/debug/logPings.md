@@ -28,14 +28,7 @@ The tag will be applied upon initialization in this case.
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab"></div>
 <div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-import Glean
-
-Glean.shared.setLogPings(true)
-```
-</div>
+<div data-lang="Swift" class="tab"></div>
 <div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
