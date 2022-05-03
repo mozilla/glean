@@ -575,7 +575,7 @@ public class Glean {
     ///
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
-    func setSourceTags(_ value: [String]) -> Bool {
+    public func setSourceTags(_ value: [String]) -> Bool {
         if self.isInitialized() {
             let len = value.count
             return withArrayOfCStrings(value) { value in

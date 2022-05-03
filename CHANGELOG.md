@@ -7,6 +7,9 @@
     It is marked as version 1 in the definition now. ([#2026](https://github.com/mozilla/glean/pull/2026))
 * Kotlin
   * (Development only) Allow to override the used `glean_parser` in the Glean Gradle Plugin ([#2029](https://github.com/mozilla/glean/pull/2029))
+  * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035)))
+* iOS
+  * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035))
 
 # v44.1.1 (2022-04-14)
 
