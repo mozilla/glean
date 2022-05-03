@@ -5,6 +5,7 @@
 package org.mozilla.samples.gleancore
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
@@ -55,10 +56,19 @@ open class MainActivity : AppCompatActivity() {
                     BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
                 )
             )
+
+            val text = "Data generated"
+            val duration = Toast.LENGTH_SHORT
+            val toast = Toast.makeText(applicationContext, text, duration)
+            toast.show()
         }
 
         binding.buttonSubmit.setOnClickListener {
             Pings.sample.submit()
+            val text = "Sample ping submitted"
+            val duration = Toast.LENGTH_SHORT
+            val toast = Toast.makeText(applicationContext, text, duration)
+            toast.show()
         }
 
         binding.uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
