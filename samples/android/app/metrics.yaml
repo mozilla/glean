@@ -82,6 +82,7 @@ test:
       Testing StringList ping
     send_in_pings:
       - test-string-list
+      - sample
     lifetime: user
     bugs:
       - https://bugzilla.mozilla.org/123456789
@@ -102,6 +103,7 @@ test:
       Testing counter
     send_in_pings:
       - test-string-list
+      - sample
     lifetime: user
     bugs:
       - https://bugzilla.mozilla.org/123456789
@@ -136,6 +138,7 @@ test:
       Testing boolean
     send_in_pings:
       - baseline
+      - sample
     lifetime: application
     bugs:
       - https://bugzilla.mozilla.org/1234567890

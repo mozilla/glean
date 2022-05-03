@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
+import org.mozilla.samples.gleancore.GleanMetrics.Pings
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.databinding.ActivityMainBinding
 
@@ -54,6 +55,10 @@ open class MainActivity : AppCompatActivity() {
                     BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
                 )
             )
+        }
+
+        binding.buttonSubmit.setOnClickListener {
+            Pings.sample.submit()
         }
 
         binding.uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
