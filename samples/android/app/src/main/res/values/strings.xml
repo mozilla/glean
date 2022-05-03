@@ -5,6 +5,7 @@
 <resources>
     <string name="app_name">Glean - Metrics Demo</string>
     <string name="generate_data">Record Text</string>
+    <string name="submit_data">Submit Ping</string>
     <string name="string_list_input_hint">Enter some text here</string>
     <string name="counter_metric_info">
         Every time you click on the button above, the text is added to the test-string-list metric
