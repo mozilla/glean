@@ -702,7 +702,7 @@ open class GleanInternalAPI internal constructor () {
      *
      * @param tags A list of tags, which must be valid HTTP header values.
      */
-    internal fun setSourceTags(tags: Set<String>): Boolean {
+    fun setSourceTags(tags: Set<String>): Boolean {
         return if (isInitialized()) {
             val tagList = StringArray(tags.toList().toTypedArray(), "utf-8")
             LibGleanFFI.INSTANCE.glean_set_source_tags(tagList, tags.size).toBoolean()
