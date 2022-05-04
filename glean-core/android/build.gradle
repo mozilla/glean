@@ -26,6 +26,7 @@ File GLEAN_PING_SCHEMA_PATH = file("$rootDir/glean.1.schema.json")
 // Set configuration for the glean_parser
 ext.allowGleanInternal = true
 ext.gleanNamespace = "mozilla.telemetry.glean"
+ext.gleanParserOverride = "git+ssh://git@github.com/badboy/glean_parser@uniffi-preparation#glean-parser"
 
 android {
     compileSdkVersion rootProject.ext.build.compileSdkVersion
