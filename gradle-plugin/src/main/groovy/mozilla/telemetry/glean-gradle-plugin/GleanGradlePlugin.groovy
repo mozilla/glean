@@ -449,7 +449,9 @@ except:
 
                 // Setup a miniconda environment. conda is used because it works
                 // non-interactively on Windows, unlike the standard Python installers
-                if (parserVersion.matches("git")) {
+
+                // If we have a git package (a la `git+https://github.com`) we install that.
+                if (parserVersion.matches("git.+")) {
                     conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", [parserVersion]
                 } else {
                     conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${parserVersion}"]
