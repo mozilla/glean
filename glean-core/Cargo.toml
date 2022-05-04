@@ -40,7 +40,7 @@ flate2 = "1.0.19"
 zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
-whatsys = "0.1.2"
+whatsys = "0.2.0"
 uniffi = "0.17.0"
 uniffi_macros = "0.17.0"
 time = "0.1.40"
@@ -49,7 +49,7 @@ time = "0.1.40"
 android_logger = { version = "0.10.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
+oslog = { version = "0.2.0", default-features = false, features = ["logger"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.8.0", default-features = false, features = ["termcolor", "atty", "humantime"] }

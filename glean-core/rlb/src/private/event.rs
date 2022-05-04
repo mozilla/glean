@@ -134,11 +134,11 @@ mod test {
     }
 }
 
-#[inherent(pub)]
+#[inherent]
 impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
     type Extra = K;
 
-    fn record<M: Into<Option<<Self as traits::Event>::Extra>>>(&self, extra: M) {
+    pub fn record<M: Into<Option<<Self as traits::Event>::Extra>>>(&self, extra: M) {
         let extra = extra
             .into()
             .map(|e| e.into_ffi_extra())
@@ -146,7 +146,7 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
         self.inner.record(extra);
     }
 
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(
+    pub fn test_get_value<'a, S: Into<Option<&'a str>>>(
         &self,
         ping_name: S,
     ) -> Option<Vec<RecordedEvent>> {
@@ -154,7 +154,7 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
         self.inner.test_get_value(ping_name)
     }
 
-    fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
+    pub fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
         &self,
         error: ErrorType,
         ping_name: S,
