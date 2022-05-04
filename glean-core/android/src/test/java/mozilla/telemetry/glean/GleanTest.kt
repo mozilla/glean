@@ -638,7 +638,7 @@ class GleanTest {
             )
         )
 
-        repeat(110) {
+        repeat(1010) {
             counterMetric.add()
         }
 
@@ -671,7 +671,7 @@ class GleanTest {
         )
         assertEquals(
             "Ping payload: $jsonContent",
-            100,
+            1000,
             counters.getInt("telemetry.repeatedly")
         )
     }
