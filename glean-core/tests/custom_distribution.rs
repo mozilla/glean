@@ -97,7 +97,7 @@ mod linear {
             );
             assert_eq!(
                 json!(1),
-                snapshot["custom_distribution"]["telemetry.distribution"]["values"][&50]
+                snapshot["custom_distribution"]["telemetry.distribution"]["values"]["50"]
             );
         }
     }
@@ -308,7 +308,7 @@ mod exponential {
             );
             assert_eq!(
                 json!(1),
-                snapshot["custom_distribution"]["telemetry.distribution"]["values"][&29]
+                snapshot["custom_distribution"]["telemetry.distribution"]["values"]["29"]
             );
         }
     }

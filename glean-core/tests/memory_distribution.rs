@@ -91,7 +91,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         );
         assert_eq!(
             json!(1),
-            snapshot["memory_distribution"]["telemetry.distribution"]["values"][&96785]
+            snapshot["memory_distribution"]["telemetry.distribution"]["values"]["96785"]
         );
     }
 }

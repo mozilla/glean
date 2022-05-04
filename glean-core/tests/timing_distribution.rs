@@ -99,7 +99,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
         );
         assert_eq!(
             json!(1),
-            snapshot["timing_distribution"]["telemetry.distribution"]["values"][&1]
+            snapshot["timing_distribution"]["telemetry.distribution"]["values"]["1"]
         );
     }
 }
