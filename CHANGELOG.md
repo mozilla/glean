@@ -1,6 +1,28 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v44.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...main)
+
+* General
+  * The `glean.error.preinit_tasks_overflow` metric now reports only the number of overflowing tasks.
+    It is marked as version 1 in the definition now. ([#2026](https://github.com/mozilla/glean/pull/2026))
+* Kotlin
+  * (Development only) Allow to override the used `glean_parser` in the Glean Gradle Plugin ([#2029](https://github.com/mozilla/glean/pull/2029))
+  * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035)))
+* iOS
+  * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035))
+
+# v44.1.1 (2022-04-14)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v44.1.0...v44.1.1)
+
+* Rust
+  * Raise the global dispatcher queue limit from 100 to 1000 tasks. ([bug 1764549](https://bugzilla.mozilla.org/show_bug.cgi?id=1764549))
+* iOS
+  * Enable expiry by version in the `sdk_generator.sh` script ([#2013](https://github.com/mozilla/glean/pull/2013))
+
+# v44.1.0 (2022-04-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v44.0.0...v44.1.0)
 
 * Android
   * The `glean-native-forUnitTests` now ships with separate libraries for macOS x86_64 and macOS aarch64 ([#1967](https://github.com/mozilla/glean/pull/1967))

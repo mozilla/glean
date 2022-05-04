@@ -215,7 +215,7 @@ impl DispatchGuard {
 
         let overflow_count = self.overflow_count.load(Ordering::SeqCst);
         if overflow_count > 0 {
-            Ok(overflow_count + global::GLOBAL_DISPATCHER_LIMIT)
+            Ok(overflow_count)
         } else {
             Ok(0)
         }

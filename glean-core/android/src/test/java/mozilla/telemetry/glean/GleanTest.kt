@@ -667,7 +667,7 @@ class GleanTest {
                 .getJSONObject("counter")
         assertTrue(
             "Ping payload: $jsonContent",
-            110 <= counters.getInt("glean.error.preinit_tasks_overflow")
+            10 <= counters.getInt("glean.error.preinit_tasks_overflow")
         )
         assertEquals(
             "Ping payload: $jsonContent",

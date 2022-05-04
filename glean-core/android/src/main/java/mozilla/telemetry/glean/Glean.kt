@@ -375,7 +375,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param tags A list of tags, which must be valid HTTP header values.
      */
-    internal fun setSourceTags(tags: Set<String>): Boolean {
+    fun setSourceTags(tags: Set<String>): Boolean {
         return gleanSetSourceTags(tags.toList())
     }
 

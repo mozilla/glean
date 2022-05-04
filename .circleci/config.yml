@@ -78,6 +78,7 @@ commands:
       - run:
           name: Upload coverage report
           command: |
+            sudo apt update
             sudo apt install python3-pip
             pip3 install glean_parser
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
@@ -93,15 +94,6 @@ commands:
           command: |
               echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
-  install-android-targets:
-    steps:
-      - run:
-          command: |
-            rustup target add aarch64-linux-android
-            rustup target add armv7-linux-androideabi
-            rustup target add i686-linux-android
-            rustup target add x86_64-linux-android
-
   install-android-ndk:
     steps:
       - run:
@@ -116,8 +108,11 @@ commands:
       - install-rustup
       - setup-rust-toolchain:
           rust-version: stable
-      - install-android-targets
       - install-android-ndk
+      - run:
+          name: Restrict to Linux builds only
+          command: |
+              echo "rust.targets=linux-x86-64" > local.properties
 
   test-python:
     steps:
@@ -248,7 +243,7 @@ jobs:
 
   License check:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -260,19 +255,15 @@ jobs:
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
-            mv "${DENY}/cargo-deny" /usr/local/cargo/bin/cargo-deny
-            chmod +x /usr/local/cargo/bin/cargo-deny
-      - run:
-          name: Use Git CLI from cargo
-          command: |
-              echo "export CARGO_NET_GIT_FETCH_WITH_CLI=true" >> $BASH_ENV
+            mv "${DENY}/cargo-deny" ~/.cargo/bin/cargo-deny
+            chmod +x ~/.cargo/bin/cargo-deny
       - run:
           name: Run license check
           command: cargo deny check licenses
 
   Check vendored schema:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -302,7 +293,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -311,7 +302,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - setup-uniffi-bindgen
@@ -323,21 +314,21 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     resource_class: "medium+"
     steps:
       - test-rust
 
   Rust tests - beta:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - test-rust:
           rust-version: "beta"
 
   Rust tests - minimum version:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.57
     resource_class: "medium+"
     steps:
       - test-rust:
@@ -345,7 +336,7 @@ jobs:
 
   Generate Rust documentation:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -362,7 +353,7 @@ jobs:
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
               # We rename it to mdbook here, so other tools keep working as expected
-              mv mdbook-dtmo /usr/local/cargo/bin/mdbook
+              mv mdbook-dtmo ~/.cargo/bin/mdbook
               mdbook --version
       - run:
           name: Build Rust documentation
@@ -378,7 +369,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - run:
@@ -408,32 +399,21 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: circleci/android:api-28
+      - image: cimg/android:2022.03.1
     steps:
       - checkout
-      - install-android-ndk
-      - install-rustup
-      - setup-rust-toolchain:
-          rust-version: stable
-      - run:
-          name: Restrict to Linux builds only
-          command: |
-              echo "rust.targets=linux-x86-64" > local.properties
+      - android-setup
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
       - run: ./gradlew --no-daemon detekt
 
   Android tests:
     docker:
-      - image: circleci/android:api-28
+      - image: cimg/android:2022.03.1
     steps:
       - checkout
       - skip-if-doc-only
       - android-setup
-      - run:
-          name: Restrict to Linux builds only
-          command: |
-              echo "rust.targets=linux-x86-64" > local.properties
       - run:
           name: Remove coredump file restriction
           command: |
@@ -690,7 +670,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - attach_workspace:
@@ -1044,12 +1024,12 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: circleci/node
+      - image: cimg/node:17.9
     steps:
       - checkout
       - run:
           name: Install linkchecker
-          command: sudo npm install -g link-checker
+          command: npm install -g link-checker
       - attach_workspace:
           at: build/
       - run:
@@ -1059,8 +1039,7 @@ jobs:
 
   docs-spellcheck:
     docker:
-      # Use Ubuntu Focal (20.04) so we get aspell 0.60.8 or later (which contains markdown support)
-      - image: circleci/buildpack-deps:focal
+      - image: cimg/base:2022.03
     steps:
       - checkout
       - run:

@@ -82,7 +82,23 @@ import * as search from "./path/to/generated/files/search.js";
 search.template.set("https://mysearchengine.com/");
 ```
 </div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::search::template.Set("https://mysearchengine.com/"_ns);
+```
+
+**JavaScript**
+
+```js
+Glean.search.template.set("https://mysearchengine.com/");
+```
+
+</div>
 {{#include ../../../shared/tab_footer.md}}
 
 ### `setUrl`
@@ -154,8 +170,6 @@ assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValu
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual("https://mysearchengine.com/", try Search.template.testGetValue())
 ```
 
@@ -223,8 +237,6 @@ assertTrue(Search.INSTANCE.template.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssert(try Search.template.testHasValue())
 ```
 
@@ -292,8 +304,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidValue))
 XCTAssertEqual(0, Search.template.testGetNumRecordedErrors(.invalidOverflow))
 ```
