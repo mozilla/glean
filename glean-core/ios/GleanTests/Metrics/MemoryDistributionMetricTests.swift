@@ -40,11 +40,11 @@ class MemoryDistributionTypeTests: XCTestCase {
         // Check the sum
         XCTAssertEqual(1 * kb + 2 * kb + 3 * kb, snapshot.sum)
         // Check that the 1L fell into the first value bucket
-        XCTAssertEqual(1, snapshot.values["1023"])
+        XCTAssertEqual(1, snapshot.values[1023])
         // Check that the 2L fell into the second value bucket
-        XCTAssertEqual(1, snapshot.values["2047"])
+        XCTAssertEqual(1, snapshot.values[2047])
         // Check that the 3L fell into the third value bucket
-        XCTAssertEqual(1, snapshot.values["3024"])
+        XCTAssertEqual(1, snapshot.values[3024])
     }
 
     func testMemoryDistributionValuesAreTruncatedTo1Tb() {
@@ -64,7 +64,7 @@ class MemoryDistributionTypeTests: XCTestCase {
         // Check the sum
         XCTAssertEqual(1 << 40, snapshot.sum)
         // Check that the 1L fell into the first value bucket
-        XCTAssertEqual(1, snapshot.values["\((1 << 40) - 1)"])
+        XCTAssertEqual(1, snapshot.values[(1 << 40) - 1])
         // Check that an error was recorded
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidValue))
     }
@@ -118,11 +118,11 @@ class MemoryDistributionTypeTests: XCTestCase {
         // Check the sum
         XCTAssertEqual(6144, snapshot.sum)
         // Check that the 1L fell into the first value bucket
-        XCTAssertEqual(1, snapshot.values["1023"])
+        XCTAssertEqual(1, snapshot.values[1023])
         // Check that the 2L fell into the second value bucket
-        XCTAssertEqual(1, snapshot.values["2047"])
+        XCTAssertEqual(1, snapshot.values[2047])
         // Check that the 3L fell into the third value bucket
-        XCTAssertEqual(1, snapshot.values["3024"])
+        XCTAssertEqual(1, snapshot.values[3024])
 
         // Check that data was properly recorded in the second ping.
         snapshot = metric.testGetValue("store3")!
@@ -130,10 +130,10 @@ class MemoryDistributionTypeTests: XCTestCase {
         // Check the sum
         XCTAssertEqual(6144, snapshot.sum)
         // Check that the 1L fell into the first value bucket
-        XCTAssertEqual(1, snapshot.values["1023"])
+        XCTAssertEqual(1, snapshot.values[1023])
         // Check that the 2L fell into the second value bucket
-        XCTAssertEqual(1, snapshot.values["2047"])
+        XCTAssertEqual(1, snapshot.values[2047])
         // Check that the 3L fell into the third value bucket
-        XCTAssertEqual(1, snapshot.values["3024"])
+        XCTAssertEqual(1, snapshot.values[3024])
     }
 }
