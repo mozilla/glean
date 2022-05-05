@@ -201,6 +201,7 @@ class build(_build):
         )
 
         command = [
+            "cargo",
             "uniffi-bindgen",
             "generate",
             "glean-core/src/glean.udl",

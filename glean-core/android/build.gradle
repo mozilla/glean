@@ -210,12 +210,15 @@ ext.configurePublish()
 
 android.libraryVariants.all { variant ->
     def uniffiGeneratedPath = "generated/source/uniffi/${variant.name}/java"
+    def udlFilePath = "../src/glean.udl"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
         workingDir project.rootDir
-        commandLine 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/../src/glean.udl", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
+        commandLine '/usr/bin/env', 'cargo', 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/${udlFilePath}", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
         outputs.dir "${buildDir}/${uniffiGeneratedPath}"
         // Re-generate if the interface definition changes.
         inputs.file "${project.projectDir}/../src/glean.udl"
+        // Re-generate if our uniffi-bindgen tooling changes.
+        inputs.dir "${project.rootDir}/tools/embedded-uniffi-bindgen/"
         // Re-generate if our uniffi-bindgen version changes.
         inputs.file "${project.rootDir}/Cargo.lock"
     }

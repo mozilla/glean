@@ -6,5 +6,6 @@ set -eEuvx
 
 # Xcode tries to be helpful and overwrites the PATH. Reset that.
 export PATH="${HOME}/.cargo/bin:$PATH"
+export LIBRARY_PATH="${DEVELOPER_SDK_DIR}/MacOSX.sdk/usr/lib:${LIBRARY_PATH:-}"
 
 "${@}"
