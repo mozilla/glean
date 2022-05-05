@@ -39,6 +39,6 @@ else
 fi
 
 # Install uniffi-bindgen
-cargo install --git https://github.com/mozilla/uniffi-rs
+cargo install uniffi_bindgen --version 0.18.0
 
 set +eux
