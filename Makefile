@@ -54,7 +54,7 @@ build-python: python-setup ## Build the Python bindings
 bindgen-python: glean-core/python/glean/_uniffi.py  # Generate the uniffi wrapper code manually
 
 glean-core/python/glean/_uniffi.py: glean-core/src/glean.udl
-	uniffi-bindgen generate $< --language python --out-dir target
+	cargo uniffi-bindgen generate $< --language python --out-dir target
 	cp target/glean.py $@
 
 .PHONY: build build-rust build-kotlin build-swift build-apk build-python bindgen-python
