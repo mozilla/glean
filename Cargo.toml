@@ -4,11 +4,13 @@ members = [
   "glean-core",
   "glean-core/rlb",
   "glean-core/bundle",
+  "tools/embedded-uniffi-bindgen",
 ]
 
 default-members = [
   "glean-core",
   "glean-core/rlb",
+  "tools/embedded-uniffi-bindgen",
 ]
 
 exclude = [
