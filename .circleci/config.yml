@@ -48,14 +48,6 @@ commands:
             rustup install <<parameters.rust-version>>
             rustup default <<parameters.rust-version>>
             rustc --version
-      - setup-uniffi-bindgen
-
-  setup-uniffi-bindgen:
-    steps:
-      - run:
-          name: Install uniffi-bindgen
-          command: |
-            cargo install uniffi_bindgen --version 0.18.0
 
   test-rust:
     parameters:
@@ -305,7 +297,6 @@ jobs:
       - image: cimg/rust:1.60
     steps:
       - checkout
-      - setup-uniffi-bindgen
       - run: rustup component add clippy
       - run: cargo clippy --version
       - run:
@@ -342,7 +333,6 @@ jobs:
       - run:
           name: Version information
           command: rustc --version; cargo --version; rustup --version
-      - setup-uniffi-bindgen
       - run:
           name: Install mdbook-dtmo
           command: |
@@ -691,7 +681,6 @@ jobs:
     steps:
       - checkout
       - install-rustup
-      - setup-uniffi-bindgen
       - run:
           name: Run uniffi-bindgen
           command: make bindgen-python

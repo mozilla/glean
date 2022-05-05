@@ -38,7 +38,4 @@ else
     rustup default "${TOOLCHAIN}"
 fi
 
-# Install uniffi-bindgen
-cargo install uniffi_bindgen --version 0.18.0
-
 set +eux
