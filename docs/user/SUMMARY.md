@@ -12,6 +12,7 @@
 - [Metrics](user/metrics/adding-new-metrics.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
     - [Testing metrics](user/metrics/testing-metrics.md)
+    - [Validating metrics](user/metrics/validation-checklist.md)
     - [Error reporting](user/metrics/error-reporting.md)
     - [Metrics collected by the Glean SDKs](user/collected-metrics/metrics.md)
 - [Pings](user/pings/index.md)
