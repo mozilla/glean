@@ -1,24 +1,32 @@
 # Validating the collected data
 
-Once instrumentation is added to a product, it is worth investing time early to understand if the data looks as expected and reasonable, while clients start sending it, and act if it does not.
+It is worth investing time when instrumentation is added to the product to understand if the data looks reasonable and expected, and to take action if it does not.
 
-The following checklist could help guide such validation effort.
+The following checklist could help guide this validation effort.
 
-1. Before releasing the product with the new data collection, make sure the data looks as expected by generating sample data on a local machine and inspecting it on the [Glean Debug View](../../reference/debug/debugViewTag.md):
+1. Before releasing the product with the new data collection, make sure the data looks as expected by generating sample data on a local machine and inspecting it on the Glean Debug View[(see the debugging facilities)](../../reference/debug/index.md):
 
-    a. is the data showing up in the correct ping(s)?
+    a. Is the data showing up in the correct ping(s)?
 
-    b. does the metric report the expected data?
+    b. Does the metric report the expected data?
 
-    c. if exercising the same path again, it is expected for the data to be submitted again? And does it?
+    c. If exercising the same path again, is it expected for the data to be submitted again? And does it?
 
-2. As users start adopting the version of the product with the new data collection, the initial data coming in should be checked, to understand how the measurements are behaving in the wild:
+2. As users start adopting the version of the product with the new data collection (usually within a few days of release), the initial data coming in should be checked, to understand how the measurements are behaving in the wild:
 
-    a. does the shape of the collected data fit our prior expectations?
+    a. Does this organically-sent data satisfy the same quality expectations the manually-sent data did in Step 1?
 
-    b. is there any new [error](../../user/metrics/error-reporting.md) being reported for the new data points? If so, does this point to an edge case that should be documented and/or fixed in the code?
+    b. Is the metric showing up correctly in the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/)?
 
-    c. in case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
+    c. Is there any new [error](../../user/metrics/error-reporting.md) being reported for the new data points? If so, does this point to an edge case that should be documented and/or fixed in the code?
+
+    d. In case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
+
+{{#include ../../../shared/blockquote-info.html}}
+
+### How to annotate metrics without changing the source code?
+
+> Data practitioners that have no familiarity with YAML or product-specific development workflows can still document any discovered edge-cases and anomalies by identifying the metric in the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/) and initiate adding commentary from the metric page.
 
 3. After enough data is collected from the product population, are the expectations from the previous points still met?
 
@@ -26,5 +34,5 @@ The following checklist could help guide such validation effort.
 
 ### Does the product support multiple release channels?
 
-> In case of multiple distinct product populations, the above checklist should be ideally run against all of them. For example, in case of _Firefox_, the checklist should be run for the Nightly population first, then on the other channels as the collection moves across the release trains.
-
+> In case of multiple distinct product populations, the above checklist should be ideally run against all of them.
+> For example, in case of _Firefox_, the checklist should be run for the Nightly population first, then on the other channels as the collection moves across the release trains.
