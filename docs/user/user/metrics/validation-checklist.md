@@ -1,6 +1,7 @@
 # Validating the collected data
 
 It is worth investing time when instrumentation is added to the product to understand if the data looks reasonable and expected, and to take action if it does not.
+It is important to highlight that an automated rigorous test suite for [testing metrics](testing-metrics.md) is an important precondition for building confidence in newly collected data (especially business-critical ones).
 
 The following checklist could help guide this validation effort.
 
