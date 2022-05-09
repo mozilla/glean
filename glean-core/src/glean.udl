@@ -498,3 +498,40 @@ interface EventMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
 };
+
+dictionary Rate {
+    i32 numerator;
+    i32 denominator;
+};
+
+interface RateMetric {
+    constructor(CommonMetricData meta);
+
+    void add_to_numerator(i32 amount);
+
+    void add_to_denominator(i32 amount);
+
+    Rate? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
+
+interface DenominatorMetric {
+    constructor(CommonMetricData meta, sequence<CommonMetricData> numerators);
+
+    void add(i32 amount);
+
+    i32? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
+
+interface NumeratorMetric {
+    constructor(CommonMetricData meta);
+
+    void add_to_numerator(i32 amount);
+
+    Rate? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error, optional string? ping_name = null);
+};
