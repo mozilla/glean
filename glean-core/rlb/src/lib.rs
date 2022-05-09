@@ -42,7 +42,7 @@ pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
-    metrics::{Datetime, DistributionData, MemoryUnit, RecordedEvent, TimeUnit, TimerId},
+    metrics::{Datetime, DistributionData, MemoryUnit, Rate, RecordedEvent, TimeUnit, TimerId},
     traits, CommonMetricData, Error, ErrorType, Glean, HistogramType, Lifetime, RecordedExperiment,
     Result,
 };

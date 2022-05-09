@@ -57,9 +57,10 @@ pub use crate::metrics::labeled::{
 };
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
-    DistributionData, EventMetric, MemoryDistributionMetric, MemoryUnit, PingType, QuantityMetric,
-    RecordedEvent, RecordedExperiment, StringListMetric, StringMetric, TimeUnit, TimerId,
-    TimespanMetric, TimingDistributionMetric, UrlMetric, UuidMetric,
+    DenominatorMetric, DistributionData, EventMetric, MemoryDistributionMetric, MemoryUnit,
+    NumeratorMetric, PingType, QuantityMetric, Rate, RateMetric, RecordedEvent, RecordedExperiment,
+    StringListMetric, StringMetric, TimeUnit, TimerId, TimespanMetric, TimingDistributionMetric,
+    UrlMetric, UuidMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
 
