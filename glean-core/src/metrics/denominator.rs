@@ -15,6 +15,9 @@ use crate::Glean;
 ///
 /// Used to count things.
 /// The value can only be incremented, not decremented.
+// This is essentially a counter metric,
+// which additionally forwards increments to the denominator to a list of associated rates.
+// The numerator is incremented through the corresponding `NumeratorMetric`.
 #[derive(Clone, Debug)]
 pub struct DenominatorMetric {
     counter: CounterMetric,
