@@ -52,7 +52,7 @@ metrics.flags.a11y_enabled.set(is_accessibility_enabled())
 
 <div data-lang="Rust" class="tab">
 
-```
+```Rust
 use glean_metrics;
 
 flags::a11y_enabled.set(system.is_accessibility_enabled());
@@ -143,7 +143,7 @@ assert True is metrics.flags.a11y_enabled.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```
+```Rust
 use glean_metrics;
 
 assert!(flags::a11y_enabled.test_get_value(None).unwrap());
@@ -250,7 +250,7 @@ Gets number of errors recorded for a given counter metric.
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
 
 use glean_metrics;
