@@ -45,3 +45,8 @@ typealias TimeUnit = mozilla.telemetry.glean.internal.TimeUnit
  * Represents the recorded data for a single event.
  */
 typealias RecordedEvent = mozilla.telemetry.glean.internal.RecordedEvent
+
+/*
+ * A rate value as given by its numerator and denominator.
+ */
+typealias Rate = mozilla.telemetry.glean.internal.Rate
