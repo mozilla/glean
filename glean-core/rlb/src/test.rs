@@ -1129,7 +1129,7 @@ fn test_a_ping_before_submission() {
 }
 
 #[test]
-fn test_boolean_get_num_errors(){
+fn test_boolean_get_num_errors() {
     let _lock = lock_test();
 
     let _t = new_glean(None, false);

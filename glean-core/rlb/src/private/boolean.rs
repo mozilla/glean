@@ -48,12 +48,11 @@ impl glean_core::traits::Boolean for BooleanMetric {
     fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
         &self,
         error: ErrorType,
-        ping_name: S
-    ) -> i32
-    {
+        ping_name: S,
+    ) -> i32 {
         crate::block_on_dispatcher();
 
-        crate::with_glean_mut(|glean|{
+        crate::with_glean_mut(|glean| {
             glean_core::test_get_num_recorded_errors(glean, self.0.meta(), error, ping_name.into())
                 .unwrap_or(0)
         })
