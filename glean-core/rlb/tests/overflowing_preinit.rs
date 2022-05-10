@@ -90,7 +90,7 @@ fn overflowing_the_task_queue_records_telemetry() {
     let val = metrics::preinit_tasks_overflow
         .test_get_value(None)
         .unwrap();
-    assert!(val >= 1010);
+    assert!(val >= 10);
 
     glean::shutdown();
 }

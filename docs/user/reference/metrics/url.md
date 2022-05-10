@@ -82,7 +82,23 @@ import * as search from "./path/to/generated/files/search.js";
 search.template.set("https://mysearchengine.com/");
 ```
 </div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::search::template.Set("https://mysearchengine.com/"_ns);
+```
+
+**JavaScript**
+
+```js
+Glean.search.template.set("https://mysearchengine.com/");
+```
+
+</div>
 {{#include ../../../shared/tab_footer.md}}
 
 ### `setUrl`
