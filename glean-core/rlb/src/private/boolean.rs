@@ -5,7 +5,7 @@
 use inherent::inherent;
 use std::sync::Arc;
 
-use glean_core::metrics::MetricType;
+use glean_core::{metrics::MetricType, ErrorType};
 
 // We need to wrap the glean-core type: otherwise if we try to implement
 // the trait for the metric in `glean_core::metrics` we hit error[E0117]:
@@ -43,5 +43,19 @@ impl glean_core::traits::Boolean for BooleanMetric {
         };
 
         crate::with_glean(|glean| self.0.test_get_value(glean, queried_ping_name))
+    }
+
+    fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
+        &self,
+        error: ErrorType,
+        ping_name: S
+    ) -> i32
+    {
+        crate::block_on_dispatcher();
+
+        crate::with_glean_mut(|glean|{
+            glean_core::test_get_num_recorded_errors(glean, self.0.meta(), error, ping_name.into())
+                .unwrap_or(0)
+        })
     }
 }

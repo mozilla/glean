@@ -1127,3 +1127,26 @@ fn test_a_ping_before_submission() {
     let url = r.recv().unwrap();
     assert!(url.contains("custom1"));
 }
+
+#[test]
+fn test_boolean_get_num_errors(){
+    let _lock = lock_test();
+
+    let _t = new_glean(None, false);
+
+    let metric = BooleanMetric::new(CommonMetricData {
+        name: "counter_metric".into(),
+        category: "test".into(),
+        send_in_pings: vec!["custom1".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        dynamic_label: Some(str::to_string("asdf")),
+    });
+
+    crate::block_on_dispatcher();
+
+    // Check specifically for an invalid label
+    let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel, None);
+
+    assert_eq!(result, 0);
+}
