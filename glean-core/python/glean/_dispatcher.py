@@ -303,8 +303,6 @@ class Dispatcher:
 
             # This must happen after `cls.set_task_queueing(False)` is run, or
             # it would be added to a full task queue and be silently dropped.
-            metrics.glean.error.preinit_tasks_overflow.add(
-                cls.MAX_QUEUE_SIZE + cls._overflow_count
-            )
+            metrics.glean.error.preinit_tasks_overflow.add(cls._overflow_count)
 
             cls._overflow_count = 0

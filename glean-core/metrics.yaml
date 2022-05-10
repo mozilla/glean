@@ -450,10 +450,13 @@ glean.error:
       - COMMON_PREFIX
 
   preinit_tasks_overflow:
+    version: 1
     type: counter
     description: |
-      The number of tasks queued in the pre-initialization buffer.
-      Only sent if the buffer overflows.
+      The number of tasks that overflowed the pre-initialization buffer.
+      Only sent if the buffer ever overflows.
+
+      In Version 0 this reported the total number of tasks enqueued.
     unit:
       tasks
     bugs:

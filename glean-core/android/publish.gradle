@@ -52,7 +52,8 @@ ext.configurePublish = {
                     groupId = theGroupId
                     artifactId = theArtifactId
                     description = theDescription
-                    version = rootProject.ext.library.version
+                    // For mavenLocal publishing workflow, increment the version number every publish.
+                    version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
                     packaging = "aar"
 
                     licenses {
