@@ -179,6 +179,8 @@ class MetricsPingScheduler {
     ///
     /// - parameters:
     ///     * now: A `Date` representing the current time
+    ///     * startupPing: Whether this is a ping sent at startup.
+    ///                    If `true` the caller is responsible to schedule the uploader.
     ///     * reason: The reason the ping is being submitted.
     func collectPingAndReschedule(
         _ now: Date,
@@ -197,7 +199,8 @@ class MetricsPingScheduler {
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            gleanSubmitPingByNameSync("metrics", reasonString)
+            // The upload is triggered by the caller.
+            _ = gleanSubmitPingByNameSync("metrics", reasonString)
         } else {
             GleanMetrics.Pings.shared.metrics.submit(reason: reason)
         }
