@@ -22,7 +22,7 @@ use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
 pub type ChronoDatetime = DateTime<FixedOffset>;
 
 /// Representation of a date, time and timezone.
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Datetime {
     /// The year, e.g. 2021.
     pub year: i32,
