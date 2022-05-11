@@ -8,6 +8,7 @@ import XCTest
 
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
 
+// swiftlint:disable type_body_length
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -147,10 +148,11 @@ class GleanTests: XCTestCase {
     }
 
     /*
-    FIXME: todo
+     FIXME: This test causes crashes in subsequent tests,
+     probably because of some race condition triggered by restarting Glean.
     func testSendingOfBaselinePingWithDirtyFlag() {
         // Set the dirty flag
-        glean_set_dirty_flag(true.toByte())
+        gleanSetDirtyFlag(true)
 
         // Set up the test stub based on the default telemetry endpoint
         stubServerReceive { pingType, json in
@@ -265,11 +267,10 @@ class GleanTests: XCTestCase {
         }
     }
 
-    /*
-    FIXME: todo
+    // swiftlint:disable force_cast
     func testSendingOfStartupBaselinePingWithAppLifetimeMetric() {
         // Set the dirty flag.
-        glean_set_dirty_flag(true.toByte())
+        gleanSetDirtyFlag(true)
 
         let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
@@ -317,7 +318,7 @@ class GleanTests: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
-    */
+    // swiftlint:enable force_cast
 
     func testGleanIsNotInitializedFromOtherProcesses() {
         // Check to see if Glean is initialized
