@@ -540,7 +540,7 @@ pub extern "C" fn glean_enable_logging() {
                 .filter_module("glean_ffi", log::LevelFilter::Debug)
                 .filter_module("glean_core", log::LevelFilter::Debug)
                 .filter_module("glean", log::LevelFilter::Debug)
-                .filter_module("glean::ffi", log::LevelFilter::Trace)
+                .filter_module("glean_core::ffi", log::LevelFilter::Info)
                 .build();
             android_logger::init_once(
                 android_logger::Config::default()
