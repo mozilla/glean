@@ -236,7 +236,7 @@ assert True is metrics.flags.a11y_enabled.test_has_value()
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Gets number of errors recorded for a given boolean metric.
 
 {{#include ../../../shared/tab_header.md}}
 
