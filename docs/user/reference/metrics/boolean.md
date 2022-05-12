@@ -255,8 +255,12 @@ use glean::ErrorType;
 
 use glean_metrics;
 
-assert!(flags::a11y_enabled.test_get_num_recorded_errors(
-    ErrorType::InvalidValue);
+assert_eq!(
+  0,
+  flags::a11y_enabled.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+  )
+);
 ```
 
 </div>
