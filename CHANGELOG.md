@@ -7,10 +7,6 @@
 
 # v44.1.2 (2022-05-13)
 
-[Full changelog](https://github.com/mozilla/glean/compare/v44.1.2...v44.1.2)
-
-# v44.1.2 (2022-05-13)
-
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...v44.1.2)
 
 * General

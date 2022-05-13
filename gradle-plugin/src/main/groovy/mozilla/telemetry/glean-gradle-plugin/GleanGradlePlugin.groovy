@@ -449,9 +449,7 @@ except:
 
                 // Setup a miniconda environment. conda is used because it works
                 // non-interactively on Windows, unlike the standard Python installers
-
-                // If we have a git package (a la `git+https://github.com`) we install that.
-                if (parserVersion.matches("git.+")) {
+                if (parserVersion.matches("git")) {
                     conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", [parserVersion]
                 } else {
                     conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${parserVersion}"]
@@ -529,7 +527,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "44.1.2"
+        project.ext.glean_version = "44.1.1"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
