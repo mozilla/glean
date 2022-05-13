@@ -144,8 +144,6 @@ assertEquals(Install.INSTANCE.firstRun.testGetValue(), Date(2019, 3, 25));
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 let expectedDate = DateComponents(
                       calendar: Calendar.current,
                       year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29
@@ -251,8 +249,6 @@ assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun.testGetValueAsString(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 assertEquals("2019-03-25-05:00", try Install.firstRun.testGetValueAsString())
 ```
 </div>
@@ -312,8 +308,6 @@ assertTrue(Install.INSTANCE.firstRun.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssert(Install.firstRun.testHasValue())
 ```
 </div>
@@ -368,8 +362,6 @@ assertEquals(0, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.Inv
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertEqual(0, Install.firstRun.getNumRecordedErrors(.invalidValue))
 ```
 </div>

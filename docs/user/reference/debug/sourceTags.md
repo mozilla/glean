@@ -27,8 +27,22 @@ This API can safely be called before `Glean.initialize`.
 The tag will be applied upon initialization in this case.
 
 {{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import mozilla.telemetry.glean.Glean
+
+Glean.setSourceTags(setOf("my-tag", "your-tag", "our-tag"))
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+Glean.INSTANCE.setSourceTags(setOf("my-tag", "your-tag", "our-tag"))
+```
+
+</div>
 <div data-lang="Swift" class="tab">
 
 ```Swift

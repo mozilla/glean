@@ -52,7 +52,7 @@ metrics.flags.a11y_enabled.set(is_accessibility_enabled())
 
 <div data-lang="Rust" class="tab">
 
-```
+```Rust
 use glean_metrics;
 
 flags::a11y_enabled.set(system.is_accessibility_enabled());
@@ -125,8 +125,6 @@ assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertTrue(try Flags.a11yEnabled.testGetValue())
 ```
 
@@ -145,7 +143,7 @@ assert True is metrics.flags.a11y_enabled.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```
+```Rust
 use glean_metrics;
 
 assert!(flags::a11y_enabled.test_get_value(None).unwrap());
@@ -212,8 +210,6 @@ assertTrue(Flags.INSTANCE.a11yEnabled.testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 XCTAssertTrue(try Flags.a11yEnabled.testHasValue())
 ```
 
@@ -231,6 +227,43 @@ assert True is metrics.flags.a11y_enabled.test_has_value()
 </div>
 
 <div data-lang="Rust" class="tab"></div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+### `testGetNumRecordedErrors`
+
+Gets number of errors recorded for a given boolean metric.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab"></div>
+
+<div data-lang="Python" class="tab"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+
+use glean_metrics;
+
+assert_eq!(
+  0,
+  flags::a11y_enabled.test_get_num_recorded_errors(
+    ErrorType::InvalidValue
+  )
+);
+```
+
+</div>
 
 <div data-lang="JavaScript" class="tab"></div>
 

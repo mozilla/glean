@@ -34,7 +34,7 @@ if (project.name == 'glean-gradle-plugin') {
                     groupId = rootProject.ext.library.groupId
                     artifactId = project.ext.artifactId
                     description = project.ext.description
-                    version = rootProject.ext.library.version
+                    version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
 
                     licenses {
                         license {

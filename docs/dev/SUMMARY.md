@@ -12,6 +12,7 @@
     - [Android SDK/NDK versions](android/sdk-ndk-versions.md)
     - [Development with android-components](android/development-with-android-components.md)
     - [Locally-published components in Fenix](android/locally-published-components-in-fenix.md)
+    - [Substituting glean_parser](android/glean-parser-substitution.md)
 - [iOS bindings](ios/index.md)
     - [Setup Build Environment](ios/setup-ios-build-environment.md)
     - [Debugging Different Versions of Glean](ios/debug-glean-on-ios.md)

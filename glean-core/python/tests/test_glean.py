@@ -503,12 +503,12 @@ def test_overflowing_the_task_queue_records_telemetry():
 
     Dispatcher.flush_queued_initial_tasks()
 
-    assert 110 == _builtins.metrics.glean.error.preinit_tasks_overflow.test_get_value()
+    assert 10 == _builtins.metrics.glean.error.preinit_tasks_overflow.test_get_value()
 
     json_content = Glean.test_collect(_builtins.pings.metrics)
     json_tree = json.loads(json_content)
 
-    assert 110 == json_tree["metrics"]["counter"]["glean.error.preinit_tasks_overflow"]
+    assert 10 == json_tree["metrics"]["counter"]["glean.error.preinit_tasks_overflow"]
 
 
 def test_configuration_property(safe_httpserver):

@@ -150,8 +150,6 @@ assertEquals(2L, snapshot.getCount());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Get snapshot
 let snapshot = try! Memory.heapAllocated.testGetValue()
 
@@ -255,8 +253,6 @@ assertTrue(Memory.INSTANCE.heapAllocated().testHasValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Was anything recorded?
 XCTAssert(Memory.heapAllocated.testHasValue())
 ```
@@ -316,8 +312,6 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-@testable import Glean
-
 // Did this record a negative value?
 XCTAssertEqual(0, Memory.heapAllocated.testGetNumRecordedErrors(.invalidValue))
 ```

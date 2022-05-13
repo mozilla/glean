@@ -606,7 +606,7 @@ class GleanTest {
             serverEndpoint = "http://" + server.hostName + ":" + server.port
         ), GleanBuildInfo.buildInfo)
 
-        assertEquals(110, GleanError.preinitTasksOverflow.testGetValue())
+        assertEquals(10, GleanError.preinitTasksOverflow.testGetValue())
 
         Pings.metrics.submit()
 
@@ -618,7 +618,7 @@ class GleanTest {
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         val jsonContent = JSONObject(request.getPlainBody())
         assertEquals(
-            110,
+            10,
             jsonContent
                 .getJSONObject("metrics")
                 .getJSONObject("counter")
