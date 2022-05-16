@@ -9,37 +9,16 @@ the details of which are reproduced below.
 >>>>>>> release-v44.1.2
 -->
   <license>
-    <name>Apache License 2.0: const_fn</name>
-    <url>https://github.com/taiki-e/const_fn</url>
+    <name>Apache License 2.0: adler</name>
+    <url>https://github.com/jonas-schievink/adler.git</url>
   </license>
   <license>
-<<<<<<< HEAD
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rkv</name>
-    <url>https://github.com/mozilla/rkv</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: crc32fast</name>
-    <url>https://github.com/srijs/rust-crc32fast</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: humantime</name>
-    <url>https://github.com/tailhook/humantime</url>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
 =======
@@ -225,28 +204,24 @@ the details of which are reproduced below.
 <<<<<<< HEAD
   </license>
   <license>
+    <name>Apache License 2.0: chrono</name>
+    <url>https://github.com/chronotope/chrono</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: crc32fast</name>
+    <url>https://github.com/srijs/rust-crc32fast</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: humantime</name>
+    <url>https://github.com/tailhook/humantime</url>
+  </license>
+  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>
   <license>
-    <name>Apache License 2.0: adler</name>
-    <url>https://github.com/jonas-schievink/adler.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
+    <name>Apache License 2.0: lmdb-rkv</name>
+    <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
   <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
@@ -261,48 +236,6 @@ the details of which are reproduced below.
     <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
-  </license>
-  <license>
-    <name>BSD 2-Clause "Simplified" License: arrayref</name>
-    <url>https://github.com/droundy/arrayref</url>
-  </license>
-  <license>
-    <name>MIT License: matches</name>
-    <url>https://github.com/SimonSapin/rust-std-candidates</url>
-  </license>
-  <license>
-    <name>MIT License: ordered-float</name>
-    <url>https://github.com/reem/rust-ordered-float</url>
-  </license>
-  <license>
-    <name>MIT License: atty</name>
-    <url>https://github.com/softprops/atty</url>
-  </license>
-  <license>
-    <name>MIT License: dashmap</name>
-    <url>https://github.com/xacrimon/dashmap</url>
-  </license>
-  <license>
-    <name>MIT License: oslog</name>
-    <url>https://github.com/steven-joruk/oslog</url>
-  </license>
-  <license>
-=======
-  </license>  <license>
-=======
-  </license>
-  <license>
->>>>>>> release-v44.1.2
-    <name>Apache License 2.0: getrandom</name>
-    <url>https://github.com/rust-random/getrandom</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: adler</name>
-    <url>https://github.com/jonas-schievink/adler.git</url>
-  </license>
-  <license>
     <name>Apache License 2.0: log</name>
     <url>https://github.com/rust-lang/log</url>
   </license>
@@ -311,59 +244,30 @@ the details of which are reproduced below.
     <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
   </license>
   <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
+    <name>Apache License 2.0: rkv</name>
+    <url>https://github.com/mozilla/rkv</url>
   </license>
   <license>
-    <name>Apache License 2.0: lmdb-rkv-sys</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
+    <name>Apache License 2.0: ryu</name>
+    <url>https://github.com/dtolnay/ryu</url>
   </license>
   <license>
-    <name>Apache License 2.0: tinyvec</name>
-    <url>https://github.com/Lokathor/tinyvec</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
+    <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
   </license>
   <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
   </license>
   <license>
-    <name>MIT License: matches</name>
-    <url>https://github.com/SimonSapin/rust-std-candidates</url>
-  </license>
-  <license>
-    <name>MIT License: ordered-float</name>
-    <url>https://github.com/reem/rust-ordered-float</url>
-  </license>
-  <license>
     <name>MIT License: atty</name>
     <url>https://github.com/softprops/atty</url>
   </license>
   <license>
-    <name>MIT License: dashmap</name>
-    <url>https://github.com/xacrimon/dashmap</url>
-  </license>
-  <license>
-    <name>MIT License: oslog</name>
-    <url>https://github.com/steven-joruk/oslog</url>
-<<<<<<< HEAD
-  </license>  <license>
->>>>>>> release-v44.1.2
-=======
-  </license>
-  <license>
->>>>>>> release-v44.1.2
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>
@@ -378,16 +282,28 @@ the details of which are reproduced below.
 <<<<<<< HEAD
   </license>
   <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
+    <name>MIT License: dashmap</name>
+    <url>https://github.com/xacrimon/dashmap</url>
+  </license>
+  <license>
+    <name>MIT License: matches</name>
+    <url>https://github.com/SimonSapin/rust-std-candidates</url>
+  </license>
+  <license>
+    <name>MIT License: ordered-float</name>
+    <url>https://github.com/reem/rust-ordered-float</url>
+  </license>
+  <license>
+    <name>MIT License: oslog</name>
+    <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>
   </license>
   <license>
-    <name>Mozilla Public License 2.0: glean-bundle</name>
-    <url>https://github.com/mozilla/glean</url>
+    <name>MIT License: winapi-util</name>
+    <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
 =======
@@ -429,6 +345,10 @@ the details of which are reproduced below.
     <url>https://github.com/badboy/zeitstempel</url>
 <<<<<<< HEAD
 <<<<<<< HEAD
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean-bundle</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>
 =======
