@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v44.2.0...main)
+
+# v44.2.0 (2022-05-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...v44.2.0)
 
 * General
   * The `glean.error.preinit_tasks_overflow` metric now reports only the number of overflowing tasks.
@@ -10,6 +14,8 @@
   * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035)))
 * iOS
   * `setSourceTags` is now a public API ([#2035](https://github.com/mozilla/glean/pull/2035))
+* Rust
+  * Implemented `try_get_num_recorded_errors` for Boolean in Rust Language Bindings ([#2049](https://github.com/mozilla/glean/pull/2049))
 
 # v44.1.1 (2022-04-14)
 
@@ -544,6 +550,7 @@ No functional changes. v33.10.0 failed to generated iOS artifacts due to broken 
 
 * General
   * Do not require default-features on rkv and downgrade bincode ([#1317](https://github.com/mozilla/glean/pull/1317))
+  * Do not require default-features on `rkv` and downgrade `bincode` ([#1317](https://github.com/mozilla/glean/pull/1317))
 * Rust
   * Implement the experiments API ([#1314](https://github.com/mozilla/glean/pull/1314))
 
