@@ -37,6 +37,7 @@ Releases can only be done by one of the Glean maintainers.
 
 ### Create a release branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a release branch from the `main` branch:
     ```
     git checkout -b release-v25.0.0 main
@@ -94,6 +95,7 @@ If the latest released version requires a bug fix, a hotfix branch is used.
 
 ### Create a hotfix branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a hotfix branch from the main release branch:
     ```
     git checkout -b hotfix-v25.0.1 release
@@ -152,6 +154,7 @@ If you need to release a hotfix for a previously released version (that is: not 
 
 ### Create a support and hotfix branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a support branch from the version tag and push it:
     ```
     git checkout -b support/v24.0 v24.0.0
