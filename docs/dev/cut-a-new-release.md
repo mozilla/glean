@@ -67,7 +67,7 @@ When CI has finished and is green for your specific release branch, you are read
     ```
 2. Merge the specific release branch:
     ```
-    git merge --no-ff release-v25.0.0
+    git merge --no-ff -X theirs release-v25.0.0
     ```
 3. Push the main release branch:
     ```
