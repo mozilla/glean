@@ -75,7 +75,7 @@ When CI has finished and is green for your specific release branch, you are read
     git push upstream release
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
      4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
@@ -134,7 +134,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     git push upstream release
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
@@ -187,7 +187,7 @@ If you need to release a hotfix for a previously released version (that is: not 
     git push upstream support/v24.0
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the support branch (e.g. `support/v24.0`) as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
