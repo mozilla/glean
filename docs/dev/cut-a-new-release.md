@@ -51,9 +51,9 @@ Releases can only be done by one of the Glean maintainers.
     ```
     git push upstream release-v25.0.0
     ```
-5. Wait for CI to finish on that branch and ensure it's green:
-    * <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
-    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
+5. Open a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
+    * Wait for CI to finish on that branch and ensure it's green.
+    * Do not merge this PR yet!
 6. Apply additional commits for bug fixes to this branch.
     * Adding large new features here is strictly prohibited. They need to go to the `main` branch and wait for the next release.
 
@@ -81,9 +81,8 @@ When CI has finished and is green for your specific release branch, you are read
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
-6. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
+6. Merge the Pull Request opened previously.
     * This is important so that no changes are lost.
-    * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
     * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
 7. Once the above pull request lands, delete the specific release branch.
 8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
