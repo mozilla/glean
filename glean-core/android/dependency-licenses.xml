@@ -3,10 +3,6 @@
 Binary distributions of this software incorporate code from a number of third-party dependencies.
 These dependencies are available under a variety of free and open source licenses,
 the details of which are reproduced below.
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> release-v44.1.2
 -->
   <license>
     <name>Apache License 2.0: adler</name>
@@ -21,43 +17,6 @@ the details of which are reproduced below.
     <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
-=======
--->  <license>
-=======
->>>>>>> release-v44.1.2
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: rkv</name>
-    <url>https://github.com/mozilla/rkv</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: crc32fast</name>
-    <url>https://github.com/srijs/rust-crc32fast</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: humantime</name>
-    <url>https://github.com/tailhook/humantime</url>
-<<<<<<< HEAD
-  </license>  <license>
->>>>>>> release-v44.1.2
-=======
-  </license>
-  <license>
->>>>>>> release-v44.1.2
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>
@@ -200,8 +159,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: url</name>
     <url>https://github.com/servo/rust-url</url>
-<<<<<<< HEAD
-<<<<<<< HEAD
   </license>
   <license>
     <name>Apache License 2.0: chrono</name>
@@ -278,8 +235,6 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: termcolor</name>
     <url>https://github.com/BurntSushi/termcolor</url>
-<<<<<<< HEAD
-<<<<<<< HEAD
   </license>
   <license>
     <name>MIT License: dashmap</name>
@@ -306,29 +261,6 @@ the details of which are reproduced below.
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
   <license>
-=======
-  </license>  <license>
-=======
-  </license>
-  <license>
->>>>>>> release-v44.1.2
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
-  </license>
-  <license>
-    <name>MIT License: whatsys</name>
-    <url>https://github.com/badboy/whatsys</url>
-  </license>
-  <license>
-    <name>Mozilla Public License 2.0: glean-bundle</name>
-    <url>https://github.com/mozilla/glean</url>
-<<<<<<< HEAD
-  </license>  <license>
->>>>>>> release-v44.1.2
-=======
-  </license>
-  <license>
->>>>>>> release-v44.1.2
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
@@ -343,19 +275,10 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
-<<<<<<< HEAD
-<<<<<<< HEAD
   </license>
   <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
 </licenses>
-=======
-  </license></licenses>
->>>>>>> release-v44.1.2
-=======
-  </license>
-</licenses>
->>>>>>> release-v44.1.2
 
