@@ -1126,8 +1126,6 @@ fn test_boolean_get_num_errors() {
         dynamic_label: Some(str::to_string("asdf")),
     });
 
-    crate::block_on_dispatcher();
-
     // Check specifically for an invalid label
     let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel, None);
 
