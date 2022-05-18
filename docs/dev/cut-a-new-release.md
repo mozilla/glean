@@ -37,6 +37,7 @@ Releases can only be done by one of the Glean maintainers.
 
 ### Create a release branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a release branch from the `main` branch:
     ```
     git checkout -b release-v25.0.0 main
@@ -51,9 +52,9 @@ Releases can only be done by one of the Glean maintainers.
     ```
     git push upstream release-v25.0.0
     ```
-5. Wait for CI to finish on that branch and ensure it's green:
-    * <https://circleci.com/gh/mozilla/glean/tree/release-v25.0.0>
-    * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
+5. Open a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
+    * Wait for CI to finish on that branch and ensure it's green.
+    * Do not merge this PR yet!
 6. Apply additional commits for bug fixes to this branch.
     * Adding large new features here is strictly prohibited. They need to go to the `main` branch and wait for the next release.
 
@@ -67,27 +68,25 @@ When CI has finished and is green for your specific release branch, you are read
     ```
 2. Merge the specific release branch:
     ```
-    git merge --no-ff release-v25.0.0
+    git merge --no-ff -X theirs release-v25.0.0
     ```
 3. Push the main release branch:
     ```
     git push upstream release
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
      4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
-6. Send a pull request to merge back the specific release branch to the development branch: <https://github.com/mozilla/glean/compare/main...release-v25.0.0?expand=1>
+6. Merge the Pull Request opened previously.
     * This is important so that no changes are lost.
-    * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
     * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
 7. Once the above pull request lands, delete the specific release branch.
-8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
-9. Post a message to [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org) announcing the new release.
+8. Post a message to [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org) announcing the new release.
     * Include a copy of the release-specific changelog if you want to be fancy.
 
 ## Hotfix release for latest version
@@ -96,6 +95,7 @@ If the latest released version requires a bug fix, a hotfix branch is used.
 
 ### Create a hotfix branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a hotfix branch from the main release branch:
     ```
     git checkout -b hotfix-v25.0.1 release
@@ -134,7 +134,7 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     git push upstream release
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
@@ -145,7 +145,6 @@ When CI has finished and is green for your hotfix branch, you are ready to cut a
     * This is important so that no changes are lost.
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 7. Once the above pull request lands, delete the hotfix branch.
-8. Update `glean-ffi` in the iOS megazord. See the [application-services documentation for that](https://github.com/mozilla/application-services/blob/main/megazords/ios/README.md#glean-component).
 
 ## Hotfix release for previous version
 
@@ -155,6 +154,7 @@ If you need to release a hotfix for a previously released version (that is: not 
 
 ### Create a support and hotfix branch
 
+0. Announce your intention to create a release in the team chat.
 1. Create a support branch from the version tag and push it:
     ```
     git checkout -b support/v24.0 v24.0.0
@@ -187,7 +187,7 @@ If you need to release a hotfix for a previously released version (that is: not 
     git push upstream support/v24.0
     ```
 4. Tag the release on GitHub:
-    1. [Draft a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
+    1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the support branch (e.g. `support/v24.0`) as the target.
     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
