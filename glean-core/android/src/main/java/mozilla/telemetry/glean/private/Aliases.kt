@@ -46,6 +46,11 @@ typealias TimeUnit = mozilla.telemetry.glean.internal.TimeUnit
  */
 typealias RecordedEvent = mozilla.telemetry.glean.internal.RecordedEvent
 
+/**
+ * Deserialized experiment data.
+ */
+typealias RecordedExperiment = mozilla.telemetry.glean.internal.RecordedExperiment
+
 /*
  * A rate value as given by its numerator and denominator.
  */
