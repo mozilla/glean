@@ -96,7 +96,9 @@ class TimingDistributionMetricType:
         """
         return self._TimingDistributionContextManager(self)
 
-    def test_get_value(self, ping_name: Optional[str] = None) -> DistributionData:
+    def test_get_value(
+        self, ping_name: Optional[str] = None
+    ) -> Optional[DistributionData]:
         """
         Returns the stored value for testing purposes only.
 

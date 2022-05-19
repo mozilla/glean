@@ -74,7 +74,7 @@ class EventMetricType:
 
         self._inner.record(extra)
 
-    def test_get_value(self, ping_name: Optional[str] = None) -> List[RecordedEvent]:
+    def test_get_value(self, ping_name: Optional[str] = None) -> Optional[List[RecordedEvent]]:
         """
         Returns the stored value for testing purposes only.
 
