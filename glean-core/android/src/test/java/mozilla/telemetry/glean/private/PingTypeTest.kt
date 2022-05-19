@@ -8,15 +8,15 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.checkPingSchema
-import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
+import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
-import mozilla.telemetry.glean.delayMetricsPing
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -40,9 +40,12 @@ class PingTypeTest {
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom",
@@ -52,11 +55,13 @@ class PingTypeTest {
         )
 
         val counter = CounterMetricType(
-            disabled = false,
-            category = "test",
-            lifetime = Lifetime.Ping,
-            name = "counter",
-            sendInPings = listOf("custom")
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("custom")
+            )
         )
 
         counter.add()
@@ -90,9 +95,12 @@ class PingTypeTest {
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom_ping",
@@ -102,11 +110,13 @@ class PingTypeTest {
         )
 
         val counter = CounterMetricType(
-            disabled = false,
-            category = "test",
-            lifetime = Lifetime.Ping,
-            name = "counter",
-            sendInPings = listOf("custom_ping")
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("custom_ping")
+            )
         )
 
         counter.add()
@@ -131,9 +141,12 @@ class PingTypeTest {
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom-ping",
@@ -143,11 +156,13 @@ class PingTypeTest {
         )
 
         val counter = CounterMetricType(
-            disabled = false,
-            category = "test",
-            lifetime = Lifetime.Ping,
-            name = "counter",
-            sendInPings = listOf("custom-ping")
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("custom-ping")
+            )
         )
 
         counter.add()
@@ -172,9 +187,12 @@ class PingTypeTest {
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom",
@@ -184,11 +202,13 @@ class PingTypeTest {
         )
 
         val counter = CounterMetricType(
-            disabled = false,
-            category = "test",
-            lifetime = Lifetime.Ping,
-            name = "counter",
-            sendInPings = listOf("custom")
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("custom")
+            )
         )
 
         counter.add()
@@ -212,33 +232,32 @@ class PingTypeTest {
         val server = getMockWebServer()
 
         val counter = CounterMetricType(
-            disabled = false,
-            category = "test",
-            lifetime = Lifetime.Ping,
-            name = "counter",
-            sendInPings = listOf("unknown")
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("unknown")
+            )
         )
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         counter.add()
         assertTrue(counter.testHasValue())
 
         Glean.submitPingByName("unknown")
 
-        assertFalse("We shouldn't have any pings scheduled",
+        assertFalse(
+            "We shouldn't have any pings scheduled",
             getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
         )
-    }
-
-    @Test
-    fun `Registry should contain built-in pings`() {
-        assertTrue(Glean.testHasPingType("metrics"))
-        assertTrue(Glean.testHasPingType("events"))
-        assertTrue(Glean.testHasPingType("baseline"))
     }
 }

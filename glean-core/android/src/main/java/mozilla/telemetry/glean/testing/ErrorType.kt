@@ -7,24 +7,4 @@ package mozilla.telemetry.glean.testing
 /**
  * Different types of errors that can be reported through Glean's error reporting metrics.
  */
-enum class ErrorType {
-    /**
-     * For when the value to be recorded does not match the metric-specific restrictions
-     */
-    InvalidValue,
-
-    /**
-     * For when the label of a labeled metric does not match the restrictions
-     */
-    InvalidLabel,
-
-    /**
-     * For when timings are recorded incorrectly
-     */
-    InvalidState,
-
-    /**
-     * For when the value to be recorded overflows the metric-specific upper range
-     */
-    InvalidOverflow
-}
+typealias ErrorType = mozilla.telemetry.glean.internal.ErrorType

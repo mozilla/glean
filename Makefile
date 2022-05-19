@@ -51,7 +51,13 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 build-python: python-setup ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
 
-.PHONY: build build-rust build-kotlin build-swift build-apk
+bindgen-python: glean-core/python/glean/_uniffi.py  # Generate the uniffi wrapper code manually
+
+glean-core/python/glean/_uniffi.py: glean-core/src/glean.udl
+	cargo uniffi-bindgen generate $< --language python --out-dir target
+	cp target/glean.py $@
+
+.PHONY: build build-rust build-kotlin build-swift build-apk build-python bindgen-python
 
 # All tests
 
@@ -107,7 +113,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 lint-python: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\) glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\)\|_uniffi.py glean-core/python
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
@@ -138,7 +144,7 @@ python-docs: build-python ## Build the Python documentation
 .PHONY: docs rust-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser==5.0.1
+	$(GLEAN_PYENV)/bin/pip install glean_parser==6.0.0
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \
@@ -162,7 +168,8 @@ linkcheck-raw:
     --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
-    --url-ignore ".*/docs/glean_.*"
+    --url-ignore ".*/docs/glean_.*" \
+    --url-ignore ".*/docs/glean/.*"
 .PHONY: linkcheck linkcheck-raw
 
 spellcheck: ## Spellcheck the docs
@@ -174,16 +181,6 @@ spellcheck: ## Spellcheck the docs
 android-emulator: ## Start the Android emulator with a predefined image
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: android-emulator
-
-cbindgen: ## Regenerate the FFI header file
-	RUSTUP_TOOLCHAIN=nightly \
-	cbindgen \
-		--config glean-core/ffi/cbindgen.toml \
-		--crate glean-ffi \
-		--lockfile Cargo.lock \
-		--output glean-core/ffi/glean.h
-	cp glean-core/ffi/glean.h glean-core/ios/Glean/GleanFfi.h
-.PHONY: cbindgen
 
 rust-coverage: export CARGO_INCREMENTAL=0
 rust-coverage: export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads

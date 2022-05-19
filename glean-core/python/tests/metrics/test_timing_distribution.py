@@ -4,138 +4,133 @@
 
 
 import pytest
+import time
 
 
 from glean import metrics
-from glean.metrics import Lifetime, TimeUnit
+from glean.metrics import Lifetime, TimeUnit, TimerId, CommonMetricData
 from glean import testing
-from glean import _util
 
 
-def test_the_api_saves_to_its_storage_engine(monkeypatch):
+def test_the_api_saves_to_its_storage_engine():
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
-    override_time = 0
-
-    def override_time_ns():
-        return override_time
-
-    monkeypatch.setattr(_util, "time_ns", override_time_ns)
-
-    for i in range(1, 4):
-        override_time = 0
+    for _ in range(1, 4):
         timer_id = metric.start()
-        override_time = i
         metric.stop_and_accumulate(timer_id)
 
-    assert metric.test_has_value()
     snapshot = metric.test_get_value()
-    assert 6 == snapshot.sum
-    assert {1: 1, 2: 1, 3: 1, 4: 0} == snapshot.values
+    assert 0 < snapshot.sum
+
+    count = sum([v for v in snapshot.values.values()])
+    assert 3 == count
 
 
 def test_disabled_timing_distributions_must_not_record_data():
     metric = metrics.TimingDistributionMetricType(
-        disabled=True,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=True,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
     timer_id = metric.start()
     metric.stop_and_accumulate(timer_id)
 
-    assert not metric.test_has_value()
+    assert not metric.test_get_value()
 
 
 def test_get_value_throws():
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["store1"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
-    with pytest.raises(ValueError):
-        metric.test_get_value()
+    assert not metric.test_get_value()
 
 
-def test_api_saves_to_secondary_pings(monkeypatch):
+def test_api_saves_to_secondary_pings():
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["store1", "store2", "store3"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["store1", "store2", "store3"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
-    override_time = 0
-
-    def override_time_ns():
-        return override_time
-
-    monkeypatch.setattr(_util, "time_ns", override_time_ns)
-
-    for i in range(1, 4):
-        override_time = 0
+    for _ in range(1, 4):
         timer_id = metric.start()
-        override_time = i
         metric.stop_and_accumulate(timer_id)
 
     for store in ["store1", "store2", "store3"]:
-        assert metric.test_has_value(store)
         snapshot = metric.test_get_value(store)
-        assert 6 == snapshot.sum
-        assert {1: 1, 2: 1, 3: 1, 4: 0} == snapshot.values
+        assert 0 < snapshot.sum
+        count = sum([v for v in snapshot.values.values()])
+        assert 3 == count
 
 
 def test_stopping_a_non_existent_timer_records_an_error():
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["store1", "store2", "store3"],
-        time_unit=TimeUnit.NANOSECOND,
-    )
-
-    metric.stop_and_accumulate(-1)
-    assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
-
-
-def test_time_unit_controls_truncation(monkeypatch):
-    max_sample_time = 1000 * 1000 * 1000 * 60 * 10
-
-    override_time = 0
-
-    def override_time_ns():
-        return override_time
-
-    monkeypatch.setattr(_util, "time_ns", override_time_ns)
-
-    for unit in [TimeUnit.NANOSECOND, TimeUnit.MICROSECOND, TimeUnit.MILLISECOND]:
-        metric = metrics.TimingDistributionMetricType(
+        CommonMetricData(
             disabled=False,
             category="telemetry",
             lifetime=Lifetime.APPLICATION,
-            name=f"timing_distribution_{unit.name}",
-            send_in_pings=["baseline"],
+            name="timing_distribution",
+            send_in_pings=["store1", "store2", "store3"],
+            dynamic_label=None,
+        ),
+        time_unit=TimeUnit.NANOSECOND,
+    )
+
+    metric.stop_and_accumulate(TimerId(0))
+    assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
+
+
+# Doesn't really test anything anymore
+@pytest.mark.skip
+def test_time_unit_controls_truncation():
+    max_sample_time = 1000 * 1000 * 1000 * 60 * 10
+
+    for unit in [TimeUnit.NANOSECOND, TimeUnit.MICROSECOND, TimeUnit.MILLISECOND]:
+        metric = metrics.TimingDistributionMetricType(
+            CommonMetricData(
+                disabled=False,
+                category="telemetry",
+                lifetime=Lifetime.APPLICATION,
+                name=f"timing_distribution_{unit.name}",
+                send_in_pings=["baseline"],
+                dynamic_label=None,
+            ),
             time_unit=unit,
         )
 
-        for value in [
+        for _value in [
             1,
             100,
             100000,
@@ -143,60 +138,52 @@ def test_time_unit_controls_truncation(monkeypatch):
             max_sample_time * 1000,
             max_sample_time * 1000000,
         ]:
-            override_time = 0
             timer_id = metric.start()
-            override_time = value
             metric.stop_and_accumulate(timer_id)
 
         snapshot = metric.test_get_value()
         assert len(snapshot.values) < 318
 
 
-def test_measure(monkeypatch):
+def test_measure():
     """
     Test the TimingDistributionMetricType.measure context manager.
     """
-    override_time = 0
-
-    def override_time_ns():
-        return override_time
-
-    monkeypatch.setattr(_util, "time_ns", override_time_ns)
-
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["baseline"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["baseline"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
     with metric.measure():
-        # Move the "virtual timer" forward
-        override_time = 1000
+        time.sleep(0.1)
 
     snapshot = metric.test_get_value()
-    assert snapshot.sum == 1000
+    # more than 0.1s = 100ms = 10^8 nanoseconds
+    # less than 0.2s = 200ms = 2*10^8 nanoseconds
+    assert 10**8 < snapshot.sum
+    assert 2 * 10**8 > snapshot.sum
 
 
-def test_measure_exception(monkeypatch):
+def test_measure_exception():
     """
     Test the TimingDistributionMetricType.measure context manager.
     """
-    override_time = 0
-
-    def override_time_ns():
-        return override_time
-
-    monkeypatch.setattr(_util, "time_ns", override_time_ns)
-
     metric = metrics.TimingDistributionMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.APPLICATION,
-        name="timing_distribution",
-        send_in_pings=["baseline"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="timing_distribution",
+            send_in_pings=["baseline"],
+            dynamic_label=None,
+        ),
         time_unit=TimeUnit.NANOSECOND,
     )
 
@@ -204,4 +191,4 @@ def test_measure_exception(monkeypatch):
         with metric.measure():
             raise ValueError()
 
-    assert not metric.test_has_value()
+    assert not metric.test_get_value()

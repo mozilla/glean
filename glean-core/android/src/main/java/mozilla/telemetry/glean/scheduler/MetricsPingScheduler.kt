@@ -6,16 +6,16 @@ package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.VisibleForTesting
 import android.text.format.DateUtils
 import android.util.Log
-import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.Glean
+import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanMetrics.Pings
+import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
+import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.utils.getISOTimeString
 import mozilla.telemetry.glean.utils.parseISOTimeString
-import mozilla.telemetry.glean.private.TimeUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
@@ -49,10 +49,11 @@ internal class MetricsPingScheduler(
     }
 
     init {
+        Log.i(LOG_TAG, "New MetricsPingSched")
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         @Suppress("EXPERIMENTAL_API_USAGE")
-        if (Dispatchers.API.testingMode) {
+        if (Glean.testingMode) {
             isDifferentVersion()
         }
 
@@ -71,8 +72,7 @@ internal class MetricsPingScheduler(
      *
      * @return the `Date` as a `String` or `<buggy Android 8>` if running on a buggy OS.
      */
-    internal fun safeDateToString(date: Date): String
-    {
+    internal fun safeDateToString(date: Date): String {
         // Work around a bug in Android 8 devices (SDK=25). See this platform issue
         // https://issuetracker.google.com/issues/110848122 . Unfortunately there isn't much
         // we could do, but since this is just a log message, we can simply add a placeholder
@@ -105,7 +105,7 @@ internal class MetricsPingScheduler(
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
         Log.d(LOG_TAG, "Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
 
-        // Cancel any existing scheduled work. Does not actually cancel a
+        // Cancel any existing scheduled work. Does not actually ancel a
         // currently-running task.
         cancel()
 
@@ -210,7 +210,8 @@ internal class MetricsPingScheduler(
      * Performs startup checks to decide when to schedule the next metrics ping
      * collection.
      */
-    fun schedule() {
+    fun schedule(): Boolean {
+        Log.i(LOG_TAG, "MetricsPingSched.schedule")
         val now = getCalendarInstance()
 
         // If the version of the app is different from the last time we ran the app,
@@ -223,7 +224,7 @@ internal class MetricsPingScheduler(
             // that this gets executed now before the Application lifetime metrics get cleared.
             collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.upgrade)
 
-            return
+            return true
         }
 
         val lastSentDate = getLastCollectedDate()
@@ -248,6 +249,7 @@ internal class MetricsPingScheduler(
                 // calendar day. This addresses (1).
                 Log.i(LOG_TAG, "The 'metrics' ping was already sent today, ${safeDateToString(now.time)}.")
                 schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
+                return false
             }
             isAfterDueTime(now) -> {
                 // The ping wasn't already sent today. Are we overdue or just waiting for
@@ -260,12 +262,14 @@ internal class MetricsPingScheduler(
                 // Since `schedule` is only ever called from Glean.initialize, we need to ensure
                 // that this gets executed now before the Application lifetime metrics get cleared.
                 collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
+                return true
             }
             else -> {
                 // This covers (3).
                 Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${safeDateToString(now.time)}")
 
                 schedulePingCollection(now, sendTheNextCalendarDay = false, reason = Pings.metricsReasonCodes.today)
+                return false
             }
         }
     }
@@ -292,9 +296,9 @@ internal class MetricsPingScheduler(
             //
             // During the Glean initialization, we require any metric recording to be
             // batched up and replayed after any startup metrics ping is sent. To guarantee
-            // that, we dispatch this function from `Dispatchers.API.executeTask`. However,
-            // Pings.metrics.submit() ends up calling `Dispatchers.API.launch` again which
-            // will delay the ping collection task after any pending metric recording is
+            // that, this scheduling is run synchronously in the intializer task.
+            // However, Pings.metrics.submit() ends running asynchronously again,
+            // which will delay the ping collection task after any pending metric recording is
             // executed, breaking the 'metrics' ping promise of sending a startup 'metrics'
             // ping only containing data from the previous session.
             // To prevent that, we synchronously manually dispatch the 'metrics' ping, without
@@ -302,13 +306,14 @@ internal class MetricsPingScheduler(
             //
             // * Do not change this line without checking what it implies for the above wall
             // of text. *
-            Glean.submitPingByNameSync("metrics", reasonString)
+            gleanSubmitPingByNameSync("metrics", reasonString)
+            // The initialization process will take care of triggering the uploader here.
         } else {
             Pings.metrics.submit(reason)
         }
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
-        updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.Day))
+        updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.DAY))
         // Reschedule the collection.
         schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.reschedule)
     }

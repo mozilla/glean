@@ -7,6 +7,7 @@
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader {
     var config: Configuration
+    var testingMode: Bool
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -29,16 +30,17 @@ public class HttpPingUploader {
     ///
     /// - parameters:
     ///     * configuration: The Glean configuration to use.
-    public init(configuration: Configuration) {
+    public init(configuration: Configuration, testingMode: Bool = false) {
         self.config = configuration
+        self.testingMode = testingMode
     }
 
     /// Launch a new ping uploader on the background thread.
     ///
     /// This function doesn't block.
-    static func launch(configuration: Configuration) {
-        Dispatchers.shared.launchConcurrent {
-            HttpPingUploader(configuration: configuration).process()
+    static func launch(configuration: Configuration, _ testingMode: Bool = false) {
+        Dispatchers.shared.launchAsync {
+            HttpPingUploader(configuration: configuration, testingMode: testingMode).process()
         }
     }
 
@@ -67,7 +69,7 @@ public class HttpPingUploader {
 
             // Build a URLSession with no-caching suitable for uploading our pings
             let config: URLSessionConfiguration
-            if Dispatchers.shared.testingMode {
+            if self.testingMode {
                 // For test mode, we want the URLSession to send things ASAP, rather than in the background
                 config = URLSessionConfiguration.default
             } else {
@@ -147,15 +149,24 @@ public class HttpPingUploader {
         // Limits are enforced by glean-core to avoid an inifinite loop here.
         // Whenever a limit is reached, this binding will receive `.done` and step out.
         while true {
-            var incomingTask = FfiPingUploadTask()
-            glean_get_upload_task(&incomingTask)
-            let task = incomingTask.toPingUploadTask()
+            let task = gleanGetUploadTask()
 
             switch task {
             case let .upload(request):
-                self.upload(path: request.path, data: request.body, headers: request.headers) { result in
-                    glean_process_ping_upload_response(&incomingTask, result.toFfi())
+                var body = Data(capacity: request.body.count)
+                body.append(contentsOf: request.body)
+                self.upload(path: request.path, data: body, headers: request.headers) { result in
+                    gleanProcessPingUploadResponse(request.documentId, result)
+
+                    // launch a new iteration.
+                    Dispatchers.shared.launchAsync {
+                        HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+                    }
                 }
+
+                // we don't want to launch multiple uploads at once.
+                // if the upload finishes, we going to launch the next one.
+                return
             case .wait(let time):
                 sleep(UInt32(time) / 1000)
                 continue
@@ -177,44 +188,14 @@ private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let httpResponse = task.response as? HTTPURLResponse
-        let statusCode = UInt32(httpResponse?.statusCode ?? 0)
+        let statusCode = Int32(httpResponse?.statusCode ?? 0)
 
-        if let error = error {
+        if error != nil {
             // Upload failed on the client-side. We should try again.
-            callback(.recoverableFailure(error))
+            callback(.recoverableFailure(unused: 0))
         } else {
             // HTTP status codes are handled on the Rust side
-            callback(.httpResponse(statusCode))
-        }
-    }
-}
-
-enum UploadResult {
-    /// A HTTP response code.
-    ///
-    /// This can still indicate an error, depending on the status code.
-    case httpResponse(UInt32)
-
-    /// An unrecoverable upload failure.
-    ///
-    /// A possible cause might be a malformed URL.
-    case unrecoverableFailure(Error)
-
-    /// A recoverable failure.
-    ///
-    /// During upload something went wrong,
-    /// e.g. the network connection failed.
-    /// The upload should be retried at a later time.
-    case recoverableFailure(Error)
-
-    func toFfi() -> UInt32 {
-        switch self {
-        case let .httpResponse(status):
-            return UInt32(UPLOAD_RESULT_HTTP_STATUS) | status
-        case .unrecoverableFailure:
-            return UInt32(UPLOAD_RESULT_UNRECOVERABLE)
-        case .recoverableFailure:
-            return UInt32(UPLOAD_RESULT_RECOVERABLE)
+            callback(.httpStatus(code: statusCode))
         }
     }
 }

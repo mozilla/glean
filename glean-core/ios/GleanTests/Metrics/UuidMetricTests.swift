@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class UuidMetricTypeTests: XCTestCase {
     override func setUp() {
         resetGleanDiscardingInitialPings(testCase: self, tag: "UuidMetricTypeTests")
@@ -17,83 +15,77 @@ class UuidMetricTypeTests: XCTestCase {
     }
 
     func testUuidSavesToStorage() {
-        let uuidMetric = UuidMetricType(
+        let uuidMetric = UuidMetricType(CommonMetricData(
             category: "telemetry",
             name: "uuid_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         // Check that there is no UUID recorded
-        XCTAssertFalse(uuidMetric.testHasValue())
+        XCTAssertNil(uuidMetric.testGetValue())
 
         // Record two UUID's of the same type, with a little delay
         let uuid = uuidMetric.generateAndSet()
 
         // Check that the data was properly recorded
-        XCTAssertTrue(uuidMetric.testHasValue())
-        XCTAssertEqual(uuid, try uuidMetric.testGetValue())
+        XCTAssertEqual(uuid, uuidMetric.testGetValue())
 
         let uuid2 = UUID(uuidString: "ce2adeb8-843a-4232-87a5-a099ed1e7bb3")!
         uuidMetric.set(uuid2)
 
         // Check that the data was properly recorded
-        XCTAssertTrue(uuidMetric.testHasValue())
-        XCTAssertEqual(uuid2, try uuidMetric.testGetValue())
+        XCTAssertEqual(uuid2, uuidMetric.testGetValue())
     }
 
     func testUuidMustNotRecordIfDisabled() {
-        let uuidMetric = UuidMetricType(
+        let uuidMetric = UuidMetricType(CommonMetricData(
             category: "telemetry",
             name: "uuid_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ))
 
-        XCTAssertFalse(uuidMetric.testHasValue())
+        XCTAssertNil(uuidMetric.testGetValue())
 
         _ = uuidMetric.generateAndSet()
 
-        XCTAssertFalse(uuidMetric.testHasValue(), "UUIDs must not be recorded if they are disabled")
+        XCTAssertNil(uuidMetric.testGetValue(), "UUIDs must not be recorded if they are disabled")
     }
 
     func testUuidGetValueThrowsExceptionIfNothingIsStored() {
-        let uuidMetric = UuidMetricType(
+        let uuidMetric = UuidMetricType(CommonMetricData(
             category: "telemetry",
             name: "uuid_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertThrowsError(try uuidMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(uuidMetric.testGetValue())
     }
 
     func testUuidSavesToSecondaryPings() {
-        let uuidMetric = UuidMetricType(
+        let uuidMetric = UuidMetricType(CommonMetricData(
             category: "telemetry",
             name: "uuid_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         // Record two UUID's of the same type, with a little delay
         let uuid = uuidMetric.generateAndSet()
 
         // Check that the data was properly recorded
-        XCTAssertTrue(uuidMetric.testHasValue("store2"))
-        XCTAssertEqual(uuid, try uuidMetric.testGetValue("store2"))
+        XCTAssertEqual(uuid, uuidMetric.testGetValue("store2"))
 
         let uuid2 = UUID(uuidString: "ce2adeb8-843a-4232-87a5-a099ed1e7bb3")!
         uuidMetric.set(uuid2)
 
         // Check that the data was properly recorded
-        XCTAssertTrue(uuidMetric.testHasValue("store2"))
-        XCTAssertEqual(uuid2, try uuidMetric.testGetValue("store2"))
+        XCTAssertEqual(uuid2, uuidMetric.testGetValue("store2"))
     }
 }

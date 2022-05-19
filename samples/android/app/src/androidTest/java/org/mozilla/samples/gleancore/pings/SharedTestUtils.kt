@@ -21,11 +21,13 @@ import java.util.zip.GZIPInputStream
  */
 internal fun createMockWebServer(): MockWebServer {
     val server = MockWebServer()
-    server.dispatcher = (object : Dispatcher() {
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            return MockResponse().setBody("OK")
+    server.dispatcher = (
+        object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                return MockResponse().setBody("OK")
+            }
         }
-    })
+        )
     return server
 }
 
@@ -67,8 +69,7 @@ fun waitForPingContent(
     pingReason: String?,
     server: MockWebServer,
     maxAttempts: Int = 3
-): JSONObject?
-{
+): JSONObject? {
     var parsedPayload: JSONObject? = null
     @Suppress("LoopWithTooManyJumpStatements")
     for (ignored in 1..maxAttempts) {

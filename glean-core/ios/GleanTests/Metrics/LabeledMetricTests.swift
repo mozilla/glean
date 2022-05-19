@@ -17,13 +17,13 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledCounterType() {
-        let counterMetric = CounterMetricType(
+        let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -42,24 +42,19 @@ class LabeledMetricTypeTests: XCTestCase {
         // but it's useful to test here that it works.
         counterMetric.add(3)
 
-        XCTAssert(labeledCounterMetric["label1"].testHasValue())
-        XCTAssertEqual(1, try labeledCounterMetric["label1"].testGetValue())
-
-        XCTAssert(labeledCounterMetric["label2"].testHasValue())
-        XCTAssertEqual(2, try labeledCounterMetric["label2"].testGetValue())
-
-        XCTAssert(counterMetric.testHasValue())
-        XCTAssertEqual(3, try counterMetric.testGetValue())
+        XCTAssertEqual(1, labeledCounterMetric["label1"].testGetValue())
+        XCTAssertEqual(2, labeledCounterMetric["label2"].testGetValue())
+        XCTAssertEqual(3, counterMetric.testGetValue())
     }
 
     func testOtherLabelWithPredefinedLabels() {
-        let counterMetric = CounterMetricType(
+        let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -78,21 +73,21 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledCounterMetric["also_not_there"].add(1)
         labeledCounterMetric["not_me"].add(1)
 
-        XCTAssertEqual(3, try labeledCounterMetric["foo"].testGetValue())
-        XCTAssertEqual(1, try labeledCounterMetric["bar"].testGetValue())
-        XCTAssertFalse(labeledCounterMetric["baz"].testHasValue())
+        XCTAssertEqual(3, labeledCounterMetric["foo"].testGetValue())
+        XCTAssertEqual(1, labeledCounterMetric["bar"].testGetValue())
+        XCTAssertNil(labeledCounterMetric["baz"].testGetValue())
         // The rest all lands in the __other__ bucket
-        XCTAssertEqual(3, try labeledCounterMetric["not_there"].testGetValue())
+        XCTAssertEqual(3, labeledCounterMetric["not_there"].testGetValue())
     }
 
     func testOtherLabelWithoutPredefinedLabels() {
-        let counterMetric = CounterMetricType(
+        let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -110,21 +105,21 @@ class LabeledMetricTypeTests: XCTestCase {
         // Go back and record in one of the real labels again
         labeledCounterMetric["label_0"].add(1)
 
-        XCTAssertEqual(2, try labeledCounterMetric["label_0"].testGetValue())
+        XCTAssertEqual(2, labeledCounterMetric["label_0"].testGetValue())
         for i in 1 ... 15 {
-            XCTAssertEqual(1, try labeledCounterMetric["label_\(i)"].testGetValue())
+            XCTAssertEqual(1, labeledCounterMetric["label_\(i)"].testGetValue())
         }
-        XCTAssertEqual(5, try labeledCounterMetric["__other__"].testGetValue())
+        XCTAssertEqual(5, labeledCounterMetric["__other__"].testGetValue())
     }
 
     func testEnsureInvalidLabelsGoToOther() {
-        let counterMetric = CounterMetricType(
+        let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -145,17 +140,17 @@ class LabeledMetricTypeTests: XCTestCase {
             labeledCounterMetric.testGetNumRecordedErrors(.invalidLabel)
         )
 
-        XCTAssertEqual(4, try labeledCounterMetric["__other__"].testGetValue())
+        XCTAssertEqual(4, labeledCounterMetric["__other__"].testGetValue())
     }
 
     func testLabeledStringType() {
-        let stringMetric = StringMetricType(
+        let counterMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledStringMetric = try! LabeledMetricType<StringMetricType>(
             category: "telemetry",
@@ -163,24 +158,24 @@ class LabeledMetricTypeTests: XCTestCase {
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false,
-            subMetric: stringMetric
+            subMetric: counterMetric
         )
 
         labeledStringMetric["label1"].set("foo")
         labeledStringMetric["label2"].set("bar")
 
-        XCTAssertEqual("foo", try labeledStringMetric["label1"].testGetValue())
-        XCTAssertEqual("bar", try labeledStringMetric["label2"].testGetValue())
+        XCTAssertEqual("foo", labeledStringMetric["label1"].testGetValue())
+        XCTAssertEqual("bar", labeledStringMetric["label2"].testGetValue())
     }
 
     func testLabeledBooleanType() {
-        let booleanMetric = BooleanMetricType(
+        let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_boolean_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledBooleanMetric = try! LabeledMetricType<BooleanMetricType>(
             category: "telemetry",
@@ -194,18 +189,18 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledBooleanMetric["label1"].set(false)
         labeledBooleanMetric["label2"].set(true)
 
-        XCTAssertEqual(false, try labeledBooleanMetric["label1"].testGetValue())
-        XCTAssertEqual(true, try labeledBooleanMetric["label2"].testGetValue())
+        XCTAssertEqual(false, labeledBooleanMetric["label1"].testGetValue())
+        XCTAssertEqual(true, labeledBooleanMetric["label2"].testGetValue())
     }
 
     func testLabeledEventsThrowAnException() {
-        let eventMetric = EventMetricType<NoExtraKeys, NoExtras>(
+        let eventMetric = EventMetricType<NoExtraKeys, NoExtras>(CommonMetricData(
             category: "telemetry",
             name: "labeled_event",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ), nil)
 
         XCTAssertThrowsError(try LabeledMetricType<EventMetricType<NoExtraKeys, NoExtras>>(
             category: "telemetry",
@@ -226,13 +221,13 @@ class LabeledMetricTypeTests: XCTestCase {
         // We used to create a new object every time a label was referenced,
         // leading to exhausting the available storage in that map, which finally results in a panic.
 
-        let counterMetric = CounterMetricType(
+        let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "labeled_nocrash_counter",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",

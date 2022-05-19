@@ -15,21 +15,20 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import org.json.JSONObject
-import org.mockito.Mockito
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.scheduler.PingUploadWorker
-import mozilla.telemetry.glean.private.PingTypeBase
 import mozilla.telemetry.glean.private.TimeUnit
+import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
+import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.decompressGZIP
 import mozilla.telemetry.glean.utils.getISOTimeString
-import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.json.JSONObject
 import org.junit.Assert
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito
 import org.robolectric.shadows.ShadowLog
 import java.io.ByteArrayInputStream
 import java.util.Calendar
@@ -110,18 +109,6 @@ internal fun checkPingSchema(content: String): JSONObject {
 }
 
 /**
- * Collects a specified ping type and checks it against the Glean ping schema.
- *
- * @param ping The ping to check
- * @return the ping contents, in a JSONObject
- * @throws AssertionError If the JSON content is not valid
- */
-internal fun collectAndCheckPingSchema(ping: PingTypeBase): JSONObject {
-    val jsonString = Glean.testCollect(ping)!!
-    return checkPingSchema(jsonString)
-}
-
-/**
  * Resets the Glean state and trigger init again.
  *
  * @param context the application context to init Glean with
@@ -142,8 +129,6 @@ internal fun resetGlean(
     // We're using the WorkManager in a bunch of places, and Glean will crash
     // in tests without this line. Let's simply put it here.
     WorkManagerTestInitHelper.initializeTestWorkManager(context)
-    // Always log pings for tests
-    Glean.setLogPings(true)
     Glean.resetGlean(context, config, clearStores, uploadEnabled = uploadEnabled)
 }
 
@@ -221,8 +206,10 @@ internal fun triggerWorkManager(context: Context) {
     // Check that the work is scheduled
     val workerTag = PingUploadWorker.PING_WORKER_TAG
     val status = getWorkerStatus(context, workerTag)
-    Assert.assertTrue("A scheduled $workerTag must exist",
-        status.isEnqueued)
+    Assert.assertTrue(
+        "A scheduled $workerTag must exist",
+        status.isEnqueued
+    )
 
     // Trigger WorkManager using TestDriver
     val workManagerTestInitHelper = WorkManagerTestInitHelper.getTestDriver(context)
@@ -235,11 +222,13 @@ internal fun triggerWorkManager(context: Context) {
  */
 internal fun getMockWebServer(): MockWebServer {
     val server = MockWebServer()
-    server.dispatcher = (object : Dispatcher() {
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            return MockResponse().setBody("OK")
+    server.dispatcher = (
+        object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                return MockResponse().setBody("OK")
+            }
         }
-    })
+        )
     return server
 }
 
@@ -284,7 +273,7 @@ internal fun delayMetricsPing(
     // Set the last sent date to yesterday.
     val mps = MetricsPingScheduler(context, buildInfo)
 
-    mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.Day))
+    mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
 }
 
 // The following Mockito fixups are copied over from support-test (Matchers.kt) from
@@ -335,8 +324,7 @@ fun waitForPingContent(
     pingReason: String?,
     server: MockWebServer,
     maxAttempts: Int = 3
-): JSONObject?
-{
+): JSONObject? {
     var parsedPayload: JSONObject? = null
     @Suppress("LoopWithTooManyJumpStatements")
     for (ignored in 1..maxAttempts) {

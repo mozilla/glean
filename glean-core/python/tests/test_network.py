@@ -6,11 +6,13 @@
 import logging
 from pathlib import Path
 import uuid
+import time
 
 
 from glean import Glean
+from glean import _builtins
 from glean import metrics
-from glean.metrics import CounterMetricType, Lifetime
+from glean.metrics import CounterMetricType, Lifetime, CommonMetricData
 from glean._process_dispatcher import ProcessDispatcher
 from glean.net import PingUploadWorker
 from glean.net.http_client import HttpClientUploader
@@ -23,10 +25,14 @@ GLEAN_APP_ID = "glean-python-test"
 
 def get_upload_failure_metric():
     return metrics.LabeledCounterMetricType(
-        disabled=False,
-        send_in_pings=["metrics"],
-        name="ping_upload_failure",
-        category="glean.upload",
+        CommonMetricData(
+            disabled=False,
+            send_in_pings=["metrics"],
+            name="ping_upload_failure",
+            category="glean.upload",
+            lifetime=metrics.Lifetime.PING,
+            dynamic_label=None,
+        ),
         labels=[
             "status_code_4xx",
             "status_code_5xx",
@@ -34,7 +40,6 @@ def get_upload_failure_metric():
             "unrecoverable",
             "recoverable",
         ],
-        lifetime=metrics.Lifetime.PING,
     )
 
 
@@ -61,11 +66,14 @@ def test_recording_upload_errors_doesnt_clobber_database(
     )
 
     counter_metric = CounterMetricType(
-        disabled=False,
-        category="telemetry",
-        lifetime=Lifetime.PING,
-        name="counter_metric",
-        send_in_pings=["baseline"],
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.PING,
+            name="counter_metric",
+            send_in_pings=["baseline"],
+            dynamic_label=None,
+        )
     )
     counter_metric.add(10)
 
@@ -74,7 +82,10 @@ def test_recording_upload_errors_doesnt_clobber_database(
     # Force the ping upload worker into a separate process
     monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
     Glean._configuration._server_endpoint = safe_httpserver.url
-    Glean._submit_ping_by_name("baseline")
+    _builtins.pings.baseline.submit()
+    # `Ping.submit()` is async on the Rust dispatcher.
+    # We briefly wait to give it a chance to trigger.
+    time.sleep(0.5)
     ProcessDispatcher._wait_for_last_process()
 
     assert 1 == len(safe_httpserver.requests)
@@ -89,18 +100,18 @@ def test_recording_upload_errors_doesnt_clobber_database(
     )
 
     metric = get_upload_failure_metric()
-    assert not metric["status_code_4xx"].test_has_value()
+    assert not metric["status_code_4xx"].test_get_value()
 
 
 def test_400_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=400)
 
     response = HttpClientUploader.upload(
-        url=safe_httpserver.url, data=b"{}", headers=[]
+        url=safe_httpserver.url, data=b"{}", headers={}
     )
 
-    assert type(response) is ping_uploader.HttpResponse
-    assert 400 == response._status_code
+    assert isinstance(response, ping_uploader.UploadResult.HTTP_STATUS)
+    assert 400 == response.code
     assert 1 == len(safe_httpserver.requests)
 
 
@@ -108,20 +119,20 @@ def test_500_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=500)
 
     response = HttpClientUploader.upload(
-        url=safe_httpserver.url, data=b"{}", headers=[]
+        url=safe_httpserver.url, data=b"{}", headers={}
     )
 
-    assert type(response) is ping_uploader.HttpResponse
-    assert 500 == response._status_code
+    assert isinstance(response, ping_uploader.UploadResult.HTTP_STATUS)
+    assert 500 == response.code
     assert 1 == len(safe_httpserver.requests)
 
 
 def test_unknown_scheme():
     response = HttpClientUploader.upload(
-        url="ftp://example.com/", data=b"{}", headers=[]
+        url="ftp://example.com/", data=b"{}", headers={}
     )
 
-    assert type(response) is ping_uploader.UnrecoverableFailure
+    assert isinstance(response, ping_uploader.UploadResult.UNRECOVERABLE_FAILURE)
 
 
 def test_ping_upload_worker_single_process(safe_httpserver):
@@ -167,10 +178,10 @@ def test_ping_upload_worker_single_process(safe_httpserver):
 def test_unknown_url_no_exception():
     # Shouldn't leak any socket or HTTPExceptions
     response = HttpClientUploader.upload(
-        url="http://nowhere.example.com", data=b"{}", headers=[]
+        url="http://nowhere.example.com", data=b"{}", headers={}
     )
 
-    assert type(response) is ping_uploader.RecoverableFailure
+    assert isinstance(response, ping_uploader.UploadResult.RECOVERABLE_FAILURE)
 
 
 def test_log_on_success(safe_httpserver, capfd):

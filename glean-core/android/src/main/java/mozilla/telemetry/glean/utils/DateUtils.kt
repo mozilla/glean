@@ -4,22 +4,24 @@
 
 package mozilla.telemetry.glean.utils
 
+import mozilla.telemetry.glean.private.Datetime
+import mozilla.telemetry.glean.private.TimeUnit
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
-import mozilla.telemetry.glean.private.TimeUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 @Suppress("TopLevelPropertyNaming")
 internal val DATE_FORMAT_PATTERNS = mapOf(
-    TimeUnit.Nanosecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Microsecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Millisecond to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-    TimeUnit.Second to "yyyy-MM-dd'T'HH:mm:ssZ",
-    TimeUnit.Minute to "yyyy-MM-dd'T'HH:mmZ",
-    TimeUnit.Hour to "yyyy-MM-dd'T'HHZ",
-    TimeUnit.Day to "yyyy-MM-ddZ"
+    TimeUnit.NANOSECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.MICROSECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.MILLISECOND to "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    TimeUnit.SECOND to "yyyy-MM-dd'T'HH:mm:ssZ",
+    TimeUnit.MINUTE to "yyyy-MM-dd'T'HH:mmZ",
+    TimeUnit.HOUR to "yyyy-MM-dd'T'HHZ",
+    TimeUnit.DAY to "yyyy-MM-ddZ"
 )
 
 // A mapping from the length of the date string to the format that would parse
@@ -46,7 +48,7 @@ internal val DATE_FORMAT_PATTERN_VALUES = DATE_FORMAT_PATTERNS.values.toSet()
  */
 internal fun getISOTimeString(
     date: Date = Date(),
-    truncateTo: TimeUnit = TimeUnit.Minute
+    truncateTo: TimeUnit = TimeUnit.MINUTE
 ): String {
     val cal = Calendar.getInstance()
     cal.setTime(date)
@@ -62,7 +64,7 @@ internal fun getISOTimeString(
  */
 internal fun getISOTimeString(
     calendar: Calendar,
-    truncateTo: TimeUnit = TimeUnit.Minute
+    truncateTo: TimeUnit = TimeUnit.MINUTE
 ): String {
     val dateFormat = SimpleDateFormat(DATE_FORMAT_PATTERNS[truncateTo], Locale.US)
     dateFormat.setTimeZone(calendar.getTimeZone())
@@ -122,4 +124,21 @@ internal fun parseISOTimeString(date: String): Date? {
     }
 
     return null
+}
+
+internal fun calendarToDatetime(cal: Calendar): Datetime {
+    val dt = Datetime(
+        year = cal.get(Calendar.YEAR),
+        month = (cal.get(Calendar.MONTH) + 1).toUInt(),
+        day = cal.get(Calendar.DAY_OF_MONTH).toUInt(),
+        hour = cal.get(Calendar.HOUR_OF_DAY).toUInt(),
+        minute = cal.get(Calendar.MINUTE).toUInt(),
+        second = cal.get(Calendar.SECOND).toUInt(),
+        nanosecond = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()).toUInt(),
+        offsetSeconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
+            cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET)
+        ).toInt()
+    )
+
+    return dt
 }

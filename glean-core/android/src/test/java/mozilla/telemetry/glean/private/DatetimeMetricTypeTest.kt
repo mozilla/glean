@@ -36,11 +36,13 @@ class DatetimeMetricTypeTest {
     fun `The API saves to its storage engine`() {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1"
         val datetimeMetric = DatetimeMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "datetime_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "datetime_metric",
+                sendInPings = listOf("store1")
+            )
         )
 
         val value = Calendar.getInstance()
@@ -68,14 +70,13 @@ class DatetimeMetricTypeTest {
         assertEquals("1969-08-20T20:17-12:00", datetimeMetric.testGetValueAsString())
 
         // A date following 2038 (the extent of signed 32-bits after UNIX epoch)
-        // This fails on some workers on Taskcluster.  32-bit platforms, perhaps?
-
-        // val value4 = Calendar.getInstance()
-        // value4.set(2039, 7, 20, 20, 17, 3)
-        // datetimeMetric.set(value4)
-        // // Check that data was properly recorded.
-        // assertTrue(datetimeMetric.testHasValue())
-        // assertEquals("2039-08-20T20:17:03-04:00", datetimeMetric.testGetValueAsString())
+        val value4 = Calendar.getInstance()
+        value4.set(2039, 7, 20, 20, 17, 3)
+        value4.timeZone = TimeZone.getTimeZone("GMT-4")
+        datetimeMetric.set(value4)
+        // Check that data was properly recorded.
+        assertTrue(datetimeMetric.testHasValue())
+        assertEquals("2039-08-20T20:17-04:00", datetimeMetric.testGetValueAsString())
     }
 
     @Test
@@ -83,11 +84,13 @@ class DatetimeMetricTypeTest {
         // Define a 'datetimeMetric' datetime metric, which will be stored in "store1". It's disabled
         // so it should not record anything.
         val datetimeMetric = DatetimeMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "datetimeMetric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "datetimeMetric",
+                sendInPings = listOf("store1")
+            )
         )
 
         // Attempt to store the datetime.
@@ -101,12 +104,14 @@ class DatetimeMetricTypeTest {
         // Previously we failed to properly deal with DST when converting from `Calendar` into its pieces.
 
         val datetimeMetric = DatetimeMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "datetimeMetric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "datetimeMetric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         val nowDate = Date()
@@ -115,6 +120,6 @@ class DatetimeMetricTypeTest {
 
         datetimeMetric.set(timestamp)
 
-        assertEquals(now, datetimeMetric.testGetValue().asSeconds())
+        assertEquals(now, datetimeMetric.testGetValue()!!.asSeconds())
     }
 }

@@ -18,38 +18,30 @@ class GleanDebugUtilityTests: XCTestCase {
         tearDownStubs()
     }
 
-    func testHandleCustomUrlLogPings() {
-        // We destroy the Glean handle so that Glean in in an unitialized state,
-        // this way it will save the value of `logPings` in the `logPings` prop.
-        Glean.shared.testDestroyGleanHandle()
+    func testSmokeHandleCustomUrlLogPings() {
+        // The exact values are not accessible to Swift,
+        // so all we do is check that this doesn't crash.
 
         // Test toggle true
         var url = URL(string: "test://glean?logPings=true")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertTrue(Glean.shared.logPings)
 
         // Test invalid value doesn't cause setting to toggle
-        var previousValue = Glean.shared.logPings
         url = URL(string: "test://glean?logPings=Not-a-bool")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertEqual(previousValue, Glean.shared.logPings)
 
         // Test toggle false
         url = URL(string: "test://glean?logPings=false")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertFalse(Glean.shared.logPings)
 
         // Test invalid value doesn't cause setting to toggle
-        previousValue = Glean.shared.logPings
         url = URL(string: "test://glean?logPings=Not-a-bool")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertEqual(previousValue, Glean.shared.logPings)
 
         // This should NOT set the logPings to true or false because it doesn't
         // match the required host "glean".
         url = URL(string: "test://not-glean?logPings=true")
         Glean.shared.handleCustomUrl(url: url!)
-        XCTAssertEqual(previousValue, Glean.shared.logPings)
     }
 
     func testHandleCustomUrlSendPing() {
@@ -59,11 +51,9 @@ class GleanDebugUtilityTests: XCTestCase {
         // to test that unknown pings aren't being sent.
         expectation!.expectedFulfillmentCount = 3
         expectation!.assertForOverFulfill = true
+        let expectedPings = ["baseline", "events", "metrics"]
         stubServerReceive { pingType, _ in
-            XCTAssertTrue(
-                Glean.shared.testHasPingType(pingType),
-                "\(pingType) should be registered, but is missing"
-            )
+            XCTAssertTrue(expectedPings.contains(pingType), "\(pingType) should be valid")
 
             DispatchQueue.main.async {
                 // Let the response get processed before we mark the expectation fulfilled
@@ -73,23 +63,22 @@ class GleanDebugUtilityTests: XCTestCase {
 
         // Create a dummy event and a dummy metric so that the
         // respective pings will be sent
-        let event = EventMetricType<ClickKeys, NoExtras>(
+        let event = EventMetricType<ClickKeys, NoExtras>(CommonMetricData(
             category: "ui",
             name: "click",
             sendInPings: ["events"],
             lifetime: .ping,
-            disabled: false,
-            allowedExtraKeys: ["object_id", "other"]
-        )
+            disabled: false
+        ), ["object_id", "other"])
         event.record()
 
-        let metric = CounterMetricType(
+        let metric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "counter_metric",
             sendInPings: ["metrics"],
             lifetime: .application,
             disabled: false
-        )
+        ))
         metric.add()
 
         // Send the baseline ping via the custom URL

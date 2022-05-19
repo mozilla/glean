@@ -5,95 +5,91 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class UrlMetricTypeTests: XCTestCase {
     override func setUp() {
-        Glean.shared.resetGlean(clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "UrlMetricTypeTests")
+    }
+
+    override func tearDown() {
+        tearDownStubs()
     }
 
     func testUrlSavesToStorage() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertFalse(urlMetric.testHasValue())
+        XCTAssertNil(urlMetric.testGetValue())
 
         // Record two URLs of the same type, with a little delay.
         urlMetric.set("glean://test")
 
         // Check that the count was incremented and properly recorded.
-        XCTAssert(urlMetric.testHasValue())
-        XCTAssertEqual("glean://test", try urlMetric.testGetValue())
+        XCTAssertEqual("glean://test", urlMetric.testGetValue())
 
         urlMetric.set("glean://other")
         // Check that data was properly recorded.
-        XCTAssert(urlMetric.testHasValue())
-        XCTAssertEqual("glean://other", try urlMetric.testGetValue())
+        XCTAssertEqual("glean://other", urlMetric.testGetValue())
     }
 
     func testUrlMustNotRecordIfDisabled() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ))
 
-        XCTAssertFalse(urlMetric.testHasValue())
+        XCTAssertNil(urlMetric.testGetValue())
 
         urlMetric.set("glean://notrecorded")
 
-        XCTAssertFalse(urlMetric.testHasValue(), "Urls must not be recorded if they are disabled")
+        XCTAssertNil(urlMetric.testGetValue(), "Urls must not be recorded if they are disabled")
     }
 
     func testUrlGetValueThrowsExceptionIfNothingIsStored() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertThrowsError(try urlMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(urlMetric.testGetValue())
     }
 
     func testUrlSavesToSecondaryPings() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         urlMetric.set("glean://value")
 
-        XCTAssert(urlMetric.testHasValue("store2"))
-        XCTAssertEqual("glean://value", try urlMetric.testGetValue("store2"))
+        XCTAssertEqual("glean://value", urlMetric.testGetValue("store2"))
 
         urlMetric.set("glean://overridenValue")
 
-        XCTAssert(urlMetric.testHasValue("store2"))
-        XCTAssertEqual("glean://overridenValue", try urlMetric.testGetValue("store2"))
+        XCTAssertEqual("glean://overridenValue", urlMetric.testGetValue("store2"))
     }
 
     func testSettingLongURLsRecordsAnError() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         let host = String(repeating: "testing", count: 2000)
         urlMetric.set("glean://" + host)
@@ -102,22 +98,21 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testSettingURLType() {
-        let urlMetric = UrlMetricType(
+        let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertFalse(urlMetric.testHasValue())
+        XCTAssertNil(urlMetric.testGetValue())
 
         // Record two URLs of the same type, with a little delay.
         let url = URL(string: "glean://test")!
         urlMetric.set(url: url)
 
         // Check that the count was incremented and properly recorded.
-        XCTAssert(urlMetric.testHasValue())
-        XCTAssertEqual("glean://test", try urlMetric.testGetValue())
+        XCTAssertEqual("glean://test", urlMetric.testGetValue())
     }
 }

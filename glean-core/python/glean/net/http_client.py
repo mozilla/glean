@@ -11,12 +11,12 @@ module.
 import http.client
 import logging
 import socket
-from typing import List, Tuple
+from typing import Dict, Union
 import urllib.parse
 
 
 from . import base_uploader
-from . import ping_uploader
+from .ping_uploader import UploadResult
 
 
 log = logging.getLogger("glean")
@@ -28,15 +28,20 @@ class HttpClientUploader(base_uploader.BaseUploader):
 
     @classmethod
     def upload(
-        cls, url: str, data: bytes, headers: List[Tuple[str, str]]
-    ) -> ping_uploader.UploadResult:
+        cls, url: str, data: bytes, headers: Dict[str, str]
+    ) -> Union[
+        UploadResult,
+        UploadResult.UNRECOVERABLE_FAILURE,
+        UploadResult.RECOVERABLE_FAILURE,
+        UploadResult.HTTP_STATUS,
+    ]:
         """
         Synchronously upload a ping to a server.
 
         Args:
             url (str): The URL path to upload the data to.
             data (str): The serialized text data to send.
-            headers (list of (str, str)): HTTP headers to send.
+            headers (dict of (str, str)): HTTP headers to send.
         """
         parsed_url = urllib.parse.urlparse(url)
         if parsed_url.scheme == "http":
@@ -55,37 +60,37 @@ class HttpClientUploader(base_uploader.BaseUploader):
             # If we don't know the URL scheme, log an error and mark this as an unrecoverable
             # error, like if it were a malformed URL.
             log.error(f"Unknown URL scheme {parsed_url.scheme}")
-            return ping_uploader.UnrecoverableFailure()
+            return UploadResult.UNRECOVERABLE_FAILURE(0)
 
         try:
             conn.request(
                 "POST",
                 parsed_url.path,
                 body=data,
-                headers=dict(headers),
+                headers=headers,
             )
             response = conn.getresponse()
         except http.client.InvalidURL as e:
             log.error(f"Could not upload telemetry due to malformed URL: '{url}' {e}")
-            return ping_uploader.UnrecoverableFailure()
+            return UploadResult.UNRECOVERABLE_FAILURE(0)
         except http.client.HTTPException as e:
             log.debug(f"http.client.HTTPException while uploading ping: '{url}' {e}")
-            return ping_uploader.RecoverableFailure()
+            return UploadResult.RECOVERABLE_FAILURE(0)
         except socket.gaierror as e:
             log.debug(f"socket.gaierror while uploading ping: '{url}' {e}")
-            return ping_uploader.RecoverableFailure()
+            return UploadResult.RECOVERABLE_FAILURE(0)
         except OSError as e:
             log.debug(f"OSError while uploading ping: '{url}' {e}")
-            return ping_uploader.RecoverableFailure()
+            return UploadResult.RECOVERABLE_FAILURE(0)
         except Exception as e:
             log.error(f"Unknown Exception while uploading ping: '{url}' {e}")
-            return ping_uploader.RecoverableFailure()
+            return UploadResult.RECOVERABLE_FAILURE(0)
 
         status_code = response.status
 
         conn.close()
 
-        return ping_uploader.HttpResponse(status_code)
+        return UploadResult.HTTP_STATUS(status_code)
 
 
 __all__ = ["HttpClientUploader"]

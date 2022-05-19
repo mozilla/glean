@@ -5,29 +5,35 @@
 package org.mozilla.samples.gleancore
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import mozilla.telemetry.glean.Glean
-import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
+import org.mozilla.samples.gleancore.GleanMetrics.Pings
+import org.mozilla.samples.gleancore.GleanMetrics.Test
+import org.mozilla.samples.gleancore.databinding.ActivityMainBinding
 
 open class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
 
         Test.isStarted.set(true)
 
         // Generate an event when user clicks on the button.
-        buttonGenerateData.setOnClickListener {
+        binding.buttonGenerateData.setOnClickListener {
             // These first two actions, adding to the string list and incrementing the counter are
             // tied to a user lifetime metric which is persistent from launch to launch.
 
             // Adds the EditText's text content as a new string in the string list metric from the
             // metrics.yaml file.
-            Test.stringList.add(etStringListInput.text.toString())
+            Test.stringList.add(binding.etStringListInput.text.toString())
             // Clear current text to help indicate something happened
-            etStringListInput.setText("")
+            binding.etStringListInput.setText("")
 
             // Increments the test_counter metric from the metrics.yaml file.
             Test.counter.add()
@@ -44,18 +50,33 @@ open class MainActivity : AppCompatActivity() {
 
             // Testing the old API. It should still be possible, even if deprecated
             @Suppress("DEPRECATION")
-            BrowserEngagement.oldEventStyle.record(mapOf(
-                BrowserEngagement.oldEventStyleKeys.key1 to "extra_value1",
-                BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
-            ))
+            BrowserEngagement.oldEventStyle.record(
+                mapOf(
+                    BrowserEngagement.oldEventStyleKeys.key1 to "extra_value1",
+                    BrowserEngagement.oldEventStyleKeys.key2 to "extra_value2"
+                )
+            )
+
+            val text = "Data generated"
+            val duration = Toast.LENGTH_SHORT
+            val toast = Toast.makeText(applicationContext, text, duration)
+            toast.show()
         }
 
-        uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
+        binding.buttonSubmit.setOnClickListener {
+            Pings.sample.submit()
+            val text = "Sample ping submitted"
+            val duration = Toast.LENGTH_SHORT
+            val toast = Toast.makeText(applicationContext, text, duration)
+            toast.show()
+        }
+
+        binding.uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                gleanEnabledText.setText("Glean is enabled")
+                binding.gleanEnabledText.setText("Glean is enabled")
                 Glean.setUploadEnabled(true)
             } else {
-                gleanEnabledText.setText("Glean is disabled")
+                binding.gleanEnabledText.setText("Glean is disabled")
                 Glean.setUploadEnabled(false)
             }
         }

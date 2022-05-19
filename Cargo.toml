@@ -2,15 +2,16 @@
 
 members = [
   "glean-core",
-  "glean-core/ffi",
   "glean-core/rlb",
   "glean-core/bundle",
+  "glean-core/bundle-android",
+  "tools/embedded-uniffi-bindgen",
 ]
 
 default-members = [
   "glean-core",
-  "glean-core/ffi",
   "glean-core/rlb",
+  "tools/embedded-uniffi-bindgen",
 ]
 
 exclude = [

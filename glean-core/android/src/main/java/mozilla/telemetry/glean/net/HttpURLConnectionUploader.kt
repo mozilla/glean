@@ -64,16 +64,16 @@ class HttpURLConnectionUploader : PingUploader {
 
             // Finally upload.
             val statusCode = doUpload(connection, data)
-            return HttpResponse(statusCode)
+            return HttpStatus(statusCode)
         } catch (e: MalformedURLException) {
             // There's nothing we can do to recover from this here. So let's just log an error and
             // notify the service that this job has been completed - even though we didn't upload
             // anything to the server.
             Log.e(LOG_TAG, "Could not upload telemetry due to malformed URL", e)
-            return UnrecoverableFailure
+            return UnrecoverableFailure(0)
         } catch (e: IOException) {
             Log.w(LOG_TAG, "IOException while uploading ping", e)
-            return RecoverableFailure
+            return RecoverableFailure(0)
         } finally {
             connection?.disconnect()
         }

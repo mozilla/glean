@@ -11,11 +11,12 @@ import sys
 import time
 from typing import List, Tuple
 
-from .upload_task_tag import UploadTaskTag
-
-from .. import _ffi
-from .._glean_ffi import ffi as ffi_support  # type: ignore
-from .._dispatcher import Dispatcher
+from .._uniffi import (
+    glean_get_upload_task,
+    glean_initialize_for_subprocess,
+    glean_process_ping_upload_response,
+)
+from .._uniffi import InternalConfiguration
 from .._process_dispatcher import ProcessDispatcher
 
 
@@ -24,7 +25,7 @@ log = logging.getLogger("glean")
 
 class PingUploadWorker:
     @classmethod
-    def process(cls):
+    def process(cls, testing_mode: bool = False):
         """
         Function to deserialize and process all serialized ping files.
 
@@ -32,14 +33,14 @@ class PingUploadWorker:
         just delete them to prevent files from polluting the ping storage
         directory.
         """
-        if Dispatcher._testing_mode:
+        if testing_mode:
             cls._test_process_sync()
             return
 
         cls._process()
 
     @classmethod
-    def _process(cls):
+    def _process(cls, testing_mode: bool = False):
         from .. import Glean
 
         return ProcessDispatcher.dispatch(
@@ -60,8 +61,6 @@ class PingUploadWorker:
         Returns:
             uploaded (bool): The success of the upload task.
         """
-        assert Dispatcher._testing_mode is True
-
         p = cls._process()
         p.wait()
         return p.returncode == 0
@@ -108,53 +107,48 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
         # We don't want to send pings or otherwise update the database during
         # initialization in a subprocess, so we use
         # `glean_initialize_for_subprocess` rather than `glean_initialize` here.
-        cfg = _ffi.make_config(
-            data_dir,
-            application_id,
+        cfg = InternalConfiguration(
+            data_path=str(data_dir),
+            application_id=application_id,
+            language_binding_name="python",
             # Set upload enabled to False. The subprocess should not record
             # telemetry. In the special `glean_initialize_for_subprocess` mode,
             # this does not have any side effects like resetting the client_id
             # or sending a deletion-request ping.
-            False,
-            configuration.max_events,
+            upload_enabled=False,
+            max_events=configuration.max_events,
+            delay_ping_lifetime_io=False,
+            use_core_mps=False,
+            app_build="",
         )
-        if _ffi.lib.glean_initialize_for_subprocess(cfg) == 0:
+        if not glean_initialize_for_subprocess(cfg):
             log.error("Couldn't initialize Glean in subprocess")
             sys.exit(1)
 
     # Limits are enforced by glean-core to avoid an inifinite loop here.
     # Whenever a limit is reached, this binding will receive `UploadTaskTag.DONE` and step out.
     while True:
-        incoming_task = ffi_support.new("FfiPingUploadTask *")
-        _ffi.lib.glean_get_upload_task(incoming_task)
+        task = glean_get_upload_task()
 
-        tag = incoming_task.tag
-        if tag == UploadTaskTag.UPLOAD:
+        if task.is_upload():
             # Ping data is available for upload: parse the structure but make
             # sure to let Rust free the memory.
-            doc_id = _ffi.ffi_decode_string(
-                incoming_task.upload.document_id, free_memory=False
-            )
-            url_path = _ffi.ffi_decode_string(
-                incoming_task.upload.path, free_memory=False
-            )
-            body = _ffi.ffi_decode_byte_buffer(incoming_task.upload.body)
-            headers = _ffi.ffi_decode_string(
-                incoming_task.upload.headers, free_memory=False
-            )
+            request = task.request
+            doc_id = request.document_id
+            url_path = request.path
+            body = bytes(request.body)
+            headers = request.headers
 
             # Delegate the upload to the uploader.
             upload_result = configuration.ping_uploader.do_upload(
-                url_path, body, _parse_ping_headers(headers, doc_id), configuration
+                url_path, body, headers, configuration
             )
 
             # Process the response.
-            _ffi.lib.glean_process_ping_upload_response(
-                incoming_task, upload_result.to_ffi()
-            )
-        elif tag == UploadTaskTag.WAIT:
-            time.sleep(incoming_task.wait / 1000)
-        elif tag == UploadTaskTag.DONE:
+            glean_process_ping_upload_response(doc_id, upload_result)
+        elif task.is_wait():
+            time.sleep(task.time / 1000)
+        elif task.is_done():
             return True
 
 

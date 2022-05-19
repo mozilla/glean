@@ -8,11 +8,11 @@ import android.app.Application
 import android.util.Log
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Basic
-import org.mozilla.samples.gleancore.GleanMetrics.GleanBuildInfo
-import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
+import org.mozilla.samples.gleancore.GleanMetrics.GleanBuildInfo
 import org.mozilla.samples.gleancore.GleanMetrics.LegacyIds
 import org.mozilla.samples.gleancore.GleanMetrics.Pings
+import org.mozilla.samples.gleancore.GleanMetrics.Test
 import java.util.UUID
 
 private const val TAG = "Glean"

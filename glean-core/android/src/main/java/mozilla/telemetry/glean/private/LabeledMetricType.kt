@@ -5,10 +5,9 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import com.sun.jna.StringArray
-import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.internal.LabeledBoolean
+import mozilla.telemetry.glean.internal.LabeledCounter
+import mozilla.telemetry.glean.internal.LabeledString
 import mozilla.telemetry.glean.testing.ErrorType
 
 /**
@@ -33,30 +32,26 @@ class LabeledMetricType<T>(
     private val sendInPings: List<String>,
     private val subMetric: T
 ) {
-    private val handle: Long
+    // The inner labeled metric, from which actual metrics are constructed.
+    private val inner: Any
 
     init {
-        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
-        val labelList = labels?.let { StringArray(it.toList().toTypedArray(), "utf-8") }
-        val metricTypeInstantiator = when (subMetric) {
-            is CounterMetricType -> LibGleanFFI::glean_new_labeled_counter_metric
-            is BooleanMetricType -> LibGleanFFI::glean_new_labeled_boolean_metric
-            is StringMetricType -> LibGleanFFI::glean_new_labeled_string_metric
+        val meta = CommonMetricData(
+            category = category,
+            name = name,
+            sendInPings = sendInPings,
+            disabled = disabled,
+            lifetime = lifetime
+        )
+
+        this.inner = when (subMetric) {
+            is CounterMetricType -> LabeledCounter(meta, labels?.toList())
+            is BooleanMetricType -> LabeledBoolean(meta, labels?.toList())
+            is StringMetricType -> LabeledString(meta, labels?.toList())
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
         }
-
-        this.handle = metricTypeInstantiator(
-                LibGleanFFI.INSTANCE,
-                category,
-                name,
-                ffiPingsList,
-                sendInPings.size,
-                lifetime.ordinal,
-                disabled.toByte(),
-                labelList,
-                if (labels != null) { labels.size } else { 0 })
     }
 
     /**
@@ -78,19 +73,10 @@ class LabeledMetricType<T>(
      */
     @Suppress("UNCHECKED_CAST")
     operator fun get(label: String): T {
-        return when (subMetric) {
-            is CounterMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_counter_metric_get(this.handle, label)
-                CounterMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
-            }
-            is BooleanMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_boolean_metric_get(this.handle, label)
-                BooleanMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
-            }
-            is StringMetricType -> {
-                val handle = LibGleanFFI.INSTANCE.glean_labeled_string_metric_get(this.handle, label)
-                StringMetricType(handle = handle, disabled = disabled, sendInPings = sendInPings) as T
-            }
+        return when (this.inner) {
+            is LabeledCounter -> this.inner.get(label) as T
+            is LabeledBoolean -> this.inner.get(label) as T
+            is LabeledString -> this.inner.get(label) as T
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )
@@ -129,25 +115,10 @@ class LabeledMetricType<T>(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
     fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        return when (subMetric) {
-            is CounterMetricType -> {
-                LibGleanFFI.INSTANCE.glean_labeled_counter_test_get_num_recorded_errors(
-                    this.handle, errorType.ordinal, pingName
-                )
-            }
-            is BooleanMetricType -> {
-                LibGleanFFI.INSTANCE.glean_labeled_boolean_test_get_num_recorded_errors(
-                    this.handle, errorType.ordinal, pingName
-                )
-            }
-            is StringMetricType -> {
-                LibGleanFFI.INSTANCE.glean_labeled_string_test_get_num_recorded_errors(
-                    this.handle, errorType.ordinal, pingName
-                )
-            }
+        return when (this.inner) {
+            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType, pingName)
+            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType, pingName)
+            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType, pingName)
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )

@@ -64,9 +64,6 @@ class ViewController: UIViewController {
 
         // An event without any extra keys
         BrowserEngagement.eventNoKeys.record()
-
-        // Testing the old API. It should still be possible, even if deprecated
-        BrowserEngagement.oldEventStyle.record(extra: [.key1: "extra_value1", .key2: "extra_value2"])
     }
 
     @IBAction func sendButtonTapped(_: Any) {
