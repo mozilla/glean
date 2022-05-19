@@ -2,6 +2,35 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.2.0...main)
 
+This release is a major refactoring of the internals and contains several breaking changes to exposed APIs.
+Exposed functionality should be unaffected.
+See below for details.
+
+* General
+  * Switch to UniFFI-defined and -generated APIs for all 3 foreign-language SDKs
+  * The task dispatcher has been moved to Rust for all foreign-language SDKs
+  * Updated to `glean_parser` v6.0.0
+* Swift
+  * `testGetValue` on all metric types now returns `nil` when no data is recorded instead of throwing an exception.
+  * `testGetValue` on metrics with more complex data now return new objects for inspection.
+    See the respective documentation for details.
+  * `testHasValue` on all metric types is deprecated.
+    It is currently still available as extension methods.
+    Use `testGetValue` with not-null checks.
+* Kotlin
+  * `testGetValue` on all metric types now returns `null` when no data is recorded instead of throwing an exception.
+  * `testGetValue` on metrics with more complex data now return new objects for inspection.
+    See the respective documentation for details.
+  * `testHasValue` on all metric types is deprecated.
+    It is currently still available as extension methods and thus require an additional import. Use `testGetValue` with not-null checks.
+  * On `TimingDistributionMetric`, `CustomDistributionMetric`, `MemoryDistributionMetric` the `accumulateSamples` method now takes a `List<Long>` instead of `LongArray`.
+    Use `listOf` instead of `longArrayOf` or call `.toList`
+ * `TimingDistributionMetricType.start` now always returns a valid `TimerId`, `TimingDistributionMetricType.stopAndAccumulate` always requires a `TimerId`.
+* Python
+  * `test_get_value` on all metric types now returns `None` when no data is recorded instead of throwing an exception.
+  * `test_has_value` on all metric types was removed.
+    Use `test_get_value` with not-null checks.
+
 # v44.2.0 (2022-05-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...v44.2.0)
