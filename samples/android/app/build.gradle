@@ -65,7 +65,6 @@ ext.gleanBuildDate = "2020-11-06T11:30:50+00:00"
 // Enable expiration by major version. The sample is at version 1,
 // see versionName.
 ext.gleanExpireByVersion = 1
-ext.gleanParserOverride = "git+https://github.com/badboy/glean_parser@uniffi-preparation#glean-parser"
 
 // Include the glean-gradle-plugin. This is slightly different than what is
 // recommended for external users since we are loading it from the same root Gradle

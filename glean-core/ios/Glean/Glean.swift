@@ -289,8 +289,6 @@ public class Glean {
     /// return `false`.
     /// If Glean is not initialized yet, tags will not be validated at this point.
     ///
-    /// This is only meant to be used internally by the `GleanDebugActivity`.
-    ///
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
     public func setSourceTags(_ tags: [String]) -> Bool {
