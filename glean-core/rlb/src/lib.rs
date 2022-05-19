@@ -119,12 +119,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         use_core_mps: cfg.use_core_mps,
     };
 
-    let success = glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);
-
-    if !success {
-        return None;
-    }
-
+    glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);
     Some(())
 }
 

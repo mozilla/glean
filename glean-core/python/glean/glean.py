@@ -229,7 +229,8 @@ class Glean:
             app_build=cls._application_build_id,
         )
 
-        cls._initialized = _uniffi.glean_initialize(cfg, client_info, callbacks)
+        _uniffi.glean_initialize(cfg, client_info, callbacks)
+        cls._initialized = True
 
     @classmethod
     def _initialize_with_tempdir_for_testing(

@@ -11,7 +11,7 @@ namespace glean {
     //
     // This will fully initialize Glean in a separate thread.
     // It will return immediately.
-    boolean glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callbacks);
+    void glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callbacks);
 
     // Creates and initializes a new Glean object for use in a subprocess.
     //

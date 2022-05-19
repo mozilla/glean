@@ -224,9 +224,8 @@ pub fn glean_initialize(
     cfg: InternalConfiguration,
     client_info: ClientInfoMetrics,
     callbacks: Box<dyn OnGleanEvents>,
-) -> bool {
+) {
     initialize_inner(cfg, client_info, callbacks);
-    true
 }
 
 /// Creates and initializes a new Glean object for use in a subprocess.
