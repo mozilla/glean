@@ -103,7 +103,7 @@ class TimespanMetricType:
         """
         self._inner.set_raw_nanos(elapsed_nanos)
 
-    def test_get_value(self, ping_name: Optional[str] = None) -> int:
+    def test_get_value(self, ping_name: Optional[str] = None) -> Optional[int]:
         """
         Returns the stored value for testing purposes only.
 

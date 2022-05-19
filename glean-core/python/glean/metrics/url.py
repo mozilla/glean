@@ -41,7 +41,7 @@ class UrlMetricType:
 
         self._inner.set(value)
 
-    def test_get_value(self, ping_name: Optional[str] = None) -> str:
+    def test_get_value(self, ping_name: Optional[str] = None) -> Optional[str]:
         return self._inner.test_get_value(ping_name)
 
     def test_get_num_recorded_errors(
