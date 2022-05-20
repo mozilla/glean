@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v44.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...main)
+
+# v50.0.0 (2022-05-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v44.2.0...v50.0.0)
 
 This release is a major refactoring of the internals and contains several breaking changes to exposed APIs.
 Exposed functionality should be unaffected.
