@@ -307,7 +307,8 @@ jobs:
       - image: cimg/rust:1.60
     resource_class: "medium+"
     steps:
-      - test-rust
+      - test-rust:
+          rust-version: "1.60.0"
 
   Rust tests - beta:
     docker:
