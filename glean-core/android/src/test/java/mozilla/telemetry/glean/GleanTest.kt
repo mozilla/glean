@@ -10,14 +10,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.Dispatchers as KotlinDispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import mozilla.telemetry.glean.GleanMetrics.GleanError
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.internal.gleanSubmitPingByNameSync
+import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -26,9 +25,7 @@ import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
-import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.toBoolean
-import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.private.testHasValue
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -36,24 +33,25 @@ import mozilla.telemetry.glean.utils.getLanguageFromLocale
 import mozilla.telemetry.glean.utils.getLocaleTag
 import org.json.JSONObject
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.spy
-import org.robolectric.shadows.ShadowProcess
 import org.robolectric.shadows.ShadowLog
+import org.robolectric.shadows.ShadowProcess
 import java.io.File
 import java.util.Calendar
-import java.util.TimeZone
 import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 
 @ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -69,39 +67,40 @@ class GleanTest {
         Glean.setUploadEnabled(true)
     }
 
-    // New from glean-core.
     @Test
     fun `send a ping`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         Glean.handleBackgroundEvent()
         // Trigger it to upload
         triggerWorkManager(context)
 
-        // Make sure the number of request received thus far is only 1,
-        // we are only expecting one baseline ping.
-        assertEquals(server.requestCount, 2)
+        // We got exactly 1 ping here:
+        // The baseline ping triggered by the background event above.
+        assertEquals(1, server.requestCount)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         var docType = request.path!!.split("/")[3]
         assertEquals("baseline", docType)
-
-        request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        docType = request.path!!.split("/")[3]
-        assertEquals("metrics", docType)
     }
 
     @Test
     fun `X-Debug-ID header is correctly added when debug view tag is set`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         Glean.setDebugViewTag("this-ping-is-tagged")
         Glean.handleBackgroundEvent()
@@ -113,21 +112,21 @@ class GleanTest {
         assertEquals(request!!.getHeader("X-Debug-ID"), "this-ping-is-tagged")
     }
 
-    // Tests from glean-ac (706af1f).
-
     @Test
     fun `disabling upload should disable metrics recording`() {
         val stringMetric = StringMetricType(
+            CommonMetricData(
                 disabled = false,
                 category = "telemetry",
-                lifetime = Lifetime.Application,
+                lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
                 sendInPings = listOf("store1")
+            )
         )
         Glean.setUploadEnabled(false)
 
         stringMetric.set("foo")
-        assertFalse(stringMetric.testHasValue())
+        assertNull(stringMetric.testGetValue())
     }
 
     @Test
@@ -157,7 +156,6 @@ class GleanTest {
     fun `test experiments recording before Glean inits`() {
         // This test relies on Glean not being initialized and task queuing to be on.
         Glean.testDestroyGleanHandle()
-        Dispatchers.API.setTaskQueueing(true)
 
         Glean.setExperimentActive(
             "experiment_set_preinit", "branch_a"
@@ -183,18 +181,23 @@ class GleanTest {
         val server = getMockWebServer()
 
         val click = EventMetricType<NoExtraKeys, NoExtras>(
-            disabled = false,
-            category = "ui",
-            lifetime = Lifetime.Ping,
-            name = "click",
-            sendInPings = listOf("events")
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("events")
+            ),
+            allowedExtraKeys = emptyList()
         )
 
-        val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         // Fake calling the lifecycle observer.
         val lifecycleOwner = mock(LifecycleOwner::class.java)
@@ -204,28 +207,41 @@ class GleanTest {
 
         try {
             // Simulate the first foreground event after the application starts.
+            // Triggers a `baseline` ping (1)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+
+            // Record an event in the foreground
             click.record()
 
             // Simulate going to background.
+            // Triggers a `baseline` ping (2) and an `events` ping (3)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
 
             // Simulate going to foreground.
+            // Triggers a `baseline` ping (4)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
 
             // Submit a metrics ping so we can check the foreground_count
+            // Triggers a `metrics` ping (5)
             Glean.submitPingByName("metrics")
 
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
-            for (ignored in 0..5) {
-                val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            // We got 5 pings total:
+            // * 3 `baseline` pings
+            // * 1 `events` ping
+            // * 1 `metrics` ping
+            assertEquals(5, server.requestCount)
+
+            for (ignored in 1..5) {
+                val request = server.takeRequest(5L, TimeUnit.SECONDS)!!
                 val docType = request.path!!.split("/")[3]
 
                 val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
                 if (docType == "events") {
+                    assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                     assertEquals(1, json.getJSONArray("events").length())
                 } else if (docType == "baseline") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
@@ -234,12 +250,18 @@ class GleanTest {
                     //   - seq: 0, reason: active, duration: null
                     //   - seq: 1, reason: inactive, duration: non-null
                     //   - seq: 2, reason: active, duration: null
+                    val baselineMetricsObject = json.getJSONObject("metrics")
+                    if (seq == 0) {
+                        assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
+                    }
                     if (seq == 1) {
-                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
                         assertNotNull(baselineTimespanMetrics.get("glean.baseline.duration"))
+                    }
+                    if (seq == 2) {
+                        assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
                     }
                 } else if (docType == "metrics") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
@@ -263,16 +285,21 @@ class GleanTest {
 
     @Test
     fun `test sending of startup baseline ping`() {
+        // TODO: Should be in Rust now.
         // Set the dirty flag.
-        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+        Glean.handleForegroundEvent()
 
         // Restart glean and don't clear the stores.
         val server = getMockWebServer()
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), false)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            false
+        )
 
         try {
             // Trigger worker task to upload the pings in the background
@@ -282,19 +309,22 @@ class GleanTest {
             var docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
-            val baselineJson = JSONObject(request.getPlainBody())
+            var baselineJson = JSONObject(request.getPlainBody())
             assertEquals("dirty_startup", baselineJson.getJSONObject("ping_info")["reason"])
             checkPingSchema(baselineJson)
 
             request = server.takeRequest(20L, TimeUnit.SECONDS)!!
             docType = request.path!!.split("/")[3]
-            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+            assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
+            baselineJson = JSONObject(request.getPlainBody())
+            assertEquals("active", baselineJson.getJSONObject("ping_info")["reason"])
         } finally {
             server.shutdown()
         }
     }
 
     @Test
+    @Ignore("this causes some subsequent tests to intermittently fail")
     fun `initialize() must not crash the app if Glean's data dir is messed up`() {
         // Remove the Glean's data directory.
         val gleanDir = File(
@@ -317,24 +347,25 @@ class GleanTest {
     @Test
     fun `queued recorded metrics correctly record during init`() {
         val counterMetric = CounterMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1")
+            )
         )
 
-        // Enable queuing
-        Dispatchers.API.setTaskQueueing(true)
+        // Destroy Glean, so that the dispatcher will queue tasks until flushed.
+        Glean.testDestroyGleanHandle(clearStores = true)
 
         // This will queue 3 tasks that will add to the metric value once Glean is initialized
         for (ignored in 0..2) {
             counterMetric.add()
         }
 
-        // Ensure that no value has been stored yet since the tasks have only been queued and not
-        // executed yet
-        assertFalse("No value must be stored", counterMetric.testHasValue())
+        // We can't ensure that no value has been stored yet.
+        // The tasks have been queued, but we have no Glean object yet to query the database.
 
         // Calling resetGlean here will cause Glean to be initialized and should cause the queued
         // tasks recording metrics to execute
@@ -361,13 +392,9 @@ class GleanTest {
     }
 
     @Test
-    fun `Don't handle events when uninitialized`() {
-        val gleanSpy = spy<GleanInternalAPI>(GleanInternalAPI::class.java)
-
-        gleanSpy.testDestroyGleanHandle()
-        runBlocking {
-            assertFalse(LibGleanFFI.INSTANCE.glean_submit_ping_by_name("events", null).toBoolean())
-        }
+    fun `synchronous submit without Glean is a no-op`() {
+        Glean.testDestroyGleanHandle()
+        assertFalse(gleanSubmitPingByNameSync("events"))
     }
 
     @Test
@@ -375,26 +402,17 @@ class GleanTest {
         // No appChannel must be set if nothing was provided through the config
         // options.
         resetGlean(getContext(), Configuration())
-        assertFalse(GleanInternalMetrics.appChannel.testHasValue())
+        assertNull(GleanInternalMetrics.appChannel.testGetValue())
 
         // The appChannel must be correctly reported if a channel value
         // was provided.
         val testChannelName = "my-test-channel"
         resetGlean(getContext(), Configuration(channel = testChannelName))
-        assertTrue(GleanInternalMetrics.appChannel.testHasValue())
         assertEquals(testChannelName, GleanInternalMetrics.appChannel.testGetValue())
     }
 
-    // glean-ac test removed.
-    // `client_id and first_run_date metrics should be copied from the old location` was here.
-    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
-
-    // glean-ac test removed.
-    // `client_id and first_run_date metrics should not override new location` was here.
-    // 1539480 BACKWARD COMPATIBILITY HACK that is not needed anymore.
-
     @Test
-    fun `getLanguageTag() reports the tag for the default locale`() {
+    fun `getLanguageTag reports the tag for the default locale`() {
         val defaultLanguageTag = getLocaleTag()
 
         assertNotNull(defaultLanguageTag)
@@ -440,9 +458,12 @@ class GleanTest {
 
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ))
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
 
         val pingName = "custom_ping_1"
         val ping = PingType<NoReasonCodes>(
@@ -452,17 +473,20 @@ class GleanTest {
             reasonCodes = listOf()
         )
         val stringMetric = StringMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "string_metric",
-            sendInPings = listOf(pingName)
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "string_metric",
+                sendInPings = listOf(pingName)
+            )
         )
 
         // This test relies on testing mode to be disabled, since we need to prove the
         // real-world async behaviour of this. We don't need to care about clearing it,
         // the test-unit hooks will call `resetGlean` anyway.
-        Dispatchers.API.setTestingMode(false)
+        // Dispatchers.API.setTestingMode(false)
+        Glean.setTestingMode(false)
 
         // This is the important part of the test. Even though both the metrics API and
         // sendPings are async and off the main thread, "SomeTestValue" should be recorded,
@@ -494,42 +518,44 @@ class GleanTest {
     @Test
     fun `Basic metrics should be cleared when disabling uploading`() {
         val stringMetric = StringMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "string_metric",
-            sendInPings = listOf("default")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "string_metric",
+                sendInPings = listOf("default")
+            )
         )
 
         stringMetric.set("TEST VALUE")
-        assertTrue(stringMetric.testHasValue())
+        assertEquals("TEST VALUE", stringMetric.testGetValue()!!)
 
         Glean.setUploadEnabled(false)
-        assertFalse(stringMetric.testHasValue())
+        assertNull(stringMetric.testGetValue())
         stringMetric.set("TEST VALUE")
-        assertFalse(stringMetric.testHasValue())
+        assertNull(stringMetric.testGetValue())
 
         Glean.setUploadEnabled(true)
-        assertFalse(stringMetric.testHasValue())
+        assertNull(stringMetric.testGetValue())
         stringMetric.set("TEST VALUE")
-        assertTrue(stringMetric.testHasValue())
+        assertEquals("TEST VALUE", stringMetric.testGetValue()!!)
     }
 
     @Test
     fun `Core metrics should be cleared and restored when disabling and enabling uploading`() {
-        assertTrue(GleanInternalMetrics.os.testHasValue())
+        assertNotNull(GleanInternalMetrics.os.testGetValue())
 
         Glean.setUploadEnabled(false)
-        assertFalse(GleanInternalMetrics.os.testHasValue())
+        assertNull(GleanInternalMetrics.os.testGetValue())
 
         Glean.setUploadEnabled(true)
-        assertTrue(GleanInternalMetrics.os.testHasValue())
+        assertNotNull(GleanInternalMetrics.os.testGetValue())
     }
 
     @Test
     fun `Workers should be cancelled when disabling uploading`() {
         // Force the MetricsPingScheduler to schedule the MetricsPingWorker
-        Glean.metricsPingScheduler.schedulePingCollection(
+        Glean.metricsPingScheduler!!.schedulePingCollection(
             Calendar.getInstance(),
             true,
             Pings.metricsReasonCodes.overdue
@@ -538,27 +564,37 @@ class GleanTest {
         Pings.baseline.submit()
 
         // Verify that the workers are enqueued
-        assertTrue("PingUploadWorker is enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
-        assertTrue("MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler.timer != null)
+        assertTrue(
+            "PingUploadWorker is enqueued",
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+        )
+        assertTrue(
+            "MetricsPingWorker is enqueued",
+            Glean.metricsPingScheduler!!.timer != null
+        )
 
         Glean.setUploadEnabled(true)
 
         // Verify that the workers are still enqueued to show that setting upload enabled to true
         // doesn't affect any already queued workers, since we ask consumers to set upload enabled
         // before initializing glean.
-        assertTrue("PingUploadWorker is enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
-        assertTrue("MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler.timer != null)
+        assertTrue(
+            "PingUploadWorker is enqueued",
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+        )
+        assertTrue(
+            "MetricsPingWorker is enqueued",
+            Glean.metricsPingScheduler!!.timer != null
+        )
 
         // Toggle upload enabled to false
         Glean.setUploadEnabled(false)
 
         // Verify workers have been cancelled
-        assertTrue("MetricsPingWorker is not enqueued",
-            Glean.metricsPingScheduler.timer == null)
+        assertTrue(
+            "MetricsPingWorker is not enqueued",
+            Glean.metricsPingScheduler!!.timer == null
+        )
     }
 
     @Test
@@ -588,25 +624,33 @@ class GleanTest {
     fun `overflowing the task queue records telemetry`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
-        Dispatchers.API.setTestingMode(true)
-        Dispatchers.API.setTaskQueueing(true)
 
-        repeat(110) {
-            Dispatchers.API.launch {
-            }
+        // No Glean active, tasks will be queued.
+        Glean.testDestroyGleanHandle(clearStores = true)
+
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "repeatedly",
+                sendInPings = listOf("metrics")
+            )
+        )
+
+        repeat(1010) {
+            counterMetric.add()
         }
 
-        assertEquals("Task queue contains the maximum number of tasks",
-            100, Dispatchers.API.taskQueue.size)
-        assertEquals("overflowCount is correct", 10, Dispatchers.API.overflowCount)
-
-        Glean.testDestroyGleanHandle()
         // Now trigger execution to ensure the tasks fired
-        Glean.initialize(context, true, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), GleanBuildInfo.buildInfo)
-
-        assertEquals(10, GleanError.preinitTasksOverflow.testGetValue())
+        resetGlean(
+            context,
+            config = Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = false,
+            uploadEnabled = true
+        )
 
         Pings.metrics.submit()
 
@@ -617,15 +661,19 @@ class GleanTest {
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         val jsonContent = JSONObject(request.getPlainBody())
-        assertEquals(
-            10,
+        val counters =
             jsonContent
                 .getJSONObject("metrics")
                 .getJSONObject("counter")
-                .getInt("glean.error.preinit_tasks_overflow")
+        assertTrue(
+            "Ping payload: $jsonContent",
+            10 <= counters.getInt("glean.error.preinit_tasks_overflow")
         )
-
-        Dispatchers.API.overflowCount = 0
+        assertEquals(
+            "Ping payload: $jsonContent",
+            1000,
+            counters.getInt("telemetry.repeatedly")
+        )
     }
 
     @Test
@@ -682,14 +730,16 @@ class GleanTest {
     @Test
     fun `test sending of startup baseline ping with application lifetime metric`() {
         // Set the dirty flag.
-        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
+        Glean.setDirtyFlag(true)
 
         val stringMetric = StringMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "app_lifetime",
-            sendInPings = listOf("baseline")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "app_lifetime",
+                sendInPings = listOf("baseline")
+            )
         )
         stringMetric.set("HELLOOOOO!")
 
@@ -697,9 +747,13 @@ class GleanTest {
         val server = getMockWebServer()
         val context = getContext()
         delayMetricsPing(context)
-        resetGlean(context, Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        ), false)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            ),
+            clearStores = false
+        )
 
         try {
             // Trigger worker task to upload the pings in the background
@@ -722,16 +776,6 @@ class GleanTest {
     }
 
     @Test
-    fun `test dirty flag is reset to false`() {
-        // Set the dirty flag.
-        LibGleanFFI.INSTANCE.glean_set_dirty_flag(true.toByte())
-
-        resetGlean(context, Glean.configuration, false)
-
-        assertFalse(LibGleanFFI.INSTANCE.glean_is_dirty_flag_set().toBoolean())
-    }
-
-    @Test
     fun `setting debugViewTag before initialization should not crash`() {
         // Can't use resetGlean directly
         Glean.testDestroyGleanHandle()
@@ -739,11 +783,11 @@ class GleanTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val server = getMockWebServer()
         val config = Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
         )
 
         Glean.setDebugViewTag("valid-tag")
-        Glean.initialize(context, true, config, GleanBuildInfo.buildInfo)
+        resetGlean(context, config, uploadEnabled = true)
 
         // Send a ping
         Glean.handleBackgroundEvent()
@@ -781,8 +825,8 @@ class GleanTest {
         // real-world async behaviour of this.
         // We don't need to care about clearing it,
         // the test-unit hooks will call `resetGlean` anyway.
-        Dispatchers.API.setTaskQueueing(true)
-        Dispatchers.API.setTestingMode(false)
+        // Dispatchers.API.setTaskQueueing(true)
+        // Dispatchers.API.setTestingMode(false)
 
         // We create a ping and a metric before we initialize Glean
         val pingName = "sample_ping_1"
@@ -793,11 +837,13 @@ class GleanTest {
             reasonCodes = listOf()
         )
         val stringMetric = StringMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "string_metric",
-            sendInPings = listOf(pingName)
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "string_metric",
+                sendInPings = listOf(pingName)
+            )
         )
 
         val server = getMockWebServer()

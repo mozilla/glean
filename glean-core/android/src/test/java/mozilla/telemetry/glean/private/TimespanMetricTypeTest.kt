@@ -8,16 +8,17 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
@@ -29,12 +30,14 @@ class TimespanMetricTypeTest {
     fun `The API must record to its storage engine`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Record a timespan.
@@ -43,19 +46,21 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded.
         assertTrue(metric.testHasValue())
-        assertTrue(metric.testGetValue() >= 0)
+        assertTrue(metric.testGetValue()!! >= 0)
     }
 
     @Test
     fun `The API should not record if the metric is disabled`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Record a timespan.
@@ -66,20 +71,24 @@ class TimespanMetricTypeTest {
         metric.cancel()
 
         // Check that data was not recorded.
-        assertFalse("The API should not record a counter if metric is disabled",
-            metric.testHasValue())
+        assertFalse(
+            "The API should not record a counter if metric is disabled",
+            metric.testHasValue()
+        )
     }
 
     @Test
     fun `The API must correctly cancel`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Record a timespan.
@@ -88,34 +97,41 @@ class TimespanMetricTypeTest {
         metric.stop()
 
         // Check that data was not recorded.
-        assertFalse("The API should not record a counter if metric is cancelled",
-            metric.testHasValue())
-        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
+        assertFalse(
+            "The API should not record a counter if metric is cancelled",
+            metric.testHasValue()
+        )
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
 
-    @Test(expected = NullPointerException::class)
+    // TODO: Fixme: should we continue throwing an exception instead?
+    @Test // (expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
-        metric.testGetValue()
+        assertNull(metric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a timespan metric, which will be stored in "store1" and "store2"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1", "store2"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1", "store2"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Record a timespan.
@@ -124,19 +140,21 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
-        assertTrue(metric.testGetValue("store2") >= 0)
+        assertTrue(metric.testGetValue("store2")!! >= 0)
     }
 
     @Test
     fun `Records an error if started twice`() {
         // Define a timespan metric, which will be stored in "store1" and "store2"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1", "store2"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1", "store2"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Record a timespan.
@@ -146,20 +164,22 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded in the second ping.
         assertTrue(metric.testHasValue("store2"))
-        assertTrue(metric.testGetValue("store2") >= 0)
-        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.InvalidState))
+        assertTrue(metric.testGetValue("store2")!! >= 0)
+        assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
 
     @Test
     fun `Value unchanged if stopped twice`() {
         // Define a timespan metric, which will be stored in "store1" and "store2"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Nanosecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
         )
 
         // Record a timespan.
@@ -178,16 +198,18 @@ class TimespanMetricTypeTest {
         val timespanNanos = 6 * 1000000000L
 
         val metric = TimespanMetricType(
-            false,
-            "telemetry",
-            Lifetime.Ping,
-            "explicit_timespan",
-            listOf("store1"),
-            timeUnit = TimeUnit.Second
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "explicit_timespan",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
         )
 
         metric.setRawNanos(timespanNanos)
-        assertEquals(6, metric.testGetValue())
+        assertEquals(6, metric.testGetValue()!!)
     }
 
     @Test
@@ -195,21 +217,22 @@ class TimespanMetricTypeTest {
         val timespanNanos = 6 * 1000000000L
 
         val metric = TimespanMetricType(
-            false,
-            "telemetry",
-            Lifetime.Ping,
-            "explicit_timespan_1",
-            listOf("store1"),
-            timeUnit = TimeUnit.Second
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "explicit_timespan_1",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
         )
 
         metric.setRawNanos(timespanNanos)
-        assertEquals(6, metric.testGetValue())
+        assertEquals(6, metric.testGetValue()!!)
 
         metric.start()
         metric.stop()
-        val value = metric.testGetValue()
-        assertEquals(6, value)
+        assertEquals(6, metric.testGetValue()!!)
     }
 
     @Test
@@ -217,12 +240,14 @@ class TimespanMetricTypeTest {
         val timespanNanos = 6 * 1000000000L
 
         val metric = TimespanMetricType(
-            false,
-            "telemetry",
-            Lifetime.Ping,
-            "explicit_timespan_1",
-            listOf("store1"),
-            timeUnit = TimeUnit.Second
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "explicit_timespan_2",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
         )
 
         metric.start()
@@ -231,7 +256,7 @@ class TimespanMetricTypeTest {
 
         metric.setRawNanos(timespanNanos)
 
-        assertEquals(value, metric.testGetValue())
+        assertEquals(value, metric.testGetValue()!!)
     }
 
     @Test
@@ -239,12 +264,14 @@ class TimespanMetricTypeTest {
         val timespanNanos = 1000000000L
 
         val metric = TimespanMetricType(
-            false,
-            "telemetry",
-            Lifetime.Ping,
-            "explicit_timespan",
-            listOf("store1"),
-            timeUnit = TimeUnit.Second
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "explicit_timespan_3",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.SECOND
         )
 
         metric.start()
@@ -253,19 +280,21 @@ class TimespanMetricTypeTest {
 
         // If setRawNanos worked, (which it's not supposed to in this case), it would
         // have recorded 1000000000 ns == 1s.  Make sure it's not that.
-        assertNotEquals(1, metric.testGetValue())
+        assertNotEquals(1, metric.testGetValue()!!)
     }
 
     @Test
     fun `measure function correctly measures values`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Create a function to measure, which also returns a value to test that we properly pass
@@ -285,18 +314,20 @@ class TimespanMetricTypeTest {
 
         // Check that data was properly recorded.
         assertTrue("Metric must have a value", metric.testHasValue())
-        assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+        assertTrue("Metric value must be greater than zero", metric.testGetValue()!! >= 0)
     }
 
     @Test
     fun `measure function does not change behavior with early return`() {
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Ping,
-            name = "inlined",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Nanosecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "inlined",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.NANOSECOND
         )
 
         // We define a function that measures the whole function call runtime
@@ -315,19 +346,21 @@ class TimespanMetricTypeTest {
         assertEquals("Test value must match", 17, res)
 
         assertTrue("Metric must have a value", metric.testHasValue())
-        assertTrue("Metric value must be greater than zero", metric.testGetValue() >= 0)
+        assertTrue("Metric value must be greater than zero", metric.testGetValue()!! >= 0)
     }
 
     @Test
     fun `measure function bubbles up exceptions and timing is canceled`() {
         // Define a timespan metric, which will be stored in "store1"
         val metric = TimespanMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "timespan_metric",
-            sendInPings = listOf("store1"),
-            timeUnit = TimeUnit.Millisecond
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "timespan_metric",
+                sendInPings = listOf("store1"),
+            ),
+            timeUnit = TimeUnit.MILLISECOND
         )
 
         // Create a function that will throw a NPE

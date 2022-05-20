@@ -3,15 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import List, Optional
+from typing import Optional
 
 
-from .. import _ffi
-from .._dispatcher import Dispatcher
+from .._uniffi import CommonMetricData
+from .._uniffi import UrlMetric
 from ..testing import ErrorType
-
-
-from .lifetime import Lifetime
 
 
 class UrlMetricType:
@@ -28,29 +25,8 @@ class UrlMetricType:
     See https://mozilla.github.io/glean/book/reference/metrics/url.html#limits
     """
 
-    def __init__(
-        self,
-        disabled: bool,
-        category: str,
-        lifetime: Lifetime,
-        name: str,
-        send_in_pings: List[str],
-    ):
-        self._disabled = disabled
-        self._send_in_pings = send_in_pings
-
-        self._handle = _ffi.lib.glean_new_url_metric(
-            _ffi.ffi_encode_string(category),
-            _ffi.ffi_encode_string(name),
-            _ffi.ffi_encode_vec_string(send_in_pings),
-            len(send_in_pings),
-            lifetime.value,
-            disabled,
-        )
-
-    def __del__(self):
-        if getattr(self, "_handle", 0) != 0:
-            _ffi.lib.glean_destroy_url_metric(self._handle)
+    def __init__(self, common_metric_data: CommonMetricData):
+        self._inner = UrlMetric(common_metric_data)
 
     def set(self, value: str) -> None:
         """
@@ -60,80 +36,18 @@ class UrlMetricType:
             value (str): This is a user-defined URL value. If the length of
                 the URL exceeds the maximum length, it will not be recorded.
         """
-        if self._disabled:
+        if value is None:
             return
 
-        @Dispatcher.launch
-        def set():
-            _ffi.lib.glean_url_set(self._handle, _ffi.ffi_encode_string(value))
+        self._inner.set(value)
 
-    def test_has_value(self, ping_name: Optional[str] = None) -> bool:
-        """
-        Tests whether a value is stored for the metric for testing purposes
-        only.
-
-        Args:
-            ping_name (str): (default: first value in send_in_pings) The name
-                of the ping to retrieve the metric for.
-
-        Returns:
-            has_value (bool): True if the metric value exists.
-        """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        return bool(
-            _ffi.lib.glean_url_test_has_value(
-                self._handle, _ffi.ffi_encode_string(ping_name)
-            )
-        )
-
-    def test_get_value(self, ping_name: Optional[str] = None) -> str:
-        """
-        Returns the stored value for testing purposes only.
-
-        Args:
-            ping_name (str): (default: first value in send_in_pings) The name
-                of the ping to retrieve the metric for.
-
-        Returns:
-            value (int): value of the stored metric.
-        """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        if not self.test_has_value(ping_name):
-            raise ValueError("metric has no value")
-
-        return _ffi.ffi_decode_string(
-            _ffi.lib.glean_url_test_get_value(
-                self._handle, _ffi.ffi_encode_string(ping_name)
-            )
-        )
+    def test_get_value(self, ping_name: Optional[str] = None) -> Optional[str]:
+        return self._inner.test_get_value(ping_name)
 
     def test_get_num_recorded_errors(
         self, error_type: ErrorType, ping_name: Optional[str] = None
     ) -> int:
-        """
-        Returns the number of errors recorded for the given metric.
-
-        Args:
-            error_type (ErrorType): The type of error recorded.
-            ping_name (str): (default: first value in send_in_pings) The name
-                of the ping to retrieve the metric for.
-
-        Returns:
-            num_errors (int): The number of errors recorded for the metric for
-                the given error type.
-        """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        return _ffi.lib.glean_url_test_get_num_recorded_errors(
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
-        )
+        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
 
 
 __all__ = ["UrlMetricType"]

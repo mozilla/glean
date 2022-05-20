@@ -17,16 +17,16 @@ BUILD_DIR="$1"
 ARTIFACT_ID="$2"
 
 REQUIRED_FILES_AAR=(
-    jni/arm64-v8a/libglean_ffi.so
-    jni/armeabi-v7a/libglean_ffi.so
-    jni/x86/libglean_ffi.so
-    jni/x86_64/libglean_ffi.so
+    jni/arm64-v8a/libxul.so
+    jni/armeabi-v7a/libxul.so
+    jni/x86/libxul.so
+    jni/x86_64/libxul.so
 )
 REQUIRED_FILES_TEST=(
-    darwin-aarch64/libglean_ffi.dylib
-    darwin-x86-64/libglean_ffi.dylib
-    linux-x86-64/libglean_ffi.so
-    win32-x86-64/glean_ffi.dll
+    darwin-aarch64/libxul.dylib
+    darwin-x86-64/libxul.dylib
+    linux-x86-64/libxul.so
+    win32-x86-64/xul.dll
 )
 
 check_files() {

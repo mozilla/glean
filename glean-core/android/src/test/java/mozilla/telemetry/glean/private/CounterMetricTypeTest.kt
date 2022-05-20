@@ -12,11 +12,11 @@ package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.lang.NullPointerException
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -32,11 +32,13 @@ class CounterMetricTypeTest {
     fun `The API saves to its storage engine`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1"
         val counterMetric = CounterMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1")
+            )
         )
 
         assertFalse(counterMetric.testHasValue())
@@ -61,41 +63,50 @@ class CounterMetricTypeTest {
         // Define a 'counterMetric' counter metric, which will be stored in "store1".  It's disabled
         // so it should not record anything.
         val counterMetric = CounterMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1")
+            )
         )
 
         // Attempt to store the counter.
         counterMetric.add()
         // Check that nothing was recorded.
-        assertFalse("Counters must not be recorded if they are disabled",
-            counterMetric.testHasValue())
+        assertFalse(
+            "Counters must not be recorded if they are disabled",
+            counterMetric.testHasValue()
+        )
     }
 
-    @Test(expected = NullPointerException::class)
+    // TODO: Fixme: should we continue throwing an exception instead?
+    @Test // (expected = NullPointerException::class)
     fun `testGetValue() throws NullPointerException if nothing is stored`() {
         val counterMetric = CounterMetricType(
-            disabled = true,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1")
+            )
         )
-        counterMetric.testGetValue()
+        assertNull(counterMetric.testGetValue())
     }
 
     @Test
     fun `The API saves to secondary pings`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1" and "store2"
         val counterMetric = CounterMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1", "store2")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1", "store2")
+            )
         )
 
         // Add to the counter a couple of times with a little delay.  The first call will check
@@ -117,11 +128,13 @@ class CounterMetricTypeTest {
     fun `negative values are not counted`() {
         // Define a 'counterMetric' counter metric, which will be stored in "store1"
         val counterMetric = CounterMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.Application,
-            name = "counter_metric",
-            sendInPings = listOf("store1")
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter_metric",
+                sendInPings = listOf("store1")
+            )
         )
 
         // Increment to 1 (initial value)
@@ -135,6 +148,6 @@ class CounterMetricTypeTest {
         // Check that count was NOT incremented.
         assertTrue(counterMetric.testHasValue("store1"))
         assertEquals(1, counterMetric.testGetValue("store1"))
-        assertEquals(1, counterMetric.testGetNumRecordedErrors(ErrorType.InvalidValue))
+        assertEquals(1, counterMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
 }

@@ -56,12 +56,11 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "44.2.0"
+version = "50.0.0"
 
 requirements = [
     "cffi>=1.13.0",
-    "glean_parser==5.0.1",
-    "iso8601>=0.1.10; python_version<='3.6'",
+    "glean_parser==6.0.0",
 ]
 
 setup_requirements = ["cffi>=1.13.0"]
@@ -195,10 +194,25 @@ class build(_build):
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core" / "ffi", env=env)
+        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core", env=env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
+        )
+
+        command = [
+            "cargo",
+            "uniffi-bindgen",
+            "generate",
+            "glean-core/src/glean.udl",
+            "--language",
+            "python",
+            "--out-dir",
+            SRC_ROOT / "target",
+        ]
+        subprocess.check_call(command, cwd=SRC_ROOT, env=env)
+        shutil.copyfile(
+            SRC_ROOT / "target" / "glean.py", PYTHON_ROOT / "glean" / "_uniffi.py"
         )
 
         shutil.copyfile(
@@ -222,7 +236,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
     ],
     description="Mozilla's Glean Telemetry SDK: The Machine that Goes 'Ping!'",
     install_requires=requirements,
@@ -246,8 +259,7 @@ setup(
         "glean.net": FROM_TOP / "glean" / "net",
         "glean.testing": FROM_TOP / "glean" / "testing",
     },
-    setup_requires=setup_requirements,
-    cffi_modules=[str(PYTHON_ROOT / "ffi_build.py:ffibuilder")],
+    setup_requires=[],
     url="https://github.com/mozilla/glean",
     zip_safe=False,
     package_data={"glean": [shared_object, "metrics.yaml", "pings.yaml"]},

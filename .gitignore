@@ -4,7 +4,6 @@ docs/user/appendix/changelog.md
 docs/user/appendix/changelog/sdk.md
 docs/user/appendix/changelog/js.md
 target
-.cargo
 
 # Android stuff.
 *.iml
@@ -65,7 +64,11 @@ samples/ios/app/.venv/
 htmlcov/
 *.log
 
-glean-core/python/glean/_glean_ffi.py
+glean-core/python/glean/_uniffi.py
 __pycache__
 *.py[cod]
 .Python
+
+# UniFFI generated code
+glean-core/uniffi/src/glean_core.uniffi.rs
+glean-core/uniffi/src/uniffi

@@ -10,7 +10,40 @@ private typealias GleanValidation = GleanMetrics.GleanValidation
 private typealias Pings = GleanMetrics.Pings
 
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
-public typealias GleanTimerId = UInt64
+public typealias GleanTimerId = TimerId
+
+class OnGleanEventsImpl: OnGleanEvents {
+    let glean: Glean
+
+    init(glean: Glean) {
+        self.glean = glean
+    }
+
+    func onInitializeFinished() {
+        // Run this off the main thread,
+        // as it will trigger a ping submission,
+        // which itself will trigger `triggerUpload()` on this class.
+        Dispatchers.shared.launchAsync {
+            self.glean.observer = GleanLifecycleObserver()
+        }
+        self.glean.initialized = true
+    }
+
+    func triggerUpload() {
+        // If uploading is disabled, we need to send the deletion-request ping
+        HttpPingUploader.launch(configuration: self.glean.configuration!, self.glean.testingMode.value)
+    }
+
+    func startMetricsPingScheduler() -> Bool {
+        self.glean.metricsPingScheduler = MetricsPingScheduler(self.glean.testingMode.value)
+        // Check for overdue metrics pings
+        return self.glean.metricsPingScheduler!.schedule()
+    }
+
+    func cancelUploads() {
+        // intentionally left empty
+    }
+}
 
 public struct BuildInfo {
     var buildDate: DateComponents
@@ -23,7 +56,6 @@ public struct BuildInfo {
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
-// swiftlint:disable type_body_length
 public class Glean {
     /// The main Glean object.
     ///
@@ -32,28 +64,22 @@ public class Glean {
     /// ```
     public static let shared = Glean()
 
-    var metricsPingScheduler: MetricsPingScheduler = MetricsPingScheduler()
+    var metricsPingScheduler: MetricsPingScheduler?
 
     var initialized: Bool = false
-    // Set when `initialize()` returns.
-    // This allows to detect calls that happen before `Glean.shared.initialize()` was called.
-    // Note: The initialization might still be in progress, as it runs in a separate thread.
-    var initFinished = AtomicBoolean(false)
 
-    private var debugViewTag: String?
-    private var sourceTags: [String]?
-    var logPings: Bool = false
+    // Are we in testing mode?
+    internal var testingMode = AtomicBoolean(false)
+
     var configuration: Configuration?
     private var buildInfo: BuildInfo?
-    private var observer: GleanLifecycleObserver?
+    fileprivate var observer: GleanLifecycleObserver?
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         static let logTag = "glean/Glean"
         static let languageBindingName = "Swift"
     }
-
-    private var pingTypeQueue = [PingBase]()
 
     private let logger = Logger(tag: Constants.logTag)
 
@@ -65,14 +91,13 @@ public class Glean {
         // intentionally left private, no external user can instantiate a new global object.
 
         // Enable logging in the Rust library
-        glean_enable_logging()
+        gleanEnableLogging()
     }
 
     deinit {
         self.initialized = false
     }
 
-    // swiftlint:disable function_body_length cyclomatic_complexity
     /// Initialize the Glean SDK.
     ///
     /// This should only be initialized once by the application, and not by
@@ -106,142 +131,34 @@ public class Glean {
 
         self.buildInfo = buildInfo
         self.configuration = configuration
-
-        // Execute startup off the main thread
-        Dispatchers.shared.launchConcurrent {
-            self.initialized = withFfiConfiguration(
-                // The FileManager returns `file://` URLS with absolute paths.
-                // The Rust side expects normal path strings to be used.
-                // `relativePath` for a file URL gives us the absolute filesystem path.
-                dataDir: getGleanDirectory().relativePath,
-                packageName: AppInfo.name,
-                languageBindingName: Constants.languageBindingName,
-                uploadEnabled: uploadEnabled,
-                configuration: configuration
-            ) { cfg in
-                var cfg = cfg
-                return glean_initialize(&cfg).toBool()
-            }
-
-            // If initialization of Glean fails, bail out and don't initialize further
-            if !self.initialized {
-                return
-            }
-
-            if let debugViewTag = self.debugViewTag {
-                _ = self.setDebugViewTag(debugViewTag)
-            }
-
-            if self.logPings {
-                self.setLogPings(self.logPings)
-            }
-
-            if let sourceTags = self.sourceTags {
-                _ = self.setSourceTags(sourceTags)
-            }
-
-            // Get the current value of the dirty flag so we know whether to
-            // send a dirty startup baseline ping below.  Immediately set it to
-            // `false` so that dirty startup pings won't be sent if Glean
-            // initialization does not complete successfully.
-            // It is set to `true` again when registering the lifecycle observer.
-            let isDirtyFlagSet = glean_is_dirty_flag_set().toBool()
-            glean_set_dirty_flag(false.toByte())
-
-            // Register builtin pings.
-            // Unfortunately we need to manually list them here to guarantee they are registered synchronously
-            // before we need them.
-            // We don't need to handle the deletion-request ping. It's never touched from the language implementation.
-            glean_register_ping_type(Pings.shared.baseline.handle)
-            glean_register_ping_type(Pings.shared.metrics.handle)
-            glean_register_ping_type(Pings.shared.events.handle)
-
-            // If any pings were registered before initializing, do so now
-            for ping in self.pingTypeQueue {
-                // We're registering pings synchronously here,
-                // as this whole `initialize` block already runs off the main thread.
-                glean_register_ping_type(ping.handle)
-            }
-
-            // If this is the first time ever the Glean SDK runs, make sure to set
-            // some initial core metrics in case we need to generate early pings.
-            // The next times we start, we would have them around already.
-            let isFirstRun = glean_is_first_run().toBool()
-            if isFirstRun {
-                self.initializeCoreMetrics()
-            }
-
-            // Deal with any pending events so we can start recording new ones
-            let pingSubmitted = glean_on_ready_to_submit_pings().toBool()
-
-            // We need to enqueue the ping uploader in these cases:
-            // 1. Pings were submitted through Glean and it is ready to upload those pings;
-            // 2. Upload is disabled, to upload a possible deletion-request ping.
-            if pingSubmitted || !uploadEnabled {
-                HttpPingUploader.launch(configuration: configuration)
-            }
-
-            // Check for overdue metrics pings
-            self.metricsPingScheduler.schedule()
-
-            // Check if the "dirty flag" is set. That means the product was probably
-            // force-closed. If that's the case, submit a 'baseline' ping with the
-            // reason "dirty_startup". We only do that from the second run.
-            if !isFirstRun && isDirtyFlagSet {
-                self.submitPingByNameSync(
-                    pingName: "baseline",
-                    reason: "dirty_startup"
-                )
-            }
-
-            // From the second time we run, after all startup pings are generated,
-            // make sure to clear `lifetime: application` metrics and set them again.
-            // Any new value will be sent in newly generted pings after startup.
-            // NOTE: we are adding this directly to the serialOperationQueue which
-            // bypasses the queue for initial tasks, otherwise this could get lost
-            // if the initial tasks queue overflows.
-            if !isFirstRun {
-                glean_clear_application_lifetime_metrics()
-                self.initializeCoreMetrics()
-            }
-
-            // Signal the RLB dispatcher to unblock, if any exists.
-            glean_flush_rlb_dispatcher()
-            // Signal Dispatcher that init is complete
-            Dispatchers.shared.flushQueuedInitialTasks()
-
-            self.observer = GleanLifecycleObserver()
-        }
-
-        self.initFinished.value = true
+        let cfg = InternalConfiguration(
+            dataPath: getGleanDirectory().relativePath,
+            applicationId: AppInfo.name,
+            languageBindingName: Constants.languageBindingName,
+            uploadEnabled: uploadEnabled,
+            maxEvents: configuration.maxEvents.map { UInt32($0) },
+            delayPingLifetimeIo: false,
+            appBuild: "0.0.0",
+            useCoreMps: false
+        )
+        let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
+        let callbacks = OnGleanEventsImpl(glean: self)
+        gleanInitialize(cfg, clientInfo, callbacks)
     }
 
-    // swiftlint:enable function_body_length cyclomatic_complexity
-
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
-    private func initializeCoreMetrics() {
-        // Set a few more metrics that will be sent as part of every ping.
-        // Please note that the following metrics must be set synchronously, so
-        // that they are guaranteed to be available with the first ping that is
-        // generated. We use an internal only API to do that.
-
-        GleanInternalMetrics.osVersion.setSync(UIDevice.current.systemVersion)
-        GleanInternalMetrics.deviceManufacturer.setSync(Sysctl.manufacturer)
-        GleanInternalMetrics.deviceModel.setSync(Sysctl.model)
-        GleanInternalMetrics.architecture.setSync(Sysctl.machine)
-        GleanInternalMetrics.locale.setSync(getLocaleTag())
-
-        if let channel = self.configuration?.channel {
-            GleanInternalMetrics.appChannel.setSync(channel)
-        }
-
-        GleanInternalMetrics.appBuild.setSync(AppInfo.buildId)
-        GleanInternalMetrics.appDisplayVersion.setSync(AppInfo.displayVersion)
-
-        // It's definitely initialized at `initialize`
-        if let buildInfo = self.buildInfo {
-            GleanInternalMetrics.buildDate.setSync(buildInfo.buildDate)
-        }
+    internal func getClientInfo(_ configuration: Configuration, buildInfo: BuildInfo) -> ClientInfoMetrics {
+        return ClientInfoMetrics(
+            appBuild: AppInfo.buildId,
+            appDisplayVersion: AppInfo.displayVersion,
+            appBuildDate: Datetime(from: buildInfo.buildDate),
+            architecture: Sysctl.machine,
+            osVersion: UIDevice.current.systemVersion,
+            channel: configuration.channel,
+            locale: getLocaleTag(),
+            deviceManufacturer: Sysctl.manufacturer,
+            deviceModel: Sysctl.model
+        )
     }
 
     /// Enable or disable Glean collection and upload.
@@ -258,70 +175,7 @@ public class Glean {
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
     public func setUploadEnabled(_ enabled: Bool) {
-        if !self.initFinished.value {
-            let msg = """
-            Changing upload enabled before Glean is initialized is not supported.
-            Pass the correct state into `Glean.initialize()`.
-            See documentation at https://mozilla.github.io/glean/book/user/general-api.html#initializing-the-glean-sdk
-            """
-            self.logger.error(msg)
-
-            return
-        }
-        // Changing upload enabled always happens asynchronous.
-        // That way it follows what a user expect when calling it inbetween other calls:
-        // It executes in the right order.
-        //
-        // Because the dispatch queue is halted until Glean is fully initialized
-        // we can safely enqueue here and it will execute after initialization.
-        Dispatchers.shared.launchAPI {
-            // glean_set_upload_enabled might delete all of the queued pings.
-            // Currently a ping uploader could be scheduled ahead of this,
-            // at which point it will pick up scheduled pings before the setting was toggled.
-            // Or it is scheduled afterwards and will not schedule or find any left-over pings to send.
-
-            let originalEnabled = self.internalGetUploadEnabled()
-            glean_set_upload_enabled(enabled.toByte())
-
-            if !enabled {
-                Dispatchers.shared.cancelBackgroundTasks()
-            }
-
-            if !originalEnabled && enabled {
-                // If uploading is being re-enabled, we have to restore the
-                // application-lifetime metrics.
-                self.initializeCoreMetrics()
-            }
-
-            if originalEnabled && !enabled {
-                // If uploading is disabled, we need to send the deletion-request ping
-                HttpPingUploader.launch(configuration: self.configuration!)
-            }
-        }
-    }
-
-    /// Get whether or not Glean is allowed to record and upload data.
-    ///
-    /// Caution: the result is only correct if Glean is already initialized.
-    ///
-    /// **THIS METHOD IS DEPRECATED.**
-    /// Applications should not rely on Glean's internal state.
-    /// Upload enabled status should be tracked by the application and communicated to Glean if it changes.
-    @available(*, deprecated,
-               message: "Upload enabled should be tracked by the application and communicated to Glean if it changes")
-    public func getUploadEnabled() -> Bool {
-        return internalGetUploadEnabled()
-    }
-
-    /// Get whether or not Glean is allowed to record and upload data.
-    ///
-    /// Caution: the result is only correct if Glean is already initialized.
-    func internalGetUploadEnabled() -> Bool {
-        if isInitialized() {
-            return glean_is_upload_enabled().toBool()
-        } else {
-            return false
-        }
+        gleanSetUploadEnabled(enabled)
     }
 
     /// Used to indicate that an experiment is running.
@@ -333,47 +187,17 @@ public class Glean {
     ///     * experimentId: The id of the active experiment (maximum 100 bytes).
     ///     * branch: The branch of the experiment (maximum 100 bytes).
     ///     * extra: Optional metadata to output with the ping.
-    public func setExperimentActive(experimentId: String, branch: String, extra: [String: String]?) {
-        // The Dictionary is sent over FFI as a pair of arrays, one containing the
-        // keys, and the other containing the values.
-        // Keys and values are passed over the FFI boundary as arrays of strings, so
-        // it is necessary to separate the dictionary into appropriate arrays.
-        var keys = [String]()
-        var values = [String]()
-        if let extras = extra {
-            for item in extras {
-                keys.append(item.key)
-                values.append(item.value)
-            }
-        }
-
-        withArrayOfCStrings(keys) { keys in
-            withArrayOfCStrings(values) { values in
-                // We dispatch this asynchronously so that, if called before the Glean SDK is
-                // initialized, it doesn't get ignored and will be replayed after init.
-                Dispatchers.shared.launchAPI {
-                    glean_set_experiment_active(
-                        experimentId,
-                        branch,
-                        keys,
-                        values,
-                        Int32(extra?.count ?? 0)
-                    )
-                }
-            }
-        }
+    public func setExperimentActive(_ experimentId: String, branch: String, extra: [String: String]?) {
+        let map = extra ?? [:]
+        gleanSetExperimentActive(experimentId, branch, map)
     }
 
     /// Used to indicate that an experiment is no longer running.
     ///
     /// - parameters:
     ///     * experimentsId: The id of the experiment to deactivate.
-    public func setExperimentInactive(experimentId: String) {
-        // We dispatch this asynchronously so that, if called before the Glean SDK is
-        // initialized, it doesn't get ignored and will be replayed after init.
-        Dispatchers.shared.launchAPI {
-            glean_set_experiment_inactive(experimentId)
-        }
+    public func setExperimentInactive(_ experimentId: String) {
+        gleanSetExperimentInactive(experimentId)
     }
 
     /// Tests wheter an experiment is active, for testing purposes only.
@@ -382,9 +206,8 @@ public class Glean {
     ///     * experimentId: The id of the experiment to look for.
     ///
     /// - returns: `true` if the experiment is active and reported in pings.
-    public func testIsExperimentActive(experimentId: String) -> Bool {
-        Dispatchers.shared.assertInTestingMode()
-        return glean_experiment_test_is_active(experimentId).toBool()
+    public func testIsExperimentActive(_ experimentId: String) -> Bool {
+        return gleanTestGetExperimentData(experimentId) != nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -394,22 +217,9 @@ public class Glean {
     /// - parameters:
     ///     * experimentId: The id of the experiment to look for.
     ///
-    /// - returns: `RecordedExperimentData` if the experiment is active and reported in pings, `nil` otherwise.
-    public func testGetExperimentData(experimentId: String) -> RecordedExperimentData? {
-        Dispatchers.shared.assertInTestingMode()
-        let jsonString = String(
-            freeingGleanString: glean_experiment_test_get_data(experimentId)
-        )
-
-        if let jsonData: Data = jsonString.data(using: .utf8, allowLossyConversion: false) {
-            if let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                let experimentData = RecordedExperimentData(json: json)
-
-                return experimentData
-            }
-        }
-
-        return nil
+    /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
+    public func testGetExperimentData(_ experimentId: String) -> RecordedExperiment? {
+        return gleanTestGetExperimentData(experimentId)
     }
 
     /// Returns true if the Glean SDK has been initialized.
@@ -419,32 +229,14 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        Dispatchers.shared.launchAPI {
-            glean_handle_client_active()
-            // The above call may generate pings, so we need to trigger
-            // the uploader. It's fine to trigger it if no ping was generated:
-            // it will bail out.
-            HttpPingUploader.launch(configuration: self.configuration!)
-        }
+        gleanHandleClientActive()
 
-        // Start the timespan for the new activity period.
-        GleanBaseline.duration.start()
         GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        // We're going to background, so store how much time we spent
-        // on foreground.
-        GleanBaseline.duration.stop()
-
-        Dispatchers.shared.launchAPI {
-            glean_handle_client_inactive()
-            // The above call may generate pings, so we need to trigger
-            // the uploader. It's fine to trigger it if no ping was generated:
-            // it will bail out.
-            HttpPingUploader.launch(configuration: self.configuration!)
-        }
+        gleanHandleClientInactive()
     }
 
     /// Collect and submit a ping by name for eventual uploading
@@ -460,51 +252,8 @@ public class Glean {
     ///
     /// If the ping currently contains no content, it will not be assembled and
     /// queued for sending.
-    func submitPingByName(pingName: String, reason: String? = nil) {
-        // Queue submitting the ping behind all other metric operations to include them in the ping
-        Dispatchers.shared.launchAPI {
-            self.submitPingByNameSync(pingName: pingName, reason: reason)
-        }
-    }
-
-    /// Collect and submit a ping by name for eventual uploading, synchronously
-    ///
-    /// - parameters:
-    ///     * pingName: Name of the ping to submit.
-    ///     * reason: The reason the ping is being submitted. Must be one of the strings
-    ///       defined in the reasons field in the ping metadata.
-    ///
-    /// The ping content is assembled as soon as possible, but upload is not
-    /// guaranteed to happen immediately, as that depends on the upload
-    /// policies.
-    ///
-    /// If the ping currently contains no content, it will not be assembled and
-    /// queued for sending.
-    func submitPingByNameSync(pingName: String, reason: String? = nil) {
-        if !self.isInitialized() {
-            self.logger.error("Glean must be initialized before sending pings")
-            return
-        }
-
-        if !self.internalGetUploadEnabled() {
-            self.logger.info("Glean disabled: not submitting any pings")
-            return
-        }
-
-        let submittedPing = glean_submit_ping_by_name(
-            pingName,
-            reason
-        )
-
-        if submittedPing != 0 {
-            if let config = self.configuration {
-                HttpPingUploader.launch(configuration: config)
-            }
-        }
-    }
-
-    func submitPing(_ ping: PingBase, reason: String? = nil) {
-        return self.submitPingByName(pingName: ping.name, reason: reason)
+    func submitPingByName(_ pingName: String, _ reason: String? = nil) {
+        gleanSubmitPingByName(pingName, reason)
     }
 
     /// Register the pings generated from `pings.yaml` with the Glean SDK.
@@ -513,29 +262,7 @@ public class Glean {
     ///     * pings: The `Pings` object generated for your library or application
     ///              by the Glean SDK.
     public func registerPings(_: Any) {
-        // Instantiating the Pings object to send this function is enough to
-        // call the constructor and have it registered through [Glean.registerPingType].
         NSLog("Registering pings")
-    }
-
-    /// Register a `Ping` in the registry associated with this `Glean` object.
-    func registerPingType(_ pingType: PingBase) {
-        // If this happens after Glean.initialize is called (and returns),
-        // we dispatch ping registration on the thread pool.
-        // Registering a ping should not block the application.
-        // Submission itself is also dispatched, so it will always come after the registration.
-        if self.initFinished.value {
-            Dispatchers.shared.launchAPI {
-                glean_register_ping_type(pingType.handle)
-            }
-        }
-
-        // We need to keep track of pings, so they get re-registered after a reset.
-        // This state is kept across Glean resets, which should only ever happen in test mode.
-        // Or by the instrumentation tests (`connectedAndroidTest`), which relaunches the application activity,
-        // but not the whole process, meaning globals, such as the ping types, still exist from the old run.
-        // It's a set and keeping them around forever should not have much of an impact.
-        self.pingTypeQueue.append(pingType)
     }
 
     /// Set a tag to be applied to headers when uploading pings for debug view.
@@ -543,13 +270,8 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    func setDebugViewTag(_ value: String) -> Bool {
-        if self.isInitialized() {
-            return glean_set_debug_view_tag(value).toBool()
-        } else {
-            debugViewTag = value
-            return true
-        }
+    func setDebugViewTag(_ tag: String) -> Bool {
+        return gleanSetDebugViewTag(tag)
     }
 
     /// Set the log_pings debug option,
@@ -558,11 +280,7 @@ public class Glean {
     /// - parameters:
     ///     * value: The value of the option.
     func setLogPings(_ value: Bool) {
-        if self.isInitialized() {
-            glean_set_log_pings(value.toByte())
-        } else {
-            logPings = value
-        }
+        gleanSetLogPings(value)
     }
 
     /// Set the source tags to be applied as headers when uploading pings.
@@ -571,20 +289,10 @@ public class Glean {
     /// return `false`.
     /// If Glean is not initialized yet, tags will not be validated at this point.
     ///
-    /// This is only meant to be used internally by the `GleanDebugActivity`.
-    ///
     /// - parameters:
     ///    * tags: A list of tags, which must be valid HTTP header values.
-    public func setSourceTags(_ value: [String]) -> Bool {
-        if self.isInitialized() {
-            let len = value.count
-            return withArrayOfCStrings(value) { value in
-                glean_set_source_tags(value, Int32(len)).toBool()
-            }
-        } else {
-            sourceTags = value
-            return true
-        }
+    public func setSourceTags(_ tags: [String]) -> Bool {
+        gleanSetSourceTags(tags)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process
@@ -644,25 +352,20 @@ public class Glean {
         return isMainProcess!
     }
 
-    /// PUBLIC TEST ONLY FUNCTION.
-    ///
-    /// Returns true if a ping by this name is in the ping registry.
-    public func testHasPingType(_ pingName: String) -> Bool {
-        return glean_test_has_ping_type(pingName).toBool()
-    }
-
     /// Test-only method to destroy the owned glean-core handle.
-    func testDestroyGleanHandle() {
+    func testDestroyGleanHandle(_ clearStores: Bool = false) {
         if !isInitialized() {
             // We don't need to destroy Glean: it wasn't initialized.
             return
         }
 
-        glean_destroy_glean()
-        // Reset all state.
-        Dispatchers.shared.setTaskQueueing(enabled: true)
-        self.initFinished.value = false
+        gleanTestDestroyGlean(clearStores)
+
+        // Reset all state
+        gleanSetTestMode(false)
+        self.testingMode.value = false
         self.initialized = false
+        self.metricsPingScheduler = nil
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -672,7 +375,8 @@ public class Glean {
     /// This makes all asynchronous work synchronous so we can test the results of the
     /// API synchronously.
     public func enableTestingMode() {
-        Dispatchers.shared.setTestingMode(enabled: true)
+        self.testingMode.value = true
+        gleanSetTestMode(true)
     }
 
     /// PUBLIC TEST ONLY FUNCTION.
@@ -685,15 +389,20 @@ public class Glean {
     public func resetGlean(configuration: Configuration = Configuration(),
                            clearStores: Bool,
                            uploadEnabled: Bool = true) {
-        enableTestingMode()
+        // Init Glean.
+        testDestroyGleanHandle(clearStores)
 
-        if isInitialized() && clearStores {
-            // Clear all the stored data.
-            glean_test_clear_all_stores()
+        // If Glean was not initialized we can't ask it to delete its data.
+        // But we can go as far as simply removing all files.
+        if clearStores {
+            let dataPath = getGleanDirectory()
+            // Don't care if we can't remove the directory.
+            // It might just not exist.
+            _ = try? FileManager.default.removeItem(at: dataPath)
         }
 
-        // Init Glean.
-        testDestroyGleanHandle()
+        // Enable test mode.
+        enableTestingMode()
         // Enable ping logging for all tests
         setLogPings(true)
 

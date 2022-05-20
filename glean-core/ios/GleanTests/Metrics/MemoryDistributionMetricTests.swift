@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class MemoryDistributionTypeTests: XCTestCase {
     override func setUp() {
         resetGleanDiscardingInitialPings(testCase: self, tag: "MemoryDistributionTypeTests")
@@ -17,27 +15,27 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testTiminingDistributionSavesToStorage() {
-        let metric = MemoryDistributionMetricType(
+        let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            memoryUnit: .kilobyte
+            disabled: false
+            ), .kilobyte
         )
 
         // Accumulate a few values
-        for i in UInt64(1) ... 3 {
+        for i in Int64(1) ... 3 {
             metric.accumulate(i)
         }
 
-        let kb = UInt64(1024)
+        let kb = Int64(1024)
 
         // Check that data was properly recorded.
         // We can only check the count, as we don't control the time.
-        XCTAssert(metric.testHasValue())
-        let snapshot = try! metric.testGetValue()
-        XCTAssertEqual(3, snapshot.count)
+        let snapshot = metric.testGetValue()!
+        let sum = snapshot.values.values.reduce(0, +)
+        XCTAssertEqual(3, sum)
 
         // Check the sum
         XCTAssertEqual(1 * kb + 2 * kb + 3 * kb, snapshot.sum)
@@ -50,18 +48,18 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testMemoryDistributionValuesAreTruncatedTo1Tb() {
-        let metric = MemoryDistributionMetricType(
+        let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: false,
-            memoryUnit: .gigabyte
+            disabled: false
+            ), .gigabyte
         )
 
         metric.accumulate(2048)
 
-        let snapshot = try! metric.testGetValue()
+        let snapshot = metric.testGetValue()!
 
         // Check the sum
         XCTAssertEqual(1 << 40, snapshot.sum)
@@ -72,53 +70,50 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testMemoryDistributionMustNotRecordIfDisabled() {
-        let metric = MemoryDistributionMetricType(
+        let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",
             sendInPings: ["store1"],
             lifetime: .ping,
-            disabled: true,
-            memoryUnit: .kilobyte
+            disabled: true
+            ), .kilobyte
         )
 
         metric.accumulate(1)
-        XCTAssertFalse(metric.testHasValue())
+        XCTAssertNil(metric.testGetValue())
     }
 
     func testMemoryDistributionGetValueThrowsExceptionIfNothingIsStored() {
-        let metric = MemoryDistributionMetricType(
+        let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",
             sendInPings: ["store1"],
             lifetime: .application,
-            disabled: false,
-            memoryUnit: .kilobyte
+            disabled: false
+            ), .kilobyte
         )
 
-        XCTAssertThrowsError(try metric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(metric.testGetValue())
     }
 
     func testMemoryDistributionSavesToSecondaryPings() {
         // Define a memory distribution metric which will be stored in multiple stores
-        let metric = MemoryDistributionMetricType(
+        let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",
             sendInPings: ["store1", "store2", "store3"],
             lifetime: .application,
-            disabled: false,
-            memoryUnit: .kilobyte
+            disabled: false
+            ), .kilobyte
         )
 
         // Accumulate a few values
-        for i in UInt64(1) ... 3 {
+        for i in Int64(1) ... 3 {
             metric.accumulate(i)
         }
 
         // Check that data was properly recorded in the second ping.
-        XCTAssert(metric.testHasValue("store2"))
-        var snapshot = try! metric.testGetValue("store2")
+        var snapshot = metric.testGetValue("store2")!
 
         // Check the sum
         XCTAssertEqual(6144, snapshot.sum)
@@ -130,8 +125,7 @@ class MemoryDistributionTypeTests: XCTestCase {
         XCTAssertEqual(1, snapshot.values[3024])
 
         // Check that data was properly recorded in the second ping.
-        XCTAssert(metric.testHasValue("store3"))
-        snapshot = try! metric.testGetValue("store3")
+        snapshot = metric.testGetValue("store3")!
 
         // Check the sum
         XCTAssertEqual(6144, snapshot.sum)

@@ -76,9 +76,10 @@ class GleanDebugActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         if (!Glean.isInitialized()) {
-            Log.e(LOG_TAG,
+            Log.e(
+                LOG_TAG,
                 "Glean is not initialized. " +
-                "It may be disabled by the application."
+                    "It may be disabled by the application."
             )
             finish()
             return

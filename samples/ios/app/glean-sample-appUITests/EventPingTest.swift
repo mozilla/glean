@@ -47,12 +47,12 @@ class EventPingTest: XCTestCase {
 
         let recordButton = app.buttons["Record"]
 
-        // 3 events, quickly
+        // 3 taps, quickly
         recordButton.tap()
         recordButton.tap()
         recordButton.tap()
 
-        // one event after a while
+        // one tap after a while
         sleep(1)
         recordButton.tap()
 
@@ -72,23 +72,26 @@ class EventPingTest: XCTestCase {
         XCTAssertEqual("inactive", reason, "Should have gotten a inactive events ping")
 
         let events = lastPingJson!["events"] as! [[String: Any]]
-        // Per button tap we record 3 events.
-        XCTAssertEqual(4 * 3, events.count, "Events ping should have all button-tap events")
+        // 4 taps total, per button tap we record 2 events.
+        let expectedCount = 4 * 2
+        XCTAssertEqual(expectedCount, events.count, "Events ping should have all button-tap events")
 
         let firstEvent = events[0]
         XCTAssertEqual(0, firstEvent["timestamp"] as! Int, "First event should be at timestamp 0")
 
-        for i in 1...11 {
+        for i in 1...(expectedCount-1) {
             let earlier = events[i-1]["timestamp"] as! Int
             let this = events[i]["timestamp"] as! Int
             XCTAssert(earlier <= this, "Events should be ordered monotonically non-decreasing")
         }
 
-        // 3 events per tap,
-        // thus event 8 is the last event of the third tap,
-        // event 9 is the first event of the fourth tap.
-        let notLast = events[8]["timestamp"] as! Int
-        let last = events[9]["timestamp"] as! Int
+        // 2 events per tap,
+        // we want the last event of the third tap,
+        // and the first event of the fourth tap.
+        let lastOfThree = (3 * 2) - 1
+        let firstOfFour = lastOfThree + 1
+        let notLast = events[lastOfThree]["timestamp"] as! Int
+        let last = events[firstOfFour]["timestamp"] as! Int
         let diff = last - notLast
         // Sleeping and tapping the button has a delay of ~600ms,
         // so we account for a tiny bit more here.

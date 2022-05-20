@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class StringMetricTests: XCTestCase {
     override func setUp() {
         resetGleanDiscardingInitialPings(testCase: self, tag: "StringMetricTests")
@@ -17,84 +15,78 @@ class StringMetricTests: XCTestCase {
     }
 
     func testStringSavesToStorage() {
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertFalse(stringMetric.testHasValue())
+        XCTAssertNil(stringMetric.testGetValue())
 
         stringMetric.set("value")
 
-        XCTAssert(stringMetric.testHasValue())
-        XCTAssertEqual("value", try stringMetric.testGetValue())
+        XCTAssertEqual("value", stringMetric.testGetValue())
 
         stringMetric.set("overridenValue")
-        XCTAssert(stringMetric.testHasValue())
-        XCTAssertEqual("overridenValue", try stringMetric.testGetValue())
+        XCTAssertEqual("overridenValue", stringMetric.testGetValue())
     }
 
     func testStringMustNotRecordIfDisabled() {
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ))
 
-        XCTAssertFalse(stringMetric.testHasValue())
+        XCTAssertNil(stringMetric.testGetValue())
 
         stringMetric.set("value")
 
-        XCTAssertFalse(stringMetric.testHasValue(), "Strings must not be recorded if they are disabled")
+        XCTAssertNil(stringMetric.testGetValue(), "Strings must not be recorded if they are disabled")
     }
 
     func testStringGetValueThrowsExceptionIfNothingIsStored() {
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
-        XCTAssertThrowsError(try stringMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(stringMetric.testGetValue())
     }
 
     func testStringSavesToSecondaryPings() {
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         stringMetric.set("value")
 
-        XCTAssert(stringMetric.testHasValue("store2"))
-        XCTAssertEqual("value", try stringMetric.testGetValue("store2"))
+        XCTAssertEqual("value", stringMetric.testGetValue("store2"))
 
         stringMetric.set("overridenValue")
 
-        XCTAssert(stringMetric.testHasValue("store2"))
-        XCTAssertEqual("overridenValue", try stringMetric.testGetValue("store2"))
+        XCTAssertEqual("overridenValue", stringMetric.testGetValue("store2"))
     }
 
     func testLongStringRecordsAnError() {
-        let stringMetric = StringMetricType(
+        let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ))
 
         stringMetric.set(String(repeating: "0123456789", count: 11))
 

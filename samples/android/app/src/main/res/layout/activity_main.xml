@@ -43,6 +43,13 @@
         android:layout_marginTop="5dp"
         android:text="@string/generate_data" />
 
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/submit_data" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"

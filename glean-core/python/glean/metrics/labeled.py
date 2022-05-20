@@ -3,14 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Any, Callable, List, Optional, Set, Type
+from typing import Any, Optional, Set, Type
 
 
-from .. import _ffi
-from .boolean import BooleanMetricType
-from .counter import CounterMetricType
-from .lifetime import Lifetime
-from .string import StringMetricType
+from .._uniffi import CommonMetricData
+from .._uniffi import LabeledBoolean
+from .._uniffi import LabeledCounter
+from .._uniffi import LabeledString
 from ..testing import ErrorType
 
 
@@ -30,50 +29,18 @@ class LabeledMetricBase:
     metric storage and rearrange them correctly in the ping.
     """
 
-    # The following 4 class attributes must be overridden by classes
+    # The following class attribute must be overridden by classes
     # inheriting from LabeledMetricBase:
 
-    # The class of the concrete metric type
-    _submetric_type: Type
-
     # The FFI function to instantiate the labeled metric type
-    _metric_type_instantiator: Callable
-
-    # The FFI function to get a concrete metric type from the labeled metric type
-    _submetric_type_instantiator: Callable
-
-    # The FFI function for test_get_num_recorded_errors
-    _test_get_num_recorded_errors_ffi: Callable
+    _ctor: Type
 
     def __init__(
         self,
-        disabled: bool,
-        category: str,
-        lifetime: Lifetime,
-        name: str,
-        send_in_pings: List[str],
+        common_metric_data: CommonMetricData,
         labels: Optional[Set[str]] = None,
     ):
-        self._disabled = disabled
-        self._send_in_pings = send_in_pings
-
-        if labels is not None:
-            label_list = _ffi.ffi_encode_vec_string(list(labels))
-            label_len = len(labels)
-        else:
-            label_list = _ffi.ffi.NULL
-            label_len = 0
-
-        self._handle = self._metric_type_instantiator(
-            _ffi.ffi_encode_string(category),
-            _ffi.ffi_encode_string(name),
-            _ffi.ffi_encode_vec_string(send_in_pings),
-            len(send_in_pings),
-            lifetime.value,
-            disabled,
-            label_list,
-            label_len,
-        )
+        self._inner = self._ctor(common_metric_data, labels)
 
     def __getitem__(self, item: str) -> Any:
         """
@@ -91,14 +58,7 @@ class LabeledMetricBase:
         label is used, the metric will be recorded in the special `__other__`
         label.
         """
-        handle = self._submetric_type_instantiator(
-            self._handle, _ffi.ffi_encode_string(item)
-        )
-        metric = self._submetric_type.__new__(self._submetric_type)  # type: ignore
-        metric._handle = handle
-        metric._disabled = self._disabled
-        metric._send_in_pings = self._send_in_pings
-        return metric
+        return self._inner.get(item)
 
     def test_get_num_recorded_errors(
         self, error_type: ErrorType, ping_name: Optional[str] = None
@@ -115,41 +75,19 @@ class LabeledMetricBase:
             num_errors (int): The number of errors recorded for the metric for
                 the given error type.
         """
-        if ping_name is None:
-            ping_name = self._send_in_pings[0]
-
-        return self._test_get_num_recorded_errors_ffi(
-            self._handle,
-            error_type.value,
-            _ffi.ffi_encode_string(ping_name),
-        )
+        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
 
 
 class LabeledBooleanMetricType(LabeledMetricBase):
-    _submetric_type = BooleanMetricType
-    _metric_type_instantiator = _ffi.lib.glean_new_labeled_boolean_metric
-    _submetric_type_instantiator = _ffi.lib.glean_labeled_boolean_metric_get
-    _test_get_num_recorded_errors_ffi = (
-        _ffi.lib.glean_labeled_boolean_test_get_num_recorded_errors
-    )
+    _ctor = LabeledBoolean
 
 
 class LabeledCounterMetricType(LabeledMetricBase):
-    _submetric_type = CounterMetricType
-    _metric_type_instantiator = _ffi.lib.glean_new_labeled_counter_metric
-    _submetric_type_instantiator = _ffi.lib.glean_labeled_counter_metric_get
-    _test_get_num_recorded_errors_ffi = (
-        _ffi.lib.glean_labeled_counter_test_get_num_recorded_errors
-    )
+    _ctor = LabeledCounter
 
 
 class LabeledStringMetricType(LabeledMetricBase):
-    _submetric_type = StringMetricType
-    _metric_type_instantiator = _ffi.lib.glean_new_labeled_string_metric
-    _submetric_type_instantiator = _ffi.lib.glean_labeled_string_metric_get
-    _test_get_num_recorded_errors_ffi = (
-        _ffi.lib.glean_labeled_string_test_get_num_recorded_errors
-    )
+    _ctor = LabeledString
 
 
 __all__ = [

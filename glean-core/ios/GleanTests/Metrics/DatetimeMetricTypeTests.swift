@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class DatetimeMetricTypeTests: XCTestCase {
     override func setUp() {
         resetGleanDiscardingInitialPings(testCase: self, tag: "DatetimeMetricTypeTests")
@@ -40,19 +38,19 @@ class DatetimeMetricTypeTests: XCTestCase {
             second: second
         )
         metric.set(components: value)
-        XCTAssertEqual(testString, try metric.testGetValueAsString())
+        XCTAssertEqual(testString, metric.testGetValueAsString())
         let date1 = Date.fromISO8601String(dateString: testString, precision: metric.timeUnit)
-        XCTAssertEqual(date1, try metric.testGetValue())
+        XCTAssertEqual(date1, metric.testGetValue())
     }
 
     func testDatetimeSavesToStorage() {
-        let datetimeMetric = DatetimeMetricType(
+        let datetimeMetric = DatetimeMetricType(CommonMetricData(
             category: "telemetry",
             name: "datetime_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ), .minute)
 
         testDatetime(metric: datetimeMetric,
                      testString: "2004-12-09T08:03-08:00",
@@ -71,43 +69,41 @@ class DatetimeMetricTypeTests: XCTestCase {
     }
 
     func testDatetimeMustNotRecordIfDisabled() {
-        let datetimeMetric = DatetimeMetricType(
+        let datetimeMetric = DatetimeMetricType(CommonMetricData(
             category: "telemetry",
             name: "datetime_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: true
-        )
+        ), .minute)
 
-        XCTAssertFalse(datetimeMetric.testHasValue())
+        XCTAssertNil(datetimeMetric.testGetValue())
 
         datetimeMetric.set()
 
-        XCTAssertFalse(datetimeMetric.testHasValue(), "Datetimes must not be recorded if they are disabled")
+        XCTAssertNil(datetimeMetric.testGetValue(), "Datetimes must not be recorded if they are disabled")
     }
 
     func testDatetimeGetValueThrowsExceptionIfNothingIsStored() {
-        let datetimeMetric = DatetimeMetricType(
+        let datetimeMetric = DatetimeMetricType(CommonMetricData(
             category: "telemetry",
             name: "datetime_metric",
             sendInPings: ["store1"],
             lifetime: .application,
             disabled: false
-        )
+        ), .minute)
 
-        XCTAssertThrowsError(try datetimeMetric.testGetValue()) { error in
-            XCTAssertEqual(error as! String, "Missing value")
-        }
+        XCTAssertNil(datetimeMetric.testGetValue())
     }
 
     func testDatetimeSavesToSecondaryPings() {
-        let datetimeMetric = DatetimeMetricType(
+        let datetimeMetric = DatetimeMetricType(CommonMetricData(
             category: "telemetry",
             name: "datetime_metric",
             sendInPings: ["store1", "store2"],
             lifetime: .application,
             disabled: false
-        )
+        ), .minute)
 
         let timeZone = TimeZone(identifier: "America/Los_Angeles")
         let value = DateComponents(
@@ -124,8 +120,8 @@ class DatetimeMetricTypeTests: XCTestCase {
         XCTAssertTrue(datetimeMetric.testHasValue("store2"))
         let testString = "2004-12-09T08:03-08:00"
         let date = Date.fromISO8601String(dateString: testString, precision: datetimeMetric.timeUnit)
-        XCTAssertEqual(date, try datetimeMetric.testGetValue("store2"))
-        XCTAssertEqual(testString, try datetimeMetric.testGetValueAsString("store2"))
+        XCTAssertEqual(date, datetimeMetric.testGetValue("store2"))
+        XCTAssertEqual(testString, datetimeMetric.testGetValueAsString("store2"))
     }
 
     func testDateExtensionfromISO8601String() {

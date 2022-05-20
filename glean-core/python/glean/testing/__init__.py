@@ -10,12 +10,13 @@ Utilities for writing unit tests involving Glean.
 
 import gzip
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Dict, Optional, Union
 
-
+from .._uniffi import glean_set_test_mode, glean_set_log_pings
+from .._uniffi import ErrorType
 from glean import Configuration
-from .error_type import ErrorType  # noqa
-from ..net import base_uploader, ping_uploader
+from ..net import base_uploader
+from ..net.ping_uploader import UploadResult
 
 
 def reset_glean(
@@ -36,7 +37,6 @@ def reset_glean(
             global settings.
     """
     from glean import Glean
-    from glean._dispatcher import Dispatcher
 
     data_dir: Optional[Path] = None
     if not clear_stores:
@@ -45,10 +45,9 @@ def reset_glean(
 
     Glean._reset()
 
-    # `_testing_mode` should be changed *after* `Glean._reset()` is run, so
-    # that `Glean` properly joins on the worker thread when `_testing_mode` is
-    # False.
-    Dispatcher._testing_mode = True
+    Glean._testing_mode = True
+    glean_set_test_mode(True)
+    glean_set_log_pings(True)
 
     if data_dir is None:
         Glean._initialize_with_tempdir_for_testing(
@@ -82,20 +81,22 @@ class _RecordingUploader(base_uploader.BaseUploader):
         self,
         path: str,
         data: bytes,
-        headers: List[Tuple[str, str]],
+        headers: Dict[str, str],
         config: "Configuration",
-    ) -> ping_uploader.UploadResult:
-        is_gzipped = (
-            len([h for h in headers if h[0] == "Content-Encoding" and h[1] == "gzip"])
-            == 1
-        )
+    ) -> Union[
+        UploadResult,
+        UploadResult.UNRECOVERABLE_FAILURE,
+        UploadResult.RECOVERABLE_FAILURE,
+        UploadResult.HTTP_STATUS,
+    ]:
+        is_gzipped = headers.get("Content-Encoding", None) == "gzip"
 
         uncompressed_data = gzip.decompress(data) if is_gzipped else data
         with self.file_path.open("w") as fd:
             fd.write(str(path) + "\n")
             fd.write(uncompressed_data.decode("utf-8") + "\n")
 
-        return ping_uploader.HttpResponse(status_code=200)
+        return UploadResult.HTTP_STATUS(200)
 
 
 __all__ = ["reset_glean", "ErrorType"]

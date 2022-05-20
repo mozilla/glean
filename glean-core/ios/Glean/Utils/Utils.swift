@@ -18,6 +18,21 @@ extension UInt8 {
     }
 }
 
+extension Datetime {
+    init(from components: DateComponents) {
+        self.init(
+            year: Int32(components.year ?? 0),
+            month: UInt32(components.month ?? 0),
+            day: UInt32(components.day ?? 0),
+            hour: UInt32(components.hour ?? 0),
+            minute: UInt32(components.minute ?? 0),
+            second: UInt32(components.second ?? 0),
+            nanosecond: UInt32(components.nanosecond ?? 0),
+            offsetSeconds: Int32(components.timeZone!.secondsFromGMT(for: components.date!))
+        )
+    }
+}
+
 /// Turn a string into an error, so that it can be thrown as an exception.
 ///
 /// This should only be used in tests.
@@ -69,35 +84,6 @@ extension Date {
     }
 }
 
-extension String {
-    /// Create a string from a Rust-allocated char pointer and deallocate the char pointer.
-    public init(freeingGleanString rustString: UnsafeMutablePointer<CChar>) {
-        defer { glean_str_free(rustString) }
-        self.init(cString: rustString)
-    }
-
-    /// Checks to see if a string matches a regex
-    ///
-    /// - returns: true if the string matches the regex
-    func matches(_ regex: String) -> Bool {
-        return self.range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
-    }
-
-    /// Conveniently convert a string path to a file URL
-    ///
-    /// - returns: File `URL` represeting the path contained in the string
-    var fileURL: URL {
-        return URL(fileURLWithPath: self)
-    }
-
-    /// Gets the last path components, such as the file name from a string path
-    ///
-    /// - returns: `String` representing the last path component
-    var lastPathComponent: String {
-        return fileURL.lastPathComponent
-    }
-}
-
 /// Helper function to retrive the application's Application Support directory for persistent file storage
 ///
 /// - returns: `URL` of the Application Support directory
@@ -105,70 +91,6 @@ func getGleanDirectory() -> URL {
     let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
     return documentsDirectory.appendingPathComponent("glean_data")
-}
-
-// swiftlint:disable function_parameter_count
-/// Create a temporary FFI configuration for the span of the closure.
-///
-/// We need to ensure strings exist across the FFI call, so we `strdup` them and clean up afterwards.
-func withFfiConfiguration<R>(
-    dataDir: String,
-    packageName: String,
-    languageBindingName: String,
-    uploadEnabled: Bool,
-    configuration: Configuration,
-    _ body: (FfiConfiguration) -> R
-) -> R {
-    let dataDir = strdup(dataDir)
-    let packageName = strdup(packageName)
-    let languageBindingName = strdup(languageBindingName)
-
-    var maxEventsPtr: UnsafeMutablePointer<Int32>?
-    if let maxEvents = configuration.maxEvents {
-        maxEventsPtr = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
-        maxEventsPtr!.initialize(to: maxEvents)
-    }
-
-    defer {
-        free(dataDir)
-        free(packageName)
-        maxEventsPtr?.deallocate()
-    }
-
-    let cfg = FfiConfiguration(
-        data_dir: dataDir,
-        package_name: packageName,
-        language_binding_name: languageBindingName,
-        upload_enabled: uploadEnabled.toByte(),
-        max_events: maxEventsPtr,
-        delay_ping_lifetime_io: false.toByte()
-    )
-    return body(cfg)
-}
-
-// swiftlint:enable function_parameter_count
-
-/// Create a temporary array of C-compatible (null-terminated) strings to pass over FFI.
-///
-/// The strings are deallocated after the closure returns.
-///
-/// - parameters:
-///     * args: The array of strings to use.
-//              If `nil` no output array will be allocated and `nil` will be passed to `body`.
-///     * body: The closure that gets an array of C-compatible strings
-func withArrayOfCStrings<R>(
-    _ args: [String]?,
-    _ body: ([UnsafePointer<CChar>?]?) -> R
-) -> R {
-    if let args = args {
-        let cStrings = args.map { UnsafePointer(strdup($0)) }
-        defer {
-            cStrings.forEach { free(UnsafeMutableRawPointer(mutating: $0)) }
-        }
-        return body(cStrings)
-    } else {
-        return body(nil)
-    }
 }
 
 /// This struct creates a Boolean with atomic or synchronized access.

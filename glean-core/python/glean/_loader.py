@@ -16,8 +16,8 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 from glean_parser.parser import parse_objects  # type: ignore
 import glean_parser.lint  # type: ignore
-import glean_parser.metrics  # type: ignore
-from glean_parser.util import Camelize  # type: ignore
+import glean_parser.metrics as gp_metrics  # type: ignore
+from glean_parser.util import Camelize, extra_metric_args  # type: ignore
 
 
 from . import metrics
@@ -40,7 +40,6 @@ _TYPE_MAPPING = {
     "timespan": metrics.TimespanMetricType,
     "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
-    "jwe": metrics.JweMetricType,
     "quantity": metrics.QuantityMetricType,
 }
 
@@ -63,6 +62,42 @@ _ARGS = [
     "send_in_pings",
     "time_unit",
 ]
+
+_ARG_CONVERSION = {
+    "lifetime": {
+        gp_metrics.Lifetime.ping: metrics.Lifetime.PING,
+        gp_metrics.Lifetime.application: metrics.Lifetime.APPLICATION,
+        gp_metrics.Lifetime.user: metrics.Lifetime.USER,
+    },
+    "time_unit": {
+        gp_metrics.TimeUnit.nanosecond: metrics.TimeUnit.NANOSECOND,
+        gp_metrics.TimeUnit.microsecond: metrics.TimeUnit.MICROSECOND,
+        gp_metrics.TimeUnit.millisecond: metrics.TimeUnit.MILLISECOND,
+        gp_metrics.TimeUnit.second: metrics.TimeUnit.SECOND,
+        gp_metrics.TimeUnit.minute: metrics.TimeUnit.MINUTE,
+        gp_metrics.TimeUnit.hour: metrics.TimeUnit.HOUR,
+        gp_metrics.TimeUnit.day: metrics.TimeUnit.DAY,
+    },
+    "memory_unit": {
+        gp_metrics.MemoryUnit.byte: metrics.MemoryUnit.BYTE,
+        gp_metrics.MemoryUnit.kilobyte: metrics.MemoryUnit.KILOBYTE,
+        gp_metrics.MemoryUnit.megabyte: metrics.MemoryUnit.MEGABYTE,
+        gp_metrics.MemoryUnit.gigabyte: metrics.MemoryUnit.GIGABYTE,
+    },
+}
+
+
+def getattr_conv(metric, arg):
+    """
+    Get an attribute from the parsed metric
+    and optionally convert it to the correct glean-py type.
+    """
+
+    val = getattr(metric, arg)
+    if arg in _ARG_CONVERSION:
+        val = _ARG_CONVERSION[arg].get(val, val)
+
+    return val
 
 
 def _normalize_name(name):
@@ -117,31 +152,41 @@ def _event_extra_factory(name: str, argnames: List[Tuple[str, str]]) -> Any:
             setattr(self, key, value)
 
     def to_ffi_extra(self):
-        keys = []
-        values = []
+        extras = {}
 
-        for idx, (name, typ) in enumerate(argnames):
+        for name, typ in argnames:
             attr = getattr(self, name, None)
             if attr is not None:
-                keys.append(idx)
                 if typ == "boolean" and isinstance(attr, bool):
                     # Special-case needed for booleans to turn them lowercase (true/false)
-                    values.append(str(attr).lower())
+                    extras[name] = str(attr).lower()
                 elif typ == "string" and isinstance(attr, str):
-                    values.append(str(attr))
+                    extras[name] = str(attr)
                 elif typ == "quantity" and isinstance(attr, int):
-                    values.append(str(attr))
+                    extras[name] = str(attr)
                 # Don't support other data types
                 else:
                     raise TypeError(f"Type {type(attr)} not supported for {name}")
 
-        return (keys, values)
+        return extras
 
     attr = {name: None for (name, _) in argnames}  # type: Dict[str, Any]
     attr["__init__"] = __init__
     attr["to_ffi_extra"] = to_ffi_extra
     newclass = type(name, (metrics.EventExtras,), attr)
     return newclass
+
+
+def _split_ctor_args(args: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    meta_args = {}
+    extra_args = {}
+    for k, v in args.items():
+        if k in extra_metric_args:
+            extra_args[k] = v
+        else:
+            meta_args[k] = v
+
+    return (meta_args, extra_args)
 
 
 def _get_metric_objects(
@@ -154,14 +199,21 @@ def _get_metric_objects(
     args = {}
     for arg in _ARGS:
         if hasattr(metric, arg):
-            args[arg] = getattr(metric, arg)
+            args[arg] = getattr_conv(metric, arg)
 
     metric_type = _TYPE_MAPPING.get(metric.type)
 
     if metric_type is None:
-        glean_metric = UnsupportedMetricType(metric.type)
+        glean_metric = UnsupportedMetricType(metric.type)  # type: ignore
+    elif metric.type == "ping":
+        # Special-case Ping, doesn't take CommonMetricData
+        glean_metric = metrics.PingType(**args)  # type: ignore
     else:
-        glean_metric = metric_type(**args)
+        # Hack for the time being.
+        if "dynamic_label" not in args:
+            args["dynamic_label"] = None
+        meta_args, rest = _split_ctor_args(args)
+        glean_metric = metric_type(metrics.CommonMetricData(**meta_args), **rest)
 
     glean_metric.__doc__ = metric.description
 
@@ -178,9 +230,7 @@ def _get_metric_objects(
         else:
             enum_name = name + "_keys"
             class_name = Camelize(enum_name)
-            values = dict(
-                (x.upper(), i) for (i, x) in enumerate(metric.allowed_extra_keys)
-            )
+            values = dict((x.upper(), x) for x in metric.allowed_extra_keys)
             keys_enum = enum.Enum(class_name, values)  # type: ignore
             yield enum_name, keys_enum
     elif metric.type == "ping":

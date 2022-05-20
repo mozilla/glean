@@ -5,12 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import com.sun.jna.StringArray
-import mozilla.telemetry.glean.Dispatchers
-import mozilla.telemetry.glean.rust.getAndConsumeRustString
-import mozilla.telemetry.glean.rust.LibGleanFFI
-import mozilla.telemetry.glean.rust.toBoolean
-import mozilla.telemetry.glean.rust.toByte
+import mozilla.telemetry.glean.internal.UuidMetric
 import java.util.UUID
 
 /**
@@ -23,118 +18,25 @@ import java.util.UUID
  *
  * The internal constructor is only used by [LabeledMetricType] directly.
  */
-class UuidMetricType(
-    private var handle: Long,
-    private val disabled: Boolean,
-    private val sendInPings: List<String>
-) {
-    /**
-     * The public constructor used by automatically generated metrics.
-     */
-    constructor(
-        disabled: Boolean,
-        category: String,
-        lifetime: Lifetime,
-        name: String,
-        sendInPings: List<String>
-    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
-        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
-        this.handle = LibGleanFFI.INSTANCE.glean_new_uuid_metric(
-            category = category,
-            name = name,
-            send_in_pings = ffiPingsList,
-            send_in_pings_len = sendInPings.size,
-            lifetime = lifetime.ordinal,
-            disabled = disabled.toByte())
-    }
+class UuidMetricType(meta: CommonMetricData) {
+    val inner = UuidMetric(meta)
 
-    /**
-     * Generate a new UUID value and set it in the metric store.
-     */
-    fun generateAndSet(): UUID? {
-        // Even if `set` is already checking if we're allowed to record,
-        // we need to check here as well otherwise we'd return a `UUID`
-        // that won't be stored anywhere.
-        if (disabled) {
-            return null
-        }
-
-        val uuid = UUID.randomUUID()
-        set(uuid)
-        return uuid
-    }
-
-    /**
-     * Explicitly set an existing UUID value
-     *
-     * @param value a valid [UUID] to set the metric to
-     */
-    fun set(value: UUID) {
-        if (disabled) {
-            return
-        }
-
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_uuid_set(
-                this@UuidMetricType.handle,
-                value.toString())
-        }
-    }
-
-    /**
-     * Explicitly set a value synchronously.
-     *
-     * This is only to be used for the glean-ac to glean-core data migration.
-     */
-    internal fun setSync(value: UUID) {
-        if (disabled) {
-            return
-        }
-
-        LibGleanFFI.INSTANCE.glean_uuid_set(
-            this@UuidMetricType.handle,
-            value.toString())
-    }
-
-    /**
-     * Tests whether a value is stored for the metric for testing purposes only. This function will
-     * attempt to await the last task (if any) writing to the the metric's storage engine before
-     * returning a value.
-     *
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
-     * @return true if metric value exists, otherwise false
-     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        val res = LibGleanFFI.INSTANCE.glean_uuid_test_has_value(this.handle, pingName)
-        return res.toBoolean()
+    fun testGetValue(pingName: String? = null): UUID? {
+        return inner.testGetValue(pingName)?.let { UUID.fromString(it) }
     }
 
-    /**
-     * Returns the stored value for testing purposes only. This function will attempt to await the
-     * last task (if any) writing to the the metric's storage engine before returning a value.
-     *
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
-     * @return value of the stored metric
-     * @throws [NullPointerException] if no value is stored
-     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String = sendInPings.first()): UUID {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
+    fun testHasValue(pingName: String? = null): Boolean {
+        return inner.testGetValue(pingName) != null
+    }
 
-        if (!testHasValue(pingName)) {
-            throw NullPointerException("Metric has no value")
-        }
-        val ptr = LibGleanFFI.INSTANCE.glean_uuid_test_get_value(this.handle, pingName)!!
-        return UUID.fromString(ptr.getAndConsumeRustString())
+    fun set(value: UUID) = inner.set(value.toString())
+
+    fun generateAndSet(): UUID {
+        val uuid = inner.generateAndSet()
+        return UUID.fromString(uuid)
     }
 }
