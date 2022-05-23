@@ -60,7 +60,7 @@ version = "50.0.0"
 
 requirements = [
     "cffi>=1.13.0",
-    "glean_parser==6.0.0",
+    "glean_parser==6.0.1",
 ]
 
 setup_requirements = ["cffi>=1.13.0"]
