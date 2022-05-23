@@ -52,6 +52,3 @@ def setup_logging():
     logging_thread = threading.Thread(target=log_handler)
     logging_thread.daemon = True
     logging_thread.start()
-
-
-setup_logging()
