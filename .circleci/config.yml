@@ -782,6 +782,10 @@ jobs:
           name: Run tests
           command: |
             $WINPYTHON -m pytest glean-core/python/tests
+      - run:
+          name: Regression test subprocesses
+          command: |
+            $WINPYTHON -m pytest -s glean-core/python/tests/test_subprocess.py
 
   Python Windows i686 tests:
     docker:
