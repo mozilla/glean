@@ -761,7 +761,7 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      - image: cimg/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - skip-if-doc-only
@@ -769,7 +769,7 @@ jobs:
       - run:
           name: Install Wine
           command: |
-            sudo apt install wine-stable
+            sudo apt install wine64
       - run:
           name: Install Python for Windows
           command: |
@@ -781,11 +781,11 @@ jobs:
       - run:
           name: Run tests
           command: |
-            $WINPYTHON -m pytest glean-core/python/tests
+            $WINPYTHON -m pytest -s glean-core/python/tests
 
   Python Windows i686 tests:
     docker:
-      - image: cimg/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - skip-if-doc-only
@@ -807,7 +807,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            $WINPYTHON -m pytest glean-core/python/tests
+            $WINPYTHON -m pytest -s glean-core/python/tests
 
   Generate Python documentation:
     docker:
