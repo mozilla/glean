@@ -165,7 +165,7 @@ def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     # This should cause initialization to fail,
     # but we don't have a way to check.
 
-    shutil.rmtree(str(tmpdir))
+    shutil.rmtree(str(tmpdir), ignore_errors=True)
 
 
 def test_queued_recorded_metrics_correctly_during_init():
