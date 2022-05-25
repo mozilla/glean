@@ -676,7 +676,7 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.10.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.12.0]( https://github.com/matklad/once_cell )
 * [paste 0.1.18]( https://github.com/dtolnay/paste )
 * [paste 1.0.7]( https://github.com/dtolnay/paste )
 * [paste-impl 0.1.18]( https://github.com/dtolnay/paste )
@@ -4903,8 +4903,8 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 50.0.0]( https://github.com/mozilla/glean )
-* [glean-core 50.0.0]( https://github.com/mozilla/glean )
+* [glean 50.0.1]( https://github.com/mozilla/glean )
+* [glean-core 50.0.1]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
