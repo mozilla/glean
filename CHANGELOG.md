@@ -1,6 +1,15 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.1...main)
+
+# v50.0.1 (2022-05-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...v50.0.1)
+
+* General
+  * Updated to `glean_parser` v6.0.1
+* Python
+  * Remove duplicate log initialization and prevent crash ([#2064](https://github.com/mozilla/glean/pull/2064))
 
 # v50.0.0 (2022-05-20)
 

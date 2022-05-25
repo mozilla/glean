@@ -889,13 +889,12 @@ pub fn glean_enable_logging_to_fd(fd: u64) {
         // language binding should setup a pipe and pass in the descriptor to
         // the writing side of the pipe as the `fd` parameter. Log messages are
         // written as JSON to the file descriptor.
-        if FD_LOGGER.set(fd_logger::FdLogger::new(fd)).is_ok() {
-            // Set the level so everything goes through to the language
-            // binding side where it will be filtered by the language
-            // binding's logging system.
-            if log::set_logger(FD_LOGGER.get().unwrap()).is_ok() {
-                log::set_max_level(log::LevelFilter::Debug);
-            }
+        let logger = FD_LOGGER.get_or_init(|| fd_logger::FdLogger::new(fd));
+        // Set the level so everything goes through to the language
+        // binding side where it will be filtered by the language
+        // binding's logging system.
+        if log::set_logger(logger).is_ok() {
+            log::set_max_level(log::LevelFilter::Debug);
         }
     }
 }

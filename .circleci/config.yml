@@ -376,11 +376,6 @@ jobs:
             cargo publish --verbose
 
             sleep 30
-            pushd ffi
-            cargo publish --verbose
-            popd
-
-            sleep 30
             pushd rlb
             cargo publish --verbose
 

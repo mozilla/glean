@@ -41,7 +41,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "6.0.0"
+    private String GLEAN_PARSER_VERSION = "6.0.1"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -529,7 +529,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "50.0.0"
+        project.ext.glean_version = "50.0.1"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
