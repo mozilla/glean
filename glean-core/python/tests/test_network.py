@@ -5,8 +5,10 @@
 
 import logging
 from pathlib import Path
-import uuid
+import pytest
+import sys
 import time
+import uuid
 
 
 from glean import Glean
@@ -184,6 +186,7 @@ def test_unknown_url_no_exception():
     assert isinstance(response, ping_uploader.UploadResult.RECOVERABLE_FAILURE)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_log_on_success(safe_httpserver, capfd):
     # We can't use caplog to catch log messages from the subprocess, but we can
     # use capsys to catch its stderr.
