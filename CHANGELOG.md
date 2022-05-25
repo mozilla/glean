@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.1...main)
+
+# v50.0.1 (2022-05-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...v50.0.1)
 
 * General
   * Updated to `glean_parser` v6.0.1
