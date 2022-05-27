@@ -210,7 +210,8 @@ views.loginOpened.record({ sourceOfLogin: "toolbar" });
 
 ### `testGetValue`
 
-Get the list of recorded events.
+Get the list of recorded events.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -313,59 +314,6 @@ Assert.equal("login_opened", events[0].name);
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not any event was recorded for a given event metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Views
-
-assertTrue(Views.loginOpened.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Views
-
-assertTrue(Views.INSTANCE.loginOpened.testHasValue())
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```swift
-XCTAssert(Views.loginOpened.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.views.login_opened.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Get the number of errors recorded for a given event metric.
@@ -378,7 +326,10 @@ Get the number of errors recorded for a given event metric.
 import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Views
 
-assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+assertEquals(
+    0,
+    Views.loginOpened.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+)
 ```
 
 </div>
@@ -389,7 +340,10 @@ assertEquals(0, Views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidOver
 import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Views
 
-assertEquals(0, Views.INSTANCE.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+assertEquals(
+    0,
+    Views.INSTANCE.loginOpened.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+)
 ```
 
 </div>
@@ -423,7 +377,10 @@ use metrics::views;
 
 assert_eq!(
     0,
-    views::login_opened.test_get_num_recorded_errors(ErrorType::InvalidOverflow, None)
+    views::login_opened.test_get_num_recorded_errors(
+        ErrorType::InvalidOverflow,
+        None
+    )
 );
 ```
 
@@ -436,7 +393,7 @@ import * as views from "./path/to/generated/files/views.js";
 import { ErrorType } from "@mozilla/glean/<platform>";
 
 assert.strictEqual(
-  1,
+  0,
   await views.loginOpened.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
 ```
