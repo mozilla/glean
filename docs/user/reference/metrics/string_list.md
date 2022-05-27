@@ -28,10 +28,10 @@ Search.engines.add("duck duck go")
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Search
+import org.mozilla.yourApplication.GleanMetrics.Search;
 
-Search.INSTANCE.engines().add("wikipedia")
-Search.INSTANCE.engines().add("duck duck go")
+Search.INSTANCE.engines().add("wikipedia");
+Search.INSTANCE.engines().add("duck duck go");
 ```
 
 </div>
@@ -121,9 +121,9 @@ Search.engines.set(listOf("wikipedia", "duck duck go"))
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Search
+import org.mozilla.yourApplication.GleanMetrics.Search;
 
-Search.INSTANCE.engines().set(listOf("wikipedia", "duck duck go"))
+Search.INSTANCE.engines().set(listOf("wikipedia", "duck duck go"));
 ```
 
 </div>
@@ -194,7 +194,9 @@ Glean.search.engines.set(["wikipedia", "duck duck go"]);
 
 ### `testGetValue`
 
-Gets the recorded value for a given string list metric.
+Gets the recorded value for a given string list metric.  
+Returns the list of strings if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
@@ -209,19 +211,19 @@ assertEquals(listOf("Google", "DuckDuckGo"), Search.engines.testGetValue())
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.Search
+import org.mozilla.yourApplication.GleanMetrics.Search;
 
 assertEquals(
     Arrays.asList("Google", "DuckDuckGo"),
     Search.INSTANCE.engines().testGetValue()
-)
+);
 ```
 
 </div>
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(["Google", "DuckDuckGo"], try Search.engines.testGetValue())
+XCTAssertEqual(["Google", "DuckDuckGo"], Search.engines.testGetValue())
 ```
 
 </div>
@@ -282,73 +284,32 @@ Assert.ok(engines.includes("duck duck go"));
 </div>
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given string list metric.
-
-{{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Search
-
-assertTrue(Search.engines.testHasValue())
-```
-
-</div>
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Search
-
-assertTrue(Search.INSTANCE.engines().testHasValue())
-```
-
-</div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-XCTAssert(Search.engines.testHasValue())
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.search.engines.test_has_value()
-```
-
-</div>
-<div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given string list metric.
+Gets the number of errors recorded for a given string list metric.
 
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Search
-
-assertEquals(1, Search.engines.testGetNumRecordedErrors(ErrorType.InvalidValue))
-```
-
-</div>
-<div data-lang="Java" class="tab">
-
-```Java
 import org.mozilla.yourApplication.GleanMetrics.Search
 
 assertEquals(
-    1, Search.INSTANCE.engines().testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    Search.engines.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 )
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Search;
+
+assertEquals(
+    0,
+    Search.INSTANCE.engines().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
 ```
 
 </div>
@@ -356,7 +317,7 @@ assertEquals(
 
 ```Swift
 // Were any of the values too long, and thus an error was recorded?
-XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Search.engines.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -366,7 +327,7 @@ XCTAssertEqual(1, Search.engines.testGetNumRecordedErrors(.invalidValue))
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
-assert 1 == metrics.search.engines.test_get_num_recorded_errors(
+assert 0 == metrics.search.engines.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
