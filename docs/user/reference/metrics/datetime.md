@@ -67,7 +67,7 @@ metrics.install.first_run.set(datetime.datetime(2019, 3, 25)) # Records a custom
 <div data-lang="Rust" class="tab">
 
 ```Rust
-use glean_metrics;
+use glean_metrics::install;
 
 use chrono::{FixedOffset, TimeZone};
 
@@ -119,7 +119,8 @@ Glean.install.firstRun.set(value.getTime() * 1000);
 
 ### `testGetValue`
 
-Get the recorded value for a given datetime metric as a language-specific Date object.
+Get the recorded value for a given datetime metric as a language-specific Datetime object.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -168,7 +169,7 @@ assert value == metrics.install.first_run.test_get_value()
 <div data-lang="Rust" class="tab">
 
 ```Rust
-use glean_metrics;
+use glean_metrics::install;
 
 use chrono::{FixedOffset, TimeZone};
 
@@ -218,7 +219,9 @@ Assert.equal(Glean.install.firstRun.testGetValue().getTime(), value.getTime());
 
 ### `testGetValueAsString`
 
-Get the recorded value for a given datetime metric as an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).
+Get the recorded value for a given datetime metric as an [ISO Date String](https://en.wikipedia.org/wiki/ISO_8601#Dates).  
+Returns a ISO 8601 date string if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 The returned string will be truncated to the metric's [time unit](#time_unit)
 and will include the timezone offset from UTC, e.g. `2019-03-25-05:00`
@@ -279,58 +282,6 @@ assert.strictEqual("2019-03-25-05:00", await install.firstRun.testGetValueAsStri
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given datetime metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Install
-
-assertTrue(Install.firstRun.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Install;
-
-assertTrue(Install.INSTANCE.firstRun.testHasValue());
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-XCTAssert(Install.firstRun.testHasValue())
-```
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.install.first_run.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Get number of errors recorded for a given datetime metric.
@@ -343,7 +294,7 @@ Get number of errors recorded for a given datetime metric.
 import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Install
 
-assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
 ```
 
 </div>
@@ -354,7 +305,10 @@ assertEquals(0, Install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue
 import mozilla.telemetry.glean.testing.ErrorType
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
-assertEquals(0, Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue));
+assertEquals(
+    0,
+    Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
 ```
 
 </div>
@@ -381,13 +335,16 @@ assert 0 == metrics.install.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-use glean_metrics;
+use glean_metrics::install;
 
-assert_eq!(0, install::first_run.test_get_num_recorded_errors(
-    ErrorType::InvalidValue
-));
+assert_eq!(
+    0,
+    install::first_run.test_get_num_recorded_errors(
+        ErrorType::InvalidValue
+    )
+);
 ```
 
 </div>
@@ -399,7 +356,7 @@ import * as install from "./path/to/generated/files/install.js";
 import { ErrorType } from "@mozilla/glean/<platform>";
 
 assert.strictEqual(
-  1,
+  0,
   await install.firstRun.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
 ```
