@@ -152,7 +152,7 @@ Views.loginOpened.record(mapOf(Views.loginOpenedKeys.sourceOfLogin to "toolbar")
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Views;
 
-Views.INSTANCE.loginOpened.record();
+Views.INSTANCE.loginOpened().record();
 ```
 
 </div>
@@ -233,7 +233,7 @@ assertEquals("login_opened", first.name)
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Views
 
-assertEquals(Views.INSTANCE.loginOpened.testGetValue().size)
+assertEquals(Views.INSTANCE.loginOpened().testGetValue().size)
 ```
 
 </div>
@@ -342,7 +342,7 @@ import org.mozilla.yourApplication.GleanMetrics.Views
 
 assertEquals(
     0,
-    Views.INSTANCE.loginOpened.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+    Views.INSTANCE.loginOpened().testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
 )
 ```
 

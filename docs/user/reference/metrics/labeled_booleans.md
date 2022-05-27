@@ -25,8 +25,8 @@ Accessibility.features["high_contrast"].set(isHighContrastEnabled())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
-Acessibility.INSTANCE.features["screen_reader"].set(isScreenReaderEnabled());
-Acessibility.INSTANCE.features["high_contrast"].set(isHighContrastEnabled());
+Acessibility.INSTANCE.features()["screen_reader"].set(isScreenReaderEnabled());
+Acessibility.INSTANCE.features()["high_contrast"].set(isHighContrastEnabled());
 ```
 </div>
 
@@ -122,8 +122,8 @@ assertEquals(False, Accessibility.features["high_contrast"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
 // Do the booleans have the expected values?
-assertEquals(True, Acessibility.INSTANCE.features["screen_reader"].testGetValue());
-assertEquals(False, Acessibility.INSTANCE.features["high_contrast"].testGetValue());
+assertEquals(True, Acessibility.INSTANCE.features()["screen_reader"].testGetValue());
+assertEquals(False, Acessibility.INSTANCE.features()["high_contrast"].testGetValue());
 ```
 </div>
 
@@ -219,7 +219,7 @@ import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 // Did we record any invalid labels?
 assertEquals(
     0,
-    Acessibility.INSTANCE.features.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+    Acessibility.INSTANCE.features().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
 );
 ```
 </div>

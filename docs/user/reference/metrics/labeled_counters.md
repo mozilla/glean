@@ -30,8 +30,8 @@ Stability.crashCount["native_code_crash"].add(3) // Adds 3 to the "native_code_c
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
-Stability.INSTANCE.crashCount["uncaught_exception"].add(); // Adds 1 to the "uncaught_exception" counter.
-Stability.INSTANCE.crashCount["native_code_crash"].add(3); // Adds 3 to the "native_code_crash" counter.
+Stability.INSTANCE.crashCount()["uncaught_exception"].add(); // Adds 1 to the "uncaught_exception" counter.
+Stability.INSTANCE.crashCount()["native_code_crash"].add(3); // Adds 3 to the "native_code_crash" counter.
 ```
 </div>
 
@@ -137,8 +137,8 @@ assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
 // Do the counters have the expected values?
-assertEquals(1, Stability.INSTANCE.crashCount["uncaught_exception"].testGetValue());
-assertEquals(3, Stability.INSTANCE.crashCount["native_code_crash"].testGetValue());
+assertEquals(1, Stability.INSTANCE.crashCount()["uncaught_exception"].testGetValue());
+assertEquals(3, Stability.INSTANCE.crashCount()["native_code_crash"].testGetValue());
 ```
 </div>
 
@@ -235,7 +235,7 @@ import org.mozilla.yourApplication.GleanMetrics.Stability;
 // Were there any invalid labels?
 assertEquals(
     0,
-    Stability.INSTANCE.crashCount.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+    Stability.INSTANCE.crashCount().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
 );
 ```
 </div>

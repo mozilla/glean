@@ -27,7 +27,7 @@ User.clientId.generateAndSet()
 import org.mozilla.yourApplication.GleanMetrics.User;
 
 // Generate a new UUID and record it
-User.INSTANCE.clientId.generateAndSet();
+User.INSTANCE.clientId().generateAndSet();
 ```
 
 </div>
@@ -121,7 +121,7 @@ User.clientId.set(UUID.randomUUID())  // Set a UUID explicitly
 import org.mozilla.yourApplication.GleanMetrics.User;
 
 // Set a UUID explicitly
-User.INSTANCE.clientId.set(UUID.randomUUID());
+User.INSTANCE.clientId().set(UUID.randomUUID());
 ```
 </div>
 
@@ -222,7 +222,7 @@ assertEquals(uuid, User.clientId.testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.User;
 
 // Was it the expected value?
-assertEquals(uuid, User.INSTANCE.clientId.testGetValue());
+assertEquals(uuid, User.INSTANCE.clientId().testGetValue());
 ```
 </div>
 
@@ -322,7 +322,7 @@ import org.mozilla.yourApplication.GleanMetrics.User;
 
 assertEquals(
     0,
-    User.INSTANCE.clientId.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    User.INSTANCE.clientId().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 

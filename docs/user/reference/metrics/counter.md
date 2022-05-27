@@ -41,8 +41,8 @@ Controls.refreshPressed.add(5) // Adds 5 to the counter.
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Controls;
 
-Controls.INSTANCE.refreshPressed.add(); // Adds 1 to the counter.
-Controls.INSTANCE.refreshPressed.add(5); // Adds 5 to the counter.
+Controls.INSTANCE.refreshPressed().add(); // Adds 1 to the counter.
+Controls.INSTANCE.refreshPressed().add(5); // Adds 5 to the counter.
 ```
 
 </div>
@@ -144,7 +144,7 @@ assertEquals(6, Controls.refreshPressed.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Controls;
 
-assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
+assertEquals(6, Controls.INSTANCE.refreshPressed().testGetValue());
 ```
 
 </div>
@@ -237,7 +237,7 @@ import org.mozilla.yourApplication.GleanMetrics.Controls;
 
 assertEquals(
     0,
-    Controls.INSTANCE.refreshPressed.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    Controls.INSTANCE.refreshPressed().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 

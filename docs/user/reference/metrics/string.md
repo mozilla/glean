@@ -38,9 +38,9 @@ SearchDefault.name.set("wikipedia")
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 
 // Record a value into the metric.
-SearchDefault.INSTANCE.name.set("duck duck go");
+SearchDefault.INSTANCE.name().set("duck duck go");
 // If it changed later, you can record the new value:
-SearchDefault.INSTANCE.name.set("wikipedia");
+SearchDefault.INSTANCE.name().set("wikipedia");
 ```
 
 </div>
@@ -152,7 +152,7 @@ assertEquals("wikipedia", SearchDefault.name.testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 
 // Does the string metric have the expected value?
-assertEquals("wikipedia", SearchDefault.INSTANCE.name.testGetValue());
+assertEquals("wikipedia", SearchDefault.INSTANCE.name().testGetValue());
 ```
 
 </div>
@@ -254,7 +254,7 @@ import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 // Was the string truncated, and an error reported?
 assertEquals(
     0,
-    SearchDefault.INSTANCE.name.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+    SearchDefault.INSTANCE.name().testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
 );
 ```
 

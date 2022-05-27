@@ -32,7 +32,7 @@ Display.width.set(width)
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Display;
 
-Display.INSTANCE.width.set(width);
+Display.INSTANCE.width().set(width);
 ```
 </div>
 
@@ -125,7 +125,7 @@ assertEquals(433, Display.width.testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Display;
 
 // Does the quantity have the expected value?
-assertEquals(433, Display.INSTANCE.width.testGetValue());
+assertEquals(433, Display.INSTANCE.width().testGetValue());
 ```
 </div>
 
@@ -214,7 +214,7 @@ import org.mozilla.yourApplication.GleanMetrics.Display;
 // Did the quantity record a negative value?
 assertEquals(
     0,
-    Display.INSTANCE.width.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    Display.INSTANCE.width().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 </div>

@@ -24,7 +24,7 @@ Login.errorsByStage["server_auth"].set("Invalid password")
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
-Login.INSTANCE.errorsByStage["server_auth"].set("Invalid password");
+Login.INSTANCE.errorsByStage()["server_auth"].set("Invalid password");
 ```
 </div>
 
@@ -118,7 +118,7 @@ assertTrue(Login.errorsByStage["server_auth"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
 // Does the metric have the expected value?
-assertTrue(Login.INSTANCE.errorsByStage["server_auth"].testGetValue());
+assertTrue(Login.INSTANCE.errorsByStage()["server_auth"].testGetValue());
 ```
 </div>
 
@@ -210,7 +210,7 @@ import org.mozilla.yourApplication.GleanMetrics.Login;
 // Were there any invalid labels?
 assertEquals(
     0,
-    Login.INSTANCE.errorsByStage.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+    Login.INSTANCE.errorsByStage().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
 );
 ```
 </div>
