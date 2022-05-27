@@ -72,8 +72,8 @@ metrics.search_default.name.set("wikipedia")
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::search_default;
 
 // Record a value into the metric.
 search_default::name.set("duck duck go");
@@ -127,7 +127,9 @@ Glean.searchDefault.name.set("wikipedia");
 
 ### `testGetValue`
 
-Get the recorded value for a given string metric.
+Get the recorded value for a given string metric.  
+Returns the string if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 The recorded value may have been truncated. See ["Limits"](#limits) section above.
 
@@ -147,7 +149,7 @@ assertEquals("wikipedia", SearchDefault.name.testGetValue())
 <div data-lang="Java" class="tab">
 
 ```Java
-import org.mozilla.yourApplication.GleanMetrics.SearchDefault
+import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 
 // Does the string metric have the expected value?
 assertEquals("wikipedia", SearchDefault.INSTANCE.name.testGetValue());
@@ -159,7 +161,7 @@ assertEquals("wikipedia", SearchDefault.INSTANCE.name.testGetValue());
 
 ```Swift
 // Does the string metric have the expected value?
-XCTAssertEqual("wikipedia", try SearchDefault.name.testGetValue())
+XCTAssertEqual("wikipedia", SearchDefault.name.testGetValue())
 ```
 
 </div>
@@ -178,8 +180,8 @@ assert "wikipedia" == metrics.search_default.name.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::search_default;
 
 // Does the string metric have the expected value?
 assert_eq!(6, search_default::name.test_get_value(None).unwrap());
@@ -224,66 +226,9 @@ Assert.equal("wikipedia", Glean.searchDefault.name.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given string metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.SearchDefault
-
-// Was anything recorded?
-assertTrue(SearchDefault.name.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.SearchDefault
-
-// Was anything recorded?
-assertTrue(SearchDefault.INSTANCE.name.testHasValue());
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(SearchDefault.name.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.search_default.name.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given string metric.
+Gets the number of errors recorded for a given string metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -293,7 +238,10 @@ Gets number of errors recorded for a given string metric.
 import org.mozilla.yourApplication.GleanMetrics.SearchDefault
 
 // Was the string truncated, and an error reported?
-assertEquals(1, SearchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+assertEquals(
+    0,
+    SearchDefault.name.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+)
 ```
 
 </div>
@@ -305,10 +253,8 @@ import org.mozilla.yourApplication.GleanMetrics.SearchDefault;
 
 // Was the string truncated, and an error reported?
 assertEquals(
-    1,
-    SearchDefault.INSTANCE.name.testGetNumRecordedErrors(
-        ErrorType.InvalidOverflow
-    )
+    0,
+    SearchDefault.INSTANCE.name.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
 );
 ```
 
@@ -318,7 +264,7 @@ assertEquals(
 
 ```Swift
 // Was the string truncated, and an error reported?
-XCTAssertEqual(1, SearchDefault.name.testGetNumRecordedErrors(.invalidOverflow))
+XCTAssertEqual(0, SearchDefault.name.testGetNumRecordedErrors(.invalidOverflow))
 ```
 
 </div>
@@ -330,7 +276,7 @@ from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
 # Was the string truncated, and an error reported?
-assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
+assert 0 == metrics.search_default.name.test_get_num_recorded_errors(
     ErrorType.INVALID_OVERFLOW
 )
 ```
@@ -339,14 +285,13 @@ assert 1 == metrics.search_default.name.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::search_default;
 
 // Was the string truncated, and an error reported?
 assert_eq!(
-  1,
+  0,
   search_default::name.test_get_num_recorded_errors(
     ErrorType::InvalidOverflow
   )
@@ -362,7 +307,7 @@ import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Was the string truncated, and an error reported?
 assert.strictEqual(
-  1,
+  0,
   await searchDefault.name.testGetNumRecordedErrors(ErrorType.InvalidOverflow)
 );
 ```
