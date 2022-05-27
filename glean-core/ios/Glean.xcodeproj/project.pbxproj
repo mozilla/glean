@@ -56,6 +56,7 @@
 		BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */; };
 		BFFE183A2350A61F0068D97B /* TimingDistributionMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */; };
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
+		CD062129284110970006370D /* TextMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD062128284110970006370D /* TextMetric.swift */; };
 		CD0CADA427E216810015A997 /* glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD08C8527E21104007C8400 /* glean.swift */; };
 		CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */; };
 		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
@@ -132,6 +133,7 @@
 		BFFE18372350A5F50068D97B /* TimingDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetric.swift; sourceTree = "<group>"; };
 		BFFE18392350A61F0068D97B /* TimingDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingDistributionMetricTests.swift; sourceTree = "<group>"; };
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		CD062128284110970006370D /* TextMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextMetric.swift; sourceTree = "<group>"; };
 		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
 		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
 		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				BF30FDC3233260B500840607 /* TimespanMetric.swift */,
 				BFAED5072369751100DF293D /* StringListMetric.swift */,
 				BF89055E232BC213003CA2BA /* StringMetric.swift */,
+				CD062128284110970006370D /* TextMetric.swift */,
 				1FD4527423395B4500F4C7E8 /* UuidMetric.swift */,
 				CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */,
 				BF2E57042334B77D00364D92 /* EventMetric.swift */,
@@ -576,6 +579,7 @@
 				1F58920D23C7D615007D2D80 /* MetricsPingScheduler.swift in Sources */,
 				BF7CC0A62473F61C003B166D /* Metrics.swift in Sources */,
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
+				CD062129284110970006370D /* TextMetric.swift in Sources */,
 				1F6A8FF0233C049D007837D5 /* BooleanMetric.swift in Sources */,
 				1F6A8FF4233C0A91007837D5 /* DatetimeMetric.swift in Sources */,
 				AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */,
