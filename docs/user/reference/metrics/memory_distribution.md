@@ -69,7 +69,7 @@ def allocate_memory(nbytes):
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean_metrics::memory;
 
 fn allocate_memory(bytes: u64) {
@@ -109,7 +109,9 @@ Glean.memory.heapAllocated.accumulate(bytes / 1024);
 
 ### `testGetValue`
 
-Gets the recorded value for a given memory distribution metric.
+Gets the recorded value for a given memory distribution metric.  
+Returns a struct with counts per buckets and total sum if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -182,7 +184,7 @@ assert 2 == snapshot.count
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
 use glean_metrics::memory;
 
@@ -223,61 +225,9 @@ Assert.equal(11 * 1024, data.sum);
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given memory distribution metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pages
-
-// Get snapshot
-assertTrue(Memory.heapAllocated.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Pages;
-
-// Was anything recorded?
-assertTrue(Memory.INSTANCE.heapAllocated().testHasValue());
-```
-
-</div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(Memory.heapAllocated.testHasValue())
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.memory.head_allocated.test_has_value()
-```
-
-</div>
-<div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given memory distribution metric.
+Gets the number of errors recorded for a given memory distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -289,7 +239,7 @@ import org.mozilla.yourApplication.GleanMetrics.Memory
 // Did this record a negative value?
 assertEquals(
     0,
-    Memory.heapAllocated.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    Memory.heapAllocated.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 )
 ```
 
@@ -302,9 +252,7 @@ import org.mozilla.yourApplication.GleanMetrics.Memory;
 // Assert that no errors were recorded.
 assertEquals(
     0,
-    Memory.INSTANCE.heapAllocated().testGetNumRecordedErrors(
-        ErrorType.InvalidValue
-    )
+    Memory.INSTANCE.heapAllocated().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 
