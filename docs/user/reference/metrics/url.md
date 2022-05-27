@@ -37,7 +37,7 @@ Search.template.set("https://mysearchengine.com/")
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Search;
 
-Search.INSTANCE.template.set("https://mysearchengine.com/");
+Search.INSTANCE.template().set("https://mysearchengine.com/");
 ```
 
 </div>
@@ -164,7 +164,7 @@ assertEquals("https://mysearchengine.com/", Search.template.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Search
 
-assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValue());
+assertEquals("https://mysearchengine.com/", Search.INSTANCE.template().testGetValue());
 ```
 
 </div>
@@ -234,12 +234,12 @@ import org.mozilla.yourApplication.GleanMetrics.Search;
 
 assertEquals(
     0,
-    Search.INSTANCE.template.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    Search.INSTANCE.template().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 
 assertEquals(
     0,
-    Search.INSTANCE.template.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+    Search.INSTANCE.template().testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
 );
 ```
 

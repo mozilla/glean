@@ -32,8 +32,8 @@ Install.firstRun.set(Calendar(2019, 3, 25)) // Records a custom datetime
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
-Install.INSTANCE.firstRun.set(); // Records "now"
-Install.INSTANCE.firstRun.set(Calendar(2019, 3, 25)); // Records a custom datetime
+Install.INSTANCE.firstRun().set(); // Records "now"
+Install.INSTANCE.firstRun().set(Calendar(2019, 3, 25)); // Records a custom datetime
 ```
 
 </div>
@@ -138,7 +138,7 @@ assertEquals(Install.firstRun.testGetValue(), Date(2019, 3, 25))
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
-assertEquals(Install.INSTANCE.firstRun.testGetValue(), Date(2019, 3, 25));
+assertEquals(Install.INSTANCE.firstRun().testGetValue(), Date(2019, 3, 25));
 ```
 </div>
 
@@ -244,7 +244,7 @@ assertEquals("2019-03-25-05:00", Install.firstRun.testGetValueAsString())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
-assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun.testGetValueAsString());
+assertEquals("2019-03-25-05:00", Install.INSTANCE.firstRun().testGetValueAsString());
 ```
 
 </div>
@@ -307,7 +307,7 @@ import org.mozilla.yourApplication.GleanMetrics.Install;
 
 assertEquals(
     0,
-    Install.INSTANCE.firstRun.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    Install.INSTANCE.firstRun().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 

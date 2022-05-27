@@ -25,7 +25,7 @@ Flags.a11yEnabled.set(System.isAccesibilityEnabled())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Flags;
 
-Flags.INSTANCE.a11yEnabled.set(System.isAccessibilityEnabled());
+Flags.INSTANCE.a11yEnabled().set(System.isAccessibilityEnabled());
 ```
 
 </div>
@@ -118,7 +118,7 @@ assertTrue(Flags.a11yEnabled.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Flags;
 
-assertTrue(Flags.INSTANCE.a11yEnabled.testGetValue());
+assertTrue(Flags.INSTANCE.a11yEnabled().testGetValue());
 ```
 
 </div>
@@ -205,7 +205,7 @@ assertEquals(
 import org.mozilla.yourApplication.GleanMetrics.Flags;
 
 assertEquals(
-    0, Flags.INSTANCE.a11yEnabled.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    0, Flags.INSTANCE.a11yEnabled().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 

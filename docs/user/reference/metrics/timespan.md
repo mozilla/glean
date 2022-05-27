@@ -33,7 +33,7 @@ fun onShowLogin() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onShowLogin() {
-    Auth.INSTANCE.loginTime.start();
+    Auth.INSTANCE.loginTime().start();
     // ...
 }
 ```
@@ -147,7 +147,7 @@ fun onLogin() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onLogin() {
-    Auth.INSTANCE.loginTime.stop();
+    Auth.INSTANCE.loginTime().stop();
     // ...
 }
 ```
@@ -242,7 +242,7 @@ fun onLoginCancel() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onLoginCancel() {
-    Auth.INSTANCE.loginTime.cancel();
+    Auth.INSTANCE.loginTime().cancel();
     // ...
 }
 ```
@@ -331,7 +331,7 @@ Auth.loginTime.measure {
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
-Auth.INSTANCE.loginTime.measure() -> {
+Auth.INSTANCE.loginTime().measure() -> {
     // Process login flow
     return null;
 });
@@ -393,7 +393,7 @@ fun afterLogin(loginElapsedNs: Long) {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void afterLogin(long loginElapsedNs) {
-    Auth.INSTANCE.loginTime.setRawNanos(loginElapsedNs);
+    Auth.INSTANCE.loginTime().setRawNanos(loginElapsedNs);
     // ...
 }
 ```
@@ -498,7 +498,7 @@ assertTrue(Auth.loginTime.testGetValue() > 0)
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
-assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0);
+assertTrue(Auth.INSTANCE.loginTime().testGetValue() > 0);
 ```
 </div>
 <div data-lang="Swift" class="tab">
@@ -573,7 +573,7 @@ import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 assertEquals(
     0,
-    Auth.INSTANCE.loginTime.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+    Auth.INSTANCE.loginTime().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 
