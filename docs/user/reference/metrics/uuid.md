@@ -56,9 +56,9 @@ metrics.user.client_id.generate_and_set()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
 use uuid::Uuid;
+use glean_metrics::user;
 
 // Generate a new UUID and record it
 user::client_id.generate_and_set();
@@ -148,9 +148,9 @@ metrics.user.client_id.set(uuid.uuid4())
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
 use uuid::Uuid;
+use glean_metrics::user;
 
 // Set a UUID explicitly
 user::client_id.set(Uuid::new_v4());
@@ -200,7 +200,9 @@ Glean.user.clientId.set(uuid);
 
 ### `testGetValue`
 
-Gets the recorded value for a given UUID metric.
+Gets the recorded value for a given UUID metric.  
+Returns a UUID if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -248,9 +250,9 @@ assert uuid == metrics.user.client_id.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
 use uuid::Uuid;
+use glean_metrics::user;
 
 let u = Uuid::new_v4();
 // Does it have the expected value?
@@ -294,67 +296,9 @@ Assert.equal(Glean.user.clientId.testGetValue(), uuid);
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given UUID metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.User
-
-// Was anything recorded?
-assertTrue(User.clientId.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.User;
-
-// Was anything recorded?
-assertTrue(User.INSTANCE.clientId.testHasValue());
-```
-
-</div>
-
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(User.clientId.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.user.client_id.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given UUID metric.
+Gets the number of errors recorded for a given UUID metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -364,7 +308,8 @@ Gets number of errors recorded for a given UUID metric.
 import org.mozilla.yourApplication.GleanMetrics.User
 
 assertEquals(
-    1, User.clientId.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    User.clientId.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 )
 ```
 
@@ -376,7 +321,8 @@ assertEquals(
 import org.mozilla.yourApplication.GleanMetrics.User;
 
 assertEquals(
-    1, User.INSTANCE.clientId.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    User.INSTANCE.clientId.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 
@@ -386,7 +332,7 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(1, User.clientId.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, User.clientId.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -399,7 +345,7 @@ metrics = load_metrics("metrics.yaml")
 
 from glean.testing import ErrorType
 
-assert 1 == metrics.user.client_id.test_get_num_recorded_errors(
+assert 0 == metrics.user.client_id.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
@@ -407,13 +353,12 @@ assert 1 == metrics.user.client_id.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::user;
 
 assert_eq!(
-  1,
+  0,
   user::client_id.test_get_num_recorded_errors(
     ErrorType::InvalidValue
   )
@@ -430,7 +375,7 @@ import { ErrorType } from "@mozilla/glean/<platform>";
 
 // Was the string truncated, and an error reported?
 assert.strictEqual(
-  1,
+  0,
   await user.clientId.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
 ```
