@@ -102,7 +102,7 @@ class PageHandler:
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean_metrics::pages;
 
 fn on_page_start() {
@@ -358,7 +358,9 @@ Glean.pages.pageLoad.cancel(timerId);
 
 ### `testGetValue`
 
-Gets the recorded value for a given timing distribution metric.
+Gets the recorded value for a given timing distribution metric.  
+Returns a struct with counts per buckets and total sum if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -372,7 +374,7 @@ val snapshot = Pages.pageLoad.testGetValue()
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.count)
+assertEquals(1L, snapshot.sum)
 ```
 
 </div>
@@ -386,7 +388,7 @@ DistributionData snapshot = pages.INSTANCE.pageLoad().testGetValue();
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.getCount());
+assertEquals(1L, snapshot.getSum());
 ```
 
 </div>
@@ -394,11 +396,11 @@ assertEquals(1L, snapshot.getCount());
 
 ```Swift
 // Get snapshot.
-let snapshot = try! pages.pageLoad.testGetValue()
+let snapshot = pages.pageLoad.testGetValue()
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-XCTAssertEqual(1, snapshot.count)
+XCTAssertEqual(1, snapshot.sum)
 ```
 
 </div>
@@ -413,13 +415,13 @@ snapshot = metrics.pages.page_load.test_get_value()
 
 # Usually you don't know the exact timing values,
 # but how many should have been recorded.
-assert 1 == snapshot.count
+assert 1 == snapshot.sum
 ```
 
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
 use glean_metrics::pages;
 
@@ -456,61 +458,9 @@ Assert.ok(Glean.pages.pageLoad.testGetValue().sum > 0);
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given timing distribution metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pages
-
-// Was anything recorded?
-assertTrue(Pages.pageLoad.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Pages;
-
-// Was anything recorded?
-assertTrue(Pages.INSTANCE.pageLoad().testHasValue());
-```
-
-</div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(pages.pageLoad.testHasValue())
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.pages.page_load.test_has_value()
-```
-
-</div>
-<div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given timing distribution metric.
+Gets the number of errors recorded for a given timing distribution metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -520,7 +470,10 @@ Gets number of errors recorded for a given timing distribution metric.
 import org.mozilla.yourApplication.GleanMetrics.Pages
 
 // Assert that no errors were recorded.
-assertEquals(0, Pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(
+    0,
+    Pages.pageLoad.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
 ```
 
 </div>
@@ -532,9 +485,7 @@ import org.mozilla.yourApplication.GleanMetrics.Pages;
 // Assert that no errors were recorded.
 assertEquals(
     0,
-    Pages.INSTANCE.pageLoad().testGetNumRecordedErrors(
-        ErrorType.InvalidValue
-    )
+    Pages.INSTANCE.pageLoad().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 
@@ -543,7 +494,7 @@ assertEquals(
 
 ```Swift
 // Assert that no errors were recorded.
-XCTAssertEqual(0, pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Pages.pageLoad.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
