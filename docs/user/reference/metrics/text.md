@@ -88,7 +88,7 @@ assert.strictEqual("some content", await article.content.testGetValue());
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given text metric.
+Gets the number of errors recorded for a given text metric.
 
 {{#include ../../../shared/tab_header.md}}
 
