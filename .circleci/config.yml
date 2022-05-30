@@ -1070,11 +1070,6 @@ jobs:
 
 workflows:
   version: 2
-  check-formating:
-    jobs:
-      - Check Rust formatting
-      - Check Swift formatting
-
   lint:
     jobs:
       - Lint YAML with yamllint
@@ -1084,6 +1079,8 @@ workflows:
       - Lint Android with ktlint and detekt
       - Lint Python
       - Check vendored schema
+      - Check Rust formatting
+      - Check Swift formatting
 
   ci:
     jobs:
