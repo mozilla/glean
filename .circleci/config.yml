@@ -234,7 +234,7 @@ jobs:
 
   License check:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -254,7 +254,7 @@ jobs:
 
   Check vendored schema:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -284,7 +284,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -293,7 +293,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run: rustup component add clippy
@@ -304,15 +304,14 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     resource_class: "medium+"
     steps:
-      - test-rust:
-          rust-version: "1.60.0"
+      - test-rust
 
   Rust tests - beta:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - test-rust:
           rust-version: "beta"
@@ -327,7 +326,7 @@ jobs:
 
   Generate Rust documentation:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -359,7 +358,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -655,7 +654,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - attach_workspace:
