@@ -112,11 +112,11 @@ class LabeledMetricType<T>(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
+    fun testGetNumRecordedErrors(errorType: ErrorType): Int {
         return when (this.inner) {
-            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType, pingName)
-            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType, pingName)
-            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType, pingName)
+            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType)
+            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType)
+            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType)
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )

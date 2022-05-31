@@ -43,10 +43,8 @@ class StringMetricType:
     def test_get_value(self, ping_name: Optional[str] = None) -> Optional[str]:
         return self._inner.test_get_value(ping_name)
 
-    def test_get_num_recorded_errors(
-        self, error_type: ErrorType, ping_name: Optional[str] = None
-    ) -> int:
-        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
+    def test_get_num_recorded_errors(self, error_type: ErrorType) -> int:
+        return self._inner.test_get_num_recorded_errors(error_type)
 
 
 __all__ = ["StringMetricType"]
