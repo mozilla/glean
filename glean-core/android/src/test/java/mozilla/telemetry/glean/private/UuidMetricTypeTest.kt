@@ -14,9 +14,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,20 +40,18 @@ class UuidMetricTypeTest {
         )
 
         // Check that there is no UUID recorded
-        assertFalse(uuidMetric.testHasValue())
+        assertNull(uuidMetric.testGetValue())
 
         // Record two uuids of the same type, with a little delay.
         val uuid: UUID = uuidMetric.generateAndSet()
 
         // Check that data was properly recorded.
-        assertTrue(uuidMetric.testHasValue())
         assertEquals(uuid, uuidMetric.testGetValue())
 
         val uuid2 = UUID.fromString("ce2adeb8-843a-4232-87a5-a099ed1e7bb3")
         uuidMetric.set(uuid2)
 
         // Check that data was properly recorded.
-        assertTrue(uuidMetric.testHasValue())
         assertEquals(uuid2, uuidMetric.testGetValue())
     }
 
@@ -76,9 +72,9 @@ class UuidMetricTypeTest {
         // Attempt to store the uuid.
         uuidMetric.generateAndSet()
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Uuids must not be recorded if they are disabled",
-            uuidMetric.testHasValue()
+            uuidMetric.testGetValue()
         )
     }
 
@@ -113,14 +109,12 @@ class UuidMetricTypeTest {
         val uuid = uuidMetric.generateAndSet()
 
         // Check that data was properly recorded.
-        assertTrue(uuidMetric.testHasValue("store2"))
         assertEquals(uuid, uuidMetric.testGetValue("store2"))
 
         val uuid2 = UUID.fromString("ce2adeb8-843a-4232-87a5-a099ed1e7bb3")
         uuidMetric.set(uuid2)
 
         // Check that data was properly recorded.
-        assertTrue(uuidMetric.testHasValue("store2"))
         assertEquals(uuid2, uuidMetric.testGetValue("store2"))
     }
 }

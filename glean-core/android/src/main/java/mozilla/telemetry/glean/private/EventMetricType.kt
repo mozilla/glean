@@ -109,19 +109,6 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
     }
 
     /**
-     * Tests whether a value is stored for the metric for testing purposes only.
-     *
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
-     * @return true if metric value exists, otherwise false
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testHasValue(pingName: String? = null): Boolean {
-        return inner.testGetValue(pingName) != null
-    }
-
-    /**
      * Returns the stored value for testing purposes only. This function will attempt to await the
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *

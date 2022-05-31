@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording URL metrics.
  *
@@ -16,9 +14,3 @@ import androidx.annotation.VisibleForTesting
  * data and making sure that limits are enforced.
  */
 typealias UrlMetricType = mozilla.telemetry.glean.internal.UrlMetric
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun UrlMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}

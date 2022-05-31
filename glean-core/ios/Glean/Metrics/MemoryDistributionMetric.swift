@@ -9,9 +9,3 @@
 ///
 /// The memory distribution API only exposes the `MemoryDistributionMetricType.accumulate()` method.
 public typealias MemoryDistributionMetricType = MemoryDistributionMetric
-
-extension MemoryDistributionMetric {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}

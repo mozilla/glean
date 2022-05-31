@@ -14,8 +14,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,7 +48,6 @@ class DatetimeMetricTypeTest {
         value.set(2004, 11, 9, 8, 3, 29)
         value.timeZone = TimeZone.getTimeZone("America/Los_Angeles")
         datetimeMetric.set(value)
-        assertTrue(datetimeMetric.testHasValue())
         assertEquals("2004-12-09T08:03-08:00", datetimeMetric.testGetValueAsString())
 
         val value2 = Calendar.getInstance()
@@ -57,7 +55,6 @@ class DatetimeMetricTypeTest {
         value2.timeZone = TimeZone.getTimeZone("GMT+0")
         datetimeMetric.set(value2)
         // Check that data was properly recorded.
-        assertTrue(datetimeMetric.testHasValue())
         assertEquals("1993-02-23T09:05+00:00", datetimeMetric.testGetValueAsString())
 
         // A date prior to the UNIX epoch
@@ -66,7 +63,6 @@ class DatetimeMetricTypeTest {
         value3.timeZone = TimeZone.getTimeZone("GMT-12")
         datetimeMetric.set(value3)
         // Check that data was properly recorded.
-        assertTrue(datetimeMetric.testHasValue())
         assertEquals("1969-08-20T20:17-12:00", datetimeMetric.testGetValueAsString())
 
         // A date following 2038 (the extent of signed 32-bits after UNIX epoch)
@@ -75,7 +71,6 @@ class DatetimeMetricTypeTest {
         value4.timeZone = TimeZone.getTimeZone("GMT-4")
         datetimeMetric.set(value4)
         // Check that data was properly recorded.
-        assertTrue(datetimeMetric.testHasValue())
         assertEquals("2039-08-20T20:17-04:00", datetimeMetric.testGetValueAsString())
     }
 
@@ -95,7 +90,7 @@ class DatetimeMetricTypeTest {
 
         // Attempt to store the datetime.
         datetimeMetric.set()
-        assertFalse(datetimeMetric.testHasValue())
+        assertNull(datetimeMetric.testGetValue())
     }
 
     @Test

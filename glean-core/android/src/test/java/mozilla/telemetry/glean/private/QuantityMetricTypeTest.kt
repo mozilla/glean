@@ -15,9 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,20 +39,18 @@ class QuantityMetricTypeTest {
             )
         )
 
-        assertFalse(quantityMetric.testHasValue())
+        assertNull(quantityMetric.testGetValue())
 
         // Add to the quantity a couple of times.
         // calling add() without parameters to test increment by 1.
         quantityMetric.set(1L)
 
         // Check that the count was incremented and properly recorded.
-        assertTrue(quantityMetric.testHasValue())
         assertEquals(1L, quantityMetric.testGetValue())
 
         quantityMetric.set(10L)
         // Check that count was incremented and properly recorded.  This second call will check
         // calling add() with 10 to test increment by other amount
-        assertTrue(quantityMetric.testHasValue())
         assertEquals(10L, quantityMetric.testGetValue())
     }
 
@@ -75,9 +71,9 @@ class QuantityMetricTypeTest {
         // Attempt to increment the quantity
         quantityMetric.set(1L)
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Quantities must not be recorded if they are disabled",
-            quantityMetric.testHasValue()
+            quantityMetric.testGetValue()
         )
     }
 
@@ -98,9 +94,9 @@ class QuantityMetricTypeTest {
         // Attempt to store the quantity.
         quantityMetric.set(1L)
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Quantities must not be recorded if they are disabled",
-            quantityMetric.testHasValue()
+            quantityMetric.testGetValue()
         )
     }
 
@@ -133,11 +129,9 @@ class QuantityMetricTypeTest {
 
         quantityMetric.set(1L)
 
-        assertTrue(quantityMetric.testHasValue("store2"))
         assertEquals(1L, quantityMetric.testGetValue("store2"))
 
         quantityMetric.set(10L)
-        assertTrue(quantityMetric.testHasValue("store2"))
         assertEquals(10L, quantityMetric.testGetValue("store2"))
     }
 
@@ -156,7 +150,7 @@ class QuantityMetricTypeTest {
 
         quantityMetric.set(-10L)
         // Check that quantity was NOT recorded
-        assertFalse(quantityMetric.testHasValue("store1"))
+        assertNull(quantityMetric.testGetValue("store1"))
 
         // Make sure that the errors have been recorded
         assertEquals(1, quantityMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))

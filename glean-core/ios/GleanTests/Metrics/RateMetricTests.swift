@@ -23,17 +23,13 @@ class RateMetricTypeTests: XCTestCase {
             disabled: false
         ))
 
-        XCTAssertFalse(rateMetric.testHasValue())
+        XCTAssertNil(rateMetric.testGetValue())
 
         rateMetric.addToNumerator(2)
         rateMetric.addToDenominator(5)
-
-        XCTAssert(rateMetric.testHasValue())
         XCTAssertEqual(Rate(numerator: 2, denominator: 5), rateMetric.testGetValue())
 
         rateMetric.addToNumerator(1)
-
-        XCTAssert(rateMetric.testHasValue())
         XCTAssertEqual(Rate(numerator: 3, denominator: 5), rateMetric.testGetValue())
     }
 
@@ -46,12 +42,12 @@ class RateMetricTypeTests: XCTestCase {
             disabled: true
         ))
 
-        XCTAssertFalse(rateMetric.testHasValue())
+        XCTAssertNil(rateMetric.testGetValue())
 
         rateMetric.addToNumerator(2)
         rateMetric.addToDenominator(5)
 
-        XCTAssertFalse(rateMetric.testHasValue())
+        XCTAssertNil(rateMetric.testGetValue())
     }
 
     func testRateWithExternalDenominator() {

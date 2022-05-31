@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording the numerator of a rate metric
  * with an external denominator.
@@ -17,9 +15,3 @@ import androidx.annotation.VisibleForTesting
  * which takes care of validating the input data and making sure that limits are enforced.
  */
 typealias NumeratorMetricType = mozilla.telemetry.glean.internal.NumeratorMetric
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun NumeratorMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}

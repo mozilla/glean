@@ -107,9 +107,7 @@ class LabeledMetricType<T>(
     /**
      * Returns the number of errors recorded for the given metric.
      *
-     * @param errorType The type of the error recorded.
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     * @param error The type of the error recorded.
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

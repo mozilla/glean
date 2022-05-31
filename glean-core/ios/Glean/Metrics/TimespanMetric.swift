@@ -12,10 +12,6 @@
 public typealias TimespanMetricType = TimespanMetric
 
 extension TimespanMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-
     /// Convenience method to simplify measuring a function or block of code
     ///
     /// - parameters:

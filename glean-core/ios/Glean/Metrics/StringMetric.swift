@@ -10,9 +10,3 @@
 /// The string API only exposes the `StringMetricType.set(_:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
 public typealias StringMetricType = StringMetric
-
-extension StringMetricType {
-    public func testHasValue(pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}
