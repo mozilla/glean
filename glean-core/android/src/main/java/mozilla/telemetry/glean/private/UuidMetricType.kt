@@ -27,12 +27,6 @@ class UuidMetricType(meta: CommonMetricData) {
         return inner.testGetValue(pingName)?.let { UUID.fromString(it) }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testHasValue(pingName: String? = null): Boolean {
-        return inner.testGetValue(pingName) != null
-    }
-
     fun set(value: UUID) = inner.set(value.toString())
 
     fun generateAndSet(): UUID {

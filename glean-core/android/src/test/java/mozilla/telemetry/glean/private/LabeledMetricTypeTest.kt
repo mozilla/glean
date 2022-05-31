@@ -12,6 +12,7 @@ import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -51,13 +52,8 @@ class LabeledMetricTypeTest {
         // but it's useful to test here that it works.
         counterMetric.add(3)
 
-        assertTrue(labeledCounterMetric["label1"].testHasValue())
         assertEquals(1, labeledCounterMetric["label1"].testGetValue())
-
-        assertTrue(labeledCounterMetric["label2"].testHasValue())
         assertEquals(2, labeledCounterMetric["label2"].testGetValue())
-
-        assertTrue(counterMetric.testHasValue())
         assertEquals(3, counterMetric.testGetValue())
     }
 
@@ -92,7 +88,7 @@ class LabeledMetricTypeTest {
 
         assertEquals(3, labeledCounterMetric["foo"].testGetValue())
         assertEquals(1, labeledCounterMetric["bar"].testGetValue())
-        assertFalse(labeledCounterMetric["baz"].testHasValue())
+        assertNull(labeledCounterMetric["baz"].testGetValue())
         // The rest all lands in the __other__ bucket
         assertEquals(3, labeledCounterMetric["not_there"].testGetValue())
     }

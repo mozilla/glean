@@ -35,18 +35,6 @@ public class UuidMetricType {
         inner.set(value.uuidString.lowercased())
     }
 
-    /// Tests whether a value is stored for the metric for testing purposes only. This function will
-    /// attempt to await the last task (if any) writing to the the metric's storage engine before
-    /// returning a value.
-    ///
-    /// - parameters:
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
-    /// - returns: true if metric value exists, otherwise false
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return inner.testGetValue(pingName) != nil
-    }
-
     /// Returns the stored value for testing purposes only. This function will attempt to await the
     /// last task (if any) writing to the the metric's storage engine before returning a value.
     ///

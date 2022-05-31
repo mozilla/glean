@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording quantity metrics.
  *
@@ -15,9 +13,3 @@ import androidx.annotation.VisibleForTesting
  * The quantity API only exposes the [set] method.
  */
 typealias QuantityMetricType = mozilla.telemetry.glean.internal.QuantityMetric
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun QuantityMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}

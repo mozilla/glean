@@ -291,7 +291,7 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Checking to see if the metric has been cleared after startup here, since receiving
         // the response above means that the metric should have been processed and cleared.
-        XCTAssertFalse(testMetric.testHasValue(), "The metric must be cleared after startup")
+        XCTAssertNil(testMetric.testGetValue(), "The metric must be cleared after startup")
 
         // Clean up
         resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")

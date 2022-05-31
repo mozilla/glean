@@ -26,7 +26,6 @@ import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.waitForPingContent
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -105,7 +104,6 @@ class EventMetricTypeTest {
 
         // Check that data was properly recorded.
         val snapshot = click.testGetValue()!!
-        assertTrue(click.testHasValue())
         assertEquals(2, snapshot.size)
 
         val firstEvent = snapshot.single { e -> e.extra?.get("object_id") == "buttonA" }
@@ -148,7 +146,6 @@ class EventMetricTypeTest {
         click.record(extra = mapOf(clickKeys.objectId to "buttonB"))
 
         // Check that data was properly recorded.
-        assertTrue(click.testHasValue())
         val snapshot = click.testGetValue()!!
         assertEquals(2, snapshot.size)
 
@@ -184,9 +181,9 @@ class EventMetricTypeTest {
         click.record()
 
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Events must not be recorded if they are disabled",
-            click.testHasValue()
+            click.testGetValue()
         )
     }
 
@@ -228,7 +225,6 @@ class EventMetricTypeTest {
         click.record(extra = mapOf(clickKeys.objectId to "buttonB"))
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(click.testHasValue("store2"))
         val snapshot = click.testGetValue("store2")!!
         assertEquals(2, snapshot.size)
 

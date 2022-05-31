@@ -68,10 +68,4 @@ class DatetimeMetricType(meta: CommonMetricData, timeUnit: TimeUnit = TimeUnit.M
     fun testGetValueAsString(pingName: String? = null): String? {
         return inner.testGetValueAsString(pingName)
     }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testHasValue(pingName: String? = null): Boolean {
-        return inner.testGetValue(pingName) != null
-    }
 }

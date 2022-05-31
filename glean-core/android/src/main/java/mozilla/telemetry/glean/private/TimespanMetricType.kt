@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording timespans.
  *
@@ -34,10 +32,4 @@ fun <U> TimespanMetricType.measure(funcToMeasure: () -> U): U {
 
     this.stop()
     return returnValue
-}
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun TimespanMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
 }

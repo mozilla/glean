@@ -10,9 +10,3 @@
 /// The quantity API only exposes the `QuantityMetricType.set(_:)` method, which takes care of validating the input
 /// data and making sure that requirements are enforced.
 public typealias QuantityMetricType = QuantityMetric
-
-extension QuantityMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}

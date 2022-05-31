@@ -500,7 +500,6 @@ class GleanTests: XCTestCase {
         Glean.shared.handleForegroundEvent()
 
         let foregroundCounter = GleanMetrics.GleanValidation.foregroundCount
-        XCTAssert(foregroundCounter.testHasValue())
         XCTAssertEqual(2, foregroundCounter.testGetValue())
     }
 

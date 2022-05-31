@@ -10,9 +10,3 @@
 /// The counter API only exposes the `CounterMetricType.add(_:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
 public typealias CounterMetricType = CounterMetric
-
-extension CounterMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}

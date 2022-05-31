@@ -11,12 +11,6 @@
 /// which takes care of validating the input data and making sure that limits are enforced.
 public typealias RateMetricType = RateMetric
 
-extension RateMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}
-
 /// This implements the developer facing API for recording a denominator of a rate metric,
 /// where the denominator is external.
 /// It is essentially a wrapper around `CounterMetricType`.
@@ -28,14 +22,6 @@ extension RateMetricType {
 /// which takes care of validating the input data and making sure that limits are enforced.
 public typealias DenominatorMetricType = DenominatorMetric
 
-extension DenominatorMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}
-
-public typealias NumeratorMetricType = NumeratorMetric
-
 /// This implements the developer facing API for recording the numerator of a rate metric
 /// with an external denominator.
 ///
@@ -44,8 +30,4 @@ public typealias NumeratorMetricType = NumeratorMetric
 ///
 /// The numerator API exposes the `NumeratorMetrictype.addToNumerator(_:)` method,
 /// which takes care of validating the input data and making sure that limits are enforced.
-extension NumeratorMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}
+public typealias NumeratorMetricType = NumeratorMetric

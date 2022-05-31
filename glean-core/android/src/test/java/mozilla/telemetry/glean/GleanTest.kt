@@ -25,7 +25,6 @@ import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.StringMetricType
-import mozilla.telemetry.glean.private.testHasValue
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -372,7 +371,6 @@ class GleanTest {
         resetGlean(clearStores = false)
 
         // Verify that the callback was executed by testing for the correct value
-        assertTrue("Value must exist", counterMetric.testHasValue())
         assertEquals("Value must match", 3, counterMetric.testGetValue())
     }
 

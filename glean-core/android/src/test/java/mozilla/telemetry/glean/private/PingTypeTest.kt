@@ -65,7 +65,7 @@ class PingTypeTest {
         )
 
         counter.add()
-        assertTrue(counter.testHasValue())
+        assertEquals(1, counter.testGetValue())
 
         var callbackWasCalled = false
         customPing.testBeforeNextSubmit { reason ->
@@ -120,7 +120,7 @@ class PingTypeTest {
         )
 
         counter.add()
-        assertTrue(counter.testHasValue())
+        assertEquals(1, counter.testGetValue())
 
         customPing.submit()
         // Trigger worker task to upload the pings in the background
@@ -166,7 +166,7 @@ class PingTypeTest {
         )
 
         counter.add()
-        assertTrue(counter.testHasValue())
+        assertEquals(1, counter.testGetValue())
 
         customPing.submit()
         // Trigger worker task to upload the pings in the background
@@ -212,7 +212,7 @@ class PingTypeTest {
         )
 
         counter.add()
-        assertTrue(counter.testHasValue())
+        assertEquals(1, counter.testGetValue())
 
         customPing.submit()
         // Trigger worker task to upload the pings in the background
@@ -251,7 +251,7 @@ class PingTypeTest {
         )
 
         counter.add()
-        assertTrue(counter.testHasValue())
+        assertEquals(1, counter.testGetValue())
 
         Glean.submitPingByName("unknown")
 

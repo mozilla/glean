@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...main)
 
+* General
+  * Remove `testHasValue` from all implementations.
+    `testGetValue` always returns a null value
+    (`null`, `nil`, `None` depending on the language) and does not throw an exception.
+
 # v50.1.2 (2022-07-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.1...v50.1.2)

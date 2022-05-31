@@ -10,9 +10,3 @@
 /// The boolean API only exposes the `BooleanMetricType.set(_:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
 public typealias BooleanMetricType = BooleanMetric
-
-extension BooleanMetricType {
-    public func testHasValue(pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}

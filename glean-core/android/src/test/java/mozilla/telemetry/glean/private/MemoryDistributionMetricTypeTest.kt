@@ -10,9 +10,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,7 +46,6 @@ class MemoryDistributionMetricTypeTest {
         val kb = 1024
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertEquals(1L * kb + 2L * kb + 3L * kb, snapshot.sum)
@@ -77,7 +74,6 @@ class MemoryDistributionMetricTypeTest {
         metric.accumulate(2048L)
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertEquals(1L shl 40, snapshot.sum)
@@ -105,9 +101,9 @@ class MemoryDistributionMetricTypeTest {
         metric.accumulate(1L)
 
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "MemoryDistributions without a lifetime should not record data.",
-            metric.testHasValue()
+            metric.testGetValue()
         )
     }
 
@@ -147,7 +143,6 @@ class MemoryDistributionMetricTypeTest {
         }
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store2"))
         val snapshot = metric.testGetValue("store2")!!
         // Check the sum
         assertEquals(6144L, snapshot.sum)
@@ -159,7 +154,6 @@ class MemoryDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[3024])
 
         // Check that data was properly recorded in the third ping.
-        assertTrue(metric.testHasValue("store3"))
         val snapshot2 = metric.testGetValue("store3")!!
         // Check the sum
         assertEquals(6144L, snapshot2.sum)
@@ -190,7 +184,6 @@ class MemoryDistributionMetricTypeTest {
         metric.accumulateSamples(testSamples)
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store1"))
         val snapshot = metric.testGetValue("store1")!!
         // Check the sum
         val kb = 1024L
