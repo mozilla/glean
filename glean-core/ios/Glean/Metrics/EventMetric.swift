@@ -108,11 +108,9 @@ public class EventMetricType<ExtraKeysEnum: EventExtraKey, ExtraObject: EventExt
     ///
     /// - parameters:
     ///     * errorType: The type of error recorded.
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns: The number of errors recorded for the metric for the given error type.
-    public func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
-        return self.inner.testGetNumRecordedErrors(errorType, pingName)
+    public func testGetNumRecordedErrors(_ errorType: ErrorType) -> Int32 {
+        return self.inner.testGetNumRecordedErrors(errorType)
     }
 }

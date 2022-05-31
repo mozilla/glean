@@ -126,13 +126,9 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
      * Returns the number of errors recorded for the given metric.
      *
      * @param errorType The type of the error recorded.
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String? = null): Int {
-        return inner.testGetNumRecordedErrors(errorType, pingName)
-    }
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
 }

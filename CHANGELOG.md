@@ -5,7 +5,9 @@
 * General
   * Remove `testHasValue` from all implementations.
     `testGetValue` always returns a null value
-    (`null`, `nil`, `None` depending on the language) and does not throw an exception.
+    (`null`, `nil`, `None` depending on the language) and does not throw an exception ([#2087](https://github.com/mozilla/glean/pull/2087)).
+  * BREAKING CHANGE: Dropped `ping_name` argument from all `test_get_num_recorded_errors` methods ([#2088](https://github.com/mozilla/glean/pull/2088))  
+    Errors default to the `metrics` ping, so that's what is queried internally.
 * Kotlin
   * Fix the Glean Gradle Plugin to work with Android Gradle Plugin v7.2.1 ([#2114](https://github.com/mozilla/glean/pull/2114))
 

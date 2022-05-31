@@ -154,12 +154,7 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
         self.inner.test_get_value(ping_name)
     }
 
-    pub fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
-        &self,
-        error: ErrorType,
-        ping_name: S,
-    ) -> i32 {
-        let ping_name = ping_name.into().map(|s| s.to_string());
-        self.inner.test_get_num_recorded_errors(error, ping_name)
+    pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        self.inner.test_get_num_recorded_errors(error)
     }
 }
