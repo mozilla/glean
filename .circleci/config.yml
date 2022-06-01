@@ -60,12 +60,14 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt) cargo test --all --verbose -- --nocapture
+          command: |
+            export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
+            cargo test --all --verbose --jobs 6 -- --nocapture
       - run:
           name: Test Glean with rkv safe-mode
           command: |
             cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode -- --nocapture
+            cargo test -p glean-core --features rkv-safe-mode --jobs 6 -- --nocapture
       - run:
           name: Upload coverage report
           command: |
