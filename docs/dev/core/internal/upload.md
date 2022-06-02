@@ -12,20 +12,16 @@ All language bindings implement ping uploading around a common API and protocol.
 ```mermaid
 classDiagram
     class UploadResult {
-        ~ToFFI()* int
     }
 
     class HttpResponse {
         int statusCode
-        ~ToFFI() int
     }
 
     class UnrecoverableFailure {
-        ~ToFFI() int
     }
 
     class RecoverableFailure {
-        ~ToFFI() int
     }
 
     class PingUploader {
@@ -117,21 +113,17 @@ See the documentation for further usage and explanation of the additional types:
 
 </div>
 
-<div data-lang="FFI" class="tab">
+<div data-lang="Foreign languages" class="tab">
 
-For FFI consumers (e.g. Kotlin/Swift/Python implementations) these functions are available:
+For other consumers (e.g. Kotlin/Swift/Python implementations) these functions are available:
 
-```rust
-/// Gets the next task for an uploader. Which can be either:
-extern "C" fn glean_get_upload_task(result: *mut FfiPingUploadTask)
+```
+/// Gets the next task for an uploader.
+PingUploadTask glean_get_upload_task();
 
 /// Processes the response from an attempt to upload a ping.
-extern "C" fn glean_process_ping_upload_response(task: *mut FfiPingUploadTask, status: u32)
+void glean_process_ping_upload_response(string uuid, UploadResult result);
 ```
-
-See the documentation for additional information about the types:
-
-* [`glean_ffi::upload`](../../../../docs/glean_ffi/upload/index.html)
 
 </div>
 
