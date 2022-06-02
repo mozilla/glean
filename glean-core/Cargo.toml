@@ -61,7 +61,3 @@ ctor = "0.1.12"
 
 [build-dependencies]
 uniffi_build = { version = "0.19.3", features = ["builtin-bindgen"] }
-
-[features]
-# Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
-rkv-safe-mode = []

@@ -64,11 +64,6 @@ commands:
             export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
             cargo test --verbose --jobs 6 -- --nocapture
       - run:
-          name: Test Glean with rkv safe-mode
-          command: |
-            cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode --jobs 6 -- --nocapture
-      - run:
           name: Install required Python dependencies
           command: |
             sudo apt update
