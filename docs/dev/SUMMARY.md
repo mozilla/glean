@@ -22,7 +22,6 @@
     - [Documentation guidelines](core/documentation-guidelines.md)
     - [Dependency Management](core/dependency-management.md)
     - [Adding a new metric type](core/new-metric-type.md)
-        - [FFI](core/new-metric-type/ffi.md)
         - [Kotlin](core/new-metric-type/kotlin.md)
         - [Swift](core/new-metric-type/swift.md)
         - [Python](core/new-metric-type/python.md)

@@ -1,68 +1,44 @@
 # Adding a new metric type - Kotlin
 
-## FFI
+## Re-export generated API
 
-The platform-specific FFI wrapper needs the definitions of these new functions.
-For Kotlin this is in `glean-core/android/src/main/java/mozilla/telemetry/glean/rust/LibGleanFFI.kt`:
+By default a metric type gets an auto-generated API from the definition in `glean.udl`.
+This API is exposed under the `internal` namespace.
+If this API is sufficient it needs to be re-exported.
 
-```kotlin
-fun glean_new_counter_metric(category: String, name: String, send_in_pings: StringArray, send_in_pings_len: Int, lifetime: Int, disabled: Byte): Long
-fun glean_destroy_counter_metric(handle: Long)
-fun glean_counter_add(glean_handle: Long, metric_id: Long, amount: Int)
+Create a new Kotlin file, e.g. `glean-core/android/src/main/java/mozilla/telemetry/glean/private/CounterMetricType.kt`:
+
+```Kotlin
+package mozilla.telemetry.glean.private
+
+typealias CounterMetricType = mozilla.telemetry.glean.internal.CounterMetric
 ```
 
-## Kotlin API
+## Extend and modify API
 
-Finally, create a platform-specific metric type wrapper.
-For Kotlin this would be `glean-core/android/src/main/java/mozilla/telemetry/glean/private/CounterMetricType.kt`:
+If the generated API is not sufficient, convenient or needs additional language-specific constructs or conversions the generated API can be wrapped.
 
-```kotlin
-class CounterMetricType(
-    private var handle: Long,
-    private val disabled: Boolean,
-    private val sendInPings: List<String>
-) {
-    /**
-     * The public constructor used by automatically generated metrics.
-     */
-    constructor(
-        disabled: Boolean,
-        category: String,
-        lifetime: Lifetime,
-        name: String,
-        sendInPings: List<String>
-    ) : this(handle = 0, disabled = disabled, sendInPings = sendInPings) {
-        val ffiPingsList = StringArray(sendInPings.toTypedArray(), "utf-8")
-        this.handle = LibGleanFFI.INSTANCE.glean_new_counter_metric(
-                category = category,
-                name = name,
-                send_in_pings = ffiPingsList,
-                send_in_pings_len = sendInPings.size,
-                lifetime = lifetime.ordinal,
-                disabled = disabled.toByte())
-    }
+Create a new Kotlin file, e.g. `glean-core/android/src/main/java/mozilla/telemetry/glean/private/CounterMetricType.kt`.
+Then create a new class, that delegates functionality to the metric type class from the `internal` namespace.
 
+```Kotlin
+package mozilla.telemetry.glean.private
+
+import mozilla.telemetry.glean.internal.CounterMetric
+
+class CounterMetricType(meta: CommonMetricData) {
+    val inner = CounterMetric(meta)
+
+    // Wrap existing functionality
     fun add(amount: Int = 1) {
-        if (disabled) {
-            return
-        }
-
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.launch {
-            LibGleanFFI.INSTANCE.glean_counter_add(
-                Glean.handle,
-                this@CounterMetricType.handle,
-                amount)
-        }
+        inner.add(amount)
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testHasValue(pingName: String = sendInPings.first()): Boolean {
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        Dispatchers.API.assertInTestingMode()
-
-        val res = LibGleanFFI.INSTANCE.glean_counter_test_has_value(Glean.handle, this.handle, pingName)
-        return res.toBoolean()
+    // Add a new method
+    fun addTwo() {
+        inner.add(2)
     }
 }
 ```
+
+Remember to wrap all defined methods of the metric type.
