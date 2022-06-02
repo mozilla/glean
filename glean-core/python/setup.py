@@ -182,8 +182,6 @@ class build(_build):
             "glean-bundle",
             "--target",
             target,
-            "--features",
-            "rkv-safe-mode",
         ]
         if buildvariant != "debug":
             command.append(f"--{buildvariant}")
