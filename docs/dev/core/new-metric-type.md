@@ -1,7 +1,7 @@
 # Adding a new metric type
 
 Data in the Glean SDK is stored in so-called metrics.
-You can find the full list of implemented metric types [in the user overview](../../book/user/metrics/index.md).
+You can find the full list of implemented metric types [in the user overview](../../book/reference/metrics/index.md).
 
 Adding a new metric type involves defining the metric type's API, its persisted and in-memory storage as well as its serialization into the ping payload.
 
@@ -21,14 +21,28 @@ but in short:
 
 ## The metric type's API
 
-A metric type implementation is defined in its own file under `glean-core/src/metrics/`, e.g. `glean-core/src/metrics/counter.rs` for a [Counter](../../book/user/metrics/counter.md).
+A new metric type is defined in `glean-core/src/glean.udl`.
+Each metric type is its own interface with a constructor and all recording and testing functions defined.
+It supports built-in types as well as new custom types.
+See [the UniFFI documentation](https://mozilla.github.io/uniffi-rs/udl/builtin_types.html) for more.
+
+```idl
+interface CounterMetric {
+    constructor(CommonMetricData meta);
+
+    void add(optional i32 amount = 1);
+};
+```
+
+The implementation of this metric type is defined in its own file under `glean-core/src/metrics/`,
+e.g. `glean-core/src/metrics/counter.rs` for a [Counter](../../book/reference/metrics/counter.md).
 
 Start by defining a structure to hold the metric's metadata:
 
 ```rust,noplaypen
 #[derive(Clone, Debug)]
 pub struct CounterMetric {
-    meta: CommonMetricData
+    meta: Arc<CommonMetricData>,
 }
 ```
 
@@ -40,28 +54,35 @@ impl MetricType for CounterMetric {
     fn meta(&self) -> &CommonMetricData {
         &self.meta
     }
-
-    fn meta_mut(&mut self) -> &mut CommonMetricData {
-        &mut self.meta
-    }
 }
 ```
 
-Its implementation should have a way to create a new metric from the common metric data. It should be the same for all metric types.
+Its implementation should have a way to create a new metric from the common metric data.
+It should be the similar for all metric types.
+Additional metric type parameters are passed as additional arguments.
 
 ```rust,noplaypen
 impl CounterMetric {
     pub fn new(meta: CommonMetricData) -> Self {
-        Self { meta }
+        Self {
+            meta: Arc::new(meta),
+        }
     }
 }
 ```
 
-Implement each method for the type. The first argument to accept should always be `glean: &Glean`, that is: a reference to the `Glean` object, used to access the storage:
+Implement each method for the type.
+The public method should do minimal work synchronously and defer logic & storage functionality to run on the dispatcher.
+The synchronous implementation should then take `glean: &Glean` to be able to access the storage.
 
 ```rust,noplaypen
 impl CounterMetric { // same block as above
-    pub fn add(&self, glean: &Glean, amount: i32) {
+    pub fn add(&self, amount: i32) {
+        let metric = self.clone();
+        crate::launch_with_glean(move |glean| metric.add_sync(glean, amount))
+    }
+
+    fn add_sync(&self, glean: &Glean, amount: i32) {
         // Always include this check!
         if !self.should_record() {
             return;
@@ -147,7 +168,7 @@ Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
 Documentation for the new metric type must be added to the
 [user book](https://mozilla.github.io/glean/book/index.html).
 
-* Add a new file for your new metric in `docs/user/user/metrics/`.
+* Add a new file for your new metric in `docs/user/reference/metrics/`.
   Its contents should follow the form and content of the other examples in that folder.
 * Reference that file in `docs/user/SUMMARY.md` so it will be included in the build.
 * Follow the [Documentation Contribution Guide](../docs.html).
@@ -165,4 +186,10 @@ Tests are written in the Language Bindings and tend to just cover basic function
 
 ---
 
-In the next step we will create the FFI wrapper and platform-specific wrappers.
+At this point the metric type will have an auto-generated API in all target languages.
+This needs to be re-exported in the target language.
+The following chapters have details on how to do that for the different languages.
+
+Sometimes a metric type needs some additional modifications to expose a language-specific type,
+apply additional type conversions or add additional functionality.
+For how to implement additional modifications to the API see the following chapters.
