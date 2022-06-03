@@ -707,6 +707,7 @@ def test_app_display_version_unknown():
     )
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
     # This test relies on testing mode to be disabled, since we need to prove the
     # real-world async behaviour of this.
