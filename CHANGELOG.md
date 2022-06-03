@@ -4,6 +4,8 @@
 
 * iOS
   * Dropped usage of Carthage for internal dependencies.
+* Rust
+  * Derive `serde::{Deserialize, Serialize}` on `Lifetime` and `CommonMetricData` ([bug 1772156](https://bugzilla.mozilla.org/show_bug.cgi?id=1772156))
 
 # v50.0.1 (2022-05-25)
 
