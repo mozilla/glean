@@ -490,9 +490,6 @@ jobs:
           command: |
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
-            # Bootstrap dependencies
-            bin/bootstrap.sh
-
             UDID=$(xcrun xctrace list devices 2>&1 | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
             # Store build type for use in cache key

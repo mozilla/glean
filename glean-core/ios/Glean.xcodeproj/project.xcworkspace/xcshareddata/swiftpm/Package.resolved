@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins" : [
+      {
+        "package": "GzipSwift",
+          "repositoryURL" : "https://github.com/1024jp/GzipSwift",
+          "state" : {
+            "branch": null,
+            "revision" : "7a7f17761c76a932662ab77028a4329f67d645a4",
+            "version" : "5.2.0"
+          }
+      },
+      {
+        "package" : "OHHTTPStubs",
+        "repositoryURL" : "https://github.com/alisoftware/OHHTTPStubs",
+        "state" : {
+          "branch": null,
+          "revision" : "12f19662426d0434d6c330c6974d53e2eb10ecd9",
+          "version" : "9.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

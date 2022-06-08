@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.0.1...main)
 
+* iOS
+  * Dropped usage of Carthage for internal dependencies.
+
 # v50.0.1 (2022-05-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.0.0...v50.0.1)
