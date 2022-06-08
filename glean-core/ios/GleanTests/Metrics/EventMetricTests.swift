@@ -183,7 +183,7 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertNil(metric.testGetValue(), "Events must not be recorded if they are disabled")
     }
 
-    func testEventGetValueThrowsExceptionIfNothingIsStored() {
+    func testEventGetValueReturnsNilIfNothingIsStored() {
         let metric = EventMetricType<ClickKeys, NoExtras>(CommonMetricData(
             category: "ui",
             name: "click",

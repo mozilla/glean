@@ -49,7 +49,7 @@ class StringMetricTests: XCTestCase {
         XCTAssertNil(stringMetric.testGetValue(), "Strings must not be recorded if they are disabled")
     }
 
-    func testStringGetValueThrowsExceptionIfNothingIsStored() {
+    func testStringGetValueReturnsNilIfNothingIsStored() {
         let stringMetric = StringMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_metric",

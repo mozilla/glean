@@ -83,7 +83,7 @@ class MemoryDistributionTypeTests: XCTestCase {
         XCTAssertNil(metric.testGetValue())
     }
 
-    func testMemoryDistributionGetValueThrowsExceptionIfNothingIsStored() {
+    func testMemoryDistributionGetValueReturnsNilIfNothingIsStored() {
         let metric = MemoryDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "memory_distribution",

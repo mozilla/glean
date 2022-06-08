@@ -79,7 +79,7 @@ class UuidMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val uuidMetric = UuidMetricType(
             CommonMetricData(
                 disabled = true,

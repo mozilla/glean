@@ -70,7 +70,7 @@ class BooleanMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         // Define a 'booleanMetric' boolean metric to have an instance to call
         // testGetValue() on
         val booleanMetric = BooleanMetricType(
