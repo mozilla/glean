@@ -10,6 +10,7 @@ pip
 pytest-localserver==0.5.1
 pytest-runner==5.3.1
 pytest==7.0.1
+semver==2.13.0
 setuptools-git==1.2
 twine==3.8.0
 types-pkg_resources==0.1.3
