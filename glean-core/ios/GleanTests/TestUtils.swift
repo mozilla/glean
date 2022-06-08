@@ -5,6 +5,7 @@
 @testable import Glean
 import Gzip
 import OHHTTPStubs
+import OHHTTPStubsSwift
 import XCTest
 
 /// Stub out receiving a request on Glean's default Telemetry endpoint.
@@ -35,7 +36,7 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 
         callback(pingType, payload)
 
-        return OHHTTPStubsResponse(
+        return HTTPStubsResponse(
             jsonObject: [],
             statusCode: 200,
             headers: ["Content-Type": "application/json"]
@@ -96,7 +97,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
 }
 
 func tearDownStubs() {
-    OHHTTPStubs.removeAllStubs()
+    HTTPStubs.removeAllStubs()
 }
 
 /// Stringify a JSON object and if unable to, just return an empty string.

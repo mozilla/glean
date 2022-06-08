@@ -4,6 +4,7 @@
 
 @testable import Glean
 import OHHTTPStubs
+import OHHTTPStubsSwift
 import XCTest
 
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
@@ -376,7 +377,7 @@ class GleanTests: XCTestCase {
                 self.expectation?.fulfill()
             }
 
-            return OHHTTPStubsResponse(
+            return HTTPStubsResponse(
                 jsonObject: [],
                 statusCode: 200,
                 headers: ["Content-Type": "application/json"]
@@ -414,7 +415,7 @@ class GleanTests: XCTestCase {
                 self.expectation?.fulfill()
             }
 
-            return OHHTTPStubsResponse(
+            return HTTPStubsResponse(
                 jsonObject: [],
                 statusCode: 200,
                 headers: ["Content-Type": "application/json"]
