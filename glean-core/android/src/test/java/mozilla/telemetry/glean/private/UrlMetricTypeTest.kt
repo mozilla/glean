@@ -68,7 +68,7 @@ class UrlMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val urlMetric = UrlMetricType(
             CommonMetricData(
                 disabled = true,

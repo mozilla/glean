@@ -101,7 +101,7 @@ class QuantityMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val quantityMetric = QuantityMetricType(
             CommonMetricData(
                 disabled = true,

@@ -52,7 +52,7 @@ class UrlMetricTypeTests: XCTestCase {
         XCTAssertNil(urlMetric.testGetValue(), "Urls must not be recorded if they are disabled")
     }
 
-    func testUrlGetValueThrowsExceptionIfNothingIsStored() {
+    func testUrlGetValueReturnsNilIfNothingIsStored() {
         let urlMetric = UrlMetricType(CommonMetricData(
             category: "telemetry",
             name: "url_metric",

@@ -55,7 +55,7 @@ class UuidMetricTypeTests: XCTestCase {
         XCTAssertNil(uuidMetric.testGetValue(), "UUIDs must not be recorded if they are disabled")
     }
 
-    func testUuidGetValueThrowsExceptionIfNothingIsStored() {
+    func testUuidGetValueReturnsNilIfNothingIsStored() {
         let uuidMetric = UuidMetricType(CommonMetricData(
             category: "telemetry",
             name: "uuid_metric",

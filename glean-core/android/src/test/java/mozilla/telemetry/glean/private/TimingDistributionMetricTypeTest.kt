@@ -87,7 +87,7 @@ class TimingDistributionMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         // Define a timing distribution metric which will be stored in "store1"
         val metric = TimingDistributionMetricType(
             CommonMetricData(

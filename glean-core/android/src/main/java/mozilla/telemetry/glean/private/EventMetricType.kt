@@ -115,7 +115,6 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
      * @param pingName represents the name of the ping to retrieve the metric for.
      *                 Defaults to the first value in `sendInPings`.
      * @return value of the stored events
-     * @throws [NullPointerException] if no value is stored
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads

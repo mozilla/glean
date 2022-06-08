@@ -51,7 +51,7 @@ class BooleanMetricTypeTests: XCTestCase {
         XCTAssertNil(booleanMetric.testGetValue(), "Booleans must not be recorded if they are disabled")
     }
 
-    func testBooleanGetValueThrowsExceptionIfNothingIsStored() {
+    func testBooleanGetValueReturnsNilIfNothingIsStored() {
         let booleanMetric = BooleanMetricType(CommonMetricData(
             category: "telemetry",
             name: "boolean_metric",

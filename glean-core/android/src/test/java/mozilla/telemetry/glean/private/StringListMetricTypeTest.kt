@@ -127,7 +127,7 @@ class StringListMetricTypeTest {
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val stringListMetric = StringListMetricType(
             CommonMetricData(
                 disabled = true,

@@ -54,7 +54,7 @@ class CounterMetricTypeTests: XCTestCase {
         XCTAssertNil(counterMetric.testGetValue(), "Counters must not be recorded if they are disabled")
     }
 
-    func testCounterGetValueThrowsExceptionIfNothingIsStored() {
+    func testCounterGetValueReturnsNilIfNothingIsStored() {
         let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "counter_metric",

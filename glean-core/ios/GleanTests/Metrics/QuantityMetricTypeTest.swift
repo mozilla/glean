@@ -51,7 +51,7 @@ class QuantityMetricTypeTests: XCTestCase {
         XCTAssertNil(quantityMetric.testGetValue(), "Quantities must not be recorded if they are disabled")
     }
 
-    func testCounterGetValueThrowsExceptionIfNothingIsStored() {
+    func testCounterGetValueReturnsNilIfNothingIsStored() {
         let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",

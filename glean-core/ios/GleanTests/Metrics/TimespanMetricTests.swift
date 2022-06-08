@@ -73,7 +73,7 @@ class TimespanMetricTypeTests: XCTestCase {
         XCTAssertNil(metric.testGetValue(), "Timespan must not be recorded if they are disabled")
     }
 
-    func testTimespanGetValueThrowsExceptionIfNothingIsStored() {
+    func testTimespanGetValueReturnsNilIfNothingIsStored() {
         let metric = TimespanMetricType(CommonMetricData(
             category: "telemetry",
             name: "timespan_metric",

@@ -91,7 +91,7 @@ class StringListMetricTests: XCTestCase {
         XCTAssertNil(stringListMetric.testGetValue(), "Strings must not be recorded if they are disabled")
     }
 
-    func testStringGetValueThrowsExceptionIfNothingIsStored() {
+    func testStringGetValueReturnsNilIfNothingIsStored() {
         let stringListMetric = StringListMetricType(CommonMetricData(
             category: "telemetry",
             name: "string_list_metric",

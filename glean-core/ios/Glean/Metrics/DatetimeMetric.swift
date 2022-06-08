@@ -48,8 +48,6 @@ public class DatetimeMetricType {
     /// will attempt to await the last task (if any) writing to the the metric's storage engine before returning
     ///  a value.
     ///
-    /// Throws a `Missing value` exception if no value is stored
-    ///
     /// - parameters:
     ///     * pingName: represents the name of the ping to retrieve the metric for.
     ///                 Defaults to the first value in `sendInPings`.
@@ -61,8 +59,6 @@ public class DatetimeMetricType {
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
     /// last task (if any) writing to the the metric's storage engine before returning a value.
-    ///
-    /// Throws a `Missing value` exception if no value is stored
     ///
     /// - parameters:
     ///     * pingName: represents the name of the ping to retrieve the metric for.
