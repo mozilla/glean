@@ -18,16 +18,11 @@
 		BFD3AB4E224D475E00AD9255 /* BaselinePingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD3AB4D224D475E00AD9255 /* BaselinePingTest.swift */; };
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
 		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
-		BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; };
-		BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24B525CC39B200110728 /* Glean.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
-		BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
+		CD70CF8C2850D3F400FC2014 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD70CF8B2850D3F400FC2014 /* Glean.xcframework */; };
+		CD70CF8E2850D4B700FC2014 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF8D2850D4B700FC2014 /* Swifter */; };
+		CD70CF902850D4BA00FC2014 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF8F2850D4BA00FC2014 /* Gzip */; };
 		CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99D84525F131D600BD5339 /* EventPingTest.swift */; };
-		CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; };
-		CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24BB25CC39BF00110728 /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; };
-		CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BFEA24C025CC39CB00110728 /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,9 +49,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CDDD7AA225D1636C00837394 /* Swifter.xcframework in Embed Frameworks */,
-				BFEA24B725CC39B200110728 /* Glean.xcframework in Embed Frameworks */,
-				CDDD7A9E25D1635F00837394 /* Gzip.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,10 +78,9 @@
 		BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerTest.swift; sourceTree = "<group>"; };
 		BFDA7AD12371D2BA00575C7B /* MockServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		BFE1E7D523435A600067A12A /* sdk_generator.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = sdk_generator.sh; sourceTree = "<group>"; };
-		BFEA24B525CC39B200110728 /* Glean.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Glean.xcframework; path = Carthage/Build/Glean.xcframework; sourceTree = "<group>"; };
-		BFEA24BB25CC39BF00110728 /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
-		BFEA24C025CC39CB00110728 /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
 		BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionRequestPingTest.swift; sourceTree = "<group>"; };
+		CD70CF8A2850D3DE00FC2014 /* app */ = {isa = PBXFileReference; lastKnownFileType = folder; name = app; sourceTree = "<group>"; };
+		CD70CF8B2850D3F400FC2014 /* Glean.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Glean.xcframework; path = ../../../build/archives/Glean.xcframework; sourceTree = "<group>"; };
 		CD99D84525F131D600BD5339 /* EventPingTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventPingTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,9 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDDD7AA125D1636C00837394 /* Swifter.xcframework in Frameworks */,
-				BFEA24B625CC39B200110728 /* Glean.xcframework in Frameworks */,
-				CDDD7A9D25D1635F00837394 /* Gzip.xcframework in Frameworks */,
+				CD70CF8C2850D3F400FC2014 /* Glean.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,8 +104,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFEA24D325CC3A5200110728 /* Swifter.xcframework in Frameworks */,
-				BFEA24D025CC3A4F00110728 /* Gzip.xcframework in Frameworks */,
+				CD70CF902850D4BA00FC2014 /* Gzip in Frameworks */,
+				CD70CF8E2850D4B700FC2014 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,6 +123,8 @@
 		BFD3AB21224D475E00AD9255 = {
 			isa = PBXGroup;
 			children = (
+				CD70CF8B2850D3F400FC2014 /* Glean.xcframework */,
+				CD70CF8A2850D3DE00FC2014 /* app */,
 				BF6F41C4234346A000E222A8 /* metrics.yaml */,
 				BF8966592371C82E0097B7F2 /* pings.yaml */,
 				BFE1E7D523435A600067A12A /* sdk_generator.sh */,
@@ -197,9 +188,6 @@
 		BFD3AB68224D4F9500AD9255 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BFEA24C025CC39CB00110728 /* Swifter.xcframework */,
-				BFEA24BB25CC39BF00110728 /* Gzip.xcframework */,
-				BFEA24B525CC39B200110728 /* Glean.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -222,6 +210,8 @@
 			dependencies = (
 			);
 			name = "glean-sample-app";
+			packageProductDependencies = (
+			);
 			productName = "glean-sample-app";
 			productReference = BFD3AB2A224D475E00AD9255 /* glean-sample-app.app */;
 			productType = "com.apple.product-type.application";
@@ -258,6 +248,10 @@
 				BFD3AB4B224D475E00AD9255 /* PBXTargetDependency */,
 			);
 			name = "glean-sample-appUITests";
+			packageProductDependencies = (
+				CD70CF8D2850D4B700FC2014 /* Swifter */,
+				CD70CF8F2850D4BA00FC2014 /* Gzip */,
+			);
 			productName = "glean-sample-appUITests";
 			productReference = BFD3AB49224D475E00AD9255 /* glean-sample-appUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -296,6 +290,10 @@
 				Base,
 			);
 			mainGroup = BFD3AB21224D475E00AD9255;
+			packageReferences = (
+				CDAACF9D2850D2B8000AA189 /* XCRemoteSwiftPackageReference "swifter" */,
+				CDAACFA02850D2D8000AA189 /* XCRemoteSwiftPackageReference "GzipSwift" */,
+			);
 			productRefGroup = BFD3AB2B224D475E00AD9255 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -712,6 +710,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CDAACF9D2850D2B8000AA189 /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+		CDAACFA02850D2D8000AA189 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/1024jp/GzipSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CD70CF8D2850D4B700FC2014 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CDAACF9D2850D2B8000AA189 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+		CD70CF8F2850D4BA00FC2014 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CDAACFA02850D2D8000AA189 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BFD3AB22224D475E00AD9255 /* Project object */;
 }

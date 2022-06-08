@@ -9,23 +9,16 @@ Glean sends a [`baseline`][] ping when the app is sent to background.
 
 ## Build
 
-1. Install Xcode version 11.0 + Swift 5.1.
+1. Install Xcode version 13.
 
 2. Install the latest [Xcode developer tools](https://developer.apple.com/xcode/downloads/) from Apple.
 
-3. Install Carthage:
+3. Build the XCFramework to be consumed. Run the following from the root directory of this repository:
 
     ```
-    brew update
-    brew install carthage
+    ./bin/build-xcframework.sh
     ```
 
-4. Pull in the sample app's dependencies:
+4. Open `samples/ios/app/glean-sample-app.xcodeproj` in Xcode.
 
-    ```
-    ./bootstrap.sh
-    ```
-
-6. Open `glean-sample-app.xcodeproj` in Xcode.
-
-7. Build/Run the `glean-sample-app` scheme in Xcode.
+5. Build/Run the `glean-sample-app` scheme in Xcode.
