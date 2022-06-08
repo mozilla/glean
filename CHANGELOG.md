@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...main)
 
+* General
+  * Relax `glean_parser` version requirement. All "compatible releases" are now allowed ([#2086](https://github.com/mozilla/glean/pull/2086))
 * Kotlin
   * BUGFIX: Re-enable correctly connecting `glean.validation.foreground_count` again ([#2153](https://github.com/mozilla/glean/pull/2153))
 

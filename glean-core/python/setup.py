@@ -59,7 +59,8 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
 version = "51.1.0"
 
 requirements = [
-    "glean_parser==6.1.2",
+    "semver>=2.13.0",
+    "glean_parser~=6.1",
 ]
 
 # The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`

@@ -41,7 +41,7 @@ class GleanMetricsYamlTransform extends ArtifactTransform {
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "6.1.2"
+    private String GLEAN_PARSER_VERSION = "6.1"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "4.5.11"
@@ -71,25 +71,47 @@ except ImportError:
 else:
     found_version = getattr(module, '__version__')
 
-if found_version != expected_version:
-    if not offline:
-        if 'git' in expected_version:
-            target=expected_version
-        else:
-            target=f'{module_name}=={expected_version}'
-
-        subprocess.check_call([
-            sys.executable,
-            '-m',
-            'pip',
-            'install',
-            '--upgrade',
-            target
-        ])
+if not offline:
+    # When running in online mode, we always install.
+    # If it is installed this is essentially a no-op,
+    # otherwise it installs/upgrades.
+    if 'git' in expected_version:
+        target=expected_version
     else:
-        print(f'Using Python environment at {sys.executable},')
-        print(f'expected glean_parser version {expected_version}, found {found_version}.')
+        target=f'{module_name}~={expected_version}'
+
+    subprocess.check_call([
+        sys.executable,
+        '-m',
+        'pip',
+        'install',
+        '--upgrade',
+        target
+    ])
+else:
+    error_text = f'''
+    Using Python environment at {sys.executable},
+    expected glean_parser version ~={expected_version}, found {found_version}.
+    Please remove the Python environment, then prepare the package wheels for use:
+
+      mkdir -p glean-wheels
+      cd glean-wheels
+      pip download glean_parser~={expected_version}
+    '''
+
+    if found_version is None:
+        print(error_text)
         sys.exit(1)
+    else:
+        # We check MAJOR.MINOR only
+        expected_ver = expected_version.split(".")
+        expected_maj, expected_min = int(expected_ver[0]), int(expected_ver[1])
+        current_ver = found_version.split(".")
+        current_maj, current_min = int(current_ver[0]), int(current_ver[1])
+
+        if current_maj > expected_maj or current_maj < expected_maj or (current_maj == expected_maj and current_min < expected_min):
+            print(error_text)
+            sys.exit(1)
 try:
     subprocess.check_call([
         sys.executable,
@@ -384,7 +406,7 @@ except:
                     }
 
                     project.logger.warn("Building in offline mode, therefore, Glean is using a supplied Python at ${pythonBinary}")
-                    project.logger.warn("The Python binary can be overridden GLEAN_PYTHON env var.")
+                    project.logger.warn("The Python binary can be overridden with the GLEAN_PYTHON env var.")
 
                     commandLine pythonBinary
                     args "-m"
@@ -458,7 +480,7 @@ except:
                 if (parserVersion.matches("git.+")) {
                     conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", [parserVersion]
                 } else {
-                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser==${parserVersion}"]
+                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser~=${parserVersion}"]
                 }
             }
             File envDir = new File(
