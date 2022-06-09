@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import Foundation
+
 /// This class represents a ping uploader via HTTP.
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.

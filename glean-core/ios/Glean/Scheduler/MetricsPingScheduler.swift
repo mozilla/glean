@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import Foundation
+import UIKit
+
 /// MetricsPingScheduler facilitates scheduling the periodic assembling of metrics pings,
 /// at a given time, trying its best to handle the following cases:
 ///
