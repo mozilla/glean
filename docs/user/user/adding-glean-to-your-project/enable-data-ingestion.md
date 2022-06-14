@@ -1,26 +1,32 @@
-# Adding your product to the Glean Dictionary
+# Enabling data to be ingested by the data platform
 
-This page provides a step-by-step guide on how to add your project to the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/).
+This page provides a step-by-step guide on how to enable data from your product to be ingested by the data platform.
 
-This is just one of the required steps for integrating Glean successfully into a project. Check the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
+This is just one of the required steps for integrating Glean successfully into a product.
+Check the full [Glean integration checklist](./index.md) for a comprehensive list of all the steps involved in doing so.
 
-# Requirements
+## Requirements
 
-GitHub Actions
+* GitHub Workflows
 
-# Enable your product
+## Add your product to probe scraper
 
-At least one week before releasing your product, [file a data engineering bug][dataeng-bug] to enable your product's application id and metrics to be published to the Glean Dictionary. This will result in your product being added to `probe-scraper`'s [`repositories.yaml`](https://github.com/mozilla/probe-scraper/blob/main/repositories.yaml)
+At least one week before releasing your product, [file a data engineering bug][dataeng-bug] to enable your product's application id.
+This will result in your product being added to [probe scraper](https://github.com/mozilla/probe-scraper)'s
+[`repositories.yaml`](https://github.com/mozilla/probe-scraper/blob/main/repositories.yaml).
 
-# Validate and publish metrics
+## Validate and publish metrics
 
-After your product has been enabled, you must submit commits to [`probe-scraper`](https://github.com/mozilla/probe-scraper) to validate and publish metrics to the Glean Dictionary. Metrics will only be published from branches defined in [`repositories.yaml`](https://github.com/mozilla/probe-scraper/blob/main/repositories.yaml), or the git default branch if not explicitly configured.
+After your product has been enabled, you must submit commits to probe scraper to validate and publish metrics.
+Metrics will only be published from branches defined in probe scraper's `repositories.yaml`, or the Git default branch if not explicitly configured.
+This should happen on every CI run to the specified branches.
+Nightly jobs will then automatically add published metrics to the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/) and other data platform tools.
 
-Add the following `.github/workflows/glean-probe-scraper.yml` to submit commits via GitHub workflows:
+Enable the GitHub Workflow by creating a new file `.github/workflows/glean-probe-scraper.yml` with the following content:
 
 ```yaml
 ---
-name: GLEAN probe-scraper
+name: Glean probe-scraper
 on: [push, pull_request]
 jobs:
   glean-probe-scraper:
