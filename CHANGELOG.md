@@ -1,6 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.0...main)
+
+# v50.1.0 (2022-06-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.0.1...v50.1.0)
+
+* General
+  * Updated to `glean_parser` v6.1.1 ([#2092](https://github.com/mozilla/glean/pull/2092))
+* Swift
+  * Dropped usage of Carthage for internal dependencies ([#2089](https://github.com/mozilla/glean/pull/2089))
+  * Implement the text metric ([#2073](https://github.com/mozilla/glean/pull/2073))
+* Kotlin
+  * Implement the text metric ([#2073](https://github.com/mozilla/glean/pull/2073))
+* Rust
+  * Derive `serde::{Deserialize, Serialize}` on `Lifetime` and `CommonMetricData` ([bug 1772156](https://bugzilla.mozilla.org/show_bug.cgi?id=1772156))
 
 # v50.0.1 (2022-05-25)
 

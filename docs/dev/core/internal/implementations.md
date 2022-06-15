@@ -3,7 +3,6 @@
 | Project Name      | Language Bindings   | Operating System  | App Lifecycle Type  | Environment Data source |
 | ----------------- | ------------------- | ----------------  | ------------------- | ----------------------- |
 | glean-core        | Rust                | all               | all                 | none                    |
-| glean-ffi         | C                   | all               | all                 | none                    |
 | glean             | Rust                | Windows/Mac/Linux | Desktop application | OS info build-time autodetected, app info passed in |
 | Glean Android     | Kotlin, Java        | Android           | Mobile app          | Autodetected from the Android environment |
 | Glean iOS         | Swift               | iOS               | Mobile app          | Autodetected from the iOS environment

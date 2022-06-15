@@ -27,74 +27,85 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
 
-  ```Kotlin
-  import org.mozilla.yourApplication.GleanMetrics.Controls
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Controls
 
-  Controls.refreshPressed.add() // Adds 1 to the counter.
-  Controls.refreshPressed.add(5) // Adds 5 to the counter.
-  ```
+Controls.refreshPressed.add() // Adds 1 to the counter.
+Controls.refreshPressed.add(5) // Adds 5 to the counter.
+```
+
 </div>
+
 <div data-lang="Java" class="tab">
 
-  ```Java
-  import org.mozilla.yourApplication.GleanMetrics.Controls;
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Controls;
 
-  Controls.INSTANCE.refreshPressed.add(); // Adds 1 to the counter.
-  Controls.INSTANCE.refreshPressed.add(5); // Adds 5 to the counter.
-  ```
+Controls.INSTANCE.refreshPressed().add(); // Adds 1 to the counter.
+Controls.INSTANCE.refreshPressed().add(5); // Adds 5 to the counter.
+```
+
 </div>
+
 <div data-lang="Swift" class="tab">
 
-  ```Swift
-  Controls.refreshPressed.add() // Adds 1 to the counter.
-  Controls.refreshPressed.add(5) // Adds 5 to the counter.
-  ```
+```Swift
+Controls.refreshPressed.add() // Adds 1 to the counter.
+Controls.refreshPressed.add(5) // Adds 5 to the counter.
+```
 </div>
+
 <div data-lang="Python" class="tab">
 
-  ```Python
-  from glean import load_metrics
-  metrics = load_metrics("metrics.yaml")
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
 
-  metrics.controls.refresh_pressed.add()  # Adds 1 to the counter.
-  metrics.controls.refresh_pressed.add(5) # Adds 5 to the counter.
-  ```
+metrics.controls.refresh_pressed.add()  # Adds 1 to the counter.
+metrics.controls.refresh_pressed.add(5) # Adds 5 to the counter.
+```
+
 </div>
+
 <div data-lang="Rust" class="tab">
 
-  ```Rust
-  use glean_metrics;
+```Rust
+use glean_metrics::controls;
 
-  controls::refresh_pressed.add(1); // Adds 1 to the counter.
-  controls::refresh_pressed.add(5); // Adds 5 to the counter.
-  ```
+controls::refresh_pressed.add(1); // Adds 1 to the counter.
+controls::refresh_pressed.add(5); // Adds 5 to the counter.
+```
+
 </div>
 <div data-lang="JavaScript" class="tab">
 
-  ```js
-  import * as controls from "./path/to/generated/files/controls.js";
+```js
+import * as controls from "./path/to/generated/files/controls.js";
 
-  controls.refreshPressed.add(); // Adds 1 to the counter.
-  controls.refreshPressed.add(5); // Adds 5 to the counter.
-  ```
+controls.refreshPressed.add(); // Adds 1 to the counter.
+controls.refreshPressed.add(5); // Adds 5 to the counter.
+```
+
 </div>
+
 <div data-lang="Firefox Desktop" class="tab">
 
-  **C++**
+**C++**
 
-  ```cpp
-  #include "mozilla/glean/GleanMetrics.h"
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
 
-  mozilla::glean::controls::refresh_pressed.Add(1);
-  mozilla::glean::controls::refresh_pressed.Add(5);
-  ```
+mozilla::glean::controls::refresh_pressed.Add(1);
+mozilla::glean::controls::refresh_pressed.Add(5);
+```
 
-  **JavaScript**
+**JavaScript**
 
-  ```js
-  Glean.controls.refreshPressed.add(1);
-  Glean.controls.refreshPressed.add(5);
-  ```
+```js
+Glean.controls.refreshPressed.add(1);
+Glean.controls.refreshPressed.add(5);
+```
+
 </div>
 {{#include ../../../shared/tab_footer.md}}
 
@@ -112,7 +123,9 @@ Increases the counter by a certain amount. If no amount is passed it defaults to
 
 ### `testGetValue`
 
-Gets the recorded value for a given counter metric.
+Gets the recorded value for a given counter metric.  
+Returns the count if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -131,7 +144,7 @@ assertEquals(6, Controls.refreshPressed.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Controls;
 
-assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
+assertEquals(6, Controls.INSTANCE.refreshPressed().testGetValue());
 ```
 
 </div>
@@ -140,7 +153,7 @@ assertEquals(6, Controls.INSTANCE.refreshPressed.testGetValue());
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(6, try Controls.refreshPressed.testGetValue())
+XCTAssertEqual(6, Controls.refreshPressed.testGetValue())
 ```
 
 </div>
@@ -158,8 +171,8 @@ assert 6 == metrics.controls.refresh_pressed.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::controls;
 
 assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 ```
@@ -168,11 +181,12 @@ assert_eq!(6, controls::refresh_pressed.test_get_value(None).unwrap());
 
 <div data-lang="JavaScript" class="tab">
 
-  ```js
-  import * as controls from "./path/to/generated/files/controls.js";
+```js
+import * as controls from "./path/to/generated/files/controls.js";
 
-  assert.strictEqual(6, await controls.refreshPressed.testGetValue());
-  ```
+assert.strictEqual(6, await controls.refreshPressed.testGetValue());
+```
+
 </div>
 
 <div data-lang="Firefox Desktop" class="tab">
@@ -197,63 +211,9 @@ Assert.equal(6, Glean.controls.refreshPressed.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given counter metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Controls
-
-assertTrue(Controls.refreshPressed.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Controls;
-
-assertTrue(Controls.INSTANCE.refreshPressed.testHasValue());
-```
-
-</div>
-
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-XCTAssert(Controls.refreshPressed.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.controls.refresh_pressed.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Gets the number of errors recorded for a given counter metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -263,7 +223,8 @@ Gets number of errors recorded for a given counter metric.
 import org.mozilla.yourApplication.GleanMetrics.Controls
 
 assertEquals(
-    1, Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    Controls.refreshPressed.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 )
 ```
 
@@ -275,7 +236,8 @@ assertEquals(
 import org.mozilla.yourApplication.GleanMetrics.Controls;
 
 assertEquals(
-    1, Controls.INSTANCE.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    Controls.INSTANCE.refreshPressed().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 
@@ -285,7 +247,7 @@ assertEquals(
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(1, Controls.refreshPressed.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Controls.refreshPressed.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -298,7 +260,7 @@ metrics = load_metrics("metrics.yaml")
 
 from glean.testing import ErrorType
 
-assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
+assert 0 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
@@ -306,13 +268,12 @@ assert 1 == metrics.controls.refresh_pressed.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::controls;
 
 assert_eq!(
-  1,
+  0,
   controls::refresh_pressed.test_get_num_recorded_errors(
     ErrorType::InvalidValue
   )
@@ -328,7 +289,7 @@ import * as controls from "./path/to/generated/files/controls.js";
 import { ErrorType } from "@mozilla/glean/<platform>";
 
 assert.strictEqual(
-  1,
+  0,
   await controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)
 );
 ```

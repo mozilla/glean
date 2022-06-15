@@ -121,24 +121,12 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/paste</url>
   </license>
   <license>
-    <name>Apache License 2.0: paste</name>
-    <url>https://github.com/dtolnay/paste</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: paste-impl</name>
-    <url>https://github.com/dtolnay/paste</url>
-  </license>
-  <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
   </license>
   <license>
     <name>Apache License 2.0: pest</name>
     <url>https://github.com/pest-parser/pest</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: proc-macro-hack</name>
-    <url>https://github.com/dtolnay/proc-macro-hack</url>
   </license>
   <license>
     <name>Apache License 2.0: proc-macro2</name>

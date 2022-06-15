@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins" : [
+      {
+        "package": "GzipSwift",
+        "repositoryURL" : "https://github.com/1024jp/GzipSwift",
+        "state" : {
+          "branch": null,
+          "revision" : "7a7f17761c76a932662ab77028a4329f67d645a4",
+          "version" : "5.2.0"
+        }
+      },
+      {
+        "package" : "swifter",
+        "repositoryURL" : "https://github.com/httpswift/swifter",
+        "state" : {
+          "branch": null,
+          "revision" : "9483a5d459b45c3ffd059f7b55f9638e268632fd",
+          "version" : "1.5.0"
+        }
+      }
+    ]
+  },
+  "version" : 1
+}

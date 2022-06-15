@@ -30,8 +30,8 @@ Stability.crashCount["native_code_crash"].add(3) // Adds 3 to the "native_code_c
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
-Stability.INSTANCE.crashCount["uncaught_exception"].add(); // Adds 1 to the "uncaught_exception" counter.
-Stability.INSTANCE.crashCount["native_code_crash"].add(3); // Adds 3 to the "native_code_crash" counter.
+Stability.INSTANCE.crashCount()["uncaught_exception"].add(); // Adds 1 to the "uncaught_exception" counter.
+Stability.INSTANCE.crashCount()["native_code_crash"].add(3); // Adds 3 to the "native_code_crash" counter.
 ```
 </div>
 
@@ -58,8 +58,8 @@ metrics.stability.crash_count["native_code_crash"].add(3)
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::stability;
 
 stability::crash_count.get("uncaught_exception").add(1); // Adds 1 to the "uncaught_exception" counter.
 stability::crash_count.get("native_code_crash").add(3); // Adds 3 to the "native_code_crash" counter.
@@ -114,7 +114,9 @@ Glean.stability.crashCount["native_code_crash"].add(3);
 
 ### `testGetValue`
 
-Gets the recorded value for a given label in a labeled counter metric.
+Gets the recorded value for a given label in a labeled counter metric.  
+Returns the count if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -135,8 +137,8 @@ assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
 // Do the counters have the expected values?
-assertEquals(1, Stability.INSTANCE.crashCount["uncaught_exception"].testGetValue());
-assertEquals(3, Stability.INSTANCE.crashCount["native_code_crash"].testGetValue());
+assertEquals(1, Stability.INSTANCE.crashCount()["uncaught_exception"].testGetValue());
+assertEquals(3, Stability.INSTANCE.crashCount()["native_code_crash"].testGetValue());
 ```
 </div>
 
@@ -144,8 +146,8 @@ assertEquals(3, Stability.INSTANCE.crashCount["native_code_crash"].testGetValue(
 
 ```Swift
 // Do the counters have the expected values?
-XCTAssertEqual(1, try Stability.crashCount["uncaught_exception"].testGetValue())
-XCTAssertEqual(3, try Stability.crashCount["native_code_crash"].testGetValue())
+XCTAssertEqual(1, Stability.crashCount["uncaught_exception"].testGetValue())
+XCTAssertEqual(3, Stability.crashCount["native_code_crash"].testGetValue())
 ```
 </div>
 
@@ -163,8 +165,8 @@ assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::stability;
 
 // Do the counters have the expected values?
 assert_eq!(1, stability::crash_count.get("uncaught_exception").test_get_value().unwrap());
@@ -206,63 +208,6 @@ Assert.equal(3, Glean.stability.crashCount.native_code_crash.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given label in a labeled counter metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Stability
-
-// Was anything recorded?
-assertTrue(Stability.crashCount["uncaught_exception"].testHasValue())
-assertTrue(Stability.crashCount["native_code_crash"].testHasValue())
-```
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Stability;
-
-// Was anything recorded?
-assertTrue(Stability.INSTANCE.crashCount["uncaught_exception"].testHasValue());
-assertTrue(Stability.INSTANCE.crashCount["native_code_crash"].testHasValue());
-```
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(Stability.crashCount["uncaught_exception"].testHasValue())
-XCTAssert(Stability.crashCount["native_code_crash"].testHasValue())
-```
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.stability.crash_count["uncaught_exception"].test_has_value()
-assert metrics.stability.crash_count["native_code_crash"].test_has_value()
-```
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Gets the number of errors recorded for a given labeled counter metric in total.
@@ -275,7 +220,10 @@ Gets the number of errors recorded for a given labeled counter metric in total.
 import org.mozilla.yourApplication.GleanMetrics.Stabilit
 
 // Were there any invalid labels?
-assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(
+    0,
+    Stability.crashCount.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+)
 ```
 </div>
 
@@ -285,7 +233,10 @@ assertEquals(0, Stability.crashCount.testGetNumRecordedErrors(ErrorType.InvalidL
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
 // Were there any invalid labels?
-assertEquals(0, Stability.INSTANCE.crashCount.testGetNumRecordedErrors(ErrorType.InvalidLabel));
+assertEquals(
+    0,
+    Stability.INSTANCE.crashCount().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+);
 ```
 </div>
 
@@ -312,10 +263,10 @@ assert 0 == metrics.stability.crash_count.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
 
-use glean_metrics;
+use glean_metrics::stability;
 
 // Were there any invalid labels?
 assert_eq!(

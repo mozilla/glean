@@ -32,7 +32,7 @@ Display.width.set(width)
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Display;
 
-Display.INSTANCE.width.set(width);
+Display.INSTANCE.width().set(width);
 ```
 </div>
 
@@ -53,21 +53,21 @@ metrics.display.width.set(width)
 ```
 </div>
 
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::display;
+
+display::width.set(width);
+```
+</div>
+
 <div data-lang="JavaScript" class="tab">
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
 
-display.width.set(window.innerHeight);
-```
-</div>
-
-<div data-lang="Rust" class="tab">
-
-```rust
-use glean_metrics;
-
-display::width.set(width);
+display.width.set(window.innerWidth);
 ```
 </div>
 
@@ -78,13 +78,13 @@ display::width.set(width);
 ```cpp
 #include "mozilla/glean/GleanMetrics.h"
 
-mozilla::glean::display::width.Set(innerHeight);
+mozilla::glean::display::width.Set(innerWidth);
 ```
 
 **JavaScript**
 
 ```js
-Glean.display.width.set(innerHeight);
+Glean.display.width.set(innerWidth);
 ```
 </div>
 
@@ -103,7 +103,9 @@ Glean.display.width.set(innerHeight);
 
 ### `testGetValue`
 
-Gets the recorded value for a given quantity metric.
+Gets the recorded value for a given quantity metric.  
+Returns the quantity value if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -113,7 +115,7 @@ Gets the recorded value for a given quantity metric.
 import org.mozilla.yourApplication.GleanMetrics.Display
 
 // Does the quantity have the expected value?
-assertEquals(6, Display.width.testGetValue())
+assertEquals(433, Display.width.testGetValue())
 ```
 </div>
 
@@ -122,10 +124,8 @@ assertEquals(6, Display.width.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Display;
 
-// Was anything recorded?
-assertTrue(Display.INSTANCE.width.testHasValue());
 // Does the quantity have the expected value?
-assertEquals(6, Display.INSTANCE.width.testGetValue());
+assertEquals(433, Display.INSTANCE.width().testGetValue());
 ```
 </div>
 
@@ -133,7 +133,7 @@ assertEquals(6, Display.INSTANCE.width.testGetValue());
 
 ```Swift
 // Does the quantity have the expected value?
-XCTAssertEqual(6, try Display.width.testGetValue())
+XCTAssertEqual(433, try Display.width.testGetValue())
 ```
 
 </div>
@@ -145,7 +145,17 @@ from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
 # Does the quantity have the expected value?
-assert 6 == metrics.display.width.test_get_value()
+assert 433 == metrics.display.width.test_get_value()
+```
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::display;
+
+// Was anything recorded?
+assert_eq!(433, display::width.test_get_value(None).unwrap());
 ```
 </div>
 
@@ -157,16 +167,6 @@ import * as display from "./path/to/generated/files/display.js";
 assert.strictEqual(433, await display.width.testGetValue());
 ```
 
-</div>
-
-<div data-lang="Rust" class="tab">
-
-```rust
-use glean_metrics;
-
-// Was anything recorded?
-assert!(display::width.test_get_value(None).is_some());
-```
 </div>
 
 <div data-lang="Firefox Desktop" class="tab">
@@ -190,64 +190,9 @@ Assert.equal(433, Glean.display.width.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given quantity metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Display
-
-// Was anything recorded?
-assertTrue(Display.width.testHasValue())
-```
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Display;
-
-// Was anything recorded?
-assertTrue(Display.INSTANCE.width.testHasValue());
-);
-```
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(Display.width.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.display.width.test_has_value()
-```
-</div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given quantity metric.
+Gets the number of errors recorded for a given quantity metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -257,7 +202,7 @@ Gets number of errors recorded for a given quantity metric.
 import org.mozilla.yourApplication.GleanMetrics.Display
 
 // Did it record an error due to a negative value?
-assertEquals(1, Display.width.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(0, Display.width.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
 ```
 </div>
 
@@ -268,7 +213,8 @@ import org.mozilla.yourApplication.GleanMetrics.Display;
 
 // Did the quantity record a negative value?
 assertEquals(
-    1, Display.INSTANCE.width.testGetNumRecordedErrors(ErrorType.InvalidValue)
+    0,
+    Display.INSTANCE.width().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
 </div>
@@ -277,7 +223,7 @@ assertEquals(
 
 ```Swift
 // Did the quantity record a negative value?
-XCTAssertEqual(1, Display.width.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Display.width.testGetNumRecordedErrors(.invalidValue))
 ```
 
 </div>
@@ -290,9 +236,25 @@ metrics = load_metrics("metrics.yaml")
 
 # Did the quantity record an negative value?
 from glean.testing import ErrorType
-assert 1 == metrics.display.width.test_get_num_recorded_errors(
+assert 0 == metrics.display.width.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
+```
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics::display;
+
+assert_eq!(
+  0,
+  display::width.test_get_num_recorded_errors(
+    ErrorType::InvalidValue,
+    None
+  )
+);
 ```
 </div>
 
@@ -308,22 +270,6 @@ assert.strictEqual(
 );
 ```
 
-</div>
-
-<div data-lang="Rust" class="tab">
-
-```rust
-use glean::ErrorType;
-
-use glean_metrics;
-
-assert_eq!(
-  1,
-  display::width.test_get_num_recorded_errors(
-    ErrorType::InvalidValue
-  )
-);
-```
 </div>
 
 <div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>

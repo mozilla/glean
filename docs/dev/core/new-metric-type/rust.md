@@ -3,12 +3,12 @@
 ## Trait
 
 To ensure the API is stable across Rust consumers and re-exporters (like FOG),
-you must define a Trait for the new metric in `glean-core/src/traits`.
+you must define a trait for the new metric in `glean-core/src/traits`.
 First, add your metric type to `mod.rs`:
 
-```rust
+```Rust
 mod counter;
-...
+
 pub use self::counter::Counter;
 ```
 
@@ -27,35 +27,14 @@ These will be the dev-facing API docs for Rust consumers.
 
 ## Rust Language Binding (RLB) Type
 
-The Rust Language Binding supplies the implementation of the trait
-(mostly by delegating to the glean-core implementation)
-and adds a layer of ordering and safety using the dispatcher.
-You can find the RLB metric implementations in
-`glean-core/rlb/src/private`.
+The Rust Language Binding can simply re-export the core metric types.
+You can find the RLB metric re-exports in `glean-core/rlb/src/private`.
 
-First, add your metric type to `mod.rs`:
+Add your metric type to `mod.rs`:
 
-```rust
-mod counter;
-...
-pub use counter::Counter;
+```Rust
+pub use glean_core::Counter;
 ```
-
-Then add the trait in e.g.
-[`counter.rs`](https://github.com/mozilla/glean/blob/HEAD/glean-core/rlb/src/private/counter.rs).
-
-Note that in `counter.rs` the (internal) `new` and `add_sync` are on the `struct`'s `impl`, not the trait's.
-
-Note there are no API comments on the trait's `impl`.
-
-If your metric type has locked internal mutability,
-(like `TimingDistributionMetric`'s `RwLock`)
-you must always take the metric lock and Glean in the same order.
-
-## Tests
-
-Add at least a "smoke test" (a simple confirmation of the API's behavior)
-to the RLB implementation.
 
 ## Documentation
 

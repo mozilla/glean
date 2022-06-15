@@ -33,7 +33,7 @@ fun onShowLogin() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onShowLogin() {
-    Auth.INSTANCE.loginTime.start();
+    Auth.INSTANCE.loginTime().start();
     // ...
 }
 ```
@@ -60,11 +60,11 @@ def on_show_login():
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
+use glean_metrics::auth;
 
 fn show_login() {
-    metrics::auth::login_time.start();
+    auth::login_time.start();
     // ...
 }
 ```
@@ -147,7 +147,7 @@ fun onLogin() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onLogin() {
-    Auth.INSTANCE.loginTime.stop();
+    Auth.INSTANCE.loginTime().stop();
     // ...
 }
 ```
@@ -174,11 +174,11 @@ def on_login():
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
+use glean_metrics::auth;;
 
 fn login() {
-    metrics::auth::login_time.stop();
+    auth::login_time.stop();
     // ...
 }
 ```
@@ -242,7 +242,7 @@ fun onLoginCancel() {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void onLoginCancel() {
-    Auth.INSTANCE.loginTime.cancel();
+    Auth.INSTANCE.loginTime().cancel();
     // ...
 }
 ```
@@ -269,11 +269,11 @@ def on_login_cancel():
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
+use glean_metrics::auth;
 
 fn login_cancel() {
-    metrics::auth::login_time.cancel();
+    auth::login_time.cancel();
     // ...
 }
 ```
@@ -331,7 +331,7 @@ Auth.loginTime.measure {
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
-Auth.INSTANCE.loginTime.measure() -> {
+Auth.INSTANCE.loginTime().measure() -> {
     // Process login flow
     return null;
 });
@@ -393,7 +393,7 @@ fun afterLogin(loginElapsedNs: Long) {
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 void afterLogin(long loginElapsedNs) {
-    Auth.INSTANCE.loginTime.setRawNanos(loginElapsedNs);
+    Auth.INSTANCE.loginTime().setRawNanos(loginElapsedNs);
     // ...
 }
 ```
@@ -420,12 +420,12 @@ def after_login(login_elapsed_ns):
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
 use std::time::duration;
+use glean_metrics::auth;
 
 fn after_login(login_elapsed: Duration) {
-    metrics::auth::login_time.set_raw(login_elapsed);
+    auth::login_time.set_raw(login_elapsed);
     // ...
 }
 ```
@@ -480,7 +480,9 @@ function afterLogin(aDuration) {
 
 ### `testGetValue`
 
-Get the currently-stored value.
+Get the currently-stored value.  
+Returns the timespan as a integer in the metric's time unit if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
@@ -496,13 +498,13 @@ assertTrue(Auth.loginTime.testGetValue() > 0)
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
-assertTrue(Auth.INSTANCE.loginTime.testGetValue() > 0);
+assertTrue(Auth.INSTANCE.loginTime().testGetValue() > 0);
 ```
 </div>
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssert(try Auth.loginTime.testGetValue() > 0)
+XCTAssert(Auth.loginTime.testGetValue() > 0)
 ```
 </div>
 <div data-lang="Python" class="tab">
@@ -516,10 +518,10 @@ assert metrics.auth.login_time.test_get_value() > 0
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
+use glean_metrics::auth;
 
-assert!(metrics::login_time.test_get_value().unwrap() > 0);
+assert!(auth::login_time.test_get_value().unwrap() > 0);
 ```
 </div>
 <div data-lang="JavaScript" class="tab">
@@ -547,55 +549,6 @@ Assert.ok(Glean.auth.loginTime.testGetValue() > 0);
 </div>
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Test if the metric currently stores any value.
-
-{{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Auth
-
-assertTrue(Auth.loginTime.testHasValue())
-```
-</div>
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Auth;
-
-assertTrue(Auth.INSTANCE.loginTime.testHasValue() > 0);
-```
-</div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-XCTAssert(try Auth.loginTime.testHasValue() > 0)
-```
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.auth.login_time.test_has_value() > 0
-```
-</div>
-<div data-lang="Rust" class="tab">
-
-```rust
-use fog::metrics;
-
-assert!(metrics::login_time.test_has_value().unwrap() > 0);
-```
-</div>
-<div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Gets the number of errors recorded during operations on this metric.
@@ -606,8 +559,12 @@ Gets the number of errors recorded during operations on this metric.
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Auth
 
-assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
+assertEquals(
+    0,
+    Auth.loginTime.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
 ```
+
 </div>
 <div data-lang="Java" class="tab">
 
@@ -615,18 +572,18 @@ assertEquals(1, Auth.loginTime.testGetNumRecordedErrors(ErrorType.InvalidValue))
 import org.mozilla.yourApplication.GleanMetrics.Auth;
 
 assertEquals(
-    1,
-    Auth.INSTANCE.loginTime.testGetNumRecordedErrors(
-        ErrorType.InvalidValue
-    )
+    0,
+    Auth.INSTANCE.loginTime().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 ```
+
 </div>
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(1, Auth.loginTime.testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Auth.loginTime.testGetNumRecordedErrors(.invalidValue))
 ```
+
 </div>
 <div data-lang="Python" class="tab">
 
@@ -634,18 +591,20 @@ XCTAssertEqual(1, Auth.loginTime.testGetNumRecordedErrors(.invalidValue))
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
-assert 1 == metrics.auth.local_time.test_get_num_recorded_errors(
+assert 0 == metrics.auth.local_time.test_get_num_recorded_errors(
     ErrorType.INVALID_VALUE
 )
 ```
+
 </div>
 <div data-lang="Rust" class="tab">
 
-```rust
-use fog::metrics;
+```Rust
+use glean_metrics::auth;
 
-assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
+assert_eq!(1, auth::login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
 ```
+
 </div>
 <div data-lang="JavaScript" class="tab">
 

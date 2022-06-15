@@ -60,12 +60,14 @@ commands:
           rust-version: <<parameters.rust-version>>
       - run:
           name: Test
-          command: GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt) cargo test --all --verbose -- --nocapture
+          command: |
+            export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
+            cargo test --all --verbose --jobs 6 -- --nocapture
       - run:
           name: Test Glean with rkv safe-mode
           command: |
             cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode -- --nocapture
+            cargo test -p glean-core --features rkv-safe-mode --jobs 6 -- --nocapture
       - run:
           name: Upload coverage report
           command: |
@@ -234,7 +236,7 @@ jobs:
 
   License check:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -254,7 +256,7 @@ jobs:
 
   Check vendored schema:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -284,7 +286,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -293,7 +295,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run: rustup component add clippy
@@ -304,15 +306,14 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     resource_class: "medium+"
     steps:
-      - test-rust:
-          rust-version: "1.60.0"
+      - test-rust
 
   Rust tests - beta:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - test-rust:
           rust-version: "beta"
@@ -327,7 +328,7 @@ jobs:
 
   Generate Rust documentation:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -359,7 +360,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - run:
@@ -490,9 +491,6 @@ jobs:
           command: |
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
-            # Bootstrap dependencies
-            bin/bootstrap.sh
-
             UDID=$(xcrun xctrace list devices 2>&1 | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
             # Store build type for use in cache key
@@ -580,38 +578,9 @@ jobs:
             UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UDID"
       - run:
-          name: Reduce dependencies in Cartfile for caching
+          name: Build XCFramework archive
           command: |
-            sed -i.bak "/mozilla\/glean/d" "samples/ios/app/Cartfile"
-      - restore_cache:
-          name: Restore carthage dep cache
-          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
-      - run:
-          name: Bootstrap dependencies
-          command: |
-            pushd samples/ios/app
-            ./bootstrap.sh
-            popd
-      - save_cache:
-          paths:
-            - samples/ios/app/Carthage
-          key: v1-swift-sample-deps-{{checksum "samples/ios/app/Cartfile"}}
-      - run:
-          name: Use current commit of Glean
-          command: |
-            GLEAN_PATH="$(pwd)"
-            CARTFILE_PATH="${GLEAN_PATH}/samples/ios/app/Cartfile"
-
-            echo "New Cartfile:"
-            echo "git \"${GLEAN_PATH}\" \"${CIRCLE_SHA1}\"#" >> "$CARTFILE_PATH"
-            cat "${CARTFILE_PATH}"
-      - run:
-          name: Bootstrap Glean dependency
-          command: |
-            pushd samples/ios/app
-            carthage update --no-build --verbose
-            ./bootstrap.sh
-            popd
+              bash bin/build-xcframework.sh
       - run:
           name: Build sample app
           command: |
@@ -655,7 +624,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: cimg/rust:1.60
+      - image: cimg/rust:1.61
     steps:
       - checkout
       - attach_workspace:
@@ -761,7 +730,7 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      - image: cimg/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - skip-if-doc-only
@@ -769,7 +738,7 @@ jobs:
       - run:
           name: Install Wine
           command: |
-            sudo apt install wine-stable
+            sudo apt install wine64
       - run:
           name: Install Python for Windows
           command: |
@@ -781,11 +750,11 @@ jobs:
       - run:
           name: Run tests
           command: |
-            $WINPYTHON -m pytest glean-core/python/tests
+            $WINPYTHON -m pytest -s glean-core/python/tests
 
   Python Windows i686 tests:
     docker:
-      - image: cimg/python:3.8.5
+      - image: cimg/python:3.8
     steps:
       - checkout
       - skip-if-doc-only
@@ -807,7 +776,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            $WINPYTHON -m pytest glean-core/python/tests
+            $WINPYTHON -m pytest -s glean-core/python/tests
 
   Generate Python documentation:
     docker:
@@ -1070,11 +1039,6 @@ jobs:
 
 workflows:
   version: 2
-  check-formating:
-    jobs:
-      - Check Rust formatting
-      - Check Swift formatting
-
   lint:
     jobs:
       - Lint YAML with yamllint
@@ -1084,6 +1048,8 @@ workflows:
       - Lint Android with ktlint and detekt
       - Lint Python
       - Check vendored schema
+      - Check Rust formatting
+      - Check Swift formatting
 
   ci:
     jobs:

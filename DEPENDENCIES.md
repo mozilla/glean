@@ -661,7 +661,7 @@ The following text applies to code linked from these dependencies:
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.8.4]( https://github.com/env-logger-rs/env_logger/ )
 * [ffi-support 0.4.4]( https://github.com/mozilla/ffi-support )
-* [flate2 1.0.23]( https://github.com/rust-lang/flate2-rs )
+* [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
 * [glob 0.3.0]( https://github.com/rust-lang/glob )
 * [hashbrown 0.11.2]( https://github.com/rust-lang/hashbrown )
@@ -677,12 +677,9 @@ The following text applies to code linked from these dependencies:
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
 * [once_cell 1.12.0]( https://github.com/matklad/once_cell )
-* [paste 0.1.18]( https://github.com/dtolnay/paste )
 * [paste 1.0.7]( https://github.com/dtolnay/paste )
-* [paste-impl 0.1.18]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [pest 2.1.3]( https://github.com/pest-parser/pest )
-* [proc-macro-hack 0.5.19]( https://github.com/dtolnay/proc-macro-hack )
 * [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.18]( https://github.com/dtolnay/quote )
 * [serde 1.0.137]( https://github.com/serde-rs/serde )
@@ -3543,7 +3540,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [rkv 0.17.0]( https://github.com/mozilla/rkv )
+* [rkv 0.17.1]( https://github.com/mozilla/rkv )
 * [static_assertions 1.1.0]( https://github.com/nvzqz/static-assertions-rs )
 
 
@@ -4519,7 +4516,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [ordered-float 1.1.1]( https://github.com/reem/rust-ordered-float )
+* [ordered-float 3.0.0]( https://github.com/reem/rust-ordered-float )
 
 
 ```
@@ -5045,8 +5042,8 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 50.0.1]( https://github.com/mozilla/glean )
-* [glean-core 50.0.1]( https://github.com/mozilla/glean )
+* [glean 50.1.0]( https://github.com/mozilla/glean )
+* [glean-core 50.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 

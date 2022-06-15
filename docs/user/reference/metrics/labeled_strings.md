@@ -24,7 +24,7 @@ Login.errorsByStage["server_auth"].set("Invalid password")
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
-Login.INSTANCE.errorsByStage["server_auth"].set("Invalid password");
+Login.INSTANCE.errorsByStage()["server_auth"].set("Invalid password");
 ```
 </div>
 
@@ -47,8 +47,8 @@ metrics.login.errors_by_stage["server_auth"].set("Invalid password")
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::login;
 
 login::errors_by_stage.get("server_auth").set("Invalid password");
 ```
@@ -96,7 +96,9 @@ Glean.login.errorsByStage["server_auth"].set("Invalid password");
 
 ### `testGetValue`
 
-Gets the recorded value for a given label in a labeled string metric.
+Gets the recorded value for a given label in a labeled string metric.  
+Returns the string if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -116,7 +118,7 @@ assertTrue(Login.errorsByStage["server_auth"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
 // Does the metric have the expected value?
-assertTrue(Login.INSTANCE.errorsByStage["server_auth"].testGetValue());
+assertTrue(Login.INSTANCE.errorsByStage()["server_auth"].testGetValue());
 ```
 </div>
 
@@ -142,8 +144,8 @@ assert "Invalid password" == metrics.login.errors_by_stage["server_auth"].testGe
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::login;
 
 // Does the metric have the expected value?
 assert!(login::errors_by_stage.get("server_auth").test_get_value());
@@ -181,57 +183,6 @@ Assert.equal("Invalid password", Glean.login.errorsByStage["server_auth"].testGe
 </div>
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given label in a labeled string metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Login
-
-// Was anything recorded?
-assertTrue(Login.errorsByStage["server_auth"].testHasValue())
-```
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Login;
-
-// Was anything recorded?
-assertTrue(Login.INSTANCE.errorsByStage["server_auth"].testHasValue());
-```
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(Login.errorsByStage["server_auth"].testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-# Was anything recorded?
-assert metrics.login.errors_by_stage["server_auth"].test_has_value()
-```
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Gets the number of errors recorded for a given labeled string metric in total.
@@ -244,7 +195,10 @@ Gets the number of errors recorded for a given labeled string metric in total.
 import org.mozilla.yourApplication.GleanMetrics.Login
 
 // Were there any invalid labels?
-assertEquals(0, Login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(
+    0,
+    Login.errorsByStage.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+)
 ```
 </div>
 
@@ -254,7 +208,10 @@ assertEquals(0, Login.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLa
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
 // Were there any invalid labels?
-assertEquals(0, Login.INSTANCE.errorsByStage.testGetNumRecordedErrors(ErrorType.InvalidLabel));
+assertEquals(
+    0,
+    Login.INSTANCE.errorsByStage().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+);
 ```
 </div>
 
@@ -282,10 +239,9 @@ assert 0 == metrics.login.errors_by_stage.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::login;
 
 // Were there any invalid labels?
 assert_eq!(

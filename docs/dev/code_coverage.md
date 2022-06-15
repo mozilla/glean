@@ -40,13 +40,7 @@ To generate an HTML report, `genhtml` from the `lcov` package is required. Insta
 After installation you can build the Rust code and generate a report:
 
 ```bash
-export CARGO_INCREMENTAL=0
-export RUSTFLAGS='-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads'
-cargo +nightly test
-
-zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" -o lcov.info
-genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
+make rust-coverage
 ```
 
 After that you'll find an HTML report at the following location:

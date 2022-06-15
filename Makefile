@@ -113,7 +113,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 lint-python: python-setup ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(.venv\*\)\|\(.eggs\)\|_uniffi.py glean-core/python
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
@@ -124,7 +124,7 @@ fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
 fmt-python: python-setup ## Run black to format Python code
-	$(GLEAN_PYENV)/bin/python3 -m black glean-core/python/glean glean-core/python/tests
+	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
 
 .PHONY: fmt-rust fmt-python
 
@@ -144,7 +144,7 @@ python-docs: build-python ## Build the Python documentation
 .PHONY: docs rust-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser==6.0.1
+	$(GLEAN_PYENV)/bin/pip install glean_parser==6.1.1
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

@@ -441,6 +441,7 @@ def wait_for_requests(server, n=1, timeout=2):
             raise TimeoutError()
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_set_application_id_and_version(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._reset()
@@ -706,6 +707,7 @@ def test_app_display_version_unknown():
     )
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
     # This test relies on testing mode to be disabled, since we need to prove the
     # real-world async behaviour of this.
@@ -772,6 +774,7 @@ def wait_for_ping(info_path, max_wait=10) -> (str, str):
     return (url_path, payload)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_client_activity_api(tmpdir, monkeypatch):
     Glean._reset()
 

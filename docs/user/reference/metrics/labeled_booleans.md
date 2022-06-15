@@ -25,8 +25,8 @@ Accessibility.features["high_contrast"].set(isHighContrastEnabled())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
-Acessibility.INSTANCE.features["screen_reader"].set(isScreenReaderEnabled());
-Acessibility.INSTANCE.features["high_contrast"].set(isHighContrastEnabled());
+Acessibility.INSTANCE.features()["screen_reader"].set(isScreenReaderEnabled());
+Acessibility.INSTANCE.features()["high_contrast"].set(isHighContrastEnabled());
 ```
 </div>
 
@@ -51,8 +51,8 @@ metrics.accessibility.features["high_contrast"].set(is_high_contrast_enabled())
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::accessibility;
 
 accessibility::features.get("screen_reader").set(is_screen_reader_enabled());
 accessibility::features.get("high_contrast").set(is_high_contrast_enabled());
@@ -99,7 +99,9 @@ Glean.accessibility.features["high_contrast"].set(false);
 
 ### `testGetValue`
 
-Gets the recorded value for a given label in a labeled boolean metric.
+Gets the recorded value for a given label in a labeled boolean metric.  
+Returns the count if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -120,8 +122,8 @@ assertEquals(False, Accessibility.features["high_contrast"].testGetValue())
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
 // Do the booleans have the expected values?
-assertEquals(True, Acessibility.INSTANCE.features["screen_reader"].testGetValue());
-assertEquals(False, Acessibility.INSTANCE.features["high_contrast"].testGetValue());
+assertEquals(True, Acessibility.INSTANCE.features()["screen_reader"].testGetValue());
+assertEquals(False, Acessibility.INSTANCE.features()["high_contrast"].testGetValue());
 ```
 </div>
 
@@ -129,8 +131,8 @@ assertEquals(False, Acessibility.INSTANCE.features["high_contrast"].testGetValue
 
 ```Swift
 // Do the booleans have the expected values?
-XCTAssertEqual(true, try Accessibility.features["screen_reader"].testGetValue())
-XCTAssertEqual(false, try Accessibility.features["high_contrast"].testGetValue())
+XCTAssertEqual(true, Accessibility.features["screen_reader"].testGetValue())
+XCTAssertEqual(false, Accessibility.features["high_contrast"].testGetValue())
 ```
 </div>
 
@@ -148,8 +150,8 @@ assert not metrics.accessibility.features["high_contrast"].test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::accessibility;
 
 // Do the booleans have the expected values?
 assert!(accessibility::features.get("screen_reader").test_get_value(None).unwrap());
@@ -190,64 +192,6 @@ Assert.equal(false, Glean.accessibility.features.high_contrast.testGetValue());
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given label in a labeled boolean metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Accessibility
-
-// Was anything recorded?
-assertTrue(Accessibility.features["screen_reader"].testHasValue())
-assertTrue(Accessibility.features["high_contrast"].testHasValue())
-```
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Accessibility;
-
-// Was anything recorded?
-assertEquals(True, Acessibility.INSTANCE.features["screen_reader"].testHasValue());
-assertEquals(True, Acessibility.INSTANCE.features["high_contrast"].testHasValue());
-```
-</div>
-
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Was anything recorded?
-XCTAssert(Accessibility.features["screen_reader"].testHasValue())
-XCTAssert(Accessibility.features["high_contrast"].testHasValue())
-```
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Was anything recorded?
-assert metrics.accessibility.features["screen_reader"].test_has_value()
-assert metrics.accessibility.features["high_contrast"].test_has_value()
-```
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
 Gets the number of errors recorded for a given labeled boolean metric in total.
@@ -260,7 +204,10 @@ Gets the number of errors recorded for a given labeled boolean metric in total.
 import org.mozilla.yourApplication.GleanMetrics.Accessibility
 
 // Did we record any invalid labels?
-assertEquals(0, Accessibility.features.testGetNumRecordedErrors(ErrorType.InvalidLabel))
+assertEquals(
+    0,
+    Accessibility.features.testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+)
 ```
 </div>
 
@@ -270,7 +217,10 @@ assertEquals(0, Accessibility.features.testGetNumRecordedErrors(ErrorType.Invali
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
 // Did we record any invalid labels?
-assertEquals(0, Acessibility.INSTANCE.features.testGetNumRecordedErrors());
+assertEquals(
+    0,
+    Acessibility.INSTANCE.features().testGetNumRecordedErrors(ErrorType.INVALID_LABEL)
+);
 ```
 </div>
 
@@ -297,10 +247,9 @@ assert 0 == metrics.accessibility.features.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::accessibility;
 
 // Did we record any invalid labels?
 assert_eq!(

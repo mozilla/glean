@@ -18,13 +18,54 @@ Sets a text metric to a specific value.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
 
-<div data-lang="Java" class="tab"></div>
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Article
 
-<div data-lang="Swift" class="tab"></div>
+Article.content.set(extractedText)
+```
 
-<div data-lang="Python" class="tab"></div>
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Article;
+
+Article.INSTANCE.content().set(extractedText);
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Article.content.set(extractedText)
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.article.content.set(extracted_text)
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::article;
+
+article::content.set(extracted_text);
+```
+
+</div>
 
 <div data-lang="JavaScript" class="tab">
 
@@ -34,8 +75,6 @@ import * as article from "./path/to/generated/files/article.js";
 article.content.set(extractedText);
 ```
 </div>
-
-<div data-lang="Rust" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -58,17 +97,60 @@ article.content.set(extractedText);
 
 ### `testGetValue`
 
-Gets the recorded value for a given text metric.
+Gets the recorded value for a given text metric.  
+Returns the string if data is stored.  
+Returns `null` if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
 
-<div data-lang="Java" class="tab"></div>
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Article
 
-<div data-lang="Swift" class="tab"></div>
+assertEquals("some content", Article.content.testGetValue())
+```
 
-<div data-lang="Python" class="tab"></div>
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Article;
+
+assertEquals("some content", Article.INSTANCE.content().testGetValue());
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+XCTAssertEqual("some content", Article.content.testGetValue())
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert "some content" == metrics.article.content.test_get_value()
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::article;
+
+assert_eq!("some content", article::content.test_get_value(None).unwrap());
+```
+
+</div>
 
 <div data-lang="JavaScript" class="tab">
 
@@ -80,25 +162,84 @@ assert.strictEqual("some content", await article.content.testGetValue());
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
-
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given text metric.
+Gets the number of errors recorded for a given text metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
 
-<div data-lang="Java" class="tab"></div>
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Article
 
-<div data-lang="Swift" class="tab"></div>
+// Was the string truncated, and an error reported?
+assertEquals(
+    0,
+    Article.content.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+)
+```
 
-<div data-lang="Python" class="tab"></div>
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Article;
+
+// Was the string truncated, and an error reported?
+assertEquals(
+    0,
+    Article.content.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
+);
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+// Was the string truncated, and an error reported?
+XCTAssertEqual(0, Article.content.testGetNumRecordedErrors(.invalidOverflow))
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Was the string truncated, and an error reported?
+assert 0 == metrics.article.content.test_get_num_recorded_errors(
+    ErrorType.INVALID_OVERFLOW
+)
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::ErrorType;
+use glean_metrics::article;
+
+// Was the string truncated, and an error reported?
+assert_eq!(
+  0,
+  article::content.test_get_num_recorded_errors(
+    ErrorType::InvalidOverflow,
+    None
+  )
+);
+```
+
+</div>
 
 <div data-lang="JavaScript" class="tab">
 
@@ -113,8 +254,6 @@ assert.strictEqual(
 ```
 
 </div>
-
-<div data-lang="Rust" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 

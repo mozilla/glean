@@ -37,7 +37,7 @@ Search.template.set("https://mysearchengine.com/")
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Search;
 
-Search.INSTANCE.template.set("https://mysearchengine.com/");
+Search.INSTANCE.template().set("https://mysearchengine.com/");
 ```
 
 </div>
@@ -67,8 +67,8 @@ metrics.search.template.set("https://mysearchengine.com/")
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::search;
 
 search::template.set("https://mysearchengine.com/");
 ```
@@ -143,7 +143,9 @@ search.template.setUrl(new URL("https://mysearchengine.com/"));
 
 ### `testGetValue`
 
-Gets the recorded value for a given URL metric as a (unencoded) string.
+Gets the recorded value for a given URL metric as a (unencoded) string.  
+Returns a URL if data is stored.  
+Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -162,7 +164,7 @@ assertEquals("https://mysearchengine.com/", Search.template.testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Search
 
-assertEquals("https://mysearchengine.com/", Search.INSTANCE.template.testGetValue());
+assertEquals("https://mysearchengine.com/", Search.INSTANCE.template().testGetValue());
 ```
 
 </div>
@@ -188,8 +190,8 @@ assert "https://mysearchengine.com/" == metrics.search.template.test_get_value()
 
 <div data-lang="Rust" class="tab">
 
-```rust
-use glean_metrics;
+```Rust
+use glean_metrics::search;
 
 assert_eq!("https://mysearchengine.com/", search::template.test_get_value(None).unwrap());
 ```
@@ -208,62 +210,9 @@ assert.strictEqual("https://mysearchengine.com/", await search.template.testGetV
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `testHasValue`
-
-Whether or not **any** value was recorded for a given UUID metric.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Search
-
-assertTrue(Search.template.testHasValue())
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Search
-
-assertTrue(Search.INSTANCE.template.testHasValue());
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-```Swift
-XCTAssert(try Search.template.testHasValue())
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-assert metrics.search.template.test_has_value()
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab"></div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `testGetNumRecordedErrors`
 
-Gets number of errors recorded for a given counter metric.
+Gets the number of errors recorded for a given counter metric.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -272,9 +221,8 @@ Gets number of errors recorded for a given counter metric.
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Search
 
-assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.InvalidValue))
-
-assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.InvalidOverflow))
+assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
+assertEquals(0, Search.template.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))
 ```
 
 </div>
@@ -286,16 +234,12 @@ import org.mozilla.yourApplication.GleanMetrics.Search;
 
 assertEquals(
     0,
-    Search.INSTANCE.template.testGetNumRecordedErrors(
-        ErrorType.InvalidValue
-    )
+    Search.INSTANCE.template().testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
 );
 
 assertEquals(
     0,
-    Search.INSTANCE.template.testGetNumRecordedErrors(
-        ErrorType.InvalidOverflow
-    )
+    Search.INSTANCE.template().testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW)
 );
 ```
 
@@ -329,10 +273,9 @@ assert 0 == metrics.search.template.test_get_num_recorded_errors(
 
 <div data-lang="Rust" class="tab">
 
-```rust
+```Rust
 use glean::ErrorType;
-
-use glean_metrics;
+use glean_metrics::search;
 
 assert_eq!(
   0,
