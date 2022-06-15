@@ -46,16 +46,16 @@ uniffi_macros = "0.18.0"
 time = "0.1.40"
 
 [target.'cfg(target_os = "android")'.dependencies]
-android_logger = { version = "0.10.0", default-features = false }
+android_logger = { version = "0.11.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
 oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
-env_logger = { version = "0.8.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
+env_logger = { version = "0.9.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
 
 [dev-dependencies]
-env_logger = { version = "0.8.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
+env_logger = { version = "0.9.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
 iso8601 = "0.4"
 ctor = "0.1.12"
