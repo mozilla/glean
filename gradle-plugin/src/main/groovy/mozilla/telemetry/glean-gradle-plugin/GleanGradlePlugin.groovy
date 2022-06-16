@@ -73,7 +73,7 @@ else:
 
 if found_version != expected_version:
     if not offline:
-        if "git" in expected_version:
+        if 'git' in expected_version:
             target=expected_version
         else:
             target=f'{module_name}=={expected_version}'
