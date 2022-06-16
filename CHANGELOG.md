@@ -4,7 +4,7 @@
 
 * Kotlin
   * Fix bug in Glean Gradle plugin by using correct quoting in embedded Python script ([#2097](https://github.com/mozilla/glean/pull/2097))
-
+  * Fix bug in Glean Gradle plugin by removing references to Linux paths ([#2098](https://github.com/mozilla/glean/pull/2098))
 
 # v50.1.0 (2022-06-15)
 
