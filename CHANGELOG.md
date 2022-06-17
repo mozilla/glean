@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.1...main)
+
+# v50.1.1 (2022-06-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.0...v50.1.1)
 
 * Kotlin
   * Fix bug in Glean Gradle plugin by using correct quoting in embedded Python script ([#2097](https://github.com/mozilla/glean/pull/2097))
