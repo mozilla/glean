@@ -441,7 +441,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [android_logger 0.10.1]( https://github.com/Nercury/android_logger-rs )
+* [android_logger 0.11.0]( https://github.com/Nercury/android_logger-rs )
 
 
 ```
@@ -659,7 +659,7 @@ The following text applies to code linked from these dependencies:
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.4]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
-* [env_logger 0.8.4]( https://github.com/env-logger-rs/env_logger/ )
+* [env_logger 0.9.0]( https://github.com/env-logger-rs/env_logger/ )
 * [ffi-support 0.4.4]( https://github.com/mozilla/ffi-support )
 * [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
@@ -5042,8 +5042,8 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 50.1.0]( https://github.com/mozilla/glean )
-* [glean-core 50.1.0]( https://github.com/mozilla/glean )
+* [glean 50.1.1]( https://github.com/mozilla/glean )
+* [glean-core 50.1.1]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 
