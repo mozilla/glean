@@ -125,16 +125,16 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url/</url>
   </license>
   <license>
-    <name>Apache License 2.0: pest</name>
-    <url>https://github.com/pest-parser/pest</url>
-  </license>
-  <license>
     <name>Apache License 2.0: proc-macro2</name>
     <url>https://github.com/dtolnay/proc-macro2</url>
   </license>
   <license>
     <name>Apache License 2.0: quote</name>
     <url>https://github.com/dtolnay/quote</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: semver</name>
+    <url>https://github.com/dtolnay/semver</url>
   </license>
   <license>
     <name>Apache License 2.0: serde</name>
@@ -167,10 +167,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: toml</name>
     <url>https://github.com/alexcrichton/toml-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: ucd-trie</name>
-    <url>https://github.com/BurntSushi/ucd-generate</url>
   </license>
   <license>
     <name>Apache License 2.0: unicase</name>
@@ -253,6 +249,18 @@ the details of which are reproduced below.
     <url>https://github.com/tailhook/humantime</url>
   </license>
   <license>
+    <name>Apache License 2.0: fs-err</name>
+    <url>https://github.com/andrewhickman/fs-err</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: uuid</name>
+    <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>
@@ -263,22 +271,6 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: lmdb-rkv</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: semver</name>
-    <url>https://github.com/steveklabnik/semver</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: semver-parser</name>
-    <url>https://github.com/steveklabnik/semver-parser</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
   </license>
   <license>
     <name>Apache License 2.0: minimal-lexical</name>
@@ -325,12 +317,28 @@ the details of which are reproduced below.
     <url>https://github.com/servo/bincode</url>
   </license>
   <license>
+    <name>MIT License: bitvec</name>
+    <url>https://github.com/myrrlyn/bitvec</url>
+  </license>
+  <license>
+    <name>MIT License: funty</name>
+    <url>https://github.com/myrrlyn/funty</url>
+  </license>
+  <license>
+    <name>MIT License: radium</name>
+    <url>https://github.com/mystor/radium</url>
+  </license>
+  <license>
+    <name>MIT License: wyz</name>
+    <url>https://github.com/myrrlyn/wyz</url>
+  </license>
+  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>
   <license>
     <name>MIT License: memchr</name>
-    <url>https://github.com/BurntSushi/memchr</url>
+    <url>https://github.com/BurntSushi/rust-memchr</url>
   </license>
   <license>
     <name>MIT License: termcolor</name>
@@ -377,12 +385,16 @@ the details of which are reproduced below.
     <url>https://github.com/dguo/strsim-rs</url>
   </license>
   <license>
+    <name>MIT License: tap</name>
+    <url>https://github.com/myrrlyn/tap</url>
+  </license>
+  <license>
     <name>MIT License: textwrap</name>
     <url>https://github.com/mgeisler/textwrap</url>
   </license>
   <license>
     <name>MIT License: weedle2</name>
-    <url>https://github.com/badboy/weedle</url>
+    <url>https://github.com/mozilla/uniffi-rs</url>
   </license>
   <license>
     <name>MIT License: whatsys</name>
