@@ -15,6 +15,9 @@ captures
 .externalNativeBuild
 .lastAutoPublishContentsHash
 
+# Include glean-build crate again
+!/glean-core/build
+
 # iOS stuff.
 xcuserdata
 raw_xcode*log

@@ -63,6 +63,20 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
+# update the version in glean-core/build/Cargo.toml
+FILE=glean-core/build/Cargo.toml
+run $SED -i.bak -E \
+    -e "s/^version = \"[0-9.]+\"/version = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
+# update the version in glean-core/build/src/lib.rs
+FILE=glean-core/build/src/lib.rs
+run $SED -i.bak -E \
+    -e "s/GLEAN_PARSER_VERSION: \&str = \"[0-9.]+\"/GLEAN_PARSER_VERSION: \&str = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
 # update the version in the Makefile
 FILE=Makefile
 run $SED -i.bak -E \

@@ -38,6 +38,7 @@ Additionally, applications (but not libraries) **must**:
 > - [JavaScript](./javascript.md)
 > - [Kotlin](./kotlin.md)
 > - [Python](./python.md)
+> - [Rust](./rust.md)
 > - [Swift](./swift.md)
 > - [Qt/QML](./qt.md)
 
