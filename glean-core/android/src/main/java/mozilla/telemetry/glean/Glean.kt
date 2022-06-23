@@ -175,19 +175,23 @@ open class GleanInternalAPI internal constructor() {
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-        val cfg = InternalConfiguration(
-            dataPath = gleanDataDir.path,
-            applicationId = applicationContext.packageName,
-            languageBindingName = LANGUAGE_BINDING_NAME,
-            uploadEnabled = uploadEnabled,
-            maxEvents = null,
-            delayPingLifetimeIo = false,
-            appBuild = "none",
-            useCoreMps = false
-        )
-        val clientInfo = getClientInfo(configuration, buildInfo)
-        val callbacks = OnGleanEventsImpl(this)
-        gleanInitialize(cfg, clientInfo, callbacks)
+        // Execute startup off the main thread.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.executeTask {
+            val cfg = InternalConfiguration(
+                dataPath = gleanDataDir.path,
+                applicationId = applicationContext.packageName,
+                languageBindingName = LANGUAGE_BINDING_NAME,
+                uploadEnabled = uploadEnabled,
+                maxEvents = null,
+                delayPingLifetimeIo = false,
+                appBuild = "none",
+                useCoreMps = false
+            )
+            val clientInfo = getClientInfo(configuration, buildInfo)
+            val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
+            gleanInitialize(cfg, clientInfo, callbacks)
+        }
     }
 
     /**
@@ -411,6 +415,8 @@ open class GleanInternalAPI internal constructor() {
     internal fun setTestingMode(enabled: Boolean) {
         this.testingMode = enabled
         gleanSetTestMode(enabled)
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTestingMode(enabled)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
