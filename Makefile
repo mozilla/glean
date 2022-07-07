@@ -96,7 +96,7 @@ bench-rust: ## Run Rust benchmarks
 # Linting
 
 lint-rust: ## Run cargo-clippy to lint Rust code
-	cargo clippy --all --all-targets --all-features -- -D warnings
+	cargo clippy --all --all-targets --all-features -- -D warnings -A unknown-lints
 
 lint-kotlin: ## Run ktlint to lint Kotlin code
 	./gradlew lint ktlint detekt
