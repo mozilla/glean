@@ -38,6 +38,18 @@ impl<K: traits::ExtraKeys> EventMetric<K> {
         }
     }
 
+    /// The public constructor used by runtime-defined metrics.
+    pub fn with_runtime_extra_keys(
+        meta: glean_core::CommonMetricData,
+        allowed_extra_keys: Vec<String>,
+    ) -> Self {
+        let inner = glean_core::metrics::EventMetric::new(meta, allowed_extra_keys);
+        Self {
+            inner,
+            extra_keys: PhantomData,
+        }
+    }
+
     /// Record a new event with a provided timestamp.
     ///
     /// It's the caller's responsibility to ensure the timestamp comes from the same clock source.
@@ -115,6 +127,57 @@ mod test {
         metric.record(map2);
 
         metric.record(None);
+
+        let data = metric.test_get_value(None).expect("no event recorded");
+        assert_eq!(3, data.len());
+        assert!(data[0].timestamp <= data[1].timestamp);
+        assert!(data[1].timestamp <= data[2].timestamp);
+
+        let mut map = HashMap::new();
+        map.insert("key1".into(), "1".into());
+        assert_eq!(Some(map), data[0].extra);
+
+        let mut map = HashMap::new();
+        map.insert("key1".into(), "1".into());
+        map.insert("key2".into(), "2".into());
+        assert_eq!(Some(map), data[1].extra);
+
+        assert_eq!(None, data[2].extra);
+    }
+
+    #[test]
+    fn with_runtime_extra_keys() {
+        let _lock = lock_test();
+        let _t = new_glean(None, true);
+
+        #[derive(Default, Debug, Clone, Hash, Eq, PartialEq)]
+        struct RuntimeExtra {}
+
+        impl glean_core::traits::ExtraKeys for RuntimeExtra {
+            const ALLOWED_KEYS: &'static [&'static str] = &[];
+
+            fn into_ffi_extra(self) -> HashMap<String, String> {
+                HashMap::new()
+            }
+        }
+
+        let metric: EventMetric<RuntimeExtra> = EventMetric::with_runtime_extra_keys(
+            CommonMetricData {
+                name: "event".into(),
+                category: "test".into(),
+                send_in_pings: vec!["test1".into()],
+                ..Default::default()
+            },
+            vec!["key1".into(), "key2".into()],
+        );
+
+        let map1 = HashMap::from([("key1".into(), "1".into())]);
+        metric.record_with_time(0, map1);
+
+        let map2 = HashMap::from([("key1".into(), "1".into()), ("key2".into(), "2".into())]);
+        metric.record_with_time(1, map2);
+
+        metric.record_with_time(2, HashMap::new());
 
         let data = metric.test_get_value(None).expect("no event recorded");
         assert_eq!(3, data.len());
