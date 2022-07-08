@@ -1,6 +1,6 @@
 auditwheel==5.1.2
 black==22.3.0
-cffi==1.15.0
+cffi==1.15.1
 coverage==6.2
 flake8==4.0.1
 flake8-bugbear==22.7.1
