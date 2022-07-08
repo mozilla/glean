@@ -2111,7 +2111,7 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.12.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.13.0]( https://github.com/matklad/once_cell )
 * [paste 1.0.7]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
@@ -4557,10 +4557,10 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.19.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.19.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.19.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.19.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.19.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.19.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.19.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.19.3]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0
