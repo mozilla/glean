@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.1...main)
 
+* General
+  * Update UniFFI to version 0.19.3
+  * Fix rust-beta-tests linting
+
 # v50.1.1 (2022-06-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.0...v50.1.1)
