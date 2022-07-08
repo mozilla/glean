@@ -8,6 +8,8 @@
     (`null`, `nil`, `None` depending on the language) and does not throw an exception.
 * Kotlin
   * Fix the Glean Gradle Plugin to work with Android Gradle Plugin v7.2.1 ([#2114](https://github.com/mozilla/glean/pull/2114))
+* Rust
+  * Add a method to construct an Event with runtime-known allowed extra keys. ([bug 1767037](https://bugzilla.mozilla.org/show_bug.cgi?id=1767037))
 
 # v50.1.2 (2022-07-08)
 
