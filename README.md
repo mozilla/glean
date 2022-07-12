@@ -27,7 +27,7 @@ The code in this repository is organized as follows:
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
 * [./glean-core/python](glean-core/python) contains Python bindings.
 
-**Note: The Glean SDK requires at least [Rust 1.57.0](https://blog.rust-lang.org/2021/12/02/Rust-1.57.0.html). Older versions are untested.**
+**Note: The Glean SDK requires at least [Rust 1.58.0](https://blog.rust-lang.org/2022/01/13/Rust-1.58.0.html). Older versions are untested.**
 
 ## Contact
 
