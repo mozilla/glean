@@ -152,7 +152,7 @@ commands:
     steps:
       - install-rustup
       - setup-rust-toolchain:
-          rust-version: "1.57.0"
+          rust-version: "1.58.0"
       - install-mingw
       - run:
           name: Install Python development tools for host
@@ -320,11 +320,11 @@ jobs:
 
   Rust tests - minimum version:
     docker:
-      - image: cimg/rust:1.57
+      - image: cimg/rust:1.58
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.57.0"
+          rust-version: "1.58.0"
 
   Generate Rust documentation:
     docker:
