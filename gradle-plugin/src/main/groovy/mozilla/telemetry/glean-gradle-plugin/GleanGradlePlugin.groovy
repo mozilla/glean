@@ -139,22 +139,7 @@ except:
     def setupTasks(Project project, File envDir, boolean isApplication, String parserVersion) {
         return { variant ->
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
-            // Get the name of the package as if it were to be used in the R or BuildConfig
-            // files. This is required since applications can define different application ids
-            // depending on the variant type: the generated API definitions don't need to be
-            // different due to that.
-            TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
-            def configProvider = buildConfigProvider.get()
-            def originalPackageName
-            // In Gradle 6.x `getBuildConfigPackageName` was reaplced by `namespace`.
-            // We want to be forward compatible, so we check that first or fallback to the old method.
-            if (configProvider.hasProperty("namespace")) {
-                originalPackageName = configProvider.namespace.get()
-            } else {
-                originalPackageName = configProvider.getBuildConfigPackageName().get()
-            }
 
-            def fullNamespace = "${originalPackageName}.GleanMetrics"
             def generateKotlinAPI = project.task("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", type: Exec) {
                 description = "Generate the Kotlin code for the Metrics API"
 
@@ -198,8 +183,6 @@ except:
                 args "-o"
                 args "$sourceOutputDir"
                 args "-s"
-                args "namespace=$fullNamespace"
-                args "-s"
                 args "glean_namespace=$gleanNamespace"
 
                 // If we're building the Glean library itself (rather than an
@@ -229,6 +212,26 @@ except:
                 }
 
                 doFirst {
+                    // Get the name of the package as if it were to be used in the R or BuildConfig
+                    // files. This is required since applications can define different application ids
+                    // depending on the variant type: the generated API definitions don't need to be
+                    // different due to that.
+                    // Note that this needs to be done at evaluation time rather than configuration
+                    // time, otherwise the `namespace` property won't be available.
+                    TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
+                    def configProvider = buildConfigProvider.get()
+                    def originalPackageName
+                    // In Gradle 6.x `getBuildConfigPackageName` was reaplced by `namespace`.
+                    // We want to be forward compatible, so we check that first or fallback to the old method.
+                    if (configProvider.hasProperty("namespace")) {
+                        originalPackageName = configProvider.namespace.get()
+                    } else {
+                        originalPackageName = configProvider.getBuildConfigPackageName().get()
+                    }
+
+                    args "-s"
+                    args "namespace=${originalPackageName}.GleanMetrics"
+
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
                     inputs.files.forEach { file ->
