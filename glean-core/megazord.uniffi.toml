@@ -1,0 +1,5 @@
+[bindings.swift]
+ffi_module_name = "MozillaRustComponents"
+ffi_module_filename = "gleanFFI"
+generate_module_map = false
+omit_argument_labels = true
