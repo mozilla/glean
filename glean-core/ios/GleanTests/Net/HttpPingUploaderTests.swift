@@ -21,14 +21,15 @@ class HttpPingUploaderTests: XCTestCase {
         // We are explicitly setting the test mode to true here to force the uploader to not
         // run in the background, which can make this test take a long time.
         var testValue: UploadResult?
-        stubServerReceive { _, json in
+        let cfg = Configuration()
+        stubServerReceive(endpoint: cfg.serverEndpoint) { _, json in
             XCTAssert(json != nil)
             XCTAssertEqual(json?["ping"] as? String, "test")
         }
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader(configuration: Configuration(), testingMode: true)
+        let httpPingUploader = HttpPingUploader(configuration: cfg, testingMode: true)
         httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()

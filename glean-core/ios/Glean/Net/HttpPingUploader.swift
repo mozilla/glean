@@ -56,6 +56,7 @@ public class HttpPingUploader {
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
         // Build the request and create an async upload operation using a background URLSession
         if let request = self.buildRequest(path: path, data: data, headers: headers) {
+            self.logger.debug("Sending ping to \(request.url!). Data size: \(data.count)")
             // Try to write the temporary file which the URLSession will use for transfer. If this fails
             // then there is no need to create the URLSessionConfiguration or URLSession.
             let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),

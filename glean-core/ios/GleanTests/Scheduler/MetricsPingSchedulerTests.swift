@@ -184,7 +184,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         let yesterday = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: now)
         MetricsPingScheduler(true).updateSentDate(yesterday!)
 
-        stubServerReceive { pingType, json in
+        let cfg = Glean.shared.configuration!
+        stubServerReceive(endpoint: cfg.serverEndpoint) { pingType, json in
             if pingType != "metrics" {
                 // Skip initial "active" baseline ping
                 return
@@ -216,7 +217,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Glean.shared.initialize(uploadEnabled: true)
         Glean.shared.enableTestingMode()
         Glean.shared.setLogPings(true)
-        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
+        Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
         // Enable ping logging for all tests
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -259,7 +260,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         Glean.shared.metricsPingScheduler!.updateSentDate(yesterday!)
 
         // Set up the interception of the ping for inspection
-        stubServerReceive { pingType, json in
+        let cfg = Glean.shared.configuration!
+        stubServerReceive(endpoint: cfg.serverEndpoint) { pingType, json in
             if pingType == "baseline" {
                 // Ignore initial "active" baseline ping
                 return
@@ -284,7 +286,7 @@ class MetricsPingSchedulerTests: XCTestCase {
         // Initialize Glean the SECOND time: it will send the expected string metric (stored from
         // the previous run) but must not send the canary string, which would be sent the next time
         // the "metrics" ping is collected after this one.
-        Glean.shared.resetGlean(clearStores: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false)
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }

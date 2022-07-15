@@ -66,7 +66,7 @@ class EventMetricTypeTests: XCTestCase {
     var lastPingJson: [String: Any]?
 
     private func setupHttpResponseStub() {
-        stubServerReceive { pingType, json in
+        stubServerReceive(endpoint: Glean.shared.configuration!.serverEndpoint) { pingType, json in
             if pingType != "events" {
                 // Skip non-events pings here.
                 // This might include the initial "active" baseline ping.
