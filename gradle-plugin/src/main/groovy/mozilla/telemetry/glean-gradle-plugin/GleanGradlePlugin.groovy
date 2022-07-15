@@ -406,6 +406,7 @@ except:
                     args "pip"
                     args "install"
                     args "glean_parser"
+                    args "--no-index"
                     args "-f"
                     args pythonPackagesDir
                 }
