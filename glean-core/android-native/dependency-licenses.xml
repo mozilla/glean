@@ -5,48 +5,32 @@ These dependencies are available under a variety of free and open source license
 the details of which are reproduced below.
 -->
   <license>
-    <name>Apache License 2.0: const_fn</name>
-    <url>https://github.com/taiki-e/const_fn</url>
+    <name>Apache License 2.0: adler</name>
+    <url>https://github.com/jonas-schievink/adler.git</url>
   </license>
   <license>
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+    <name>Apache License 2.0: cargo-platform</name>
+    <url>https://github.com/rust-lang/cargo</url>
   </license>
   <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
+    <name>Apache License 2.0: android_log-sys</name>
+    <url>https://github.com/nercury/android_log-sys-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: rkv</name>
-    <url>https://github.com/mozilla/rkv</url>
+    <name>Apache License 2.0: android_logger</name>
+    <url>https://github.com/Nercury/android_logger-rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: crc32fast</name>
-    <url>https://github.com/srijs/rust-crc32fast</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: humantime</name>
-    <url>https://crates.io/crates/humantime</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: quick-error</name>
-    <url>http://github.com/tailhook/quick-error</url>
+    <name>Apache License 2.0: anyhow</name>
+    <url>https://github.com/dtolnay/anyhow</url>
   </license>
   <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>
   <license>
-    <name>Apache License 2.0: cfg-if</name>
-    <url>https://github.com/alexcrichton/cfg-if</url>
+    <name>Apache License 2.0: camino</name>
+    <url>https://github.com/camino-rs/camino</url>
   </license>
   <license>
     <name>Apache License 2.0: cfg-if</name>
@@ -62,11 +46,11 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Apache License 2.0: env_logger</name>
-    <url>https://github.com/sebasmagri/env_logger/</url>
+    <url>https://github.com/env-logger-rs/env_logger/</url>
   </license>
   <license>
-    <name>Apache License 2.0: ffi-support</name>
-    <url>https://github.com/mozilla/application-services</url>
+    <name>Apache License 2.0: fastrand</name>
+    <url>https://github.com/smol-rs/fastrand</url>
   </license>
   <license>
     <name>Apache License 2.0: flate2</name>
@@ -77,12 +61,28 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
+    <name>Apache License 2.0: glob</name>
+    <url>https://github.com/rust-lang/glob</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: hashbrown</name>
+    <url>https://github.com/rust-lang/hashbrown</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: heck</name>
+    <url>https://github.com/withoutboats/heck</url>
+  </license>
+  <license>
     <name>Apache License 2.0: id-arena</name>
     <url>https://github.com/fitzgen/id-arena</url>
   </license>
   <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: indexmap</name>
+    <url>https://github.com/bluss/indexmap</url>
   </license>
   <license>
     <name>Apache License 2.0: inherent</name>
@@ -97,12 +97,8 @@ the details of which are reproduced below.
     <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
   </license>
   <license>
-    <name>Apache License 2.0: libc</name>
-    <url>https://github.com/rust-lang/libc</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
+    <name>Apache License 2.0: mime</name>
+    <url>https://github.com/hyperium/mime</url>
   </license>
   <license>
     <name>Apache License 2.0: num-integer</name>
@@ -125,24 +121,20 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/paste</url>
   </license>
   <license>
-    <name>Apache License 2.0: paste-impl</name>
-    <url>https://github.com/dtolnay/paste</url>
-  </license>
-  <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
   </license>
   <license>
-    <name>Apache License 2.0: proc-macro-hack</name>
-    <url>https://github.com/dtolnay/proc-macro-hack</url>
-  </license>
-  <license>
     <name>Apache License 2.0: proc-macro2</name>
-    <url>https://github.com/alexcrichton/proc-macro2</url>
+    <url>https://github.com/dtolnay/proc-macro2</url>
   </license>
   <license>
     <name>Apache License 2.0: quote</name>
     <url>https://github.com/dtolnay/quote</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: semver</name>
+    <url>https://github.com/dtolnay/semver</url>
   </license>
   <license>
     <name>Apache License 2.0: serde</name>
@@ -161,6 +153,10 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/syn</url>
   </license>
   <license>
+    <name>Apache License 2.0: tempfile</name>
+    <url>https://github.com/Stebalien/tempfile</url>
+  </license>
+  <license>
     <name>Apache License 2.0: thiserror</name>
     <url>https://github.com/dtolnay/thiserror</url>
   </license>
@@ -173,12 +169,24 @@ the details of which are reproduced below.
     <url>https://github.com/time-rs/time</url>
   </license>
   <license>
+    <name>Apache License 2.0: toml</name>
+    <url>https://github.com/alexcrichton/toml-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: unicase</name>
+    <url>https://github.com/seanmonstar/unicase</url>
+  </license>
+  <license>
     <name>Apache License 2.0: unicode-bidi</name>
     <url>https://github.com/servo/unicode-bidi</url>
   </license>
   <license>
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: unicode-width</name>
+    <url>https://github.com/unicode-rs/unicode-width</url>
   </license>
   <license>
     <name>Apache License 2.0: unicode-xid</name>
@@ -189,95 +197,287 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
-    <name>Apache License 2.0: getrandom</name>
-    <url>https://github.com/rust-random/getrandom</url>
+    <name>Apache License 2.0: askama</name>
+    <url>https://github.com/djc/askama</url>
   </license>
   <license>
-    <name>Apache License 2.0: adler</name>
-    <url>https://github.com/jonas-schievink/adler.git</url>
+    <name>Apache License 2.0: askama_derive</name>
+    <url>https://github.com/djc/askama</url>
   </license>
   <license>
-    <name>Apache License 2.0: uuid</name>
-    <url>https://github.com/uuid-rs/uuid</url>
+    <name>Apache License 2.0: askama_escape</name>
+    <url>https://github.com/djc/askama</url>
   </license>
   <license>
-    <name>Apache License 2.0: android_log-sys</name>
-    <url>https://github.com/nercury/android_log-sys-rs</url>
-  </license>
-  <license>
-    <name>Apache License 2.0: android_logger</name>
-    <url>https://github.com/Nercury/android_logger-rs</url>
+    <name>Apache License 2.0: askama_shared</name>
+    <url>https://github.com/djc/askama</url>
   </license>
   <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>
   <license>
-    <name>Apache License 2.0: tinyvec</name>
-    <url>https://github.com/Lokathor/tinyvec</url>
+    <name>Apache License 2.0: tinyvec_macros</name>
+    <url>https://github.com/Soveu/tinyvec_macros</url>
   </license>
   <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>
   <license>
+    <name>Apache License 2.0: xshell-macros</name>
+    <url>https://github.com/matklad/xshell</url>
+  </license>
+  <license>
     <name>Apache License 2.0: chrono</name>
     <url>https://github.com/chronotope/chrono</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: clap</name>
+    <url>https://github.com/clap-rs/clap</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: clap_derive</name>
+    <url>https://github.com/clap-rs/clap/tree/master/clap_derive</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: clap_lex</name>
+    <url>https://github.com/clap-rs/clap/tree/master/clap_lex</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: os_str_bytes</name>
+    <url>https://github.com/dylni/os_str_bytes</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: ryu</name>
+    <url>https://github.com/dtolnay/ryu</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: unicode-linebreak</name>
+    <url>https://github.com/axelf4/unicode-linebreak</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: crc32fast</name>
+    <url>https://github.com/srijs/rust-crc32fast</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: humantime</name>
+    <url>https://github.com/tailhook/humantime</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: fs-err</name>
+    <url>https://github.com/andrewhickman/fs-err</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: uuid</name>
+    <url>https://github.com/uuid-rs/uuid</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: getrandom</name>
+    <url>https://github.com/rust-random/getrandom</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: libc</name>
+    <url>https://github.com/rust-lang/libc</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: lmdb-rkv</name>
+    <url>https://github.com/mozilla/lmdb-rs.git</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: minimal-lexical</name>
+    <url>https://github.com/Alexhuszagh/minimal-lexical</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: proc-macro-error</name>
+    <url>https://gitlab.com/CreepySkeleton/proc-macro-error</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: proc-macro-error-attr</name>
+    <url>https://gitlab.com/CreepySkeleton/proc-macro-error</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: remove_dir_all</name>
+    <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: rkv</name>
+    <url>https://github.com/mozilla/rkv</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: static_assertions</name>
+    <url>https://github.com/nvzqz/static-assertions-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: tinyvec</name>
+    <url>https://github.com/Lokathor/tinyvec</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: winapi</name>
+    <url>https://github.com/retep998/winapi-rs</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: xshell</name>
+    <url>https://github.com/matklad/xshell</url>
   </license>
   <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
   </license>
   <license>
-    <name>MIT License: matches</name>
-    <url>https://github.com/SimonSapin/rust-std-candidates</url>
-  </license>
-  <license>
-    <name>MIT License: ordered-float</name>
-    <url>https://github.com/reem/rust-ordered-float</url>
-  </license>
-  <license>
     <name>MIT License: atty</name>
     <url>https://github.com/softprops/atty</url>
-  </license>
-  <license>
-    <name>MIT License: dashmap</name>
-    <url>https://github.com/xacrimon/dashmap</url>
-  </license>
-  <license>
-    <name>MIT License: oslog</name>
-    <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>
   <license>
+    <name>MIT License: bitvec</name>
+    <url>https://github.com/myrrlyn/bitvec</url>
+  </license>
+  <license>
+    <name>MIT License: funty</name>
+    <url>https://github.com/myrrlyn/funty</url>
+  </license>
+  <license>
+    <name>MIT License: radium</name>
+    <url>https://github.com/mystor/radium</url>
+  </license>
+  <license>
+    <name>MIT License: sample</name>
+    <url>https://crates.io/crates/sample</url>
+  </license>
+  <license>
+    <name>MIT License: wyz</name>
+    <url>https://github.com/myrrlyn/wyz</url>
+  </license>
+  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
+  </license>
+  <license>
+    <name>MIT License: memchr</name>
+    <url>https://github.com/BurntSushi/memchr</url>
   </license>
   <license>
     <name>MIT License: termcolor</name>
     <url>https://github.com/BurntSushi/termcolor</url>
   </license>
   <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
+    <name>MIT License: bytes</name>
+    <url>https://github.com/tokio-rs/bytes</url>
+  </license>
+  <license>
+    <name>MIT License: cargo_metadata</name>
+    <url>https://github.com/oli-obk/cargo_metadata</url>
+  </license>
+  <license>
+    <name>MIT License: dashmap</name>
+    <url>https://github.com/xacrimon/dashmap</url>
+  </license>
+  <license>
+    <name>MIT License: matches</name>
+    <url>https://github.com/SimonSapin/rust-std-candidates</url>
+  </license>
+  <license>
+    <name>MIT License: mime_guess</name>
+    <url>https://github.com/abonander/mime_guess</url>
+  </license>
+  <license>
+    <name>MIT License: nom</name>
+    <url>https://github.com/Geal/nom</url>
+  </license>
+  <license>
+    <name>MIT License: nom</name>
+    <url>https://github.com/Geal/nom</url>
+  </license>
+  <license>
+    <name>MIT License: ordered-float</name>
+    <url>https://github.com/reem/rust-ordered-float</url>
+  </license>
+  <license>
+    <name>MIT License: oslog</name>
+    <url>https://github.com/steven-joruk/oslog</url>
+  </license>
+  <license>
+    <name>MIT License: smawk</name>
+    <url>https://github.com/mgeisler/smawk</url>
+  </license>
+  <license>
+    <name>MIT License: strsim</name>
+    <url>https://github.com/dguo/strsim-rs</url>
+  </license>
+  <license>
+    <name>MIT License: tap</name>
+    <url>https://github.com/myrrlyn/tap</url>
+  </license>
+  <license>
+    <name>MIT License: textwrap</name>
+    <url>https://github.com/mgeisler/textwrap</url>
+  </license>
+  <license>
+    <name>MIT License: weedle2</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
   </license>
   <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>
   </license>
   <license>
+    <name>MIT License: winapi-util</name>
+    <url>https://github.com/BurntSushi/winapi-util</url>
+  </license>
+  <license>
+    <name>MIT License: xshell-venv</name>
+    <url>https://github.com/badboy/xshell-venv</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: embedded-uniffi-bindgen</name>
+    <url>https://crates.io/crates/embedded-uniffi-bindgen</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean-bundle</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: glean-bundle-android</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: uniffi</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: uniffi_bindgen</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: uniffi_build</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: uniffi_macros</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>
+  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
+    <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
-    <name>Mozilla Public License 2.0: glean-ffi</name>
+    <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
   </license>
   <license>
