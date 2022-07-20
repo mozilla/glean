@@ -7,9 +7,6 @@ Modern Gradle supports [composite builds](https://docs.gradle.org/current/usergu
 1. publish library snapshot to the local Maven repository
 1. consume library snapshot in application
 
-> **Note**: this substitution-based approach will not work for testing updates to `glean_parser` as shipped in the Glean Gradle Plugin.
-> For replacing `glean_parser` in a local build, see [Substituting `glean_parser`](glean-parser-substitution.md).
-
 ## Preparation
 
 Clone the Glean SDK and android-components repositories:
@@ -45,7 +42,45 @@ so you should be able to configure it by simply adding the path to the Glean rep
 In `android-components/local.properties`:
 
 ```groovy
-localProperties.autoPublish.glean.dir=../glean
+autoPublish.glean.dir=../glean
 ```
 
 This will auto-publish Glean SDK changes to a local repository and consume them in android-components.
+
+### Replacing the Glean Gradle plugin
+
+> **Note**: If you only need to replace the `glean_parser` used in the build see [Substituting `glean_parser`](glean-parser-substitution.md).
+> This is only necessary if you changed `GleanGradlePlugin.groovy`.
+
+If you need to replace the Glean Gradle Plugin used by other components within Android Components, follow these steps:
+
+1. In your Glean repository increment the version number in `.buildconfig.yml`
+
+   ```yaml
+   libraryVersion: 60.0.0
+   ```
+
+2. Build and publish the plugin locally:
+
+   ```
+   ./gradlew publishToMavenLocal
+   ```
+
+3. In the Android Components repository change the required Glean version `buildSrc/src/main/java/Dependencies.kt`:
+
+   ```kotlin
+   const val mozilla_glean = "60.0.0"
+   ```
+
+4. In the Android Components repository add the following at the top of the `settings.gradle` file:
+
+   ```gradle
+   pluginManagement {
+       repositories {
+           mavenLocal()
+           gradlePluginPortal()
+       }
+   }
+   ```
+
+Building any component will now use your locally published Glean Gradle Plugin (and Glean SDK).
