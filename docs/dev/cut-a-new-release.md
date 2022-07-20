@@ -82,6 +82,8 @@ When CI has finished and is green for your specific release branch, you are read
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
+    * On rare occasions CI tasks may fail.
+      You can safely rerun them on CircleCI by selecting _Rerun_, then _Rerun workflow from failed_ on the top right on the failed task.
 6. Merge the Pull Request opened previously.
     * This is important so that no changes are lost.
     * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
