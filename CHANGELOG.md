@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.0.0...main)
+
+# v51.0.0 (2022-07-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v51.0.0)
 
 * General
   * Remove `testHasValue` from all implementations.
