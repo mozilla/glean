@@ -58,7 +58,7 @@ class TimingDistributionTypeTests: XCTestCase {
         XCTAssertNil(metric.testGetValue(), "TimingDistributions must not be recorded if they are disabled")
     }
 
-    func testTimingDistributionGetValueThrowsExceptionIfNothingIsStored() {
+    func testTimingDistributionGetValueReturnsNilIfNothingIsStored() {
         let metric = TimingDistributionMetricType(CommonMetricData(
             category: "telemetry",
             name: "timing_distribution",

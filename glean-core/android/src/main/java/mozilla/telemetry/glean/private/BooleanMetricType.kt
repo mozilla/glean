@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording boolean metrics.
  *
@@ -15,9 +13,3 @@ import androidx.annotation.VisibleForTesting
  * The boolean API only exposes the [set] method.
  */
 typealias BooleanMetricType = mozilla.telemetry.glean.internal.BooleanMetric
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun BooleanMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}

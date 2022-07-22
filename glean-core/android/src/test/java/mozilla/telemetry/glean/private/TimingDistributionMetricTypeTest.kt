@@ -13,7 +13,6 @@ import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -51,7 +50,6 @@ class TimingDistributionMetricTypeTest {
         }
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertTrue(snapshot.sum > 0L)
@@ -82,14 +80,14 @@ class TimingDistributionMetricTypeTest {
         metric.stopAndAccumulate(id)
 
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Disabled TimingDistributions should not record data.",
-            metric.testHasValue()
+            metric.testGetValue()
         )
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         // Define a timing distribution metric which will be stored in "store1"
         val metric = TimingDistributionMetricType(
             CommonMetricData(
@@ -125,7 +123,6 @@ class TimingDistributionMetricTypeTest {
         }
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store2"))
         val snapshot = metric.testGetValue("store2")!!
         // Check the sum
         assertTrue(snapshot.sum > 0)
@@ -137,7 +134,6 @@ class TimingDistributionMetricTypeTest {
         // assertEquals(1L, snapshot.values[3])
 
         // Check that data was properly recorded in the third ping.
-        assertTrue(metric.testHasValue("store3"))
         val snapshot2 = metric.testGetValue("store3")!!
         // Check the sum
         assertEquals(snapshot.sum, snapshot2.sum)
@@ -168,7 +164,6 @@ class TimingDistributionMetricTypeTest {
         metric.accumulateSamples(testSamples)
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store1"))
         val snapshot = metric.testGetValue("store1")!!
         val secondsToNanos = 1000L * 1000L * 1000L
         // Check the sum
@@ -275,7 +270,6 @@ class TimingDistributionMetricTypeTest {
         }
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertTrue(snapshot.sum > 0L)
@@ -315,7 +309,6 @@ class TimingDistributionMetricTypeTest {
         val res = testFunc()
         assertEquals("Test value must match", 17, res)
 
-        assertTrue("Metric must have a value", metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         assertTrue("Should have stored some nanoseconds", snapshot.sum > 0L)
     }
@@ -349,7 +342,7 @@ class TimingDistributionMetricTypeTest {
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {
             // Check that no data was recorded.
-            assertFalse("Metric must not have a value", metric.testHasValue())
+            assertNull("Metric must not have a value", metric.testGetValue())
         }
     }
 }

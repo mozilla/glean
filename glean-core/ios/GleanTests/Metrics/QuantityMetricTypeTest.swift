@@ -23,17 +23,15 @@ class QuantityMetricTypeTests: XCTestCase {
             disabled: false
         ))
 
-        XCTAssertFalse(quantityMetric.testHasValue())
+        XCTAssertNil(quantityMetric.testGetValue())
 
         quantityMetric.set(1)
 
         // Check that the metric was properly recorded.
-        XCTAssert(quantityMetric.testHasValue())
         XCTAssertEqual(1, quantityMetric.testGetValue())
 
         quantityMetric.set(10)
         // Check that the metric was properly overwritten.
-        XCTAssert(quantityMetric.testHasValue())
         XCTAssertEqual(10, quantityMetric.testGetValue())
     }
 
@@ -46,14 +44,14 @@ class QuantityMetricTypeTests: XCTestCase {
             disabled: true
         ))
 
-        XCTAssertFalse(quantityMetric.testHasValue())
+        XCTAssertNil(quantityMetric.testGetValue())
 
         quantityMetric.set(1)
 
-        XCTAssertFalse(quantityMetric.testHasValue(), "Quantities must not be recorded if they are disabled")
+        XCTAssertNil(quantityMetric.testGetValue(), "Quantities must not be recorded if they are disabled")
     }
 
-    func testCounterGetValueThrowsExceptionIfNothingIsStored() {
+    func testCounterGetValueReturnsNilIfNothingIsStored() {
         let quantityMetric = QuantityMetricType(CommonMetricData(
             category: "telemetry",
             name: "quantity_metric",
@@ -77,12 +75,10 @@ class QuantityMetricTypeTests: XCTestCase {
         quantityMetric.set(1)
 
         // Check that the metric was properly recorded.
-        XCTAssert(quantityMetric.testHasValue("store2"))
         XCTAssertEqual(1, quantityMetric.testGetValue("store2"))
 
         quantityMetric.set(10)
         // Check that the metric was properly overwritten.
-        XCTAssert(quantityMetric.testHasValue("store2"))
         XCTAssertEqual(10, quantityMetric.testGetValue("store2"))
     }
 
@@ -98,12 +94,10 @@ class QuantityMetricTypeTests: XCTestCase {
         quantityMetric.set(1)
 
         // Check that the metric was properly recorded.
-        XCTAssert(quantityMetric.testHasValue("store1"))
         XCTAssertEqual(1, quantityMetric.testGetValue("store1"))
 
         quantityMetric.set(-10)
         // Check that the metric was NOT recorded.
-        XCTAssert(quantityMetric.testHasValue("store1"))
         XCTAssertEqual(1, quantityMetric.testGetValue("store1"))
         XCTAssertEqual(1, quantityMetric.testGetNumRecordedErrors(.invalidValue))
     }

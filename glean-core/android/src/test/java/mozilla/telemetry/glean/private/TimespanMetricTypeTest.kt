@@ -11,8 +11,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -45,7 +45,6 @@ class TimespanMetricTypeTest {
         metric.stop()
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         assertTrue(metric.testGetValue()!! >= 0)
     }
 
@@ -71,9 +70,9 @@ class TimespanMetricTypeTest {
         metric.cancel()
 
         // Check that data was not recorded.
-        assertFalse(
+        assertNull(
             "The API should not record a counter if metric is disabled",
-            metric.testHasValue()
+            metric.testGetValue()
         )
     }
 
@@ -97,16 +96,16 @@ class TimespanMetricTypeTest {
         metric.stop()
 
         // Check that data was not recorded.
-        assertFalse(
+        assertNull(
             "The API should not record a counter if metric is cancelled",
-            metric.testHasValue()
+            metric.testGetValue()
         )
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
 
     // TODO: Fixme: should we continue throwing an exception instead?
     @Test // (expected = NullPointerException::class)
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val metric = TimespanMetricType(
             CommonMetricData(
                 disabled = false,
@@ -139,7 +138,6 @@ class TimespanMetricTypeTest {
         metric.stop()
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2")!! >= 0)
     }
 
@@ -163,7 +161,6 @@ class TimespanMetricTypeTest {
         metric.stop()
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store2"))
         assertTrue(metric.testGetValue("store2")!! >= 0)
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
@@ -185,11 +182,11 @@ class TimespanMetricTypeTest {
         // Record a timespan.
         metric.start()
         metric.stop()
-        assertTrue(metric.testHasValue())
         val value = metric.testGetValue()
 
         metric.stop()
 
+        assertNotNull(value)
         assertEquals(value, metric.testGetValue())
     }
 
@@ -313,7 +310,6 @@ class TimespanMetricTypeTest {
         assertTrue("Test value must match", testValue)
 
         // Check that data was properly recorded.
-        assertTrue("Metric must have a value", metric.testHasValue())
         assertTrue("Metric value must be greater than zero", metric.testGetValue()!! >= 0)
     }
 
@@ -345,7 +341,6 @@ class TimespanMetricTypeTest {
         val res = testFunc()
         assertEquals("Test value must match", 17, res)
 
-        assertTrue("Metric must have a value", metric.testHasValue())
         assertTrue("Metric value must be greater than zero", metric.testGetValue()!! >= 0)
     }
 
@@ -378,7 +373,7 @@ class TimespanMetricTypeTest {
             // Make sure we caught the right kind of exception: NPE
             assertTrue("Exception type must match", e is NullPointerException)
         } finally {
-            assertTrue("Metric must not have a value", !metric.testHasValue())
+            assertNull("Metric must not have a value", metric.testGetValue())
         }
     }
 }

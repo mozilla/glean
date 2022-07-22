@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.private
 
-import androidx.annotation.VisibleForTesting
-
 /**
  * This implements the developer facing API for recording string list metrics.
  *
@@ -16,9 +14,3 @@ import androidx.annotation.VisibleForTesting
  * data and making sure that limits are enforced.
  */
 typealias StringListMetricType = mozilla.telemetry.glean.internal.StringListMetric
-
-@VisibleForTesting(otherwise = VisibleForTesting.NONE)
-@JvmOverloads
-fun StringListMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}

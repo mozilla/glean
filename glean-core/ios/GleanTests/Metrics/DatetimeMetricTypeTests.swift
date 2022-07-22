@@ -84,7 +84,7 @@ class DatetimeMetricTypeTests: XCTestCase {
         XCTAssertNil(datetimeMetric.testGetValue(), "Datetimes must not be recorded if they are disabled")
     }
 
-    func testDatetimeGetValueThrowsExceptionIfNothingIsStored() {
+    func testDatetimeGetValueReturnsNilIfNothingIsStored() {
         let datetimeMetric = DatetimeMetricType(CommonMetricData(
             category: "telemetry",
             name: "datetime_metric",
@@ -117,7 +117,6 @@ class DatetimeMetricTypeTests: XCTestCase {
             second: 29
         )
         datetimeMetric.set(components: value)
-        XCTAssertTrue(datetimeMetric.testHasValue("store2"))
         let testString = "2004-12-09T08:03-08:00"
         let date = Date.fromISO8601String(dateString: testString, precision: datetimeMetric.timeUnit)
         XCTAssertEqual(date, datetimeMetric.testGetValue("store2"))

@@ -42,12 +42,10 @@ class BooleanMetricTypeTest {
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded.
-        assertTrue(booleanMetric.testHasValue())
         assertTrue(booleanMetric.testGetValue()!!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded.
-        assertTrue(booleanMetric.testHasValue())
         assertFalse(booleanMetric.testGetValue()!!)
     }
 
@@ -68,11 +66,11 @@ class BooleanMetricTypeTest {
         // Attempt to store the boolean.
         booleanMetric.set(true)
         // Check that nothing was recorded.
-        assertFalse(booleanMetric.testHasValue())
+        assertNull(booleanMetric.testGetValue())
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         // Define a 'booleanMetric' boolean metric to have an instance to call
         // testGetValue() on
         val booleanMetric = BooleanMetricType(
@@ -103,12 +101,10 @@ class BooleanMetricTypeTest {
         // Record two booleans of the same type, with a little delay.
         booleanMetric.set(true)
         // Check that data was properly recorded in the second ping
-        assertTrue(booleanMetric.testHasValue("store2"))
         assertTrue(booleanMetric.testGetValue("store2")!!)
 
         booleanMetric.set(false)
         // Check that data was properly recorded in the second ping.
-        assertTrue(booleanMetric.testHasValue("store2"))
         assertFalse(booleanMetric.testGetValue("store2")!!)
     }
 }

@@ -1,6 +1,22 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.0.0...main)
+
+# v51.0.0 (2022-07-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v51.0.0)
+
+* General
+  * Remove `testHasValue` from all implementations.
+    `testGetValue` always returns a null value
+    (`null`, `nil`, `None` depending on the language) and does not throw an exception ([#2087](https://github.com/mozilla/glean/pull/2087)).
+  * BREAKING CHANGE: Dropped `ping_name` argument from all `test_get_num_recorded_errors` methods ([#2088](https://github.com/mozilla/glean/pull/2088))  
+    Errors default to the `metrics` ping, so that's what is queried internally.
+  * BREAKING: Disable `safe-mode` everywhere. This causes all clients to migrate from LMDB to safe-mode storage ([#2123](https://github.com/mozilla/glean/pull/2123))
+* Kotlin
+  * Fix the Glean Gradle Plugin to work with Android Gradle Plugin v7.2.1 ([#2114](https://github.com/mozilla/glean/pull/2114))
+* Rust
+  * Add a method to construct an Event with runtime-known allowed extra keys. ([bug 1767037](https://bugzilla.mozilla.org/show_bug.cgi?id=1767037))
 
 # v50.1.2 (2022-07-08)
 

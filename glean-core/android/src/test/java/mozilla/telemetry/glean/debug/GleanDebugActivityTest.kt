@@ -23,7 +23,6 @@ import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
-import mozilla.telemetry.glean.private.testHasValue
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
@@ -157,7 +156,7 @@ class GleanDebugActivityTest {
         )
 
         booleanMetric.set(true)
-        assertTrue(booleanMetric.testHasValue())
+        assertTrue(booleanMetric.testGetValue()!!)
 
         // Set the extra values and start the intent.
         val intent = Intent(
@@ -209,7 +208,7 @@ class GleanDebugActivityTest {
         )
 
         booleanMetric.set(true)
-        assertTrue(booleanMetric.testHasValue())
+        assertTrue(booleanMetric.testGetValue()!!)
 
         // Set the extra values and start the intent.
         val intent = Intent(

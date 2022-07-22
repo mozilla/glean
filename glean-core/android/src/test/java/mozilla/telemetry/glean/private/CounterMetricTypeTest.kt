@@ -15,9 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,20 +39,18 @@ class CounterMetricTypeTest {
             )
         )
 
-        assertFalse(counterMetric.testHasValue())
+        assertNull(counterMetric.testGetValue())
 
         // Add to the counter a couple of times with a little delay.  The first call will check
         // calling add() without parameters to test increment by 1.
         counterMetric.add()
 
         // Check that the count was incremented and properly recorded.
-        assertTrue(counterMetric.testHasValue())
         assertEquals(1, counterMetric.testGetValue())
 
         counterMetric.add(10)
         // Check that count was incremented and properly recorded.  This second call will check
         // calling add() with 10 to test increment by other amount
-        assertTrue(counterMetric.testHasValue())
         assertEquals(11, counterMetric.testGetValue())
     }
 
@@ -75,15 +71,15 @@ class CounterMetricTypeTest {
         // Attempt to store the counter.
         counterMetric.add()
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Counters must not be recorded if they are disabled",
-            counterMetric.testHasValue()
+            counterMetric.testGetValue()
         )
     }
 
     // TODO: Fixme: should we continue throwing an exception instead?
     @Test // (expected = NullPointerException::class)
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val counterMetric = CounterMetricType(
             CommonMetricData(
                 disabled = true,
@@ -114,13 +110,11 @@ class CounterMetricTypeTest {
         counterMetric.add()
 
         // Check that the count was incremented and properly recorded for the second ping.
-        assertTrue(counterMetric.testHasValue("store2"))
         assertEquals(1, counterMetric.testGetValue("store2"))
 
         counterMetric.add(10)
         // Check that count was incremented and properly recorded for the second ping.
         // This second call will check calling add() with 10 to test increment by other amount
-        assertTrue(counterMetric.testHasValue("store2"))
         assertEquals(11, counterMetric.testGetValue("store2"))
     }
 
@@ -141,12 +135,10 @@ class CounterMetricTypeTest {
         counterMetric.add()
 
         // Check that the count was incremented
-        assertTrue(counterMetric.testHasValue("store1"))
         assertEquals(1, counterMetric.testGetValue("store1"))
 
         counterMetric.add(-10)
         // Check that count was NOT incremented.
-        assertTrue(counterMetric.testHasValue("store1"))
         assertEquals(1, counterMetric.testGetValue("store1"))
         assertEquals(1, counterMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }

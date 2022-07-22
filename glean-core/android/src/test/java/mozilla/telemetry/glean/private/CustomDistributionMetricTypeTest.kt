@@ -10,9 +10,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,7 +47,6 @@ class CustomDistributionMetricTypeTest {
         }
 
         // Check that data was properly recorded.
-        assertTrue(metric.testHasValue())
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertEquals(6L, snapshot.sum)
@@ -83,14 +80,14 @@ class CustomDistributionMetricTypeTest {
         metric.accumulateSamples(listOf(0L))
 
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Disabled CustomDistributions should not record data.",
-            metric.testHasValue()
+            metric.testGetValue()
         )
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         // Define a custom distribution metric which will be stored in "store1"
         val metric = CustomDistributionMetricType(
             CommonMetricData(
@@ -129,7 +126,6 @@ class CustomDistributionMetricTypeTest {
         metric.accumulateSamples(listOf(1L, 2L, 3L))
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store2"))
         val snapshot = metric.testGetValue("store2")!!
         // Check the sum
         assertEquals(6L, snapshot.sum)
@@ -141,7 +137,6 @@ class CustomDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[3])
 
         // Check that data was properly recorded in the third ping.
-        assertTrue(metric.testHasValue("store3"))
         val snapshot2 = metric.testGetValue("store3")!!
         // Check the sum
         assertEquals(6L, snapshot2.sum)
@@ -175,7 +170,6 @@ class CustomDistributionMetricTypeTest {
         metric.accumulateSamples(testSamples)
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(metric.testHasValue("store1"))
         val snapshot = metric.testGetValue("store1")!!
         // Check the sum
         assertEquals(6L, snapshot.sum)

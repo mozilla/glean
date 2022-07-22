@@ -44,6 +44,12 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
             ProcessLifecycleOwner.get().lifecycle.addObserver(glean.gleanLifecycleObserver)
         }
         glean.initialized = true
+
+        if (glean.testingMode) {
+            glean.afterInitQueue.forEach { block ->
+                block()
+            }
+        }
     }
 
     override fun triggerUpload() {
@@ -101,6 +107,8 @@ open class GleanInternalAPI internal constructor() {
     // This object holds data related to any persistent information about the metrics ping,
     // such as the last time it was sent and the store name
     internal var metricsPingScheduler: MetricsPingScheduler? = null
+
+    internal val afterInitQueue: MutableList<() -> Unit> = mutableListOf()
 
     // This is used to cache the process state and is used by the function `isMainProcess()`
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -175,19 +183,23 @@ open class GleanInternalAPI internal constructor() {
         this.httpClient = BaseUploader(configuration.httpClient)
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
-        val cfg = InternalConfiguration(
-            dataPath = gleanDataDir.path,
-            applicationId = applicationContext.packageName,
-            languageBindingName = LANGUAGE_BINDING_NAME,
-            uploadEnabled = uploadEnabled,
-            maxEvents = null,
-            delayPingLifetimeIo = false,
-            appBuild = "none",
-            useCoreMps = false
-        )
-        val clientInfo = getClientInfo(configuration, buildInfo)
-        val callbacks = OnGleanEventsImpl(this)
-        gleanInitialize(cfg, clientInfo, callbacks)
+        // Execute startup off the main thread.
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.executeTask {
+            val cfg = InternalConfiguration(
+                dataPath = gleanDataDir.path,
+                applicationId = applicationContext.packageName,
+                languageBindingName = LANGUAGE_BINDING_NAME,
+                uploadEnabled = uploadEnabled,
+                maxEvents = null,
+                delayPingLifetimeIo = false,
+                appBuild = "none",
+                useCoreMps = false
+            )
+            val clientInfo = getClientInfo(configuration, buildInfo)
+            val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
+            gleanInitialize(cfg, clientInfo, callbacks)
+        }
     }
 
     /**
@@ -411,6 +423,8 @@ open class GleanInternalAPI internal constructor() {
     internal fun setTestingMode(enabled: Boolean) {
         this.testingMode = enabled
         gleanSetTestMode(enabled)
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        Dispatchers.API.setTestingMode(enabled)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -451,6 +465,23 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Run a task right after initialization.
+     *
+     * If initialization already happened the task runs immediately.
+     * Otherwise it is queued and run after initialization finishes.
+     */
+    internal fun afterInitialize(block: () -> Unit) {
+        // Queueing tasks after initialize is only allowed in test mode.
+        assert(isInitialized())
+
+        if (isInitialized()) {
+            block()
+        } else {
+            this.afterInitQueue.add(block)
+        }
+    }
+
+    /**
      * TEST ONLY FUNCTION.
      * Sets the server endpoint to a local address for ingesting test pings.
      *
@@ -465,12 +496,10 @@ open class GleanInternalAPI internal constructor() {
 
         isSendingToTestEndpoint = true
 
-        // We can't set the configuration unless we're initialized.
-        assert(isInitialized())
-
-        val endpointUrl = "http://localhost:$port"
-
-        Glean.configuration = configuration.copy(serverEndpoint = endpointUrl)
+        Glean.afterInitialize {
+            val endpointUrl = "http://localhost:$port"
+            Glean.configuration = configuration.copy(serverEndpoint = endpointUrl)
+        }
     }
 
     /**

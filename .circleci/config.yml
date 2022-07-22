@@ -62,17 +62,23 @@ commands:
           name: Test
           command: |
             export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
-            cargo test --all --verbose --jobs 6 -- --nocapture
+            cargo test --verbose --jobs 6 -- --nocapture
       - run:
-          name: Test Glean with rkv safe-mode
+          name: Install required Python dependencies
           command: |
-            cd glean-core
-            cargo test -p glean-core --features rkv-safe-mode --jobs 6 -- --nocapture
+            sudo apt update
+            sudo apt install --yes --no-install-recommends \
+              python3-pip \
+              python3.8-venv
+      - run:
+          name: Run Rust sample
+          command: |
+            if rustc --version | grep -q 'rustc 1.6'; then
+              cargo run -p sample
+            fi
       - run:
           name: Upload coverage report
           command: |
-            sudo apt update
-            sudo apt install python3-pip
             pip3 install glean_parser
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
             bin/codecov.sh -X yaml -f codecov.json
@@ -152,7 +158,7 @@ commands:
     steps:
       - install-rustup
       - setup-rust-toolchain:
-          rust-version: "1.57.0"
+          rust-version: "1.58.0"
       - install-mingw
       - run:
           name: Install Python development tools for host
@@ -301,6 +307,12 @@ jobs:
       - run: rustup component add clippy
       - run: cargo clippy --version
       - run:
+          name: Install required Python dependencies
+          command: |
+            sudo apt update
+            sudo apt install --yes --no-install-recommends \
+              python3.8-venv
+      - run:
           name: Clippy
           command: make lint-rust
 
@@ -320,11 +332,11 @@ jobs:
 
   Rust tests - minimum version:
     docker:
-      - image: cimg/rust:1.57
+      - image: cimg/rust:1.58
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.57.0"
+          rust-version: "1.58.0"
 
   Generate Rust documentation:
     docker:

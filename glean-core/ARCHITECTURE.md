@@ -167,15 +167,6 @@ package mozilla.telemetry.glean.private
 typealias CounterMetricType = mozilla.telemetry.glean.internal.CounterMetric
 ```
 
-Occasionally additional methods might be necessary.
-These can be implemented as extension methods on the type.
-
-```kotlin
-fun CounterMetricType.testHasValue(pingName: String? = null): Boolean {
-    return this.testGetValue(pingName) != null
-}
-```
-
 Some more complex type might need additional work.
 These should wrap the `internal` metric and add the additional state.
 

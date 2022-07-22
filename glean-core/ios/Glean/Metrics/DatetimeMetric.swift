@@ -44,23 +44,9 @@ public class DatetimeMetricType {
         inner.set(dt)
     }
 
-    /// Tests whether a value is stored for the metric for testing purposes only. This function will
-    /// attempt to await the last task (if any) writing to the the metric's storage engine before
-    /// returning a value.
-    ///
-    /// - parameters:
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
-    /// - returns: true if metric value exists, otherwise false
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return inner.testGetValue(pingName) != nil
-    }
-
     /// Returns the string representation of the stored value for testing purposes only. This function
     /// will attempt to await the last task (if any) writing to the the metric's storage engine before returning
     ///  a value.
-    ///
-    /// Throws a `Missing value` exception if no value is stored
     ///
     /// - parameters:
     ///     * pingName: represents the name of the ping to retrieve the metric for.
@@ -73,8 +59,6 @@ public class DatetimeMetricType {
 
     /// Returns the stored value for testing purposes only. This function will attempt to await the
     /// last task (if any) writing to the the metric's storage engine before returning a value.
-    ///
-    /// Throws a `Missing value` exception if no value is stored
     ///
     /// - parameters:
     ///     * pingName: represents the name of the ping to retrieve the metric for.
@@ -93,11 +77,9 @@ public class DatetimeMetricType {
     ///
     /// - parameters:
     ///     * errorType: The type of error recorded.
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns: The number of errors recorded for the metric for the given error type.
-    public func testGetNumRecordedErrors(_ error: ErrorType, pingName: String? = nil) -> Int32 {
-        inner.testGetNumRecordedErrors(error, pingName)
+    public func testGetNumRecordedErrors(_ error: ErrorType) -> Int32 {
+        inner.testGetNumRecordedErrors(error)
     }
 }

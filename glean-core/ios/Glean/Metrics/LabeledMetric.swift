@@ -93,19 +93,15 @@ public class LabeledMetricType<T> {
     ///
     /// - parameters:
     ///     * errorType: The type of the error recorded.
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
     /// - returns: the number of errors recorded for the metric.
-    public func testGetNumRecordedErrors(_ errorType: ErrorType, pingName: String? = nil) -> Int32 {
-        let pingName = pingName ?? self.sendInPings[0]
-
+    public func testGetNumRecordedErrors(_ errorType: ErrorType) -> Int32 {
         switch self.inner {
         case is LabeledCounter:
-            return (self.inner as! LabeledCounter).testGetNumRecordedErrors(errorType, pingName)
+            return (self.inner as! LabeledCounter).testGetNumRecordedErrors(errorType)
         case is LabeledBoolean:
-            return (self.inner as! LabeledBoolean).testGetNumRecordedErrors(errorType, pingName)
+            return (self.inner as! LabeledBoolean).testGetNumRecordedErrors(errorType)
         case is LabeledString:
-            return (self.inner as! LabeledString).testGetNumRecordedErrors(errorType, pingName)
+            return (self.inner as! LabeledString).testGetNumRecordedErrors(errorType)
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()

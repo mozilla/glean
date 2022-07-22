@@ -116,10 +116,8 @@ class DatetimeMetricType:
         )
         return dt
 
-    def test_get_num_recorded_errors(
-        self, error_type: ErrorType, ping_name: Optional[str] = None
-    ) -> int:
-        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
+    def test_get_num_recorded_errors(self, error_type: ErrorType) -> int:
+        return self._inner.test_get_num_recorded_errors(error_type)
 
 
 __all__ = ["DatetimeMetricType"]

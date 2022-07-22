@@ -67,6 +67,7 @@ RUN apt-get update -qq \
         python \
         python3 \
         python3-pip \
+        python3-venv \
         # taskcluster > mohawk > setuptools.
         python3-setuptools \
         # Required to extract the Android SDK/NDK.

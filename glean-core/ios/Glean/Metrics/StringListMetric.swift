@@ -11,9 +11,3 @@
 /// which takes care of validating the input
 /// data and making sure that limits are enforced.
 public typealias StringListMetricType = StringListMetric
-
-extension StringListMetricType {
-    public func testHasValue(_ pingName: String? = nil) -> Bool {
-        return self.testGetValue(pingName) != nil
-    }
-}

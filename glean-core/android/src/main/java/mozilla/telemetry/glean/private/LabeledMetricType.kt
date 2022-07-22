@@ -107,18 +107,16 @@ class LabeledMetricType<T>(
     /**
      * Returns the number of errors recorded for the given metric.
      *
-     * @param errorType The type of the error recorded.
-     * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     * @param error The type of the error recorded.
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetNumRecordedErrors(errorType: ErrorType, pingName: String = sendInPings.first()): Int {
+    fun testGetNumRecordedErrors(errorType: ErrorType): Int {
         return when (this.inner) {
-            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType, pingName)
-            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType, pingName)
-            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType, pingName)
+            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType)
+            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType)
+            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType)
             else -> throw IllegalStateException(
                 "Can not create a labeled version of this metric type"
             )

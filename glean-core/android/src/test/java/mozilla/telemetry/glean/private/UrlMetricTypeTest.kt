@@ -9,9 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,12 +37,10 @@ class UrlMetricTypeTest {
         urlMetric.set("glean://test")
 
         // Check that data was properly recorded.
-        assertTrue(urlMetric.testHasValue())
         assertEquals("glean://test", urlMetric.testGetValue())
 
         urlMetric.set("glean://other")
         // Check that data was properly recorded.
-        assertTrue(urlMetric.testHasValue())
         assertEquals("glean://other", urlMetric.testGetValue())
     }
 
@@ -65,14 +61,14 @@ class UrlMetricTypeTest {
         // Attempt to store the URL.
         urlMetric.set("glean://notrecorded")
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Url must not be recorded if they are disabled",
-            urlMetric.testHasValue()
+            urlMetric.testGetValue()
         )
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val urlMetric = UrlMetricType(
             CommonMetricData(
                 disabled = true,
@@ -101,12 +97,10 @@ class UrlMetricTypeTest {
         urlMetric.set("glean://value")
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(urlMetric.testHasValue("store2"))
         assertEquals("glean://value", urlMetric.testGetValue("store2"))
 
         urlMetric.set("glean://overriddenValue")
         // Check that data was properly recorded in the second ping.
-        assertTrue(urlMetric.testHasValue("store2"))
         assertEquals("glean://overriddenValue", urlMetric.testGetValue("store2"))
     }
 

@@ -62,6 +62,7 @@ Before submitting a PR:
 - For changes to Rust code
   - `make test-rust` produces no test failures
   - `make lint-rust` runs without emitting any warnings or errors.
+  - `make fmt-rust` should be used to format your changed Rust code.
 - For changes to Kotlin code
   - `make test-kotlin` runs without emitting any warnings or errors.
   - `make ktlint` runs without emitting any warnings.

@@ -56,11 +56,9 @@ public class UrlMetricType {
     ///
     /// - parameters:
     ///     * errorType: The type of error recorded.
-    ///     * pingName: represents the name of the ping to retrieve the metric for.
-    ///                 Defaults to the first value in `sendInPings`.
     ///
     /// - returns: The number of errors recorded for the metric for the given error type.
-    public func testGetNumRecordedErrors(_ error: ErrorType, pingName: String? = nil) -> Int32 {
-        inner.testGetNumRecordedErrors(error, pingName)
+    public func testGetNumRecordedErrors(_ error: ErrorType) -> Int32 {
+        inner.testGetNumRecordedErrors(error)
     }
 }

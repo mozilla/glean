@@ -1,6 +1,6 @@
 [package]
 name = "glean"
-version = "50.1.2"
+version = "51.0.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
@@ -22,7 +22,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "50.1.2"
+version = "51.0.0"
 
 [dependencies]
 crossbeam-channel = "0.5"
@@ -40,9 +40,5 @@ whatsys = "0.1.2"
 [dev-dependencies]
 env_logger = { version = "0.9.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
 tempfile = "3.1.0"
-jsonschema-valid = "0.4.0"
+jsonschema-valid = "0.5.0"
 flate2 = "1.0.19"
-
-[features]
-# Enable the "safe-mode" Rust storage backend instead of the default LMDB one.
-rkv-safe-mode = ["glean-core/rkv-safe-mode"]

@@ -14,8 +14,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,17 +37,15 @@ class RateMetricTypeTest {
             )
         )
 
-        assertFalse(rateMetric.testHasValue())
+        assertNull(rateMetric.testGetValue())
 
         rateMetric.addToNumerator(2)
         rateMetric.addToDenominator(5)
 
         // Check that the count was incremented and properly recorded.
-        assertTrue(rateMetric.testHasValue())
         assertEquals(Rate(2, 5), rateMetric.testGetValue())
 
         rateMetric.addToNumerator(1)
-        assertTrue(rateMetric.testHasValue())
         assertEquals(Rate(3, 5), rateMetric.testGetValue())
     }
 
@@ -66,9 +63,9 @@ class RateMetricTypeTest {
 
         rateMetric.addToNumerator(1)
         rateMetric.addToDenominator(1)
-        assertFalse(
+        assertNull(
             "rates must not be recorded if they are disabled",
-            rateMetric.testHasValue()
+            rateMetric.testGetValue()
         )
     }
 

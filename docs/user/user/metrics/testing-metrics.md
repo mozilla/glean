@@ -33,11 +33,8 @@ GleanMetrics.BrowserEngagement.click.record(
 BrowserEngagement.click.record()
 BrowserEngagement.click.record()
 
-// Check if we collected any events into the 'click' metric
-assertTrue(BrowserEngagement.click.testHasValue())
-
 // Retrieve a snapshot of the recorded events
-val events = BrowserEngagement.click.testGetValue()
+val events = BrowserEngagement.click.testGetValue()!!
 
 // Check if we collected all 3 events in the snapshot
 assertEquals(3, events.size)
@@ -58,11 +55,8 @@ GleanMetrics.BrowserEngagement.click.record([.font: "Courier"])
 BrowserEngagement.click.record()
 BrowserEngagement.click.record()
 
-// Check if we collected any events into the 'click' metric
-XCTAssertTrue(BrowserEngagement.click.testHasValue())
-
 // Retrieve a snapshot of the recorded events
-let events = try! BrowserEngagement.click.testGetValue()
+let events = BrowserEngagement.click.testGetValue()!
 
 // Check if we collected all 3 events in the snapshot
 XCTAssertEqual(3, events.count)
@@ -83,7 +77,7 @@ metrics = load_metrics("metrics.yaml")
 metrics.url.visit.add(1)
 
 # Check if we collected any events into the 'click' metric
-assert metrics.url.visit.test_has_value()
+assert metrics.url.visit.test_get_value() is not Null
 
 # Retrieve a snapshot of the recorded events
 assert 1 == metrics.url.visit.test_get_value()

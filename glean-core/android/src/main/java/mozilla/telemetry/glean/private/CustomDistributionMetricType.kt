@@ -48,13 +48,5 @@ class CustomDistributionMetricType(
     fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testGetNumRecordedErrors(error: ErrorType, pingName: String? = null) =
-        inner.testGetNumRecordedErrors(error, pingName)
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testHasValue(pingName: String? = null): Boolean {
-        return this.testGetValue(pingName) != null
-    }
+    fun testGetNumRecordedErrors(error: ErrorType) = inner.testGetNumRecordedErrors(error)
 }

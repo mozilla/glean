@@ -18,7 +18,9 @@ XML_TEMPLATE="${WORKSPACE_ROOT}/bin/about.xml.hbs"
 
 MD_OUTPUT="${WORKSPACE_ROOT}/DEPENDENCIES.md"
 XML_OUTPUT="${WORKSPACE_ROOT}/glean-core/android/dependency-licenses.xml"
+XML_OUTPUT_NATIVE="${WORKSPACE_ROOT}/glean-core/android-native/dependency-licenses.xml"
 
 command -v cargo-about >/dev/null || cargo install cargo-about
 cargo about generate "${MD_TEMPLATE}" > "${MD_OUTPUT}"
 cargo about generate "${XML_TEMPLATE}" > "${XML_OUTPUT}"
+cp "${XML_OUTPUT}" "${XML_OUTPUT_NATIVE}"

@@ -23,20 +23,18 @@ class CounterMetricTypeTests: XCTestCase {
             disabled: false
         ))
 
-        XCTAssertFalse(counterMetric.testHasValue())
+        XCTAssertNil(counterMetric.testGetValue())
 
         // Add to the counter a couple of times with a little delay.  The first call will check
         // calling add() without parameters to test increment by 1.
         counterMetric.add()
 
         // Check that the count was incremented and properly recorded.
-        XCTAssert(counterMetric.testHasValue())
         XCTAssertEqual(1, counterMetric.testGetValue())
 
         counterMetric.add(10)
         // Check that count was incremented and properly recorded.  This second call will check
         // calling add() with 10 to test increment by other amount
-        XCTAssert(counterMetric.testHasValue())
         XCTAssertEqual(11, counterMetric.testGetValue())
     }
 
@@ -49,14 +47,14 @@ class CounterMetricTypeTests: XCTestCase {
             disabled: true
         ))
 
-        XCTAssertFalse(counterMetric.testHasValue())
+        XCTAssertNil(counterMetric.testGetValue())
 
         counterMetric.add(1)
 
-        XCTAssertFalse(counterMetric.testHasValue(), "Counters must not be recorded if they are disabled")
+        XCTAssertNil(counterMetric.testGetValue(), "Counters must not be recorded if they are disabled")
     }
 
-    func testCounterGetValueThrowsExceptionIfNothingIsStored() {
+    func testCounterGetValueReturnsNilIfNothingIsStored() {
         let counterMetric = CounterMetricType(CommonMetricData(
             category: "telemetry",
             name: "counter_metric",
@@ -78,13 +76,9 @@ class CounterMetricTypeTests: XCTestCase {
         ))
 
         counterMetric.add(1)
-
-        XCTAssert(counterMetric.testHasValue("store2"))
         XCTAssertEqual(1, counterMetric.testGetValue("store2"))
 
         counterMetric.add(10)
-
-        XCTAssert(counterMetric.testHasValue("store2"))
         XCTAssertEqual(11, counterMetric.testGetValue("store2"))
     }
 
@@ -101,12 +95,10 @@ class CounterMetricTypeTests: XCTestCase {
         counterMetric.add()
 
         // Check that the count was incremented
-        XCTAssert(counterMetric.testHasValue("store1"))
         XCTAssertEqual(1, counterMetric.testGetValue("store1"))
 
         counterMetric.add(-10)
         // Check that count was NOT incremented.
-        XCTAssert(counterMetric.testHasValue("store1"))
         XCTAssertEqual(1, counterMetric.testGetValue("store1"))
         XCTAssertEqual(1, counterMetric.testGetNumRecordedErrors(.invalidValue))
     }

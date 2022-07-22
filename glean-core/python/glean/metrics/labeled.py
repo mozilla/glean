@@ -60,9 +60,7 @@ class LabeledMetricBase:
         """
         return self._inner.get(item)
 
-    def test_get_num_recorded_errors(
-        self, error_type: ErrorType, ping_name: Optional[str] = None
-    ) -> int:
+    def test_get_num_recorded_errors(self, error_type: ErrorType) -> int:
         """
         Returns the number of errors recorded for the given metric.
 
@@ -75,7 +73,7 @@ class LabeledMetricBase:
             num_errors (int): The number of errors recorded for the metric for
                 the given error type.
         """
-        return self._inner.test_get_num_recorded_errors(error_type, ping_name)
+        return self._inner.test_get_num_recorded_errors(error_type)
 
 
 class LabeledBooleanMetricType(LabeledMetricBase):

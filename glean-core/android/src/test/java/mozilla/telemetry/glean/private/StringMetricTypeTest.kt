@@ -15,9 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,12 +43,10 @@ class StringMetricTypeTest {
         stringMetric.set("value")
 
         // Check that data was properly recorded.
-        assertTrue(stringMetric.testHasValue())
         assertEquals("value", stringMetric.testGetValue())
 
         stringMetric.set("overriddenValue")
         // Check that data was properly recorded.
-        assertTrue(stringMetric.testHasValue())
         assertEquals("overriddenValue", stringMetric.testGetValue())
     }
 
@@ -71,14 +67,14 @@ class StringMetricTypeTest {
         // Attempt to store the string.
         stringMetric.set("value")
         // Check that nothing was recorded.
-        assertFalse(
+        assertNull(
             "Strings must not be recorded if they are disabled",
-            stringMetric.testHasValue()
+            stringMetric.testGetValue()
         )
     }
 
     @Test
-    fun `testGetValue() throws NullPointerException if nothing is stored`() {
+    fun `testGetValue() returns null if nothing is stored`() {
         val stringMetric = StringMetricType(
             CommonMetricData(
                 disabled = true,
@@ -108,12 +104,10 @@ class StringMetricTypeTest {
         stringMetric.set("value")
 
         // Check that data was properly recorded in the second ping.
-        assertTrue(stringMetric.testHasValue("store2"))
         assertEquals("value", stringMetric.testGetValue("store2"))
 
         stringMetric.set("overriddenValue")
         // Check that data was properly recorded in the second ping.
-        assertTrue(stringMetric.testHasValue("store2"))
         assertEquals("overriddenValue", stringMetric.testGetValue("store2"))
     }
 
