@@ -86,6 +86,12 @@ class PingTypeTest {
 
         val pingJson = JSONObject(request.getPlainBody())
         assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
+
+        assertNotNull(pingJson.getJSONObject("client_info")["android_sdk_version"])
+        assertNotNull(pingJson.getJSONObject("client_info")["device_model"])
+        assertNotNull(pingJson.getJSONObject("client_info")["device_manufacturer"])
+        assertNotNull(pingJson.getJSONObject("client_info")["locale"])
+
         checkPingSchema(pingJson)
     }
 
