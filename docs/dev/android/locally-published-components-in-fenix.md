@@ -20,7 +20,7 @@ so you should be able to configure it by simply adding the path to the Glean rep
 In `fenix/local.properties`:
 
 ```groovy
-localProperties.autoPublish.glean.dir=../glean
+autoPublish.glean.dir=../glean
 ```
 
 This will auto-publish Glean SDK changes to a local repository and consume them in Fenix.

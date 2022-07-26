@@ -72,6 +72,9 @@ class PingTests: XCTestCase {
 
         let clientInfo = lastPingJson?["client_info"] as? [String: Any]
         XCTAssertNotNil(clientInfo?["client_id"] as? String)
+        XCTAssertNotNil(clientInfo?["device_model"] as? String)
+        XCTAssertNotNil(clientInfo?["device_manufacturer"] as? String)
+        XCTAssertNotNil(clientInfo?["locale"] as? String)
     }
 
     func testSendingOfCustomPingsWithoutClientId() {
