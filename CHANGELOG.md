@@ -25,6 +25,14 @@
 * Rust
   * Add a method to construct an Event with runtime-known allowed extra keys. ([bug 1767037](https://bugzilla.mozilla.org/show_bug.cgi?id=1767037))
 
+# v50.1.3 (2022-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v50.1.3)
+
+* General
+  * BUGFIX: Set the following `client_info` fields correctly again: `android_sdk_version`, `device_manufacturer`, `device_model`, `locale`. These were never set in Glean v50.0.0 to v51.0.0 ([#2131](https://github.com/mozilla/glean/pull/2131))
+
+
 # v50.1.2 (2022-07-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.1...v50.1.2)
