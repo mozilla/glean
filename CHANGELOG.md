@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.3...main)
+
+# v50.1.3 (2022-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v50.1.3)
 
 * General
   * BUGFIX: Set the following `client_info` fields correctly again: `android_sdk_version`, `device_manufacturer`, `device_model`, `locale`. These were never set in Glean v50.0.0 to v51.0.0 ([#2131](https://github.com/mozilla/glean/pull/2131))
