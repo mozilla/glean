@@ -20,7 +20,7 @@ include = [
 ]
 
 [package.metadata.glean]
-glean-parser = "6.1.2"
+glean-parser = "6.1.1"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
