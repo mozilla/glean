@@ -17,6 +17,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.internal.PingUploadTask
+import mozilla.telemetry.glean.internal.UploadTaskAction
 import mozilla.telemetry.glean.internal.gleanGetUploadTask
 import mozilla.telemetry.glean.internal.gleanProcessPingUploadResponse
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
@@ -112,13 +113,19 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     )
 
                     // Process the upload response
-                    gleanProcessPingUploadResponse(action.request.documentId, result)
+                    val action = gleanProcessPingUploadResponse(action.request.documentId, result)
+                    when (action) {
+                        UploadTaskAction.NEXT -> continue
+                        UploadTaskAction.END -> break
+                    }
                 }
                 is PingUploadTask.Wait -> SystemClock.sleep(action.time.toLong())
-                is PingUploadTask.Done -> return Result.success()
+                is PingUploadTask.Done -> break
             }
         } while (true)
         // Limits are enforced by glean-core to avoid an inifinite loop here.
         // Whenever a limit is reached, this binding will receive `PingUploadTask.Done` and step out.
+
+        return Result.success()
     }
 }

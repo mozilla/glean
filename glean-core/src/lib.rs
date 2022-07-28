@@ -63,7 +63,7 @@ pub use crate::metrics::{
     StringListMetric, StringMetric, TextMetric, TimeUnit, TimerId, TimespanMetric,
     TimingDistributionMetric, UrlMetric, UuidMetric,
 };
-pub use crate::upload::{PingRequest, PingUploadTask, UploadResult};
+pub use crate::upload::{PingRequest, PingUploadTask, UploadResult, UploadTaskAction};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GLEAN_SCHEMA_VERSION: u32 = 1;
@@ -851,7 +851,7 @@ pub fn glean_get_upload_task() -> PingUploadTask {
 }
 
 /// Processes the response from an attempt to upload a ping.
-pub fn glean_process_ping_upload_response(uuid: String, result: UploadResult) {
+pub fn glean_process_ping_upload_response(uuid: String, result: UploadResult) -> UploadTaskAction {
     core::with_glean(|glean| glean.process_ping_upload_response(&uuid, result))
 }
 

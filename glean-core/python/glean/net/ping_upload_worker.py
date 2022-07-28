@@ -16,7 +16,7 @@ from .._uniffi import (
     glean_initialize_for_subprocess,
     glean_process_ping_upload_response,
 )
-from .._uniffi import InternalConfiguration
+from .._uniffi import InternalConfiguration, UploadTaskAction
 from .._process_dispatcher import ProcessDispatcher
 
 
@@ -145,7 +145,12 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             )
 
             # Process the response.
-            glean_process_ping_upload_response(doc_id, upload_result)
+            action = glean_process_ping_upload_response(doc_id, upload_result)
+            if action == UploadTaskAction.NEXT:
+                continue
+            else:  # action == UploadTaskAction.END
+                return True
+
         elif task.is_wait():
             time.sleep(task.time / 1000)
         elif task.is_done():

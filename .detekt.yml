@@ -9,6 +9,14 @@ style:
   # Multiple returns are ok
   ReturnCount:
     active: false
+
+  # Go ahead and jump (Jump!)
+  # Go ahead and jump
+  #
+  # break/continue in loops are ok.
+  LoopWithTooManyJumpStatements:
+    active: false
+
 build:
   maxIssues: 0
 
