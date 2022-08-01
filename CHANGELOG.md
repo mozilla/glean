@@ -25,6 +25,13 @@
 * Rust
   * Add a method to construct an Event with runtime-known allowed extra keys. ([bug 1767037](https://bugzilla.mozilla.org/show_bug.cgi?id=1767037))
 
+# v50.1.4 (2022-08-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.3...v50.1.4)
+
+* General
+  * BUGFIX: Handle that Glean might be uninitialized when an upload task is requested ([#2131](https://github.com/mozilla/glean/pull/2131))
+
 # v50.1.3 (2022-07-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v50.1.3)
