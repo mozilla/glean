@@ -556,16 +556,6 @@ except:
                 }
                 because 'use GeckoView Glean instead of standalone Glean'
             }
-
-            incoming.afterResolve {
-                resolutionResult.allComponents {
-                    if (selectionReason.conflictResolution && moduleVersion != null) {
-                        if (moduleVersion.group.contains("org.mozilla.telemetry") && moduleVersion.name.contains("glean")) {
-                            throw new AssertionError("Cannot have a conflict on Glean ${selectionReason}")
-                        }
-                    }
-                }
-            }
         }
 
         if (project.android.hasProperty('applicationVariants')) {
