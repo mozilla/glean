@@ -124,7 +124,9 @@ commands:
               ulimit -c unlimited
       - run:
           name: Python tests
-          command: make test-python
+          command: |
+            export PYTEST_ARGS=-v
+            make test-python
       - run:
           name: Detect and gather coredump files
           when: always
