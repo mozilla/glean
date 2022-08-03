@@ -82,7 +82,7 @@ test-ios-sample: ## Run the iOS UI tests on the sample app
 	bin/run-ios-sample-app-test.sh
 
 test-python: build-python ## Run all Python tests
-	$(GLEAN_PYENV)/bin/py.test glean-core/python/tests $(PYTEST_ARGS)
+	$(GLEAN_PYENV)/bin/py.test -v glean-core/python/tests $(PYTEST_ARGS)
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
 
