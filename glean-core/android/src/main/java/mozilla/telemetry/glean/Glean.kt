@@ -472,7 +472,7 @@ open class GleanInternalAPI internal constructor() {
      */
     internal fun afterInitialize(block: () -> Unit) {
         // Queueing tasks after initialize is only allowed in test mode.
-        assert(isInitialized())
+        assert(this.testingMode)
 
         if (isInitialized()) {
             block()
