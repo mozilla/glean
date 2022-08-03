@@ -111,7 +111,6 @@ class LabeledMetricType<T>(
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
     fun testGetNumRecordedErrors(errorType: ErrorType): Int {
         return when (this.inner) {
             is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType)
