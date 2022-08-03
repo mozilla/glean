@@ -208,6 +208,9 @@ def test_log_on_success(safe_httpserver, capfd):
 
     assert 1 == len(safe_httpserver.requests)
 
+    request = safe_httpserver.requests[0]
+    assert "/data/path/" == request.path
+
     captured = capfd.readouterr()
 
     assert "successfully sent 200" in str(captured.err)
