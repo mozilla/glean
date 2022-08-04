@@ -64,7 +64,7 @@
         android:layout_marginTop="10dp"
         android:text="@string/glean_enabled_info" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/uploadSwitch"
         android:checked="true"
         android:layout_width="match_parent"
