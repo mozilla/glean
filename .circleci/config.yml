@@ -731,7 +731,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add curl git gcc musl-dev libffi-dev openssh-client make openssl-dev
+            apk add curl git gcc musl-dev libffi-dev openssh-client make openssl-dev tzdata
+      - run:
+          name: Set UTC as localtime
+          command: |
+            # Avoids a chrono issue: https://github.com/chronotope/chrono/issues/755
+            cp /usr/share/zoneinfo/UTC /etc/localtime
       - checkout
       - test-python
 
