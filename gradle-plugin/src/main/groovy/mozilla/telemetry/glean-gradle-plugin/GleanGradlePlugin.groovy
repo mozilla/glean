@@ -532,7 +532,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "51.0.1"
+        project.ext.glean_version = "51.1.0"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
