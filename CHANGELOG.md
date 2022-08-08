@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...main)
+
+# v51.1.0 (2022-08-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.0.1...v51.1.0)
 
 * General
   * BUGFIX: Handle that Glean might be uninitialized when an upload task is requested ([#2131](https://github.com/mozilla/glean/pull/2131))

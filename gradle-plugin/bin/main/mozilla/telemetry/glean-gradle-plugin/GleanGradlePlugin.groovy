@@ -532,7 +532,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "51.0.1"
+        project.ext.glean_version = "51.1.0"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
@@ -555,6 +555,16 @@ except:
                     select(toBeSelected)
                 }
                 because 'use GeckoView Glean instead of standalone Glean'
+            }
+
+            incoming.afterResolve {
+                resolutionResult.allComponents {
+                    if (selectionReason.conflictResolution && moduleVersion != null) {
+                        if (moduleVersion.group.contains("org.mozilla.telemetry") && moduleVersion.name.contains("glean")) {
+                            throw new AssertionError("Cannot have a conflict on Glean ${selectionReason}")
+                        }
+                    }
+                }
             }
         }
 
