@@ -4,6 +4,7 @@
 
 * General
   * BUGFIX: Handle that Glean might be uninitialized when an upload task is requested ([#2131](https://github.com/mozilla/glean/pull/2131))
+  * Updated the glean_parser to version 6.1.2
 * Kotlin
   * BUGFIX: When setting a local endpoint in testing check for testing mode, not initialization ([#2145](https://github.com/mozilla/glean/pull/2145/))
   * Gradle plugin: Remove the version conflict check. Now the consuming module need to ensure it uses a single version across all dependencies ([#2143](https://github.com/mozilla/glean/pull/2143))
