@@ -1678,24 +1678,50 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [crc32fast 1.3.2]( https://github.com/srijs/rust-crc32fast )
-* [humantime 2.1.0]( https://github.com/tailhook/humantime )
-
-
-```
-                                 Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
-
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-
-   1. Definitions.
-
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
-
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
+* [anyhow 1.0.60]( https://github.com/dtolnay/anyhow )
+* [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
+* [camino 1.0.9]( https://github.com/camino-rs/camino )
+* [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
+* [crossbeam-channel 0.5.6]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
+* [env_logger 0.9.0]( https://github.com/env-logger-rs/env_logger/ )
+* [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
+* [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
+* [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
+* [glob 0.3.0]( https://github.com/rust-lang/glob )
+* [hashbrown 0.11.2]( https://github.com/rust-lang/hashbrown )
+* [heck 0.4.0]( https://github.com/withoutboats/heck )
+* [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
+* [idna 0.2.3]( https://github.com/servo/rust-url/ )
+* [indexmap 1.8.1]( https://github.com/bluss/indexmap )
+* [inherent 1.0.1]( https://github.com/dtolnay/inherent )
+* [itoa 1.0.1]( https://github.com/dtolnay/itoa )
+* [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
+* [mime 0.3.16]( https://github.com/hyperium/mime )
+* [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
+* [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
+* [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
+* [once_cell 1.13.0]( https://github.com/matklad/once_cell )
+* [paste 1.0.7]( https://github.com/dtolnay/paste )
+* [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
+* [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
+* [quote 1.0.18]( https://github.com/dtolnay/quote )
+* [semver 1.0.10]( https://github.com/dtolnay/semver )
+* [serde 1.0.137]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.137]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.81]( https://github.com/serde-rs/json )
+* [syn 1.0.92]( https://github.com/dtolnay/syn )
+* [tempfile 3.3.0]( https://github.com/Stebalien/tempfile )
+* [thiserror 1.0.31]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.31]( https://github.com/dtolnay/thiserror )
+* [time 0.1.44]( https://github.com/time-rs/time )
+* [toml 0.5.9]( https://github.com/alexcrichton/toml-rs )
+* [unicase 2.6.0]( https://github.com/seanmonstar/unicase )
+* [unicode-bidi 0.3.8]( https://github.com/servo/unicode-bidi )
+* [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
+* [unicode-width 0.1.9]( https://github.com/unicode-rs/unicode-width )
+* [unicode-xid 0.2.3]( https://github.com/unicode-rs/unicode-xid )
+* [url 2.2.2]( https://github.com/servo/rust-url )
 
       "Legal Entity" shall mean the union of the acting entity and all
       other entities that control, are controlled by, or are under common
@@ -4171,7 +4197,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [winapi 0.3.9]( https://github.com/retep998/winapi-rs )
+* [android_logger 0.11.1]( https://github.com/Nercury/android_logger-rs )
 
 
 ```
@@ -5438,9 +5464,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.0.1]( https://github.com/mozilla/glean )
-* [glean-build 6.1.1]( https://github.com/mozilla/glean )
-* [glean-core 51.0.1]( https://github.com/mozilla/glean )
+* [glean 51.1.0]( https://github.com/mozilla/glean )
+* [glean-build 6.1.2]( https://github.com/mozilla/glean )
+* [glean-core 51.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 

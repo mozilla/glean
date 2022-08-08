@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...main)
+
+# v51.1.0 (2022-08-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.0.1...v51.1.0)
+
+* General
+  * BUGFIX: Handle that Glean might be uninitialized when an upload task is requested ([#2131](https://github.com/mozilla/glean/pull/2131))
+  * Updated the glean_parser to version 6.1.2
+* Kotlin
+  * BUGFIX: When setting a local endpoint in testing check for testing mode, not initialization ([#2145](https://github.com/mozilla/glean/pull/2145/))
+  * Gradle plugin: Remove the version conflict check. Now the consuming module need to ensure it uses a single version across all dependencies ([#2143](https://github.com/mozilla/glean/pull/2143))
 
 # v51.0.1 (2022-07-26)
 
@@ -24,6 +35,21 @@
   * Fix the Glean Gradle Plugin to work with Android Gradle Plugin v7.2.1 ([#2114](https://github.com/mozilla/glean/pull/2114))
 * Rust
   * Add a method to construct an Event with runtime-known allowed extra keys. ([bug 1767037](https://bugzilla.mozilla.org/show_bug.cgi?id=1767037))
+
+# v50.1.4 (2022-08-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.3...v50.1.4)
+
+* General
+  * BUGFIX: Handle that Glean might be uninitialized when an upload task is requested ([#2131](https://github.com/mozilla/glean/pull/2131))
+
+# v50.1.3 (2022-07-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v50.1.2...v50.1.3)
+
+* General
+  * BUGFIX: Set the following `client_info` fields correctly again: `android_sdk_version`, `device_manufacturer`, `device_model`, `locale`. These were never set in Glean v50.0.0 to v51.0.0 ([#2131](https://github.com/mozilla/glean/pull/2131))
+
 
 # v50.1.2 (2022-07-08)
 

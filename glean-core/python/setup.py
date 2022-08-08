@@ -56,10 +56,10 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "51.0.1"
+version = "51.1.0"
 
 requirements = [
-    "glean_parser==6.1.1",
+    "glean_parser==6.1.2",
 ]
 
 # The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`

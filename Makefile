@@ -82,7 +82,7 @@ test-ios-sample: ## Run the iOS UI tests on the sample app
 	bin/run-ios-sample-app-test.sh
 
 test-python: build-python ## Run all Python tests
-	$(GLEAN_PYENV)/bin/py.test glean-core/python/tests $(PYTEST_ARGS)
+	$(GLEAN_PYENV)/bin/py.test -v glean-core/python/tests $(PYTEST_ARGS)
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
 
@@ -144,7 +144,7 @@ python-docs: build-python ## Build the Python documentation
 .PHONY: docs rust-docs swift-docs
 
 metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser==6.1.1
+	$(GLEAN_PYENV)/bin/pip install glean_parser==6.1.2
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

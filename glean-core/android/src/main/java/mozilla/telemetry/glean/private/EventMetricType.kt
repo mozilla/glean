@@ -129,6 +129,5 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
     fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
 }
