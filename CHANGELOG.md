@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...main)
 
+* Kotlin
+  * BUGFIX: Re-enable correctly connecting `glean.validation.foreground_count` again ([#2153](https://github.com/mozilla/glean/pull/2153))
+
 # v51.1.0 (2022-08-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.0.1...v51.1.0)
