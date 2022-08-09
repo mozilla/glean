@@ -15,6 +15,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.internal.* // ktlint-disable no-wildcard-imports
 import mozilla.telemetry.glean.net.BaseUploader
@@ -329,8 +330,7 @@ open class GleanInternalAPI internal constructor() {
         // time the app goes to background.
         gleanHandleClientActive()
 
-        // TODO: Re-enable when Counter metric is working
-        // GleanValidation.foregroundCount.add(1)
+        GleanValidation.foregroundCount.add(1)
     }
 
     /**
