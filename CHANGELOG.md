@@ -6,6 +6,7 @@
   * Relax `glean_parser` version requirement. All "compatible releases" are now allowed ([#2086](https://github.com/mozilla/glean/pull/2086))
 * Kotlin
   * BUGFIX: Re-enable correctly connecting `glean.validation.foreground_count` again ([#2153](https://github.com/mozilla/glean/pull/2153))
+  * BUGFIX: Gradle plugin: Correctly remove the version conflict check. Now the consuming module need to ensure it uses a single version across all dependencies ([#2155](https://github.com/mozilla/glean/pull/2155))
 
 # v51.1.0 (2022-08-08)
 
