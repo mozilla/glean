@@ -24,6 +24,6 @@ jobs:
         - ['.', './taskcluster/scripts/rustup-setup.sh', 'beta']
         - ['rustup', 'component', 'add', 'clippy']
       commands:
-        - ['cargo', 'test', '--all', '--verbose']
+        - ['cargo', 'test', '--all', '--verbose', '--jobs', '6']
         - ['cargo', 'clippy', '--version']
         - ['cargo', 'clippy', '--verbose', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
