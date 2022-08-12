@@ -7,8 +7,8 @@ The Glean SDK implementation is currently build against the following versions:
     * or install with: `sdkmanager --verbose "platforms;android-32"`
 * Android Command line tools
     * Download link: <https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip>
-* NDK r21
-    * Download link: <https://dl.google.com/android/repository/android-ndk-r21-linux-x86_64.zip>
+* NDK r25
+    * Download link: <https://dl.google.com/android/repository/android-ndk-r25-linux-x86_64.zip>
 
 For the full setup see [Setup the Android Build Environment](setup-android-build-environment.html).
 
@@ -26,4 +26,4 @@ All locations need to be updated on upgrades:
         * `ENV ANDROID_BUILD_TOOLS "33.0.0"`
         * `ENV ANDROID_SDK_VERSION "8512546"`
         * `ENV ANDROID_PLATFORM_VERSION "32"`
-        * `ENV ANDROID_NDK_VERSION "21.3.6528147"`
+        * `ENV ANDROID_NDK_VERSION "25.0.8775105"`
