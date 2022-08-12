@@ -8,6 +8,7 @@
   * BUGFIX: Re-enable correctly connecting `glean.validation.foreground_count` again ([#2153](https://github.com/mozilla/glean/pull/2153))
   * BUGFIX: Gradle plugin: Correctly remove the version conflict check. Now the consuming module need to ensure it uses a single version across all dependencies ([#2155](https://github.com/mozilla/glean/pull/2155))
   * Upgrade dependencies and increase to Android target/compile SDK version 32 ([#2150](https://github.com/mozilla/glean/pull/2150))
+  * Upgrade Android NDK to r25 ([#2159](https://github.com/mozilla/glean/pull/2159))
 
 # v51.1.0 (2022-08-08)
 
