@@ -38,4 +38,4 @@ else
     rustup default "${TOOLCHAIN}"
 fi
 
-set +eux
+set +eu
