@@ -215,7 +215,6 @@ let cfg = Configuration {
     upload_enabled: is_telemetry_enabled(),
     max_events: None,
     delay_ping_lifetime_io: false,
-    channel: None,
     server_endpoint: Some("https://incoming.telemetry.mozilla.org".into()),
     uploader: None,
     use_core_mps: true,
@@ -224,6 +223,7 @@ let cfg = Configuration {
 let client_info = ClientInfoMetrics {
     app_build: env!("CARGO_PKG_VERSION").to_string(),
     app_display_version: env!("CARGO_PKG_VERSION").to_string(),
+    channel: None,
 };
 
 glean::initialize(cfg, client_info);
