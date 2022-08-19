@@ -204,19 +204,4 @@ If you need to release a hotfix for a previously released version (that is: not 
 ## Upgrading android-components to a new version of Glean
 
 On Android, Mozilla products consume the Glean SDK through its wrapper in [`android-components`](https://github.com/mozilla-mobile/android-components).
-Therefore, when a new Glean SDK release is made, `android-components` must also be updated.
-
-After following one of the above instructions to make a Glean SDK release:
-
-1. Ensure that CI has completed and the artifacts are published on [Mozilla's Maven repository](https://maven.mozilla.org/?prefix=maven2/org/mozilla/telemetry/).
-
-2. Create a pull request against `android-components` to update the Glean version with the following changes:
-
-   - The Glean version is updated in the `mozilla_glean` variable in the [`buildSrc/src/main/java/Dependencies.kt`](https://github.com/mozilla-mobile/android-components/blob/69546999739ab19d21425e9a98e107e438a3f905/buildSrc/src/main/java/Dependencies.kt#L32) file.
-
-   - The relevant parts of the Glean changelog copied into the top part of the [`android-components` changelog](https://github.com/mozilla-mobile/android-components/blob/main/docs/changelog.md).
-     This involves copying the Android-specific changes and the general changes to Glean, but can omit other platform-specific changes.
-
-**IMPORTANT:** Until the [Glean Gradle plugin work is complete](https://bugzilla.mozilla.org/show_bug.cgi?id=1592947), all downstream consumers of android-components will also need to update their version of Glean to match the version used in android-components so that their unit tests can run correctly.
-
-In Fenix, for example, the [Glean version is specified here](https://github.com/mozilla-mobile/fenix/blob/5e4ef202b85e273cf46ec5c7ec1b80f30ca4e77c/buildSrc/src/main/java/Dependencies.kt#L44).
+The process of vendoring a new version of Glean in to Mozilla Central now handles the upgrade process for android-components and no manual updating is needed here.
