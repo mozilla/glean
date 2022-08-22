@@ -148,6 +148,7 @@ fn test_experiments_recording_before_glean_inits() {
 }
 
 #[test]
+#[ignore = "Bug 1786469: Causing test timeouts on TaskCluster with Rust Beta"]
 fn sending_of_foreground_background_pings() {
     let _lock = lock_test();
 
@@ -597,6 +598,7 @@ fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploa
 }
 
 #[test]
+#[ignore = "Bug 1786469: Causing test timeouts on TaskCluster with Rust Beta"]
 fn sending_deletion_ping_if_disabled_outside_of_run() {
     let _lock = lock_test();
 
