@@ -82,7 +82,7 @@ When submitting a PR:
 ## Code Review
 
 This project is production Mozilla code and subject to our
-[engineering practices and quality standards](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities).
+[engineering practices and quality standards](https://firefox-source-docs.mozilla.org/contributing/committing_rules_and_responsibilities.html).
 Every patch must be peer reviewed by a member of the Glean core team.
 
 Reviewers are defined in the [CODEOWNERS](https://github.com/mozilla/glean/blob/main/.github/CODEOWNERS) file
