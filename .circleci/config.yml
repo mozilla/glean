@@ -63,14 +63,6 @@ commands:
           command: |
             export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
             cargo test --verbose --jobs 6 -- --nocapture
-
-            # FIXME(bug 1786469): Tests are ignored to not cause TC failures.
-            # Explicitly run them here.
-            cargo test --verbose --jobs 6 -p glean --lib -- \
-              --test-threads 1 \
-              --ignored \
-              sending_deletion_ping_if_disabled_outside_of_run \
-              sending_of_foreground_background_pings
       - run:
           name: Install required Python dependencies
           command: |
