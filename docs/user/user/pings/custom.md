@@ -71,6 +71,8 @@ If this metric should also be sent in the default ping for the given metric type
 For custom pings that contain event metrics, the `glean.restarted` event is injected by Glean
 on every application restart that may happen during the pings measurement window.
 
+**Note**: All leading and trailing `glean.restarted` events are omitted from each ping.
+
 {{#include ../../../shared/blockquote-warning.html}}
 
 ### Only applies to the Glean JavaScript SDK
