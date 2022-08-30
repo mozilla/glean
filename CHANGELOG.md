@@ -5,6 +5,7 @@
 * General
   * Relax `glean_parser` version requirement. All "compatible releases" are now allowed ([#2086](https://github.com/mozilla/glean/pull/2086))
   * Uploaders can now signal that they can't upload anymore ([#2136](https://github.com/mozilla/glean/pull/2136))
+  * Update UniFFI to version 0.19.6 ([#2175](https://github.com/mozilla/glean/pull/2175))
 * Kotlin
   * BUGFIX: Re-enable correctly connecting `glean.validation.foreground_count` again ([#2153](https://github.com/mozilla/glean/pull/2153))
   * BUGFIX: Gradle plugin: Correctly remove the version conflict check. Now the consuming module need to ensure it uses a single version across all dependencies ([#2155](https://github.com/mozilla/glean/pull/2155))
