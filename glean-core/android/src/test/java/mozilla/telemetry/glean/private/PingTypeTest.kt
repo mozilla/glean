@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.private
 
+import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
@@ -20,6 +21,7 @@ import mozilla.telemetry.glean.triggerWorkManager
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -87,6 +89,10 @@ class PingTypeTest {
         val pingJson = JSONObject(request.getPlainBody())
         assertNotNull(pingJson.getJSONObject("client_info")["client_id"])
 
+        // This is not "Android" when testing locally,
+        // so we just check that it is not Unknown.
+        assertNotEquals("Unknown", pingJson.getJSONObject("client_info")["os"])
+        assertEquals(Build.VERSION.RELEASE, pingJson.getJSONObject("client_info")["os_version"])
         assertNotNull(pingJson.getJSONObject("client_info")["android_sdk_version"])
         assertNotNull(pingJson.getJSONObject("client_info")["device_model"])
         assertNotNull(pingJson.getJSONObject("client_info")["device_manufacturer"])
