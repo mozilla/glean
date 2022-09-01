@@ -11,14 +11,14 @@ buildscript {
     // changing them. Please note that, for using in Android-Components, the
     // versions below must match the ones in that repository.
     ext.versions = [
-        android_gradle_plugin: '7.2.1',
+        android_gradle_plugin: '7.2.2',
         android_maven_publish_plugin: '3.6.2',
-        coroutines: '1.6.1',
+        coroutines: '1.6.4',
         jna: '5.8.0',
         junit: '4.12',
         mockito: '3.11.2',
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
-        kotlin: '1.6.10',
+        kotlin: '1.6.21',
         robolectric: '4.8.1',
         rust_android_plugin: '0.9.3',
 
