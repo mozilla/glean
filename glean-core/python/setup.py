@@ -5,7 +5,7 @@
 """The setup script."""
 
 # setuptools must be imported first
-from setuptools import setup, Distribution, find_packages
+from setuptools import setup, Distribution
 from setuptools.command.install import install
 
 from distutils.command.build import build as _build
