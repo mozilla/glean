@@ -14,6 +14,8 @@
   * BUGFIX: Correctly set `os_version` and `architecture` again ([#2174](https://github.com/mozilla/glean/pull/2174))
 * iOS
   * BUGFIX: Correctly set `os_version` and `architecture` again ([#2174](https://github.com/mozilla/glean/pull/2174))
+* Python
+  * BUGFIX: Correctly handle every string that represents a UUID, including non-hyphenated random 32-character strings ([#2182](https://github.com/mozilla/glean/pull/2182))
 
 # v51.1.0 (2022-08-08)
 

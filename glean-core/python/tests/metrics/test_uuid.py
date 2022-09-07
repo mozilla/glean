@@ -2,11 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from pathlib import Path
+import json
+import time
 import uuid
 
+from glean import Glean
+from glean import _builtins
 from glean import metrics
-from glean.metrics import Lifetime, CommonMetricData
 from glean import testing
+from glean.metrics import Lifetime, CommonMetricData
+from glean.testing import _RecordingUploader
 
 
 def test_the_api_saves_to_its_storage_engine():
@@ -127,3 +133,95 @@ def test_invalid_uuid_string():
     assert (
         uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
     )
+
+
+def test_what_looks_like_it_might_be_uuid(tmpdir):
+    import hashlib
+
+    Glean._reset()
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+
+    # This test relies on testing mode to be disabled, since we need to prove the
+    # real-world async behaviour of this.
+
+    configuration = Glean._configuration
+    configuration.ping_uploader = _RecordingUploader(info_path)
+    Glean._initialize_with_tempdir_for_testing(
+        application_id="glean-python-test",
+        application_version="0.0.1",
+        upload_enabled=True,
+        configuration=Glean._configuration,
+    )
+
+    chksum_uuid = metrics.UuidMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="c",
+            lifetime=Lifetime.PING,
+            name="chksum",
+            send_in_pings=["metrics"],
+            dynamic_label=None,
+        )
+    )
+
+    random_uuid = metrics.UuidMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="c",
+            lifetime=Lifetime.PING,
+            name="random",
+            send_in_pings=["metrics"],
+            dynamic_label=None,
+        )
+    )
+
+    valid_uuid = metrics.UuidMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="c",
+            lifetime=Lifetime.PING,
+            name="valid",
+            send_in_pings=["metrics"],
+            dynamic_label=None,
+        )
+    )
+
+    # We can handle anything that _looks_ like a UUID,
+    # that is:
+    # * A 32-byte hex string
+    # * A hyphenated UUID (5 groups of characters plus `-`, total of 36 characters)
+    # * `urn:uuid:$uuid`
+    # Why? Because that's what people use.
+    chksum = hashlib.md5("glean".encode("utf-8")).hexdigest()
+    random = "dd296ebb49b2456eaf3b99d7486ab9c0"  # generated using `uuid.uuid4().hex`
+    valid = "dd296ebb-49b2-456e-af3b-99d7486ab9c0"  # above but hyphenated
+
+    # A character too long and you are out!
+    random_uuid.set(random + "a")
+    assert (
+        random_uuid.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
+    )
+
+    chksum_uuid.set(chksum)
+    random_uuid.set(random)
+    valid_uuid.set(valid)
+
+    # We check the actual payload to verify how it is encoded.
+    _builtins.pings.metrics.submit()
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert "metrics" == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
+    uuids = json_content["metrics"]["uuid"]
+
+    assert uuids["c.chksum"] == "39621ca5-f9d2-ef5c-d021-afc9a789535e"
+    assert uuids["c.random"] == valid
+    assert uuids["c.valid"] == valid
