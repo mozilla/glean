@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...main)
+
+# v51.2.0 (2022-09-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...v51.2.0)
 
 * General
   * Relax `glean_parser` version requirement. All "compatible releases" are now allowed ([#2086](https://github.com/mozilla/glean/pull/2086))
