@@ -6,9 +6,12 @@
 def test_subprocess_works():
     import glean  # noqa: F401
     import subprocess
+    import sys
 
     # Importing glean shouldn't affect subprocess.
     output = (
-        subprocess.check_output(["python", "-c", "print('hello')"]).decode().strip()
+        subprocess.check_output([sys.executable, "-c", "print('hello')"])
+        .decode()
+        .strip()
     )
     assert output == "hello"

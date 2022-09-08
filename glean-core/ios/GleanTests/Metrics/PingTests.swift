@@ -71,6 +71,8 @@ class PingTests: XCTestCase {
         }
 
         let clientInfo = lastPingJson?["client_info"] as? [String: Any]
+        XCTAssertEqual("iOS", clientInfo?["os"] as? String)
+        XCTAssertEqual(UIDevice.current.systemVersion, clientInfo?["os_version"] as? String)
         XCTAssertNotNil(clientInfo?["client_id"] as? String)
         XCTAssertNotNil(clientInfo?["device_model"] as? String)
         XCTAssertNotNil(clientInfo?["device_manufacturer"] as? String)

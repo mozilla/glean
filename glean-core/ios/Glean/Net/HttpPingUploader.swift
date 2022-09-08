@@ -158,12 +158,17 @@ public class HttpPingUploader {
                 var body = Data(capacity: request.body.count)
                 body.append(contentsOf: request.body)
                 self.upload(path: request.path, data: body, headers: request.headers) { result in
-                    gleanProcessPingUploadResponse(request.documentId, result)
-
-                    // launch a new iteration.
-                    Dispatchers.shared.launchAsync {
-                        HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+                    let action = gleanProcessPingUploadResponse(request.documentId, result)
+                    switch action {
+                    case .next:
+                        // launch a new iteration.
+                        Dispatchers.shared.launchAsync {
+                            HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+                        }
+                    case .end:
+                        return
                     }
+
                 }
 
                 // we don't want to launch multiple uploads at once.

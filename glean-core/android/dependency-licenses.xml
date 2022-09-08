@@ -61,10 +61,6 @@ the details of which are reproduced below.
     <url>https://github.com/servo/rust-url</url>
   </license>
   <license>
-    <name>Apache License 2.0: glob</name>
-    <url>https://github.com/rust-lang/glob</url>
-  </license>
-  <license>
     <name>Apache License 2.0: hashbrown</name>
     <url>https://github.com/rust-lang/hashbrown</url>
   </license>
@@ -123,6 +119,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
+  </license>
+  <license>
+    <name>Apache License 2.0: plain</name>
+    <url>https://github.com/randomites/plain</url>
   </license>
   <license>
     <name>Apache License 2.0: proc-macro2</name>
@@ -341,26 +341,6 @@ the details of which are reproduced below.
     <url>https://github.com/servo/bincode</url>
   </license>
   <license>
-    <name>MIT License: bitvec</name>
-    <url>https://github.com/myrrlyn/bitvec</url>
-  </license>
-  <license>
-    <name>MIT License: funty</name>
-    <url>https://github.com/myrrlyn/funty</url>
-  </license>
-  <license>
-    <name>MIT License: radium</name>
-    <url>https://github.com/mystor/radium</url>
-  </license>
-  <license>
-    <name>MIT License: sample</name>
-    <url>https://crates.io/crates/sample</url>
-  </license>
-  <license>
-    <name>MIT License: wyz</name>
-    <url>https://github.com/myrrlyn/wyz</url>
-  </license>
-  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>
@@ -385,16 +365,16 @@ the details of which are reproduced below.
     <url>https://github.com/xacrimon/dashmap</url>
   </license>
   <license>
+    <name>MIT License: goblin</name>
+    <url>https://github.com/m4b/goblin</url>
+  </license>
+  <license>
     <name>MIT License: matches</name>
     <url>https://github.com/SimonSapin/rust-std-candidates</url>
   </license>
   <license>
     <name>MIT License: mime_guess</name>
     <url>https://github.com/abonander/mime_guess</url>
-  </license>
-  <license>
-    <name>MIT License: nom</name>
-    <url>https://github.com/Geal/nom</url>
   </license>
   <license>
     <name>MIT License: nom</name>
@@ -409,16 +389,24 @@ the details of which are reproduced below.
     <url>https://github.com/steven-joruk/oslog</url>
   </license>
   <license>
+    <name>MIT License: sample</name>
+    <url>https://crates.io/crates/sample</url>
+  </license>
+  <license>
+    <name>MIT License: scroll</name>
+    <url>https://github.com/m4b/scroll</url>
+  </license>
+  <license>
+    <name>MIT License: scroll_derive</name>
+    <url>https://github.com/m4b/scroll</url>
+  </license>
+  <license>
     <name>MIT License: smawk</name>
     <url>https://github.com/mgeisler/smawk</url>
   </license>
   <license>
     <name>MIT License: strsim</name>
     <url>https://github.com/dguo/strsim-rs</url>
-  </license>
-  <license>
-    <name>MIT License: tap</name>
-    <url>https://github.com/myrrlyn/tap</url>
   </license>
   <license>
     <name>MIT License: textwrap</name>
@@ -466,6 +454,10 @@ the details of which are reproduced below.
   </license>
   <license>
     <name>Mozilla Public License 2.0: uniffi_macros</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>
+  <license>
+    <name>Mozilla Public License 2.0: uniffi_meta</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>
   <license>

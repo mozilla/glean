@@ -27,18 +27,19 @@ if [ -z "$1" ]; then
 fi
 
 NEW_VERSION="$1"
+NEW_VERSION_MAJOR_MINOR="$(echo "$NEW_VERSION" | awk -F'.' '{print $1"."$2}')"
 
 # Update the version in glean-core/ios/sdk_generator.sh
 FILE=glean-core/ios/sdk_generator.sh
 run $SED -i.bak -E \
-    -e "s/^GLEAN_PARSER_VERSION=[0-9.]+/GLEAN_PARSER_VERSION=${NEW_VERSION}/" \
+    -e "s/^GLEAN_PARSER_VERSION=[0-9.]+/GLEAN_PARSER_VERSION=${NEW_VERSION_MAJOR_MINOR}/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
 # Update the version in glean-core/python/setup.py
 FILE=glean-core/python/setup.py
 run $SED -i.bak -E \
-    -e "s/\"glean_parser==[0-9.]+\"/\"glean_parser==${NEW_VERSION}\"/" \
+    -e "s/\"glean_parser~=[0-9.]+\"/\"glean_parser~=${NEW_VERSION_MAJOR_MINOR}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
@@ -52,7 +53,7 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # update the version in gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy
 FILE=gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy
 run $SED -i.bak -E \
-    -e "s/GLEAN_PARSER_VERSION = \"[0-9.]+\"/GLEAN_PARSER_VERSION = \"${NEW_VERSION}\"/" \
+    -e "s/GLEAN_PARSER_VERSION = \"[0-9.]+\"/GLEAN_PARSER_VERSION = \"${NEW_VERSION_MAJOR_MINOR}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
@@ -80,6 +81,6 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # update the version in the Makefile
 FILE=Makefile
 run $SED -i.bak -E \
-    -e "s/glean_parser==[0-9.]+/glean_parser==${NEW_VERSION}/" \
+    -e "s/glean_parser~=[0-9.]+/glean_parser~=${NEW_VERSION_MAJOR_MINOR}/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
