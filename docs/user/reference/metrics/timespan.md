@@ -218,7 +218,7 @@ function onLogin() {
 #### Recorded errors
 
 * [`invalid_state`](../../user/metrics/error-reporting.md):
-  Calling `stop` without calling `start` first.
+  Calling `stop` without calling `start` first,
   e.g. if the `start` happened on a previous application run.
 
 ### `cancel`
