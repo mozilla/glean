@@ -11,7 +11,7 @@ xcodebuild \
   -workspace ./samples/ios/app/glean-sample-app.xcodeproj/project.xcworkspace \
   -scheme glean-sample-app \
   -sdk iphonesimulator \
-  -destination 'platform=iOS Simulator,name=iPhone 11' \
+  -destination 'platform=iOS Simulator,name=iPhone 14' \
   test | \
 tee raw_sample_xcodetest.log | \
 xcpretty && exit "${PIPESTATUS[0]}"

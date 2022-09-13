@@ -22,6 +22,9 @@
   * Gradle plugin: Fix quoting issue in Python wrapper code ([#2193](https://github.com/mozilla/glean/pull/2193))
   * Bumped the required Android NDK to version 25.1.8937393 ([#2195](https://github.com/mozilla/glean/pull/2195))
 
+* iOS
+  * Glean for iOS is now being built with Xcode 14.0.0 ([#2188](https://github.com/mozilla/glean/pull/2188)).
+
 # v51.2.0 (2022-09-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...v51.2.0)
