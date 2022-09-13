@@ -111,7 +111,18 @@ fn on_page_start() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as timing from "./path/to/generated/files/timing.js";
+
+function onPageStart() {
+    // store this ID, you will need it later to stop or cancel your timer
+    const timerId = timing.start();
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -197,7 +208,17 @@ fn on_page_loaded() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as timing from "./path/to/generated/files/timing.js";
+
+function onPageLoaded() {
+    timing.stopAndAccumulate(timerId);
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -265,7 +286,7 @@ with metrics.pages.page_load.measure():
 
 </div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -333,7 +354,17 @@ fn on_page_error() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as timing from "./path/to/generated/files/timing.js";
+
+function onPageError() {
+    timing.cancel(timerId);
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -435,7 +466,19 @@ assert_eq!(1, snapshot.values.len());
 
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as timing from "./path/to/generated/files/timing.js";
+
+const snapshot = await timing.testGetValue("<yourPingName>");
+
+// Usually you don't know the exact timing values,
+// but how many should have been recorded.
+assert.equal(1, snapshot.count);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -524,7 +567,16 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as timing from "./path/to/generated/files/timing.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+assert.equal(1, await metric.testGetNumRecordedErrors(ErrorType.InvalidValue));
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
