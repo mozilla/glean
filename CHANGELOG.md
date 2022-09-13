@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...main)
 
+* iOS
+  * Glean for iOS is now being built with Xcode 14.0.0 ([#2188](https://github.com/mozilla/glean/pull/2188)).
+
 # v51.2.0 (2022-09-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...v51.2.0)
