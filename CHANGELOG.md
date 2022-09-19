@@ -3,7 +3,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...main)
 
 * Kotlin
-  * Bumped the required Android NDK to version 25.1.8937393 ([]().
+  * Bumped the required Android NDK to version 25.1.8937393 ([#2195](https://github.com/mozilla/glean/pull/2195)).
+
 # v51.2.0 (2022-09-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.1.0...v51.2.0)
