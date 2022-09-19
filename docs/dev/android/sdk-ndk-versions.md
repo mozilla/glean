@@ -26,4 +26,4 @@ All locations need to be updated on upgrades:
         * `ENV ANDROID_BUILD_TOOLS "33.0.0"`
         * `ENV ANDROID_SDK_VERSION "8512546"`
         * `ENV ANDROID_PLATFORM_VERSION "32"`
-        * `ENV ANDROID_NDK_VERSION "25.0.8775105"`
+        * `ENV ANDROID_NDK_VERSION "25.1.8937393"`
