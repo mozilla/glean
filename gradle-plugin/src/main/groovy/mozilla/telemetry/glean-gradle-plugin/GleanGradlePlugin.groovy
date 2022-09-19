@@ -104,9 +104,9 @@ else:
         sys.exit(1)
     else:
         # We check MAJOR.MINOR only
-        expected_ver = expected_version.split(".")
+        expected_ver = expected_version.split('.')
         expected_maj, expected_min = int(expected_ver[0]), int(expected_ver[1])
-        current_ver = found_version.split(".")
+        current_ver = found_version.split('.')
         current_maj, current_min = int(current_ver[0]), int(current_ver[1])
 
         if current_maj > expected_maj or current_maj < expected_maj or (current_maj == expected_maj and current_min < expected_min):
