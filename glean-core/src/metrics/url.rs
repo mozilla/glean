@@ -204,12 +204,24 @@ mod test {
             dynamic_label: None,
         });
 
-        let long_path = "testing".repeat(2000);
-        let test_url = format!("glean://{}", long_path);
+        // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
+        // MAX_URL_LENGTH.
+        //
+        // This 8-character string was chosen so we could have an even number that is
+        // a divisor of our MAX_URL_LENGTH.
+        let long_path = "abcdefgh";
+
+        // Using 2000 creates a string > 16000 characters, well over MAX_URL_LENGTH.
+        let test_url = format!("glean://{}", long_path.repeat(2000));
         metric.set_sync(&glean, test_url);
 
-        assert!(metric.get_value(&glean, "store1").is_none());
+        // "glean://" is 8 characters
+        // "abcdefgh" (long_path) is 8 characters
+        // `long_path` is repeated 1023 times (8184)
+        // 8 + 8184 = 8192 (MAX_URL_LENGTH)
+        let expected = format!("glean://{}", long_path.repeat(1023));
 
+        assert_eq!(metric.get_value(&glean, "store1").unwrap(), expected);
         assert_eq!(
             1,
             test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidOverflow)
