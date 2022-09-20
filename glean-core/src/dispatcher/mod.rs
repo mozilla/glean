@@ -32,7 +32,7 @@ use std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
     },
-    thread::{self, JoinHandle}
+    thread::{self, JoinHandle},
 };
 
 use crossbeam_channel::{bounded, unbounded, SendError, Sender, TrySendError};
@@ -95,7 +95,7 @@ enum Bounded {
     Zero,
 
     /// Positive integer for normal bounded cases
-    Bounded (usize),
+    Bounded(Some(usize)),
 }
 
 impl From<TrySendError<Command>> for DispatchError {
@@ -259,10 +259,11 @@ impl Dispatcher {
         let (block_sender, block_receiver) = bounded(1);
         let (sender, mut unbounded_receiver) = unbounded();
 
-        let (preint_sender, preinit_receiever) = match max_queue_size {
+        let (preinit_sender, preinit_receiver) = match max_queue_size {
             Bounded::Unbounded => unbounded(),
             Bounded::Zero => bounded(0),
-            Bounded::Bounded(i) => bounded(i),
+            Bounded::Bounded(Some(i)) => bounded(i),
+            Bounded::Bounded(None) => unbounded(),
         };
 
         let queue_preinit = Arc::new(AtomicBool::new(true));
