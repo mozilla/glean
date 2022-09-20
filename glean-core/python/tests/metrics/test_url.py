@@ -84,7 +84,7 @@ def test_setting_a_long_url_records_an_error():
     #
     # This 8-character string was chosen so we could have an even number that is
     # a divisor of our MAX_URL_LENGTH.
-    long_path_base = "abcdefgh";
+    long_path_base = "abcdefgh"
 
     # Using 2000 creates a string > 16000 characters, well over MAX_URL_LENGTH.
     test_url = "glean://" + (long_path_base * 2000)
