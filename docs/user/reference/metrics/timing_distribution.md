@@ -114,11 +114,11 @@ fn on_page_start() {
 <div data-lang="JavaScript" class="tab">
 
 ```Javascript
-import * as timing from "./path/to/generated/files/timing.js";
+import * as pages from "./path/to/generated/files/pages.js";
 
 function onPageStart() {
     // store this ID, you will need it later to stop or cancel your timer
-    const timerId = timing.start();
+    const timerId = pages.pageLoad.start();
 }
 ```
 
@@ -211,10 +211,10 @@ fn on_page_loaded() {
 <div data-lang="JavaScript" class="tab">
 
 ```Javascript
-import * as timing from "./path/to/generated/files/timing.js";
+import * as pages from "./path/to/generated/files/pages.js";
 
 function onPageLoaded() {
-    timing.stopAndAccumulate(timerId);
+    pages.pageLoad.stopAndAccumulate(timerId);
 }
 ```
 
@@ -357,10 +357,10 @@ fn on_page_error() {
 <div data-lang="JavaScript" class="tab">
 
 ```Javascript
-import * as timing from "./path/to/generated/files/timing.js";
+import * as pages from "./path/to/generated/files/pages.js";
 
 function onPageError() {
-    timing.cancel(timerId);
+    pages.pageLoad.cancel(timerId);
 }
 ```
 
@@ -469,9 +469,9 @@ assert_eq!(1, snapshot.values.len());
 <div data-lang="JavaScript" class="tab">
 
 ```Javascript
-import * as timing from "./path/to/generated/files/timing.js";
+import * as pages from "./path/to/generated/files/pages.js";
 
-const snapshot = await timing.testGetValue("<yourPingName>");
+const snapshot = await pages.pageLoad.testGetValue();
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
@@ -570,10 +570,10 @@ assert_eq!(
 <div data-lang="JavaScript" class="tab">
 
 ```Javascript
-import * as timing from "./path/to/generated/files/timing.js";
+import * as pages from "./path/to/generated/files/pages.js";
 import { ErrorType } from "@mozilla/glean/<platform>";
 
-assert.equal(1, await metric.testGetNumRecordedErrors(ErrorType.InvalidValue));
+assert.equal(1, await pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue));
 ```
 
 </div>
