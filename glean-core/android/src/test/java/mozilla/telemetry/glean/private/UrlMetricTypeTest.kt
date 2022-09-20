@@ -122,18 +122,18 @@ class UrlMetricTypeTest {
         //
         // This 8-character string was chosen so we could have an even number that is
         // a divisor of our MAX_URL_LENGTH.
-        val longPath = "abcdefgh"
+        val longPathBase = "abcdefgh"
 
-        val testUrl = "glean://" + longPath.repeat(2000)
+        val testUrl = "glean://" + longPathBase.repeat(2000)
 
         // Using 2000 creates a string > 16000 characters, well over MAX_URL_LENGTH.
         urlMetric.set(testUrl)
 
         // "glean://" is 8 characters
-        // "abcdefgh" (long_path) is 8 characters
-        // `long_path` is repeated 1023 times (8184)
+        // "abcdefgh" (longPathBase) is 8 characters
+        // `longPathBase` is repeated 1023 times (8184)
         // 8 + 8184 = 8192 (MAX_URL_LENGTH)
-        val expected = "glean://" + longPath.repeat(1023)
+        val expected = "glean://" + longPathBase.repeat(1023)
 
         assertEquals(urlMetric.testGetValue("store1"), expected)
         assertEquals(1, urlMetric.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))

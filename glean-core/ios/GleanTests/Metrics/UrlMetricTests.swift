@@ -96,17 +96,17 @@ class UrlMetricTypeTests: XCTestCase {
         //
         // This 8-character string was chosen so we could have an even number that is
         // a divisor of our MAX_URL_LENGTH.
-        let longPath = "abcdefgh"
+        let longPathBase = "abcdefgh"
 
         // Using 2000 creates a string > 16000 characters, well over MAX_URL_LENGTH.
-        let testUrl = "glean://" + String(repeating: longPath, count: 2000)
+        let testUrl = "glean://" + String(repeating: longPathBase, count: 2000)
         urlMetric.set(testUrl)
 
         // "glean://" is 8 characters
-        // "abcdefgh" (long_path) is 8 characters
-        // `long_path` is repeated 1023 times (8184)
+        // "abcdefgh" (longPathBase) is 8 characters
+        // `longPathBase` is repeated 1023 times (8184)
         // 8 + 8184 = 8192 (MAX_URL_LENGTH)
-        let expected = "glean://" + String(repeating: longPath, count: 1023)
+        let expected = "glean://" + String(repeating: longPathBase, count: 1023)
 
         XCTAssertEqual(expected, urlMetric.testGetValue())
         XCTAssertEqual(1, urlMetric.testGetNumRecordedErrors(.invalidOverflow))
