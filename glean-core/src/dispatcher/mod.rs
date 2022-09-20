@@ -32,7 +32,7 @@ use std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
     },
-    thread::{self, JoinHandle},
+    thread::{self, JoinHandle}, ops::Bound,
 };
 
 use crossbeam_channel::{bounded, unbounded, SendError, Sender, TrySendError};
@@ -84,6 +84,18 @@ pub enum DispatchError {
     /// Failed to receive from channel
     #[error("Failed to receive from channel")]
     RecvError(#[from] crossbeam_channel::RecvError),
+}
+
+/// What size should the pre-initialization queue be?
+enum Bounded {
+    /// Unbounded; grows when channel is insufficiently long
+    Unbounded,
+
+    /// 0 is a special case zero capacity channel
+    Zero,
+
+    /// Positive integer for normal bounded cases
+    Bounded (usize),
 }
 
 impl From<TrySendError<Command>> for DispatchError {
@@ -243,10 +255,15 @@ impl Dispatcher {
     /// Launched tasks won't run until [`flush_init`] is called.
     ///
     /// [`flush_init`]: #method.flush_init
-    pub fn new(max_queue_size: usize) -> Self {
+    pub fn new(max_queue_size: Bounded) -> Self {
         let (block_sender, block_receiver) = bounded(1);
-        let (preinit_sender, preinit_receiver) = bounded(max_queue_size);
         let (sender, mut unbounded_receiver) = unbounded();
+
+        let (preint_sender, preinit_receiever) = match max_queue_size {
+            Bounded::Unbounded => unbounded(),
+            Bounded::Zero => bounded(0),
+            Bounded::Bounded(i) => bounded(i),
+        };
 
         let queue_preinit = Arc::new(AtomicBool::new(true));
         let overflow_count = Arc::new(AtomicUsize::new(0));
