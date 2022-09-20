@@ -12,7 +12,7 @@ use crate::CommonMetricData;
 use crate::Glean;
 
 // The maximum number of characters a URL Metric may have, before encoding.
-const MAX_URL_LENGTH: usize = 2048;
+const MAX_URL_LENGTH: usize = 8192;
 
 /// A URL metric.
 ///
@@ -80,7 +80,7 @@ impl UrlMetric {
             return;
         }
 
-        let s = value.into();
+        let mut s = value.into();
         if s.len() > MAX_URL_LENGTH {
             let msg = format!(
                 "Value length {} exceeds maximum of {}",
@@ -88,7 +88,7 @@ impl UrlMetric {
                 MAX_URL_LENGTH
             );
             record_error(glean, &self.meta, ErrorType::InvalidOverflow, msg, None);
-            return;
+            s = s[..MAX_URL_LENGTH].to_string();
         }
 
         if s.starts_with("data:") {
