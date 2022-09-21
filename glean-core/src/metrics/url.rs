@@ -8,9 +8,9 @@ use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorTy
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
+use crate::util::truncate_string_at_boundary_with_error;
 use crate::CommonMetricData;
 use crate::Glean;
-use crate::util::truncate_string_at_boundary_with_error;
 
 // The maximum number of characters a URL Metric may have, before encoding.
 const MAX_URL_LENGTH: usize = 8192;
