@@ -70,4 +70,4 @@ rustup target add x86_64-pc-windows-gnu
 
 popd
 
-set +eux
+set +eu
