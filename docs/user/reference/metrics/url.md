@@ -132,12 +132,12 @@ search.template.setUrl(new URL("https://mysearchengine.com/"));
 * [`invalid_value`](../../user/metrics/error-reporting.md):
   * If the URL passed does not start with a [scheme](https://url.spec.whatwg.org/#url-representation) followed by a `:` character.
   * If the URL passed uses the `data:` protocol.
-* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the URL passed is longer than 2048 characters (before encoding).
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the URL passed is longer than 8192 characters (before encoding).
 * [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
 
 #### Limits
 
-* Fixed maximum URL length: 2048. Longer URLs are dropped.
+* Fixed maximum URL length: 8192. Longer URLs are truncated and recorded along with an `invalid_overflow` error.
 
 ## Testing API
 
