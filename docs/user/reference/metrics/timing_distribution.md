@@ -372,9 +372,12 @@ import org.mozilla.yourApplication.GleanMetrics.Pages
 // Get snapshot.
 val snapshot = Pages.pageLoad.testGetValue()
 
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum)
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.sum)
+assertEquals(2UL, snapshot.count)
 ```
 
 </div>
@@ -386,9 +389,12 @@ import org.mozilla.yourApplication.GleanMetrics.Pages;
 // Get snapshot.
 DistributionData snapshot = pages.INSTANCE.pageLoad().testGetValue();
 
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum);
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.getSum());
+assertEquals(2L, snapshot.getCount());
 ```
 
 </div>
@@ -398,9 +404,12 @@ assertEquals(1L, snapshot.getSum());
 // Get snapshot.
 let snapshot = pages.pageLoad.testGetValue()
 
+// Does the sum have the expected value?
+XCTAssertEqual(11, snapshot.sum)
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-XCTAssertEqual(1, snapshot.sum)
+XCTAssertEqual(2, snapshot.count)
 ```
 
 </div>
@@ -413,9 +422,12 @@ metrics = load_metrics("metrics.yaml")
 # Get snapshot.
 snapshot = metrics.pages.page_load.test_get_value()
 
+# Does the sum have the expected value?
+assert 11 == snapshot.sum
+
 # Usually you don't know the exact timing values,
 # but how many should have been recorded.
-assert 1 == snapshot.sum
+assert 2 == snapshot.count
 ```
 
 </div>
@@ -428,9 +440,12 @@ use glean_metrics::pages;
 // Get snapshot
 let snapshot = pages::page_load.test_get_value(None).unwrap();
 
+// Does the sum have the expected value?
+assert_eq!(11, snapshot.sum);
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assert_eq!(1, snapshot.values.len());
+assert_eq!(2, snapshot.count);
 ```
 
 

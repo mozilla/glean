@@ -128,7 +128,7 @@ assertEquals(11, snapshot.sum)
 
 // Usually you don't know the exact memory values,
 // but how many should have been recorded.
-assertEquals(2L, snapshot.count)
+assertEquals(2UL, snapshot.count)
 ```
 
 </div>
@@ -196,7 +196,7 @@ assert_eq!(11, snapshot.sum);
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assert_eq!(2, snapshot.values.len());
+assert_eq!(2, snapshot.count);
 ```
 
 
