@@ -10,6 +10,7 @@ use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
+use crate::util::truncate_string_at_boundary_with_error;
 
 // The maximum number of characters a URL Metric may have, before encoding.
 const MAX_URL_LENGTH: usize = 8192;
@@ -80,16 +81,7 @@ impl UrlMetric {
             return;
         }
 
-        let mut s = value.into();
-        if s.len() > MAX_URL_LENGTH {
-            let msg = format!(
-                "Value length {} exceeds maximum of {}",
-                s.len(),
-                MAX_URL_LENGTH
-            );
-            record_error(glean, &self.meta, ErrorType::InvalidOverflow, msg, None);
-            s = s[..MAX_URL_LENGTH].to_string();
-        }
+        let s = truncate_string_at_boundary_with_error(glean, &self.meta, value, MAX_URL_LENGTH);
 
         if s.starts_with("data:") {
             record_error(
