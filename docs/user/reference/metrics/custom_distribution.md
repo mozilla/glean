@@ -63,7 +63,15 @@ graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+
+graphics.checkerboardPeak.accumulateSamples([23]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -180,7 +188,22 @@ assert_eq(1, snapshot.values[19])
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+
+// Get snapshot
+const snapshot = await graphics.checkerboardPeak.testGetValue();
+
+// Does the sum have the expected value?
+assert.equal(23, snapshot.sum);
+
+// Buckets are indexed by their lower bound.
+assert.equal(1, snapshot.values[19]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -276,7 +299,20 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+// Did the metric receive a negative value?
+assert.equal(
+    0,
+    graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
