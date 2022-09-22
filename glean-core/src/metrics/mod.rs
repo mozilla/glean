@@ -79,7 +79,7 @@ pub struct DistributionData {
     pub sum: i64,
 
     /// The total number of entries in the distribution.
-    pub count: u64,
+    pub count: i64,
 }
 
 /// The available metrics.
