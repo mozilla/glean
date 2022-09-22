@@ -150,36 +150,33 @@ public class HttpPingUploader {
     func process() {
         // Limits are enforced by glean-core to avoid an inifinite loop here.
         // Whenever a limit is reached, this binding will receive `.done` and step out.
-        while true {
-            let task = gleanGetUploadTask()
+        let task = gleanGetUploadTask()
 
-            switch task {
-            case let .upload(request):
-                var body = Data(capacity: request.body.count)
-                body.append(contentsOf: request.body)
-                self.upload(path: request.path, data: body, headers: request.headers) { result in
-                    let action = gleanProcessPingUploadResponse(request.documentId, result)
-                    switch action {
-                    case .next:
-                        // launch a new iteration.
-                        Dispatchers.shared.launchAsync {
-                            HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
-                        }
-                    case .end:
-                        return
+        switch task {
+        case let .upload(request):
+            var body = Data(capacity: request.body.count)
+            body.append(contentsOf: request.body)
+            self.upload(path: request.path, data: body, headers: request.headers) { result in
+                let action = gleanProcessPingUploadResponse(request.documentId, result)
+                switch action {
+                case .next:
+                    // launch a new iteration.
+                    Dispatchers.shared.launchAsync {
+                        HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
                     }
-
+                case .end:
+                    return
                 }
 
-                // we don't want to launch multiple uploads at once.
-                // if the upload finishes, we going to launch the next one.
-                return
-            case .wait(let time):
-                sleep(UInt32(time) / 1000)
-                continue
-            case .done:
-                return
             }
+        case .wait(let time):
+            sleep(UInt32(time) / 1000)
+            // launch a new iteration.
+            Dispatchers.shared.launchAsync {
+                HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+            }
+        case .done:
+            return
         }
     }
 }
