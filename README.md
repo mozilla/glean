@@ -22,7 +22,7 @@ For an overview of Glean beyond just the SDK, see the [section in the Firefox da
 The code in this repository is organized as follows:
 
 * [./glean-core/](glean-core) contains the source for the low-level Rust library.
-* [./glean-core/ffi](glean-core/ffi) contains the mapping into a C FFI.
+* [./glean-core/rlb](glean-core/rlb) contains the high-level Rust library.
 * [./glean-core/android](glean-core/android) contains the Kotlin bindings for use by Android applications.
 * [./glean-core/ios](glean-core/ios) contains the Swift bindings for use by iOS applications.
 * [./glean-core/python](glean-core/python) contains Python bindings.

@@ -191,7 +191,7 @@ rust-coverage: ## Generate code coverage information for Rust code
 	cargo build --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 	cargo test --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" --ignore "glean-core/ffi/*" -o lcov.info
+	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info
 	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
 .PHONY: rust-coverage
 
