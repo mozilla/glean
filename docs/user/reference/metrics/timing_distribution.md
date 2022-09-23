@@ -377,7 +377,7 @@ assertEquals(11, snapshot.sum)
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(2UL, snapshot.count)
+assertEquals(2L, snapshot.count)
 ```
 
 </div>
