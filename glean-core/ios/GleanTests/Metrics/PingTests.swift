@@ -20,7 +20,7 @@ class PingTests: XCTestCase {
     }
 
     private func setupHttpResponseStub(_ expectedPingType: String) {
-        stubServerReceive { pingType, json in
+        stubServerReceive(endpoint: Glean.shared.configuration!.serverEndpoint) { pingType, json in
             XCTAssertEqual(pingType, expectedPingType, "Wrong ping type received")
             XCTAssert(json != nil)
 

@@ -52,7 +52,7 @@ class GleanDebugUtilityTests: XCTestCase {
         expectation!.expectedFulfillmentCount = 3
         expectation!.assertForOverFulfill = true
         let expectedPings = ["baseline", "events", "metrics"]
-        stubServerReceive { pingType, _ in
+        stubServerReceive(endpoint: Glean.shared.configuration!.serverEndpoint) { pingType, _ in
             XCTAssertTrue(expectedPings.contains(pingType), "\(pingType) should be valid")
 
             DispatchQueue.main.async {

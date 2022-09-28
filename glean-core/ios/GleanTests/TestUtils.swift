@@ -19,8 +19,13 @@ import XCTest
 /// - parameters
 ///       * callback: A callback to validate the incoming request.
 ///                   It receives a `pingType` and the ping's JSON-decoded `payload`.
-func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
-    let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+func stubServerReceive(endpoint: String?, callback: @escaping (String, [String: Any]?) -> Void) {
+    var host: String
+    if let endpoint = endpoint {
+        host = URL(string: endpoint)!.host!
+    } else {
+        host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+    }
     stub(condition: isHost(host)) { data in
         let request = data as NSURLRequest
         let url = request.url!
@@ -49,8 +54,19 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 ///
 /// This also prevents outgoing network requests during unit tests while
 /// still allowing us to use the default telemetry endpoint.
-func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearStores: Bool = true) {
+func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearStores: Bool = true, testId: String? = nil) {
     let expectation = testCase.expectation(description: "\(tag): Ping Received")
+
+    let configuration: Configuration
+    if let testId = testId {
+        configuration = Configuration(serverEndpoint: "https://\(testId).telemetry.mozilla.org")
+    } else {
+        if let cfg = Glean.shared.configuration {
+            configuration = cfg
+        } else {
+            configuration = Configuration()
+        }
+    }
 
     // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
     // outgoing network requests and prevent actual requests being made from tests.
@@ -61,7 +77,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
     //
     // Once we received the "active" baseline ping we're good to go.
     // All subsequent pings should be from the test itself.
-    stubServerReceive { pingType, json in
+    stubServerReceive(endpoint: configuration.serverEndpoint) { pingType, json in
         if pingType != "baseline" {
             return
         }
@@ -85,7 +101,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
     let mps = MetricsPingScheduler(true)
     mps.updateSentDate(Date())
 
-    Glean.shared.resetGlean(clearStores: clearStores)
+    Glean.shared.resetGlean(configuration: configuration, clearStores: clearStores)
 
     testCase.waitForExpectations(timeout: 5.0) { error in
         XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

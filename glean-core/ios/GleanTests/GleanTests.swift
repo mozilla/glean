@@ -9,12 +9,19 @@ import XCTest
 
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
 
+func randomString(_ length: Int) -> String {
+  let letters = "abcdefghijklmnopqrstuvwxyz0123456789"
+  return String((0..<length).map{ _ in letters.randomElement()! })
+}
+
 // swiftlint:disable type_body_length
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
+    var testId: String = ""
 
     override func setUp() {
-        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests")
+        self.testId = "r\(randomString(10))"
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests", testId: self.testId)
     }
 
     override func tearDown() {
@@ -90,7 +97,7 @@ class GleanTests: XCTestCase {
         Glean.shared.setExperimentInactive("experiment_preinit_disabled")
 
         // This will reset Glean and flush the queued tasks
-        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests", clearStores: false)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests", clearStores: false, testId: self.testId)
 
         // Verify the tasks were executed
         XCTAssertTrue(
@@ -104,7 +111,8 @@ class GleanTests: XCTestCase {
     }
 
     func testSendingOfForegroundBaselinePing() {
-        stubServerReceive { _, json in
+        let cfg = Glean.shared.configuration!
+        stubServerReceive(endpoint: cfg.serverEndpoint) { _, json in
             // Check for the "dirty_startup" flag
             let pingInfo = json?["ping_info"] as? [String: Any]
             XCTAssertEqual("active", pingInfo?["reason"] as? String)
@@ -156,7 +164,7 @@ class GleanTests: XCTestCase {
         gleanSetDirtyFlag(true)
 
         // Set up the test stub based on the default telemetry endpoint
-        stubServerReceive { pingType, json in
+        stubServerReceive(endpoint: Glean.shared.configuration!.serverEndpoint) { pingType, json in
             XCTAssertEqual("baseline", pingType)
             XCTAssert(json != nil)
 
@@ -216,7 +224,8 @@ class GleanTests: XCTestCase {
     */
 
     func testSendingDeletionPingIfDisabledOutsideOfRun() {
-        stubServerReceive { pingType, _ in
+        let cfg = Glean.shared.configuration!
+        stubServerReceive(endpoint: cfg.serverEndpoint) { pingType, _ in
             // Since we are starting Glean with upload disabled, the only ping we
             // should see is the deletion request ping
             XCTAssertEqual("deletion-request", pingType)
@@ -233,7 +242,7 @@ class GleanTests: XCTestCase {
         // Now reset Glean with uploadEnabled = false and not clearing the stores to
         // trigger the deletion request ping. Since `uploadEnabled` is `false`, only
         // the deletion-request ping should be generated.
-        Glean.shared.resetGlean(clearStores: false, uploadEnabled: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false, uploadEnabled: false)
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
@@ -242,8 +251,10 @@ class GleanTests: XCTestCase {
     func testNotSendingDeletionRequestIfUnchangedOutsideOfRun() {
         XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
 
+        let cfg = Glean.shared.configuration!
+
         // Set up the test stub based on the default telemetry endpoint
-        stubServerReceive { _, _ in
+        stubServerReceive(endpoint: cfg.serverEndpoint) { _, _ in
             XCTFail("Should not have recieved any ping")
         }
 
@@ -257,12 +268,12 @@ class GleanTests: XCTestCase {
         expectation?.fulfill()
 
         // Reset Glean with uploadEnabled = false
-        Glean.shared.resetGlean(clearStores: true, uploadEnabled: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: true, uploadEnabled: false)
 
         // Now reset Glean with uploadEnabled = false again without clearing the stores to
         // make sure we don't trigger the deletion request ping.  If it does, then we will
         // have overfulfilled the expectation which will trigger a test assertion.
-        Glean.shared.resetGlean(clearStores: false, uploadEnabled: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false, uploadEnabled: false)
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
@@ -282,8 +293,10 @@ class GleanTests: XCTestCase {
         ))
         stringMetric.set("HELLOOOOO!")
 
+        let cfg = Glean.shared.configuration!
+
         // Set up the test stub based on the default telemetry endpoint
-        stubServerReceive { pingType, json in
+        stubServerReceive(endpoint: cfg.serverEndpoint) { pingType, json in
             XCTAssertEqual("baseline", pingType)
             XCTAssert(json != nil)
 
@@ -314,7 +327,7 @@ class GleanTests: XCTestCase {
 
         // Restart glean and don't clear the stores.
         // This should trigger a baseline ping with a "dirty_startup" reason.
-        Glean.shared.resetGlean(clearStores: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false)
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
@@ -325,6 +338,8 @@ class GleanTests: XCTestCase {
         // Check to see if Glean is initialized
         XCTAssert(Glean.shared.isInitialized())
 
+        let cfg = Glean.shared.configuration!
+
         // Set the control variable to false to simulate that we are not running
         // in the main process
         Glean.shared.isMainProcess = false
@@ -332,7 +347,7 @@ class GleanTests: XCTestCase {
         expectation = expectation(description: "GleanTests: Ping Received")
         // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
         // outgoing network requests and prevent actual requests being made from tests.
-        stubServerReceive { _, _ in
+        stubServerReceive(endpoint: cfg.serverEndpoint) { _, _ in
             // Fulfill test's expectation once we parsed the incoming data.
             DispatchQueue.main.async {
                 // Let the response get processed before we mark the expectation fulfilled
@@ -345,7 +360,7 @@ class GleanTests: XCTestCase {
         // since init should fail.
         expectation?.isInverted = true
         // Restart Glean
-        Glean.shared.resetGlean(clearStores: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false)
         waitForExpectations(timeout: 2.0) { error in
             XCTAssertNil(error, "Received a ping upload when we shouldn't have: \(error!)")
         }
@@ -359,14 +374,15 @@ class GleanTests: XCTestCase {
 
     func testSettingDebugViewTagBeforeInitialization() {
         // This test relies on Glean not being initialized
+        let cfg = Glean.shared.configuration!
         Glean.shared.testDestroyGleanHandle()
 
         XCTAssert(Glean.shared.setDebugViewTag("valid-tag"))
 
         // Restart glean
-        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false, testId: self.testId)
 
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        let host = URL(string: cfg.serverEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Debug-ID"), "valid-tag")
@@ -396,15 +412,17 @@ class GleanTests: XCTestCase {
     }
 
     func testSettingSourceTagsBeforeInitialization() {
+        let cfg = Glean.shared.configuration!
+
         // This test relies on Glean not being initialized
         Glean.shared.testDestroyGleanHandle()
 
         XCTAssert(Glean.shared.setSourceTags(["valid-tag", "tag-valid"]))
 
         // Restart glean, disposing of any pings from startup that might interfere with the test
-        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTest", clearStores: false, testId: self.testId)
 
-        let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
+        let host = URL(string: cfg.serverEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
             XCTAssertEqual(request.value(forHTTPHeaderField: "X-Source-Tags"), "valid-tag,tag-valid")
@@ -433,11 +451,13 @@ class GleanTests: XCTestCase {
     }
 
     func testFlippingUploadEnabledRespectsOrderOfEvents() {
+        let cfg = Glean.shared.configuration!
+
         // This test relies on Glean not being initialized
         Glean.shared.testDestroyGleanHandle()
 
         // We expect only a single ping later
-        stubServerReceive { pingType, _ in
+        stubServerReceive(endpoint: cfg.serverEndpoint) { pingType, _ in
             if pingType == "baseline" {
                 // Ignore initial "active" baseline ping
                 return
@@ -475,7 +495,7 @@ class GleanTests: XCTestCase {
         let now = Date()
         MetricsPingScheduler(true).updateSentDate(now)
         // Restart glean
-        Glean.shared.resetGlean(clearStores: false)
+        Glean.shared.resetGlean(configuration: cfg, clearStores: false)
 
         // Glean might still be initializing. Disable upload.
         Glean.shared.setUploadEnabled(false)
