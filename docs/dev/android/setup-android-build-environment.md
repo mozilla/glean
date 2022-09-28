@@ -22,8 +22,8 @@ If Android Studio asks you to upgrade the version of Gradle, decline.
 
 The following dependencies can be installed in Android Studio through `Tools > SDK Manager > SDK Tools`:
 
-- Android SDK Tools (may already be selected)
-- NDK r25
+- Android SDK Tools (may already be selected) ([check here for the version requirements](sdk-ndk-versions.md))
+- NDK ([check here for the version requirements](sdk-ndk-versions.md))
 - CMake
 - LLDB
 
@@ -43,9 +43,9 @@ Alternatively add the following line to the `local.properties` file in the root 
 sdk.dir=/path/to/sdk
 ```
 
-For the Android NDK:
+For the Android NDK ([check here for the version requirements](sdk-ndk-versions.md)):
 
-1. Download NDK r21 from <https://developer.android.com/ndk/downloads>.
+1. Download NDK from <https://developer.android.com/ndk/downloads>.
 2. Extract it and put it somewhere (`$HOME/.android-ndk-r25` is a reasonable choice, but it doesn't matter).
 3. Add the following line to the `local.properties` file in the root of the Glean checkout (create the file if it does not exist):
    ```

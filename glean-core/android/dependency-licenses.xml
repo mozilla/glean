@@ -59,8 +59,7 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: form_urlencoded</name>
     <url>https://github.com/servo/rust-url</url>
-  </license>
-  <license>
+  </license>  <license>
     <name>Apache License 2.0: hashbrown</name>
     <url>https://github.com/rust-lang/hashbrown</url>
   </license>
@@ -119,12 +118,10 @@ the details of which are reproduced below.
   <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
-  </license>
-  <license>
+  </license>  <license>
     <name>Apache License 2.0: plain</name>
     <url>https://github.com/randomites/plain</url>
-  </license>
-  <license>
+  </license>  <license>
     <name>Apache License 2.0: proc-macro2</name>
     <url>https://github.com/dtolnay/proc-macro2</url>
   </license>
@@ -331,16 +328,46 @@ the details of which are reproduced below.
   <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
-  </license>
-  <license>
+  </license>  <license>
+    <name>MIT License: matches</name>
+    <url>https://github.com/SimonSapin/rust-std-candidates</url>
+  </license>  <license>
+    <name>MIT License: nom</name>
+    <url>https://github.com/Geal/nom</url>
+  </license>  <license>
+    <name>MIT License: ordered-float</name>
+    <url>https://github.com/reem/rust-ordered-float</url>
+  </license>  <license>
     <name>MIT License: atty</name>
     <url>https://github.com/softprops/atty</url>
-  </license>
-  <license>
-    <name>MIT License: bincode</name>
-    <url>https://github.com/servo/bincode</url>
-  </license>
-  <license>
+  </license>  <license>
+    <name>MIT License: bytes</name>
+    <url>https://github.com/tokio-rs/bytes</url>
+  </license>  <license>
+    <name>MIT License: weedle2</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>MIT License: textwrap</name>
+    <url>https://github.com/mgeisler/textwrap</url>
+  </license>  <license>
+    <name>MIT License: scroll_derive</name>
+    <url>https://github.com/m4b/scroll</url>
+  </license>  <license>
+    <name>MIT License: smawk</name>
+    <url>https://github.com/mgeisler/smawk</url>
+  </license>  <license>
+    <name>MIT License: dashmap</name>
+    <url>https://github.com/xacrimon/dashmap</url>
+  </license>  <license>
+    <name>MIT License: oslog</name>
+    <url>https://github.com/steven-joruk/oslog</url>
+  </license>  <license>
+    <name>MIT License: sample</name>
+    <url>https://crates.io/crates/sample</url>
+  </license>  <license>
+    <name>MIT License: cargo_metadata</name>
+    <url>https://github.com/oli-obk/cargo_metadata</url>
+  </license>  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>
@@ -419,8 +446,28 @@ the details of which are reproduced below.
   <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>
-  </license>
-  <license>
+  </license>  <license>
+    <name>MIT License: xshell-venv</name>
+    <url>https://github.com/badboy/xshell-venv</url>
+  </license>  <license>
+    <name>MIT License: scroll</name>
+    <url>https://github.com/m4b/scroll</url>
+  </license>  <license>
+    <name>MIT License: goblin</name>
+    <url>https://github.com/m4b/goblin</url>
+  </license>  <license>
+    <name>MIT License: bincode</name>
+    <url>https://github.com/servo/bincode</url>
+  </license>  <license>
+    <name>MIT License: byteorder</name>
+    <url>https://github.com/BurntSushi/byteorder</url>
+  </license>  <license>
+    <name>MIT License: memchr</name>
+    <url>https://github.com/BurntSushi/memchr</url>
+  </license>  <license>
+    <name>MIT License: termcolor</name>
+    <url>https://github.com/BurntSushi/termcolor</url>
+  </license>  <license>
     <name>MIT License: winapi-util</name>
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>
@@ -455,12 +502,10 @@ the details of which are reproduced below.
   <license>
     <name>Mozilla Public License 2.0: uniffi_macros</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>
-  <license>
+  </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_meta</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>
-  <license>
+  </license>  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>

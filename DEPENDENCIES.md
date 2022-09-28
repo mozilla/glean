@@ -1678,17 +1678,16 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [anyhow 1.0.60]( https://github.com/dtolnay/anyhow )
+* [anyhow 1.0.64]( https://github.com/dtolnay/anyhow )
 * [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
 * [camino 1.0.9]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.6]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
-* [env_logger 0.9.0]( https://github.com/env-logger-rs/env_logger/ )
+* [env_logger 0.9.1]( https://github.com/env-logger-rs/env_logger/ )
 * [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
-* [glob 0.3.0]( https://github.com/rust-lang/glob )
 * [hashbrown 0.11.2]( https://github.com/rust-lang/hashbrown )
 * [heck 0.4.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
@@ -1701,9 +1700,10 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.13.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.15.0]( https://github.com/matklad/once_cell )
 * [paste 1.0.7]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
+* [plain 0.2.3]( https://github.com/randomites/plain )
 * [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.18]( https://github.com/dtolnay/quote )
 * [semver 1.0.10]( https://github.com/dtolnay/semver )
@@ -4925,7 +4925,21 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [mime_guess 2.0.4]( https://github.com/abonander/mime_guess )
+* [nom 7.1.1]( https://github.com/Geal/nom )
+
+```
+Copyright (c) 2014-2019 Geoffroy Couprie
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
 
 ```
@@ -5025,7 +5039,31 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [oslog 0.1.0]( https://github.com/steven-joruk/oslog )
+* [weedle2 4.0.0]( https://github.com/mozilla/uniffi-rs )
+
+```
+Copyright 2018-Present Sharad Chand
+Copyright 2022 Jan-Erik Rediger
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
 
 
 ```
@@ -5057,13 +5095,12 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [sample 0.1.0]( https://crates.io/crates/sample )
-
+* [scroll_derive 0.11.0]( https://github.com/m4b/scroll )
 
 ```
 MIT License
 
-Copyright (c) <year> <copyright holders>
+Copyright (c) 2017 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -5173,8 +5210,92 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [strsim 0.10.0]( https://github.com/dguo/strsim-rs )
+* [sample 0.1.0]( https://crates.io/crates/sample )
 
+```
+MIT License
+
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [cargo_metadata 0.14.2]( https://github.com/oli-obk/cargo_metadata )
+
+```
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [byteorder 1.4.3]( https://github.com/BurntSushi/byteorder )
+* [memchr 2.5.0]( https://github.com/BurntSushi/memchr )
+* [termcolor 1.1.3]( https://github.com/BurntSushi/termcolor )
+
+```
+The MIT License (MIT)
+
+Copyright (c) 2015 Andrew Gallant
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [mime_guess 2.0.4]( https://github.com/abonander/mime_guess )
 
 ```
 The MIT License (MIT)
@@ -5357,6 +5478,115 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [scroll 0.11.0]( https://github.com/m4b/scroll )
+
+```
+The MIT License (MIT)
+
+Copyright (c) m4b 2016
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [goblin 0.5.4]( https://github.com/m4b/goblin )
+
+```
+The MIT License (MIT)
+
+Copyright (c) m4b 2016-2018
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [bincode 1.3.3]( https://github.com/servo/bincode )
+
+```
+The MIT License (MIT)
+
+Copyright (c) 2014 Ty Overby
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [byteorder 1.4.3]( https://github.com/BurntSushi/byteorder )
+* [memchr 2.5.0]( https://github.com/BurntSushi/memchr )
+* [termcolor 1.1.3]( https://github.com/BurntSushi/termcolor )
+* [winapi-util 0.1.5]( https://github.com/BurntSushi/winapi-util )
+
+```
+This project is dual-licensed under the Unlicense and MIT licenses.
+
+You may use this code under the terms of either license.
+
+```
 ## Mozilla Public License 2.0
 <span id="MPL-2.0"></span>
 
@@ -5365,12 +5595,11 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.19.6]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.19.6]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.19.6]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.19.6]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.19.6]( https://github.com/mozilla/uniffi-rs )
-
+* [uniffi 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.20.0]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0
@@ -5524,9 +5753,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.2.0]( https://github.com/mozilla/glean )
+* [glean 51.3.0]( https://github.com/mozilla/glean )
 * [glean-build 6.1.2]( https://github.com/mozilla/glean )
-* [glean-core 51.2.0]( https://github.com/mozilla/glean )
+* [glean-core 51.3.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 

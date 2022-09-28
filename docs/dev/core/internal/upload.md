@@ -55,7 +55,7 @@ The `BaseUploader` component is responsible for interfacing with the lower level
 
   * Every Glean instance will always have a single `BaseUploader` instance.
   * The `BaseUploader` is fed, at Glean initialization, with an instance of an implementation of the `PingUploader` interface.
-  * Whenever `BaseUploader` thinks it should perform an upload, it will call the provided instance of the `PingUploader` interface and call `upload` with the data it's getting from the glean-core/FFI.
+  * Whenever `BaseUploader` thinks it should perform an upload, it will call the provided instance of the `PingUploader` interface and call `upload` with the data it's getting from Glean.
   * Any throttling happens at this layer: the core will orchestrate the throttling, while this layer will be responsible to abide to what the core is telling it to do.
   * Any logic for aborting uploads or triggering uploads is provided by this object.
 

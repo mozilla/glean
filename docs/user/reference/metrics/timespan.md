@@ -1,6 +1,7 @@
 # Timespan
 
 Timespans are used to make a measurement of how much time is spent in a particular task.
+Irrespective of the timespan's `lifetime`, both `start` and `stop` must occur within the same application session.
 
 To measure the distribution of multiple timespans,
 see [Timing Distributions](timing_distribution.md).
@@ -217,7 +218,8 @@ function onLogin() {
 #### Recorded errors
 
 * [`invalid_state`](../../user/metrics/error-reporting.md):
-  Calling `stop` without calling `start` first.
+  Calling `stop` without calling `start` first,
+  e.g. if the `start` happened on a previous application run.
 
 ### `cancel`
 

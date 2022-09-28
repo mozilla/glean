@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "51.2.0"
+version = "51.3.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -40,8 +40,8 @@ zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 whatsys = "0.1.2"
-uniffi = "0.19.6"
-uniffi_macros = "0.19.6"
+uniffi = "0.20.0"
+uniffi_macros = "0.20.0"
 time = "0.1.40"
 
 [target.'cfg(target_os = "android")'.dependencies]
@@ -60,4 +60,4 @@ iso8601 = "0.4"
 ctor = "0.1.12"
 
 [build-dependencies]
-uniffi_build = { version = "0.19.6", features = ["builtin-bindgen"] }
+uniffi_build = { version = "0.20.0", features = ["builtin-bindgen"] }

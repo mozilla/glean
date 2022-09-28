@@ -10,7 +10,7 @@ export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_TOOLCHA
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/x86_64-apple-darwin-ar
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/x86_64-apple-darwin-ranlib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
-export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=x86_64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-dead_strip"
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-fuse-ld=/builds/worker/cctools/bin/x86_64-apple-darwin-ld -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=x86_64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX10.12.sdk -C link-arg=-Wl,-dead_strip"
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_X86_64_APPLE_DARWIN_CFLAGS_x86_64_apple_darwin="-B /builds/worker/cctools/bin -target x86_64-apple-darwin -isysroot /tmp/MacOSX10.12.sdk -Wl,-syslibroot,/tmp/MacOSX10.12.sdk -Wl,-dead_strip"
 
 # aarch64 Darwin (M1/Silicon)
@@ -19,7 +19,7 @@ export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_TOOLCH
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/aarch64-apple-darwin-ar
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/aarch64-apple-darwin-ranlib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
-export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-dead_strip"
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-fuse-ld=/builds/worker/cctools/bin/aarch64-apple-darwin-ld -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-dead_strip"
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CFLAGS_aarch64_apple_darwin="-B /builds/worker/cctools/bin -target aarch64-apple-darwin -isysroot /tmp/MacOSX11.0.sdk -Wl,-syslibroot,/tmp/MacOSX11.0.sdk -Wl,-dead_strip"
 
 # x86_64 Windows
@@ -35,7 +35,7 @@ export TARGET_CFLAGS="-DNDEBUG"
 #
 # To update:
 # * Go to https://firefox-ci-tc.services.mozilla.com/tasks/index/gecko.cache.level-3.toolchains.v3
-# * Find the tasks for `linux64-clang-11-macosx-cross` and `linux64-cctools-port-clang-11` (or higher Clang version)
+# * Find the tasks for `linux64-clang-12-macosx-cross` and `linux64-cctools-port-clang-12` (or higher Clang version)
 # * Per task, follow the link to the latest indexed task
 # * In the detail view, click "View Task"
 # * In the task view, click "See more"
@@ -45,11 +45,11 @@ export TARGET_CFLAGS="-DNDEBUG"
 #   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
 pushd /builds/worker
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-11.hash.25231a75e67a889cf0049c296d3a8a440439f0a14c845da0dd574c2ca3b732b2/artifacts/public/build/cctools.tar.xz > cctools.tar.xz
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-12.hash.247392feb5811691ce42b7469f957956282c88d39a7e507f1852bae68f407548/artifacts/public/build/cctools.tar.xz > cctools.tar.xz
 tar -xf cctools.tar.xz
 rm cctools.tar.xz
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-11-macosx-cross.hash.efe2cd570200f7093d9081c41875f79571e7ace17786de15c0d34ab2f5f795c7/artifacts/public/build/clang.tar.zst > clang.tar.zst
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-12-macosx-cross.hash.985aa3998f3e6ebcaa4baf70df7dd5e265d9a8d59fa551fd7bdd5d9030224070/artifacts/public/build/clang.tar.zst > clang.tar.zst
 tar -I zstd -xf clang.tar.zst
 rm clang.tar.zst
 popd
@@ -70,4 +70,4 @@ rustup target add x86_64-pc-windows-gnu
 
 popd
 
-set +eux
+set +eu

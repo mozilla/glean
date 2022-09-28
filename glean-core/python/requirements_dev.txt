@@ -1,5 +1,5 @@
 auditwheel==5.1.2
-black==22.6.0
+black==22.8.0
 coverage==6.2
 flake8==5.0.4
 flake8-bugbear==22.8.23
