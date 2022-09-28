@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...main)
+
+# v51.3.0 (2022-09-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...v51.3.0)
 
 * General
   * Update URL metric character limit to 8k to support longer URLs. URLs that are too long now are truncated to `MAX_URL_LENGTH` and still recorded along with an Overflow error. ([#2199](https://github.com/mozilla/glean/pull/2199))
