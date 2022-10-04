@@ -188,7 +188,7 @@ assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
 assert_eq!(1, graphics::checkerboard_peak.test_get_value(None).unwrap().count);
 
 // Buckets are indexed by their lower bound.
-assert_eq(1, snapshot.values[19])
+assert_eq!(1, snapshot.values[19])
 ```
 
 </div>
