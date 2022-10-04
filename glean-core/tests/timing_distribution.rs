@@ -252,7 +252,7 @@ fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
     // Overflowing values are truncated to MAX_SAMPLE_TIME and recorded.
     assert_eq!(snapshot.sum as u64, MAX_SAMPLE_TIME + 6);
 
-    // Check that we got the right number of values.
+    // Check that we got the right number of samples.
     assert_eq!(snapshot.count, 4);
 
     // We should get a sample in each of the first 3 buckets.
