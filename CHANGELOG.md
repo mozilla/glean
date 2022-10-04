@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...main)
+
+# v51.4.0 (2022-10-04)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...v51.4.0)
+
+* Kotlin
+  * Update Kotlin and Android Gradle Plugin to the latest releases ([#2211](https://github.com/mozilla/glean/pull/2211))
+
+* Swift
+  * Fix for iOS startup crash caused by Glean ([#2206](https://github.com/mozilla/glean/pull/2206))
 
 # v51.3.0 (2022-09-28)
 

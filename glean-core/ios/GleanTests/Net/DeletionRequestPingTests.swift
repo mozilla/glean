@@ -27,9 +27,67 @@ class DeletionRequestPingTests: XCTestCase {
     }
 
     override func tearDown() {
+        Glean.shared.testDestroyGleanHandle()
         lastPingJson = nil
         expectation = nil
         tearDownStubs()
+    }
+
+    func testSendingDeletionPingIfDisabledOutsideOfRun() {
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests")
+
+        stubServerReceive { pingType, _ in
+            // Since we are starting Glean with upload disabled, the only ping we
+            // should see is the deletion request ping
+            XCTAssertEqual("deletion-request", pingType)
+
+            DispatchQueue.main.async {
+                // let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+        }
+
+        // Set up the expectation that will be fulfilled by the stub above
+        expectation = expectation(description: "Deletion Request Received")
+
+        // Now reset Glean with uploadEnabled = false and not clearing the stores to
+        // trigger the deletion request ping. Since `uploadEnabled` is `false`, only
+        // the deletion-request ping should be generated.
+        Glean.shared.resetGlean(clearStores: false, uploadEnabled: false)
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
+
+    func testNotSendingDeletionRequestIfUnchangedOutsideOfRun() {
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests")
+
+        XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
+
+        // Set up the test stub based on the default telemetry endpoint
+        stubServerReceive { _, _ in
+            XCTFail("Should not have recieved any ping")
+        }
+
+        // Set up the expectation that will NOT be fulfilled by the stub above.  If it is
+        // then it will trigger an assertion due to the `assertForOverFulfill` property.
+        expectation = expectation(description: "Deletion Request Received")
+
+        // So we can wait for expectations below, we will go ahead and fulfill the
+        // expectation.  We want to assert if the ping is triggered and over fulfills it
+        // from the stub above.
+        expectation?.fulfill()
+
+        // Reset Glean with uploadEnabled = false
+        Glean.shared.resetGlean(clearStores: true, uploadEnabled: false)
+
+        // Now reset Glean with uploadEnabled = false again without clearing the stores to
+        // make sure we don't trigger the deletion request ping.  If it does, then we will
+        // have overfulfilled the expectation which will trigger a test assertion.
+        Glean.shared.resetGlean(clearStores: false, uploadEnabled: false)
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
     }
 
     func testDeletionRequestPingsAreSentWhenUploadDisabled() {
