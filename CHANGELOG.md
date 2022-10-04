@@ -2,6 +2,12 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...main)
 
+* Kotlin
+  * Update Kotlin and Android Gradle Plugin to the latest releases ([#2211](https://github.com/mozilla/glean/pull/2211))
+
+* Swift
+  * Fix for iOS startup crash caused by Glean ([#2206](https://github.com/mozilla/glean/pull/2206))
+
 # v51.3.0 (2022-09-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.2.0...v51.3.0)
