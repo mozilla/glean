@@ -31,9 +31,7 @@ def test_the_api_saves_to_its_storage_engine():
 
     snapshot = metric.test_get_value()
     assert 0 < snapshot.sum
-
-    count = sum([v for v in snapshot.values.values()])
-    assert 3 == count
+    assert 3 == snapshot.count
 
 
 def test_disabled_timing_distributions_must_not_record_data():
@@ -91,8 +89,7 @@ def test_api_saves_to_secondary_pings():
     for store in ["store1", "store2", "store3"]:
         snapshot = metric.test_get_value(store)
         assert 0 < snapshot.sum
-        count = sum([v for v in snapshot.values.values()])
-        assert 3 == count
+        assert 3 == snapshot.count
 
 
 def test_stopping_a_non_existent_timer_records_an_error():

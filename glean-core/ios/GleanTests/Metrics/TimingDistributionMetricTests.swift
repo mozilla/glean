@@ -36,6 +36,7 @@ class TimingDistributionTypeTests: XCTestCase {
         let snapshot = metric.testGetValue()!
         let sum = snapshot.values.values.reduce(0, +)
         XCTAssertEqual(3, sum)
+        XCTAssertEqual(3, snapshot.count)
     }
 
     func testTimingDistributionMustNotRecordIfDisabled() {
@@ -91,10 +92,12 @@ class TimingDistributionTypeTests: XCTestCase {
         var snapshot = metric.testGetValue("store2")!
         var sum = snapshot.values.values.reduce(0, +)
         XCTAssertEqual(3, sum)
+        XCTAssertEqual(3, snapshot.count)
 
         snapshot = metric.testGetValue("store3")!
         sum = snapshot.values.values.reduce(0, +)
         XCTAssertEqual(3, sum)
+        XCTAssertEqual(3, snapshot.count)
     }
 
     func testTimingDistributionMustNotRecordIfCanceled() {
@@ -162,6 +165,7 @@ class TimingDistributionTypeTests: XCTestCase {
         let snapshot = metric.testGetValue()!
         let sum = snapshot.values.values.reduce(0, +)
         XCTAssertEqual(3, sum)
+        XCTAssertEqual(3, snapshot.count)
     }
 
     func testMeasureFunctionThrows() {

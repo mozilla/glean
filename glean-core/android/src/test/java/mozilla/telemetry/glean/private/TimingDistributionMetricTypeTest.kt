@@ -53,6 +53,7 @@ class TimingDistributionMetricTypeTest {
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertTrue(snapshot.sum > 0L)
+        assertEquals(snapshot.count, 3L)
         // Check that the 1L fell into the first bucket (max 1)
         // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket (max 2)
@@ -126,6 +127,7 @@ class TimingDistributionMetricTypeTest {
         val snapshot = metric.testGetValue("store2")!!
         // Check the sum
         assertTrue(snapshot.sum > 0)
+        assertEquals(snapshot.count, 3L)
         // Check that the 1L fell into the first bucket
         // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket
@@ -137,6 +139,7 @@ class TimingDistributionMetricTypeTest {
         val snapshot2 = metric.testGetValue("store3")!!
         // Check the sum
         assertEquals(snapshot.sum, snapshot2.sum)
+        assertEquals(snapshot2.count, 3L)
         // Check that the 1L fell into the first bucket
         // assertEquals(1L, snapshot2.values[1])
         // Check that the 2L fell into the second bucket
@@ -168,6 +171,9 @@ class TimingDistributionMetricTypeTest {
         val secondsToNanos = 1000L * 1000L * 1000L
         // Check the sum
         assertEquals(6L * secondsToNanos, snapshot.sum)
+
+        // Check that we got the right number of samples.
+        assertEquals(snapshot.count, 3L)
 
         // We should get a sample in 3 buckets.
         // These numbers are a bit magic, but they correspond to
@@ -273,6 +279,7 @@ class TimingDistributionMetricTypeTest {
         val snapshot = metric.testGetValue()!!
         // Check the sum
         assertTrue(snapshot.sum > 0L)
+        assertEquals(snapshot.count, 3L)
         // Check that the 1L fell into the first bucket (max 1)
         // assertEquals(1L, snapshot.values[1])
         // Check that the 2L fell into the second bucket (max 2)
@@ -311,6 +318,8 @@ class TimingDistributionMetricTypeTest {
 
         val snapshot = metric.testGetValue()!!
         assertTrue("Should have stored some nanoseconds", snapshot.sum > 0L)
+
+        assertEquals(snapshot.count, 1L)
     }
 
     @Test
