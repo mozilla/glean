@@ -12,7 +12,6 @@ buildscript {
     // versions below must match the ones in that repository.
     ext.versions = [
         android_gradle_plugin: '7.3.0',
-        android_maven_publish_plugin: '3.6.2',
         coroutines: '1.6.4',
         jna: '5.8.0',
         junit: '4.12',
@@ -52,9 +51,6 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_gradle_plugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
-
-        // Publish.
-        classpath "digital.wup:android-maven-publish:$versions.android_maven_publish_plugin"
 
         classpath "org.mozilla.rust-android-gradle:plugin:$versions.rust_android_plugin"
 
@@ -143,7 +139,7 @@ switch (DefaultPlatform.RESOURCE_PREFIX) {
 ext.rustTargets += ext.nativeRustTarget
 
 subprojects {
-    apply plugin: 'digital.wup.android-maven-publish'
+    apply plugin: 'maven-publish'
 
     // Enable Kotlin warnings as errors for all modules
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -164,11 +160,11 @@ subprojects {
         repositories {
             maven {
                 name = "rootProjectBuildDir"
-                url "file://${project.rootProject.buildDir}/maven"
+                url = "file://${project.rootProject.buildDir}/maven"
             }
             maven {
                 name = "projectBuildDir"
-                url "file://${project.buildDir}/maven"
+                url = "file://${project.buildDir}/maven"
             }
         }
     }
