@@ -404,7 +404,7 @@ assert_eq!(0, install::first_run.test_get_num_recorded_errors(
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   1,

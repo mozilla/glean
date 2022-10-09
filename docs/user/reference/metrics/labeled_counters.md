@@ -337,7 +337,7 @@ assert_eq!(
 
 ```js
 import * as stability from "./path/to/generated/files/stability.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 // Were there any invalid labels?
 assert(

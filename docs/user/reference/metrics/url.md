@@ -345,7 +345,7 @@ assert_eq!(
 
 ```js
 import * as search from "./path/to/generated/files/search.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   0,

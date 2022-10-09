@@ -307,7 +307,7 @@ assert_eq!(
 
 ```js
 import * as login from "./path/to/generated/files/login.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 // Were there any invalid labels?
 assert(

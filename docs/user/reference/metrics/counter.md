@@ -329,8 +329,7 @@ assert_eq!(
 
 ```js
 import * as controls from "./path/to/generated/files/controls.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
-
+import { ErrorType } from "@mozilla/glean/error";
 assert.strictEqual(
   1,
   await controls.refreshPressed.testGetNumRecordedErrors(ErrorType.InvalidValue)

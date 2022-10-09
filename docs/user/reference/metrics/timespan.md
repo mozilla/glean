@@ -657,7 +657,7 @@ assert_eq!(1, login_time.test_get_num_recorded_errors(ErrorType::InvalidValue));
 
 ```js
 import * as auth from "./path/to/generated/files/auth.js";
-import { ErrorType } from "@mozilla/glean/<platform>";;
+import { ErrorType } from "@mozilla/glean/error";;
 
 assert.strictEqual(
   1,
