@@ -2,9 +2,6 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.1...main)
 
-* General
-  * DEPRECATION: Update `errorType` usage examples by adding the deprecated import statement. ([bug 1761485](https://bugzilla.mozilla.org/show_bug.cgi?id=1761485))
-
 # v44.1.1 (2022-04-14)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v44.1.0...v44.1.1)
