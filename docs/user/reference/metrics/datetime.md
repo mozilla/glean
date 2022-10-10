@@ -353,7 +353,7 @@ assert_eq!(
 
 ```js
 import * as install from "./path/to/generated/files/install.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   0,
