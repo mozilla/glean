@@ -8,4 +8,5 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "Zlib",
+    "Unicode-DFS-2016",
 ]
