@@ -158,8 +158,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
-    implementation "androidx.lifecycle:lifecycle-extensions:$versions.androidx_lifecycle_extensions"
-    implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-process:$versions.androidx_lifecycle"
     implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
 
     // We need a compileOnly dependency on the following block of testing
@@ -182,7 +182,7 @@ dependencies {
     testImplementation "androidx.test.ext:junit:$versions.androidx_junit"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     testImplementation "org.mockito:mockito-core:$versions.mockito"
-    testImplementation "androidx.test:core-ktx:$versions.androidx_core"
+    testImplementation "androidx.test:core-ktx:$versions.androidx_test"
     testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver"
     testImplementation "androidx.work:work-testing:$versions.androidx_work"
 
