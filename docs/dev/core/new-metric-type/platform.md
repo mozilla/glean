@@ -40,7 +40,7 @@ If adding a labeled metric type as well, the same template from the "core" metri
 
 After updating the templates, you need to regenerate the fully-qualified schema using [these instructions](https://github.com/mozilla-services/mozilla-pipeline-schemas#build).
 
-The fully-qualified Glean schema is also used by the Glean SDK's unit test suite to make sure that ping payloads validate against the schema. Therefore, whenever the Glean JSON schema is updated, it should also be copied and checked in to the [Glean SDK repository](https://github.com/mozilla/glean). Specifically, copy the generated schema in `mozilla-pipeline-schemas/schemas/glean/glean.1.schema.json` to the root of the Glean SDK repository. 
+The fully-qualified Glean schema is also used by the Glean SDK's unit test suite to make sure that ping payloads validate against the schema. Therefore, whenever the Glean JSON schema is updated, it should also be copied and checked in to the [Glean SDK repository](https://github.com/mozilla/glean). Specifically, copy the generated schema in `mozilla-pipeline-schemas/schemas/glean/glean.1.schema.json` to the root of the Glean SDK repository.
 
 ## Adding a new metric type to `mozilla-schema-generator`
 
@@ -53,4 +53,17 @@ Each new metric type also needs an entry in the Glean configuration in [`mozilla
         not:
           - glean_ping_info
       type: counter
+```
+
+## Adding a new metric type to `lookml-generator`
+
+Each new metric type needs to be enabled in the [`lookml-generator`](https://github.com/mozilla/lookml-generator).
+The list of allowed Glean metric types is in [`generator/views/glean_ping_view.py.yaml`](https://github.com/mozilla/lookml-generator/blob/3e4a8fdca43bd96635be477c7418bbf996801eaf/generator/views/glean_ping_view.py#L21).
+Add the new metric type to `ALLOWED_TYPES`:
+
+```python
+ALLOWED_TYPES = DISTRIBUTION_TYPES | {
+    # ...
+    "counter",
+}
 ```
