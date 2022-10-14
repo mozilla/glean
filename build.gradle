@@ -13,7 +13,7 @@ buildscript {
     ext.versions = [
         android_gradle_plugin: '7.3.0',
         coroutines: '1.6.4',
-        jna: '5.8.0',
+        jna: '5.12.1',
         junit: '4.12',
         mockito: '3.11.2',
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
