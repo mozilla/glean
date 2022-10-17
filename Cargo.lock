@@ -292,7 +292,7 @@ name = "embedded-uniffi-bindgen"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "uniffi_bindgen",
+ "uniffi_bindgen 0.20.0",
 ]
 
 [[package]]
@@ -418,7 +418,7 @@ dependencies = [
  "thiserror",
  "time",
  "uniffi",
- "uniffi_build",
+ "uniffi_build 0.21.0",
  "uniffi_macros",
  "uuid",
  "whatsys",
@@ -1124,7 +1124,30 @@ dependencies = [
  "serde",
  "serde_json",
  "toml",
- "uniffi_meta",
+ "uniffi_meta 0.20.0",
+ "weedle2",
+]
+
+[[package]]
+name = "uniffi_bindgen"
+version = "0.21.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12cc4af3c0180c7e86c4a3acf2b6587af04ba2567b1e948993df10f421796621"
+dependencies = [
+ "anyhow",
+ "askama",
+ "bincode",
+ "camino",
+ "clap",
+ "fs-err",
+ "goblin",
+ "heck",
+ "once_cell",
+ "paste",
+ "serde",
+ "serde_json",
+ "toml",
+ "uniffi_meta 0.21.0",
  "weedle2",
 ]
 
@@ -1136,7 +1159,17 @@ checksum = "74b65ae1c0bac70369bb0d9df6fae578b1ca130bf4cb6203e2636e2d6969dba5"
 dependencies = [
  "anyhow",
  "camino",
- "uniffi_bindgen",
+]
+
+[[package]]
+name = "uniffi_build"
+version = "0.21.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "510287c368a9386eb731ebe824a6fc6c82a105e20d020af1aa20519c1c1561db"
+dependencies = [
+ "anyhow",
+ "camino",
+ "uniffi_bindgen 0.21.0",
 ]
 
 [[package]]
@@ -1154,8 +1187,8 @@ dependencies = [
  "serde",
  "syn",
  "toml",
- "uniffi_build",
- "uniffi_meta",
+ "uniffi_build 0.20.0",
+ "uniffi_meta 0.20.0",
 ]
 
 [[package]]
@@ -1163,6 +1196,15 @@ name = "uniffi_meta"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe1767e693cbd11fc22c37a4033d82eb9d891c3862e45329b4a891c1d8395df5"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "uniffi_meta"
+version = "0.21.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd9417cc653937681436b93838d8c5f97a5b8c58697813982ee8810bd1dc3b57"
 dependencies = [
  "serde",
 ]
