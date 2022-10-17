@@ -1211,9 +1211,9 @@ dependencies = [
 
 [[package]]
 name = "whatsys"
-version = "0.1.2"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c24fff5aa1e0973964ba23a995e8b10fa2cdeae507e0cbbbd36f8403242a765d"
+checksum = "1df695c878fbe7a6bc75f50e59534d37653260a1065c509b2c1a848082bb921b"
 dependencies = [
  "cc",
  "cfg-if",
