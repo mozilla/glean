@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...main)
 
+* Kotlin
+  * Downgrade Android NDK to r21 to mitigate a crash on `x86(_64)` ([#2227](https://github.com/mozilla/glean/pull/2227), [bug 1791842](https://bugzilla.mozilla.org/show_bug.cgi?id=1791842))
+
 # v51.4.0 (2022-10-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...v51.4.0)
