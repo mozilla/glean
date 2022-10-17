@@ -189,7 +189,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "serde",
- "time",
+ "time 0.1.44",
  "winapi",
 ]
 
@@ -370,7 +370,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror",
- "time",
+ "time 0.3.15",
  "uuid",
  "whatsys",
 ]
@@ -416,7 +416,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror",
- "time",
+ "time 0.3.15",
  "uniffi",
  "uniffi_build",
  "uniffi_macros",
@@ -690,6 +690,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19e64526ebdee182341572e50e9ad03965aa510cd94427a4549448f285e957a1"
 dependencies = [
  "hermit-abi",
+ "libc",
+]
+
+[[package]]
+name = "num_threads"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2819ce041d2ee131036f4fc9d6ae7ae125a3a40e97ba64d04fe799ad9dabbb44"
+dependencies = [
  "libc",
 ]
 
@@ -1017,6 +1026,16 @@ dependencies = [
  "libc",
  "wasi",
  "winapi",
+]
+
+[[package]]
+name = "time"
+version = "0.3.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d634a985c4d4238ec39cacaed2e7ae552fbd3c476b552c1deac3021b7d7eaf0c"
+dependencies = [
+ "libc",
+ "num_threads",
 ]
 
 [[package]]
