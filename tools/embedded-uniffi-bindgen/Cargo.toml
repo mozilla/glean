@@ -8,4 +8,4 @@ publish = false
 
 [dependencies]
 anyhow = "1"
-uniffi_bindgen = "0.20.0"
+uniffi_bindgen = "0.21.0"
