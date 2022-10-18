@@ -8,6 +8,7 @@ the details of which are reproduced below.
 * [MIT License](#MIT)
 * [Mozilla Public License 2.0](#MPL-2.0)
 * [BSD 2-Clause "Simplified" License](#BSD-2-Clause)
+* [Unicode License Agreement - Data Files and Software (2016)](#Unicode-DFS-2016)
 -------------
 
 ## Apache License 2.0
@@ -839,12 +840,12 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [clap 3.1.15]( https://github.com/clap-rs/clap )
-* [clap_derive 3.1.7]( https://github.com/clap-rs/clap/tree/master/clap_derive )
-* [clap_lex 0.2.0]( https://github.com/clap-rs/clap/tree/master/clap_lex )
-* [os_str_bytes 6.0.0]( https://github.com/dylni/os_str_bytes )
-* [ryu 1.0.9]( https://github.com/dtolnay/ryu )
-* [unicode-linebreak 0.1.2]( https://github.com/axelf4/unicode-linebreak )
+* [clap 3.2.22]( https://github.com/clap-rs/clap )
+* [clap_derive 3.2.18]( https://github.com/clap-rs/clap/tree/master/clap_derive )
+* [clap_lex 0.2.4]( https://github.com/clap-rs/clap/tree/master/clap_lex )
+* [os_str_bytes 6.3.0]( https://github.com/dylni/os_str_bytes )
+* [ryu 1.0.11]( https://github.com/dtolnay/ryu )
+* [unicode-linebreak 0.1.4]( https://github.com/axelf4/unicode-linebreak )
 
 ```
                                  Apache License
@@ -1479,7 +1480,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [libc 0.2.125]( https://github.com/rust-lang/libc )
+* [libc 0.2.135]( https://github.com/rust-lang/libc )
 
 ```
                               Apache License
@@ -2089,9 +2090,10 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [anyhow 1.0.64]( https://github.com/dtolnay/anyhow )
+* [ahash 0.7.6]( https://github.com/tkaitchuck/ahash )
+* [anyhow 1.0.65]( https://github.com/dtolnay/anyhow )
 * [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
-* [camino 1.0.9]( https://github.com/camino-rs/camino )
+* [camino 1.1.1]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.6]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
@@ -2099,29 +2101,29 @@ The following text applies to code linked from these dependencies:
 * [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
-* [hashbrown 0.11.2]( https://github.com/rust-lang/hashbrown )
+* [hashbrown 0.12.3]( https://github.com/rust-lang/hashbrown )
 * [heck 0.4.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
 * [idna 0.2.3]( https://github.com/servo/rust-url/ )
-* [indexmap 1.8.1]( https://github.com/bluss/indexmap )
+* [indexmap 1.9.1]( https://github.com/bluss/indexmap )
 * [inherent 1.0.1]( https://github.com/dtolnay/inherent )
-* [itoa 1.0.1]( https://github.com/dtolnay/itoa )
+* [itoa 1.0.4]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [mime 0.3.16]( https://github.com/hyperium/mime )
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
 * [once_cell 1.15.0]( https://github.com/matklad/once_cell )
-* [paste 1.0.7]( https://github.com/dtolnay/paste )
+* [paste 1.0.9]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
-* [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
-* [quote 1.0.18]( https://github.com/dtolnay/quote )
+* [proc-macro2 1.0.47]( https://github.com/dtolnay/proc-macro2 )
+* [quote 1.0.21]( https://github.com/dtolnay/quote )
 * [semver 1.0.10]( https://github.com/dtolnay/semver )
-* [serde 1.0.137]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.137]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.81]( https://github.com/serde-rs/json )
-* [syn 1.0.92]( https://github.com/dtolnay/syn )
+* [serde 1.0.145]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.145]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.86]( https://github.com/serde-rs/json )
+* [syn 1.0.102]( https://github.com/dtolnay/syn )
 * [tempfile 3.3.0]( https://github.com/Stebalien/tempfile )
 * [thiserror 1.0.31]( https://github.com/dtolnay/thiserror )
 * [thiserror-impl 1.0.31]( https://github.com/dtolnay/thiserror )
@@ -2129,9 +2131,9 @@ The following text applies to code linked from these dependencies:
 * [toml 0.5.9]( https://github.com/alexcrichton/toml-rs )
 * [unicase 2.6.0]( https://github.com/seanmonstar/unicase )
 * [unicode-bidi 0.3.8]( https://github.com/servo/unicode-bidi )
+* [unicode-ident 1.0.5]( https://github.com/dtolnay/unicode-ident )
 * [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
-* [unicode-width 0.1.9]( https://github.com/unicode-rs/unicode-width )
-* [unicode-xid 0.2.3]( https://github.com/unicode-rs/unicode-xid )
+* [unicode-width 0.1.10]( https://github.com/unicode-rs/unicode-width )
 * [url 2.2.2]( https://github.com/servo/rust-url )
 
 ```
@@ -2765,7 +2767,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [getrandom 0.2.6]( https://github.com/rust-random/getrandom )
+* [getrandom 0.2.7]( https://github.com/rust-random/getrandom )
 
 ```
                               Apache License
@@ -3399,7 +3401,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [fs-err 2.7.0]( https://github.com/andrewhickman/fs-err )
+* [fs-err 2.8.1]( https://github.com/andrewhickman/fs-err )
 * [log 0.4.17]( https://github.com/rust-lang/log )
 * [uuid 0.8.2]( https://github.com/uuid-rs/uuid )
 
@@ -4339,8 +4341,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
-* [unicode-width 0.1.9]( https://github.com/unicode-rs/unicode-width )
-* [unicode-xid 0.2.3]( https://github.com/unicode-rs/unicode-xid )
+* [unicode-width 0.1.10]( https://github.com/unicode-rs/unicode-width )
 
 ```
 Licensed under the Apache License, Version 2.0
@@ -4584,7 +4585,7 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [textwrap 0.15.0]( https://github.com/mgeisler/textwrap )
+* [textwrap 0.15.1]( https://github.com/mgeisler/textwrap )
 
 ```
 MIT License
@@ -5094,11 +5095,11 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.21.0]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0
@@ -5252,9 +5253,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.4.0]( https://github.com/mozilla/glean )
+* [glean 51.5.0]( https://github.com/mozilla/glean )
 * [glean-build 6.1.2]( https://github.com/mozilla/glean )
-* [glean-core 51.4.0]( https://github.com/mozilla/glean )
+* [glean-core 51.5.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5631,6 +5632,38 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
   This Source Code Form is "Incompatible With Secondary Licenses", as
   defined by the Mozilla Public License, v. 2.0.
+
+```
+## Unicode License Agreement - Data Files and Software (2016)
+<span id="Unicode-DFS-2016"></span>
+
+The following text applies to code linked from these dependencies:
+
+* [unicode-ident 1.0.5]( https://github.com/dtolnay/unicode-ident )
+
+```
+UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE
+
+Unicode Data Files include all data files under the directories http://www.unicode.org/Public/, http://www.unicode.org/reports/, http://www.unicode.org/cldr/data/, http://source.icu-project.org/repos/icu/, and http://www.unicode.org/utility/trac/browser/.
+
+Unicode Data Files do not include PDF online code charts under the directory http://www.unicode.org/Public/.
+
+Software includes any source code published in the Unicode Standard or under the directories http://www.unicode.org/Public/, http://www.unicode.org/reports/, http://www.unicode.org/cldr/data/, http://source.icu-project.org/repos/icu/, and http://www.unicode.org/utility/trac/browser/.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING UNICODE INC.'S DATA FILES ("DATA FILES"), AND/OR SOFTWARE ("SOFTWARE"), YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2016 Unicode, Inc. All rights reserved. Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of the Unicode data files and any associated documentation (the "Data Files") or Unicode software and any associated documentation (the "Software") to deal in the Data Files or Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Data Files or Software, and to permit persons to whom the Data Files or Software are furnished to do so, provided that either
+
+     (a) this copyright and permission notice appear with all copies of the Data Files or Software, or
+     (b) this copyright and permission notice appear in associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in these Data Files or Software without prior written authorization of the copyright holder.
 
 ```
 

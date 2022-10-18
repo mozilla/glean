@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.5.0...main)
+
+# v51.5.0 (2022-10-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...v51.5.0)
 
 * General
   * Add `count` to `DistributionData` payload ([#2196](https://github.com/mozilla/glean/pull/2196))
