@@ -2,13 +2,21 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...main)
 
+* General
+  * Add `count` to `DistributionData` payload ([#2196](https://github.com/mozilla/glean/pull/2196))
+  * Update to UniFFI 0.21.0 ([#2229](https://github.com/mozilla/glean/pull/2229))
+* Android
+  * Synchronize AndroidX dependencies with AC ([#2219](https://github.com/mozilla/glean/pull/2219))
+  * Bump `jna` to 5.12.1 #2221 ([#2221](https://github.com/mozilla/glean/pull/2221))
+* iOS
+  * Glean for iOS is now being built with Xcode 14.0 ([#2188](https://github.com/mozilla/glean/pull/2188))
+
 # v51.4.0 (2022-10-04)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.3.0...v51.4.0)
 
 * Kotlin
   * Update Kotlin and Android Gradle Plugin to the latest releases ([#2211](https://github.com/mozilla/glean/pull/2211))
-
 * Swift
   * Fix for iOS startup crash caused by Glean ([#2206](https://github.com/mozilla/glean/pull/2206))
 
@@ -21,9 +29,6 @@
 * Kotlin
   * Gradle plugin: Fix quoting issue in Python wrapper code ([#2193](https://github.com/mozilla/glean/pull/2193))
   * Bumped the required Android NDK to version 25.1.8937393 ([#2195](https://github.com/mozilla/glean/pull/2195))
-
-* iOS
-  * Glean for iOS is now being built with Xcode 14.0.0 ([#2188](https://github.com/mozilla/glean/pull/2188)).
 
 # v51.2.0 (2022-09-08)
 
