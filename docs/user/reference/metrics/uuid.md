@@ -371,7 +371,7 @@ assert_eq!(
 
 ```js
 import * as user from "./path/to/generated/files/user.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 // Was the string truncated, and an error reported?
 assert.strictEqual(

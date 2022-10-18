@@ -265,7 +265,7 @@ assert_eq!(
 
 ```js
 import * as accessibility from "./path/to/generated/files/acessibility.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert(
   1,

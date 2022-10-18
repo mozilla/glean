@@ -262,7 +262,7 @@ assert_eq!(
 
 ```js
 import * as display from "./path/to/generated/files/display.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   0,

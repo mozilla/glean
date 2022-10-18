@@ -79,7 +79,18 @@ fn allocate_memory(bytes: u64) {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716952"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as memory from "./path/to/generated/files/memory.js";
+
+function allocateMemory() {
+    // ...
+    memory.heapAllocated.accumulate(nbytes / 1024);
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -196,12 +207,28 @@ assert_eq!(11, snapshot.sum);
 
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assert_eq!(2, snapshot.values.len());
+assert_eq!(2, snapshot.count);
 ```
 
 
 </div>
-<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as memory from "./path/to/generated/files/memory.js";
+
+// Get snapshot
+const snapshot = await memory.heapAllocated.testGetValue();
+
+// Does the sum have the expected value?
+assert.equal(11, snapshot.sum);
+
+// Usually you don't know the exact memory values,
+// but know how many should have been recorded.
+assert.equal(2, snapshot.count);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -291,7 +318,20 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"  data-bug="1716952"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as memory from "./path/to/generated/files/memory.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+// Did this record a negative value?
+assert.equal(
+    0,
+    await memory.heapAllocated.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}

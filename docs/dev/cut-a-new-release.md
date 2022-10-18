@@ -78,7 +78,8 @@ When CI has finished and is green for your specific release branch, you are read
     1. [Create a New Release](https://github.com/mozilla/glean/releases/new) in the GitHub UI (`Releases > Draft a New Release`).
     2. Enter `v<myversion>` as the tag. It's important this is the same as the version you specified to the `prepare_release.sh` script, with the `v` prefix added.
     3. Select the `release` branch as the target.
-     4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+    4. Under the description, paste the contents of the release notes from `CHANGELOG.md`.
+    5. Click the green `Publish Release` button.
 5. Wait for the CI build to complete for the tag.
     * You can check [on CircleCI for the running build](https://circleci.com/gh/mozilla/glean).
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
@@ -87,6 +88,7 @@ When CI has finished and is green for your specific release branch, you are read
 6. Merge the Pull Request opened previously.
     * This is important so that no changes are lost.
     * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
+    * There is a separate CircleCI task for the release branch, ensure that it also completes.
 7. Once the above pull request lands, delete the specific release branch.
 8. Post a message to [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org) announcing the new release.
     * Include a copy of the release-specific changelog if you want to be fancy.

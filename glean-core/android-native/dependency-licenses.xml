@@ -61,6 +61,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: proc-macro-error-attr</name>
     <url>https://gitlab.com/CreepySkeleton/proc-macro-error</url>
   </license>  <license>
+    <name>Apache License 2.0: ahash</name>
+    <url>https://github.com/tkaitchuck/ahash</url>
+  </license>  <license>
     <name>Apache License 2.0: anyhow</name>
     <url>https://github.com/dtolnay/anyhow</url>
   </license>  <license>
@@ -181,14 +184,14 @@ the details of which are reproduced below.
     <name>Apache License 2.0: unicode-bidi</name>
     <url>https://github.com/servo/unicode-bidi</url>
   </license>  <license>
+    <name>Apache License 2.0: unicode-ident</name>
+    <url>https://github.com/dtolnay/unicode-ident</url>
+  </license>  <license>
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-width</name>
     <url>https://github.com/unicode-rs/unicode-width</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicode-xid</name>
-    <url>https://github.com/unicode-rs/unicode-xid</url>
   </license>  <license>
     <name>Apache License 2.0: url</name>
     <url>https://github.com/servo/rust-url</url>
@@ -255,9 +258,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: unicode-width</name>
     <url>https://github.com/unicode-rs/unicode-width</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicode-xid</name>
-    <url>https://github.com/unicode-rs/unicode-xid</url>
   </license>  <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
@@ -381,5 +381,8 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
+  </license>  <license>
+    <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
+    <url>https://github.com/dtolnay/unicode-ident</url>
   </license></licenses>
 

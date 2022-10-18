@@ -111,7 +111,18 @@ fn on_page_start() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+function onPageStart() {
+    // store this ID, you will need it later to stop or cancel your timer
+    const timerId = pages.pageLoad.start();
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -197,7 +208,17 @@ fn on_page_loaded() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+function onPageLoaded() {
+    pages.pageLoad.stopAndAccumulate(timerId);
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -265,7 +286,7 @@ with metrics.pages.page_load.measure():
 
 </div>
 <div data-lang="Rust" class="tab"></div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}
@@ -333,7 +354,17 @@ fn on_page_error() {
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+function onPageError() {
+    pages.pageLoad.cancel(timerId);
+}
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -372,9 +403,12 @@ import org.mozilla.yourApplication.GleanMetrics.Pages
 // Get snapshot.
 val snapshot = Pages.pageLoad.testGetValue()
 
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum)
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.sum)
+assertEquals(2L, snapshot.count)
 ```
 
 </div>
@@ -386,9 +420,12 @@ import org.mozilla.yourApplication.GleanMetrics.Pages;
 // Get snapshot.
 DistributionData snapshot = pages.INSTANCE.pageLoad().testGetValue();
 
+// Does the sum have the expected value?
+assertEquals(11, snapshot.sum);
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assertEquals(1L, snapshot.getSum());
+assertEquals(2L, snapshot.getCount());
 ```
 
 </div>
@@ -398,9 +435,12 @@ assertEquals(1L, snapshot.getSum());
 // Get snapshot.
 let snapshot = pages.pageLoad.testGetValue()
 
+// Does the sum have the expected value?
+XCTAssertEqual(11, snapshot.sum)
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-XCTAssertEqual(1, snapshot.sum)
+XCTAssertEqual(2, snapshot.count)
 ```
 
 </div>
@@ -413,9 +453,12 @@ metrics = load_metrics("metrics.yaml")
 # Get snapshot.
 snapshot = metrics.pages.page_load.test_get_value()
 
+# Does the sum have the expected value?
+assert 11 == snapshot.sum
+
 # Usually you don't know the exact timing values,
 # but how many should have been recorded.
-assert 1 == snapshot.sum
+assert 2 == snapshot.count
 ```
 
 </div>
@@ -428,14 +471,29 @@ use glean_metrics::pages;
 // Get snapshot
 let snapshot = pages::page_load.test_get_value(None).unwrap();
 
+// Does the sum have the expected value?
+assert_eq!(11, snapshot.sum);
+
 // Usually you don't know the exact timing values,
 // but how many should have been recorded.
-assert_eq!(1, snapshot.values.len());
+assert_eq!(2, snapshot.count);
 ```
 
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+const snapshot = await pages.pageLoad.testGetValue();
+
+// Usually you don't know the exact timing values,
+// but how many should have been recorded.
+assert.equal(1, snapshot.count);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -524,7 +582,16 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab" data-bug="1716954"></div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+assert.equal(1, await pages.pageLoad.testGetNumRecordedErrors(ErrorType.InvalidValue));
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}

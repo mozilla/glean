@@ -392,7 +392,7 @@ assert_eq!(
 
 ```js
 import * as views from "./path/to/generated/files/views.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   0,

@@ -245,7 +245,7 @@ assert_eq!(
 
 ```js
 import * as article from "./path/to/generated/files/article.js";
-import { ErrorType } from "@mozilla/glean/<platform>";
+import { ErrorType } from "@mozilla/glean/error";
 
 assert.strictEqual(
   0,

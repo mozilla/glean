@@ -63,7 +63,15 @@ graphics::checkerboard_peak.accumulate_samples_signed(vec![23]);
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+
+graphics.checkerboardPeak.accumulateSamples([23]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -114,6 +122,9 @@ val snapshot = Graphics.checkerboardPeak.testGetValue()
 // Does the sum have the expected value?
 assertEquals(23, snapshot.sum)
 
+// Does the count have the expected value?
+assertEquals(1L, snapshot.count)
+
 // Buckets are indexed by their lower bound.
 assertEquals(1L, snapshot.values[19])
 ```
@@ -130,6 +141,9 @@ val snapshot = Graphics.INSTANCE.checkerboardPeak().testGetValue();
 
 // Does the sum have the expected value?
 assertEquals(23, snapshot.sum);
+
+// Does the count have the expected value?
+assertEquals(1L, snapshot.count);
 ```
 
 </div>
@@ -139,9 +153,11 @@ assertEquals(23, snapshot.sum);
 // Get snapshot.
 let snapshot = graphics.checkerboardPeak.testGetValue()
 
-// Usually you don't know the exact values,
-// but how many should have been recorded.
+// Does the sum have the expected value?
 XCTAssertEqual(23, snapshot.sum)
+
+// Does the count have the expected value?
+XCTAssertEqual(1, snapshot.count)
 
 // Buckets are indexed by their lower bound.
 XCTAssertEqual(1L, snapshot.values[19])
@@ -157,12 +173,14 @@ metrics = load_metrics("metrics.yaml")
 # Get snapshot.
 snapshot = metrics.graphics.checkerboard_peak.test_get_value()
 
-# Usually you don't know the exact values,
-# but how many should have been recorded.
+# Does the sum have the expected value?
 assert 23 == snapshot.sum
 
+# Does the count have the expected value?
+assert 1 == snapshot.count
+
 # Buckets are indexed by their lower bound.
-assertEquals(1L, snapshot.values[19])
+assert 1 == snapshot.values[19]
 ```
 
 </div>
@@ -171,16 +189,33 @@ assertEquals(1L, snapshot.values[19])
 ```Rust
 use glean_metrics::graphics;
 
-// Usually you don't know the exact values,
-// but how many should have been recorded.
+// Does the sum have the expected value?
 assert_eq!(23, graphics::checkerboard_peak.test_get_value(None).unwrap().sum);
 
+// Does the count have the expected value?
+assert_eq!(1, graphics::checkerboard_peak.test_get_value(None).unwrap().count);
+
 // Buckets are indexed by their lower bound.
-assert_eq(1, snapshot.values[19])
+assert_eq!(1, snapshot.values[19])
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+
+// Get snapshot
+const snapshot = await graphics.checkerboardPeak.testGetValue();
+
+// Does the sum have the expected value?
+assert.equal(23, snapshot.sum);
+
+// Buckets are indexed by their lower bound.
+assert.equal(1, snapshot.values[19]);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab">
 
 **C++**
@@ -276,7 +311,20 @@ assert_eq!(
 ```
 
 </div>
-<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+import { ErrorType } from "@mozilla/glean/<platform>";
+
+// Did the metric receive a negative value?
+assert.equal(
+    0,
+    graphics.checkerboardPeak.testGetNumRecordedErrors(ErrorType.InvalidValue)
+);
+```
+
+</div>
 <div data-lang="Firefox Desktop" class="tab"></div>
 
 {{#include ../../../shared/tab_footer.md}}

@@ -8,6 +8,7 @@ the details of which are reproduced below.
 * [MIT License](#MIT)
 * [Mozilla Public License 2.0](#MPL-2.0)
 * [BSD 2-Clause "Simplified" License](#BSD-2-Clause)
+* [Unicode License Agreement - Data Files and Software (2016)](#Unicode-DFS-2016)
 -------------
 
 ## Apache License 2.0
@@ -839,12 +840,12 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [clap 3.1.15]( https://github.com/clap-rs/clap )
-* [clap_derive 3.1.7]( https://github.com/clap-rs/clap/tree/master/clap_derive )
-* [clap_lex 0.2.0]( https://github.com/clap-rs/clap/tree/master/clap_lex )
-* [os_str_bytes 6.0.0]( https://github.com/dylni/os_str_bytes )
-* [ryu 1.0.9]( https://github.com/dtolnay/ryu )
-* [unicode-linebreak 0.1.2]( https://github.com/axelf4/unicode-linebreak )
+* [clap 3.2.22]( https://github.com/clap-rs/clap )
+* [clap_derive 3.2.18]( https://github.com/clap-rs/clap/tree/master/clap_derive )
+* [clap_lex 0.2.4]( https://github.com/clap-rs/clap/tree/master/clap_lex )
+* [os_str_bytes 6.3.0]( https://github.com/dylni/os_str_bytes )
+* [ryu 1.0.11]( https://github.com/dtolnay/ryu )
+* [unicode-linebreak 0.1.4]( https://github.com/axelf4/unicode-linebreak )
 
 ```
                                  Apache License
@@ -1479,7 +1480,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [libc 0.2.125]( https://github.com/rust-lang/libc )
+* [libc 0.2.135]( https://github.com/rust-lang/libc )
 
 ```
                               Apache License
@@ -2089,9 +2090,10 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [anyhow 1.0.64]( https://github.com/dtolnay/anyhow )
+* [ahash 0.7.6]( https://github.com/tkaitchuck/ahash )
+* [anyhow 1.0.65]( https://github.com/dtolnay/anyhow )
 * [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
-* [camino 1.0.9]( https://github.com/camino-rs/camino )
+* [camino 1.1.1]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.6]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
@@ -2099,29 +2101,29 @@ The following text applies to code linked from these dependencies:
 * [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
-* [hashbrown 0.11.2]( https://github.com/rust-lang/hashbrown )
+* [hashbrown 0.12.3]( https://github.com/rust-lang/hashbrown )
 * [heck 0.4.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
 * [idna 0.2.3]( https://github.com/servo/rust-url/ )
-* [indexmap 1.8.1]( https://github.com/bluss/indexmap )
+* [indexmap 1.9.1]( https://github.com/bluss/indexmap )
 * [inherent 1.0.1]( https://github.com/dtolnay/inherent )
-* [itoa 1.0.1]( https://github.com/dtolnay/itoa )
+* [itoa 1.0.4]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [mime 0.3.16]( https://github.com/hyperium/mime )
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
 * [once_cell 1.15.0]( https://github.com/matklad/once_cell )
-* [paste 1.0.7]( https://github.com/dtolnay/paste )
+* [paste 1.0.9]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
-* [proc-macro2 1.0.37]( https://github.com/dtolnay/proc-macro2 )
-* [quote 1.0.18]( https://github.com/dtolnay/quote )
+* [proc-macro2 1.0.47]( https://github.com/dtolnay/proc-macro2 )
+* [quote 1.0.21]( https://github.com/dtolnay/quote )
 * [semver 1.0.10]( https://github.com/dtolnay/semver )
-* [serde 1.0.137]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.137]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.81]( https://github.com/serde-rs/json )
-* [syn 1.0.92]( https://github.com/dtolnay/syn )
+* [serde 1.0.145]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.145]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.86]( https://github.com/serde-rs/json )
+* [syn 1.0.102]( https://github.com/dtolnay/syn )
 * [tempfile 3.3.0]( https://github.com/Stebalien/tempfile )
 * [thiserror 1.0.31]( https://github.com/dtolnay/thiserror )
 * [thiserror-impl 1.0.31]( https://github.com/dtolnay/thiserror )
@@ -2129,9 +2131,9 @@ The following text applies to code linked from these dependencies:
 * [toml 0.5.9]( https://github.com/alexcrichton/toml-rs )
 * [unicase 2.6.0]( https://github.com/seanmonstar/unicase )
 * [unicode-bidi 0.3.8]( https://github.com/servo/unicode-bidi )
+* [unicode-ident 1.0.5]( https://github.com/dtolnay/unicode-ident )
 * [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
-* [unicode-width 0.1.9]( https://github.com/unicode-rs/unicode-width )
-* [unicode-xid 0.2.3]( https://github.com/unicode-rs/unicode-xid )
+* [unicode-width 0.1.10]( https://github.com/unicode-rs/unicode-width )
 * [url 2.2.2]( https://github.com/servo/rust-url )
 
 ```
@@ -2765,7 +2767,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [getrandom 0.2.6]( https://github.com/rust-random/getrandom )
+* [getrandom 0.2.7]( https://github.com/rust-random/getrandom )
 
 ```
                               Apache License
@@ -3399,7 +3401,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [fs-err 2.7.0]( https://github.com/andrewhickman/fs-err )
+* [fs-err 2.8.1]( https://github.com/andrewhickman/fs-err )
 * [log 0.4.17]( https://github.com/rust-lang/log )
 * [uuid 0.8.2]( https://github.com/uuid-rs/uuid )
 
@@ -4339,8 +4341,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
-* [unicode-width 0.1.9]( https://github.com/unicode-rs/unicode-width )
-* [unicode-xid 0.2.3]( https://github.com/unicode-rs/unicode-xid )
+* [unicode-width 0.1.10]( https://github.com/unicode-rs/unicode-width )
 
 ```
 Licensed under the Apache License, Version 2.0
@@ -4584,7 +4585,7 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [textwrap 0.15.0]( https://github.com/mgeisler/textwrap )
+* [textwrap 0.15.1]( https://github.com/mgeisler/textwrap )
 
 ```
 MIT License
@@ -5203,11 +5204,11 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.20.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.20.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.21.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.21.0]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0
@@ -5361,9 +5362,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.4.0]( https://github.com/mozilla/glean )
+* [glean 51.5.0]( https://github.com/mozilla/glean )
 * [glean-build 6.1.2]( https://github.com/mozilla/glean )
-* [glean-core 51.4.0]( https://github.com/mozilla/glean )
+* [glean-core 51.5.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5742,159 +5743,36 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   defined by the Mozilla Public License, v. 2.0.
 
 ```
-## Mozilla Public License 2.0
-<span id="MPL-2.0"></span>
+## Unicode License Agreement - Data Files and Software (2016)
+<span id="Unicode-DFS-2016"></span>
 
 The following text applies to code linked from these dependencies:
 
-* [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
-
+* [unicode-ident 1.0.5]( https://github.com/dtolnay/unicode-ident )
 
 ```
-Mozilla Public License Version 2.0
+UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE
 
-1. Definitions
+Unicode Data Files include all data files under the directories http://www.unicode.org/Public/, http://www.unicode.org/reports/, http://www.unicode.org/cldr/data/, http://source.icu-project.org/repos/icu/, and http://www.unicode.org/utility/trac/browser/.
 
-     1.1. "Contributor" means each individual or legal entity that creates, contributes to the creation of, or owns Covered Software.
+Unicode Data Files do not include PDF online code charts under the directory http://www.unicode.org/Public/.
 
-     1.2. "Contributor Version" means the combination of the Contributions of others (if any) used by a Contributor and that particular Contributor's Contribution.
+Software includes any source code published in the Unicode Standard or under the directories http://www.unicode.org/Public/, http://www.unicode.org/reports/, http://www.unicode.org/cldr/data/, http://source.icu-project.org/repos/icu/, and http://www.unicode.org/utility/trac/browser/.
 
-     1.3. "Contribution" means Covered Software of a particular Contributor.
+NOTICE TO USER: Carefully read the following legal agreement. BY DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING UNICODE INC.'S DATA FILES ("DATA FILES"), AND/OR SOFTWARE ("SOFTWARE"), YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
 
-     1.4. "Covered Software" means Source Code Form to which the initial Contributor has attached the notice in Exhibit A, the Executable Form of such Source Code Form, and Modifications of such Source Code Form, in each case including portions thereof.
+COPYRIGHT AND PERMISSION NOTICE
 
-     1.5. "Incompatible With Secondary Licenses" means
+Copyright © 1991-2016 Unicode, Inc. All rights reserved. Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
 
-          (a) that the initial Contributor has attached the notice described in Exhibit B to the Covered Software; or
+Permission is hereby granted, free of charge, to any person obtaining a copy of the Unicode data files and any associated documentation (the "Data Files") or Unicode software and any associated documentation (the "Software") to deal in the Data Files or Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Data Files or Software, and to permit persons to whom the Data Files or Software are furnished to do so, provided that either
 
-          (b) that the Covered Software was made available under the terms of version 1.1 or earlier of the License, but not also under the terms of a Secondary License.
+     (a) this copyright and permission notice appear with all copies of the Data Files or Software, or
+     (b) this copyright and permission notice appear in associated Documentation.
 
-     1.6. "Executable Form" means any form of the work other than Source Code Form.
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR SOFTWARE.
 
-     1.7. "Larger Work" means a work that combines Covered Software with other material, in a separate file or files, that is not Covered Software.
-
-     1.8. "License" means this document.
-
-     1.9. "Licensable" means having the right to grant, to the maximum extent possible, whether at the time of the initial grant or subsequently, any and all of the rights conveyed by this License.
-
-     1.10. "Modifications" means any of the following:
-
-          (a) any file in Source Code Form that results from an addition to, deletion from, or modification of the contents of Covered Software; or
-
-          (b) any new file in Source Code Form that contains any Covered Software.
-
-     1.11. "Patent Claims" of a Contributor means any patent claim(s), including without limitation, method, process, and apparatus claims, in any patent Licensable by such Contributor that would be infringed, but for the grant of the License, by the making, using, selling, offering for sale, having made, import, or transfer of either its Contributions or its Contributor Version.
-
-     1.12. "Secondary License" means either the GNU General Public License, Version 2.0, the GNU Lesser General Public License, Version 2.1, the GNU Affero General Public License, Version 3.0, or any later versions of those licenses.
-
-     1.13. "Source Code Form" means the form of the work preferred for making modifications.
-
-     1.14. "You" (or "Your") means an individual or a legal entity exercising rights under this License. For legal entities, "You" includes any entity that controls, is controlled by, or is under common control with You. For purposes of this definition, "control" means (a) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (b) ownership of more than fifty percent (50%) of the outstanding shares or beneficial ownership of such entity.
-
-2. License Grants and Conditions
-
-     2.1. Grants
-     Each Contributor hereby grants You a world-wide, royalty-free, non-exclusive license:
-
-          (a) under intellectual property rights (other than patent or trademark) Licensable by such Contributor to use, reproduce, make available, modify, display, perform, distribute, and otherwise exploit its Contributions, either on an unmodified basis, with Modifications, or as part of a Larger Work; and
-
-          (b) under Patent Claims of such Contributor to make, use, sell, offer for sale, have made, import, and otherwise transfer either its Contributions or its Contributor Version.
-
-     2.2. Effective Date
-     The licenses granted in Section 2.1 with respect to any Contribution become effective for each Contribution on the date the Contributor first distributes such Contribution.
-
-     2.3. Limitations on Grant Scope
-     The licenses granted in this Section 2 are the only rights granted under this License. No additional rights or licenses will be implied from the distribution or licensing of Covered Software under this License. Notwithstanding Section 2.1(b) above, no patent license is granted by a Contributor:
-
-          (a) for any code that a Contributor has removed from Covered Software; or
-
-          (b) for infringements caused by: (i) Your and any other third party's modifications of Covered Software, or (ii) the combination of its Contributions with other software (except as part of its Contributor Version); or
-
-          (c) under Patent Claims infringed by Covered Software in the absence of its Contributions.
-
-     This License does not grant any rights in the trademarks, service marks, or logos of any Contributor (except as may be necessary to comply with the notice requirements in Section 3.4).
-
-     2.4. Subsequent Licenses
-     No Contributor makes additional grants as a result of Your choice to distribute the Covered Software under a subsequent version of this License (see Section 10.2) or under the terms of a Secondary License (if permitted under the terms of Section 3.3).
-
-     2.5. Representation
-     Each Contributor represents that the Contributor believes its Contributions are its original creation(s) or it has sufficient rights to grant the rights to its Contributions conveyed by this License.
-
-     2.6. Fair Use
-     This License is not intended to limit any rights You have under applicable copyright doctrines of fair use, fair dealing, or other equivalents.
-
-     2.7. Conditions
-     Sections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted in Section 2.1.
-
-3. Responsibilities
-
-     3.1. Distribution of Source Form
-     All distribution of Covered Software in Source Code Form, including any Modifications that You create or to which You contribute, must be under the terms of this License. You must inform recipients that the Source Code Form of the Covered Software is governed by the terms of this License, and how they can obtain a copy of this License. You may not attempt to alter or restrict the recipients' rights in the Source Code Form.
-
-     3.2. Distribution of Executable Form
-     If You distribute Covered Software in Executable Form then:
-
-          (a) such Covered Software must also be made available in Source Code Form, as described in Section 3.1, and You must inform recipients of the Executable Form how they can obtain a copy of such Source Code Form by reasonable means in a timely manner, at a charge no more than the cost of distribution to the recipient; and
-
-          (b) You may distribute such Executable Form under the terms of this License, or sublicense it under different terms, provided that the license for the Executable Form does not attempt to limit or alter the recipients' rights in the Source Code Form under this License.
-
-     3.3. Distribution of a Larger Work
-     You may create and distribute a Larger Work under terms of Your choice, provided that You also comply with the requirements of this License for the Covered Software. If the Larger Work is a combination of Covered Software with a work governed by one or more Secondary Licenses, and the Covered Software is not Incompatible With Secondary Licenses, this License permits You to additionally distribute such Covered Software under the terms of such Secondary License(s), so that the recipient of the Larger Work may, at their option, further distribute the Covered Software under the terms of either this License or such Secondary License(s).
-
-     3.4. Notices
-     You may not remove or alter the substance of any license notices (including copyright notices, patent notices, disclaimers of warranty, or limitations of liability) contained within the Source Code Form of the Covered Software, except that You may alter any license notices to the extent required to remedy known factual inaccuracies.
-
-     3.5. Application of Additional Terms
-     You may choose to offer, and to charge a fee for, warranty, support, indemnity or liability obligations to one or more recipients of Covered Software. However, You may do so only on Your own behalf, and not on behalf of any Contributor. You must make it absolutely clear that any such warranty, support, indemnity, or liability obligation is offered by You alone, and You hereby agree to indemnify every Contributor for any liability incurred by such Contributor as a result of warranty, support, indemnity or liability terms You offer. You may include additional disclaimers of warranty and limitations of liability specific to any jurisdiction.
-
-4. Inability to Comply Due to Statute or Regulation
-If it is impossible for You to comply with any of the terms of this License with respect to some or all of the Covered Software due to statute, judicial order, or regulation then You must: (a) comply with the terms of this License to the maximum extent possible; and (b) describe the limitations and the code they affect. Such description must be placed in a text file included with all distributions of the Covered Software under this License. Except to the extent prohibited by statute or regulation, such description must be sufficiently detailed for a recipient of ordinary skill to be able to understand it.
-
-5. Termination
-
-     5.1. The rights granted under this License will terminate automatically if You fail to comply with any of its terms. However, if You become compliant, then the rights granted under this License from a particular Contributor are reinstated (a) provisionally, unless and until such Contributor explicitly and finally terminates Your grants, and (b) on an ongoing basis, if such Contributor fails to notify You of the non-compliance by some reasonable means prior to 60 days after You have come back into compliance. Moreover, Your grants from a particular Contributor are reinstated on an ongoing basis if such Contributor notifies You of the non-compliance by some reasonable means, this is the first time You have received notice of non-compliance with this License from such Contributor, and You become compliant prior to 30 days after Your receipt of the notice.
-
-     5.2. If You initiate litigation against any entity by asserting a patent infringement claim (excluding declaratory judgment actions, counter-claims, and cross-claims) alleging that a Contributor Version directly or indirectly infringes any patent, then the rights granted to You by any and all Contributors for the Covered Software under Section 2.1 of this License shall terminate.
-
-     5.3. In the event of termination under Sections 5.1 or 5.2 above, all end user license agreements (excluding distributors and resellers) which have been validly granted by You or Your distributors under this License prior to termination shall survive termination.
-
-6. Disclaimer of Warranty
-Covered Software is provided under this License on an "as is" basis, without warranty of any kind, either expressed, implied, or statutory, including, without limitation, warranties that the Covered Software is free of defects, merchantable, fit for a particular purpose or non-infringing. The entire risk as to the quality and performance of the Covered Software is with You. Should any Covered Software prove defective in any respect, You (not any Contributor) assume the cost of any necessary servicing, repair, or correction. This disclaimer of warranty constitutes an essential part of this License. No use of any Covered Software is authorized under this License except under this disclaimer.
-
-7. Limitation of Liability
-Under no circumstances and under no legal theory, whether tort (including negligence), contract, or otherwise, shall any Contributor, or anyone who distributes Covered Software as permitted above, be liable to You for any direct, indirect, special, incidental, or consequential damages of any character including, without limitation, damages for lost profits, loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses, even if such party shall have been informed of the possibility of such damages. This limitation of liability shall not apply to liability for death or personal injury resulting from such party's negligence to the extent applicable law prohibits such limitation. Some jurisdictions do not allow the exclusion or limitation of incidental or consequential damages, so this exclusion and limitation may not apply to You.
-
-8. Litigation
-Any litigation relating to this License may be brought only in the courts of a jurisdiction where the defendant maintains its principal place of business and such litigation shall be governed by laws of that jurisdiction, without reference to its conflict-of-law provisions. Nothing in this Section shall prevent a party's ability to bring cross-claims or counter-claims.
-
-9. Miscellaneous
-This License represents the complete agreement concerning the subject matter hereof. If any provision of this License is held to be unenforceable, such provision shall be reformed only to the extent necessary to make it enforceable. Any law or regulation which provides that the language of a contract shall be construed against the drafter shall not be used to construe this License against a Contributor.
-
-10. Versions of the License
-
-     10.1. New Versions
-     Mozilla Foundation is the license steward. Except as provided in Section 10.3, no one other than the license steward has the right to modify or publish new versions of this License. Each version will be given a distinguishing version number.
-
-     10.2. Effect of New Versions
-     You may distribute the Covered Software under the terms of the version of the License under which You originally received the Covered Software, or under the terms of any subsequent version published by the license steward.
-
-     10.3. Modified Versions
-     If you create software not governed by this License, and you want to create a new license for such software, you may create and use a modified version of this License if you rename the license and remove any references to the name of the license steward (except to note that such modified license differs from this License).
-
-     10.4. Distributing Source Code Form that is Incompatible With Secondary Licenses
-     If You choose to distribute Source Code Form that is Incompatible With Secondary Licenses under the terms of this version of the License, the notice described in Exhibit B of this License must be attached.
-
-Exhibit A - Source Code Form License Notice
-
-     This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-If it is not possible or desirable to put the notice in a particular file, then You may include the notice in a location (such as a LICENSE file in a relevant directory) where a recipient would be likely to look for such a notice.
-
-You may add additional accurate notices of copyright ownership.
-
-Exhibit B - "Incompatible With Secondary Licenses" Notice
-
-     This Source Code Form is "Incompatible With Secondary Licenses", as defined by the Mozilla Public License, v. 2.0.
+Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in these Data Files or Software without prior written authorization of the copyright holder.
 
 ```
 
