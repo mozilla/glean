@@ -170,6 +170,16 @@ May be one of the following values:
   Emails will be sent to the `notification_emails` addresses when the metric is about to expire.
   Generally, when a metric is no longer needed, it should simply be removed.
   This does not affect the availability of data already collected by the pipeline.
+- `<major version>`: An integer greater than 0 representing the major version the metric expires in,
+  For example, `11`.
+  The version is checked at build time against the major provided to the glean_parser
+  (see e.g.
+  [Build configuration for Android](../../language-bindings/android/android-build-configuration-options.md#gleanexpirebyversion),
+  [Build configuration for iOS](../../language-bindings/ios/ios-build-configuration-options.md#--expire-by-version-integer))
+  and is only valid if a major version is provided at built time.
+  If no major version is provided at build time
+  and expiration by major version is used for a metric, an error is raised.
+  Note that mixing expiration by date and version is not allowed within a product.
 - `never`: This metric never expires.
 - `expired`: This metric is manually expired.
 

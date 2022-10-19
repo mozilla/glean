@@ -15,7 +15,7 @@ in the first ping sent during a particular run of the application.
 
 ##### `user`
 
-**Reach out to the Glean team before using this.**
+**NOTE: Reach out to the Glean team before using this.**
 
 The metric is part of the user's profile and will live as long as the profile lives.
 This is often not the best choice unless the metric records a value that _really_ needs
