@@ -97,11 +97,6 @@ public class HttpPingUploader {
 
             // Start the upload task
             uploadTask.resume()
-
-            // Since we won't be reusing this session, we can call `finishTasksAndInvalidate` which
-            // should allow our upload task to complete and then invalidate the session and release
-            // the strong reference to the delegate.
-            session.finishTasksAndInvalidate()
         }
     }
 
@@ -201,5 +196,7 @@ private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
             // HTTP status codes are handled on the Rust side
             callback(.httpStatus(code: statusCode))
         }
+
+        session.finishTasksAndInvalidate()
     }
 }
