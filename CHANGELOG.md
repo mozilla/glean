@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.6.0...main)
+
+# v51.6.0 (2022-10-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.5.0...v51.6.0)
 
 * General
   * The internal glean-core dispatch queue changed from `unbounded` to `bounded`, while still behaving as a bounded queue.
