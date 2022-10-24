@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.5.0...main)
 
+* General
+  * The internal glean-core dispatch queue changed from `unbounded` to `bounded`, while still behaving as a bounded queue.
+* iOS
+  * BUGFIX: Additional work to address an iOS crash due to an invalidated session ([#2235](https://github.com/mozilla/glean/pull/2235))
+
 # v51.5.0 (2022-10-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...v51.5.0)
