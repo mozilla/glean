@@ -2091,7 +2091,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [ahash 0.7.6]( https://github.com/tkaitchuck/ahash )
-* [anyhow 1.0.65]( https://github.com/dtolnay/anyhow )
+* [anyhow 1.0.66]( https://github.com/dtolnay/anyhow )
 * [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
 * [camino 1.1.1]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
@@ -5253,9 +5253,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.5.0]( https://github.com/mozilla/glean )
+* [glean 51.6.0]( https://github.com/mozilla/glean )
 * [glean-build 6.1.2]( https://github.com/mozilla/glean )
-* [glean-core 51.5.0]( https://github.com/mozilla/glean )
+* [glean-core 51.6.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
