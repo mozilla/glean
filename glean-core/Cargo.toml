@@ -61,3 +61,7 @@ ctor = "0.1.12"
 
 [build-dependencies]
 uniffi_build = { version = "0.21.0", features = ["builtin-bindgen"] }
+
+[features]
+# Increases the preinit queue limit to 10^6
+preinit_million_queue = []

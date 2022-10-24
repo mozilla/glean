@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.5.0...main)
 
+* Rust
+  * Add cargo feature `preinit_million_queue` to up the preinit queue length from 10^3 to 10^6 ([bug 1796258](https://bugzilla.mozilla.org/show_bug.cgi?id=1796258))
+
 # v51.5.0 (2022-10-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.4.0...v51.5.0)
