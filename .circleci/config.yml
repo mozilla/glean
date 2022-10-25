@@ -462,7 +462,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
@@ -478,7 +478,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
@@ -490,28 +490,23 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v12
+          key: swift-docs-gems-v11
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v12
+          key: swift-docs-gems-v11
           paths:
-            - ~/.gem/ruby/2.7.6
+            - ~/.gem/ruby/2.7.5
       - run:
           name: Setup build environment
           command: |
-            set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
-            # List available devices -- allows us to see what's there
-            DEVICES=$(xcrun xctrace list devices 2>&1)
-            echo "$DEVICES"
-            # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UUID"
+            UDID=$(xcrun xctrace list devices 2>&1 | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
               echo "debug" > buildtype.txt
@@ -579,7 +574,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - skip-if-doc-only
@@ -588,15 +583,14 @@ jobs:
       - run:
           name: Setup build environment
           command: |
-            set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UUID"
+            UDID=$(echo "$DEVICES" | grep 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
       - run:
           name: Build XCFramework archive
           command: |
@@ -631,7 +625,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - attach_workspace:
@@ -872,7 +866,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -904,7 +898,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.2.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
