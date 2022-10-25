@@ -462,7 +462,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - checkout
       - run:
@@ -478,7 +478,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - checkout
       - run:
@@ -490,14 +490,14 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v12
+          key: swift-docs-gems-v13
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v12
+          key: swift-docs-gems-v13
           paths:
             - ~/.gem/ruby/2.7.6
       - run:
@@ -510,7 +510,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
@@ -579,7 +579,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - checkout
       - skip-if-doc-only
@@ -595,8 +595,8 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UUID"
+            UDID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UDID"
       - run:
           name: Build XCFramework archive
           command: |
@@ -631,7 +631,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - checkout
       - attach_workspace:
@@ -872,7 +872,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -889,10 +889,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv3.10/bin/python3 setup.py bdist_wheel
+            .venv3.9/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.10/bin/python3 -m twine upload dist/*
+            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
@@ -904,7 +904,7 @@ jobs:
 
   pypi-macos-arm64-release:
     macos:
-      xcode: "14.0.0"
+      xcode: "13.4.1"
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -918,12 +918,12 @@ jobs:
           command: |
             rustup target add aarch64-apple-darwin
             cd glean-core/python
-            .venv3.10/bin/python3 setup.py bdist_wheel
+            .venv3.9/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.10/bin/python3 -m twine upload dist/*
+            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
-            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
