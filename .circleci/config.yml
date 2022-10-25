@@ -889,10 +889,10 @@ jobs:
           name: Build macOS wheel
           command: |
             cd glean-core/python
-            .venv3.10/bin/python3 setup.py bdist_wheel
+            .venv3.9/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.10/bin/python3 -m twine upload dist/*
+            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
@@ -918,12 +918,12 @@ jobs:
           command: |
             rustup target add aarch64-apple-darwin
             cd glean-core/python
-            .venv3.10/bin/python3 setup.py bdist_wheel
+            .venv3.9/bin/python3 setup.py bdist_wheel
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.10/bin/python3 -m twine upload dist/*
+            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
-            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - install-ghr-darwin
