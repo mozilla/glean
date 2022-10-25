@@ -4,6 +4,8 @@
 
 * iOS
   * Glean for iOS is now being built with Xcode 13.4 again ([#2242](https://github.com/mozilla/glean/pull/2242))
+* Rust
+  * Add cargo feature `preinit_million_queue` to up the preinit queue length from 10^3 to 10^6 ([bug 1796258](https://bugzilla.mozilla.org/show_bug.cgi?id=1796258))
 
 # v51.6.0 (2022-10-24)
 
@@ -13,9 +15,6 @@
   * The internal glean-core dispatch queue changed from `bounded` to `unbounded`, while still behaving as a bounded queue.
 * iOS
   * BUGFIX: Additional work to address an iOS crash due to an invalidated session ([#2235](https://github.com/mozilla/glean/pull/2235))
-
-* Rust
-  * Add cargo feature `preinit_million_queue` to up the preinit queue length from 10^3 to 10^6 ([bug 1796258](https://bugzilla.mozilla.org/show_bug.cgi?id=1796258))
 
 # v51.5.0 (2022-10-18)
 
