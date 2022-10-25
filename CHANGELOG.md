@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.7.0...main)
+
+# v51.7.0 (2022-10-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.6.0...v51.7.0)
 
 * iOS
   * Glean for iOS is now being built with Xcode 13.4 again ([#2242](https://github.com/mozilla/glean/pull/2242))
