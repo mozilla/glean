@@ -107,7 +107,9 @@ impl PingType {
                 crate::core::with_glean(move |glean| ping.submit_sync(glean, reason.as_deref()));
             if sent {
                 let state = crate::global_state().lock().unwrap();
-                state.callbacks.trigger_upload();
+                if let Err(e) = state.callbacks.trigger_upload() {
+                    log::error!("Triggering upload failed. Error: {}", e);
+                }
             }
         })
     }
