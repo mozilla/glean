@@ -245,6 +245,6 @@ class LabeledMetricTypeTests: XCTestCase {
             labeledCounterMetric["foo"].add(1)
         }
 
-        XCTAssertEqual(maxAttempts, try labeledCounterMetric["foo"].testGetValue())
+        XCTAssertEqual(maxAttempts, labeledCounterMetric["foo"].testGetValue())
     }
 }
