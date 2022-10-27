@@ -65,3 +65,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2022-02-09: [Migrating Legacy Telemetry Collections to Glean](https://blog.mozilla.org/data/2022/02/09/this-week-in-glean-migrating-legacy-telemetry-collections-to-glean/)
 * 2022-02-16: [What If I Want To Collect All The Data?](https://blog.mozilla.org/data/2022/02/16/this-week-in-glean-what-if-i-want-to-collect-all-the-data/)
 * 2022-02-25: [Your personal Glean data pipeline](https://blog.mozilla.org/data/2022/02/25/this-week-in-glean-your-personal-glean-data-pipeline/)
+* 2022-10-27: [Page Load Data, Three Ways (Or, How Expensive Are Events?)](https://blog.mozilla.org/data/2022/10/27/this-week-in-glean-page-load-data-three-ways-or-how-expensive-are-events/)
