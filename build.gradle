@@ -18,7 +18,7 @@ buildscript {
         mockito: '3.11.2',
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.7.20',
-        robolectric: '4.8.1',
+        robolectric: '4.9',
         rust_android_plugin: '0.9.3',
 
         // Android X dependencies
@@ -36,8 +36,8 @@ buildscript {
 
     ext.build = [
         ndkVersion: "25.1.8937393", // Keep it in sync in TC Dockerfile.
-        compileSdkVersion: 32,
-        targetSdkVersion: 32,
+        compileSdkVersion: 33,
+        targetSdkVersion: 33,
         minSdkVersion: 21, // So that we can publish for aarch64.
     ]
 
