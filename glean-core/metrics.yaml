@@ -10,6 +10,9 @@
 # https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
 # for additional information.
 
+# Disable line-length rule because of links in descriptions.
+# yamllint disable rule:line-length
+
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
@@ -641,3 +644,26 @@ glean.validation:
       - glean-team@mozilla.com
     expires:
       never
+
+glean:
+  restarted:
+    type: event
+    description: |
+      Recorded when the Glean SDK is restarted.
+
+      Only included in custom pings that record events.
+
+      For more information, please consult the
+      [Custom Ping documentation](https://mozilla.github.io/glean/book/user/pings/custom.html#the-gleanrestarted-event).
+    send_in_pings:
+      - all-pings
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1716725
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1716725
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - chutten@mozilla.com
+      - glean-team@mozilla.com
+    expires: never
