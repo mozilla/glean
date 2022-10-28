@@ -73,14 +73,6 @@ on every application restart that may happen during the pings measurement window
 
 **Note**: All leading and trailing `glean.restarted` events are omitted from each ping.
 
-{{#include ../../../shared/blockquote-warning.html}}
-
-### Only applies to the Glean JavaScript SDK
-
-> The behavior described in this section only applies to custom pings sent by
-> the Glean JavaScript SDK. Follow the implementation of this feature on the other
-> SDKs through [Bug 1716725](https://bugzilla.mozilla.org/show_bug.cgi?id=1716725).
-
 ### Event timestamps throughout application restarts
 
 Event timestamps are always calculated relative to the first event in a ping. The first event
