@@ -6,7 +6,7 @@ basic strategy for instrumenting an Android application with crash telemetry usi
 **Note:**  This is a _very_ simple example of instrumenting crashes using the Glean SDK.  There will be challenges to
 using this approach in a production application that should be considered.  For instance, when an app crashes it can be in an
 unknown state and may not be able to do things like upload data to a server.  The recommended way of instrumenting crashes with
-Android Components is called [lib-crash](https://github.com/mozilla-mobile/android-components/tree/HEAD/components/lib/crash), which takes into consideration things like multiple processes and persistence.
+Android Components is called [lib-crash](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/components/lib/crash), which takes into consideration things like multiple processes and persistence.
 
 ## Before You Start
 

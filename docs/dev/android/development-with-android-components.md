@@ -13,7 +13,7 @@ Clone the Glean SDK and android-components repositories:
 
 ```sh
 git clone https://github.com/mozilla/glean
-git clone https://github.com/mozilla-mobile/android-components
+git clone https://github.com/mozilla-mobile/firefox-android
 ```
 
 ## Cargo build targets
@@ -39,7 +39,7 @@ rust.targets=x86
 android-components has custom build logic for dealing with composite builds,
 so you should be able to configure it by simply adding the path to the Glean repository in the correct `local.properties` file:
 
-In `android-components/local.properties`:
+In `firefox-android/android-components/local.properties`:
 
 ```groovy
 autoPublish.glean.dir=../glean

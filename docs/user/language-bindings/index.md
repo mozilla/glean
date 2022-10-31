@@ -49,7 +49,7 @@ from the [Mozilla Maven instance][maven].
 
 The Kotlin SDK can also be used from Java.
 
-[ac]: https://github.com/mozilla-mobile/android-components/
+[ac]: https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/
 [maven]: https://maven.mozilla.org/?prefix=maven2
 
 See [Android](android/) for more on integrating Glean on Android.
