@@ -481,7 +481,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "14.0"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -500,7 +500,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -513,14 +513,14 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v13
+          key: swift-docs-gems-v15
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v13
+          key: swift-docs-gems-v15
           paths:
             - ~/.gem/ruby/2.7.6
       - run:
@@ -538,7 +538,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
@@ -607,7 +607,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -629,8 +629,8 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UDID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UDID"
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UUID"
       - run:
           name: Build XCFramework archive
           command: |
@@ -665,7 +665,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -907,7 +907,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - install-rustup
@@ -922,7 +922,7 @@ jobs:
           name: Build macOS x86_64 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_BUILD_TARGET: x86_64-apple-darwin
             GLEAN_BUILD_VARIANT: release
@@ -930,16 +930,16 @@ jobs:
           name: Build macOS aarch64 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
-            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS universal2 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_BUILD_TARGET: universal
             GLEAN_BUILD_VARIANT: release
@@ -949,7 +949,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload dist/*
+            .venv3.11/bin/python3 -m twine upload dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github
