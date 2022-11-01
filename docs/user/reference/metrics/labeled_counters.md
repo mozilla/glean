@@ -97,18 +97,17 @@ Glean.stability.crashCount["native_code_crash"].add(3);
 
 {{#include ../../../shared/tab_footer.md}}
 
-#### Errors recorded
+#### Recorded Errors
 
 * [`invalid_value`](../../user/metrics/error-reporting.md): if the counter is incremented by `0` or a negative value.
-* [`invalid_label`](../../user/metrics/error-reporting.md):
-  * If the label contains invalid characters. Data is still recorded to the special label `__other__`.
-  * If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
 * [`invalid_type`](../../user/metrics/error-reporting.md): if a floating point or non-number value is given.
+{{#include ../../_includes/label-errors.md}}
 
 #### Limits
 
-* Only increments;
+* Only increments
 * Saturates at the largest value that can be represented as a 32-bit signed integer.
+{{#include ../../_includes/label-limits.md}}
 
 ## Testing API
 
