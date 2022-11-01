@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.7.0...main)
 
+* Kotlin
+  * Increase to Android target/compile SDK version 33 ([#2246](https://github.com/mozilla/glean/pull/2246))
+
 # v51.7.0 (2022-10-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.6.0...v51.7.0)
