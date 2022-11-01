@@ -47,19 +47,21 @@ pub struct Builder {
     out_dir: String,
 }
 
-impl Builder {
+impl Default for Builder {
     /// A default Glean Rust bindings generator.
     ///
     /// Use [`file`][`Builder::file`] and [`files`][`Builder::files`]
     /// to specify the input files.
-    pub fn default() -> Self {
+    fn default() -> Self {
         let out_dir = env::var("OUT_DIR").unwrap_or_else(|_| "".into());
         Self {
             files: vec![],
             out_dir,
         }
     }
+}
 
+impl Builder {
     /// A Glean Rust bindings generator with the given output directory.
     ///
     /// Use [`file`][`Builder::file`] and [`files`][`Builder::files`]
