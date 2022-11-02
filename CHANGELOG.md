@@ -4,6 +4,8 @@
 
 * Kotlin
   * Increase to Android target/compile SDK version 33 ([#2246](https://github.com/mozilla/glean/pull/2246))
+* iOS
+  * Try to avoid a crash by not invalidating upload sessions ([#2254](https://github.com/mozilla/glean/pull/2254))
 
 # v51.7.0 (2022-10-25)
 
