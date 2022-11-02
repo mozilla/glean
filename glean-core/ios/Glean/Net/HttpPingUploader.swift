@@ -196,7 +196,5 @@ private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
             // HTTP status codes are handled on the Rust side
             callback(.httpStatus(code: statusCode))
         }
-
-        session.finishTasksAndInvalidate()
     }
 }
