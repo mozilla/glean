@@ -2113,7 +2113,7 @@ The following text applies to code linked from these dependencies:
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.15.0]( https://github.com/matklad/once_cell )
+* [once_cell 1.16.0]( https://github.com/matklad/once_cell )
 * [paste 1.0.9]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
@@ -5253,9 +5253,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.7.0]( https://github.com/mozilla/glean )
-* [glean-build 6.1.2]( https://github.com/mozilla/glean )
-* [glean-core 51.7.0]( https://github.com/mozilla/glean )
+* [glean 51.8.0]( https://github.com/mozilla/glean )
+* [glean-build 6.3.0]( https://github.com/mozilla/glean )
+* [glean-core 51.8.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
