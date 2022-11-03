@@ -487,7 +487,8 @@ jobs:
             ruby --version
             gem env
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.64.0"
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v13
@@ -584,7 +585,8 @@ jobs:
       - checkout
       - skip-if-doc-only
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.64.0"
       - run:
           name: Setup build environment
           command: |
@@ -875,7 +877,8 @@ jobs:
       xcode: "13.4.1"
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.64.0"
       - checkout
       - run:
           name: Build and Test Python extension
@@ -907,7 +910,8 @@ jobs:
       xcode: "13.4.1"
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          rust-version: "1.64.0"
       - checkout
       - run:
           name: Install Python development tools for host
