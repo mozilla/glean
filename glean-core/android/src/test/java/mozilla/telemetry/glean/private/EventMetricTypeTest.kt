@@ -444,7 +444,8 @@ class EventMetricTypeTest {
             allowedExtraKeys = listOf("object_id", "other")
         )
 
-        val longString = "0123456789".repeat(11)
+        val longString = "0123456789".repeat(51)
+        assertTrue("long string longer than limit", longString.length > 500)
 
         click.record(extra = mapOf(clickKeys.objectId to longString))
 

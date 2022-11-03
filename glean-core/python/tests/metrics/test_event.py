@@ -314,7 +314,7 @@ def test_long_extra_values_record_an_error():
         allowed_extra_keys=["object_id", "other"],
     )
 
-    long_string = "0123456789" * 11
+    long_string = "0123456789" * 51
 
     click.record(extra={ClickKeys.OBJECT_ID: long_string})
 
