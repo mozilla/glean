@@ -80,17 +80,16 @@ Glean.login.errorsByStage["server_auth"].set("Invalid password");
 
 {{#include ../../../shared/tab_footer.md}}
 
+#### Recorded Errors
+
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long, see [limits below](#limits).
+* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
+{{#include ../../_includes/label-errors.md}}
+
 #### Limits
 
 * Fixed maximum string length: 100. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
-
-#### Recorded Errors
-
-* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
-* [`invalid_label`](../../user/metrics/error-reporting.md):
-  * If the label contains invalid characters. Data is still recorded to the special label `__other__`.
-  * If the label exceeds the maximum number of allowed characters. Data is still recorded to the special label `__other__`.
-* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
+{{#include ../../_includes/label-limits.md}}
 
 ## Testing API
 

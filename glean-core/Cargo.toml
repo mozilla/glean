@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "51.7.0"
+version = "51.8.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -20,7 +20,7 @@ include = [
 ]
 
 [package.metadata.glean]
-glean-parser = "6.1.2"
+glean-parser = "6.3.0"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }

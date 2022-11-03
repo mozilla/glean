@@ -4,9 +4,7 @@ Labeled metrics may have an optional `labels` parameter, containing a list of kn
 The labels in this list must match the following requirements:
 
 * Conform to the [label formatting regular expression](index.md#label-format).
-
 * Each label must have a maximum of 60 bytes, when encoded as UTF-8.
-
 * This list itself is limited to 100 labels.
 
 {{#include ../../shared/blockquote-warning.html}}

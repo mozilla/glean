@@ -366,7 +366,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "51.7.0"
+version = "51.8.0"
 dependencies = [
  "chrono",
  "crossbeam-channel",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "glean-build"
-version = "6.1.2"
+version = "6.3.0"
 dependencies = [
  "xshell-venv",
 ]
@@ -409,7 +409,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "51.7.0"
+version = "51.8.0"
 dependencies = [
  "android_logger",
  "bincode",
@@ -709,9 +709,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.15.0"
+version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e82dad04139b71a90c080c8463fe0dc7902db5192d939bd0950f074d014339e1"
+checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 
 [[package]]
 name = "ordered-float"

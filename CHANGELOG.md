@@ -1,6 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.7.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.0...main)
+
+# v51.8.0 (2022-11-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.7.0...v51.8.0)
+
+* General
+  * Upgrade to `glean_parser` v6.3.0, increases the event extra limit to 15 ([#2255](https://github.com/mozilla/glean/issues/2255))
+  * Increase event extras value limit to 500 bytes ([#2255](https://github.com/mozilla/glean/issues/2255))
+* Kotlin
+  * Increase to Android target/compile SDK version 33 ([#2246](https://github.com/mozilla/glean/pull/2246))
+* iOS
+  * Try to avoid a crash by not invalidating upload sessions ([#2254](https://github.com/mozilla/glean/pull/2254))
 
 # v51.7.0 (2022-10-25)
 

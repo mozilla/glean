@@ -31,7 +31,7 @@ __author__ = "The Glean Team"
 __email__ = "glean-team@mozilla.com"
 
 
-GLEAN_PARSER_VERSION = "6.1.2"
+GLEAN_PARSER_VERSION = "6.3.0"
 parser_version = VersionInfo.parse(GLEAN_PARSER_VERSION)
 parser_version_next_major = parser_version.bump_major()
 
