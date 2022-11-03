@@ -60,7 +60,7 @@ version = "51.7.0"
 
 requirements = [
     "semver>=2.13.0",
-    "glean_parser~=6.1",
+    "glean_parser~=6.3",
 ]
 
 # The environment variable `GLEAN_BUILD_VARIANT` can be set to `debug` or `release`
