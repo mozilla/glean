@@ -506,6 +506,11 @@ jobs:
             set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
+            # For some reason everything works fine if we use the host clang,
+            # not the Xcode-bundled clang.
+            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
+
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
@@ -590,6 +595,11 @@ jobs:
           command: |
             set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+            # For some reason everything works fine if we use the host clang,
+            # not the Xcode-bundled clang.
+            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
