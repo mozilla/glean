@@ -28,7 +28,7 @@ class Configuration:
 
     def __init__(
         self,
-        server_endpoint: str = None,
+        server_endpoint: Optional[str] = None,
         channel: Optional[str] = None,
         max_events: int = DEFAULT_MAX_EVENTS,
         ping_uploader: Optional[net.BaseUploader] = None,
