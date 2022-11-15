@@ -487,8 +487,7 @@ jobs:
             ruby --version
             gem env
       - install-rustup
-      - setup-rust-toolchain:
-          rust-version: "1.64.0"
+      - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
           key: swift-docs-gems-v13
@@ -506,6 +505,11 @@ jobs:
           command: |
             set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+            # For some reason everything works fine if we use the host clang,
+            # not the Xcode-bundled clang.
+            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -585,13 +589,17 @@ jobs:
       - checkout
       - skip-if-doc-only
       - install-rustup
-      - setup-rust-toolchain:
-          rust-version: "1.64.0"
+      - setup-rust-toolchain
       - run:
           name: Setup build environment
           command: |
             set -x
             rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+            # For some reason everything works fine if we use the host clang,
+            # not the Xcode-bundled clang.
+            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -877,8 +885,7 @@ jobs:
       xcode: "13.4.1"
     steps:
       - install-rustup
-      - setup-rust-toolchain:
-          rust-version: "1.64.0"
+      - setup-rust-toolchain
       - checkout
       - run:
           name: Build and Test Python extension
@@ -910,8 +917,7 @@ jobs:
       xcode: "13.4.1"
     steps:
       - install-rustup
-      - setup-rust-toolchain:
-          rust-version: "1.64.0"
+      - setup-rust-toolchain
       - checkout
       - run:
           name: Install Python development tools for host

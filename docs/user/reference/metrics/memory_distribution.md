@@ -360,14 +360,13 @@ memory:
 
 #### `memory_unit`
 
-Memory distributions have a required `memory_unit` parameter,
-which specifies the unit the incoming memory size values are recorded in.
-The allowed values for `time_unit` are:
+Memory distributions have an optional `memory_unit` parameter, which specifies the unit the incoming memory size values are recorded in.
+The allowed values for `memory_unit` are:
 
-- `byte`
-- `kilobyte` (`= 2^10 = 1,024 bytes`)
-- `megabyte` (`= 2^20 = 1,048,576 bytes`)
-- `gigabyte` (`= 2^30 = 1,073,741,824 bytes`)
+* `byte` (default)
+* `kilobyte` (`= 2^10 = 1,024 bytes`)
+* `megabyte` (`= 2^20 = 1,048,576 bytes`)
+* `gigabyte` (`= 2^30 = 1,073,741,824 bytes`)
 
 ## Limits
 

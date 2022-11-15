@@ -127,7 +127,7 @@ class Glean:
         application_version: str,
         upload_enabled: bool,
         configuration: Optional[Configuration] = None,
-        data_dir: Path = None,
+        data_dir: Optional[Path] = None,
         application_build_id: Optional[str] = None,
         log_level: Optional[int] = None,
     ) -> None:
