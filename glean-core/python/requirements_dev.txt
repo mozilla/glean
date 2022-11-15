@@ -4,7 +4,7 @@ coverage==6.2
 flake8==5.0.4
 flake8-bugbear==22.8.23
 jsonschema==3.2.0
-mypy==0.990; python_version > '3.6'
+mypy==0.991; python_version > '3.6'
 pdoc3==0.10.0
 pip
 pytest-localserver==0.7.0
