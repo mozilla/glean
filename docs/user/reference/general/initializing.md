@@ -34,7 +34,7 @@ This always happens asynchronously.
 
 ### When upload is disabled
 
-If upload is disabled, any persisted metrics, events and pings (other than `first_run_date` and `first_run_hour`) are cleared.
+If upload is disabled, any persisted metrics, events and pings (other than `first_run_date`) are cleared.
 Pending `deletion-request` pings are sent.
 Subsequent calls to record metrics and submit pings will be no-ops.
 Because Glean does that as part of its initialization, users are _required_ to always initialize Glean.

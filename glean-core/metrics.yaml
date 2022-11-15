@@ -602,27 +602,6 @@ glean.database:
     expires: never
 
 glean.validation:
-  first_run_hour:
-    no_lint:
-      - UNIT_IN_NAME
-    type: datetime
-    lifetime: user
-    send_in_pings:
-      - metrics
-      - baseline
-    time_unit: hour
-    description: |
-      The hour of the first run of the application.
-    bugs:
-      - https://bugzilla.mozilla.org/1680783
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1680783#c5
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - glean-team@mozilla.com
-    expires:
-      never
   foreground_count:
     type: counter
     description: |
