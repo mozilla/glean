@@ -10,7 +10,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.GleanMetrics.GleanInternalMetrics
 import mozilla.telemetry.glean.GleanMetrics.Pings
@@ -52,7 +51,6 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers as KotlinDispatchers
 
-@ObsoleteCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class GleanTest {
     private val context: Context

@@ -5,8 +5,6 @@
 package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
 import org.junit.Assert.assertEquals
@@ -16,8 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class MemoryDistributionMetricTypeTest {
 

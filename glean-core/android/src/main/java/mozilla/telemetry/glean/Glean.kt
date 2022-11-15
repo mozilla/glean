@@ -185,7 +185,6 @@ open class GleanInternalAPI internal constructor() {
         this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
 
         // Execute startup off the main thread.
-        @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.executeTask {
             val cfg = InternalConfiguration(
                 dataPath = gleanDataDir.path,
@@ -358,7 +357,6 @@ open class GleanInternalAPI internal constructor() {
      * @param reason The reason the ping is being submitted.
      * @return The async [Job] performing the work of assembling the ping
      */
-    @Suppress("EXPERIMENTAL_API_USAGE")
     internal fun submitPingByName(pingName: String, reason: String? = null) {
         gleanSubmitPingByName(pingName, reason)
     }
@@ -423,7 +421,6 @@ open class GleanInternalAPI internal constructor() {
     internal fun setTestingMode(enabled: Boolean) {
         this.testingMode = enabled
         gleanSetTestMode(enabled)
-        @Suppress("EXPERIMENTAL_API_USAGE")
         Dispatchers.API.setTestingMode(enabled)
     }
 
