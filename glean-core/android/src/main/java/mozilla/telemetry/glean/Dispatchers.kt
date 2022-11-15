@@ -6,14 +6,13 @@ package mozilla.telemetry.glean
 
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 
-@ObsoleteCoroutinesApi
 internal object Dispatchers {
     class WaitableCoroutineScope(private val coroutineScope: CoroutineScope) {
         // When true, jobs will be run synchronously
@@ -54,6 +53,7 @@ internal object Dispatchers {
      * A coroutine scope to make it easy to dispatch API calls off the main thread.
      * This needs to be a `var` so that our tests can override this.
      */
+    @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
     var API = WaitableCoroutineScope(
         CoroutineScope(
             newSingleThreadContext("GleanAPIPool") + supervisorJob
