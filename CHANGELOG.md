@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.8.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.1...main)
+
+# v51.8.1 (2022-11-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.0...v51.8.1)
 
 * General
   * Do not serialize `count` field in distribution payload ([#2267](https://github.com/mozilla/glean/pull/2267))
