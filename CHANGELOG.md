@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.0...main)
 
+* General
+  * Do not serialize `count` field in distribution payload ([#2267](https://github.com/mozilla/glean/pull/2267))
+
 # v51.8.0 (2022-11-03)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.7.0...v51.8.0)
