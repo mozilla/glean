@@ -4,6 +4,7 @@
 
 * General
   * Do not serialize `count` field in distribution payload ([#2267](https://github.com/mozilla/glean/pull/2267))
+  * BUG: The glean-core "metrics" ping scheduler will now schedule and send "upgrade"-reason pings. ([bug 1800646](https://bugzilla.mozilla.org/show_bug.cgi?id=1800646))
 
 # v51.8.0 (2022-11-03)
 
