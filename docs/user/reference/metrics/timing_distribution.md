@@ -620,16 +620,16 @@ pages:
 
 #### `time_unit`
 
-Timing distributions have a required `time_unit` parameter to specify the smallest unit of resolution that the timespan will record.
+Timing distributions have an optional `time_unit` parameter to specify the smallest unit of resolution that the timespan will record.
 The allowed values for `time_unit` are:
 
-- `nanosecond`
-- `microsecond`
-- `millisecond`
-- `second`
-- `minute`
-- `hour`
-- `day`
+* `nanosecond` (default)
+* `microsecond`
+* `millisecond`
+* `second`
+* `minute`
+* `hour`
+* `day`
 
 ## Limits
 

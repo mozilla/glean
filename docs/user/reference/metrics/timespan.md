@@ -653,17 +653,16 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 #### `time_unit`
 
-Timespans have a required
-`time_unit` parameter to specify the smallest unit of resolution that the timespan will record.
+Timespans have an optional `time_unit` parameter to specify the smallest unit of resolution that the timespan will record.
 The allowed values for `time_unit` are:
 
-   - `nanosecond`
-   - `microsecond`
-   - `millisecond`
-   - `second`
-   - `minute`
-   - `hour`
-   - `day`
+* `nanosecond`
+* `microsecond`
+* `millisecond` (default)
+* `second`
+* `minute`
+* `hour`
+* `day`
 
 Consider the resolution that is required by your metric,
 and use the largest possible value that will provide useful information so as to not leak too much fine-grained information from the client.
