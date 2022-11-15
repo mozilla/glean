@@ -393,11 +393,12 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 #### `time_unit`
 
-Datetimes have a required `time_unit` parameter to specify the smallest unit of resolution that the metric will record. The allowed values for `time_unit` are:
+Datetimes have an optional `time_unit` parameter to specify the smallest unit of resolution that the metric will record.
+The allowed values for `time_unit` are:
 
 * `nanosecond`
 * `microsecond`
-* `millisecond`
+* `millisecond` (default)
 * `second`
 * `minute`
 * `hour`
