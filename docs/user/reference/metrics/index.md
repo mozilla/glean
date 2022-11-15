@@ -74,6 +74,10 @@ Specifically, they must conform to this regular expression:
 ^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$
 ```
 
+Check your label:
+<input type="text" label="Label" id="label">
+<span id="result">unchecked</span>
+
 ## Adding or changing metric types
 Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) for requesting changes to existing metric types or suggesting the implementation of new metric types:
 
