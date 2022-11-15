@@ -175,19 +175,6 @@ android-emulator: ## Start the Android emulator with a predefined image
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: android-emulator
 
-rust-coverage: export CARGO_INCREMENTAL=0
-rust-coverage: export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads
-rust-coverage: export RUSTUP_TOOLCHAIN=nightly
-rust-coverage: ## Generate code coverage information for Rust code
-	# Expects a Rust nightly toolchain to be available.
-	# Expects grcov and genhtml to be available in $PATH.
-	cargo build --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-	cargo test --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info
-	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
-.PHONY: rust-coverage
-
 python-coverage: build-python ## Generate a code coverage report for Python
 	GLEAN_COVERAGE=1 $(GLEAN_PYENV)/bin/python3 -m coverage run --parallel-mode -m pytest
 	$(GLEAN_PYENV)/bin/python3 -m coverage combine

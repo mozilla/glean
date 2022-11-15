@@ -5,7 +5,7 @@
 > which suggests it has a lower chance of containing undetected software bugs compared to a program with low test coverage.
 > ([Wikipedia](https://en.wikipedia.org/wiki/Code_coverage))
 
-This chapter describes how to generate a traditional code coverage report over the Kotlin, Rust, Swift and Python code in the Glean SDK repository. To learn how to generate a coverage report about what metrics your project is testing, see the user documentation on [generating testing coverage reports](https://mozilla.github.io/glean/book/user/testing-metrics.html#generating-testing-coverage-reports).
+This chapter describes how to generate a traditional code coverage report over the Kotlin, Swift and Python code in the Glean SDK repository. To learn how to generate a coverage report about what metrics your project is testing, see the user documentation on [generating testing coverage reports](https://mozilla.github.io/glean/book/user/testing-metrics.html#generating-testing-coverage-reports).
 
 ## Generating Kotlin reports locally
 
@@ -20,33 +20,6 @@ After that you'll find an HTML report at the following location:
 
 ```
 glean-core/android/build/reports/jacoco/jacocoTestReport/jacocoTestReport/html/index.html
-```
-
-## Generating Rust reports locally
-
-> Generating the Rust coverage report requires a significant amount of RAM during the build.
-
-We use [grcov](https://github.com/mozilla/grcov) to collect and aggregate code coverage information.
-Releases can be found on the [grcov Release page](https://github.com/mozilla/grcov/releases).
-
-The build process requires a Rust Nightly version. Install it using `rustup`:
-
-```bash
-rustup toolchain add nightly
-```
-
-To generate an HTML report, `genhtml` from the `lcov` package is required. Install it through your system's package manager.
-
-After installation you can build the Rust code and generate a report:
-
-```bash
-make rust-coverage
-```
-
-After that you'll find an HTML report at the following location:
-
-```
-report/index.html
 ```
 
 ## Generating Swift reports locally
