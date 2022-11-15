@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::borrow::Cow;
+
 use super::{metrics::*, CommonMetricData, Lifetime};
 
 #[derive(Debug)]
@@ -106,11 +108,11 @@ impl UploadMetrics {
                     dynamic_label: None,
                 },
                 Some(vec![
-                    "status_code_4xx".into(),
-                    "status_code_5xx".into(),
-                    "status_code_unknown".into(),
-                    "unrecoverable".into(),
-                    "recoverable".into(),
+                    Cow::from("status_code_4xx"),
+                    Cow::from("status_code_5xx"),
+                    Cow::from("status_code_unknown"),
+                    Cow::from("unrecoverable"),
+                    Cow::from("recoverable"),
                 ]),
             ),
 

@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::borrow::Cow;
 use std::collections::{hash_map::Entry, HashMap};
 use std::sync::{Arc, Mutex};
 
@@ -88,7 +89,7 @@ fn matches_label_regex(value: &str) -> bool {
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
 #[derive(Debug)]
 pub struct LabeledMetric<T> {
-    labels: Option<Vec<String>>,
+    labels: Option<Vec<Cow<'static, str>>>,
     /// Type of the underlying metric
     /// We hold on to an instance of it, which is cloned to create new modified instances.
     submetric: T,
@@ -159,12 +160,12 @@ where
     /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
     /// See [`get`](LabeledMetric::get) for information on how static or dynamic labels are handled.
-    pub fn new(meta: CommonMetricData, labels: Option<Vec<String>>) -> LabeledMetric<T> {
+    pub fn new(meta: CommonMetricData, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T> {
         let submetric = T::new_labeled(meta);
         LabeledMetric::new_inner(submetric, labels)
     }
 
-    fn new_inner(submetric: T, labels: Option<Vec<String>>) -> LabeledMetric<T> {
+    fn new_inner(submetric: T, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T> {
         let label_map = Default::default();
         LabeledMetric {
             labels,
