@@ -14,6 +14,7 @@
 //!
 //! ## [The Glean SDK Book](https://mozilla.github.io/glean)
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -946,6 +947,20 @@ pub fn glean_enable_logging_to_fd(_fd: u64) {
 mod ffi {
     use super::*;
     uniffi_macros::include_scaffolding!("glean");
+
+    type CowString = Cow<'static, str>;
+
+    impl UniffiCustomTypeConverter for CowString {
+        type Builtin = String;
+
+        fn into_custom(val: Self::Builtin) -> uniffi::Result<Self> {
+            Ok(Cow::from(val))
+        }
+
+        fn from_custom(obj: Self) -> Self::Builtin {
+            obj.into_owned()
+        }
+    }
 }
 pub use ffi::*;
 

@@ -48,6 +48,10 @@ namespace glean {
     UploadTaskAction glean_process_ping_upload_response(string uuid, UploadResult result);
 };
 
+// A `Cow<'static, str>`, but really it's always the owned part.
+[Custom]
+typedef string CowString;
+
 // The Glean configuration.
 //
 // This exposes all configurable parameters to the SDK side.
@@ -321,7 +325,7 @@ interface StringMetric {
 };
 
 interface LabeledCounter {
-    constructor(CommonMetricData meta, sequence<string>? labels);
+    constructor(CommonMetricData meta, sequence<CowString>? labels);
 
     CounterMetric get(string label);
 
@@ -329,7 +333,7 @@ interface LabeledCounter {
 };
 
 interface LabeledBoolean {
-    constructor(CommonMetricData meta, sequence<string>? labels);
+    constructor(CommonMetricData meta, sequence<CowString>? labels);
 
     BooleanMetric get(string label);
 
@@ -337,7 +341,7 @@ interface LabeledBoolean {
 };
 
 interface LabeledString {
-    constructor(CommonMetricData meta, sequence<string>? labels);
+    constructor(CommonMetricData meta, sequence<CowString>? labels);
 
     StringMetric get(string label);
 
