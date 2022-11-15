@@ -801,7 +801,8 @@ def test_client_activity_api(tmpdir, monkeypatch):
     url_path, payload = wait_for_ping(info_path, max_wait=20)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
-    assert "timespan" not in payload["metrics"]
+    # It's an empty ping.
+    assert "metrics" not in payload
 
     # The upload process is fast, but not fast enough to communicate its status.
     # We give it just a blink of an eye to wind down.

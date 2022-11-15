@@ -247,11 +247,11 @@ class GleanTest {
                     //   - seq: 0, reason: active, duration: null
                     //   - seq: 1, reason: inactive, duration: non-null
                     //   - seq: 2, reason: active, duration: null
-                    val baselineMetricsObject = json.getJSONObject("metrics")
                     if (seq == 0) {
                         assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
                     }
                     if (seq == 1) {
+                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())

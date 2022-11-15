@@ -31,8 +31,8 @@ final class BaselinePingTests: XCTestCase {
             let metrics = json?["metrics"] as? [String: Any]
             if metrics != nil {
                 // Since we are only expecting error metrics,
-                // let's check that this is all we got (plus the `validation.first_run_hour`).
-                XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                // let's check that this is all we got.
+                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                 let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                 labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(
@@ -92,14 +92,8 @@ final class BaselinePingTests: XCTestCase {
             // No errors should be reported.
             let metrics = json!["metrics"] as? [String: Any]
             if metrics != nil {
-                let datetimes = metrics!["datetime"] as! [String: Any]
-                XCTAssertTrue(datetimes.keys.contains("glean.validation.first_run_hour"),
-                              "Datetime should have first_run_hour: \(datetimes)")
-
                 if metrics!.count > 1 {
-                    // Since we are only expecting error metrics,
-                    // let's check that this is all we got (plus the `validation.first_run_hour`).
-                    XCTAssertEqual(metrics?.count, 2, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                    XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
                     let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                     labeledCounters!.forEach { key, _ in
                         XCTAssertTrue(

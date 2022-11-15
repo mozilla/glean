@@ -175,7 +175,7 @@ fn experiments_status_is_correctly_toggled() {
 }
 
 #[test]
-fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
+fn client_id_and_first_run_date_must_be_regenerated() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
     {
@@ -193,11 +193,6 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
             .first_run_date
             .get_value(&glean, "glean_client_info")
             .is_none());
-        assert!(glean
-            .core_metrics
-            .first_run_hour
-            .get_value(&glean, "metrics")
-            .is_none());
     }
 
     {
@@ -211,11 +206,6 @@ fn client_id_and_first_run_date_and_first_run_hour_must_be_regenerated() {
             .core_metrics
             .first_run_date
             .get_value(&glean, "glean_client_info")
-            .is_some());
-        assert!(glean
-            .core_metrics
-            .first_run_hour
-            .get_value(&glean, "metrics")
             .is_some());
     }
 }
@@ -270,34 +260,6 @@ fn first_run_date_is_managed_correctly_when_toggling_uploading() {
             .core_metrics
             .first_run_date
             .get_value(&glean, "glean_client_info")
-    );
-}
-
-#[test]
-fn first_run_hour_is_managed_correctly_when_toggling_uploading() {
-    let (mut glean, _) = new_glean(None);
-
-    let original_first_run_hour = glean
-        .core_metrics
-        .first_run_hour
-        .get_value(&glean, "metrics");
-
-    glean.set_upload_enabled(false);
-    assert_eq!(
-        original_first_run_hour,
-        glean
-            .core_metrics
-            .first_run_hour
-            .get_value(&glean, "metrics")
-    );
-
-    glean.set_upload_enabled(true);
-    assert_eq!(
-        original_first_run_hour,
-        glean
-            .core_metrics
-            .first_run_hour
-            .get_value(&glean, "metrics")
     );
 }
 
@@ -906,7 +868,7 @@ fn records_io_errors() {
     fs::set_permissions(&pending_pings_dir, permissions).unwrap();
 
     // Writing the ping file should fail.
-    let submitted = glean.internal_pings.metrics.submit_sync(&glean, None);
+    let submitted = glean.internal_pings.baseline.submit_sync(&glean, None);
     // But the return value is still `true` because we enqueue the ping anyway.
     assert!(submitted);
 

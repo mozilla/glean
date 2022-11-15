@@ -13,14 +13,14 @@ When upload is disabled, the Glean SDK will perform the following tasks:
 1. Submit a [`deletion-request`](../../user/pings/deletion-request.md) ping.
 2. Cancel scheduled ping uploads.
 3. Clear metrics and pings data from the client, except for the
-  [`first_run_date` and `first_run_hour`](../../user/pings/index.html#the-client_info-section) metrics.
+  [`first_run_date`](../../user/pings/index.html#the-client_info-section) metric.
 
 While upload is disabled, metrics aren't recorded and no data is uploaded.
 
 ## Enabling upload
 
 When upload is enabled, the Glean SDK will re-initialize its [core metrics](../../user/collected-metrics/metrics.md).
-The only core metrics that are not re-initialized are the [`first_run_date` and `first_run_hour`](../../user/pings/index.html#the-client_info-section) metrics.
+The only core metric that is not re-initialized is the [`first_run_date`](../../user/pings/index.html#the-client_info-section) metric.
 
 While upload is enabled all metrics are recorded as expected
 and pings are sent to the telemetry servers.

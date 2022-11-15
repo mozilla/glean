@@ -143,7 +143,7 @@ open class GleanInternalAPI internal constructor() {
      * as shared preferences
      * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
      *     If disabled, all persisted metrics, events and queued pings (except
-     *     first_run_date and first_run_hour) are cleared.
+     *     first_run_date) are cleared.
      * @param configuration A Glean [Configuration] object with global settings.
      * @param buildInfo A Glean [BuildInfo] object with build-time metadata. This
      *     object is generated at build time by glean_parser at the import path
