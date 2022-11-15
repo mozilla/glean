@@ -86,13 +86,6 @@ test-python: build-python ## Run all Python tests
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
 
-# Benchmarks
-
-bench-rust: ## Run Rust benchmarks
-	cargo bench -p benchmark $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-
-.PHONY: bench-rust
-
 # Linting
 
 lint-rust: ## Run cargo-clippy to lint Rust code
