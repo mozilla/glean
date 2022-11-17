@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.1...main)
 
+* General
+  * BUGFIX: Reliably clear pending pings and events on Windows using `remove_dir_all` crate ([bug 1801128](https://bugzilla.mozilla.org/show_bug.cgi?id=1801128))
+
 # v51.8.1 (2022-11-15)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.0...v51.8.1)
