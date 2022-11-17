@@ -4,6 +4,7 @@
 
 * General
   * BUGFIX: Reliably clear pending pings and events on Windows using `remove_dir_all` crate ([bug 1801128](https://bugzilla.mozilla.org/show_bug.cgi?id=1801128))
+  * Update to rkv v0.18.2 ([#2270](https://github.com/mozilla/glean/pull/2270))
 
 # v51.8.1 (2022-11-15)
 
