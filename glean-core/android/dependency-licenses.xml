@@ -337,10 +337,6 @@ the details of which are reproduced below.
     <url>https://github.com/droundy/arrayref</url>
   </license>
   <license>
-    <name>MIT License: matches</name>
-    <url>https://github.com/SimonSapin/rust-std-candidates</url>
-  </license>
-  <license>
     <name>MIT License: nom</name>
     <url>https://github.com/Geal/nom</url>
   </license>
