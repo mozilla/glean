@@ -43,6 +43,7 @@ whatsys = "0.1.2"
 uniffi = "0.21.0"
 uniffi_macros = "0.21.0"
 time = "0.1.40"
+remove_dir_all = "0.5.3"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.11.0", default-features = false }
