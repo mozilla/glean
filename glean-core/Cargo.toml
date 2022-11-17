@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "51.8.1"
+version = "51.8.2"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -29,7 +29,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.44"
-rkv = { version = "0.17.0", default-features = false }
+rkv = { version = "0.18.2", default-features = false, features = ["lmdb"] }
 bincode = "1.2.1"
 log = "0.4.8"
 uuid = { version = "0.8.1", features = ["v4"] }
@@ -43,6 +43,7 @@ whatsys = "0.1.2"
 uniffi = "0.21.0"
 uniffi_macros = "0.21.0"
 time = "0.1.40"
+remove_dir_all = "0.5.3"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.11.0", default-features = false }

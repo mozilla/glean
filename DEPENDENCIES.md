@@ -417,7 +417,7 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [rkv 0.17.1]( https://github.com/mozilla/rkv )
+* [rkv 0.18.2]( https://github.com/mozilla/rkv )
 * [static_assertions 1.1.0]( https://github.com/nvzqz/static-assertions-rs )
 
 
@@ -1487,7 +1487,8 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [libc 0.2.135]( https://github.com/rust-lang/libc )
+* [libc 0.2.137]( https://github.com/rust-lang/libc )
+
 
 
 ```
@@ -2102,7 +2103,7 @@ The following text applies to code linked from these dependencies:
 
 * [ahash 0.7.6]( https://github.com/tkaitchuck/ahash )
 * [anyhow 1.0.66]( https://github.com/dtolnay/anyhow )
-* [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
+* [bitflags 1.2.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.1]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.6]( https://github.com/crossbeam-rs/crossbeam )
@@ -2110,13 +2111,13 @@ The following text applies to code linked from these dependencies:
 * [env_logger 0.9.3]( https://github.com/env-logger-rs/env_logger/ )
 * [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.24]( https://github.com/rust-lang/flate2-rs )
-* [form_urlencoded 1.0.1]( https://github.com/servo/rust-url )
+* [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
 * [hashbrown 0.12.3]( https://github.com/rust-lang/hashbrown )
 * [heck 0.4.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
-* [idna 0.2.3]( https://github.com/servo/rust-url/ )
+* [idna 0.3.0]( https://github.com/servo/rust-url/ )
 * [indexmap 1.9.1]( https://github.com/bluss/indexmap )
-* [inherent 1.0.1]( https://github.com/dtolnay/inherent )
+* [inherent 1.0.2]( https://github.com/dtolnay/inherent )
 * [itoa 1.0.4]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [mime 0.3.16]( https://github.com/hyperium/mime )
@@ -2125,26 +2126,27 @@ The following text applies to code linked from these dependencies:
 * [num_cpus 1.13.1]( https://github.com/seanmonstar/num_cpus )
 * [once_cell 1.16.0]( https://github.com/matklad/once_cell )
 * [paste 1.0.9]( https://github.com/dtolnay/paste )
-* [percent-encoding 2.1.0]( https://github.com/servo/rust-url/ )
+* [percent-encoding 2.2.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
 * [proc-macro2 1.0.47]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.21]( https://github.com/dtolnay/quote )
 * [semver 1.0.10]( https://github.com/dtolnay/semver )
-* [serde 1.0.145]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.145]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.86]( https://github.com/serde-rs/json )
-* [syn 1.0.102]( https://github.com/dtolnay/syn )
+* [serde 1.0.147]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.147]( https://github.com/serde-rs/serde )
+* [serde_json 1.0.87]( https://github.com/serde-rs/json )
+* [syn 1.0.103]( https://github.com/dtolnay/syn )
 * [tempfile 3.3.0]( https://github.com/Stebalien/tempfile )
-* [thiserror 1.0.31]( https://github.com/dtolnay/thiserror )
-* [thiserror-impl 1.0.31]( https://github.com/dtolnay/thiserror )
+* [thiserror 1.0.37]( https://github.com/dtolnay/thiserror )
+* [thiserror-impl 1.0.37]( https://github.com/dtolnay/thiserror )
 * [time 0.1.44]( https://github.com/time-rs/time )
 * [toml 0.5.9]( https://github.com/alexcrichton/toml-rs )
 * [unicase 2.6.0]( https://github.com/seanmonstar/unicase )
 * [unicode-bidi 0.3.8]( https://github.com/servo/unicode-bidi )
 * [unicode-ident 1.0.5]( https://github.com/dtolnay/unicode-ident )
-* [unicode-normalization 0.1.19]( https://github.com/unicode-rs/unicode-normalization )
+* [unicode-normalization 0.1.22]( https://github.com/unicode-rs/unicode-normalization )
 * [unicode-width 0.1.10]( https://github.com/unicode-rs/unicode-width )
-* [url 2.2.2]( https://github.com/servo/rust-url )
+* [url 2.3.1]( https://github.com/servo/rust-url )
+
 
 
 ```
@@ -2780,7 +2782,8 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [getrandom 0.2.7]( https://github.com/rust-random/getrandom )
+* [getrandom 0.2.8]( https://github.com/rust-random/getrandom )
+
 
 
 ```
@@ -4633,42 +4636,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following text applies to code linked from these dependencies:
 
-* [matches 0.1.9]( https://github.com/SimonSapin/rust-std-candidates )
-
-
-```
-Copyright (c) 2014-2016 Simon Sapin
-
-Permission is hereby granted, free of charge, to any
-person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the
-Software without restriction, including without
-limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice
-shall be included in all copies or substantial portions
-of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
-```
-## MIT License
-<span id="MIT"></span>
-
-The following text applies to code linked from these dependencies:
-
 * [nom 7.1.1]( https://github.com/Geal/nom )
 
 
@@ -4700,7 +4667,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [ordered-float 3.0.0]( https://github.com/reem/rust-ordered-float )
+* [ordered-float 3.2.0]( https://github.com/reem/rust-ordered-float )
+
 
 
 ```
@@ -5499,9 +5467,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 51.8.1]( https://github.com/mozilla/glean )
+* [glean 51.8.2]( https://github.com/mozilla/glean )
 * [glean-build 6.3.0]( https://github.com/mozilla/glean )
-* [glean-core 51.8.1]( https://github.com/mozilla/glean )
+* [glean-core 51.8.2]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 

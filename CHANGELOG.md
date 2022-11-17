@@ -1,6 +1,14 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.8.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.2...main)
+
+# v51.8.2 (2022-11-17)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.1...v51.8.2)
+
+* General
+  * BUGFIX: Reliably clear pending pings and events on Windows using `remove_dir_all` crate ([bug 1801128](https://bugzilla.mozilla.org/show_bug.cgi?id=1801128))
+  * Update to rkv v0.18.2 ([#2270](https://github.com/mozilla/glean/pull/2270))
 
 # v51.8.1 (2022-11-15)
 
