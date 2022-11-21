@@ -1,4 +1,4 @@
-auditwheel==5.2.1
+auditwheel==5.3.0
 black==22.10.0; python_version > '3.6'
 coverage==6.2
 flake8==5.0.4
