@@ -4,7 +4,7 @@ name = "glean-bundle-android"
 version = "1.0.0"
 authors = ["The Glean Team <glean-team@mozilla.com>"]
 edition = "2018"
-description = "Static/Dynamic library build of glean-ffi, for use in Android builds"
+description = "Dynamic library build of glean-ffi, for use in Android builds"
 repository = "https://github.com/mozilla/glean"
 license = "MPL-2.0"
 

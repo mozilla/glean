@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.2...main)
 
+* iOS
+  * Avoid building a dynamic library ([#2285](https://github.com/mozilla/glean/pull/2285)).
+    Note: v51.8.1 and 51.8.2 are **not** working on iOS and will break the build due to accidentally including a link to a dynamic library.
+
 # v51.8.2 (2022-11-17)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.1...v51.8.2)
