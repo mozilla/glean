@@ -19,9 +19,10 @@
 		BFDA7AD02371CE4900575C7B /* ViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7ACF2371CE4900575C7B /* ViewControllerTest.swift */; };
 		BFDA7AD22371D2BA00575C7B /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDA7AD12371D2BA00575C7B /* MockServer.swift */; };
 		BFED6B2C238C1638006E2BC4 /* DeletionRequestPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6B2B238C1638006E2BC4 /* DeletionRequestPingTest.swift */; };
-		CD70CF8C2850D3F400FC2014 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD70CF8B2850D3F400FC2014 /* Glean.xcframework */; };
 		CD70CF8E2850D4B700FC2014 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF8D2850D4B700FC2014 /* Swifter */; };
 		CD70CF902850D4BA00FC2014 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF8F2850D4BA00FC2014 /* Gzip */; };
+		CD802A47292E5AC800D46BE9 /* Glean.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD70CF8B2850D3F400FC2014 /* Glean.xcframework */; };
+		CD802A48292E5AC800D46BE9 /* Glean.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CD70CF8B2850D3F400FC2014 /* Glean.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CD99D84625F131D600BD5339 /* EventPingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD99D84525F131D600BD5339 /* EventPingTest.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +50,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				CD802A48292E5AC800D46BE9 /* Glean.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,7 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD70CF8C2850D3F400FC2014 /* Glean.xcframework in Frameworks */,
+				CD802A47292E5AC800D46BE9 /* Glean.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
