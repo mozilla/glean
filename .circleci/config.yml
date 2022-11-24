@@ -528,6 +528,13 @@ jobs:
       - restore_cache:
           keys:
             - v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
+
+      # Experimental - we might move this to Linux with an appropriate libdispatch later
+      - run:
+          name: Run Rust tests with native dispatcher
+          command: |
+            cargo test --verbose --jobs 6 --features native-dispatcher -- --nocapture
+
       - run:
           name: Run iOS build
           command: bash bin/run-ios-build.sh

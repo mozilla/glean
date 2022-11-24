@@ -22,50 +22,33 @@
 //! });
 //! ```
 
-use std::{
-    mem,
-    sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-        Arc,
-    },
-    thread::{self, JoinHandle},
-};
-
-use crossbeam_channel::{bounded, unbounded, SendError, Sender};
+use crossbeam_channel::SendError;
 use thiserror::Error;
 
 pub use global::*;
 
 pub(crate) mod global;
 
-/// Command received while blocked from further work.
-enum Blocked {
-    /// Shutdown immediately without processing the queue.
-    Shutdown,
-    /// Unblock and continue with work as normal.
-    Continue,
-}
+#[cfg(not(feature = "native-dispatcher"))]
+mod imp;
+#[cfg(feature = "native-dispatcher")]
+mod native;
 
-/// The command a worker should execute.
-enum Command {
-    /// A task is a user-defined function to run.
-    Task(Box<dyn FnOnce() + Send>),
-
-    /// Swap the channel
-    Swap(Sender<()>),
-
-    /// Signal the worker to finish work and shut down.
-    Shutdown,
-}
+#[cfg(not(feature = "native-dispatcher"))]
+use imp::*;
+#[cfg(feature = "native-dispatcher")]
+use native::*;
 
 /// The error returned from operations on the dispatcher
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum DispatchError {
     /// The worker panicked while running a task
+    #[allow(dead_code)] // only used in `imp`
     #[error("The worker panicked while running a task")]
     WorkerPanic,
 
     /// Maximum queue size reached
+    #[allow(dead_code)] // only used by `imp`
     #[error("Maximum queue size reached")]
     QueueFull,
 
@@ -85,252 +68,6 @@ pub enum DispatchError {
 impl<T> From<SendError<T>> for DispatchError {
     fn from(_: SendError<T>) -> Self {
         DispatchError::SendError
-    }
-}
-
-/// A clonable guard for a dispatch queue.
-#[derive(Clone)]
-struct DispatchGuard {
-    /// Whether to queue on the preinit buffer or on the unbounded queue
-    queue_preinit: Arc<AtomicBool>,
-
-    /// The number of items that were added to the queue after it filled up.
-    overflow_count: Arc<AtomicUsize>,
-
-    /// The maximum pre-init queue size
-    max_queue_size: usize,
-
-    /// Used to unblock the worker thread initially.
-    block_sender: Sender<Blocked>,
-
-    /// Sender for the preinit queue.
-    preinit_sender: Sender<Command>,
-
-    /// Sender for the unbounded queue.
-    sender: Sender<Command>,
-}
-
-impl DispatchGuard {
-    pub fn launch(&self, task: impl FnOnce() + Send + 'static) -> Result<(), DispatchError> {
-        let task = Command::Task(Box::new(task));
-        self.send(task)
-    }
-
-    pub fn shutdown(&mut self) -> Result<(), DispatchError> {
-        // Need to flush in order for the thread to actually process anything,
-        // including the shutdown command.
-        self.flush_init().ok();
-        self.send(Command::Shutdown)
-    }
-
-    fn send(&self, task: Command) -> Result<(), DispatchError> {
-        if self.queue_preinit.load(Ordering::SeqCst) {
-            if self.preinit_sender.len() < self.max_queue_size {
-                self.preinit_sender.send(task)?;
-                Ok(())
-            } else {
-                self.overflow_count.fetch_add(1, Ordering::SeqCst);
-                // Instead of using a bounded queue, we are handling the bounds
-                // checking ourselves. If a bounded queue were full, we would return
-                // a QueueFull DispatchError, so we do the same here.
-                Err(DispatchError::QueueFull)
-            }
-        } else {
-            self.sender.send(task)?;
-            Ok(())
-        }
-    }
-
-    fn block_on_queue(&self) {
-        let (tx, rx) = crossbeam_channel::bounded(0);
-
-        // We explicitly don't use `self.launch` here.
-        // We always put this task on the unbounded queue.
-        // The pre-init queue might be full before its flushed, in which case this would panic.
-        // Blocking on the queue can only work if it is eventually flushed anyway.
-
-        let task = Command::Task(Box::new(move || {
-            tx.send(())
-                .expect("(worker) Can't send message on single-use channel");
-        }));
-        self.sender
-            .send(task)
-            .expect("Failed to launch the blocking task");
-
-        rx.recv()
-            .expect("Failed to receive message on single-use channel");
-    }
-
-    fn kill(&mut self) -> Result<(), DispatchError> {
-        // We immediately stop queueing in the pre-init buffer.
-        let old_val = self.queue_preinit.swap(false, Ordering::SeqCst);
-        if !old_val {
-            return Err(DispatchError::AlreadyFlushed);
-        }
-
-        // Unblock the worker thread exactly once.
-        self.block_sender.send(Blocked::Shutdown)?;
-        Ok(())
-    }
-
-    /// Flushes the pre-init buffer.
-    ///
-    /// This function blocks until tasks queued prior to this call are finished.
-    /// Once the initial queue is empty the dispatcher will wait for new tasks to be launched.
-    ///
-    /// Returns an error if called multiple times.
-    fn flush_init(&mut self) -> Result<usize, DispatchError> {
-        // We immediately stop queueing in the pre-init buffer.
-        let old_val = self.queue_preinit.swap(false, Ordering::SeqCst);
-        if !old_val {
-            return Err(DispatchError::AlreadyFlushed);
-        }
-
-        // Unblock the worker thread exactly once.
-        self.block_sender.send(Blocked::Continue)?;
-
-        // Single-use channel to communicate with the worker thread.
-        let (swap_sender, swap_receiver) = bounded(0);
-
-        // Send final command and block until it is sent.
-        self.preinit_sender
-            .send(Command::Swap(swap_sender))
-            .map_err(|_| DispatchError::SendError)?;
-
-        // Now wait for the worker thread to do the swap and inform us.
-        // This blocks until all tasks in the preinit buffer have been processed.
-        swap_receiver.recv()?;
-
-        // We're not queueing anymore.
-        global::QUEUE_TASKS.store(false, Ordering::SeqCst);
-
-        let overflow_count = self.overflow_count.load(Ordering::SeqCst);
-        if overflow_count > 0 {
-            Ok(overflow_count)
-        } else {
-            Ok(0)
-        }
-    }
-}
-
-/// A dispatcher.
-///
-/// Run expensive processing tasks sequentially off the main thread.
-/// Tasks are processed in a single separate thread in the order they are submitted.
-/// The dispatch queue will enqueue tasks while not flushed, up to the maximum queue size.
-/// Processing will start after flushing once, processing already enqueued tasks first, then
-/// waiting for further tasks to be enqueued.
-pub struct Dispatcher {
-    /// Guard used for communication with the worker thread.
-    guard: DispatchGuard,
-
-    /// Handle to the worker thread, allows to wait for it to finish.
-    worker: Option<JoinHandle<()>>,
-}
-
-impl Dispatcher {
-    /// Creates a new dispatcher with a maximum queue size.
-    ///
-    /// Launched tasks won't run until [`flush_init`] is called.
-    ///
-    /// [`flush_init`]: #method.flush_init
-    pub fn new(max_queue_size: usize) -> Self {
-        let (block_sender, block_receiver) = bounded(1);
-        let (preinit_sender, preinit_receiver) = unbounded();
-        let (sender, mut unbounded_receiver) = unbounded();
-
-        let queue_preinit = Arc::new(AtomicBool::new(true));
-        let overflow_count = Arc::new(AtomicUsize::new(0));
-
-        let worker = thread::Builder::new()
-            .name("glean.dispatcher".into())
-            .spawn(move || {
-                match block_receiver.recv() {
-                    Err(_) => {
-                        // The other side was disconnected.
-                        // There's nothing the worker thread can do.
-                        log::error!("The task producer was disconnected. Worker thread will exit.");
-                        return;
-                    }
-                    Ok(Blocked::Shutdown) => {
-                        // The other side wants us to stop immediately
-                        return;
-                    }
-                    Ok(Blocked::Continue) => {
-                        // Queue is unblocked, processing continues as normal.
-                    }
-                }
-
-                let mut receiver = preinit_receiver;
-                loop {
-                    use Command::*;
-
-                    match receiver.recv() {
-                        Ok(Shutdown) => {
-                            break;
-                        }
-
-                        Ok(Task(f)) => {
-                            (f)();
-                        }
-
-                        Ok(Swap(swap_done)) => {
-                            // A swap should only occur exactly once.
-                            // This is upheld by `flush_init`, which errors out if the preinit buffer
-                            // was already flushed.
-
-                            // We swap the channels we listen on for new tasks.
-                            // The next iteration will continue with the unbounded queue.
-                            mem::swap(&mut receiver, &mut unbounded_receiver);
-
-                            // The swap command MUST be the last one received on the preinit buffer,
-                            // so by the time we run this we know all preinit tasks were processed.
-                            // We can notify the other side.
-                            swap_done
-                                .send(())
-                                .expect("The caller of `flush_init` has gone missing");
-                        }
-
-                        // Other side was disconnected.
-                        Err(_) => {
-                            log::error!(
-                                "The task producer was disconnected. Worker thread will exit."
-                            );
-                            return;
-                        }
-                    }
-                }
-            })
-            .expect("Failed to spawn Glean's dispatcher thread");
-
-        let guard = DispatchGuard {
-            queue_preinit,
-            overflow_count,
-            max_queue_size,
-            block_sender,
-            preinit_sender,
-            sender,
-        };
-
-        Dispatcher {
-            guard,
-            worker: Some(worker),
-        }
-    }
-
-    fn guard(&self) -> DispatchGuard {
-        self.guard.clone()
-    }
-
-    /// Waits for the worker thread to finish and finishes the dispatch queue.
-    ///
-    /// You need to call `shutdown` to initiate a shutdown of the queue.
-    #[cfg(test)]
-    fn join(mut self) -> Result<(), DispatchError> {
-        if let Some(worker) = self.worker.take() {
-            worker.join().map_err(|_| DispatchError::WorkerPanic)?;
-        }
-        Ok(())
     }
 }
 
@@ -383,7 +120,6 @@ mod test {
     fn launch_correctly_adds_tasks_to_preinit_queue() {
         enable_test_logging();
 
-        let main_thread_id = thread::current().id();
         let thread_canary = Arc::new(AtomicU8::new(0));
 
         let dispatcher = Dispatcher::new(100);
@@ -395,8 +131,6 @@ mod test {
             dispatcher
                 .guard()
                 .launch(move || {
-                    // Make sure the task is flushed off-the-main thread.
-                    assert!(thread::current().id() != main_thread_id);
                     canary_clone.fetch_add(1, Ordering::SeqCst);
                 })
                 .expect("Failed to dispatch the test task");
@@ -456,7 +190,7 @@ mod test {
     fn tasks_after_shutdown_are_not_processed() {
         enable_test_logging();
 
-        let dispatcher = Dispatcher::new(10);
+        let mut dispatcher = Dispatcher::new(10);
 
         let result = Arc::new(Mutex::new(vec![]));
 
@@ -529,7 +263,7 @@ mod test {
         // but we can quickly queue more slow tasks than the pre-init buffer holds
         // and then guarantuee they all run.
 
-        let dispatcher = Dispatcher::new(5);
+        let mut dispatcher = Dispatcher::new(5);
 
         let result = Arc::new(Mutex::new(vec![]));
 
