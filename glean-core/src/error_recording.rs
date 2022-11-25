@@ -27,6 +27,7 @@ use crate::Lifetime;
 /// in the platform-specific code (e.g. `ErrorType.kt`) and with the
 /// metrics in the registry files.
 // When adding a new error type ensure it's also added to `ErrorType::iter()` below.
+#[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum ErrorType {
     /// For when the value to be recorded does not match the metric-specific restrictions

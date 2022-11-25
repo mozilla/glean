@@ -62,6 +62,7 @@ class GleanDebugActivity : Activity() {
 
     private fun isActivityExported(targetActivity: ComponentName): Boolean {
         return try {
+            @Suppress("DEPRECATION")
             packageManager.getActivityInfo(targetActivity, PackageManager.GET_META_DATA).exported
         } catch (_: PackageManager.NameNotFoundException) {
             false

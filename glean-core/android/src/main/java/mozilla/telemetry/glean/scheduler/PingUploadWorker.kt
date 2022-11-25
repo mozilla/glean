@@ -113,8 +113,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                     )
 
                     // Process the upload response
-                    val action = gleanProcessPingUploadResponse(action.request.documentId, result)
-                    when (action) {
+                    val nextAction = gleanProcessPingUploadResponse(action.request.documentId, result)
+                    when (nextAction) {
                         UploadTaskAction.NEXT -> continue
                         UploadTaskAction.END -> break
                     }

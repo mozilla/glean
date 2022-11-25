@@ -56,7 +56,7 @@ with (SRC_ROOT / "CHANGELOG.md").open() as history_file:
     history = history_file.read()
 
 # glean version. Automatically updated by the bin/prepare_release.sh script
-version = "51.8.2"
+version = "51.8.3"
 
 requirements = [
     "semver>=2.13.0",

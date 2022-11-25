@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.8.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...main)
+
+# v51.8.3 (2022-11-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.2...v51.8.3)
+
+* General
+  * Upgrade to rkv 0.18.3. This comes with a bug fix that ensures that interrupted database writes don't corrupt/truncate the database file ([#2288](https://github.com/mozilla/glean/pull/2288))
+* iOS
+  * Avoid building a dynamic library ([#2285](https://github.com/mozilla/glean/pull/2285)).
+    Note: v51.8.1 and 51.8.2 are **not** working on iOS and will break the build due to accidentally including a link to a dynamic library.
 
 # v51.8.2 (2022-11-17)
 

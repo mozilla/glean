@@ -143,13 +143,12 @@ subprojects {
 
     // Enable Kotlin warnings as errors for all modules
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        // TODO: Re-enable when we fixed all those warnings.
-        //kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.allWarningsAsErrors = true
         kotlinOptions {
             // FIXME: Currently required for `toUByteArray` in the ping uploader.
             // Should probably be handled with an annotation.
             freeCompilerArgs += [
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
             ]
         }
     }
