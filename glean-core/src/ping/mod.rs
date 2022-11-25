@@ -61,9 +61,7 @@ impl PingMaker {
     }
 
     /// Gets, and then increments, the sequence number for a given ping.
-    ///
-    /// This is crate-internal exclusively for enabling the migration tests.
-    pub(super) fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
+    fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
         // Sequence numbers are stored as a counter under a name that includes the storage name
         let seq = CounterMetric::new(CommonMetricData {
             name: format!("{}#sequence", storage_name),
