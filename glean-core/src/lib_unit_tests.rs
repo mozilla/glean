@@ -13,6 +13,7 @@ use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionM
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
+    let _ = env_logger::builder().try_init();
     let dir = match tempdir {
         Some(tempdir) => tempdir,
         None => tempfile::tempdir().unwrap(),
