@@ -7,6 +7,7 @@
   * BEHAVIOUR CHANGE: Events in Custom Pings no longer trigger their submission. ([bug 1716725](https://bugzilla.mozilla.org/show_bug.cgi?id=1716725))
     * Custom Pings with unsent events will no longer be sent at startup with reason `startup`.
     * `glean.restarted` events will be included in Custom Pings with other events to rationalize event timestamps across restarts.
+  * `test_reset_glean` will remove all previous data if asked to clear stores, even if Glean never has been initialized ([#2294](https://github.com/mozilla/glean/pull/2294))
 
 # v51.8.3 (2022-11-25)
 

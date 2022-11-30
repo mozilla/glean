@@ -37,6 +37,7 @@
 //! ```
 
 use std::collections::HashMap;
+use std::path::Path;
 
 pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
@@ -203,14 +204,15 @@ pub fn test_get_experiment_data(experiment_id: String) -> Option<RecordedExperim
 }
 
 /// Destroy the global Glean state.
-pub(crate) fn destroy_glean(clear_stores: bool) {
-    glean_core::glean_test_destroy_glean(clear_stores)
+pub(crate) fn destroy_glean(clear_stores: bool, data_path: &Path) {
+    let data_path = data_path.display().to_string();
+    glean_core::glean_test_destroy_glean(clear_stores, Some(data_path))
 }
 
 /// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
-    destroy_glean(clear_stores);
+    destroy_glean(clear_stores, &cfg.data_path);
     initialize_internal(cfg, client_info);
     glean_core::join_init();
 }

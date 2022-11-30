@@ -354,7 +354,8 @@ class GleanTest {
         )
 
         // Destroy Glean, so that the dispatcher will queue tasks until flushed.
-        Glean.testDestroyGleanHandle(clearStores = true)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores = true, gleanDataDir.path)
 
         // This will queue 3 tasks that will add to the metric value once Glean is initialized
         for (ignored in 0..2) {
@@ -622,7 +623,8 @@ class GleanTest {
         val server = getMockWebServer()
 
         // No Glean active, tasks will be queued.
-        Glean.testDestroyGleanHandle(clearStores = true)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores = true, gleanDataDir.path)
 
         val counterMetric = CounterMetricType(
             CommonMetricData(

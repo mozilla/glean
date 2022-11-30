@@ -451,7 +451,8 @@ open class GleanInternalAPI internal constructor() {
         PingUploadWorker.cancel(context)
 
         // Init Glean.
-        Glean.testDestroyGleanHandle(clearStores)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores, gleanDataDir.path)
         // Enable test mode.
         Glean.enableTestingMode()
         // Always log pings for tests
@@ -501,15 +502,19 @@ open class GleanInternalAPI internal constructor() {
 
     /**
      * Test-only method to destroy the owned glean-core handle.
+     *
+     * @param clearStores Whether to clear data after destroying the Glean object
+     * @param dataPath The path to the data folder. Must be set if `clearStores` is `true`.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testDestroyGleanHandle(clearStores: Boolean = false) {
+    internal fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
+        // If it was initialized this also clears the directory
+        gleanTestDestroyGlean(clearStores, dataPath)
+
         if (!isInitialized()) {
-            // We don't need to destroy Glean: it wasn't initialized.
+            // We don't need to destroy anything else: it wasn't initialized.
             return
         }
-
-        gleanTestDestroyGlean(clearStores)
 
         // Reset all state.
         gleanSetTestMode(false)

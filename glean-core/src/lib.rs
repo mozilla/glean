@@ -861,7 +861,7 @@ pub fn glean_set_test_mode(enabled: bool) {
 /// **TEST-ONLY Method**
 ///
 /// Destroy the underlying database.
-pub fn glean_test_destroy_glean(clear_stores: bool) {
+pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
     if was_initialize_called() {
         // Just because initialize was called doesn't mean it's done.
         join_init();
@@ -879,6 +879,12 @@ pub fn glean_test_destroy_glean(clear_stores: bool) {
 
         // Allow us to go through initialization again.
         INITIALIZE_CALLED.store(false, Ordering::SeqCst);
+    } else if clear_stores {
+        if let Some(data_path) = data_path {
+            let _ = remove_dir_all::remove_dir_all(data_path).ok();
+        } else {
+            log::warn!("Asked to clear stores before initialization, but no data path given.");
+        }
     }
 }
 

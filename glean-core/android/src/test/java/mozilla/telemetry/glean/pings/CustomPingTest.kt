@@ -184,7 +184,7 @@ class CustomPingTest {
             Glean.configuration.copy(
                 serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = false, uploadEnabled = true
         )
 
         // There should be no ping upload worker,

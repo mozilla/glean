@@ -40,7 +40,7 @@ namespace glean {
     boolean glean_submit_ping_by_name_sync(string ping_name, optional string? reason = null);
 
     void glean_set_test_mode(boolean enabled);
-    void glean_test_destroy_glean(boolean clear_stores);
+    void glean_test_destroy_glean(boolean clear_stores, optional string? data_path = null);
 
     void glean_set_dirty_flag(boolean flag);
 
