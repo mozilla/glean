@@ -421,7 +421,42 @@ def fixture_reset_glean():
 
 </div>
 
-<div data-lang="Rust" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Note
+
+> Glean uses a global singleton object. Tests need to run single-threaded or need to ensure exclusivity using a lock.
+
+The Glean Rust SDK contains a helper function `test_reset_glean()` for resetting Glean for tests.
+It has three required arguments:
+
+1. the configuration to use
+2. the client info to use
+3. whether to clear stores before initialization
+
+You can call it like below in every test:
+
+```rust
+let dir = tempfile::tempdir().unwrap();
+let tmpname = dir.path().to_path_buf();
+
+let glean::Configuration {
+  data_path: tmpname,
+  application_id: "app-id".into(),
+  upload_enabled: true,
+  max_events: None,
+  delay_ping_lifetime_io: false,
+  server_endpoint: Some("invalid-test-host".into()),
+  uploader: None,
+  use_core_mps: false,
+};
+let client_info = glean::ClientInfoMetrics::unknown();
+glean::test_reset_glean(cfg, client_info, false);
+```
+</div>
+
 <div data-lang="JavaScript" class="tab">
 
 The Glean JavaScript SDK contains a helper function `testResetGlean()` for resetting Glean for tests.
