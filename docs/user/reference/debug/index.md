@@ -34,6 +34,6 @@ This will tag all subsequent outgoing pings with a maximum of 5 comma-separated 
 
 ### Send Pings
 
-_This feature is only available for the Kotlin and Swift SDKs._
+_This feature is only available for the Kotlin and Swift SDKs and in Firefox Desktop via `about:glean`._
 
 This expects the name of a ping and forces its immediate submission.
