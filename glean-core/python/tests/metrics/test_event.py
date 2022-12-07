@@ -22,10 +22,25 @@ from glean import __version__ as glean_version
 ROOT = Path(__file__).parent
 
 
+class ClickKeys(metrics.EventExtras):
+    def __init__(
+        self, object_id: Optional[str] = None, other: Optional[str] = None
+    ) -> None:
+        self._object_id = object_id
+        self._other = other
+
+    def to_ffi_extra(self) -> Dict[str, str]:
+        extras = {}
+        if self._object_id is not None:
+            extras["object_id"] = str(self._object_id)
+
+        if self._other is not None:
+            extras["other"] = str(self._other)
+
+        return extras
+
+
 def test_the_api_records_to_its_storage_engine():
-    class ClickKeys(enum.Enum):
-        OBJECT_ID = "object_id"
-        OTHER = "other"
 
     click = metrics.EventMetricType(
         CommonMetricData(
@@ -40,11 +55,11 @@ def test_the_api_records_to_its_storage_engine():
     )
 
     # Record two events of the same type, with a little delay
-    click.record({ClickKeys.OBJECT_ID: "buttonA", ClickKeys.OTHER: "foo"})
+    click.record(ClickKeys(object_id="buttonA", other="foo"))
 
     time.sleep(0.001)
 
-    click.record({ClickKeys.OBJECT_ID: "buttonB", ClickKeys.OTHER: "bar"})
+    click.record(ClickKeys(object_id="buttonB", other="bar"))
     click.record()
 
     # Check that data was properly recorded
@@ -65,8 +80,6 @@ def test_the_api_records_to_its_storage_engine():
 
 
 def test_the_api_records_to_its_storage_engine_when_category_is_empty():
-    class ClickKeys(enum.Enum):
-        OBJECT_ID = "object_id"
 
     click = metrics.EventMetricType(
         CommonMetricData(
@@ -81,11 +94,11 @@ def test_the_api_records_to_its_storage_engine_when_category_is_empty():
     )
 
     # Record two events of the same type, with a little delay
-    click.record(extra={ClickKeys.OBJECT_ID: "buttonA"})
+    click.record(ClickKeys(object_id="buttonA"))
 
     time.sleep(0.001)
 
-    click.record(extra={ClickKeys.OBJECT_ID: "buttonB"})
+    click.record(ClickKeys(object_id="buttonB"))
 
     # Check that the data was properly recorded
     snapshot = click.test_get_value()
@@ -101,9 +114,6 @@ def test_the_api_records_to_its_storage_engine_when_category_is_empty():
 
 
 def test_disabled_events_must_not_record_data():
-    class ClickKeys(enum.Enum):
-        OBJECT_ID = 0
-        OTHER = 1
 
     click = metrics.EventMetricType(
         CommonMetricData(
@@ -141,9 +151,6 @@ def test_test_get_value_throws_valueerror_if_nothing_is_stored():
 
 
 def test_the_api_records_to_secondary_pings():
-    class ClickKeys(enum.Enum):
-        OBJECT_ID = "object_id"
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=False,
@@ -157,11 +164,11 @@ def test_the_api_records_to_secondary_pings():
     )
 
     # Record two events of the same type, with a little delay
-    click.record(extra={ClickKeys.OBJECT_ID: "buttonA"})
+    click.record(ClickKeys(object_id="buttonA"))
 
     time.sleep(0.001)
 
-    click.record(extra={ClickKeys.OBJECT_ID: "buttonB"})
+    click.record(ClickKeys(object_id="buttonB"))
 
     # Check that the data was properly recorded in the second ping
     snapshot = click.test_get_value("store2")
@@ -298,9 +305,6 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
 
 
 def test_long_extra_values_record_an_error():
-    class ClickKeys(enum.Enum):
-        OBJECT_ID = "object_id"
-        OTHER = "other"
 
     click = metrics.EventMetricType(
         CommonMetricData(
@@ -316,7 +320,7 @@ def test_long_extra_values_record_an_error():
 
     long_string = "0123456789" * 51
 
-    click.record(extra={ClickKeys.OBJECT_ID: long_string})
+    click.record(ClickKeys(object_id=long_string))
 
     assert 1 == click.test_get_num_recorded_errors(testing.ErrorType.INVALID_OVERFLOW)
 
@@ -328,10 +332,7 @@ def test_event_enum_is_generated_correctly():
 
     print(dir(metrics.environment))
     metrics.environment.event_example.record(
-        {
-            metrics.environment.event_example_keys.KEY1: "value1",
-            metrics.environment.event_example_keys.KEY2: "value2",
-        }
+        metrics.environment.EventExampleExtra(key1="value1", key2="value2")
     )
 
     assert {
@@ -357,22 +358,6 @@ def test_event_extra_is_generated_correctly():
 
 
 def test_the_convenient_extrakeys_api():
-    class ClickKeys(metrics.EventExtras):
-        def __init__(
-            self, object_id: Optional[str] = None, other: Optional[str] = None
-        ) -> None:
-            self._object_id = object_id
-            self._other = other
-
-        def to_ffi_extra(self) -> Dict[str, str]:
-            extras = {}
-            if self._object_id is not None:
-                extras["object_id"] = str(self._object_id)
-
-            if self._other is not None:
-                extras["other"] = str(self._other)
-
-            return extras
 
     click = metrics.EventMetricType(
         CommonMetricData(

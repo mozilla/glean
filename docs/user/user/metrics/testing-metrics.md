@@ -24,9 +24,7 @@ All examples omit the step of resetting Glean for tests to focus solely on metri
 ```kotlin
 // Record a metric value with extra to validate against
 GleanMetrics.BrowserEngagement.click.record(
-    mapOf(
-        BrowserEngagement.clickKeys.font to "Courier"
-    )
+    BrowserEngagement.clickExtra(font = "Courier")
 )
 
 // Record more events without extras attached

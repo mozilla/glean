@@ -79,23 +79,6 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
     /**
      * Record an event by using the information provided by the instance of this class.
      *
-     * **THIS METHOD IS DEPRECATED.**  Specify types for your event extras.
-     * See the reference for details: https://mozilla.github.io/glean/book/reference/metrics/event.html#recording-api
-     *
-     * @param extra optional. This is a map, both keys and values need to be strings, keys are
-     *              identifiers. This is used for events where additional richer context is needed.
-     *              The maximum length for values is 100 bytes.
-     */
-    @Deprecated("Specify types for your event extras. See the reference for details.")
-    @JvmOverloads
-    fun record(extra: Map<ExtraKeysEnum, String>? = null) {
-        val extraRecord = extra?.mapKeys { it.key.keyName() } ?: emptyMap()
-        inner.record(extraRecord)
-    }
-
-    /**
-     * Record an event by using the information provided by the instance of this class.
-     *
      * @param extra The event extra properties.
      *              Values are converted to strings automatically
      *              This is used for events where additional richer context is needed.
@@ -104,8 +87,8 @@ class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
      * Note: `extra` is not optional here to avoid overlapping with the above definition of `record`.
      *       If no `extra` data is passed the above function will be invoked correctly.
      */
-    fun record(extra: ExtraObject) {
-        inner.record(extra.toExtraRecord())
+    fun record(extra: ExtraObject? = null) {
+        inner.record(extra?.toExtraRecord() ?: emptyMap())
     }
 
     /**

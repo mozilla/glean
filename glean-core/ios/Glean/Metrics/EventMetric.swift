@@ -72,18 +72,6 @@ public class EventMetricType<ExtraKeysEnum: EventExtraKey, ExtraObject: EventExt
         self.inner = EventMetric(meta, allowedExtraKeys ?? [])
     }
 
-    /// Record an event by using the information provided by the instance of this class.
-    ///
-    /// - parameters:
-    ///     * extra: (optional) A map of extra keys. Keys are identiifers and mapped to their registered name,
-    ///              values need to be strings.
-    ///              This is used for events where additional richer context is needed.
-    ///              The maximum length for values is defined by `MAX_LENGTH_EXTRA_KEY_VALUE`.
-    @available(*, deprecated, message: "Specify types for your event extras. See the reference for details.")
-    public func record(extra: [ExtraKeysEnum: String]) {
-        self.recordInternal(extras: extra.toExtraRecord())
-    }
-
     public func record(_ properties: ExtraObject? = nil) {
         self.recordInternal(extras: properties.map { $0.toExtraRecord() } ?? [:])
     }

@@ -147,13 +147,13 @@ The Glean Python bindings use the following tools:
 To just check the lints:
 
 ```bash
-  $ make pythonlint
+  $ make lint-python
 ```
 
 To reformat the Python files in-place:
 
 ```bash
-  $ make pythonfmt
+  $ make fmt-python
 ```
 
 ## Building the Python API docs
