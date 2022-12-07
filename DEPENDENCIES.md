@@ -3400,7 +3400,7 @@ The following text applies to code linked from these dependencies:
 
 * [fs-err 2.8.1]( https://github.com/andrewhickman/fs-err )
 * [log 0.4.17]( https://github.com/rust-lang/log )
-* [uuid 0.8.2]( https://github.com/uuid-rs/uuid )
+* [uuid 1.2.2]( https://github.com/uuid-rs/uuid )
 
 ```
                               Apache License
