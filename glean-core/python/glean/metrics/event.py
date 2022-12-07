@@ -3,8 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 
 from .._uniffi import CommonMetricData
@@ -46,9 +45,7 @@ class EventMetricType:
     ):
         self._inner = EventMetric(common_metric_data, allowed_extra_keys)
 
-    def record(
-        self, extra: Optional[Union[Dict[str, str], EventExtras]] = None
-    ) -> None:
+    def record(self, extra: Optional[EventExtras] = None) -> None:
         """
         Record an event by using the information provided by the instance of
         this class.
@@ -59,20 +56,11 @@ class EventMetricType:
         """
 
         if isinstance(extra, EventExtras):
-            extra = extra.to_ffi_extra()
-        elif isinstance(extra, dict):
-
-            def key_to_str(key):
-                if isinstance(key, enum.Enum):
-                    return key.value
-                else:
-                    return str(key)
-
-            extra = {key_to_str(k): v for k, v in extra.items()}
+            inner_extra = extra.to_ffi_extra()
         else:
-            extra = {}
+            inner_extra = {}
 
-        self._inner.record(extra)
+        self._inner.record(inner_extra)
 
     def test_get_value(
         self, ping_name: Optional[str] = None
