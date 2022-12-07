@@ -324,16 +324,29 @@ fn ensure_custom_ping_events_dont_overflow() {
     };
     let event = EventMetric::new(event_meta.clone(), vec![]);
 
-    assert!(test_get_num_recorded_errors(&glean, &event_meta, ErrorType::InvalidOverflow).is_err());
+    assert!(test_get_num_recorded_errors(
+        &glean,
+        &(event_meta.clone()).into(),
+        ErrorType::InvalidOverflow
+    )
+    .is_err());
 
     for _ in 0..500 {
         event.record_sync(&glean, 0, HashMap::new());
     }
-    assert!(test_get_num_recorded_errors(&glean, &event_meta, ErrorType::InvalidOverflow).is_err());
+    assert!(test_get_num_recorded_errors(
+        &glean,
+        &(event_meta.clone()).into(),
+        ErrorType::InvalidOverflow
+    )
+    .is_err());
 
     // That should top us right up to the limit. Now for going over.
     event.record_sync(&glean, 0, HashMap::new());
-    assert!(test_get_num_recorded_errors(&glean, &event_meta, ErrorType::InvalidOverflow).is_err());
+    assert!(
+        test_get_num_recorded_errors(&glean, &event_meta.into(), ErrorType::InvalidOverflow)
+            .is_err()
+    );
     assert_eq!(501, event.get_value(&glean, store_name).unwrap().len());
 }
 

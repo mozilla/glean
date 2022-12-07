@@ -76,7 +76,7 @@ impl PingMaker {
             glean.storage(),
             INTERNAL_STORAGE,
             &seq.meta().identifier(glean),
-            seq.meta().lifetime,
+            seq.meta().inner.lifetime,
         ) {
             Some(Metric::Counter(i)) => i,
             _ => 0,

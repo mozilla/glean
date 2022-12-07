@@ -11,6 +11,8 @@
   * Upgrade to `glean_parser` v6.5.0, with support for `Cow` in Rust code ([#2300](https://github.com/mozilla/glean/issues/2300))
   * API REMOVED: The deprecated-since-v38 `event` metric `record(map)` API has been removed ([bug 1802550](https://bugzilla.mozilla.org/show_bug.cgi?id=1802550))
   * BEHAVIOUR CHANGE: "events" pings will no longer be sent if they have metrics but no events ([bug 1803513](https://bugzilla.mozilla.org/show_bug.cgi?id=1803513))
+  * *_Experimental:_* Add functionality necessary to remotely configure the metric `disabled` property ([bug 1798919](https://bugzilla.mozilla.org/show_bug.cgi?id=1798919))
+    * This change has no effect when the API is not used and is transparent to consumers. The API is currently experimental because it is not stable and may change.
 * Rust
   * Static labels for labeled metrics are now `Cow<'static, str>` to reduce heap allocations ([#2272](https://github.com/mozilla/glean/pull/2272))
 

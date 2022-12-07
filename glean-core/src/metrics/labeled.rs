@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use std::collections::{hash_map::Entry, HashMap};
 use std::sync::{Arc, Mutex};
 
-use crate::common_metric_data::CommonMetricData;
+use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{BooleanMetric, CounterMetric, Metric, MetricType, StringMetric};
 use crate::Glean;
@@ -245,7 +245,7 @@ where
                     Some(_) => {
                         let label = self.static_label(label);
                         self.new_metric_with_name(combine_base_identifier_and_label(
-                            &self.submetric.meta().name,
+                            &self.submetric.meta().inner.name,
                             label,
                         ))
                     }
@@ -304,13 +304,13 @@ pub fn strip_label(identifier: &str) -> &str {
 /// The errors are logged.
 pub fn validate_dynamic_label(
     glean: &Glean,
-    meta: &CommonMetricData,
+    meta: &CommonMetricDataInternal,
     base_identifier: &str,
     label: &str,
 ) -> String {
     let key = combine_base_identifier_and_label(base_identifier, label);
-    for store in &meta.send_in_pings {
-        if glean.storage().has_metric(meta.lifetime, store, &key) {
+    for store in &meta.inner.send_in_pings {
+        if glean.storage().has_metric(meta.inner.lifetime, store, &key) {
             return key;
         }
     }
@@ -321,8 +321,8 @@ pub fn validate_dynamic_label(
         label_count += 1;
     };
 
-    let lifetime = meta.lifetime;
-    for store in &meta.send_in_pings {
+    let lifetime = meta.inner.lifetime;
+    for store in &meta.inner.send_in_pings {
         glean
             .storage()
             .iter_store_from(lifetime, store, Some(prefix), &mut snapshotter);

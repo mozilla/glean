@@ -17,6 +17,7 @@
     - [Validating metrics](user/metrics/validation-checklist.md)
     - [Error reporting](user/metrics/error-reporting.md)
     - [Metrics collected by the Glean SDKs](user/collected-metrics/metrics.md)
+    - [Enable and Disable metrics using Nimbus](user/metrics/metrics-remote-settings.md)
 - [Pings](user/pings/index.md)
     - [Adding new custom pings](user/pings/custom.md)
     - [Testing custom pings](user/pings/testing-custom-pings.md)

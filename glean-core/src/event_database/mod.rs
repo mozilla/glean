@@ -18,6 +18,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 
+use crate::common_metric_data::CommonMetricDataInternal;
 use crate::coverage::record_coverage;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{DatetimeMetric, TimeUnit};
@@ -184,7 +185,7 @@ impl EventDatabase {
                     let extra = [("glean.startup.date".into(), startup)].into();
                     self.record(
                         glean,
-                        &glean_restarted,
+                        &glean_restarted.into(),
                         crate::get_timestamp_ms(),
                         Some(extra),
                     );
@@ -237,7 +238,7 @@ impl EventDatabase {
     pub fn record(
         &self,
         glean: &Glean,
-        meta: &CommonMetricData,
+        meta: &CommonMetricDataInternal,
         timestamp: u64,
         extra: Option<HashMap<String, String>>,
     ) {
@@ -249,7 +250,7 @@ impl EventDatabase {
         let mut submit_max_capacity_event_ping = false;
         {
             let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
-            for store_name in meta.send_in_pings.iter() {
+            for store_name in meta.inner.send_in_pings.iter() {
                 let store = db.entry(store_name.to_string()).or_insert_with(Vec::new);
                 let execution_counter = CounterMetric::new(CommonMetricData {
                     name: "execution_counter".into(),
@@ -263,8 +264,8 @@ impl EventDatabase {
                 let event = StoredEvent {
                     event: RecordedEvent {
                         timestamp,
-                        category: meta.category.to_string(),
-                        name: meta.name.to_string(),
+                        category: meta.inner.category.to_string(),
+                        name: meta.inner.name.to_string(),
                         extra: extra.clone(),
                     },
                     execution_counter,
@@ -404,7 +405,7 @@ impl EventDatabase {
                                 .map_err(|_| {
                                     record_error(
                                         glean,
-                                        &glean_restarted_meta(store_name),
+                                        &glean_restarted_meta(store_name).into(),
                                         ErrorType::InvalidState,
                                         format!("Unparseable glean.startup.date '{}'", date_str),
                                         None,
@@ -444,7 +445,7 @@ impl EventDatabase {
                 if inter_group_offset < highest_ts {
                     record_error(
                         glean,
-                        &glean_restarted_meta(store_name),
+                        &glean_restarted_meta(store_name).into(),
                         ErrorType::InvalidValue,
                         format!("Time between restart and ping start {} indicates client clock weirdness.", time_from_ping_start_to_glean_restarted),
                         None,
@@ -460,7 +461,7 @@ impl EventDatabase {
             if execution_counter != cur_ec {
                 record_error(
                     glean,
-                    &glean_restarted_meta(store_name),
+                    &glean_restarted_meta(store_name).into(),
                     ErrorType::InvalidState,
                     format!(
                         "Inconsistent execution counter {} (expected {})",
@@ -476,7 +477,7 @@ impl EventDatabase {
                 // execution_counter or glean.startup.date math went awry.
                 record_error(
                     glean,
-                    &glean_restarted_meta(store_name),
+                    &glean_restarted_meta(store_name).into(),
                     ErrorType::InvalidState,
                     format!(
                         "Inconsistent previous highest timestamp {} (expected <= {})",
@@ -571,7 +572,7 @@ impl EventDatabase {
     /// This doesn't clear the stored value.
     pub fn test_get_value<'a>(
         &'a self,
-        meta: &'a CommonMetricData,
+        meta: &'a CommonMetricDataInternal,
         store_name: &str,
     ) -> Option<Vec<RecordedEvent>> {
         record_coverage(&meta.base_identifier());
@@ -584,7 +585,7 @@ impl EventDatabase {
             .into_iter()
             .flatten()
             .map(|stored_event| stored_event.event.clone())
-            .filter(|event| event.name == meta.name && event.category == meta.category)
+            .filter(|event| event.name == meta.inner.name && event.category == meta.inner.category)
             .collect();
         if !value.is_empty() {
             Some(value)
@@ -722,7 +723,7 @@ mod test {
         let test_category = "category";
         let test_name = "name";
         let test_timestamp = 2;
-        let test_meta = CommonMetricData::new(test_category, test_name, test_storage);
+        let test_meta = CommonMetricDataInternal::new(test_category, test_name, test_storage);
         let event_data = RecordedEvent {
             timestamp: test_timestamp,
             category: test_category.to_string(),
@@ -1169,7 +1170,8 @@ mod test {
                     send_in_pings: vec![store_name.into()],
                     lifetime: Lifetime::Ping,
                     ..Default::default()
-                },
+                }
+                .into(),
                 ErrorType::InvalidValue
             )
         );
