@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicU8, Ordering};
+use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, FixedOffset};
 use once_cell::sync::OnceCell;
@@ -10,7 +11,9 @@ use crate::debug::DebugOptions;
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
-use crate::metrics::{self, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment};
+use crate::metrics::{
+    self, ExperimentMetric, Metric, MetricType, MetricsDisabledConfig, PingType, RecordedExperiment,
+};
 use crate::ping::PingMaker;
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult, UploadTaskAction};
@@ -148,6 +151,8 @@ pub struct Glean {
     debug: DebugOptions,
     pub(crate) app_build: String,
     pub(crate) schedule_metrics_pings: bool,
+    pub(crate) remote_settings_epoch: AtomicU8,
+    pub(crate) remote_settings_metrics_config: Arc<Mutex<MetricsDisabledConfig>>,
 }
 
 impl Glean {
@@ -200,6 +205,8 @@ impl Glean {
             app_build: cfg.app_build.to_string(),
             // Subprocess doesn't use "metrics" pings so has no need for a scheduler.
             schedule_metrics_pings: false,
+            remote_settings_epoch: AtomicU8::new(0),
+            remote_settings_metrics_config: Arc::new(Mutex::new(MetricsDisabledConfig::new())),
         };
 
         // Ensuring these pings are registered.
@@ -687,6 +694,22 @@ impl Glean {
         metric.test_get_value(self)
     }
 
+    /// Set configuration for metrics' disabled property, typically from a remote_settings experiment
+    /// or rollout
+    ///
+    /// # Arguments
+    ///
+    /// * `json` - The stringified JSON representation of a `MetricsDisabledConfig` object
+    pub fn set_metrics_disabled_config(&self, cfg: MetricsDisabledConfig) {
+        // Set the current MetricsDisabledConfig, keeping the lock until the epoch is
+        // updated to prevent against reading a "new" config but an "old" epoch
+        let mut lock = self.remote_settings_metrics_config.lock().unwrap();
+        *lock = cfg;
+
+        // Update remote_settings epoch
+        self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
+    }
+
     /// Persists [`Lifetime::Ping`] data that might be in memory in case
     /// [`delay_ping_lifetime_io`](InternalConfiguration::delay_ping_lifetime_io) is set
     /// or was set at a previous time.
@@ -829,7 +852,7 @@ impl Glean {
             self.storage(),
             INTERNAL_STORAGE,
             &dirty_bit_metric.meta().identifier(self),
-            dirty_bit_metric.meta().lifetime,
+            dirty_bit_metric.meta().inner.lifetime,
         ) {
             Some(Metric::Boolean(b)) => b,
             _ => false,

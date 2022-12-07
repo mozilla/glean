@@ -16,10 +16,12 @@
 
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
+use metrics::MetricsDisabledConfig;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
@@ -693,6 +695,20 @@ pub fn glean_set_experiment_inactive(experiment_id: String) {
 pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     block_on_dispatcher();
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
+}
+
+/// Sets a remote configuration for the metrics' disabled property
+///
+/// See [`core::Glean::set_metrics_disabled_config`].
+pub fn glean_set_metrics_disabled_config(json: String) {
+    match MetricsDisabledConfig::try_from(json) {
+        Ok(cfg) => launch_with_glean(|glean| {
+            glean.set_metrics_disabled_config(cfg);
+        }),
+        Err(e) => {
+            log::error!("Error setting metrics feature config: {:?}", e);
+        }
+    }
 }
 
 /// Sets a debug view tag.

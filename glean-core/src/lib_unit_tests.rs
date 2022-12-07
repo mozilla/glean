@@ -8,6 +8,8 @@
 use std::collections::HashSet;
 use std::iter::FromIterator;
 
+use serde_json::json;
+
 use super::*;
 use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionMetric};
 
@@ -214,11 +216,12 @@ fn client_id_and_first_run_date_must_be_regenerated() {
 #[test]
 fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
     let (mut glean, _t) = new_glean(None);
-    let metric = StringMetric::new(CommonMetricData::new(
-        "category",
-        "string_metric",
-        "baseline",
-    ));
+    let metric = StringMetric::new(CommonMetricData {
+        category: "category".to_string(),
+        name: "string_metric".to_string(),
+        send_in_pings: vec!["baseline".to_string()],
+        ..Default::default()
+    });
 
     metric.set_sync(&glean, "TEST VALUE");
     assert!(metric.get_value(&glean, "baseline").is_some());
@@ -810,6 +813,174 @@ fn test_setting_log_pings() {
 
     glean.set_log_pings(false);
     assert!(!glean.log_pings());
+}
+
+#[test]
+fn test_set_metrics_disabled() {
+    let (glean, _t) = new_glean(None);
+    let metric = StringMetric::new(CommonMetricData {
+        category: "category".to_string(),
+        name: "string_metric".to_string(),
+        send_in_pings: vec!["baseline".to_string()],
+        ..Default::default()
+    });
+    let another_metric = LabeledString::new(
+        CommonMetricData {
+            category: "category".to_string(),
+            name: "labeled_string_metric".to_string(),
+            send_in_pings: vec!["baseline".to_string()],
+            ..Default::default()
+        },
+        Some(vec!["label1".into()]),
+    );
+
+    // 1. Set the metrics with a "TEST_VALUE" and ensure it was set
+    metric.set_sync(&glean, "TEST_VALUE");
+    assert_eq!(
+        "TEST_VALUE",
+        metric.get_value(&glean, "baseline").unwrap(),
+        "Initial value must match"
+    );
+    another_metric.get("label1").set_sync(&glean, "TEST_VALUE");
+    assert_eq!(
+        "TEST_VALUE",
+        another_metric
+            .get("label1")
+            .get_value(&glean, "baseline")
+            .unwrap(),
+        "Initial value must match"
+    );
+
+    // 2. Set a configuration to disable the metrics
+    let mut metrics_disabled_config = json!(
+        {
+            "category.string_metric": true,
+            "category.labeled_string_metric": true,
+        }
+    )
+    .to_string();
+    glean.set_metrics_disabled_config(
+        MetricsDisabledConfig::try_from(metrics_disabled_config).unwrap(),
+    );
+
+    // 3. Since the metrics were disabled, setting a new value will be ignored
+    metric.set_sync(&glean, "VALUE_AFTER_DISABLED");
+    assert_eq!(
+        "TEST_VALUE",
+        metric.get_value(&glean, "baseline").unwrap(),
+        "Shouldn't set when disabled"
+    );
+    another_metric
+        .get("label1")
+        .set_sync(&glean, "VALUE_AFTER_DISABLED");
+    assert_eq!(
+        "TEST_VALUE",
+        another_metric
+            .get("label1")
+            .get_value(&glean, "baseline")
+            .unwrap(),
+        "Shouldn't set when disabled"
+    );
+
+    // 4. Set a new configuration where the metrics are enabled
+    metrics_disabled_config = json!({}).to_string();
+    glean.set_metrics_disabled_config(
+        MetricsDisabledConfig::try_from(metrics_disabled_config).unwrap(),
+    );
+
+    // 5. Since the metrics are now enabled, setting a new value should work
+    metric.set_sync(&glean, "VALUE_AFTER_REENABLED");
+    assert_eq!(
+        "VALUE_AFTER_REENABLED",
+        metric.get_value(&glean, "baseline").unwrap(),
+        "Should set when re-enabled"
+    );
+    another_metric
+        .get("label1")
+        .set_sync(&glean, "VALUE_AFTER_REENABLED");
+    assert_eq!(
+        "VALUE_AFTER_REENABLED",
+        another_metric
+            .get("label1")
+            .get_value(&glean, "baseline")
+            .unwrap(),
+        "Should set when re-enabled"
+    );
+}
+
+#[test]
+fn test_remote_settings_epoch() {
+    let (glean, _t) = new_glean(None);
+
+    // 1. Ensure the starting epoch
+    let mut current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
+    assert_eq!(0u8, current_epoch, "Current epoch must start at 0");
+
+    // 2. Set a configuration which will trigger incrementing the epoch
+    let metrics_disabled_config = json!(
+        {
+            "category.string_metric": true
+        }
+    )
+    .to_string();
+    glean.set_metrics_disabled_config(
+        MetricsDisabledConfig::try_from(metrics_disabled_config).unwrap(),
+    );
+
+    // 3. Ensure the epoch updated
+    current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
+    assert_eq!(1u8, current_epoch, "Current epoch must match");
+}
+
+#[test]
+fn test_remote_settings_epoch_updates_in_metric() {
+    let (glean, _t) = new_glean(None);
+    let metric = StringMetric::new(CommonMetricData {
+        category: "category".to_string(),
+        name: "string_metric".to_string(),
+        send_in_pings: vec!["baseline".to_string()],
+        ..Default::default()
+    });
+
+    // 1. Set the metric with a "TEST_VALUE" and ensure it was set
+    metric.set_sync(&glean, "TEST_VALUE");
+    assert_eq!(
+        "TEST_VALUE",
+        metric.get_value(&glean, "baseline").unwrap(),
+        "Initial value must match"
+    );
+
+    // 2. Set a configuration to disable the `category.string_metric`
+    let metrics_disabled_config = json!(
+        {
+            "category.string_metric": true
+        }
+    )
+    .to_string();
+    glean.set_metrics_disabled_config(
+        MetricsDisabledConfig::try_from(metrics_disabled_config).unwrap(),
+    );
+
+    // 3. Ensure the epoch was updated
+    let current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
+    assert_eq!(1u8, current_epoch, "Current epoch must update");
+
+    // 4. Since the metric was disabled, setting a new value will be ignored
+    // AND the metric should update its epoch to match the `current_epoch`
+    metric.set_sync(&glean, "VALUE_AFTER_DISABLED");
+    assert_eq!(
+        "TEST_VALUE",
+        metric.get_value(&glean, "baseline").unwrap(),
+        "Shouldn't set when disabled"
+    );
+
+    use crate::metrics::MetricType;
+    // The "epoch" resides in the upper nibble of the `inner.disabled` field
+    let epoch = metric.meta().disabled.load(Ordering::Acquire) >> 4;
+    assert_eq!(
+        current_epoch, epoch,
+        "Epoch must match between metric and Glean core"
+    );
 }
 
 #[test]

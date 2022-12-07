@@ -170,6 +170,13 @@ pub fn set_experiment_inactive(experiment_id: String) {
     glean_core::glean_set_experiment_inactive(experiment_id)
 }
 
+/// Set the remote configuration values for the metrics' disabled property
+///
+/// See [`glean_core::Glean::set_metrics_disabled_config`].
+pub fn glean_set_metrics_disabled_config(json: String) {
+    glean_core::glean_set_metrics_disabled_config(json)
+}
+
 /// Performs the collection/cleanup operations required by becoming active.
 ///
 /// This functions generates a baseline ping with reason `active`
