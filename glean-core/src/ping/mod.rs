@@ -231,6 +231,9 @@ impl PingMaker {
         if !ping.send_if_empty() && is_empty {
             info!("Storage for {} empty. Bailing out.", ping.name());
             return None;
+        } else if ping.name() == "events" && events_data.is_none() {
+            info!("No events for 'events' ping. Bailing out.");
+            return None;
         } else if is_empty {
             info!(
                 "Storage for {} empty. Ping will still be sent.",
