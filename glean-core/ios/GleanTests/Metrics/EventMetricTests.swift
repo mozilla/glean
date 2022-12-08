@@ -46,7 +46,7 @@ struct ClickExtras: EventExtras {
 enum TestNameKeys: Int32, EventExtraKey {
     case testName = 0
 
-    public func keyName() throws-> String {
+    public func keyName() throws -> String {
         return "test_name"
     }
 }
@@ -70,7 +70,7 @@ struct TestExtras: EventExtras {
 enum SomeExtraKeys: Int32, EventExtraKey {
     case someExtra = 0
 
-    public func keyName() throws-> String {
+    public func keyName() throws -> String {
         return "some_extra"
     }
 }

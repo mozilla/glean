@@ -131,8 +131,8 @@ func timestampNanos() -> UInt64 {
 }
 
 /// Gets a gecko-compatible locale string (e.g. "es-ES")
-// If the locale can't be determined on the system, the value is "und",
-// to indicate "undetermined".
+/// If the locale can't be determined on the system, the value is "und",
+/// to indicate "undetermined".
 ///
 /// - returns: a locale string that supports custom injected locale/languages.
 func getLocaleTag() -> String {
