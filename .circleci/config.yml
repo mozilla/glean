@@ -462,14 +462,16 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.0"
     steps:
       - checkout
       - run:
           name: Install lint tools
           command: |
             export HOMEBREW_NO_AUTO_UPDATE=1
-            brew install swiftlint
+            # swiftlint 0.50.1
+            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/dd10ef27e1327dd3dfc6f428565a83402d4abc24/Formula/swiftlint.rb > swiftlint.rb
+            brew install ./swiftlint.rb
       - run:
           name: Run swiftlint
           command: |
