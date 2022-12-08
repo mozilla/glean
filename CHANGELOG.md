@@ -10,6 +10,7 @@
   * `test_reset_glean` will remove all previous data if asked to clear stores, even if Glean never has been initialized ([#2294](https://github.com/mozilla/glean/pull/2294))
   * Upgrade to `glean_parser` v6.5.0, with support for `Cow` in Rust code ([#2300](https://github.com/mozilla/glean/issues/2300))
   * API REMOVED: The deprecated-since-v38 `event` metric `record(map)` API has been removed ([bug 1802550](https://bugzilla.mozilla.org/show_bug.cgi?id=1802550))
+  * BEHAVIOUR CHANGE: "events" pings will no longer be sent if they have metrics but no events ([bug 1803513](https://bugzilla.mozilla.org/show_bug.cgi?id=1803513))
 * Rust
   * Static labels for labeled metrics are now `Cow<'static, str>` to reduce heap allocations ([#2272](https://github.com/mozilla/glean/pull/2272))
 
