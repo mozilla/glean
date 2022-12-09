@@ -79,7 +79,7 @@ pub struct CommonMetricData {
     pub dynamic_label: Option<String>,
 }
 
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug)]
 pub struct CommonMetricDataInternal {
     pub inner: CommonMetricData,
     pub disabled: AtomicU8,
