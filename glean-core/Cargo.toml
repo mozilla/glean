@@ -44,15 +44,13 @@ uniffi = "0.21.0"
 uniffi_macros = "0.21.0"
 time = "0.1.40"
 remove_dir_all = "0.5.3"
+env_logger = { version = "0.9.0", default-features = false, optional = true }
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.11.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
 oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
-
-[target.'cfg(not(target_os = "android"))'.dependencies]
-env_logger = { version = "0.9.0", default-features = false }
 
 [dev-dependencies]
 env_logger = { version = "0.9.0", default-features = false, features = ["termcolor", "atty", "humantime"] }
@@ -66,3 +64,5 @@ uniffi_build = { version = "0.21.0", features = ["builtin-bindgen"] }
 [features]
 # Increases the preinit queue limit to 10^6
 preinit_million_queue = []
+# Enable `env_logger`. Only works on non-Android non-iOS targets.
+enable_env_logger = ["env_logger"]

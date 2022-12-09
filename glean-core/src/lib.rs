@@ -601,10 +601,14 @@ pub extern "C" fn glean_enable_logging() {
         };
     }
 
-    // Make sure logging does something on non Android platforms as well.
+    // When specifically requested make sure logging does something on non-Android platforms as well.
     // Use the RUST_LOG environment variable to set the desired log level,
     // e.g. setting RUST_LOG=debug sets the log level to debug.
-    #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
+    #[cfg(all(
+        not(target_os = "android"),
+        not(target_os = "ios"),
+        feature = "enable_env_logger"
+    ))]
     {
         match env_logger::try_init() {
             Ok(_) => log::trace!("stdout logging should be hooked up!"),
