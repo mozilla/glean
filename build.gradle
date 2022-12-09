@@ -100,7 +100,9 @@ ext.cargoProfile = "debug"
 // Additionally, we require `--locked` in CI, but not for local builds.
 // Unlike the above, this can't be overridden by `local.properties` (mainly
 // because doing so seems pointless, not for any security reason)
-ext.extraCargoBuildArguments = []
+// For debug builds we also enable the `env_logger`,
+// so that local testing can get some output
+ext.extraCargoBuildArguments = ["--features=enable_env_logger"]
 
 if (System.getenv("CI")) {
     // Note: CI can still override this (and does for PRs), this
