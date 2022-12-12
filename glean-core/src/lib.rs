@@ -340,7 +340,6 @@ fn initialize_inner(
                 // send a dirty startup baseline ping below.  Immediately set it to
                 // `false` so that dirty startup pings won't be sent if Glean
                 // initialization does not complete successfully.
-                // TODO Bug 1672956 will decide where to set this flag again.
                 dirty_flag = glean.is_dirty_flag_set();
                 glean.set_dirty_flag(false);
 
