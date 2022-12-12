@@ -34,7 +34,7 @@ Python code coverage is determined using the [coverage.py](https://coverage.read
 Run
 
 ```bash
-make python-coverage
+make coverage-python
 ```
 
 to generate code coverage reports in the Glean virtual environment.
