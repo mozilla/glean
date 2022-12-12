@@ -2,8 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::io::Read;
 use std::sync::{Arc, Barrier, Mutex};
 use std::thread::{self, ThreadId};
+
+use flate2::read::GzDecoder;
+use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
 use crate::private::{BooleanMetric, CounterMetric, EventMetric, StringMetric};
@@ -582,9 +586,88 @@ fn the_app_channel_must_be_correctly_set_if_requested() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1673672.
 fn ping_collection_must_happen_after_concurrently_scheduled_metrics_recordings() {
-    todo!()
+    // Given the following block of code:
+    //
+    // Metric.A.set("SomeTestValue")
+    // Glean.submitPings(listOf("custom-ping-1"))
+    //
+    // This test ensures that "custom-ping-1" contains "metric.a" with a value of "SomeTestValue"
+    // when the ping is collected.
+
+    let _lock = lock_test();
+
+    let (s, r) = crossbeam_channel::bounded(1);
+
+    // Define a fake uploader that reports back the submission URL
+    // using a crossbeam channel.
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<(String, JsonValue)>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            // Decode the gzipped body.
+            let mut gzip_decoder = GzDecoder::new(&body[..]);
+            let mut s = String::with_capacity(body.len());
+
+            let data = gzip_decoder
+                .read_to_string(&mut s)
+                .ok()
+                .map(|_| &s[..])
+                .or_else(|| std::str::from_utf8(&body).ok())
+                .and_then(|payload| serde_json::from_str(payload).ok())
+                .unwrap();
+            self.sender.send((url, data)).unwrap();
+            net::UploadResult::http_status(200)
+        }
+    }
+
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname,
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: Some(Box::new(FakeUploader { sender: s })),
+            use_core_mps: false,
+        },
+        ClientInfoMetrics::unknown(),
+        true,
+    );
+
+    let ping_name = "custom_ping_1";
+    let ping = private::PingType::new(ping_name, true, false, vec![]);
+    let metric = private::StringMetric::new(CommonMetricData {
+        name: "string_metric".into(),
+        category: "telemetry".into(),
+        send_in_pings: vec![ping_name.into()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+        ..Default::default()
+    });
+
+    let test_value = "SomeTestValue";
+    metric.set(test_value.to_string());
+    ping.submit(None);
+
+    // Wait for the ping to arrive.
+    let (url, body) = r.recv().unwrap();
+    assert!(url.contains(ping_name));
+
+    assert_eq!(
+        test_value,
+        body["metrics"]["string"]["telemetry.string_metric"]
+    );
 }
 
 #[test]
