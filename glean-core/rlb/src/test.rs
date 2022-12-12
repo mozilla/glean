@@ -473,9 +473,49 @@ fn initializing_twice_is_a_noop() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1673668.
 fn dont_handle_events_when_uninitialized() {
-    todo!()
+    let _lock = lock_test();
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname.clone(),
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None,
+            use_core_mps: false,
+        },
+        ClientInfoMetrics::unknown(),
+        true,
+    );
+
+    // Ensure there's at least one event recorded,
+    // otherwise the ping is not sent.
+    let click: EventMetric<traits::NoExtraKeys> = private::EventMetric::new(CommonMetricData {
+        name: "click".into(),
+        category: "ui".into(),
+        send_in_pings: vec!["events".into()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+        ..Default::default()
+    });
+    click.record(None);
+    // Wait for the dispatcher.
+    assert_ne!(None, click.test_get_value(None));
+
+    // Now destroy Glean. We test submission when not initialized.
+    destroy_glean(false, &tmpname);
+
+    // We reach into `glean_core` to test this,
+    // only there we can synchronously submit and get a return value.
+    assert!(!glean_core::glean_submit_ping_by_name_sync(
+        "events".to_string(),
+        None
+    ));
 }
 
 // TODO: Should probably move into glean-core.
