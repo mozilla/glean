@@ -376,7 +376,7 @@ fn ensure_custom_ping_events_from_multiple_runs_work() {
         // We don't need a full init. Just to deal with on-disk events:
         assert!(!glean
             .event_storage()
-            .flush_pending_events_on_startup(&glean));
+            .flush_pending_events_on_startup(&glean, false));
         tempdir = dir;
 
         event.record_sync(&glean, 10, HashMap::new());
@@ -387,7 +387,7 @@ fn ensure_custom_ping_events_from_multiple_runs_work() {
         // We don't need a full init. Just to deal with on-disk events:
         assert!(!glean
             .event_storage()
-            .flush_pending_events_on_startup(&glean));
+            .flush_pending_events_on_startup(&glean, false));
 
         // Gotta use get_timestamp_ms or this event won't happen "after" the injected
         // glean.restarted event from `flush_pending_events_on_startup`.
@@ -404,5 +404,51 @@ fn ensure_custom_ping_events_from_multiple_runs_work() {
         assert_eq!(json[1]["name"], "restarted");
         assert_eq!(json[2]["category"], "category");
         assert_eq!(json[2]["name"], "name");
+    }
+}
+
+/// Ensure events in an unregistered, non-"events" (ie Custom) ping are trimmed on a subsequent init
+/// when we pass `true ` for `trim_data_to_registered_pings` in `on_ready_to_submit_pings`.
+#[test]
+fn event_storage_trimming() {
+    let (mut tempdir, _) = tempdir();
+
+    let store_name = "store-name";
+    let store_name_2 = "store-name-2";
+    let event = EventMetric::new(
+        CommonMetricData {
+            name: "name".into(),
+            category: "category".into(),
+            send_in_pings: vec![store_name.into(), store_name_2.into()],
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec![],
+    );
+    // First, record the event in the two pings.
+    // Successfully records just fine because nothing's checking on record that these pings
+    // exist and are registered.
+    {
+        let (glean, dir) = new_glean(Some(tempdir));
+        tempdir = dir;
+        event.record_sync(&glean, 10, HashMap::new());
+
+        assert_eq!(1, event.get_value(&glean, store_name).unwrap().len());
+        assert_eq!(1, event.get_value(&glean, store_name_2).unwrap().len());
+    }
+    // Second, construct (but don't init) Glean over again.
+    // Register exactly one of the two pings.
+    // Then process the part of init that does the trimming (`on_ready_to_submit_pings`).
+    // This ought to load the data from the registered ping and trim the data from the unregistered one.
+    {
+        let (mut glean, _dir) = new_glean(Some(tempdir));
+        // In Rust, pings are registered via construction.
+        // But that's done asynchronously, so we do it synchronously here:
+        glean.register_ping_type(&PingType::new(store_name.to_string(), true, false, vec![]));
+
+        glean.on_ready_to_submit_pings(true);
+
+        assert_eq!(1, event.get_value(&glean, store_name).unwrap().len());
+        assert!(event.get_value(&glean, store_name_2).is_none());
     }
 }

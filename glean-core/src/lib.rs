@@ -118,6 +118,8 @@ pub struct InternalConfiguration {
     pub app_build: String,
     /// Whether Glean should schedule "metrics" pings.
     pub use_core_mps: bool,
+    /// Whether Glean should, on init, trim its event storage to only the registered pings.
+    pub trim_data_to_registered_pings: bool,
 }
 
 /// Launches a new task on the global dispatch queue with a reference to the Glean singleton.
@@ -285,6 +287,7 @@ fn initialize_inner(
         .name("glean.init".into())
         .spawn(move || {
             let upload_enabled = cfg.upload_enabled;
+            let trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
 
             let glean = match Glean::new(cfg) {
                 Ok(glean) => glean,
@@ -362,7 +365,7 @@ fn initialize_inner(
                 }
 
                 // Deal with any pending events so we can start recording new ones
-                pings_submitted = glean.on_ready_to_submit_pings();
+                pings_submitted = glean.on_ready_to_submit_pings(trim_data_to_registered_pings);
             });
 
             {

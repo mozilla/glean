@@ -137,12 +137,18 @@ impl EventDatabase {
     /// # Arguments
     ///
     /// * `glean` - The Glean instance.
+    /// * `trim_data_to_registered_pings` - Whether we should trim the event storage of
+    ///   any events not belonging to pings previously registered via `register_ping_type`.
     ///
     /// # Returns
     ///
     /// Whether the "events" ping was submitted.
-    pub fn flush_pending_events_on_startup(&self, glean: &Glean) -> bool {
-        match self.load_events_from_disk() {
+    pub fn flush_pending_events_on_startup(
+        &self,
+        glean: &Glean,
+        trim_data_to_registered_pings: bool,
+    ) -> bool {
+        match self.load_events_from_disk(glean, trim_data_to_registered_pings) {
             Ok(_) => {
                 let stores_with_events: Vec<String> = {
                     self.event_stores
@@ -199,18 +205,35 @@ impl EventDatabase {
         }
     }
 
-    fn load_events_from_disk(&self) -> Result<()> {
+    fn load_events_from_disk(
+        &self,
+        glean: &Glean,
+        trim_data_to_registered_pings: bool,
+    ) -> Result<()> {
         // NOTE: The order of locks here is important.
         // In other code parts we might acquire the `file_lock` when we already have acquired
         // a lock on `event_stores`.
         // This is a potential lock-order-inversion.
         let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
-        let _lock = self.file_lock.read().unwrap(); // safe unwrap, only error case is poisoning
+        let _lock = self.file_lock.write().unwrap(); // safe unwrap, only error case is poisoning
 
         for entry in fs::read_dir(&self.path)? {
             let entry = entry?;
             if entry.file_type()?.is_file() {
                 let store_name = entry.file_name().into_string()?;
+                log::info!("Loading events for {}", store_name);
+                if trim_data_to_registered_pings && glean.get_ping_by_name(&store_name).is_none() {
+                    log::warn!("Trimming {}'s events", store_name);
+                    if let Err(err) = fs::remove_file(entry.path()) {
+                        match err.kind() {
+                            std::io::ErrorKind::NotFound => {
+                                // silently drop this error, the file was already non-existing
+                            }
+                            _ => log::warn!("Error trimming events file '{}': {}", store_name, err),
+                        }
+                    }
+                    continue;
+                }
                 let file = BufReader::new(File::open(entry.path())?);
                 db.insert(
                     store_name,
@@ -604,7 +627,7 @@ mod test {
 
     #[test]
     fn handle_truncated_events_on_disk() {
-        let t = tempfile::tempdir().unwrap();
+        let (glean, t) = new_glean(None);
 
         {
             let db = EventDatabase::new(t.path()).unwrap();
@@ -618,7 +641,7 @@ mod test {
 
         {
             let db = EventDatabase::new(t.path()).unwrap();
-            db.load_events_from_disk().unwrap();
+            db.load_events_from_disk(&glean, false).unwrap();
             let events = &db.event_stores.read().unwrap()["events"];
             assert_eq!(1, events.len());
         }

@@ -15,6 +15,7 @@
     * This change has no effect when the API is not used and is transparent to consumers. The API is currently experimental because it is not stable and may change.
 * Rust
   * Static labels for labeled metrics are now `Cow<'static, str>` to reduce heap allocations ([#2272](https://github.com/mozilla/glean/pull/2272))
+  * NEW INTERNAL CONFIGURATION OPTION: `trim_data_to_registered_pings` will trim event storage to just the registered pings. Consult with the Glean Team before using. ([bug 1804915](https://bugzilla.mozilla.org/show_bug.cgi?id=1804915))
 
 # v51.8.3 (2022-11-25)
 
