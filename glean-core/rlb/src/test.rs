@@ -874,9 +874,97 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1672956.
 fn test_sending_of_startup_baseline_ping_with_application_lifetime_metric() {
-    todo!()
+    let _lock = lock_test();
+
+    let (s, r) = crossbeam_channel::bounded(1);
+
+    // Define a fake uploader that reports back the submission URL
+    // using a crossbeam channel.
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<(String, JsonValue)>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            // Decode the gzipped body.
+            let mut gzip_decoder = GzDecoder::new(&body[..]);
+            let mut s = String::with_capacity(body.len());
+
+            let data = gzip_decoder
+                .read_to_string(&mut s)
+                .ok()
+                .map(|_| &s[..])
+                .or_else(|| std::str::from_utf8(&body).ok())
+                .and_then(|payload| serde_json::from_str(payload).ok())
+                .unwrap();
+            self.sender.send((url, data)).unwrap();
+            net::UploadResult::http_status(200)
+        }
+    }
+
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname.clone(),
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: None,
+            use_core_mps: false,
+        },
+        ClientInfoMetrics::unknown(),
+        true,
+    );
+
+    // Reaching into the core.
+    glean_core::glean_set_dirty_flag(true);
+
+    let metric = private::StringMetric::new(CommonMetricData {
+        name: "app_lifetime".into(),
+        category: "telemetry".into(),
+        send_in_pings: vec!["baseline".into()],
+        lifetime: Lifetime::Application,
+        disabled: false,
+        ..Default::default()
+    });
+    let test_value = "HELLOOOOO!";
+    metric.set(test_value.into());
+    assert_eq!(test_value, metric.test_get_value(None).unwrap());
+
+    // Restart glean and don't clear the stores.
+    test_reset_glean(
+        Configuration {
+            data_path: tmpname,
+            application_id: GLOBAL_APPLICATION_ID.into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            server_endpoint: Some("invalid-test-host".into()),
+            uploader: Some(Box::new(FakeUploader { sender: s })),
+            use_core_mps: false,
+        },
+        ClientInfoMetrics::unknown(),
+        false,
+    );
+
+    let (url, body) = r.recv().unwrap();
+    assert!(url.contains("/baseline/"));
+
+    // We set the dirty bit above.
+    assert_eq!("dirty_startup", body["ping_info"]["reason"]);
+    assert_eq!(
+        test_value,
+        body["metrics"]["string"]["telemetry.app_lifetime"]
+    );
 }
 
 #[test]
