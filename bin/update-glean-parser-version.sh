@@ -70,6 +70,7 @@ run $SED -i.bak -E \
     -e "s/^version = \"[0-9.]+\"/version = \"${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+cargo update -p glean-build
 
 # update the version in glean-core/build/src/lib.rs
 FILE=glean-core/build/src/lib.rs
