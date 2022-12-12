@@ -119,7 +119,10 @@ fmt-rust: ## Format all Rust code
 fmt-python: setup-python ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt-rust fmt-python
+fmt-kotlin:  ## Run ktlint to format KOtlin code
+	./gradlew ktlintFormat
+
+.PHONY: fmt-rust fmt-python fmt-kotlin
 
 # Docs
 
