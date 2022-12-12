@@ -968,12 +968,6 @@ fn test_sending_of_startup_baseline_ping_with_application_lifetime_metric() {
 }
 
 #[test]
-#[ignore] // TODO: To be done in bug 1672956.
-fn test_dirty_flag_is_reset_to_false() {
-    todo!()
-}
-
-#[test]
 fn setting_debug_view_tag_before_initialization_should_not_crash() {
     let _lock = lock_test();
     let dir = tempfile::tempdir().unwrap();
