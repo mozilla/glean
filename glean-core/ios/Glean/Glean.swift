@@ -140,7 +140,8 @@ public class Glean {
             maxEvents: configuration.maxEvents.map { UInt32($0) },
             delayPingLifetimeIo: false,
             appBuild: "0.0.0",
-            useCoreMps: false
+            useCoreMps: false,
+            trimDataToRegisteredPings: false
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)

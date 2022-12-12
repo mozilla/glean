@@ -36,6 +36,7 @@ fn main() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: true,
+        trim_data_to_registered_pings: false,
     };
 
     let client_info = ClientInfoMetrics {

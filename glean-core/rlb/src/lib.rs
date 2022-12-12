@@ -28,6 +28,7 @@
 //!     server_endpoint: None,
 //!     uploader: None,
 //!     use_core_mps: false,
+//!     trim_data_to_registered_pings: false,
 //! };
 //! glean::initialize(cfg, ClientInfoMetrics::unknown());
 //!
@@ -120,6 +121,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         delay_ping_lifetime_io: cfg.delay_ping_lifetime_io,
         app_build: client_info.app_build.clone(),
         use_core_mps: cfg.use_core_mps,
+        trim_data_to_registered_pings: cfg.trim_data_to_registered_pings,
     };
 
     glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);

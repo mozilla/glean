@@ -111,6 +111,7 @@ where
 ///     delay_ping_lifetime_io: false,
 ///     app_build: "".into(),
 ///     use_core_mps: false,
+///     trim_data_to_registered_pings: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, vec![]);
@@ -291,6 +292,7 @@ impl Glean {
             delay_ping_lifetime_io: false,
             app_build: "Unknown".into(),
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -360,11 +362,17 @@ impl Glean {
     /// Usually called from the language binding after all of the core metrics have been set
     /// and the ping types have been registered.
     ///
+    /// # Arguments
+    ///
+    /// * `trim_data_to_registered_pings` - Whether we should limit to storing data only for
+    ///   data belonging to pings previously registered via `register_ping_type`.
+    ///
     /// # Returns
     ///
-    /// Whether at least one ping was generated.
-    pub fn on_ready_to_submit_pings(&self) -> bool {
-        self.event_data_store.flush_pending_events_on_startup(self)
+    /// Whether the "events" ping was submitted.
+    pub fn on_ready_to_submit_pings(&self, trim_data_to_registered_pings: bool) -> bool {
+        self.event_data_store
+            .flush_pending_events_on_startup(self, trim_data_to_registered_pings)
     }
 
     /// Sets whether upload is enabled or not.

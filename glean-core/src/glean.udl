@@ -65,6 +65,7 @@ dictionary InternalConfiguration {
     boolean delay_ping_lifetime_io;
     string app_build;
     boolean use_core_mps;
+    boolean trim_data_to_registered_pings;
 };
 
 // Values for the `client_info` metrics.

@@ -48,6 +48,7 @@ fn send_a_ping() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -136,6 +137,7 @@ fn test_experiments_recording_before_glean_inits() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         false,
@@ -195,6 +197,7 @@ fn sending_of_foreground_background_pings() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -276,6 +279,7 @@ fn sending_of_startup_baseline_ping() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: Some(Box::new(FakeUploader { sender: s })),
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         false,
@@ -334,6 +338,7 @@ fn no_dirty_baseline_on_clean_shutdowns() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: Some(Box::new(FakeUploader { sender: s })),
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         false,
@@ -363,6 +368,7 @@ fn initialize_must_not_crash_if_data_dir_is_messed_up() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     test_reset_glean(cfg, ClientInfoMetrics::unknown(), false);
@@ -408,6 +414,7 @@ fn queued_recorded_metrics_correctly_record_during_init() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
     let _t = new_glean(Some(cfg), false);
 
@@ -433,6 +440,7 @@ fn initializing_twice_is_a_noop() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         true,
@@ -452,6 +460,7 @@ fn initializing_twice_is_a_noop() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
     );
@@ -502,6 +511,7 @@ fn the_app_channel_must_be_correctly_set_if_requested() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         client_info,
         true,
@@ -523,6 +533,7 @@ fn the_app_channel_must_be_correctly_set_if_requested() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         client_info,
         true,
@@ -586,6 +597,7 @@ fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploa
             server_endpoint: Some("invalid-test-host".into()),
             uploader: None,
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         true,
@@ -647,6 +659,7 @@ fn sending_deletion_ping_if_disabled_outside_of_run() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -663,6 +676,7 @@ fn sending_deletion_ping_if_disabled_outside_of_run() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: Some(Box::new(FakeUploader { sender: s })),
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         false,
@@ -710,6 +724,7 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: None,
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -726,6 +741,7 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
             server_endpoint: Some("invalid-test-host".into()),
             uploader: Some(Box::new(FakeUploader { sender: s })),
             use_core_mps: false,
+            trim_data_to_registered_pings: false,
         },
         ClientInfoMetrics::unknown(),
         false,
@@ -787,6 +803,7 @@ fn setting_debug_view_tag_before_initialization_should_not_crash() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -844,6 +861,7 @@ fn setting_source_tags_before_initialization_should_not_crash() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -900,6 +918,7 @@ fn setting_source_tags_after_initialization_should_not_crash() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -970,6 +989,7 @@ fn flipping_upload_enabled_respects_order_of_events() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     // We create a ping and a metric before we initialize Glean
@@ -1037,6 +1057,7 @@ fn registering_pings_before_init_must_work() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -1086,6 +1107,7 @@ fn test_a_ping_before_submission() {
         server_endpoint: Some("invalid-test-host".into()),
         uploader: Some(Box::new(FakeUploader { sender: s })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);
@@ -1188,6 +1210,7 @@ fn signaling_done() {
             counter: Arc::clone(&call_count),
         })),
         use_core_mps: false,
+        trim_data_to_registered_pings: false,
     };
 
     let _t = new_glean(Some(cfg), true);

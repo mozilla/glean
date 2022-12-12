@@ -227,6 +227,7 @@ class Glean:
             delay_ping_lifetime_io=False,
             use_core_mps=False,
             app_build=cls._application_build_id,
+            trim_data_to_registered_pings=False,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
