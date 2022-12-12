@@ -932,11 +932,17 @@ static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
 /// `fd` is a writable file descriptor (on Unix) or file handle (on Windows).
 ///
 /// # Safety
-/// Unsafe because the fd u64 passed in will be interpreted as either a file
-/// descriptor (Unix) or file handle (Windows) without any checking.
+///
+/// `fd` MUST be a valid open file descriptor (Unix) or file handle (Windows).
+/// This function is marked safe,
+/// because we can't call unsafe functions from generated UniFFI code.
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 pub fn glean_enable_logging_to_fd(fd: u64) {
-    // SAFETY: TODO.
+    // SAFETY:
+    // This functions is unsafe.
+    // Due to UniFFI restrictions we cannot mark it as such.
+    //
+    // `fd` MUST be a valid open file descriptor (Unix) or file handle (Windows).
     unsafe {
         // Set up logging to a file descriptor/handle. For this usage, the
         // language binding should setup a pipe and pass in the descriptor to
