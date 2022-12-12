@@ -146,7 +146,7 @@ commands:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build Windows wheel
           command: |
@@ -165,7 +165,7 @@ commands:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build Windows wheel
           command: |
@@ -838,7 +838,7 @@ jobs:
       - run:
           name: Build Python extension
           command: |
-            make python-setup
+            make setup-python
             glean-core/python/.venv3.8/bin/python3 setup.py sdist
             glean-core/python/.venv3.8/bin/python3 -m twine upload dist/*
 
@@ -924,7 +924,7 @@ jobs:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build macOS wheel
           command: |
@@ -996,12 +996,12 @@ jobs:
       - run:
           name: Internal metrics docs consistency check
           command: |
-            make metrics-docs
+            make docs-metrics
             if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
               echo "=================================================="
               echo "metrics.md is different from what's stored in git."
               echo "Please regenerate the file using:"
-              echo "    make metrics-docs"
+              echo "    make docs-metrics"
               echo "Commit the modified file and push."
               echo "=================================================="
               exit 1
