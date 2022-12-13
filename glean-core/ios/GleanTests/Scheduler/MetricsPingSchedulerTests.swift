@@ -5,7 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable function_body_length
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
 

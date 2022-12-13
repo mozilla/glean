@@ -146,7 +146,7 @@ commands:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build Windows wheel
           command: |
@@ -165,7 +165,7 @@ commands:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build Windows wheel
           command: |
@@ -462,14 +462,16 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.0"
     steps:
       - checkout
       - run:
           name: Install lint tools
           command: |
             export HOMEBREW_NO_AUTO_UPDATE=1
-            brew install swiftlint
+            # swiftlint 0.50.1
+            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/dd10ef27e1327dd3dfc6f428565a83402d4abc24/Formula/swiftlint.rb > swiftlint.rb
+            brew install ./swiftlint.rb
       - run:
           name: Run swiftlint
           command: |
@@ -671,7 +673,7 @@ jobs:
 
   Lint Python:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     steps:
       - checkout
       - install-rustup
@@ -836,7 +838,7 @@ jobs:
       - run:
           name: Build Python extension
           command: |
-            make python-setup
+            make setup-python
             glean-core/python/.venv3.8/bin/python3 setup.py sdist
             glean-core/python/.venv3.8/bin/python3 -m twine upload dist/*
 
@@ -922,7 +924,7 @@ jobs:
       - run:
           name: Install Python development tools for host
           command:
-            make python-setup
+            make setup-python
       - run:
           name: Build macOS wheel
           command: |
@@ -994,12 +996,12 @@ jobs:
       - run:
           name: Internal metrics docs consistency check
           command: |
-            make metrics-docs
+            make docs-metrics
             if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
               echo "=================================================="
               echo "metrics.md is different from what's stored in git."
               echo "Please regenerate the file using:"
-              echo "    make metrics-docs"
+              echo "    make docs-metrics"
               echo "Commit the modified file and push."
               echo "=================================================="
               exit 1

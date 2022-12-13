@@ -112,7 +112,7 @@ public class Glean {
     /// - parameters:
     ///     * uploadEnabled: A `Bool` that enables or disables telemetry.
     ///       If disabled, all persisted metrics, events and queued pings (except
-    ///       first_run_date and first_run_hour) are cleared.
+    ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration(),
@@ -140,7 +140,8 @@ public class Glean {
             maxEvents: configuration.maxEvents.map { UInt32($0) },
             delayPingLifetimeIo: false,
             appBuild: "0.0.0",
-            useCoreMps: false
+            useCoreMps: false,
+            trimDataToRegisteredPings: false
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
@@ -355,12 +356,14 @@ public class Glean {
 
     /// Test-only method to destroy the owned glean-core handle.
     func testDestroyGleanHandle(_ clearStores: Bool = false) {
+        // If it was initialized this also clears the directory
+        let dataPath = getGleanDirectory().relativePath
+        gleanTestDestroyGlean(clearStores, dataPath)
+
         if !isInitialized() {
-            // We don't need to destroy Glean: it wasn't initialized.
+            // We don't need to destroy anything else: it wasn't initialized.
             return
         }
-
-        gleanTestDestroyGlean(clearStores)
 
         // Reset all state
         gleanSetTestMode(false)
@@ -392,15 +395,6 @@ public class Glean {
                            uploadEnabled: Bool = true) {
         // Init Glean.
         testDestroyGleanHandle(clearStores)
-
-        // If Glean was not initialized we can't ask it to delete its data.
-        // But we can go as far as simply removing all files.
-        if clearStores {
-            let dataPath = getGleanDirectory()
-            // Don't care if we can't remove the directory.
-            // It might just not exist.
-            _ = try? FileManager.default.removeItem(at: dataPath)
-        }
 
         // Enable test mode.
         enableTestingMode()

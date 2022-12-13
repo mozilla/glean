@@ -19,7 +19,7 @@ endif
 
 # Setup environments
 
-python-setup: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
+setup-python: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
 	@:
 
 $(GLEAN_PYENV)/bin/python3:
@@ -48,7 +48,7 @@ build-swift: ## Build all Swift code
 build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
-build-python: python-setup ## Build the Python bindings
+build-python: setup-python ## Build the Python bindings
 	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
 
 bindgen-python: glean-core/python/glean/_uniffi.py  # Generate the uniffi wrapper code manually
@@ -86,13 +86,6 @@ test-python: build-python ## Run all Python tests
 
 .PHONY: test test-rust test-rust-with-logs test-kotlin test-swift test-ios-sample
 
-# Benchmarks
-
-bench-rust: ## Run Rust benchmarks
-	cargo bench -p benchmark $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-
-.PHONY: bench-rust
-
 # Linting
 
 lint-rust: ## Run cargo-clippy to lint Rust code
@@ -111,7 +104,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-lint-python: python-setup ## Run flake8 and black to lint Python code
+lint-python: setup-python ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
@@ -123,28 +116,31 @@ lint-python: python-setup ## Run flake8 and black to lint Python code
 fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
-fmt-python: python-setup ## Run black to format Python code
+fmt-python: setup-python ## Run black to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
 
-.PHONY: fmt-rust fmt-python
+fmt-kotlin:  ## Run ktlint to format KOtlin code
+	./gradlew ktlintFormat
+
+.PHONY: fmt-rust fmt-python fmt-kotlin
 
 # Docs
 
 docs: rust-docs ## Build the Rust API documentation
 
-rust-docs: ## Build the Rust documentation
+docs-rust: ## Build the Rust documentation
 	bin/build-rust-docs.sh
 
-swift-docs: ## Build the Swift documentation
+docs-swift: ## Build the Swift documentation
 	bin/build-swift-docs.sh
 
-python-docs: build-python ## Build the Python documentation
+docs-python: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
 
 .PHONY: docs rust-docs swift-docs
 
-metrics-docs: python-setup ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=6.3
+docs-metrics: setup-python ## Build the internal metrics documentation
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=6.4
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \
@@ -182,21 +178,8 @@ android-emulator: ## Start the Android emulator with a predefined image
 	$(ANDROID_HOME)/emulator/emulator -avd Nexus_5X_API_P -netdelay none -netspeed full
 .PHONY: android-emulator
 
-rust-coverage: export CARGO_INCREMENTAL=0
-rust-coverage: export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads
-rust-coverage: export RUSTUP_TOOLCHAIN=nightly
-rust-coverage: ## Generate code coverage information for Rust code
-	# Expects a Rust nightly toolchain to be available.
-	# Expects grcov and genhtml to be available in $PATH.
-	cargo build --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-	cargo test --verbose $(addprefix --target ,$(GLEAN_BUILD_TARGET))
-	zip -0 ccov.zip `find . \( -name "glean*.gc*" \) -print`
-	grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info
-	genhtml -o report/ --show-details --highlight --ignore-errors source --legend lcov.info
-.PHONY: rust-coverage
-
-python-coverage: build-python ## Generate a code coverage report for Python
+coverage-python: build-python ## Generate a code coverage report for Python
 	GLEAN_COVERAGE=1 $(GLEAN_PYENV)/bin/python3 -m coverage run --parallel-mode -m pytest
 	$(GLEAN_PYENV)/bin/python3 -m coverage combine
 	$(GLEAN_PYENV)/bin/python3 -m coverage html
-.PHONY: python-coverage
+.PHONY: coverage-coverage

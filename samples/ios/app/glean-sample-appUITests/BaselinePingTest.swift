@@ -47,7 +47,6 @@ class BaselinePingTest: XCTestCase {
     //   - seq: 1, reason: inactive, duration: non-null
     //   - seq: 2, reason: active, duration: null
     //
-    // swiftlint:disable function_body_length
     // REASON: It's a single test case for the integration test
     func testValidateBaselinePing() {
         let server = setupServer(expectPingType: "baseline")

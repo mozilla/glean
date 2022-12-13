@@ -47,7 +47,7 @@ It can be installed using:
 To build the Swift API documentation:
 
 ```sh
-make swift-docs
+make docs-swift
 ```
 
 The generated documentation is saved in `build/docs/swift`.
@@ -62,7 +62,7 @@ It is installed as part of [creating the virtual environment for Python developm
 To build the Python API documentation:
 
 ```
-make python-docs
+make docs-python
 ```
 
 The generated documentation is saved in `build/docs/python`.

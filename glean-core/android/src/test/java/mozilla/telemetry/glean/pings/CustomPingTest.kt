@@ -10,6 +10,7 @@ import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -25,6 +26,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -135,10 +137,8 @@ class CustomPingTest {
         assertEquals(1L, pingInfo.tryGetLong("seq")!!)
     }
 
-    // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
-    @Suppress("DEPRECATION")
-    fun `events for custom pings are flushed at startup`() {
+    fun `events for custom pings aren't flushed at startup`() {
         delayMetricsPing(context)
         resetGlean(
             context,
@@ -162,7 +162,7 @@ class CustomPingTest {
             allowedExtraKeys = emptyList()
         )
         // and record it in the currently initialized Glean instance.
-        click.record()
+        click.record(NoExtras())
 
         // We need to simulate that the app is shutdown and all resources are freed.
         Glean.testDestroyGleanHandle()
@@ -184,14 +184,19 @@ class CustomPingTest {
             Glean.configuration.copy(
                 serverEndpoint = "http://" + server.hostName + ":" + server.port
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = false, uploadEnabled = true
         )
 
+        // There should be no ping upload worker,
+        // because there is no ping to upload.
+        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
+
+        // But if the custom ping is specifically submitted,
+        // it should be received.
+        customPing.submit()
         // Trigger work manager once.
         // This should launch one worker that handles all pending pings.
         triggerWorkManager(context)
-
-        // Receive the custom events ping.
         var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
         var docType = request.path!!.split("/")[3]
         assertEquals(pingName, docType)

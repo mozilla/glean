@@ -247,11 +247,11 @@ class GleanTest {
                     //   - seq: 0, reason: active, duration: null
                     //   - seq: 1, reason: inactive, duration: non-null
                     //   - seq: 2, reason: active, duration: null
-                    val baselineMetricsObject = json.getJSONObject("metrics")
                     if (seq == 0) {
                         assertEquals("active", json.getJSONObject("ping_info").getString("reason"))
                     }
                     if (seq == 1) {
+                        val baselineMetricsObject = json.getJSONObject("metrics")
                         assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
                         val baselineTimespanMetrics = baselineMetricsObject.getJSONObject("timespan")
                         assertEquals(1, baselineTimespanMetrics.length())
@@ -354,7 +354,8 @@ class GleanTest {
         )
 
         // Destroy Glean, so that the dispatcher will queue tasks until flushed.
-        Glean.testDestroyGleanHandle(clearStores = true)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores = true, gleanDataDir.path)
 
         // This will queue 3 tasks that will add to the metric value once Glean is initialized
         for (ignored in 0..2) {
@@ -622,7 +623,8 @@ class GleanTest {
         val server = getMockWebServer()
 
         // No Glean active, tasks will be queued.
-        Glean.testDestroyGleanHandle(clearStores = true)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores = true, gleanDataDir.path)
 
         val counterMetric = CounterMetricType(
             CommonMetricData(

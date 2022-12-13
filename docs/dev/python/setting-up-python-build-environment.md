@@ -62,14 +62,14 @@ pip install -r requirements_dev.txt
 ### Makefile method
 
 ```bash
-  $ make python-setup
+  $ make setup-python
 ```
 
 The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes it possible to build and test for multiple versions of Python in the same checkout.
 
-> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make python-setup GLEAN_PYENV=mypyenv`.
+> *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make setup-python GLEAN_PYENV=mypyenv`.
 
-By default, the `Makefile` installs the latest version available of each of Glean's dependencies.  If you wish to install the minimum required versions instead, (useful primarily to ensure that Glean doesn't unintentionally use newer APIs in its dependencies) pass the `GLEAN_PYDEPS=min` environment variable: `make python-setup GLEAN_PYDEPS=min`.
+By default, the `Makefile` installs the latest version available of each of Glean's dependencies.  If you wish to install the minimum required versions instead, (useful primarily to ensure that Glean doesn't unintentionally use newer APIs in its dependencies) pass the `GLEAN_PYDEPS=min` environment variable: `make setup-python GLEAN_PYDEPS=min`.
 
 ## Build the Python bindings
 
@@ -147,13 +147,13 @@ The Glean Python bindings use the following tools:
 To just check the lints:
 
 ```bash
-  $ make pythonlint
+  $ make lint-python
 ```
 
 To reformat the Python files in-place:
 
 ```bash
-  $ make pythonfmt
+  $ make fmt-python
 ```
 
 ## Building the Python API docs

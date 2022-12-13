@@ -1,6 +1,25 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.0.0...main)
+
+# v52.0.0 (2022-12-13)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...v52.0.0)
+
+* General
+  * Remove the metric `glean.validation.first_run_hour`. Note that this will mean no `reason=upgrade` metrics pings from freshly installed clients anymore. ([#2271](https://github.com/mozilla/glean/pull/2271))
+  * BEHAVIOUR CHANGE: Events in Custom Pings no longer trigger their submission. ([bug 1716725](https://bugzilla.mozilla.org/show_bug.cgi?id=1716725))
+    * Custom Pings with unsent events will no longer be sent at startup with reason `startup`.
+    * `glean.restarted` events will be included in Custom Pings with other events to rationalize event timestamps across restarts.
+  * `test_reset_glean` will remove all previous data if asked to clear stores, even if Glean never has been initialized ([#2294](https://github.com/mozilla/glean/pull/2294))
+  * Upgrade to `glean_parser` v6.5.0, with support for `Cow` in Rust code ([#2300](https://github.com/mozilla/glean/issues/2300))
+  * API REMOVED: The deprecated-since-v38 `event` metric `record(map)` API has been removed ([bug 1802550](https://bugzilla.mozilla.org/show_bug.cgi?id=1802550))
+  * BEHAVIOUR CHANGE: "events" pings will no longer be sent if they have metrics but no events ([bug 1803513](https://bugzilla.mozilla.org/show_bug.cgi?id=1803513))
+  * *_Experimental:_* Add functionality necessary to remotely configure the metric `disabled` property ([bug 1798919](https://bugzilla.mozilla.org/show_bug.cgi?id=1798919))
+    * This change has no effect when the API is not used and is transparent to consumers. The API is currently experimental because it is not stable and may change.
+* Rust
+  * Static labels for labeled metrics are now `Cow<'static, str>` to reduce heap allocations ([#2272](https://github.com/mozilla/glean/pull/2272))
+  * NEW INTERNAL CONFIGURATION OPTION: `trim_data_to_registered_pings` will trim event storage to just the registered pings. Consult with the Glean Team before using. ([bug 1804915](https://bugzilla.mozilla.org/show_bug.cgi?id=1804915))
 
 # v51.8.3 (2022-11-25)
 

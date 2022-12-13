@@ -143,7 +143,7 @@ open class GleanInternalAPI internal constructor() {
      * as shared preferences
      * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
      *     If disabled, all persisted metrics, events and queued pings (except
-     *     first_run_date and first_run_hour) are cleared.
+     *     first_run_date) are cleared.
      * @param configuration A Glean [Configuration] object with global settings.
      * @param buildInfo A Glean [BuildInfo] object with build-time metadata. This
      *     object is generated at build time by glean_parser at the import path
@@ -194,7 +194,8 @@ open class GleanInternalAPI internal constructor() {
                 maxEvents = null,
                 delayPingLifetimeIo = false,
                 appBuild = "none",
-                useCoreMps = false
+                useCoreMps = false,
+                trimDataToRegisteredPings = false
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -451,7 +452,8 @@ open class GleanInternalAPI internal constructor() {
         PingUploadWorker.cancel(context)
 
         // Init Glean.
-        Glean.testDestroyGleanHandle(clearStores)
+        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        Glean.testDestroyGleanHandle(clearStores, gleanDataDir.path)
         // Enable test mode.
         Glean.enableTestingMode()
         // Always log pings for tests
@@ -501,15 +503,19 @@ open class GleanInternalAPI internal constructor() {
 
     /**
      * Test-only method to destroy the owned glean-core handle.
+     *
+     * @param clearStores Whether to clear data after destroying the Glean object
+     * @param dataPath The path to the data folder. Must be set if `clearStores` is `true`.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testDestroyGleanHandle(clearStores: Boolean = false) {
+    internal fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
+        // If it was initialized this also clears the directory
+        gleanTestDestroyGlean(clearStores, dataPath)
+
         if (!isInitialized()) {
-            // We don't need to destroy Glean: it wasn't initialized.
+            // We don't need to destroy anything else: it wasn't initialized.
             return
         }
-
-        gleanTestDestroyGlean(clearStores)
 
         // Reset all state.
         gleanSetTestMode(false)

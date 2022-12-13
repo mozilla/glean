@@ -25,10 +25,7 @@ Each event contains the following data:
 
 ### `record(object)`
 
-_Added in: [v38.0.0](../../appendix/changelog/sdk.md#v3800-2021-05-12)_
-
 Record a new event, with optional typed extra values.
-This requires `type` annotations in the definition.
 See [Extra metrics parameters](#extra-metric-parameters).
 
 {{#include ../../../shared/tab_header.md}}
@@ -59,13 +56,13 @@ Views.loginOpened.record(LoginOpenedExtra(sourceOfLogin: "toolbar"))
 
 <div data-lang="Python" class="tab">
 
-Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `_extra` added.
+Note that a `class` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Extra` added.
 
 ```Python
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
-metrics.views.login_opened.record(LoginOpenedExtra(sourceOfLogin="toolbar"))
+metrics.views.login_opened.record(metrics.views.LoginOpenedExtra(sourceOfLogin="toolbar"))
 ```
 
 </div>
@@ -116,90 +113,6 @@ Glean.views.loginOpened.record(extra);
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `record(map)` (_deprecated_)
-
-_Deprecated in: [v38.0.0](../../appendix/changelog/sdk.md#v3800-2021-05-12)_
-<!-- FIXME: Update anchor when v38.0.0 is actually released -->
-
-Record a new event, with optional extra values.
-
-{{#include ../../../shared/blockquote-info.html}}
-
-##### Deprecation notice
-
-> This API is used in v38.0.0 if an event has no `type` annotations in the definition.
-> See [Extra metrics parameters](#extra-metric-parameters).
->
-> In future versions extra values will default to a `string` type and this API will be removed.  
-> In Rust and Firefox Desktop this API is not supported.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Views
-
-Views.loginOpened.record(mapOf(Views.loginOpenedKeys.sourceOfLogin to "toolbar"))
-```
-
-</div>
-
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Views;
-
-Views.INSTANCE.loginOpened().record();
-```
-
-</div>
-
-<div data-lang="Swift" class="tab">
-
-Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `Keys` added.
-
-```Swift
-Views.loginOpened.record(extra: [.sourceOfLogin: "toolbar"])
-```
-
-</div>
-
-<div data-lang="Python" class="tab">
-
-Note that an `enum` has been generated for handling the `extra_keys`: it has the same name as the event metric, with `_keys` added.
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-metrics.views.login_opened.record(
-    {
-        metrics.views.login_opened_keys.SOURCE_OF_LOGIN: "toolbar"
-    }
-)
-```
-
-</div>
-
-<div data-lang="Rust" class="tab"></div>
-
-<div data-lang="JavaScript" class="tab">
-
-```js
-import * as views from "./path/to/generated/files/views.js";
-
-views.loginOpened.record({ sourceOfLogin: "toolbar" });
-```
-
-</div>
-
-<div data-lang="Firefox Desktop" class="tab"></div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 #### Recorded errors
 
 * [`invalid_overflow`](../../user/metrics/error-reporting.md):
@@ -212,7 +125,7 @@ views.loginOpened.record({ sourceOfLogin: "toolbar" });
 
 ### `testGetValue`
 
-Get the list of recorded events.  
+Get the list of recorded events.
 Returns a language-specific empty/null value if no data is stored.
 
 {{#include ../../../shared/tab_header.md}}
@@ -458,11 +371,11 @@ Each extra key contains additional metadata:
 
 ## Limits
 
-* When 500 events are queued on the client an events ping is immediately sent.
-* The `extra_keys` allows for a maximum of 10 keys.
+* When 500 events are queued on the client an "events" ping is immediately sent.
+* The `extra_keys` allows for a maximum of 15 keys.
 * The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40 bytes, when encoded as UTF-8.
 * The values in the `extras` object have a maximum length of 500 bytes when serialized and encoded as UTF-8.
-  Longer values are truncated, and an error is recorded.
+  Longer values are truncated, and an `invalid_overflow` error is recorded.
 
 ## Reference
 
