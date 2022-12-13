@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.0.0...main)
+
+# v52.0.0 (2022-12-13)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...v52.0.0)
 
 * General
   * Remove the metric `glean.validation.first_run_hour`. Note that this will mean no `reason=upgrade` metrics pings from freshly installed clients anymore. ([#2271](https://github.com/mozilla/glean/pull/2271))
