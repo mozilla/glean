@@ -77,8 +77,7 @@ class CounterMetricTypeTest {
         )
     }
 
-    // TODO: Fixme: should we continue throwing an exception instead?
-    @Test // (expected = NullPointerException::class)
+    @Test
     fun `testGetValue() returns null if nothing is stored`() {
         val counterMetric = CounterMetricType(
             CommonMetricData(
