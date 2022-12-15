@@ -39,8 +39,8 @@ commands:
       - run:
           name: Turn on RUST_BACKTRACE and RUST_LOG for any job that installs rustc
           command: |
-              echo "export RUST_BACKTRACE=1" >> $BASH_ENV
-              echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
+            echo "export RUST_BACKTRACE=1" >> $BASH_ENV
+            echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
@@ -91,16 +91,16 @@ commands:
       - run:
           name: Setup custom environment variables
           command: |
-              echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
 
   install-android-ndk:
     steps:
       - run:
           name: Install missing Android SDK & NDK
           command: |
-              sdkmanager \
-                "build-tools;33.0.0" \
-                "ndk;25.1.8937393"
+            sdkmanager \
+              "build-tools;33.0.0" \
+              "ndk;25.1.8937393"
 
   android-setup:
     steps:
@@ -111,7 +111,7 @@ commands:
       - run:
           name: Restrict to Linux builds only
           command: |
-              echo "rust.targets=linux-x86-64" > local.properties
+            echo "rust.targets=linux-x86-64" > local.properties
 
   test-python:
     steps:
@@ -120,8 +120,8 @@ commands:
       - run:
           name: Remove coredump file restriction
           command: |
-              # tell the operating system to remove the file size limit on core dump files
-              ulimit -c unlimited
+            # tell the operating system to remove the file size limit on core dump files
+            ulimit -c unlimited
       - run:
           name: Python tests
           command: |
@@ -131,9 +131,9 @@ commands:
           name: Detect and gather coredump files
           when: always
           command: |
-              mkdir -p ~/coredumps
-              # Try to copy the core file(s). Don't fail if they don't exist.
-              cp core.* ~/coredumps || true
+            mkdir -p ~/coredumps
+            # Try to copy the core file(s). Don't fail if they don't exist.
+            cp core.* ~/coredumps || true
       - store_artifacts:
           path: ~/coredumps
           destination: coredumps
@@ -417,8 +417,8 @@ jobs:
       - run:
           name: Remove coredump file restriction
           command: |
-              # tell the operating system to remove the file size limit on core dump files
-              ulimit -c unlimited
+            # tell the operating system to remove the file size limit on core dump files
+            ulimit -c unlimited
       - run:
           name: Android tests
           command: ./gradlew --no-daemon :glean:testDebugUnitTest
@@ -428,10 +428,10 @@ jobs:
       - run:
           name: Save test results
           command: |
-              mkdir -p ~/test-results/junit/
-              mkdir -p ~/test-results/tests/
-              cp -a glean-core/android/build/reports/tests ~/test-results/
-              find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            mkdir -p ~/test-results/junit/
+            mkdir -p ~/test-results/tests/
+            cp -a glean-core/android/build/reports/tests ~/test-results/
+            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - store_artifacts:
           path: ~/test-results/tests
@@ -439,11 +439,11 @@ jobs:
       - run:
           name: Detect and gather coredump files
           command: |
-              mkdir -p ~/coredumps
-              # Try to copy the core file from a default location. Don't fail if it doesn't exist.
-              cp -a glean-core/android/core ~/coredumps || true
-              # The JVM/Gradle might also produce a log file named like "hs_err_pid3247.log", let's copy that as well
-              find . -type f -name "hs_*.log" | xargs -I% cp -a % ~/coredumps/%
+            mkdir -p ~/coredumps
+            # Try to copy the core file from a default location. Don't fail if it doesn't exist.
+            cp -a glean-core/android/core ~/coredumps || true
+            # The JVM/Gradle might also produce a log file named like "hs_err_pid3247.log", let's copy that as well
+            find . -type f -name "hs_*.log" | xargs -I% cp -a % ~/coredumps/%
       - store_artifacts:
           path: ~/coredumps
           destination: coredumps
@@ -452,7 +452,7 @@ jobs:
       - run:
           name: Build Android Sample App
           command: |
-              ./gradlew :glean-sample-app:assembleAndroidTest
+            ./gradlew :glean-sample-app:assembleAndroidTest
           environment:
             GRADLE_OPTS: -Xmx2048m
             TARGET_CFLAGS: -DNDEBUG
@@ -612,7 +612,7 @@ jobs:
       - run:
           name: Build XCFramework archive
           command: |
-              bash bin/build-xcframework.sh
+            bash bin/build-xcframework.sh
       - run:
           name: Build sample app
           command: |
@@ -664,9 +664,9 @@ jobs:
       - run:
           name: Release glean-swift
           command: |
-              git config --global user.email "jrediger@mozilla.com"
-              git config --global user.name "Glean automated release"
-              ./bin/publish-glean-swift.sh "${CIRCLE_TAG}"
+            git config --global user.email "jrediger@mozilla.com"
+            git config --global user.name "Glean automated release"
+            ./bin/publish-glean-swift.sh "${CIRCLE_TAG}"
 
   ###########################################################################
   # Python
@@ -700,7 +700,7 @@ jobs:
       - skip-if-doc-only
       - run:
           command: |
-              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+            echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
   Python 3_7 tests:
@@ -736,7 +736,7 @@ jobs:
       - skip-if-doc-only
       - run:
           command: |
-              echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
+            echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
       - test-python
 
   Python 3_9 on Alpine tests:
