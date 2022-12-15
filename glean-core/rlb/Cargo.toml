@@ -6,7 +6,7 @@ description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
 readme = "README.md"
 license = "MPL-2.0"
-edition = "2018"
+edition = "2021"
 keywords = ["telemetry", "glean"]
 include = [
   "/README.md",
