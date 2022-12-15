@@ -40,8 +40,8 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-pub use configuration::Configuration;
 use configuration::DEFAULT_GLEAN_ENDPOINT;
+pub use configuration::{Builder as ConfigurationBuilder, Configuration};
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
     metrics::{Datetime, DistributionData, MemoryUnit, Rate, RecordedEvent, TimeUnit, TimerId},

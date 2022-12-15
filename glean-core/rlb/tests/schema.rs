@@ -10,7 +10,7 @@ use serde_json::Value;
 
 //use glean::private::{DenominatorMetric, NumeratorMetric, RateMetric};
 use glean::net::UploadResult;
-use glean::{ClientInfoMetrics, Configuration};
+use glean::{ClientInfoMetrics, Configuration, ConfigurationBuilder};
 
 const SCHEMA_JSON: &str = include_str!("../../../glean.1.schema.json");
 
@@ -28,17 +28,9 @@ fn new_glean(configuration: Option<Configuration>) -> tempfile::TempDir {
 
     let cfg = match configuration {
         Some(c) => c,
-        None => Configuration {
-            data_path: tmpname,
-            application_id: GLOBAL_APPLICATION_ID.into(),
-            upload_enabled: true,
-            max_events: None,
-            delay_ping_lifetime_io: false,
-            server_endpoint: Some("invalid-test-host".into()),
-            uploader: None,
-            use_core_mps: false,
-            trim_data_to_registered_pings: false,
-        },
+        None => ConfigurationBuilder::new(true, tmpname, GLOBAL_APPLICATION_ID)
+            .with_server_endpoint("invalid-test-host")
+            .build(),
     };
 
     let client_info = ClientInfoMetrics {
@@ -80,17 +72,10 @@ fn validate_against_schema() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().to_path_buf();
 
-    let cfg = Configuration {
-        data_path: tmpname,
-        application_id: GLOBAL_APPLICATION_ID.into(),
-        upload_enabled: true,
-        max_events: None,
-        delay_ping_lifetime_io: false,
-        server_endpoint: Some("invalid-test-host".into()),
-        uploader: Some(Box::new(ValidatingUploader { sender: s })),
-        use_core_mps: false,
-        trim_data_to_registered_pings: false,
-    };
+    let cfg = ConfigurationBuilder::new(true, tmpname, GLOBAL_APPLICATION_ID)
+        .with_server_endpoint("invalid-test-host")
+        .with_uploader(ValidatingUploader { sender: s })
+        .build();
     let _ = new_glean(Some(cfg));
 
     const PING_NAME: &str = "test-ping";
