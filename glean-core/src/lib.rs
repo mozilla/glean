@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #![allow(clippy::significant_drop_in_scrutinee)]
+#![allow(clippy::uninlined_format_args)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![deny(missing_docs)]
 

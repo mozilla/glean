@@ -109,11 +109,11 @@ impl Builder {
         let sh = Shell::new()?;
         let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
-        let glean_parser = format!("glean_parser~={}", GLEAN_PARSER_VERSION);
+        let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
         venv.pip_install(&glean_parser)?;
 
         for file in &self.files {
-            println!("cargo:rerun-if-changed={}", file);
+            println!("cargo:rerun-if-changed={file}");
         }
 
         let mut args = vec!["translate", "--format", "rust", "--output", out_dir];
