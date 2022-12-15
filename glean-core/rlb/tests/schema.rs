@@ -160,8 +160,8 @@ fn validate_against_schema() {
     match validation {
         Ok(()) => {}
         Err(e) => {
-            let errors = e.map(|e| format!("{}", e)).collect::<Vec<_>>();
-            panic!("Data: {:#?}\nErrors: {:#?}", data, errors);
+            let errors = e.map(|e| format!("{e}")).collect::<Vec<_>>();
+            panic!("Data: {data:#?}\nErrors: {errors:#?}");
         }
     }
 }
