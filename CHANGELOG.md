@@ -5,6 +5,8 @@
 * General
   * BUGFIX: Custom Pings with events should no longer erroneously post `InvalidState` errors ([bug 1811872](https://bugzilla.mozilla.org/show_bug.cgi?id=1811872))
   * Upgrade to `glean_parser` v7.0.0 ([#2346](https://github.com/mozilla/glean/pull/2346))
+* Rust
+  * Added a new `client_info` field `windows_build_number` (Windows only) ([#2325](https://github.com/mozilla/glean/pull/2325))
 
 # v52.0.1 (2023-01-19)
 
