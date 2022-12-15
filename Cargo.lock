@@ -375,7 +375,6 @@ dependencies = [
  "uniffi_build",
  "uniffi_macros",
  "uuid",
- "whatsys",
  "zeitstempel",
 ]
 
@@ -1122,9 +1121,9 @@ dependencies = [
 
 [[package]]
 name = "whatsys"
-version = "0.1.2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c24fff5aa1e0973964ba23a995e8b10fa2cdeae507e0cbbbd36f8403242a765d"
+checksum = "5a48baa5192a81e347fbaae5f5e50bc27955ef084fc0fda5ccb1f8f9aecd73c9"
 dependencies = [
  "cc",
  "cfg-if",

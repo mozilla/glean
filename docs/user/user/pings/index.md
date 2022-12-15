@@ -203,6 +203,13 @@ Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 
 The Android specific SDK version of the software running on this hardware device (e.g. "23").
 
+#### `windows_build_number` _(optional_)
+
+_Type: [Quantity](../../reference/metrics/quantity.md),
+Lifetime: [Application](../../reference/yaml/metrics.md#application)_
+
+The optional Windows build number, reported by Windows (e.g. `22000)` and not set for other platforms.
+
 #### `telemetry_sdk_build`
 
 _Type: [String](../../reference/metrics/string.md),

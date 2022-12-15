@@ -535,6 +535,9 @@ fn initialize_core_metrics(glean: &Glean, client_info: &ClientInfoMetrics) {
     if let Some(android_sdk_version) = client_info.android_sdk_version.as_ref() {
         core_metrics::internal_metrics::android_sdk_version.set_sync(glean, android_sdk_version);
     }
+    if let Some(windows_build_number) = client_info.windows_build_number.as_ref() {
+        core_metrics::internal_metrics::windows_build_number.set_sync(glean, *windows_build_number);
+    }
     if let Some(device_manufacturer) = client_info.device_manufacturer.as_ref() {
         core_metrics::internal_metrics::device_manufacturer.set_sync(glean, device_manufacturer);
     }

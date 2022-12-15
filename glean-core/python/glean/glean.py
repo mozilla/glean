@@ -216,6 +216,7 @@ class Glean:
             device_manufacturer=None,
             device_model=None,
             android_sdk_version=None,
+            windows_build_number=None,
         )
         callbacks = OnGleanEventsImpl(cls)
         cfg = _uniffi.InternalConfiguration(
