@@ -61,7 +61,7 @@ pub struct Builder {
     /// Default: `None`
     pub uploader: Option<Box<dyn PingUploader + 'static>>,
     /// Optional: Whether Glean should schedule "metrics" pings for you.
-    /// Default: `true`
+    /// Default: `false`
     pub use_core_mps: bool,
     /// Optional: Whether Glean should limit its storage to only that of registered pings.
     /// Unless you know that all your and your libraries' pings are appropriately registered
@@ -85,7 +85,7 @@ impl Builder {
             delay_ping_lifetime_io: false,
             server_endpoint: None,
             uploader: None,
-            use_core_mps: true,
+            use_core_mps: false,
             trim_data_to_registered_pings: false,
         }
     }
