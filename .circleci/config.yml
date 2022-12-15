@@ -217,9 +217,9 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR_VERSION=v0.14.0
+            GHR_VERSION=v0.16.0
             GHR=ghr_${GHR_VERSION}_darwin_amd64
-            GHR_SHA256=33e9c89d611b049a2cb7ace8334108e8c586ea37a713f59c8503df582710b679
+            GHR_SHA256=67f61cbb8ad201e28829b558d5349e1cabf667acba33db0f9ac7e05a14ed98bc
             curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
@@ -230,9 +230,9 @@ commands:
       - run:
           name: Get ghr release tool
           command: |
-            GHR_VERSION=v0.14.0
+            GHR_VERSION=v0.16.0
             GHR=ghr_${GHR_VERSION}_linux_amd64
-            GHR_SHA256=08fd71402df6aace23403ef3757dabc7e261d6b24fed5a0634e2275c71303c31
+            GHR_SHA256=02b69903e6b61272706db44ba184bb9ba5d1c806cb65edd1fcb1e561e443ce83
             curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.tar.gz"
             echo "${GHR_SHA256} *${GHR}.tar.gz" | sha256sum -c -
             tar -xf "${GHR}.tar.gz"
@@ -250,9 +250,9 @@ jobs:
       - run:
           name: Install cargo-deny
           command: |
-            DENY_VERSION=0.11.0
+            DENY_VERSION=0.13.5
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=bdac664b436fd8501b3bea5461bbf8566086ab0cf5555d83178c3209a848f9f8
+            DENY_SHA256=339014366d1ea1137fe425b35b7c0fb3b3c8a54f9bfb2b470f52cbb1a7904e17
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
@@ -351,9 +351,9 @@ jobs:
       - run:
           name: Install mdbook-dtmo
           command: |
-              MDBOOK_VERSION=0.10.0
+              MDBOOK_VERSION=0.13.1
               MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-              MDBOOK_SHA256=96d30648b21cf443d64bd181cc58c8f2ba0d98b1e390e96d4639ae1ec5985ae3
+              MDBOOK_SHA256=b27992bec9b336375c5662853da492b96cb6a472c0d5538e40e034fdeba40478
               curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
               echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
               tar -xvf "${MDBOOK}"
