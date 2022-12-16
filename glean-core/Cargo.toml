@@ -41,8 +41,8 @@ zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 whatsys = "0.1.2"
-uniffi = "0.21.0"
-uniffi_macros = "0.21.0"
+uniffi = "0.22.0"
+uniffi_macros = "0.22.0"
 time = "0.1.40"
 remove_dir_all = "0.5.3"
 env_logger = { version = "0.9.0", default-features = false, optional = true }
@@ -60,7 +60,7 @@ iso8601 = "0.4"
 ctor = "0.1.12"
 
 [build-dependencies]
-uniffi_build = { version = "0.21.0", features = ["builtin-bindgen"] }
+uniffi_build = { version = "0.22.0", features = ["builtin-bindgen"] }
 
 [features]
 # Increases the preinit queue limit to 10^6
