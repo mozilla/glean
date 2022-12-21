@@ -83,6 +83,34 @@ commands:
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
             bin/codecov.sh -X yaml -f codecov.json
 
+  test-rust-native-dispatcher:
+    steps:
+      - run:
+          name: Install required dependencies
+          command: |
+            sudo apt update
+            sudo apt install -y cmake ninja-build clang
+      - run:
+          name: Install libdispatch
+          command: |
+            cd ~
+            git clone https://github.com/apple/swift-corelibs-libdispatch
+            cd swift-corelibs-libdispatch
+            mkdir build && cd build
+            cmake -G Ninja \
+              -DCMAKE_C_COMPILER=clang \
+              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_BUILD_WITH_INSTALL_RPATH=On \
+              ..
+            ninja
+            sudo ninja install
+
+      - run:
+          name: Run Rust tests with native dispatcher
+          command: |
+            export LD_LIBRARY_PATH=/usr/local/lib
+            cargo test --verbose --jobs 6 --features native-dispatcher -- --nocapture
+
   install-rustup:
     steps:
       - run:
@@ -324,6 +352,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust
+      - test-rust-native-dispatcher
 
   Rust tests - beta:
     docker:
@@ -528,12 +557,6 @@ jobs:
       - restore_cache:
           keys:
             - v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
-
-      # Experimental - we might move this to Linux with an appropriate libdispatch later
-      - run:
-          name: Run Rust tests with native dispatcher
-          command: |
-            cargo test --verbose --jobs 6 --features native-dispatcher -- --nocapture
 
       - run:
           name: Run iOS build
