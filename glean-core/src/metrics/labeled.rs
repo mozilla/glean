@@ -4,6 +4,7 @@
 
 use std::borrow::Cow;
 use std::collections::{hash_map::Entry, HashMap};
+use std::marker::PhantomData;
 use std::sync::{Arc, Mutex};
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal};
@@ -16,13 +17,13 @@ const OTHER_LABEL: &str = "__other__";
 const MAX_LABEL_LENGTH: usize = 61;
 
 /// A labeled counter.
-pub type LabeledCounter = LabeledMetric<CounterMetric>;
+pub type LabeledCounter<L = ()> = LabeledMetric<CounterMetric, L>;
 
 /// A labeled boolean.
-pub type LabeledBoolean = LabeledMetric<BooleanMetric>;
+pub type LabeledBoolean<L = ()> = LabeledMetric<BooleanMetric, L>;
 
 /// A labeled string.
-pub type LabeledString = LabeledMetric<StringMetric>;
+pub type LabeledString<L = ()> = LabeledMetric<StringMetric, L>;
 
 /// Checks whether the given label is sane.
 ///
@@ -88,7 +89,7 @@ fn matches_label_regex(value: &str) -> bool {
 ///
 /// Labeled metrics allow to record multiple sub-metrics of the same type under different string labels.
 #[derive(Debug)]
-pub struct LabeledMetric<T> {
+pub struct LabeledMetric<T, L = ()> {
     labels: Option<Vec<Cow<'static, str>>>,
     /// Type of the underlying metric
     /// We hold on to an instance of it, which is cloned to create new modified instances.
@@ -97,6 +98,8 @@ pub struct LabeledMetric<T> {
     /// A map from a unique ID for the labeled submetric to a handle of an instantiated
     /// metric type.
     label_map: Mutex<HashMap<String, Arc<T>>>,
+
+    label_marker: PhantomData<L>,
 }
 
 /// Sealed traits protect against downstream implementations.
@@ -153,24 +156,38 @@ where
     }
 }
 
-impl<T> LabeledMetric<T>
+/// Convert something to a valid label string
+pub trait AsLabel: std::fmt::Debug {
+    fn as_label(&self) -> &str {
+        OTHER_LABEL
+    }
+}
+
+impl AsLabel for () {}
+
+impl<T, L> LabeledMetric<T, L>
 where
     T: AllowLabeled + Clone,
+    L: AsLabel,
 {
     /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
     /// See [`get`](LabeledMetric::get) for information on how static or dynamic labels are handled.
-    pub fn new(meta: CommonMetricData, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T> {
+    pub fn new(
+        meta: CommonMetricData,
+        labels: Option<Vec<Cow<'static, str>>>,
+    ) -> LabeledMetric<T, L> {
         let submetric = T::new_labeled(meta);
         LabeledMetric::new_inner(submetric, labels)
     }
 
-    fn new_inner(submetric: T, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T> {
+    fn new_inner(submetric: T, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T, L> {
         let label_map = Default::default();
         LabeledMetric {
             labels,
             submetric,
             label_map,
+            label_marker: PhantomData,
         }
     }
 
@@ -256,6 +273,11 @@ where
                 metric
             }
         }
+    }
+
+    /// todo
+    pub fn get_(&self, label: L) -> Arc<T> {
+        self.get(label.as_label())
     }
 
     /// **Exported for test purposes.**

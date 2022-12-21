@@ -15,7 +15,7 @@ use glean_core::{CommonMetricData, Lifetime};
 #[test]
 fn can_create_labeled_counter_metric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -47,7 +47,7 @@ fn can_create_labeled_counter_metric() {
 #[test]
 fn can_create_labeled_string_metric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledString::new(
+    let labeled = LabeledString::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -79,7 +79,7 @@ fn can_create_labeled_string_metric() {
 #[test]
 fn can_create_labeled_bool_metric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledBoolean::new(
+    let labeled = LabeledBoolean::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -111,7 +111,7 @@ fn can_create_labeled_bool_metric() {
 #[test]
 fn can_use_multiple_labels() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -149,7 +149,7 @@ fn can_use_multiple_labels() {
 #[test]
 fn can_record_error_for_submetric() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledString::new(
+    let labeled = LabeledString::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -174,7 +174,7 @@ fn can_record_error_for_submetric() {
 #[test]
 fn labels_are_checked_against_static_list() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -219,7 +219,7 @@ fn labels_are_checked_against_static_list() {
 #[test]
 fn dynamic_labels_too_long() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -254,7 +254,7 @@ fn dynamic_labels_too_long() {
 #[test]
 fn dynamic_labels_regex_mismatch() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -301,7 +301,7 @@ fn dynamic_labels_regex_mismatch() {
 #[test]
 fn dynamic_labels_regex_allowed() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -356,7 +356,7 @@ fn seen_labels_get_reloaded_from_disk() {
     let (glean, dir) = new_glean(Some(tempdir));
     tempdir = dir;
 
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "labeled_metric".into(),
             category: "telemetry".into(),
@@ -423,7 +423,7 @@ fn seen_labels_get_reloaded_from_disk() {
 #[test]
 fn caching_metrics_with_dynamic_labels() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "cached_labels".into(),
             category: "telemetry".into(),
@@ -457,7 +457,7 @@ fn caching_metrics_with_dynamic_labels() {
 #[test]
 fn caching_metrics_with_dynamic_labels_across_pings() {
     let (glean, _t) = new_glean(None);
-    let labeled = LabeledCounter::new(
+    let labeled = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "cached_labels2".into(),
             category: "telemetry".into(),

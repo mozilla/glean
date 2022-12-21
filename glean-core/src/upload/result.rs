@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::internal_metrics::FailureLabel;
+
 /// The result of an attempted ping upload.
 #[derive(Debug)]
 pub enum UploadResult {
@@ -47,14 +49,15 @@ impl UploadResult {
     ///
     /// Returns `None` if the upload finished succesfully.
     /// Failures are recorded in the `ping_upload_failure` metric.
-    pub fn get_label(&self) -> Option<&str> {
+    pub fn get_label(&self) -> Option<FailureLabel> {
+        use FailureLabel::*;
         match self {
             UploadResult::HttpStatus { code: 200..=299 } => None,
-            UploadResult::HttpStatus { code: 400..=499 } => Some("status_code_4xx"),
-            UploadResult::HttpStatus { code: 500..=599 } => Some("status_code_5xx"),
-            UploadResult::HttpStatus { .. } => Some("status_code_unknown"),
-            UploadResult::UnrecoverableFailure { .. } => Some("unrecoverable"),
-            UploadResult::RecoverableFailure { .. } => Some("recoverable"),
+            UploadResult::HttpStatus { code: 400..=499 } => Some(StatusCode4xx),
+            UploadResult::HttpStatus { code: 500..=599 } => Some(StatusCode5xx),
+            UploadResult::HttpStatus { .. } => Some(StatusCodeUnknown),
+            UploadResult::UnrecoverableFailure { .. } => Some(Recoverable),
+            UploadResult::RecoverableFailure { .. } => Some(Unrecoverable),
             UploadResult::Done { .. } => None,
         }
     }

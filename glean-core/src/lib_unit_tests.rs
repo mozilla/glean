@@ -824,7 +824,16 @@ fn test_set_metrics_disabled() {
         send_in_pings: vec!["baseline".to_string()],
         ..Default::default()
     });
-    let another_metric = LabeledString::new(
+    #[derive(Copy, Clone, Debug)]
+    enum AnotherLabel {
+        Label1,
+    }
+    impl crate::metrics::labeled::AsLabel for AnotherLabel {
+        fn as_label(&self) -> &str {
+            "label1"
+        }
+    }
+    let another_metric = LabeledString::<AnotherLabel>::new(
         CommonMetricData {
             category: "category".to_string(),
             name: "labeled_string_metric".to_string(),
@@ -841,11 +850,13 @@ fn test_set_metrics_disabled() {
         metric.get_value(&glean, "baseline").unwrap(),
         "Initial value must match"
     );
-    another_metric.get("label1").set_sync(&glean, "TEST_VALUE");
+    another_metric
+        .get_(AnotherLabel::Label1)
+        .set_sync(&glean, "TEST_VALUE");
     assert_eq!(
         "TEST_VALUE",
         another_metric
-            .get("label1")
+            .get_(AnotherLabel::Label1)
             .get_value(&glean, "baseline")
             .unwrap(),
         "Initial value must match"
@@ -871,12 +882,12 @@ fn test_set_metrics_disabled() {
         "Shouldn't set when disabled"
     );
     another_metric
-        .get("label1")
+        .get_(AnotherLabel::Label1)
         .set_sync(&glean, "VALUE_AFTER_DISABLED");
     assert_eq!(
         "TEST_VALUE",
         another_metric
-            .get("label1")
+            .get_(AnotherLabel::Label1)
             .get_value(&glean, "baseline")
             .unwrap(),
         "Shouldn't set when disabled"
@@ -896,12 +907,12 @@ fn test_set_metrics_disabled() {
         "Should set when re-enabled"
     );
     another_metric
-        .get("label1")
+        .get_(AnotherLabel::Label1)
         .set_sync(&glean, "VALUE_AFTER_REENABLED");
     assert_eq!(
         "VALUE_AFTER_REENABLED",
         another_metric
-            .get("label1")
+            .get_(AnotherLabel::Label1)
             .get_value(&glean, "baseline")
             .unwrap(),
         "Should set when re-enabled"

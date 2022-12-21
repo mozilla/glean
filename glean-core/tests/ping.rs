@@ -127,7 +127,7 @@ fn test_pings_submitted_metric() {
 
     // Reconstructed here so we can test it without reaching into the library
     // internals.
-    let pings_submitted = LabeledCounter::new(
+    let pings_submitted = LabeledCounter::<()>::new(
         CommonMetricData {
             name: "pings_submitted".into(),
             category: "glean.validation".into(),

@@ -88,17 +88,38 @@ impl AdditionalMetrics {
 
 #[derive(Debug)]
 pub struct UploadMetrics {
-    pub ping_upload_failure: LabeledMetric<CounterMetric>,
+    pub ping_upload_failure: LabeledMetric<CounterMetric, FailureLabel>,
     pub discarded_exceeding_pings_size: MemoryDistributionMetric,
     pub pending_pings_directory_size: MemoryDistributionMetric,
     pub deleted_pings_after_quota_hit: CounterMetric,
     pub pending_pings: CounterMetric,
 }
 
+#[derive(Debug)]
+pub enum FailureLabel {
+    StatusCode4xx,
+    StatusCode5xx,
+    StatusCodeUnknown,
+    Unrecoverable,
+    Recoverable,
+}
+
+impl crate::metrics::labeled::AsLabel for FailureLabel {
+    fn as_label(&self) -> &str {
+        match self {
+            FailureLabel::StatusCode4xx => "status_code_4xx",
+            FailureLabel::StatusCode5xx => "status_code_5xx",
+            FailureLabel::StatusCodeUnknown => "status_code_unknown",
+            FailureLabel::Unrecoverable => "unrecoverable",
+            FailureLabel::Recoverable => "recoverable",
+        }
+    }
+}
+
 impl UploadMetrics {
     pub fn new() -> UploadMetrics {
         UploadMetrics {
-            ping_upload_failure: LabeledMetric::<CounterMetric>::new(
+            ping_upload_failure: LabeledMetric::<CounterMetric, FailureLabel>::new(
                 CommonMetricData {
                     name: "ping_upload_failure".into(),
                     category: "glean.upload".into(),
