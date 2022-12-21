@@ -231,7 +231,8 @@ fn dynamic_labels_too_long() {
         None,
     );
 
-    let metric = labeled.get("this_string_has_more_than_thirty_characters");
+    let long_string = "long_string".repeat(10);
+    let metric = labeled.get(long_string);
     metric.add_sync(&glean, 1);
 
     let snapshot = StorageManager
@@ -267,13 +268,13 @@ fn dynamic_labels_regex_mismatch() {
     );
 
     let labels_not_validating = vec![
-        "notSnakeCase",
         "",
         "with/slash",
-        "1.not_fine",
+        "1\n.not_fine",
         "this.$isnotfine",
-        "-.not_fine",
-        "this.is_not_fine.2",
+        "-.not fine",
+        "this.is\tnot\tfine.2",
+        "emoji_😱_does-it-work",
     ];
     let num_non_validating = labels_not_validating.len();
 

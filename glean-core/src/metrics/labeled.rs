@@ -53,36 +53,10 @@ pub type LabeledString<L = ()> = LabeledMetric<StringMetric, L>;
 /// * `this.$isnotfine`
 /// * `-.not_fine`
 fn matches_label_regex(value: &str) -> bool {
-    let mut iter = value.chars();
-
-    loop {
-        // Match the first letter in the word.
-        match iter.next() {
-            Some('_') | Some('a'..='z') => (),
-            _ => return false,
-        };
-
-        // Match subsequent letters in the word.
-        let mut count = 0;
-        loop {
-            match iter.next() {
-                // We are done, so the whole expression is valid.
-                None => return true,
-                // Valid characters.
-                Some('_') | Some('-') | Some('a'..='z') | Some('0'..='9') => (),
-                // We ended a word, so iterate over the outer loop again.
-                Some('.') => break,
-                // An invalid character
-                _ => return false,
-            }
-            count += 1;
-            // We allow 30 characters per word, but the first one is handled
-            // above outside of this loop, so we have a maximum of 29 here.
-            if count == 29 {
-                return false;
-            }
-        }
-    }
+    value.len() > 0
+        && value
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || ['.', '_', '-'].contains(&c))
 }
 
 /// A labeled metric.
