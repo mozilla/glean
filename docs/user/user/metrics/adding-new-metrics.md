@@ -276,7 +276,7 @@ compound.category:
 In Rust this becomes:
 
 ```Rust
-use fog::metrics;
+use firefox_on_glean::metrics;
 
 metrics::compound_category::metric_name...
 ```
