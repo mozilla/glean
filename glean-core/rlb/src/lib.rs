@@ -89,6 +89,10 @@ impl glean_core::OnGleanEvents for GleanEvents {
         // intentionally left empty
         Ok(())
     }
+
+    fn shutdown(&self) {
+        self.upload_manager.shutdown();
+    }
 }
 
 fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Option<()> {

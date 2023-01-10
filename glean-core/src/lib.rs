@@ -21,10 +21,14 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
 
-use metrics::MetricsDisabledConfig;
+use crossbeam_channel::unbounded;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
+
+use metrics::MetricsDisabledConfig;
 
 mod common_metric_data;
 mod core;
@@ -237,6 +241,16 @@ pub trait OnGleanEvents: Send {
 
     /// Called when upload is disabled and uploads should be stopped
     fn cancel_uploads(&self) -> Result<(), CallbackError>;
+
+    /// Called on shutdown, before glean-core is fully shutdown.
+    ///
+    /// * This MUST NOT put any new tasks on the dispatcher.
+    ///   * New tasks will be ignored.
+    /// * This SHOULD NOT block arbitrarily long.
+    ///   * Shutdown waits for a maximum of 30 seconds.
+    fn shutdown(&self) {
+        // empty by default
+    }
 }
 
 /// Initializes Glean.
@@ -498,6 +512,38 @@ pub fn shutdown() {
 
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
+    }
+
+    // Call on_shutdown.
+    // Need to be done without holding a lock on the global Glean object.
+    {
+        let (tx, rx) = unbounded();
+
+        let handle = thread::Builder::new()
+            .name("glean.shutdown".to_string())
+            .spawn(move || {
+                let state = global_state().lock().unwrap();
+                state.callbacks.shutdown();
+
+                // Best-effort sending. The other side might have timed out already.
+                let _ = tx.send(()).ok();
+            })
+            .expect("Unable to spawn thread to wait on shutdown");
+
+        // TODO: 30 seconds? What's a good default here? Should this be configurable?
+        // Reasoning:
+        //   * If we shut down early we might still be processing pending pings.
+        //     In this case we wait at most 3 times for 1s = 3s before we upload.
+        //   * If we're rate-limited the uploader sleeps for up to 60s.
+        //     Thus waiting 30s will rarely allow another upload.
+        //   * We don't know how long uploads take until we get data from bug 1814592.
+        let result = rx.recv_timeout(Duration::from_secs(30));
+
+        if result.is_err() {
+            log::warn!("Waiting for upload failed. We're shutting down.");
+        } else {
+            let _ = handle.join().ok();
+        }
     }
 
     // Be sure to call this _after_ draining the dispatcher
