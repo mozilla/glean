@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...main)
 
+* Rust
+  * On shutdown wait up to 30s on the uploader to finish work ([#2232](https://github.com/mozilla/glean/pull/2332))
+
 # v52.2.0 (2023-01-30)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.1.1...v52.2.0)
