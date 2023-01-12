@@ -1,5 +1,6 @@
-* Labels must conform to the [label formatting regular expression](index.md#label-format).
-* Each label must have a maximum of 60 bytes, when encoded as UTF-8.
+* Labels must conform to the [label format](index.md#label-format).
+* Each label must have a maximum of 71 characters.
+* Each label must only contain printable ASCII characters.
 * The list of labels is limited to:
   * 16 different dynamic labels if no static labels are defined.
     Additional labels will all record to the special label `__other__`.

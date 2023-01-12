@@ -4,6 +4,8 @@
 
 * Rust
   * On shutdown wait up to 30s on the uploader to finish work ([#2232](https://github.com/mozilla/glean/pull/2332))
+* General
+  * Loosen label restrictions to "at most 71 characters of printable ASCII" ([bug 1672273](https://bugzilla.mozilla.org/show_bug.cgi?id=1672273))
 
 # v52.2.0 (2023-01-30)
 

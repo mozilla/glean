@@ -188,19 +188,35 @@ class LabeledMetricTypeTest {
             subMetric = counterMetric
         )
 
+        // These are actually fine now.
         labeledCounterMetric["notSnakeCase"].add(1)
         labeledCounterMetric[""].add(1)
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
 
         assertEquals(
-            4,
+            0,
             labeledCounterMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL
             )
         )
         assertEquals(
-            4,
+            null,
+            labeledCounterMetric["__other__"].testGetValue()
+        )
+
+        // More than 71 characters? Not okay.
+        labeledCounterMetric["1".repeat(72)].add(1)
+        // Not ASCII? Not okay.
+        labeledCounterMetric["Møøse"].add(1)
+        assertEquals(
+            2,
+            labeledCounterMetric.testGetNumRecordedErrors(
+                ErrorType.INVALID_LABEL
+            )
+        )
+        assertEquals(
+            2,
             labeledCounterMetric["__other__"].testGetValue()
         )
     }
@@ -226,13 +242,29 @@ class LabeledMetricTypeTest {
             subMetric = booleanMetric
         )
 
+        // These are actually fine now.
         labeledBooleanMetric["notSnakeCase"].set(true)
         labeledBooleanMetric[""].set(true)
         labeledBooleanMetric["with/slash"].set(true)
         labeledBooleanMetric["this_string_has_more_than_thirty_characters"].set(true)
 
         assertEquals(
-            4,
+            0,
+            labeledBooleanMetric.testGetNumRecordedErrors(
+                ErrorType.INVALID_LABEL
+            )
+        )
+        assertEquals(
+            null,
+            labeledBooleanMetric["__other__"].testGetValue()
+        )
+
+        // More than 71 characters? Not okay.
+        labeledBooleanMetric["1".repeat(72)].set(true)
+        // Not ASCII? Not okay.
+        labeledBooleanMetric["Møøse"].set(true)
+        assertEquals(
+            2,
             labeledBooleanMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL
             )
@@ -264,13 +296,29 @@ class LabeledMetricTypeTest {
             subMetric = stringMetric
         )
 
+        // These are actually fine now.
         labeledStringMetric["notSnakeCase"].set("foo")
         labeledStringMetric[""].set("foo")
         labeledStringMetric["with/slash"].set("foo")
         labeledStringMetric["this_string_has_more_than_thirty_characters"].set("foo")
 
         assertEquals(
-            4,
+            0,
+            labeledStringMetric.testGetNumRecordedErrors(
+                ErrorType.INVALID_LABEL
+            )
+        )
+        assertEquals(
+            null,
+            labeledStringMetric["__other__"].testGetValue()
+        )
+
+        // More than 71 characters? Not okay.
+        labeledStringMetric["1".repeat(72)].set("foo")
+        // Not ASCII? Not okay.
+        labeledStringMetric["Møøse"].set("foo")
+        assertEquals(
+            2,
             labeledStringMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL
             )

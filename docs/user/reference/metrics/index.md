@@ -57,7 +57,7 @@ Labeled metrics come in two forms:
 
 - **Static labels**: The labels are specified at build time in the `metrics.yaml` file, in the `labels` parameter.
   If a label that isn't part of this set is used at run time, it is converted to the special label `__other__`.
-  The number of static labels is limited to 100 per metric.
+  The number of static labels is limited to 4096 per metric.
 
 - **Dynamic labels**: The labels aren't known at build time, so are set at run time.
   Only the first 16 labels seen by Glean will be tracked. After that, any additional labels are converted to the special label `__other__`.
@@ -66,17 +66,7 @@ Labeled metrics come in two forms:
 
 ### Label format
 
-To ensure maximum support in database columns, labels must be made up of dot-separated identifiers with lowercase ASCII alphanumerics, containing underscores and dashes.
-
-Specifically, they must conform to this regular expression:
-
-```
-^[a-z_][a-z0-9_-]{0,29}(\\.[a-z_][a-z0-9_-]{0,29})*$
-```
-
-Check your label:
-<input type="text" label="Label" id="label">
-<span id="result">unchecked</span>
+Labels must not exceed 71 characters in length, and may comprise any printable ASCII characters.
 
 ## Adding or changing metric types
 Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) for requesting changes to existing metric types or suggesting the implementation of new metric types:
