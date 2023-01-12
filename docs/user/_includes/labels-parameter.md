@@ -3,8 +3,9 @@
 Labeled metrics may have an optional `labels` parameter, containing a list of known labels.
 The labels in this list must match the following requirements:
 
-* Conform to the [label formatting regular expression](index.md#label-format).
-* Each label must have a maximum of 60 bytes, when encoded as UTF-8.
+* Conform to the [label format](index.md#label-format).
+* Each label must have a maximum of 71 characters.
+* Each label must only contain printable ASCII characters.
 * This list itself is limited to 100 labels.
 
 {{#include ../../shared/blockquote-warning.html}}
