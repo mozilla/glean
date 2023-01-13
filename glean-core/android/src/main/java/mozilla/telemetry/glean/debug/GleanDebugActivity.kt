@@ -76,16 +76,6 @@ class GleanDebugActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!Glean.isInitialized()) {
-            Log.e(
-                LOG_TAG,
-                "Glean is not initialized. " +
-                    "It may be disabled by the application."
-            )
-            finish()
-            return
-        }
-
         if (intent.extras == null) {
             Log.e(LOG_TAG, "No debugging option was provided, doing nothing.")
             finish()

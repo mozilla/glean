@@ -12,12 +12,7 @@ import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getMockWebServer
-import mozilla.telemetry.glean.net.HeadersList
-import mozilla.telemetry.glean.net.HttpStatus
-import mozilla.telemetry.glean.net.PingUploader
-import mozilla.telemetry.glean.net.UploadResult
 import mozilla.telemetry.glean.private.BooleanMetricType
 import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.Lifetime
@@ -102,16 +97,36 @@ class GleanDebugActivityTest {
     }
 
     @Test
+    // TODO(jer): can we make this actually test something?
+    // What we would want to do is really just the
+    // "a custom activity is correctly started" test below:
+    //
+    // Even when Glean is not initialized we want the debug activity to run through,
+    // not crash and just work.
+    // If Glean is initialized later it should still trigger the debug activity tasks.
+    fun `it works without Glean initialized`() {
+        // Destroy Glean. Launching the Debug Activity should only schedule tasks,
+        // so they run once Glean is initialized.
+        Glean.testDestroyGleanHandle()
+
+        // Set the extra values and start the intent.
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext<Context>(),
+            GleanDebugActivity::class.java
+        )
+        intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
+        launch<GleanDebugActivity>(intent)
+    }
+
+    @Test
     fun `pings are sent using sendPing`() {
         val server = getMockWebServer()
 
+        // Destroy Glean. Launching the Debug Activity should only schedule tasks,
+        // so they run once Glean is initialized.
+        Glean.testDestroyGleanHandle()
+
         val context = ApplicationProvider.getApplicationContext<Context>()
-        resetGlean(
-            context,
-            Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
-        )
 
         // Put some metric data in the store, otherwise we won't get a ping out
         // Define a 'booleanMetric' boolean metric, which will be stored in "store1"
@@ -126,7 +141,6 @@ class GleanDebugActivityTest {
         )
 
         booleanMetric.set(true)
-        assertTrue(booleanMetric.testGetValue()!!)
 
         // Set the extra values and start the intent.
         val intent = Intent(
@@ -136,12 +150,15 @@ class GleanDebugActivityTest {
         intent.putExtra(GleanDebugActivity.SEND_PING_EXTRA_KEY, "metrics")
         launch<GleanDebugActivity>(intent)
 
+        val config = Glean.configuration.copy(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port
+        )
+        resetGlean(context, config)
+
         // Since we reset the serverEndpoint back to the default for untagged pings, we need to
         // override it here so that the local server we created to intercept the pings will
         // be the one that the ping is sent to.
-        Glean.configuration = Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
-        )
+        Glean.configuration = config
 
         triggerWorkManager(context)
         val request = server.takeRequest(10L, TimeUnit.SECONDS)!!
