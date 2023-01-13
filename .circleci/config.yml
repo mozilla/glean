@@ -1055,7 +1055,7 @@ jobs:
       # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
       - add_ssh_keys:
           fingerprints:
-            - "84:e6:13:7e:94:8d:e2:bf:4f:93:1f:d9:52:80:bb:2c"
+            - "52:a9:c6:64:9e:df:60:70:73:da:81:02:71:9e:00:1b"
       # The gh-pages npm package can be used to push a directory to a git branch;
       # see https://www.npmjs.com/package/gh-pages
       - run:
