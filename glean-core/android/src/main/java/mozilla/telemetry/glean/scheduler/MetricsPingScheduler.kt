@@ -49,7 +49,6 @@ internal class MetricsPingScheduler(
     }
 
     init {
-        Log.i(LOG_TAG, "New MetricsPingSched")
         // In testing mode, set the "last seen version" as the same as this one.
         // Otherwise, all we will ever send is pings for the "upgrade" reason.
         if (Glean.testingMode) {
@@ -210,7 +209,6 @@ internal class MetricsPingScheduler(
      * collection.
      */
     fun schedule(): Boolean {
-        Log.i(LOG_TAG, "MetricsPingSched.schedule")
         val now = getCalendarInstance()
 
         // If the version of the app is different from the last time we ran the app,
