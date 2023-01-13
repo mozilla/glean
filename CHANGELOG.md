@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.0.0...main)
 
+* Android
+  * The `GleanDebugActivity` can run without Glean being initialized ([#2336](https://github.com/mozilla/glean/pull/2336))
+
 # v52.0.0 (2022-12-13)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v51.8.3...v52.0.0)
