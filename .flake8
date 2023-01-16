@@ -1,3 +1,6 @@
 [flake8]
 max-line-length = 100
 exclude = glean-core/python/glean/_uniffi.py
+# B028 - manually surrouned by quotes - too many instances to fix right now
+# W503 - line break before binary operator - black formats it that way
+ignore = B028, W503
