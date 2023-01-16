@@ -978,7 +978,7 @@ pub fn glean_enable_logging_to_fd(_fd: u64) {
 #[allow(missing_docs)]
 mod ffi {
     use super::*;
-    uniffi_macros::include_scaffolding!("glean");
+    uniffi::include_scaffolding!("glean");
 
     type CowString = Cow<'static, str>;
 
