@@ -153,6 +153,21 @@ else:
     shared_object = "libglean_ffi.so"
 
 
+def cargo_build(target, buildvariant, env):
+    command = [
+        "cargo",
+        "build",
+        "--package",
+        "glean-bundle",
+        "--target",
+        target,
+    ]
+    if buildvariant != "debug":
+        command.append(f"--{buildvariant}")
+
+    subprocess.check_call(command, cwd=SRC_ROOT / "glean-core", env=env)
+
+
 class build(_build):
     def run(self):
         try:
@@ -176,21 +191,10 @@ class build(_build):
         if target == "i686-pc-windows-gnu":
             env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
-        command = [
-            "cargo",
-            "build",
-            "--package",
-            "glean-bundle",
-            "--target",
-            target,
-        ]
-        if buildvariant != "debug":
-            command.append(f"--{buildvariant}")
-
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        subprocess.check_call(command, cwd=SRC_ROOT / "glean-core", env=env)
+        cargo_build(target, buildvariant, env)
         shutil.copyfile(
             SRC_ROOT / "target" / target / buildvariant / shared_object,
             PYTHON_ROOT / "glean" / shared_object,
@@ -232,6 +236,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description="Mozilla's Glean Telemetry SDK: The Machine that Goes 'Ping!'",
     install_requires=requirements,
