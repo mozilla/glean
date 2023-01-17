@@ -890,8 +890,9 @@ jobs:
       - setup-rust-toolchain
       - checkout
       - run:
-          name: Build and Test Python extension
+          name: Install Python development tools for host
           command: |
+            rustup target add aarch64-apple-darwin
             make setup-python
       - run:
           name: Build macOS x86_64 wheel
@@ -904,7 +905,6 @@ jobs:
       - run:
           name: Build macOS aarch64 wheel
           command: |
-            rustup target add aarch64-apple-darwin
             cd glean-core/python
             .venv3.9/bin/python3 setup.py bdist_wheel
           environment:
@@ -912,11 +912,19 @@ jobs:
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - run:
+          name: Build macOS universal2 wheel
+          command: |
+            cd glean-core/python
+            .venv3.9/bin/python3 setup.py bdist_wheel
+          environment:
+            GLEAN_BUILD_TARGET: universal
+            GLEAN_BUILD_VARIANT: release
+      - run:
           name: Upload wheels to PyPI
           command:
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload dist/*
+            .venv3.9/bin/python3 -m twine upload glean-core/python/dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github

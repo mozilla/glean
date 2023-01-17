@@ -4,6 +4,8 @@
 
 * Android
   * The `GleanDebugActivity` can run without Glean being initialized ([#2336](https://github.com/mozilla/glean/pull/2336))
+* Python
+  * Ship `universal2` (`aarch64` + `x86_64` in one) wheels ([#2340](https://github.com/mozilla/glean/pull/2340))
 
 # v52.0.0 (2022-12-13)
 
