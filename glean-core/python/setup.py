@@ -93,6 +93,9 @@ class bdist_wheel(wheel.bdist_wheel.bdist_wheel):
         impl, abi_tag = "cp36", "abi3"
         if "-linux" in target:
             plat_name = f"linux_{cpu}"
+        elif target == "universal":
+            compat = macos_compat("x86_64").replace(".", "_")
+            plat_name = f"macosx_{compat}_universal2"
         elif "-darwin" in target:
             compat = macos_compat(target).replace(".", "_")
             if cpu == "aarch64":
@@ -144,7 +147,7 @@ if not target:
     target = get_rustc_info()["host"]
 
 
-if "-darwin" in target:
+if target == "universal" or "-darwin" in target:
     shared_object = "libglean_ffi.dylib"
 elif "-windows" in target:
     shared_object = "glean_ffi.dll"
@@ -191,14 +194,29 @@ class build(_build):
         if target == "i686-pc-windows-gnu":
             env["RUSTFLAGS"] = env.get("RUSTFLAGS", "") + " -C panic=abort"
 
+        if target == "universal":
+            env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat("x86_64")
+
         if "-darwin" in target:
             env["MACOSX_DEPLOYMENT_TARGET"] = macos_compat(target)
 
-        cargo_build(target, buildvariant, env)
-        shutil.copyfile(
-            SRC_ROOT / "target" / target / buildvariant / shared_object,
-            PYTHON_ROOT / "glean" / shared_object,
-        )
+        if target == "universal":
+            cargo_build("aarch64-apple-darwin", buildvariant, env)
+            cargo_build("x86_64-apple-darwin", buildvariant, env)
+
+            lipo_cmd = [
+                "lipo", "-create",
+                "-output", PYTHON_ROOT / "glean" / shared_object,
+                SRC_ROOT / "target" / "aarch64-apple-darwin" / buildvariant / shared_object,
+                SRC_ROOT / "target" / "x86_64-apple-darwin" / buildvariant / shared_object,
+            ]
+            subprocess.check_call(lipo_cmd, cwd=SRC_ROOT / "glean-core", env=env)
+        else:
+            cargo_build(target, buildvariant, env)
+            shutil.copyfile(
+                SRC_ROOT / "target" / target / buildvariant / shared_object,
+                PYTHON_ROOT / "glean" / shared_object,
+            )
 
         command = [
             "cargo",
