@@ -892,52 +892,31 @@ jobs:
       - run:
           name: Build and Test Python extension
           command: |
-            make test-python
-          environment:
-            # setup.py would set it automatically, but we're building separately.
-            MACOSX_DEPLOYMENT_TARGET: 10.7
-            GLEAN_BUILD_VARIANT: release
+            make setup-python
       - run:
-          name: Build macOS wheel
+          name: Build macOS x86_64 wheel
           command: |
             cd glean-core/python
             .venv3.9/bin/python3 setup.py bdist_wheel
-            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
-            # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
+            GLEAN_BUILD_TARGET: x86_64-apple-darwin
             GLEAN_BUILD_VARIANT: release
-      - install-ghr-darwin
       - run:
-          name: Publish to Github
-          command: |
-            # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} glean-core/python/dist
-
-  pypi-macos-arm64-release:
-    macos:
-      xcode: "13.4.1"
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - run:
-          name: Install Python development tools for host
-          command:
-            make setup-python
-      - run:
-          name: Build macOS wheel
+          name: Build macOS aarch64 wheel
           command: |
             rustup target add aarch64-apple-darwin
             cd glean-core/python
             .venv3.9/bin/python3 setup.py bdist_wheel
-            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
-            # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload dist/*
           environment:
             SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
+      - run:
+          name: Upload wheels to PyPI
+          command:
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.9/bin/python3 -m twine upload dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -1161,10 +1140,6 @@ workflows:
             - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
-          requires:
-            - Python 3_8 tests
-          filters: *release-filters
-      - pypi-macos-arm64-release:
           requires:
             - Python 3_8 tests
           filters: *release-filters
