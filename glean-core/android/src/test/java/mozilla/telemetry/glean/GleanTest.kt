@@ -558,7 +558,7 @@ class GleanTest {
             Pings.metricsReasonCodes.overdue
         )
         // Enqueue a worker to send the baseline ping
-        Pings.baseline.submit()
+        Pings.baseline.submit(Pings.baselineReasonCodes.active)
 
         // Verify that the workers are enqueued
         assertTrue(
