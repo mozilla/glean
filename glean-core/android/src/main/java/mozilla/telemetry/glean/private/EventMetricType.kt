@@ -9,31 +9,6 @@ import mozilla.telemetry.glean.internal.EventMetric
 import mozilla.telemetry.glean.testing.ErrorType
 
 /**
- * The ability to convert an enum key back to its string representation.
- * This is necessary because Glean-generated enum values are camelCased,
- * so an enum's `name` property doesn't match the allowed key.
- *
- * This is automatically implemented for generated enums.
- */
-interface EventExtraKey {
-    fun keyName(): String = throw IllegalStateException("can't serialize this key")
-}
-
-/**
- * An enum with no values for convenient use as the default set of extra keys
- * that an [EventMetricType] can accept.
- */
-@Suppress("EmptyClassBlock")
-enum class NoExtraKeys(
-    /**
-     * @suppress
-     */
-    val value: Int
-) : EventExtraKey {
-    // deliberately empty
-}
-
-/**
  * A class that can be converted into key-value pairs of event extras.
  * This will be automatically implemented for event properties of an [EventMetricType].
  */
@@ -67,9 +42,9 @@ class NoExtras : EventExtras {
  * The Events API only exposes the [record] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class EventMetricType<ExtraKeysEnum, ExtraObject> internal constructor(
+class EventMetricType<ExtraObject> internal constructor(
     private var inner: EventMetric
-) where ExtraKeysEnum : Enum<ExtraKeysEnum>, ExtraKeysEnum : EventExtraKey, ExtraObject : EventExtras {
+) where ExtraObject : EventExtras {
     /**
      * The public constructor used by automatically generated metrics.
      */

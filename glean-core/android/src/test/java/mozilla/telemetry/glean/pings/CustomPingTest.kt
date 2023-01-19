@@ -14,7 +14,6 @@ import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
-import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
@@ -151,7 +150,7 @@ class CustomPingTest {
         val pingName = "custom-events-1"
 
         // Define a 'click' event
-        val click = EventMetricType<NoExtraKeys, NoExtras>(
+        val click = EventMetricType<NoExtras>(
             CommonMetricData(
                 disabled = false,
                 category = "ui",
