@@ -25,7 +25,7 @@ fn main() -> anyhow::Result<()> {
                 "language" => {
                     target_languages.push(args.next().context("--language needs a parameter")?)
                 }
-                "out-dir" => out_dir = Some(args.next().context("--language needs a parameter")?),
+                "out-dir" => out_dir = Some(args.next().context("--out-dir needs a parameter")?),
                 "no-format" => {
                     // this is the default anyway.
                 }
