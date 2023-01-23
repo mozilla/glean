@@ -27,6 +27,7 @@ fn main() -> anyhow::Result<()> {
     let mut udl_file = None;
     let mut target_languages = vec![];
     let mut out_dir = None;
+    let mut config = None;
 
     while let Some(arg) = args.next() {
         if let Some(arg) = arg.strip_prefix("--") {
@@ -40,6 +41,9 @@ fn main() -> anyhow::Result<()> {
                 "no-format" => {
                     // this is the default anyway.
                 }
+                "config" => {
+                    config = Some(args.next().context("--config needs a parameter")?);
+                }
                 _ => bail!("Unsupported option: {arg}"),
             }
         } else if udl_file.is_some() {
@@ -50,6 +54,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let out_dir = out_dir.map(Utf8PathBuf::from);
+    let config = config.map(Utf8PathBuf::from);
 
     if udl_file.is_none() {
         bail!("Need UDL file");
@@ -65,7 +70,7 @@ fn main() -> anyhow::Result<()> {
 
     generate_bindings(
         &udl_file.unwrap(),
-        None,
+        config.as_deref(),
         target_languages,
         out_dir.as_deref(),
         None,

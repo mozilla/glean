@@ -92,17 +92,17 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
-# Update the glean-python version
+### Update Cargo.lock
 
-FILE=glean-core/python/setup.py
+cargo update -p glean-core -p glean
+
+### GLEAN-PYTHON ###
+
+FILE=pyproject.toml
 run $SED -i.bak -E \
     -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
-
-### Update Cargo.lock
-
-cargo update -p glean-core -p glean
 
 ### KOTLIN PACKAGES ###
 
