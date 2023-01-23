@@ -37,7 +37,7 @@ Using an alternative tool would replace the instructions in this section only, b
 To create a virtual environment, enter the following command, replacing `<venv>` with the path to the virtual environment you want to create.  You will need to do this only once.
 
 ```bash
-  $ python3 -m venv <venv>
+$ python3 -m venv <venv>
 ```
 
 Then activate the environment. You will need to do this for each new shell session when you want to develop Glean.
@@ -55,21 +55,18 @@ The command to use depends on your shell environment.
 Lastly, install Glean's Python development dependencies into the virtual environment.
 
 ```bash
-cd glean-core/python
-pip install -r requirements_dev.txt
+pip install -r glean-core/python/requirements_dev.txt
 ```
 
 ### Makefile method
 
 ```bash
-  $ make setup-python
+$ make setup-python
 ```
 
-The default location of the virtual environment used by the make file is `glean-core/python/.venvX.Y`, where `X.Y` is the version of Python in use. This makes it possible to build and test for multiple versions of Python in the same checkout.
+The default location of the virtual environment used by the make file is `.venvX.Y`, where `X.Y` is the version of Python in use. This makes it possible to build and test for multiple versions of Python in the same checkout.
 
 > *Note:* If you wish to change the location of the virtual environment that the `Makefile` uses, pass the `GLEAN_PYENV` environment variable: `make setup-python GLEAN_PYENV=mypyenv`.
-
-By default, the `Makefile` installs the latest version available of each of Glean's dependencies.  If you wish to install the minimum required versions instead, (useful primarily to ensure that Glean doesn't unintentionally use newer APIs in its dependencies) pass the `GLEAN_PYDEPS=min` environment variable: `make setup-python GLEAN_PYDEPS=min`.
 
 ## Build the Python bindings
 
@@ -78,8 +75,7 @@ By default, the `Makefile` installs the latest version available of each of Glea
 Building the Python bindings also builds the Rust shared object for the Glean SDK core.
 
 ```bash
-  $ cd glean-core/python
-  $ python setup.py build install
+$ maturin develop
 ```
 
 ### Makefile method
@@ -87,7 +83,7 @@ Building the Python bindings also builds the Rust shared object for the Glean SD
 This will implicitly setup the Python environment, rebuild the Rust core and then build the Python bindings.
 
 ```bash
-  $ make build-python
+$ make build-python
 ```
 
 ## Running the Python unit tests
@@ -97,8 +93,7 @@ This will implicitly setup the Python environment, rebuild the Rust core and the
 Make sure the Python bindings are built, then:
 
 ```bash
-  $ cd glean-core/python
-  $ py.test
+$ py.test glean-core/python/tests
 ```
 
 ### Makefile method
@@ -106,13 +101,13 @@ Make sure the Python bindings are built, then:
 The following will run the Python unit tests using `py.test`:
 
 ```bash
-  $ make test-python
+$ make test-python
 ```
 
 You can send extra parameters to the `py.test` command by setting the `PYTEST_ARGS` variable:
 
 ```bash
-  $ make test-python PYTEST_ARGS="-s --pdb"
+$ make test-python PYTEST_ARGS="-s --pdb"
 ```
 
 ## Viewing logging output
@@ -136,10 +131,10 @@ The Glean Python bindings use the following tools:
 ### Manual method
 
 ```bash
-  $ cd glean-core/python
-  $ flake8 glean tests
-  $ black glean tests
-  $ mypy glean
+$ cd glean-core/python
+$ flake8 glean tests
+$ black glean tests
+$ mypy glean
 ```
 
 ### Makefile method
@@ -147,13 +142,13 @@ The Glean Python bindings use the following tools:
 To just check the lints:
 
 ```bash
-  $ make lint-python
+$ make lint-python
 ```
 
 To reformat the Python files in-place:
 
 ```bash
-  $ make fmt-python
+$ make fmt-python
 ```
 
 ## Building the Python API docs
@@ -163,13 +158,13 @@ The Python API docs are built using [pdoc3](https://pdoc3.github.io/pdoc/).
 ### Manual method
 
 ```bash
-  $ python -m pdoc --html glean --force -o build/docs/python
+$ python -m pdoc --html glean --force -o build/docs/python
 ```
 
 ### Makefile method
 
 ```bash
-  $ make python-docs
+$ make python-docs
 ```
 
 ## Building wheels for Linux
@@ -187,4 +182,3 @@ The official wheels for Windows are produced on a Linux virtual machine using th
 
 The CircleCI configuration handles making these wheels from tagged releases.
 If you need to reproduce this locally, see the CircleCI job `pypi-windows-release` for an example of how this is done in practice.
-

@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.2.0...main)
 
+* Python
+  * Switched the build system to maturin. This should not have any effect on consumers. ([#2345](https://github.com/mozilla/glean/pull/2345))
+
 # v53.2.0 (2023-08-02)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...v53.2.0)

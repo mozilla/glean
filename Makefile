@@ -4,7 +4,7 @@ help:
 	  sort | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-GLEAN_PYENV := $(shell python3 -c "import sys; print('glean-core/python/.venv' + '.'.join(str(x) for x in sys.version_info[:2]))")
+GLEAN_PYENV := $(abspath $(shell python3 -c "import sys; print('.venv' + '.'.join(str(x) for x in sys.version_info[:2]))"))
 GLEAN_PYDEPS := ${GLEAN_PYDEPS}
 # Read the `GLEAN_BUILD_VARIANT` variable, default to debug.
 # If set it is passed as a flag to cargo, so we prefix it with `--`
@@ -49,18 +49,32 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: setup-python ## Build the Python bindings
-	$(GLEAN_PYENV)/bin/python3 glean-core/python/setup.py build install
+	PATH=$(PWD)/bin:$(PATH) \
+	VIRTUAL_ENV=$(GLEAN_PYENV) \
+		$(GLEAN_PYENV)/bin/maturin develop
+
+build-python-wheel: setup-python  ## Build a Python wheel
+	PATH=$(PWD)/bin:$(PATH) \
+	VIRTUAL_ENV=$(GLEAN_PYENV) \
+		$(GLEAN_PYENV)/bin/maturin build --release $(MATURIN_FLAG)
+
+build-python-sdist: setup-python ## Build a Python source distribution
+	PATH=$(PWD)/bin:$(PATH) \
+	VIRTUAL_ENV=$(GLEAN_PYENV) \
+		$(GLEAN_PYENV)/bin/maturin build --release --sdist $(MATURIN_FLAG)
 
 build-xcframework:
 	./bin/build-xcframework.sh
 
-bindgen-python: glean-core/python/glean/_uniffi.py  # Generate the uniffi wrapper code manually
+bindgen-python: glean-core/python/glean/_uniffi/glean.py glean-core/python/glean/_uniffi/__init__.py # Generate the uniffi wrapper code manually
 
-glean-core/python/glean/_uniffi.py: glean-core/src/glean.udl
-	cargo uniffi-bindgen generate $< --language python --out-dir target
-	cp target/glean.py $@
+glean-core/python/glean/_uniffi/glean.py: glean-core/src/glean.udl
+	cargo uniffi-bindgen generate $< --language python --out-dir $(@D)
 
-.PHONY: build build-rust build-kotlin build-swift build-apk build-python bindgen-python build-xcframework
+glean-core/python/glean/_uniffi/__init__.py:
+	echo 'from .glean import *  # NOQA' > $@
+
+.PHONY: build build-rust build-kotlin build-swift build-apk build-python build-python-wheel build-python-sdist bindgen-python build-xcframework glean-core/python/glean/_uniffi/__init__.py
 
 # All tests
 
@@ -109,7 +123,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 
 lint-python: setup-python ## Run flake8 and black to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --diff --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
+	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi\/ glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
@@ -120,7 +134,7 @@ fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
 fmt-python: setup-python ## Run black to format Python code
-	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi.py glean-core/python/glean glean-core/python/tests
+	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi\/ glean-core/python/glean glean-core/python/tests
 
 fmt-kotlin:  ## Run ktlint to format KOtlin code
 	./gradlew ktlintFormat
@@ -185,4 +199,4 @@ coverage-python: build-python ## Generate a code coverage report for Python
 	GLEAN_COVERAGE=1 $(GLEAN_PYENV)/bin/python3 -m coverage run --parallel-mode -m pytest
 	$(GLEAN_PYENV)/bin/python3 -m coverage combine
 	$(GLEAN_PYENV)/bin/python3 -m coverage html
-.PHONY: coverage-coverage
+.PHONY: coverage-python

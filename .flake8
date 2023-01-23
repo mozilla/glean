@@ -1,5 +1,0 @@
-[flake8]
-max-line-length = 100
-exclude = glean-core/python/glean/_uniffi.py
-# W503 - line break before binary operator - black formats it that way
-ignore = W503

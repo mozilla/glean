@@ -119,7 +119,7 @@ class ProcessDispatcher:
             # Help coverage.py do coverage across processes
             if cls._doing_coverage:
                 os.environ["COVERAGE_PROCESS_START"] = str(
-                    Path(".coveragerc").absolute()
+                    Path("pyproject.toml").absolute()
                 )
 
             # Explicitly pass the contents of `sys.path` as `PYTHONPATH` to the

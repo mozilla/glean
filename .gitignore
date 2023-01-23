@@ -33,6 +33,7 @@ raw_xcode*log
 # Python stuff
 *.egg-info
 dist/
+.venv*/
 
 # Wine stuff
 winpython/
@@ -42,10 +43,11 @@ samples/python/.venv*/
 samples/python/data
 .mypy_cache/
 .coverage
+.coverage*
 htmlcov/
 *.log
 
-glean-core/python/glean/_uniffi.py
+glean-core/python/glean/_uniffi
 __pycache__
 *.py[cod]
 .Python
