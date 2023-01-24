@@ -21,7 +21,7 @@ The following checklist could help guide this validation effort.
 
     c. Is there any new [error](../../user/metrics/error-reporting.md) being reported for the new data points? If so, does this point to an edge case that should be documented and/or fixed in the code?
 
-    d. As the first three or four days pass, distributions will converge towards their final shapes. Consider extreme values; are there a very high number of zero/minimum vaules when there shouldn't be, or values near what you would realistically expect to be the maximum (e.g. a timespan for a single day that is reporting close to 86,400 seconds)? In case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
+    d. As the first three or four days pass, distributions will converge towards their final shapes. Consider extreme values; are there a very high number of zero/minimum values when there shouldn't be, or values near what you would realistically expect to be the maximum (e.g. a timespan for a single day that is reporting close to 86,400 seconds)? In case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
 
 {{#include ../../../shared/blockquote-info.html}}
 
