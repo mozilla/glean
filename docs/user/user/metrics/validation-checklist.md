@@ -21,13 +21,13 @@ The following checklist could help guide this validation effort.
 
     c. Is there any new [error](../../user/metrics/error-reporting.md) being reported for the new data points? If so, does this point to an edge case that should be documented and/or fixed in the code?
 
-    d. In case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
+    d. As the first three or four days pass, distributions will converge towards their final shapes. Consider extreme values; are there a very high number of zero/minimum vaules when there shouldn't be, or values near what you would realistically expect to be the maximum (e.g. a timespan for a single day that is reporting close to 86,400 seconds)? In case of oddities in the data, how much of the product population is affected? Does this require changing the instrumentation or documenting?
 
 {{#include ../../../shared/blockquote-info.html}}
 
 ### How to annotate metrics without changing the source code?
 
-> Data practitioners that have no familiarity with YAML or product-specific development workflows can still document any discovered edge-cases and anomalies by identifying the metric in the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/) and initiate adding commentary from the metric page.
+> Data practitioners that lack familiarity with YAML or product-specific development workflows can still document any discovered edge-cases and anomalies by identifying the metric in the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/) and initiate adding commentary from the metric page.
 
 3. After enough data is collected from the product population, are the expectations from the previous points still met?
 
