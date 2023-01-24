@@ -2,7 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.0.1...main)
 
-* BUGFIX: Custom Pings with events should no longer erroneously post `InvalidState` errors ([bug 1811872](https://bugzilla.mozilla.org/show_bug.cgi?id=1811872))
+* General
+  * BUGFIX: Custom Pings with events should no longer erroneously post `InvalidState` errors ([bug 1811872](https://bugzilla.mozilla.org/show_bug.cgi?id=1811872))
+  * Upgrade to `glean_parser` v7.0.0 ([#2346](https://github.com/mozilla/glean/pull/2346))
 
 # v52.0.1 (2023-01-19)
 
