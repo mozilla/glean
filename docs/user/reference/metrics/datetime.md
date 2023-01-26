@@ -22,7 +22,7 @@ Sets a datetime metric to a specific date value. Defaults to now.
 import org.mozilla.yourApplication.GleanMetrics.Install
 
 Install.firstRun.set() // Records "now"
-Install.firstRun.set(Calendar(2019, 3, 25)) // Records a custom datetime
+Install.firstRun.set(Date(2019, 3, 25)) // Records a custom datetime
 ```
 
 </div>
@@ -33,7 +33,7 @@ Install.firstRun.set(Calendar(2019, 3, 25)) // Records a custom datetime
 import org.mozilla.yourApplication.GleanMetrics.Install;
 
 Install.INSTANCE.firstRun().set(); // Records "now"
-Install.INSTANCE.firstRun().set(Calendar(2019, 3, 25)); // Records a custom datetime
+Install.INSTANCE.firstRun().set(new Date(2019, 3, 25)); // Records a custom datetime
 ```
 
 </div>
