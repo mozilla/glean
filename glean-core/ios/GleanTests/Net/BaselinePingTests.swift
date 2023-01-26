@@ -58,7 +58,9 @@ final class BaselinePingTests: XCTestCase {
         Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
         // Resetting Glean doesn't trigger lifecycle events in tests so we must call the method
-        // invoked by the lifecycle observer directly.
+        // invoked by the lifecycle observer directly. We must also reset the `isActive` flag in
+        // order to have the correct state to test.
+        Glean.shared.isActive = false
         Glean.shared.handleForegroundEvent()
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

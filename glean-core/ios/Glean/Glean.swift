@@ -88,6 +88,9 @@ public class Glean {
     // order to simulate not running in the main process.  DO NOT SET EXCEPT IN TESTS!
     var isMainProcess: Bool?
 
+    // Tracks the active/inactive state to prevent calling `handleClientActive` multiple times.
+    var isActive: Bool = false
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -231,14 +234,20 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        gleanHandleClientActive()
+        if !isActive {
+            gleanHandleClientActive()
+            isActive = true
+        }
 
         GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        gleanHandleClientInactive()
+        if isActive {
+            gleanHandleClientInactive()
+            isActive = false
+        }
     }
 
     /// Collect and submit a ping by name for eventual uploading
@@ -395,6 +404,9 @@ public class Glean {
                            uploadEnabled: Bool = true) {
         // Init Glean.
         testDestroyGleanHandle(clearStores)
+
+        // Reset isActive
+        isActive = false
 
         // Enable test mode.
         enableTestingMode()
