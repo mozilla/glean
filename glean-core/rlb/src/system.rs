@@ -76,7 +76,7 @@ pub fn get_os_version() -> String {
 #[cfg(target_os = "windows")]
 /// Returns the Windows build number, e.g. 22000
 pub fn get_windows_build_number() -> Option<i64> {
-    match whatsys::get_windows_build_number() {
+    match whatsys::windows_build_number() {
         // Cast to i64 to work with QuantityMetric type
         Some(i) => Some(i as i64),
         _ => None,
