@@ -46,3 +46,4 @@ flate2 = "1.0.19"
 
 [features]
 preinit_million_queue = ["glean-core/preinit_million_queue"]
+native-dispatcher = ["glean-core/native-dispatcher"]
