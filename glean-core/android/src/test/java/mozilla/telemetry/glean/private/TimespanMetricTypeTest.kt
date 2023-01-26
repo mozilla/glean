@@ -103,8 +103,7 @@ class TimespanMetricTypeTest {
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
 
-    // TODO: Fixme: should we continue throwing an exception instead?
-    @Test // (expected = NullPointerException::class)
+    @Test
     fun `testGetValue() returns null if nothing is stored`() {
         val metric = TimespanMetricType(
             CommonMetricData(

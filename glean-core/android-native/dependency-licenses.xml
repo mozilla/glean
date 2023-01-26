@@ -19,18 +19,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: tinyvec</name>
     <url>https://github.com/Lokathor/tinyvec</url>
   </license>  <license>
-    <name>Apache License 2.0: clap</name>
-    <url>https://github.com/clap-rs/clap</url>
-  </license>  <license>
-    <name>Apache License 2.0: clap_derive</name>
-    <url>https://github.com/clap-rs/clap/tree/master/clap_derive</url>
-  </license>  <license>
-    <name>Apache License 2.0: clap_lex</name>
-    <url>https://github.com/clap-rs/clap/tree/master/clap_lex</url>
-  </license>  <license>
-    <name>Apache License 2.0: os_str_bytes</name>
-    <url>https://github.com/dylni/os_str_bytes</url>
-  </license>  <license>
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
   </license>  <license>
@@ -54,9 +42,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: askama_escape</name>
     <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: proc-macro-error-attr</name>
-    <url>https://gitlab.com/CreepySkeleton/proc-macro-error</url>
   </license>  <license>
     <name>Apache License 2.0: anyhow</name>
     <url>https://github.com/dtolnay/anyhow</url>
@@ -88,8 +73,8 @@ the details of which are reproduced below.
     <name>Apache License 2.0: form_urlencoded</name>
     <url>https://github.com/servo/rust-url</url>
   </license>  <license>
-    <name>Apache License 2.0: hashbrown</name>
-    <url>https://github.com/rust-lang/hashbrown</url>
+    <name>Apache License 2.0: glob</name>
+    <url>https://github.com/rust-lang/glob</url>
   </license>  <license>
     <name>Apache License 2.0: heck</name>
     <url>https://github.com/withoutboats/heck</url>
@@ -99,9 +84,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
-  </license>  <license>
-    <name>Apache License 2.0: indexmap</name>
-    <url>https://github.com/bluss/indexmap</url>
   </license>  <license>
     <name>Apache License 2.0: inherent</name>
     <url>https://github.com/dtolnay/inherent</url>
@@ -170,7 +152,7 @@ the details of which are reproduced below.
     <url>https://github.com/time-rs/time</url>
   </license>  <license>
     <name>Apache License 2.0: toml</name>
-    <url>https://github.com/alexcrichton/toml-rs</url>
+    <url>https://github.com/toml-rs/toml</url>
   </license>  <license>
     <name>Apache License 2.0: unicase</name>
     <url>https://github.com/seanmonstar/unicase</url>
@@ -205,9 +187,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: cargo-platform</name>
     <url>https://github.com/rust-lang/cargo</url>
   </license>  <license>
-    <name>Apache License 2.0: proc-macro-error</name>
-    <url>https://gitlab.com/CreepySkeleton/proc-macro-error</url>
-  </license>  <license>
     <name>Apache License 2.0: fs-err</name>
     <url>https://github.com/andrewhickman/fs-err</url>
   </license>  <license>
@@ -216,9 +195,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: remove_dir_all</name>
     <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
-  </license>  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
     <name>Apache License 2.0: android_log-sys</name>
     <url>https://github.com/nercury/android_log-sys-rs</url>
@@ -229,11 +205,11 @@ the details of which are reproduced below.
     <name>Apache License 2.0: askama_shared</name>
     <url>https://github.com/djc/askama</url>
   </license>  <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
-  </license>  <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
+  </license>  <license>
+    <name>Apache License 2.0: siphasher</name>
+    <url>https://github.com/jedisct1/rust-siphash</url>
   </license>  <license>
     <name>Apache License 2.0: tinyvec_macros</name>
     <url>https://github.com/Soveu/tinyvec_macros</url>
@@ -244,8 +220,8 @@ the details of which are reproduced below.
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
   </license>  <license>
-    <name>Apache License 2.0: unicode-normalization</name>
-    <url>https://github.com/unicode-rs/unicode-normalization</url>
+    <name>Apache License 2.0: chrono</name>
+    <url>https://github.com/chronotope/chrono</url>
   </license>  <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
@@ -264,9 +240,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: weedle2</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>  <license>
-    <name>MIT License: textwrap</name>
-    <url>https://github.com/mgeisler/textwrap</url>
   </license>  <license>
     <name>MIT License: scroll_derive</name>
     <url>https://github.com/m4b/scroll</url>
@@ -295,9 +268,6 @@ the details of which are reproduced below.
     <name>MIT License: mime_guess</name>
     <url>https://github.com/abonander/mime_guess</url>
   </license>  <license>
-    <name>MIT License: strsim</name>
-    <url>https://github.com/dguo/strsim-rs</url>
-  </license>  <license>
     <name>MIT License: winapi-util</name>
     <url>https://github.com/BurntSushi/winapi-util</url>
   </license>  <license>
@@ -316,17 +286,17 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
-    <name>MIT License: byteorder</name>
-    <url>https://github.com/BurntSushi/byteorder</url>
+    <name>Mozilla Public License 2.0: glean</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
-    <name>MIT License: memchr</name>
-    <url>https://github.com/BurntSushi/memchr</url>
+    <name>Mozilla Public License 2.0: glean-build</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
-    <name>MIT License: termcolor</name>
-    <url>https://github.com/BurntSushi/termcolor</url>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
+    <name>Mozilla Public License 2.0: zeitstempel</name>
+    <url>https://github.com/badboy/zeitstempel</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
@@ -358,10 +328,16 @@ the details of which are reproduced below.
     <name>Mozilla Public License 2.0: uniffi_build</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
+    <name>Mozilla Public License 2.0: uniffi_checksum_derive</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_macros</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_meta</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: uniffi_testing</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>

@@ -15,7 +15,7 @@
     - [Substituting glean_parser](android/glean-parser-substitution.md)
 - [iOS bindings](ios/index.md)
     - [Setup Build Environment](ios/setup-ios-build-environment.md)
-    - [Debugging Different Versions of Glean](ios/debug-glean-on-ios.md)
+    - [Debugging different versions of Glean](ios/debug-glean-on-ios.md)
 - [Python bindings](python/index.md)
     - [Setup Build Environment](python/setting-up-python-build-environment.md)
 - [Rust Component](core/index.md)

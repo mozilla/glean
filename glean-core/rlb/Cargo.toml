@@ -1,12 +1,12 @@
 [package]
 name = "glean"
-version = "52.0.1"
+version = "52.1.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
 readme = "README.md"
 license = "MPL-2.0"
-edition = "2018"
+edition = "2021"
 keywords = ["telemetry", "glean"]
 include = [
   "/README.md",
@@ -15,6 +15,7 @@ include = [
   "/tests",
   "/Cargo.toml",
 ]
+rust-version = "1.58"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
@@ -22,7 +23,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "52.0.1"
+version = "52.1.0"
 
 [dependencies]
 crossbeam-channel = "0.5"
@@ -35,7 +36,7 @@ serde = { version = "1.0.104", features = ["derive"] }
 uuid = { version = "1.0", features = ["v4"] }
 chrono = { version = "0.4.10", features = ["serde"] }
 time = "0.1.40"
-whatsys = "0.1.2"
+whatsys = "0.3.0"
 
 [dev-dependencies]
 env_logger = { version = "0.9.0", default-features = false, features = ["termcolor", "atty", "humantime"] }

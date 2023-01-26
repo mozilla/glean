@@ -18,13 +18,13 @@ To get started adding Glean to your project, choose one of the following guides:
   - Get started adding Glean to an iOS application or library.
 - **[Python](./user/adding-glean-to-your-project/python.md)**
   - Get started adding Glean to any Python project.
+- **[Rust](./user/adding-glean-to-your-project/rust.md)**
+  - Get started adding Glean to any Rust project or library.
 - **[JavaScript](./user/adding-glean-to-your-project/javascript.md)**
   - Get started adding Glean to a website, web extension or Node.js project.
 - **[QML](./user/adding-glean-to-your-project/qt.md)**
   - Get started adding Glean to a Qt/QML application or library.
-<!-- - **[Rust](TODO)**
-  - Get started adding Glean to any Rust project.
-- **[Firefox Desktop](TODO)**
+<!-- - **[Firefox Desktop](TODO)**
   - Get started adding Glean to a Firefox Desktop component. -->
 
 For development documentation on the `Glean SDK`, refer to [the Glean SDK development book](../dev/index.html).

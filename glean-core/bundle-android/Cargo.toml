@@ -3,7 +3,7 @@ name = "glean-bundle-android"
 # No need to ever change this version
 version = "1.0.0"
 authors = ["The Glean Team <glean-team@mozilla.com>"]
-edition = "2018"
+edition = "2021"
 description = "Dynamic library build of glean-ffi, for use in Android builds"
 repository = "https://github.com/mozilla/glean"
 license = "MPL-2.0"
@@ -23,3 +23,6 @@ path = "../bundle/src/lib.rs"
 [dependencies.glean-core]
 # No version specified, we build against what's available here.
 path = ".."
+
+[features]
+enable_env_logger = ["glean-core/enable_env_logger"]

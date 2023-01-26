@@ -75,6 +75,25 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  windows_build_number:
+    type: quantity
+    lifetime: application
+    send_in_pings:
+      - glean_client_info
+    description: |
+      The optional Windows build number, reported by Windows
+      (e.g. 22000) and not set for other platforms.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1802094
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1802094
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    unit: build_number
+
   device_manufacturer:
     type: string
     lifetime: application

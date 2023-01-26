@@ -19,7 +19,6 @@ import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.CounterMetricType
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
-import mozilla.telemetry.glean.private.NoExtraKeys
 import mozilla.telemetry.glean.private.NoExtras
 import mozilla.telemetry.glean.private.NoReasonCodes
 import mozilla.telemetry.glean.private.PingType
@@ -177,7 +176,7 @@ class GleanTest {
     fun `test sending of foreground and background pings`() {
         val server = getMockWebServer()
 
-        val click = EventMetricType<NoExtraKeys, NoExtras>(
+        val click = EventMetricType<NoExtras>(
             CommonMetricData(
                 disabled = false,
                 category = "ui",
@@ -558,7 +557,7 @@ class GleanTest {
             Pings.metricsReasonCodes.overdue
         )
         // Enqueue a worker to send the baseline ping
-        Pings.baseline.submit()
+        Pings.baseline.submit(Pings.baselineReasonCodes.active)
 
         // Verify that the workers are enqueued
         assertTrue(
