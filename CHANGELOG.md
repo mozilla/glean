@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.1.0...main)
 
+* General
+  * BUGFIX: Properly invoke the windows buildid function from whatsys ([bug 1812672](https://bugzilla.mozilla.org/show_bug.cgi?id=1812672)) 
+
 # v52.1.0 (2023-01-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.0.1...v52.1.0)
