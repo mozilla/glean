@@ -7,7 +7,7 @@ jsonschema==3.2.0
 mypy==0.991; python_version > '3.6'
 pdoc3==0.10.0
 pip
-pytest-localserver==0.7.0
+pytest-localserver==0.7.1
 pytest-runner==5.3.1
 pytest==7.0.1
 semver==2.13.0
