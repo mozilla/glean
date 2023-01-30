@@ -1,13 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...main)
+
+# v52.2.0 (2023-01-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.1.1...v52.2.0)
+
+* General
+  * Update to UniFFI 0.23 ([#2338](https://github.com/mozilla/glean/pull/2338))
 
 # v52.1.1 (2023-01-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.1.0...v52.1.1)
 
 * General
-  * BUGFIX: Properly invoke the windows build number function from whatsys ([bug 1812672](https://bugzilla.mozilla.org/show_bug.cgi?id=1812672)) 
+  * BUGFIX: Properly invoke the windows build number function from whatsys ([bug 1812672](https://bugzilla.mozilla.org/show_bug.cgi?id=1812672))
 
 # v52.1.0 (2023-01-26)
 

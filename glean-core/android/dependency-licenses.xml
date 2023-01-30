@@ -196,6 +196,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: remove_dir_all</name>
     <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
   </license>  <license>
+    <name>Apache License 2.0: winapi</name>
+    <url>https://github.com/retep998/winapi-rs</url>
+  </license>  <license>
     <name>Apache License 2.0: android_log-sys</name>
     <url>https://github.com/nercury/android_log-sys-rs</url>
   </license>  <license>
@@ -204,6 +207,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: askama_shared</name>
     <url>https://github.com/djc/askama</url>
+  </license>  <license>
+    <name>Apache License 2.0: chrono</name>
+    <url>https://github.com/chronotope/chrono</url>
   </license>  <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
@@ -220,8 +226,8 @@ the details of which are reproduced below.
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
   </license>  <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
+    <name>Apache License 2.0: unicode-normalization</name>
+    <url>https://github.com/unicode-rs/unicode-normalization</url>
   </license>  <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
@@ -286,6 +292,18 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
+    <name>MIT License: byteorder</name>
+    <url>https://github.com/BurntSushi/byteorder</url>
+  </license>  <license>
+    <name>MIT License: memchr</name>
+    <url>https://github.com/BurntSushi/memchr</url>
+  </license>  <license>
+    <name>MIT License: termcolor</name>
+    <url>https://github.com/BurntSushi/termcolor</url>
+  </license>  <license>
+    <name>MIT License: winapi-util</name>
+    <url>https://github.com/BurntSushi/winapi-util</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -317,6 +335,9 @@ the details of which are reproduced below.
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_checksum_derive</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: uniffi_core</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_macros</name>
