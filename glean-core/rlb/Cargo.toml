@@ -15,7 +15,7 @@ include = [
   "/tests",
   "/Cargo.toml",
 ]
-rust-version = "1.58"
+rust-version = "1.60"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
