@@ -69,13 +69,11 @@ commands:
             sudo apt update
             sudo apt install --yes --no-install-recommends \
               python3-pip \
-              python3.8-venv
+              python3.10-venv
       - run:
           name: Run Rust sample
           command: |
-            if rustc --version | grep -q 'rustc 1.6'; then
-              cargo run -p sample
-            fi
+            cargo run -p sample
       - run:
           name: Upload coverage report
           command: |
@@ -159,8 +157,7 @@ commands:
   build-windows-i686-wheel:
     steps:
       - install-rustup
-      - setup-rust-toolchain:
-          rust-version: "1.58.0"
+      - setup-rust-toolchain
       - install-mingw
       - run:
           name: Install Python development tools for host
@@ -244,7 +241,7 @@ jobs:
 
   License check:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run:
@@ -264,7 +261,7 @@ jobs:
 
   Check vendored schema:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run:
@@ -294,7 +291,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -303,7 +300,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run: rustup component add clippy
@@ -313,36 +310,36 @@ jobs:
           command: |
             sudo apt update
             sudo apt install --yes --no-install-recommends \
-              python3.8-venv
+              python3.10-venv
       - run:
           name: Clippy
           command: make lint-rust
 
   Rust tests - stable:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     resource_class: "medium+"
     steps:
       - test-rust
 
   Rust tests - beta:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - test-rust:
           rust-version: "beta"
 
   Rust tests - minimum version:
     docker:
-      - image: cimg/rust:1.58
+      - image: cimg/rust:1.67
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.58.0"
+          rust-version: "1.60.0"
 
   Generate Rust documentation:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run:
@@ -374,7 +371,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - run:
@@ -656,7 +653,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: cimg/rust:1.61
+      - image: cimg/rust:1.67
     steps:
       - checkout
       - attach_workspace:
@@ -717,9 +714,6 @@ jobs:
     steps:
       - checkout
       - test-python
-      - persist_to_workspace:
-          root: glean-core/python/
-          paths: .venv3.8
 
   Python 3_9 tests:
     docker:
@@ -759,6 +753,9 @@ jobs:
     steps:
       - checkout
       - test-python
+      - persist_to_workspace:
+          root: glean-core/python/
+          paths: .venv3.10
 
   Python Windows x86_64 tests:
     docker:
@@ -812,14 +809,14 @@ jobs:
 
   Generate Python documentation:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     steps:
       - checkout
       - attach_workspace:
           at: glean-core/python/
       - run:
           name: Generate Python docs
-          command: glean-core/python/.venv3.8/bin/python3 -m pdoc --html glean --force -o build/docs/python
+          command: glean-core/python/.venv3.10/bin/python3 -m pdoc --html glean --force -o build/docs/python
       - persist_to_workspace:
           root: build/
           paths: docs/python
@@ -978,7 +975,7 @@ jobs:
 
   Docs internal metrics check:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run:
@@ -1101,7 +1098,7 @@ workflows:
             - docs-spellcheck
       - Generate Python documentation:
           requires:
-            - Python 3_8 tests
+            - Python 3_10 tests
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
