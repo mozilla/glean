@@ -36,6 +36,10 @@ else
     echo "Installing Rust ${TOOLCHAIN}"
     rustup toolchain add "${TOOLCHAIN}" --profile minimal
     rustup default "${TOOLCHAIN}"
+
+    # Testing new index protocol
+    # https://blog.rust-lang.org/inside-rust/2023/01/30/cargo-sparse-protocol.html
+    export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 fi
 
 set +eu
