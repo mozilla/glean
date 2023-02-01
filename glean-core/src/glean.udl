@@ -102,7 +102,7 @@ callback interface OnGleanEvents {
     // The language SDK can do additional things from within the same initializer thread,
     // e.g. starting to observe application events for foreground/background behavior.
     // The observer then needs to call the respective client activity API.
-    void on_initialize_finished();
+    void initialize_finished();
 
     // Trigger the uploader whenever a ping was submitted.
     //

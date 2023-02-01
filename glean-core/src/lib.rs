@@ -224,7 +224,7 @@ pub trait OnGleanEvents: Send {
     /// The language SDK can do additional things from within the same initializer thread,
     /// e.g. starting to observe application events for foreground/background behavior.
     /// The observer then needs to call the respective client activity API.
-    fn on_initialize_finished(&self);
+    fn initialize_finished(&self);
 
     /// Trigger the uploader whenever a ping was submitted.
     ///
@@ -446,7 +446,7 @@ fn initialize_inner(
             }
 
             let state = global_state().lock().unwrap();
-            state.callbacks.on_initialize_finished();
+            state.callbacks.initialize_finished();
         })
         .expect("Failed to spawn Glean's init thread");
 
