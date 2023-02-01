@@ -70,7 +70,7 @@ struct GleanEvents {
 }
 
 impl glean_core::OnGleanEvents for GleanEvents {
-    fn on_initialize_finished(&self) {
+    fn initialize_finished(&self) {
         // intentionally left empty
     }
 

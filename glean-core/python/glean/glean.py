@@ -49,7 +49,7 @@ class OnGleanEventsImpl(_uniffi.OnGleanEvents):
     def __init__(self, glean):
         self.glean = glean
 
-    def on_initialize_finished(self):
+    def initialize_finished(self):
         log.debug("OnGleanEventsImpl.on_initialize_finished")
         self.glean._init_finished = True
 

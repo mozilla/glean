@@ -20,7 +20,7 @@ class OnGleanEventsImpl: OnGleanEvents {
         self.glean = glean
     }
 
-    func onInitializeFinished() {
+    func initializeFinished() {
         // Run this off the main thread,
         // as it will trigger a ping submission,
         // which itself will trigger `triggerUpload()` on this class.
