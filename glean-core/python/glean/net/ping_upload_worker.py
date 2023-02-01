@@ -99,7 +99,6 @@ def _parse_ping_headers(
 
 
 def _process(data_dir: Path, application_id: str, configuration) -> bool:
-
     # Import here to avoid cyclical import
     from ..glean import Glean
 
