@@ -93,6 +93,8 @@ pub struct UploadMetrics {
     pub pending_pings_directory_size: MemoryDistributionMetric,
     pub deleted_pings_after_quota_hit: CounterMetric,
     pub pending_pings: CounterMetric,
+    pub send_success: TimingDistributionMetric,
+    pub send_failure: TimingDistributionMetric,
 }
 
 impl UploadMetrics {
@@ -157,6 +159,30 @@ impl UploadMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+
+            send_success: TimingDistributionMetric::new(
+                CommonMetricData {
+                    name: "send_success".into(),
+                    category: "glean.upload".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                TimeUnit::Millisecond,
+            ),
+
+            send_failure: TimingDistributionMetric::new(
+                CommonMetricData {
+                    name: "send_failure".into(),
+                    category: "glean.upload".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                TimeUnit::Millisecond,
+            ),
         }
     }
 }
