@@ -573,7 +573,7 @@ pub extern "C" fn glean_enable_logging() {
                 .build();
             android_logger::init_once(
                 android_logger::Config::default()
-                    .with_min_level(log::Level::Debug)
+                    .with_max_level(log::LevelFilter::Debug)
                     .with_filter(filter)
                     .with_tag("libglean_ffi"),
             );
