@@ -12,6 +12,7 @@
 //!   API to check the HTTP response from the ping upload and either delete the
 //!   corresponding ping from disk or re-enqueue it for sending.
 
+use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::convert::TryInto;
 use std::path::PathBuf;
@@ -21,6 +22,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use crate::error::ErrorKind;
+use crate::TimerId;
 use crate::{internal_metrics::UploadMetrics, Glean};
 use directory::{PingDirectoryManager, PingPayloadsByDirectory};
 use policy::Policy;
@@ -205,6 +207,8 @@ pub struct PingUploadManager {
     upload_metrics: UploadMetrics,
     /// Policies for ping storage, uploading and requests.
     policy: Policy,
+
+    in_flight: RwLock<HashMap<String, (TimerId, TimerId)>>,
 }
 
 impl PingUploadManager {
@@ -230,6 +234,7 @@ impl PingUploadManager {
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
             policy: Policy::default(),
+            in_flight: RwLock::new(HashMap::default()),
         }
     }
 
@@ -575,6 +580,11 @@ impl PingUploadManager {
                     }
                 }
 
+                let mut lock = self.in_flight.write().unwrap();
+                let success_id = self.upload_metrics.sending_success.start_sync();
+                let failure_id = self.upload_metrics.sending_failure.start_sync();
+                lock.insert(request.document_id.clone(), (success_id, failure_id));
+
                 PingUploadTask::Upload {
                     request: queue.pop_front().unwrap(),
                 }
@@ -656,14 +666,25 @@ impl PingUploadManager {
     ) -> UploadTaskAction {
         use UploadResult::*;
 
+        let stop_time = time::precise_time_ns();
+
         if let Some(label) = status.get_label() {
             let metric = self.upload_metrics.ping_upload_failure.get(label);
             metric.add_sync(glean, 1);
         }
 
+        let mut lock = self.in_flight.write().unwrap();
+        let send_ids = lock.remove(document_id);
+
         match status {
             HttpStatus { code } if (200..=299).contains(&code) => {
                 log::info!("Ping {} successfully sent {}.", document_id, code);
+                if let Some((success_id, failure_id)) = send_ids {
+                    self.upload_metrics
+                        .sending_success
+                        .set_stop_and_accumulate(glean, success_id, stop_time);
+                    self.upload_metrics.sending_failure.cancel_sync(failure_id);
+                }
                 self.directory_manager.delete_file(document_id);
             }
 
@@ -673,6 +694,12 @@ impl PingUploadManager {
                     document_id,
                     status
                 );
+                if let Some((success_id, failure_id)) = send_ids {
+                    self.upload_metrics.sending_success.cancel_sync(success_id);
+                    self.upload_metrics
+                        .sending_failure
+                        .set_stop_and_accumulate(glean, failure_id, stop_time);
+                }
                 self.directory_manager.delete_file(document_id);
             }
 
@@ -682,6 +709,12 @@ impl PingUploadManager {
                     document_id,
                     status
                 );
+                if let Some((success_id, failure_id)) = send_ids {
+                    self.upload_metrics.sending_success.cancel_sync(success_id);
+                    self.upload_metrics
+                        .sending_failure
+                        .set_stop_and_accumulate(glean, failure_id, stop_time);
+                }
                 self.enqueue_ping_from_file(glean, document_id);
                 self.recoverable_failure_count
                     .fetch_add(1, Ordering::SeqCst);
@@ -689,6 +722,10 @@ impl PingUploadManager {
 
             Done { .. } => {
                 log::debug!("Uploader signaled Done. Exiting.");
+                if let Some((success_id, failure_id)) = send_ids {
+                    self.upload_metrics.sending_success.cancel_sync(success_id);
+                    self.upload_metrics.sending_failure.cancel_sync(failure_id);
+                }
                 return UploadTaskAction::End;
             }
         };
