@@ -607,6 +607,38 @@ glean.upload:
     no_lint:
       - COMMON_PREFIX
 
+  send_success:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time needed for a successful send of a ping to the servers and getting a reply back
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
+  send_failure:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time needed for a failed send of a ping to the servers and getting a reply back.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
 glean.database:
   size:
     type: memory_distribution
