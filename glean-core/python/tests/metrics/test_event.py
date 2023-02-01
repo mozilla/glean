@@ -41,7 +41,6 @@ class ClickKeys(metrics.EventExtras):
 
 
 def test_the_api_records_to_its_storage_engine():
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=False,
@@ -80,7 +79,6 @@ def test_the_api_records_to_its_storage_engine():
 
 
 def test_the_api_records_to_its_storage_engine_when_category_is_empty():
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=False,
@@ -114,7 +112,6 @@ def test_the_api_records_to_its_storage_engine_when_category_is_empty():
 
 
 def test_disabled_events_must_not_record_data():
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=True,
@@ -305,7 +302,6 @@ def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
 
 
 def test_long_extra_values_record_an_error():
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=False,
@@ -358,7 +354,6 @@ def test_event_extra_is_generated_correctly():
 
 
 def test_the_convenient_extrakeys_api():
-
     click = metrics.EventMetricType(
         CommonMetricData(
             disabled=False,

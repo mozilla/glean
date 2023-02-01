@@ -37,10 +37,7 @@ def get_locale_tag() -> str:
 
 
 if sys.version_info >= (3, 7):
-
     time_ns = time.monotonic_ns
-
-
 else:
 
     def time_ns() -> int:
