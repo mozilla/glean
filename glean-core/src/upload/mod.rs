@@ -365,6 +365,16 @@ impl PingUploadManager {
             return;
         }
 
+        let in_flight = self.in_flight.read().unwrap();
+        if in_flight.contains_key(document_id) {
+            log::warn!(
+                "Attempted to enqueue an in-flight ping {} at {}.",
+                document_id,
+                path
+            );
+            return;
+        }
+
         log::trace!("Enqueuing ping {} at {}", document_id, path);
         if let Some(request) = self.build_ping_request(glean, document_id, path, body, headers) {
             queue.push_back(request)
@@ -1616,5 +1626,33 @@ mod test {
             }
             _ => panic!("Expected upload manager to return a wait task!"),
         };
+    }
+
+    #[test]
+    fn cannot_enqueue_ping_while_its_being_processed() {
+        let (glean, dir) = new_glean(None);
+
+        let upload_manager = PingUploadManager::no_policy(dir.path());
+
+        // Enqueue a ping and start processing it
+        let identifier = &Uuid::new_v4().to_string();
+        upload_manager.enqueue_ping(&glean, identifier, PATH, "", None);
+        assert!(upload_manager.get_upload_task(&glean, false).is_upload());
+
+        // Attempt to re-enqueue the same ping
+        upload_manager.enqueue_ping(&glean, identifier, PATH, "", None);
+
+        // No new pings should have been enqueued so the upload task is Done.
+        assert_eq!(
+            upload_manager.get_upload_task(&glean, false),
+            PingUploadTask::done()
+        );
+
+        // Process the upload response
+        upload_manager.process_ping_upload_response(
+            &glean,
+            identifier,
+            UploadResult::http_status(200),
+        );
     }
 }
