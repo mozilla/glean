@@ -74,6 +74,21 @@ pub mod metrics {
                 TimeUnit::Millisecond,
             )
         });
+
+    pub static shutdown_wait: once_cell::sync::Lazy<TimingDistributionMetric> =
+        once_cell::sync::Lazy::new(|| {
+            TimingDistributionMetric::new(
+                CommonMetricData {
+                    name: "shutdown_wait".into(),
+                    category: "glean.validation".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                TimeUnit::Millisecond,
+            )
+        });
 }
 
 mod pings {
@@ -153,7 +168,7 @@ fn upload_timings() {
     let tmpname = dir.path().to_path_buf();
     let (tx, rx) = bounded(1);
 
-    let cfg = ConfigurationBuilder::new(true, tmpname, "glean-upload-timing")
+    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "glean-upload-timing")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(false)
         .with_uploader(FakeUploader {
@@ -191,4 +206,21 @@ fn upload_timings() {
     );
 
     glean::shutdown();
+
+    // This is awkward, but it's what gets us very close to just starting a new process with a
+    // fresh Glean.
+    let data_path = Some(tmpname.display().to_string());
+    glean_core::glean_test_destroy_glean(false, data_path);
+
+    let cfg = ConfigurationBuilder::new(true, tmpname, "glean-upload-timing")
+        .with_server_endpoint("invalid-test-host")
+        .with_use_core_mps(false)
+        .build();
+    common::initialize(cfg);
+
+    assert_eq!(
+        1,
+        metrics::shutdown_wait.test_get_value(None).unwrap().count,
+        "Measured time waiting for shutdown exactly once"
+    );
 }
