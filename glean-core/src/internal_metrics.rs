@@ -21,6 +21,9 @@ pub struct AdditionalMetrics {
 
     /// A count of the pings submitted, by ping type.
     pub pings_submitted: LabeledMetric<CounterMetric>,
+
+    /// Time waited for the uploader at shutdown.
+    pub shutdown_wait: TimingDistributionMetric,
 }
 
 impl CoreMetrics {
@@ -81,6 +84,18 @@ impl AdditionalMetrics {
                     dynamic_label: None,
                 },
                 None,
+            ),
+
+            shutdown_wait: TimingDistributionMetric::new(
+                CommonMetricData {
+                    name: "shutdown_wait".into(),
+                    category: "glean.validation".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                TimeUnit::Millisecond,
             ),
         }
     }

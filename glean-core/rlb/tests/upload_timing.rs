@@ -133,7 +133,7 @@ fn upload_timings() {
     let tmpname = dir.path().to_path_buf();
     let (tx, rx) = bounded(1);
 
-    let cfg = ConfigurationBuilder::new(true, tmpname, "glean-upload-timing")
+    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "glean-upload-timing")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(false)
         .with_uploader(FakeUploader {
@@ -185,4 +185,32 @@ fn upload_timings() {
     );
 
     glean::shutdown();
+
+    // This is awkward, but it's what gets us very close to just starting a new process with a
+    // fresh Glean.
+    let data_path = Some(tmpname.display().to_string());
+    glean_core::glean_test_destroy_glean(false, data_path);
+
+    let (tx, rx) = bounded(1);
+    let cfg = ConfigurationBuilder::new(true, tmpname, "glean-upload-timing")
+        .with_server_endpoint("invalid-test-host")
+        .with_use_core_mps(false)
+        .with_uploader(FakeUploader {
+            calls: AtomicUsize::new(4), // We only care about the last ping.
+            sender: tx,
+        })
+        .build();
+    common::initialize(cfg);
+
+    // Wait for init to finish,
+    // otherwise we might be to quick with calling `shutdown`.
+    let _ = metrics::sample_boolean.test_get_value(None);
+
+    pings::metrics.submit(None);
+    let body = rx.recv().unwrap();
+    assert_eq!(
+        1,
+        count(&body["metrics"]["timing_distribution"]["glean.validation.shutdown_wait"]),
+        "Measured time waiting for shutdown"
+    );
 }
