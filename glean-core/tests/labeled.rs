@@ -394,7 +394,7 @@ fn seen_labels_get_reloaded_from_disk() {
 
     // Force a reload
     {
-        let (glean, _) = new_glean(Some(tempdir));
+        let (glean, _t) = new_glean(Some(tempdir));
 
         // Try to store another label
         labeled.get("new_label").add_sync(&glean, 40);
