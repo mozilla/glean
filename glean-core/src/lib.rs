@@ -517,6 +517,8 @@ pub fn shutdown() {
     // Call on_shutdown.
     // Need to be done without holding a lock on the global Glean object.
     {
+        let timer_id =
+            core::with_glean(|glean| glean.additional_metrics.shutdown_wait.start_sync());
         let (tx, rx) = unbounded();
 
         let handle = thread::Builder::new()
@@ -538,6 +540,14 @@ pub fn shutdown() {
         //     Thus waiting 30s will rarely allow another upload.
         //   * We don't know how long uploads take until we get data from bug 1814592.
         let result = rx.recv_timeout(Duration::from_secs(30));
+
+        let stop_time = time::precise_time_ns();
+        core::with_glean(|glean| {
+            glean
+                .additional_metrics
+                .shutdown_wait
+                .set_stop_and_accumulate(glean, timer_id, stop_time);
+        });
 
         if result.is_err() {
             log::warn!("Waiting for upload failed. We're shutting down.");
