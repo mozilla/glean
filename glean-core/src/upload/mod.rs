@@ -778,7 +778,7 @@ mod test {
 
     #[test]
     fn doesnt_error_when_there_are_no_pending_pings() {
-        let (glean, _) = new_glean(None);
+        let (glean, _t) = new_glean(None);
 
         // Try and get the next request.
         // Verify request was not returned
@@ -885,7 +885,7 @@ mod test {
 
     #[test]
     fn clearing_the_queue_doesnt_clear_deletion_request_pings() {
-        let (mut glean, _) = new_glean(None);
+        let (mut glean, _t) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -1007,7 +1007,7 @@ mod test {
 
     #[test]
     fn processes_correctly_server_error_upload_response() {
-        let (mut glean, _) = new_glean(None);
+        let (mut glean, _t) = new_glean(None);
 
         // Register a ping for testing
         let ping_type = PingType::new("test", true, /* send_if_empty */ true, vec![]);
@@ -1125,7 +1125,7 @@ mod test {
 
     #[test]
     fn adds_debug_view_header_to_requests_when_tag_is_set() {
-        let (mut glean, _) = new_glean(None);
+        let (mut glean, _t) = new_glean(None);
 
         glean.set_debug_view_tag("valid-tag");
 
