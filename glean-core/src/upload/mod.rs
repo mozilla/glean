@@ -365,14 +365,16 @@ impl PingUploadManager {
             return;
         }
 
-        let in_flight = self.in_flight.read().unwrap();
-        if in_flight.contains_key(document_id) {
-            log::warn!(
-                "Attempted to enqueue an in-flight ping {} at {}.",
-                document_id,
-                path
-            );
-            return;
+        {
+            let in_flight = self.in_flight.read().unwrap();
+            if in_flight.contains_key(document_id) {
+                log::warn!(
+                    "Attempted to enqueue an in-flight ping {} at {}.",
+                    document_id,
+                    path
+                );
+                return;
+            }
         }
 
         log::trace!("Enqueuing ping {} at {}", document_id, path);
@@ -590,10 +592,12 @@ impl PingUploadManager {
                     }
                 }
 
-                let mut lock = self.in_flight.write().unwrap();
-                let success_id = self.upload_metrics.sending_success.start_sync();
-                let failure_id = self.upload_metrics.sending_failure.start_sync();
-                lock.insert(request.document_id.clone(), (success_id, failure_id));
+                {
+                    let mut in_flight = self.in_flight.write().unwrap();
+                    let success_id = self.upload_metrics.sending_success.start_sync();
+                    let failure_id = self.upload_metrics.sending_failure.start_sync();
+                    in_flight.insert(request.document_id.clone(), (success_id, failure_id));
+                }
 
                 PingUploadTask::Upload {
                     request: queue.pop_front().unwrap(),
@@ -683,8 +687,10 @@ impl PingUploadManager {
             metric.add_sync(glean, 1);
         }
 
-        let mut lock = self.in_flight.write().unwrap();
-        let send_ids = lock.remove(document_id);
+        let send_ids = {
+            let mut lock = self.in_flight.write().unwrap();
+            lock.remove(document_id)
+        };
 
         match status {
             HttpStatus { code } if (200..=299).contains(&code) => {

@@ -5,6 +5,7 @@
 * General
   * Loosen label restrictions to "at most 71 characters of printable ASCII" ([bug 1672273](https://bugzilla.mozilla.org/show_bug.cgi?id=1672273))
   * Introduced 2 new Glean health metrics: `glean.upload.send_failure` and `glean.upload.send_success` to measure the time for sending a ping ([#2365](https://github.com/mozilla/glean/pull/2365))
+  * Introduced a new Glean metric: `glean.validation.shutdown_wait` to measure the time Glean waits for the uploader on shutdown ([#2365](https://github.com/mozilla/glean/pull/2365))
 * Rust
   * On shutdown wait up to 30s on the uploader to finish work ([#2232](https://github.com/mozilla/glean/pull/2332))
 
