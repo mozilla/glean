@@ -24,6 +24,6 @@ All locations need to be updated on upgrades:
         * `image: circleci/android:2022.07.1`
     * `taskcluster/docker/linux/Dockerfile`.
         * `ENV ANDROID_BUILD_TOOLS "33.0.0"`
-        * `ENV ANDROID_SDK_VERSION "8512546"`
+        * `ENV ANDROID_SDK_VERSION "9477386"`
         * `ENV ANDROID_PLATFORM_VERSION "32"`
         * `ENV ANDROID_NDK_VERSION "25.1.8937393"`
