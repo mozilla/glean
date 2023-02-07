@@ -49,7 +49,7 @@ env_logger = { version = "0.10.0", default-features = false, optional = true }
 android_logger = { version = "0.12.0", default-features = false }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-oslog = { version = "0.2.0", default-features = false, features = ["logger"] }
+oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
 
 [dev-dependencies]
 env_logger = { version = "0.10.0", default-features = false, features = ["auto-color", "humantime"] }
