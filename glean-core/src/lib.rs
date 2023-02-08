@@ -487,6 +487,52 @@ pub fn join_init() {
     }
 }
 
+/// Call the `shutdown` callback.
+///
+/// This calls the shutdown in a separate thread and waits up to 30s for it to finish.
+/// If not finished in that time frame it continues.
+///
+/// Under normal operation that is fine, as the main process will end
+/// and thus the thread will get killed.
+fn uploader_shutdown() {
+    let timer_id = core::with_glean(|glean| glean.additional_metrics.shutdown_wait.start_sync());
+    let (tx, rx) = unbounded();
+
+    let handle = thread::Builder::new()
+        .name("glean.shutdown".to_string())
+        .spawn(move || {
+            let state = global_state().lock().unwrap();
+            state.callbacks.shutdown();
+
+            // Best-effort sending. The other side might have timed out already.
+            let _ = tx.send(()).ok();
+        })
+        .expect("Unable to spawn thread to wait on shutdown");
+
+    // TODO: 30 seconds? What's a good default here? Should this be configurable?
+    // Reasoning:
+    //   * If we shut down early we might still be processing pending pings.
+    //     In this case we wait at most 3 times for 1s = 3s before we upload.
+    //   * If we're rate-limited the uploader sleeps for up to 60s.
+    //     Thus waiting 30s will rarely allow another upload.
+    //   * We don't know how long uploads take until we get data from bug 1814592.
+    let result = rx.recv_timeout(Duration::from_secs(30));
+
+    let stop_time = time::precise_time_ns();
+    core::with_glean(|glean| {
+        glean
+            .additional_metrics
+            .shutdown_wait
+            .set_stop_and_accumulate(glean, timer_id, stop_time);
+    });
+
+    if result.is_err() {
+        log::warn!("Waiting for upload failed. We're shutting down.");
+    } else {
+        let _ = handle.join().ok();
+    }
+}
+
 /// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
     // Either init was never called or Glean was not fully initialized
@@ -514,47 +560,7 @@ pub fn shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
     }
 
-    // Call on_shutdown.
-    // Need to be done without holding a lock on the global Glean object.
-    {
-        let timer_id =
-            core::with_glean(|glean| glean.additional_metrics.shutdown_wait.start_sync());
-        let (tx, rx) = unbounded();
-
-        let handle = thread::Builder::new()
-            .name("glean.shutdown".to_string())
-            .spawn(move || {
-                let state = global_state().lock().unwrap();
-                state.callbacks.shutdown();
-
-                // Best-effort sending. The other side might have timed out already.
-                let _ = tx.send(()).ok();
-            })
-            .expect("Unable to spawn thread to wait on shutdown");
-
-        // TODO: 30 seconds? What's a good default here? Should this be configurable?
-        // Reasoning:
-        //   * If we shut down early we might still be processing pending pings.
-        //     In this case we wait at most 3 times for 1s = 3s before we upload.
-        //   * If we're rate-limited the uploader sleeps for up to 60s.
-        //     Thus waiting 30s will rarely allow another upload.
-        //   * We don't know how long uploads take until we get data from bug 1814592.
-        let result = rx.recv_timeout(Duration::from_secs(30));
-
-        let stop_time = time::precise_time_ns();
-        core::with_glean(|glean| {
-            glean
-                .additional_metrics
-                .shutdown_wait
-                .set_stop_and_accumulate(glean, timer_id, stop_time);
-        });
-
-        if result.is_err() {
-            log::warn!("Waiting for upload failed. We're shutting down.");
-        } else {
-            let _ = handle.join().ok();
-        }
-    }
+    uploader_shutdown();
 
     // Be sure to call this _after_ draining the dispatcher
     core::with_glean(|glean| {
@@ -950,6 +956,8 @@ pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
         join_init();
 
         dispatcher::reset_dispatcher();
+
+        uploader_shutdown();
 
         if core::global_glean().is_some() {
             core::with_glean_mut(|glean| {
