@@ -4,7 +4,7 @@ A simple app showcasing the Glean SDK.
 
 ## Running tests
 
-1. [Setup the Android Build Environment](https://mozilla.github.io/glean/book/dev/android/setup-android-build-environment.html?highlight=android#setup-the-android-build-environment)
+1. [Setup the Android Build Environment](https://mozilla.github.io/glean/dev/android/setup-android-build-environment.html#setup-the-android-build-environment)
 2. Run `./gradlew :glean-sample-app:connectedAndroidTest`
 
 Since the tests are instrumented they need a connected device or emulator
