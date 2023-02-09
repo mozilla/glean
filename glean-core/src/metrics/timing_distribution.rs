@@ -123,14 +123,6 @@ impl TimingDistributionMetric {
         id
     }
 
-    pub(crate) fn start_sync(&self) -> TimerId {
-        let start_time = time::precise_time_ns();
-        let id = self.next_id.fetch_add(1, Ordering::SeqCst).into();
-        let metric = self.clone();
-        metric.set_start(id, start_time);
-        id
-    }
-
     /// **Test-only API (exported for testing purposes).**
     ///
     /// Set start time for this metric synchronously.
@@ -254,7 +246,7 @@ impl TimingDistributionMetric {
     }
 
     /// Aborts a previous [`start`](Self::start) call synchronously.
-    pub(crate) fn cancel_sync(&self, id: TimerId) {
+    fn cancel_sync(&self, id: TimerId) {
         let mut map = self.start_times.lock().expect("can't lock timings map");
         map.remove(&id);
     }
