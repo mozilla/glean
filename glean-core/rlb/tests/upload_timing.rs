@@ -205,10 +205,9 @@ fn upload_timings() {
         "One failed ping"
     );
 
-    glean::shutdown();
-
     // This is awkward, but it's what gets us very close to just starting a new process with a
     // fresh Glean.
+    // This also calls `glean::shutdown();` internally, waiting on the uploader.
     let data_path = Some(tmpname.display().to_string());
     glean_core::glean_test_destroy_glean(false, data_path);
 

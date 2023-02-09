@@ -957,7 +957,13 @@ pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
 
         dispatcher::reset_dispatcher();
 
-        uploader_shutdown();
+        // Only useful if Glean initialization finished successfully
+        // and set up the storage.
+        let has_storage =
+            core::with_opt_glean(|glean| glean.storage_opt().is_some()).unwrap_or(false);
+        if has_storage {
+            uploader_shutdown();
+        }
 
         if core::global_glean().is_some() {
             core::with_glean_mut(|glean| {
