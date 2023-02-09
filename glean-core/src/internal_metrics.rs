@@ -21,9 +21,6 @@ pub struct AdditionalMetrics {
 
     /// A count of the pings submitted, by ping type.
     pub pings_submitted: LabeledMetric<CounterMetric>,
-
-    /// Time waited for the uploader at shutdown.
-    pub shutdown_wait: TimingDistributionMetric,
 }
 
 impl CoreMetrics {
@@ -85,18 +82,6 @@ impl AdditionalMetrics {
                 },
                 None,
             ),
-
-            shutdown_wait: TimingDistributionMetric::new(
-                CommonMetricData {
-                    name: "shutdown_wait".into(),
-                    category: "glean.validation".into(),
-                    send_in_pings: vec!["metrics".into()],
-                    lifetime: Lifetime::Ping,
-                    disabled: false,
-                    dynamic_label: None,
-                },
-                TimeUnit::Millisecond,
-            ),
         }
     }
 }
@@ -108,8 +93,6 @@ pub struct UploadMetrics {
     pub pending_pings_directory_size: MemoryDistributionMetric,
     pub deleted_pings_after_quota_hit: CounterMetric,
     pub pending_pings: CounterMetric,
-    pub sending_success: TimingDistributionMetric,
-    pub sending_failure: TimingDistributionMetric,
 }
 
 impl UploadMetrics {
@@ -174,30 +157,6 @@ impl UploadMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
-
-            sending_success: TimingDistributionMetric::new(
-                CommonMetricData {
-                    name: "sending_success".into(),
-                    category: "glean.upload".into(),
-                    send_in_pings: vec!["metrics".into()],
-                    lifetime: Lifetime::Ping,
-                    disabled: false,
-                    dynamic_label: None,
-                },
-                TimeUnit::Millisecond,
-            ),
-
-            sending_failure: TimingDistributionMetric::new(
-                CommonMetricData {
-                    name: "sending_failure".into(),
-                    category: "glean.upload".into(),
-                    send_in_pings: vec!["metrics".into()],
-                    lifetime: Lifetime::Ping,
-                    disabled: false,
-                    dynamic_label: None,
-                },
-                TimeUnit::Millisecond,
-            ),
         }
     }
 }
