@@ -44,6 +44,10 @@ class OnGleanEventsImpl: OnGleanEvents {
     func cancelUploads() {
         // intentionally left empty
     }
+
+    func shutdown() {
+        shutdownUploader()
+    }
 }
 
 public struct BuildInfo {
@@ -132,6 +136,8 @@ public class Glean {
             logger.error("Glean should not be initialized multiple times")
             return
         }
+
+        startUploader()
 
         self.buildInfo = buildInfo
         self.configuration = configuration

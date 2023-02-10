@@ -70,6 +70,10 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
         // data after the upload has been disabled.
         PingUploadWorker.cancel(glean.applicationContext)
     }
+
+    override fun shutdown() {
+        // Android doesn't warn us about shutdown, so we don't try.
+    }
 }
 
 /**

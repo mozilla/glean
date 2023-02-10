@@ -248,8 +248,9 @@ pub trait OnGleanEvents: Send {
     ///   * New tasks will be ignored.
     /// * This SHOULD NOT block arbitrarily long.
     ///   * Shutdown waits for a maximum of 30 seconds.
-    fn shutdown(&self) {
+    fn shutdown(&self) -> Result<(), CallbackError> {
         // empty by default
+        Ok(())
     }
 }
 
@@ -502,7 +503,9 @@ fn uploader_shutdown() {
         .name("glean.shutdown".to_string())
         .spawn(move || {
             let state = global_state().lock().unwrap();
-            state.callbacks.shutdown();
+            if let Err(e) = state.callbacks.shutdown() {
+                log::error!("Shutdown callback failed: {e:?}");
+            }
 
             // Best-effort sending. The other side might have timed out already.
             let _ = tx.send(()).ok();

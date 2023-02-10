@@ -90,8 +90,9 @@ impl glean_core::OnGleanEvents for GleanEvents {
         Ok(())
     }
 
-    fn shutdown(&self) {
+    fn shutdown(&self) -> Result<(), glean_core::CallbackError> {
         self.upload_manager.shutdown();
+        Ok(())
     }
 }
 
