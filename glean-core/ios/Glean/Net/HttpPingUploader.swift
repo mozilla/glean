@@ -4,6 +4,30 @@
 
 import Foundation
 
+/// `true` to allow the uploader to process pings.
+/// Note that this does not mean that an uploader is actually running.
+/// It will be invoked when a ping is submitted.
+///
+/// `false` to stop the uploader from starting new uploads.
+/// An already running uploader will finish work and then stop.
+var stateRunAllowed: AtomicBoolean = AtomicBoolean(false)
+
+/// The uploader will enter and leave this group as it starts and finishes work.
+let uploadGroup = DispatchGroup()
+
+// TODO(bug 1816403): Move this and the associated global state
+// into a singleton instance of `HttpPingUploader`.
+func shutdownUploader() {
+    stateRunAllowed.value = false
+    // Wait for an uploader to finish it's current upload.
+    // If no uploader is running, this returns immediately.
+    uploadGroup.wait()
+}
+
+func startUploader() {
+    stateRunAllowed.value = true
+}
+
 /// This class represents a ping uploader via HTTP.
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
@@ -143,6 +167,12 @@ public class HttpPingUploader {
     /// It will report back the task status to Glean, which will take care of deleting pending ping files.
     /// It will continue upload as long as it can fetch new tasks.
     func process() {
+        if !stateRunAllowed.value {
+            self.logger.info("Not allowed to continue running. Bye!")
+        }
+
+        uploadGroup.enter()
+
         // Limits are enforced by glean-core to avoid an inifinite loop here.
         // Whenever a limit is reached, this binding will receive `.done` and step out.
         let task = gleanGetUploadTask()
@@ -152,6 +182,10 @@ public class HttpPingUploader {
             var body = Data(capacity: request.body.count)
             body.append(contentsOf: request.body)
             self.upload(path: request.path, data: body, headers: request.headers) { result in
+                defer {
+                    uploadGroup.leave()
+                }
+
                 let action = gleanProcessPingUploadResponse(request.documentId, result)
                 switch action {
                 case .next:
@@ -162,7 +196,6 @@ public class HttpPingUploader {
                 case .end:
                     return
                 }
-
             }
         case .wait(let time):
             sleep(UInt32(time) / 1000)
@@ -170,8 +203,9 @@ public class HttpPingUploader {
             Dispatchers.shared.launchAsync {
                 HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
             }
+            uploadGroup.leave()
         case .done:
-            return
+            uploadGroup.leave()
         }
     }
 }
