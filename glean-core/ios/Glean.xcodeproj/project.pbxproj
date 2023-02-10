@@ -405,7 +405,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF3DE3A52243A2F20018E23F /* Build configuration list for PBXNativeTarget "Glean" */;
 			buildPhases = (
-				BF6F2DA5224BF2E000394062 /* Run Script */,
+				BF6F2DA5224BF2E000394062 /* Build Universal Library */,
 				BFB59A9723429FC000F40CA8 /* Run Glean SDK generator */,
 				CD0CADA527E216F40015A997 /* Run UniFFI bindgen */,
 				BF3DE38C2243A2F20018E23F /* Headers */,
@@ -508,7 +508,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BF6F2DA5224BF2E000394062 /* Run Script */ = {
+		BF6F2DA5224BF2E000394062 /* Build Universal Library */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -517,7 +517,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = "Build Universal Library";
 			outputFileListPaths = (
 			);
 			outputPaths = (
