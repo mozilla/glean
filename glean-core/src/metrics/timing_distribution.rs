@@ -224,9 +224,14 @@ impl TimingDistributionMetric {
             return;
         }
 
-        glean
-            .storage()
-            .record_with(glean, &self.meta, |old_value| match old_value {
+        // Let's be defensive here:
+        // The uploader tries to store some timing distribution metrics,
+        // but in tests that storage might be gone already.
+        // Let's just ignore those.
+        // We do the same for counters.
+        // This should never happen in real app usage.
+        if let Some(storage) = glean.storage_opt() {
+            storage.record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::TimingDistribution(mut hist)) => {
                     hist.accumulate(duration);
                     Metric::TimingDistribution(hist)
@@ -237,6 +242,12 @@ impl TimingDistributionMetric {
                     Metric::TimingDistribution(hist)
                 }
             });
+        } else {
+            log::warn!(
+                "Couldn't get storage. Can't record timing distribution '{}'.",
+                self.meta.base_identifier()
+            );
+        }
     }
 
     /// Aborts a previous [`start`](Self::start) call.
