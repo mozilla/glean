@@ -373,7 +373,9 @@ impl PingUploadManager {
                     document_id,
                     path
                 );
-                // TODO(bug 1816401): Instrument this failure case for monitoring.
+                self.upload_metrics
+                    .in_flight_pings_dropped
+                    .add_sync(glean, 0);
                 return;
             }
         }

@@ -639,6 +639,21 @@ glean.upload:
       - jrediger@mozilla.com
     expires: never
 
+  in_flight_pings_dropped:
+    type: counter
+    description: |
+      How many pings were dropped because we found them already in-flight.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816401
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816401
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    expires: never
+
 glean.database:
   size:
     type: memory_distribution
