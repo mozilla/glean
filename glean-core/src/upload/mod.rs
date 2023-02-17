@@ -698,6 +698,10 @@ impl PingUploadManager {
             lock.remove(document_id)
         };
 
+        if send_ids.is_none() {
+            self.upload_metrics.missing_send_ids.add_sync(glean, 1);
+        }
+
         match status {
             HttpStatus { code } if (200..=299).contains(&code) => {
                 log::info!("Ping {} successfully sent {}.", document_id, code);
@@ -706,11 +710,6 @@ impl PingUploadManager {
                         .send_success
                         .set_stop_and_accumulate(glean, success_id, stop_time);
                     self.upload_metrics.send_failure.cancel_sync(failure_id);
-                } else {
-                    // TODO(bug 1816400): Instrument missing IDs.
-                    // Should be done here and further below.
-                    // How did we remove the doc ID before we got here?
-                    // That's an inconsistency.
                 }
                 self.directory_manager.delete_file(document_id);
             }
