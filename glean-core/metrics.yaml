@@ -654,6 +654,23 @@ glean.upload:
       - chutten@mozilla.com
     expires: never
 
+  missing_send_ids:
+    type: counter
+    description: |
+      How many ping upload responses did we not record as a success or failure
+      (in `glean.upload.send_success` or `glean.upload.send_failue`,
+      respectively) due to an inconsistency in our internal bookkeeping?
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816400
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816400
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    expires: never
+
 glean.database:
   size:
     type: memory_distribution

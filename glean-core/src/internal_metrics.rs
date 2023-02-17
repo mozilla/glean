@@ -111,6 +111,7 @@ pub struct UploadMetrics {
     pub send_success: TimingDistributionMetric,
     pub send_failure: TimingDistributionMetric,
     pub in_flight_pings_dropped: CounterMetric,
+    pub missing_send_ids: CounterMetric,
 }
 
 impl UploadMetrics {
@@ -202,6 +203,15 @@ impl UploadMetrics {
 
             in_flight_pings_dropped: CounterMetric::new(CommonMetricData {
                 name: "in_flight_pings_dropped".into(),
+                category: "glean.upload".into(),
+                send_in_pings: vec!["metrics".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
+
+            missing_send_ids: CounterMetric::new(CommonMetricData {
+                name: "missing_send_ids".into(),
                 category: "glean.upload".into(),
                 send_in_pings: vec!["metrics".into()],
                 lifetime: Lifetime::Ping,
