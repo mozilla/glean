@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...main)
+
+# v52.3.0 (2023-02-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...v52.3.0)
 
 * General
   * Loosen label restrictions to "at most 71 characters of printable ASCII" ([bug 1672273](https://bugzilla.mozilla.org/show_bug.cgi?id=1672273))
