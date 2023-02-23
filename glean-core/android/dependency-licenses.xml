@@ -19,6 +19,12 @@ the details of which are reproduced below.
     <name>Apache License 2.0: tinyvec</name>
     <url>https://github.com/Lokathor/tinyvec</url>
   </license>  <license>
+    <name>Apache License 2.0: windows-sys</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows_x86_64_gnu</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
   </license>  <license>
@@ -62,7 +68,7 @@ the details of which are reproduced below.
     <url>https://github.com/crossbeam-rs/crossbeam</url>
   </license>  <license>
     <name>Apache License 2.0: env_logger</name>
-    <url>https://github.com/env-logger-rs/env_logger/</url>
+    <url>https://github.com/rust-cli/env_logger/</url>
   </license>  <license>
     <name>Apache License 2.0: fastrand</name>
     <url>https://github.com/smol-rs/fastrand</url>
@@ -88,11 +94,17 @@ the details of which are reproduced below.
     <name>Apache License 2.0: inherent</name>
     <url>https://github.com/dtolnay/inherent</url>
   </license>  <license>
+    <name>Apache License 2.0: io-lifetimes</name>
+    <url>https://github.com/sunfishcode/io-lifetimes</url>
+  </license>  <license>
     <name>Apache License 2.0: itoa</name>
     <url>https://github.com/dtolnay/itoa</url>
   </license>  <license>
     <name>Apache License 2.0: lazy_static</name>
     <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: linux-raw-sys</name>
+    <url>https://github.com/sunfishcode/linux-raw-sys</url>
   </license>  <license>
     <name>Apache License 2.0: mime</name>
     <url>https://github.com/hyperium/mime</url>
@@ -123,6 +135,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: quote</name>
     <url>https://github.com/dtolnay/quote</url>
+  </license>  <license>
+    <name>Apache License 2.0: rustix</name>
+    <url>https://github.com/bytecodealliance/rustix</url>
   </license>  <license>
     <name>Apache License 2.0: semver</name>
     <url>https://github.com/dtolnay/semver</url>
@@ -196,6 +211,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: remove_dir_all</name>
     <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
   </license>  <license>
+    <name>Apache License 2.0: num_cpus</name>
+    <url>https://github.com/seanmonstar/num_cpus</url>
+  </license>  <license>
     <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
@@ -238,9 +256,6 @@ the details of which are reproduced below.
     <name>MIT License: ordered-float</name>
     <url>https://github.com/reem/rust-ordered-float</url>
   </license>  <license>
-    <name>MIT License: atty</name>
-    <url>https://github.com/softprops/atty</url>
-  </license>  <license>
     <name>MIT License: bytes</name>
     <url>https://github.com/tokio-rs/bytes</url>
   </license>  <license>
@@ -261,6 +276,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
+  </license>  <license>
+    <name>MIT License: is-terminal</name>
+    <url>https://github.com/sunfishcode/is-terminal</url>
   </license>  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
@@ -348,18 +366,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_testing</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-build</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: zeitstempel</name>
-    <url>https://github.com/badboy/zeitstempel</url>
   </license>  <license>
     <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>

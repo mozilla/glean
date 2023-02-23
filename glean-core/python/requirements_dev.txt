@@ -1,13 +1,13 @@
 auditwheel==5.3.0
-black==22.12.0; python_version > '3.6'
+black==23.1.0; python_version > '3.6'
 coverage==7.1.0; python_version > '3.6'
 flake8==6.0.0; python_version >= '3.8'
 flake8-bugbear==23.1.17; python_version >= '3.8'
 jsonschema==3.2.0
-mypy==0.991; python_version > '3.6'
+mypy==1.0.0; python_version > '3.6'
 pdoc3==0.10.0
 pip
-pytest-localserver==0.7.0
+pytest-localserver==0.7.1
 pytest-runner==5.3.1
 pytest==7.0.1
 semver==2.13.0

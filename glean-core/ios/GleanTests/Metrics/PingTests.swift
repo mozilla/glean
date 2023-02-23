@@ -131,7 +131,7 @@ class PingTests: XCTestCase {
         Glean.shared.submitPingByName("unknown")
 
         // We wait for a timeout to happen, as we don't expect any data to be sent.
-        waitForExpectations(timeout: 5.0) { _ in
+        waitForExpectations(timeout: 2.0) { _ in
             XCTAssert(true, "Test didn't time out when it should")
         }
     }

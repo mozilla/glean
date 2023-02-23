@@ -341,12 +341,12 @@ class MetricsPingSchedulerTests: XCTestCase {
         let fakeNow = Calendar.current.date(
             bySettingHour: MetricsPingScheduler.Constants.dueHourOfTheDay - 1,
             minute: 59,
-            second: 55,
+            second: 58,
             of: now
         )!
 
         // Calling `schedulePingCollection` with our `fakeNow` should cause the timer to
-        // be set to fire in @ 5 seconds
+        // be set to fire in 2 seconds.
         mps.schedulePingCollection(
             fakeNow,
             sendTheNextCalendarDay: false,

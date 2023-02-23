@@ -37,7 +37,7 @@ typealias GleanTimerId = mozilla.telemetry.glean.internal.TimerId
 data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
 
 internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
-    override fun onInitializeFinished() {
+    override fun initializeFinished() {
         // At this point, all metrics and events can be recorded.
         // This should only be called from the main thread. This is enforced by
         // the @MainThread decorator and the `assertOnUiThread` call.
@@ -69,6 +69,10 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
         // Cancel any pending workers here so that we don't accidentally upload
         // data after the upload has been disabled.
         PingUploadWorker.cancel(glean.applicationContext)
+    }
+
+    override fun shutdown() {
+        // Android doesn't warn us about shutdown, so we don't try.
     }
 }
 

@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...main)
+
+# v52.3.0 (2023-02-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...v52.3.0)
+
+* General
+  * Loosen label restrictions to "at most 71 characters of printable ASCII" ([bug 1672273](https://bugzilla.mozilla.org/show_bug.cgi?id=1672273))
+  * Introduced 2 new Glean health metrics: `glean.upload.send_failure` and `glean.upload.send_success` to measure the time for sending a ping ([#2365](https://github.com/mozilla/glean/pull/2365))
+  * Introduced a new Glean metric: `glean.validation.shutdown_wait` to measure the time Glean waits for the uploader on shutdown ([#2365](https://github.com/mozilla/glean/pull/2365))
+* Rust
+  * On shutdown wait up to 30s on the uploader to finish work ([#2232](https://github.com/mozilla/glean/pull/2332))
+* iOS
+  * BUGFIX: Avoid an invalid state (double-starting) for `baseline.duration` when Glean is first initialized ([#2368](https://github.com/mozilla/glean/pull/2368))
 
 # v52.2.0 (2023-01-30)
 

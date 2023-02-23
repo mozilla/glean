@@ -20,7 +20,7 @@ class OnGleanEventsImpl: OnGleanEvents {
         self.glean = glean
     }
 
-    func onInitializeFinished() {
+    func initializeFinished() {
         // Run this off the main thread,
         // as it will trigger a ping submission,
         // which itself will trigger `triggerUpload()` on this class.
@@ -43,6 +43,10 @@ class OnGleanEventsImpl: OnGleanEvents {
 
     func cancelUploads() {
         // intentionally left empty
+    }
+
+    func shutdown() {
+        shutdownUploader()
     }
 }
 
@@ -88,6 +92,9 @@ public class Glean {
     // order to simulate not running in the main process.  DO NOT SET EXCEPT IN TESTS!
     var isMainProcess: Bool?
 
+    // Tracks the active/inactive state to prevent calling `handleClientActive` multiple times.
+    var isActive: Bool = false
+
     private init() {
         // intentionally left private, no external user can instantiate a new global object.
 
@@ -129,6 +136,8 @@ public class Glean {
             logger.error("Glean should not be initialized multiple times")
             return
         }
+
+        startUploader()
 
         self.buildInfo = buildInfo
         self.configuration = configuration
@@ -231,14 +240,20 @@ public class Glean {
 
     /// Handle foreground event and submit appropriate pings
     func handleForegroundEvent() {
-        gleanHandleClientActive()
+        if !isActive {
+            gleanHandleClientActive()
+            isActive = true
+        }
 
         GleanValidation.foregroundCount.add(1)
     }
 
     /// Handle background event and submit appropriate pings
     func handleBackgroundEvent() {
-        gleanHandleClientInactive()
+        if isActive {
+            gleanHandleClientInactive()
+            isActive = false
+        }
     }
 
     /// Collect and submit a ping by name for eventual uploading
@@ -395,6 +410,9 @@ public class Glean {
                            uploadEnabled: Bool = true) {
         // Init Glean.
         testDestroyGleanHandle(clearStores)
+
+        // Reset isActive
+        isActive = false
 
         // Enable test mode.
         enableTestingMode()

@@ -607,6 +607,70 @@ glean.upload:
     no_lint:
       - COMMON_PREFIX
 
+  send_success:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time needed for a successful send of a ping to the servers and getting a reply back
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
+  send_failure:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time needed for a failed send of a ping to the servers and getting a reply back.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
+  in_flight_pings_dropped:
+    type: counter
+    description: |
+      How many pings were dropped because we found them already in-flight.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816401
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816401
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    expires: never
+
+  missing_send_ids:
+    type: counter
+    description: |
+      How many ping upload responses did we not record as a success or failure
+      (in `glean.upload.send_success` or `glean.upload.send_failue`,
+      respectively) due to an inconsistency in our internal bookkeeping?
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816400
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1816400
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    expires: never
+
 glean.database:
   size:
     type: memory_distribution
@@ -663,6 +727,22 @@ glean.validation:
       - glean-team@mozilla.com
     expires:
       never
+
+  shutdown_wait:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time waited for the uploader at shutdown.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592#c3
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
 
 glean:
   restarted:

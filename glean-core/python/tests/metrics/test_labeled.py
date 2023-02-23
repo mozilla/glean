@@ -160,12 +160,22 @@ def test_invalid_labels_go_to_other():
         )
     )
 
+    # These are actually fine now.
     labeled_counter_metric["notSnakeCase"].add(1)
     labeled_counter_metric[""].add(1)
     labeled_counter_metric["with/slash"].add(1)
     labeled_counter_metric["this_string_has_more_than_thirty_characters"].add(1)
 
-    assert 4 == labeled_counter_metric.test_get_num_recorded_errors(
+    assert 0 == labeled_counter_metric.test_get_num_recorded_errors(
+        ErrorType.INVALID_LABEL
+    )
+
+    # Longer than 71? Nope.
+    labeled_counter_metric["1" * 72].add(1)
+    # Non-ASCII? Nope.
+    labeled_counter_metric["Â møøse"].add(1)
+
+    assert 2 == labeled_counter_metric.test_get_num_recorded_errors(
         ErrorType.INVALID_LABEL
     )
 

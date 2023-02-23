@@ -75,6 +75,10 @@ commands:
           command: |
             cargo run -p sample
       - run:
+          name: Run Rust RLB test
+          command: |
+            glean-core/rlb/tests/test-shutdown-blocking.sh
+      - run:
           name: Upload coverage report
           command: |
             pip3 install glean_parser
@@ -321,6 +325,16 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust
+      # RLB Windows compile test
+      - install-mingw
+      - run:
+          name: Check RLB on Windows x86_64
+          command: |
+            cargo check -p glean --examples --tests --target x86_64-pc-windows-gnu
+      - run:
+          name: Check RLB on Windows i686
+          command: |
+            cargo check -p glean --examples --tests --target i686-pc-windows-gnu
 
   Rust tests - beta:
     docker:
