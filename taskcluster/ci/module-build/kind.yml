@@ -10,7 +10,7 @@ transforms:
   - taskgraph.transforms.job:transforms
   - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
   attributes:
     run-on-pr-type: full-ci
   run-on-tasks-for: [github-pull-request, github-push]
