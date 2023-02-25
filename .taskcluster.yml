@@ -167,6 +167,8 @@ tasks:
                                         then:
                                             - index.project.${project}.v2.branch.${short_head_branch}.latest.taskgraph.decision
                                             - index.project.${project}.v2.branch.${short_head_branch}.revision.${head_sha}.taskgraph.decision
+                                            # needed by `add-new-jobs` action
+                                            - index.${trustDomain}.v2.${project}.revision.${head_sha}.taskgraph.decision
                                       - $if: 'tasks_for == "cron"'
                                         then:
                                             # cron context provides ${head_branch} as a short one
