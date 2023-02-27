@@ -12,16 +12,10 @@ import Foundation
 /// An already running uploader will finish work and then stop.
 var stateRunAllowed: AtomicBoolean = AtomicBoolean(false)
 
-/// The uploader will enter and leave this group as it starts and finishes work.
-let uploadGroup = DispatchGroup()
-
 // TODO(bug 1816403): Move this and the associated global state
 // into a singleton instance of `HttpPingUploader`.
 func shutdownUploader() {
     stateRunAllowed.value = false
-    // Wait for an uploader to finish it's current upload.
-    // If no uploader is running, this returns immediately.
-    uploadGroup.wait()
 }
 
 func startUploader() {
@@ -33,7 +27,7 @@ func startUploader() {
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader {
     var config: Configuration
-    var testingMode: Bool
+    var session: URLSession
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -50,23 +44,48 @@ public class HttpPingUploader {
     private let logger = Logger(tag: Constants.logTag)
 
     /// Initialize the HTTP Ping uploader from a Glean configuration object
-    /// and an optional directory name.
-    ///
-    /// If the path is `nil` the default name will be used.
+    /// and a URLSession
     ///
     /// - parameters:
-    ///     * configuration: The Glean configuration to use.
-    public init(configuration: Configuration, testingMode: Bool = false) {
+    ///     * configuration: The Glean `Configuration` to use.
+    ///     * session: A `URLSession` that will be reused to upload pings
+    public init(configuration: Configuration, session: URLSession) {
         self.config = configuration
-        self.testingMode = testingMode
+        self.session = session
     }
 
-    /// Launch a new ping uploader on the background thread.
+    /// Launch a new instance of a HttpPingUploader that requests additional time to run in the background
+    /// in order to give Glean time to send pings when the app is closing.
+    ///
+    /// Also responsible for creating a session that will be reused for uploading all of the pings on this execution
     ///
     /// This function doesn't block.
-    static func launch(configuration: Configuration, _ testingMode: Bool = false) {
+    static func launch(configuration: Configuration) {
         Dispatchers.shared.launchAsync {
-            HttpPingUploader(configuration: configuration, testingMode: testingMode).process()
+            var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
+
+            // Begin the background task and save the id. We will reuse this same background task
+            // for all the ping uploads
+            backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
+                // End the background task if we run out of time
+                if backgroundTaskId != .invalid {
+                    UIApplication.shared.endBackgroundTask(backgroundTaskId)
+                    backgroundTaskId = .invalid
+                }
+            }
+
+            // Build a URLSession with no-caching suitable for uploading our pings
+            let config: URLSessionConfiguration = .default
+            config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+            config.urlCache = nil
+            let session = URLSession(configuration: config)
+
+            HttpPingUploader(configuration: configuration, session: session).process()
+
+            if backgroundTaskId != .invalid {
+                UIApplication.shared.endBackgroundTask(backgroundTaskId)
+                backgroundTaskId = .invalid
+            }
         }
     }
 
@@ -78,43 +97,24 @@ public class HttpPingUploader {
     ///     * headers: Map of headers from Glean to annotate ping with
     ///     * callback: A callback to return the success/failure of the upload
     func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
-        // Build the request and create an async upload operation using a background URLSession
+        // Build the request and create upload operation using a URLSession
         if let request = self.buildRequest(path: path, data: data, headers: headers) {
-            // Try to write the temporary file which the URLSession will use for transfer. If this fails
-            // then there is no need to create the URLSessionConfiguration or URLSession.
-            let tmpFile = URL.init(fileURLWithPath: NSTemporaryDirectory(),
-                                   isDirectory: true).appendingPathComponent("\(path.split(separator: "/").last!)")
-            do {
-                try data.write(to: tmpFile, options: .noFileProtection)
-            } catch {
-                // Since we cannot write the file, there is no need to continue and schedule an
-                // upload task. So instead we log the error and return.
-                self.logger.error("\(error)")
-                return
-            }
-
-            // Build a URLSession with no-caching suitable for uploading our pings
-            let config: URLSessionConfiguration
-            if self.testingMode {
-                // For test mode, we want the URLSession to send things ASAP, rather than in the background
-                config = URLSessionConfiguration.default
-            } else {
-                // For normal use cases, we will take advantage of the background URLSessionConfiguration
-                // which will pass the data to the OS as a file and the OS will then handle the request
-                // in a separate process
-                config = URLSessionConfiguration.background(withIdentifier: path)
-            }
-            config.sessionSendsLaunchEvents = false // We don't need to notify the app when we are done.
-            config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-            config.isDiscretionary = false
-            config.urlCache = nil
-            let session = URLSession(configuration: config,
-                                     delegate: SessionResponseDelegate(callback),
-                                     delegateQueue: Dispatchers.shared.serialOperationQueue)
-
-            // Create an URLSessionUploadTask to upload our ping in the background and handle the
+            // Create an URLSessionUploadTask to upload our ping and handle the
             // server responses.
-            let uploadTask = session.uploadTask(with: request, fromFile: tmpFile)
+            let uploadTask = session.uploadTask(with: request, from: data) { _, response, error in
+
+                if let httpResponse = response as? HTTPURLResponse {
+                    let statusCode = Int32(httpResponse.statusCode)
+
+                    if error != nil {
+                        // Upload failed on the client-side. We should try again.
+                        callback(.recoverableFailure(unused: 0))
+                    } else {
+                        // HTTP status codes are handled on the Rust side
+                        callback(.httpStatus(code: statusCode))
+                    }
+                }
+            }
 
             uploadTask.countOfBytesClientExpectsToSend = 1024 * 1024
             uploadTask.countOfBytesClientExpectsToReceive = 512
@@ -130,7 +130,6 @@ public class HttpPingUploader {
     ///     * path: The URL path to append to the server address
     ///     * data: The serialized text data to send
     ///     * headers: Map of headers from Glean to annotate ping with
-    ///     * callback: A callback to return the success/failure of the upload
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
     func buildRequest(path: String, data: Data, headers: [String: String]) -> URLRequest? {
@@ -171,64 +170,23 @@ public class HttpPingUploader {
             self.logger.info("Not allowed to continue running. Bye!")
         }
 
-        uploadGroup.enter()
-
-        // Limits are enforced by glean-core to avoid an inifinite loop here.
-        // Whenever a limit is reached, this binding will receive `.done` and step out.
-        let task = gleanGetUploadTask()
-
-        switch task {
-        case let .upload(request):
-            var body = Data(capacity: request.body.count)
-            body.append(contentsOf: request.body)
-            self.upload(path: request.path, data: body, headers: request.headers) { result in
-                defer {
-                    uploadGroup.leave()
-                }
-
-                let action = gleanProcessPingUploadResponse(request.documentId, result)
-                switch action {
-                case .next:
-                    // launch a new iteration.
-                    Dispatchers.shared.launchAsync {
-                        HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
+        while true {
+            // Limits are enforced by glean-core to avoid an infinite loop here.
+            // Whenever a limit is reached, this binding will receive `.done` and step out.
+            switch gleanGetUploadTask() {
+            case let .upload(request):
+                var body = Data(capacity: request.body.count)
+                body.append(contentsOf: request.body)
+                self.upload(path: request.path, data: body, headers: request.headers) { result in
+                    if gleanProcessPingUploadResponse(request.documentId, result) == .end {
+                        return
                     }
-                case .end:
-                    return
                 }
+            case .wait(let time):
+                sleep(UInt32(time) / 1000)
+            case .done:
+                return
             }
-        case .wait(let time):
-            sleep(UInt32(time) / 1000)
-            // launch a new iteration.
-            Dispatchers.shared.launchAsync {
-                HttpPingUploader(configuration: self.config, testingMode: self.testingMode).process()
-            }
-            uploadGroup.leave()
-        case .done:
-            uploadGroup.leave()
-        }
-    }
-}
-
-/// An object that can be assigned as a session delegate and will hold the callback with which to respond to
-/// glean-core with the network response
-private class SessionResponseDelegate: NSObject, URLSessionTaskDelegate {
-    private let callback: (UploadResult) -> Void
-
-    init(_ callback: @escaping (UploadResult) -> Void) {
-        self.callback = callback
-    }
-
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        let httpResponse = task.response as? HTTPURLResponse
-        let statusCode = Int32(httpResponse?.statusCode ?? 0)
-
-        if error != nil {
-            // Upload failed on the client-side. We should try again.
-            callback(.recoverableFailure(unused: 0))
-        } else {
-            // HTTP status codes are handled on the Rust side
-            callback(.httpStatus(code: statusCode))
         }
     }
 }
