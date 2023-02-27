@@ -4,6 +4,8 @@
 
 * Kotlin
   * Upgrade Android NDK to r25c ([#2399](https://github.com/mozilla/glean/pull/2399))
+* iOS
+  * BUGFIX: Reworking the HTTP uploader to avoid background uploading issues ([Bug 1819161](https://bugzilla.mozilla.org/show_bug.cgi?id=1819161))
 
 # v52.3.1 (2023-03-01)
 

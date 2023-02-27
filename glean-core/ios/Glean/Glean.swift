@@ -32,7 +32,7 @@ class OnGleanEventsImpl: OnGleanEvents {
 
     func triggerUpload() {
         // If uploading is disabled, we need to send the deletion-request ping
-        HttpPingUploader.launch(configuration: self.glean.configuration!, self.glean.testingMode.value)
+        HttpPingUploader.launch(configuration: self.glean.configuration!)
     }
 
     func startMetricsPingScheduler() -> Bool {
