@@ -1,6 +1,6 @@
 auditwheel==5.3.0
 black==23.1.0; python_version > '3.6'
-coverage==7.1.0; python_version > '3.6'
+coverage==7.2.1; python_version > '3.6'
 flake8==6.0.0; python_version >= '3.8'
 flake8-bugbear==23.1.17; python_version >= '3.8'
 jsonschema==3.2.0
