@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...main)
 
+* General
+  * No functional change from v52.3.0, just CI updates.
+
 # v52.3.0 (2023-02-23)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...v52.3.0)
