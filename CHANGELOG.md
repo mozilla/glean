@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...main)
+
+# v52.3.1 (2023-03-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...v52.3.1)
+
+* General
+  * No functional change from v52.3.0, just CI updates.
 
 # v52.3.0 (2023-02-23)
 
