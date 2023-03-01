@@ -9,7 +9,7 @@ transforms:
   - taskgraph.transforms.job:transforms
   - taskgraph.transforms.task:transforms
 
-jobs:
+tasks:
   pr:
     attributes:
       run-on-pr-type: normal-ci

@@ -8,7 +8,7 @@ transforms:
   - taskgraph.transforms.job:transforms
   - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
   worker-type: b-linux
   worker:
     docker-image: {in-tree: linux}
@@ -16,7 +16,7 @@ job-defaults:
   run:
     using: run-commands
 
-jobs:
+tasks:
   beta-tests:
     description: 'Rust (beta): Tests'
     run:
