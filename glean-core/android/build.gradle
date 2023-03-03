@@ -154,7 +154,6 @@ dependencies {
     implementation project(":glean-native")
 
     // Note: the following version must be kept in sync
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
 
     implementation "androidx.annotation:annotation:$versions.androidx_annotation"
