@@ -14,8 +14,9 @@ baseline:
     This ping is intended to provide metrics that are managed by the library
     itself, and not explicitly set by the application or included in the
     application's `metrics.yaml` file.
-    The `baseline` ping is automatically sent when the application is moved to
-    the background.
+    The `baseline` ping is automatically sent when the application becomes
+    inactive and when the application becomes active again (including
+    application start). Please see the Reasons section for more information.
   include_client_id: true
   send_if_empty: true
   bugs:
