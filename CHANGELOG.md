@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...main)
 
+* Kotlin
+  * Upgrade Android NDK to r25c ([#2399](https://github.com/mozilla/glean/pull/2399))
+
 # v52.3.1 (2023-03-01)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.3.0...v52.3.1)
