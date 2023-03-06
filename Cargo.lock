@@ -442,9 +442,9 @@ dependencies = [
 
 [[package]]
 name = "inherent"
-version = "1.0.3"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a036328c11e86e024522cb1e9b78ba9df3e316995e004e98854a18e4a326d2e1"
+checksum = "ca36b2075a0e4eaa6fa1cf0ebf4cf6fc7b6a4834783dea1c25ba68245744a053"
 dependencies = [
  "proc-macro2",
  "quote",
