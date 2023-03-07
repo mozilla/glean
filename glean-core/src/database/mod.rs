@@ -52,6 +52,12 @@ pub fn rkv_new(path: &Path) -> std::result::Result<Rkv, rkv::StoreError> {
             // Now try again, we only handle that error once.
             Rkv::new::<rkv::backend::SafeMode>(path)
         }
+        Err(rkv::StoreError::DatabaseCorrupted) => {
+            let safebin = path.join("data.safe.bin");
+            fs::remove_file(safebin).map_err(|_| rkv::StoreError::DatabaseCorrupted)?;
+            // Try again, only allowing the error once.
+            Rkv::new::<rkv::backend::SafeMode>(path)
+        }
         other => other,
     }
 }
