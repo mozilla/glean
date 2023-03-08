@@ -42,7 +42,7 @@ crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 uniffi = { version = "0.23.0", default-features = false }
 time = "0.1.40"
-remove_dir_all = "0.5.3"
+remove_dir_all = "0.8.1"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
 
 [target.'cfg(target_os = "android")'.dependencies]
