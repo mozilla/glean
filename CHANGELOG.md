@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...main)
 
+* General
+  * Update `glean_parser` to v7.1.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v7.1.0))
 * Kotlin
   * Upgrade Android NDK to r25c ([#2399](https://github.com/mozilla/glean/pull/2399))
 * iOS

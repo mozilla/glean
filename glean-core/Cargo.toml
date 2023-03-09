@@ -21,7 +21,7 @@ include = [
 rust-version = "1.62"
 
 [package.metadata.glean]
-glean-parser = "7.0.0"
+glean-parser = "7.1.0"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
