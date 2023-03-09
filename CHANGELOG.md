@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.0...main)
+
+# v52.4.0 (2023-03-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...v52.4.0)
 
 * General
   * Update `glean_parser` to v7.1.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v7.1.0))
