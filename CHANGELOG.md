@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.0...main)
+
+# v52.4.0 (2023-03-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.3.1...v52.4.0)
+
+* General
+  * Update `glean_parser` to v7.1.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v7.1.0))
+* Kotlin
+  * Upgrade Android NDK to r25c ([#2399](https://github.com/mozilla/glean/pull/2399))
+* iOS
+  * BUGFIX: Reworking the HTTP uploader to avoid background uploading issues ([Bug 1819161](https://bugzilla.mozilla.org/show_bug.cgi?id=1819161))
 
 # v52.3.1 (2023-03-01)
 

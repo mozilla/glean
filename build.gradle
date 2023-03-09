@@ -11,13 +11,13 @@ buildscript {
     // changing them. Please note that, for using in Android-Components, the
     // versions below must match the ones in that repository.
     ext.versions = [
-        android_gradle_plugin: '7.3.0',
+        android_gradle_plugin: '7.4.1',
         coroutines: '1.6.4',
         jna: '5.12.1',
         junit: '4.12',
         mockito: '3.11.2',
         mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
-        kotlin: '1.7.20',
+        kotlin: '1.8.10',
         robolectric: '4.9',
         rust_android_plugin: '0.9.3',
 
@@ -35,7 +35,7 @@ buildscript {
     ]
 
     ext.build = [
-        ndkVersion: "25.1.8937393", // Keep it in sync in TC Dockerfile.
+        ndkVersion: "25.2.9519653", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 33,
         targetSdkVersion: 33,
         minSdkVersion: 21, // So that we can publish for aarch64.

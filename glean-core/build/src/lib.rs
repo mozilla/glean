@@ -39,7 +39,7 @@ use std::env;
 
 use xshell_venv::{Result, Shell, VirtualEnv};
 
-const GLEAN_PARSER_VERSION: &str = "7.0.0";
+const GLEAN_PARSER_VERSION: &str = "7.1.0";
 
 /// A Glean Rust bindings generator.
 pub struct Builder {

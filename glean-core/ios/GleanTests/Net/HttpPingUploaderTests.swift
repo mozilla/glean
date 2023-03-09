@@ -11,11 +11,27 @@ class HttpPingUploaderTests: XCTestCase {
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
 
+    override func setUp() {
+        resetGleanDiscardingInitialPings(testCase: self, tag: "EventMetricTypeTests", clearStores: true)
+    }
+
     override func tearDown() {
         // Reset expectations
         expectation = nil
         tearDownStubs()
     }
+
+    /// Launch a new ping uploader on the background thread.
+    ///
+    /// This function doesn't block.
+    private func getUploader() -> HttpPingUploader {
+        // Build a URLSession with no-caching suitable for uploading our pings
+        let config: URLSessionConfiguration = .default
+        config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        let session = URLSession(configuration: config)
+        return HttpPingUploader.init(configuration: Configuration(), session: session)
+}
 
     func testHTTPStatusCode() {
         // We are explicitly setting the test mode to true here to force the uploader to not
@@ -28,11 +44,14 @@ class HttpPingUploaderTests: XCTestCase {
 
         expectation = expectation(description: "Completed upload")
 
-        let httpPingUploader = HttpPingUploader(configuration: Configuration(), testingMode: true)
-        httpPingUploader.upload(path: testPath, data: Data(testPing.utf8), headers: [:]) { result in
+        // Build a URLSession with no-caching suitable for uploading our pings
+
+        let httpPingUploader = self.getUploader()
+        httpPingUploader.upload(path: self.testPath, data: Data(self.testPing.utf8), headers: [:]) { result in
             testValue = result
             self.expectation?.fulfill()
         }
+
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
@@ -47,10 +66,16 @@ class HttpPingUploaderTests: XCTestCase {
     }
 
     func testRequestParameters() {
+        // Build a URLSession with no-caching suitable for uploading our pings
+        let config: URLSessionConfiguration = .default
+        config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        let session = URLSession(configuration: config)
+
         // Build a request.
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
-        let request = HttpPingUploader(configuration: Configuration())
+        let request = HttpPingUploader(configuration: Configuration(), session: session)
             .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Test-Only": "Glean"])
 
         XCTAssertEqual(

@@ -32,8 +32,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     buildFeatures {
@@ -43,8 +43,6 @@ android {
 
 dependencies {
     implementation project(':glean')
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.versions.kotlin"
 
     implementation "androidx.appcompat:appcompat:$rootProject.versions.androidx_appcompat"
     implementation "androidx.browser:browser:$rootProject.versions.androidx_browser"
