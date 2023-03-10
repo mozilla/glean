@@ -238,9 +238,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: log</name>
     <url>https://github.com/rust-lang/log</url>
   </license>  <license>
-    <name>Apache License 2.0: remove_dir_all</name>
-    <url>https://github.com/XAMPPRocky/remove_dir_all.git</url>
-  </license>  <license>
     <name>Apache License 2.0: num_cpus</name>
     <url>https://github.com/seanmonstar/num_cpus</url>
   </license>  <license>
