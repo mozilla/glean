@@ -1,6 +1,8 @@
 # Unreleased changes
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.4.0...main)
+* General
+  * Update `tempfile` crate to remove dependency on potentially vulnerable version of `remove_dir_all@0.5.3`
 
 # v52.4.0 (2023-03-09)
 
