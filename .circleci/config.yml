@@ -41,6 +41,8 @@ commands:
           command: |
             echo "export RUST_BACKTRACE=1" >> $BASH_ENV
             echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
+            echo "export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse" >> $BASH_ENV
+            echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
           command: |
