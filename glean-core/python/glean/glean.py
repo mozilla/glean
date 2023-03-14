@@ -50,18 +50,19 @@ class OnGleanEventsImpl(_uniffi.OnGleanEvents):
         self.glean = glean
 
     def initialize_finished(self):
-        log.debug("OnGleanEventsImpl.on_initialize_finished")
         self.glean._init_finished = True
 
     def trigger_upload(self):
-        log.debug("OnGleanEventsImpl.trigger_upload")
         PingUploadWorker.process(Glean._testing_mode)
 
     def start_metrics_ping_scheduler(self):
-        log.debug("OnGleanEventsImpl.start_metrics_ping_scheduler")
+        pass
 
     def cancel_uploads(self):
-        log.debug("OnGleanEventsImpl.cancel_uploads")
+        pass
+
+    def shutdown(self):
+        pass
 
 
 class Glean:
