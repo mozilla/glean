@@ -1,4 +1,4 @@
-name: CI
+name: cargo-vet
 on: [push, pull_request]
 jobs:
   cargo-vet:
