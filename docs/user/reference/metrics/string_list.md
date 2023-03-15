@@ -107,6 +107,7 @@ Glean.search.engines.add("duck duck go");
 ### `set`
 
 Set the metric to a specific list of strings.
+An empty list is accepted.
 
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
@@ -181,8 +182,8 @@ Glean.search.engines.set(["wikipedia", "duck duck go"]);
 
 #### Recorded errors
 
-* `invalid_overflow`: if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
-* `invalid_value`: if the list is too long.
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): if any string in the list is too long, see [Limits](#limits-1) below. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
+* [`invalid_value`](../../user/metrics/error-reporting.md): if the list is too long, see [Limits](#limits-1) below.
 * [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string array is given.
 
 #### Limits

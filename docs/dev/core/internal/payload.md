@@ -59,8 +59,16 @@ A [String](../../../book/reference/metrics/string.md) is represented by its stri
 
 A [String List](../../../book/reference/metrics/string_list.md) is represented as an array of strings.
 
+#### Example
+
 ```json
 ["sample string", "another one"]
+```
+
+An empty list is accepted and send as one:
+
+```json
+[]
 ```
 
 ### Timespan
