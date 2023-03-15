@@ -296,3 +296,13 @@ A [Rate](../../../book/reference/metrics/rate.md) is represented by its `numerat
     "denominator": 7,
 }
 ```
+
+### Text
+
+A [Text](../../../book/reference/metrics/text.md) is represented by its string value.
+
+#### Example
+
+```json
+"sample string"
+```
