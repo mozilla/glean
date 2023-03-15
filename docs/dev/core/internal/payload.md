@@ -65,7 +65,7 @@ A [String List](../../../book/reference/metrics/string_list.md) is represented a
 ["sample string", "another one"]
 ```
 
-An empty list is accepted and send as one:
+An empty list is accepted and sent as:
 
 ```json
 []
