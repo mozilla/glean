@@ -1,10 +1,20 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.4.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.2...main)
+
+# v52.4.2 (2023-03-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.1...v52.4.2)
+
+* Rust
+  * Revert to libstd's `remove_dir_all` instead of external crate ([#2415](https://github.com/mozilla/glean/pull/2415))
+* Python
+  * BUGFIX: Implement an empty shutdown function ([#2417](https://github.com/mozilla/glean/pull/2417))
 
 # v52.4.1 (2023-03-10)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.4.0...v52.4.1)
+
 * General
   * Update `tempfile` crate to remove dependency on potentially vulnerable version of `remove_dir_all@0.5.3`
 
