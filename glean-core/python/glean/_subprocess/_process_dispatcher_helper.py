@@ -22,7 +22,7 @@ if __name__ == "__main__":  # pragma: no cover
     if "GLEAN_COVERAGE" in os.environ and "COVERAGE_PROCESS_START" in os.environ:
         import coverage  # type: ignore
 
-        config_path = os.environ.get("COVERAGE_PROCESS_START")
+        config_path = os.environ.get("COVERAGE_PROCESS_START") or False
 
         cov = coverage.Coverage(data_suffix=True, config_file=config_path)
         cov.start()
