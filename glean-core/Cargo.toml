@@ -41,8 +41,8 @@ zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
 uniffi = { version = "0.23.0", default-features = false }
-time = "0.1.40"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
+time = { version = "0.3.20", features = ["local-offset", "serde", "formatting", "parsing", "macros"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.12.0", default-features = false }

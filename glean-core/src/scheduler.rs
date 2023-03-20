@@ -13,12 +13,13 @@ use crate::storage::INTERNAL_STORAGE;
 use crate::util::local_now_with_offset;
 use crate::{CommonMetricData, Glean, Lifetime};
 use chrono::prelude::*;
-use chrono::Duration;
+use time::Duration;
+use time::{OffsetDateTime, Time};
 use once_cell::sync::Lazy;
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::JoinHandle;
 
-const SCHEDULED_HOUR: u32 = 4;
+const SCHEDULED_HOUR: u8 = 4;
 
 // Clippy thinks an AtomicBool would be preferred, but Condvar requires a full Mutex.
 // See https://github.com/rust-lang/rust-clippy/issues/1516
@@ -31,7 +32,7 @@ static TASK_CONDVAR: Lazy<Arc<(Mutex<bool>, Condvar)>> =
 trait MetricsPingSubmitter {
     /// Submits a metrics ping, updating the last sent time to `now`
     /// (which might not be _right now_ due to processing delays (or in tests))
-    fn submit_metrics_ping(&self, glean: &Glean, reason: Option<&str>, now: DateTime<FixedOffset>);
+    fn submit_metrics_ping(&self, glean: &Glean, reason: Option<&str>, now: OffsetDateTime);
 }
 
 /// Describes the interface for a scheduler of "metrics" pings.
@@ -43,7 +44,7 @@ trait MetricsPingScheduler {
     fn start_scheduler(
         &self,
         submitter: impl MetricsPingSubmitter + Send + 'static,
-        now: DateTime<FixedOffset>,
+        now: OffsetDateTime,
         when: When,
     );
 }
@@ -51,7 +52,7 @@ trait MetricsPingScheduler {
 /// Uses Glean to submit "metrics" pings directly.
 struct GleanMetricsPingSubmitter {}
 impl MetricsPingSubmitter for GleanMetricsPingSubmitter {
-    fn submit_metrics_ping(&self, glean: &Glean, reason: Option<&str>, now: DateTime<FixedOffset>) {
+    fn submit_metrics_ping(&self, glean: &Glean, reason: Option<&str>, now: OffsetDateTime) {
         glean.submit_ping_by_name("metrics", reason);
         // Always update the collection date, irrespective of the ping being sent.
         get_last_sent_time_metric().set_sync_chrono(glean, now);
@@ -64,7 +65,7 @@ impl MetricsPingScheduler for GleanMetricsPingScheduler {
     fn start_scheduler(
         &self,
         submitter: impl MetricsPingSubmitter + Send + 'static,
-        now: DateTime<FixedOffset>,
+        now: OffsetDateTime,
         when: When,
     ) {
         start_scheduler(submitter, now, when);
@@ -100,7 +101,7 @@ fn schedule_internal(
     glean: &Glean,
     submitter: impl MetricsPingSubmitter + Send + 'static,
     scheduler: impl MetricsPingScheduler,
-    now: DateTime<FixedOffset>,
+    now: OffsetDateTime,
 ) {
     let last_sent_build_metric = get_last_sent_build_metric();
     if let Some(last_sent_build) = last_sent_build_metric.get_value(glean, Some(INTERNAL_STORAGE)) {
@@ -139,7 +140,7 @@ fn schedule_internal(
         // Case #1
         log::info!("The 'metrics' ping was already sent today, {}", now);
         scheduler.start_scheduler(submitter, now, When::Tomorrow);
-    } else if now > now.date().and_hms(SCHEDULED_HOUR, 0, 0) {
+    } else if now > now.replace_time(Time::from_hms(SCHEDULED_HOUR, 0, 0).unwrap()) {
         // Case #2
         log::info!("Sending the 'metrics' ping immediately, {}", now);
         submitter.submit_metrics_ping(glean, Some("overdue"), now);
@@ -163,19 +164,22 @@ impl When {
     /// Returns the duration from now until our deadline.
     /// Note that std::time::Duration doesn't do negative time spans, so if
     /// our deadline has passed, this will return zero.
-    fn until(&self, now: DateTime<FixedOffset>) -> std::time::Duration {
+    fn until(&self, now: OffsetDateTime) -> std::time::Duration {
         let fire_date = match self {
-            Self::Today => now.date().and_hms(SCHEDULED_HOUR, 0, 0),
+            Self::Today => now.replace_time(Time::from_hms(SCHEDULED_HOUR, 0, 0).unwrap()),
             // Doesn't actually save us from being an hour off on DST because
             // chrono doesn't know when DST changes. : (
             Self::Tomorrow | Self::Reschedule => {
-                (now.date() + Duration::days(1)).and_hms(SCHEDULED_HOUR, 0, 0)
+                (now + Duration::days(1)).replace_time(Time::from_hms(SCHEDULED_HOUR, 0, 0).unwrap())
             }
         };
         // After rust-lang/rust#73544 can use std::time::Duration::ZERO
-        (fire_date - now)
-            .to_std()
-            .unwrap_or_else(|_| std::time::Duration::from_millis(0))
+        let diff = fire_date - now;
+        if diff.is_positive() {
+            diff.unsigned_abs()
+        } else {
+            std::time::Duration::from_millis(0)
+        }
     }
 
     /// The "metrics" ping reason corresponding to our deadline.
@@ -190,7 +194,7 @@ impl When {
 
 fn start_scheduler(
     submitter: impl MetricsPingSubmitter + Send + 'static,
-    now: DateTime<FixedOffset>,
+    now: OffsetDateTime,
     when: When,
 ) -> JoinHandle<()> {
     let pair = Arc::clone(&TASK_CONDVAR);

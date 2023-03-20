@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, FixedOffset};
 use once_cell::sync::OnceCell;
+use time::OffsetDateTime;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
@@ -145,7 +146,7 @@ pub struct Glean {
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
-    start_time: DateTime<FixedOffset>,
+    start_time: OffsetDateTime,
     max_events: u32,
     is_first_run: bool,
     pub(crate) upload_manager: PingUploadManager,
@@ -656,7 +657,7 @@ impl Glean {
     }
 
     /// Get create time of the Glean object.
-    pub(crate) fn start_time(&self) -> DateTime<FixedOffset> {
+    pub(crate) fn start_time(&self) -> OffsetDateTime {
         self.start_time
     }
 

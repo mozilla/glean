@@ -14,6 +14,7 @@ use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
 use chrono::{DateTime, FixedOffset};
+use time::OffsetDateTime;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
@@ -357,7 +358,7 @@ impl EventDatabase {
         glean: &Glean,
         store_name: &str,
         store: &mut Vec<StoredEvent>,
-        glean_start_time: DateTime<FixedOffset>,
+        glean_start_time: OffsetDateTime,
     ) {
         let is_glean_restarted =
             |event: &RecordedEvent| event.category == "glean" && event.name == "restarted";
@@ -424,7 +425,7 @@ impl EventDatabase {
                     .as_mut()
                     .and_then(|extra| {
                         extra.remove("glean.startup.date").and_then(|date_str| {
-                            DateTime::parse_from_str(&date_str, TimeUnit::Minute.format_pattern())
+                            OffsetDateTime::parse(&date_str, TimeUnit::Minute.format_pattern())
                                 .map_err(|_| {
                                     record_error(
                                         glean,
@@ -461,7 +462,7 @@ impl EventDatabase {
                     .get_value(glean, INTERNAL_STORAGE)
                     .unwrap_or(glean_start_time);
                 let time_from_ping_start_to_glean_restarted =
-                    (glean_startup_date - ping_start).num_milliseconds();
+                    (glean_startup_date - ping_start).whole_milliseconds();
                 intra_group_offset = event.event.timestamp;
                 inter_group_offset =
                     u64::try_from(time_from_ping_start_to_glean_restarted).unwrap_or(0);

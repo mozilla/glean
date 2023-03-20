@@ -5,11 +5,14 @@
 //! The different metric types supported by the Glean SDK to handle data.
 
 use std::collections::HashMap;
+use std::fmt;
 use std::sync::atomic::Ordering;
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, FixedOffset, Offset};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
+use time::format_description::well_known::Iso8601;
+use time::OffsetDateTime;
 
 mod boolean;
 mod counter;
@@ -114,7 +117,7 @@ pub enum Metric {
     /// See [`CustomDistributionMetric`] for more information.
     CustomDistributionLinear(Histogram<PrecomputedLinear>),
     /// A datetime metric. See [`DatetimeMetric`] for more information.
-    Datetime(DateTime<FixedOffset>, TimeUnit),
+    Datetime(DatetimeWrapper, TimeUnit),
     /// An experiment metric. See `ExperimentMetric` for more information.
     Experiment(recorded_experiment::RecordedExperiment),
     /// A quantity metric. See [`QuantityMetric`] for more information.
@@ -141,6 +144,64 @@ pub enum Metric {
     Url(String),
     /// A Text metric. See [`TextMetric`] for more information.
     Text(String),
+}
+
+/// TODO
+#[derive(Clone, Debug, PartialEq)]
+pub struct DatetimeWrapper {
+    inner: OffsetDateTime,
+}
+
+impl From<OffsetDateTime> for DatetimeWrapper {
+    fn from(inner: OffsetDateTime) -> Self {
+        DatetimeWrapper { inner }
+    }
+}
+
+/// serializations.
+impl serde::ser::Serialize for DatetimeWrapper {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::ser::Serializer,
+    {
+        let dt = self.inner.format(&Iso8601::DEFAULT).unwrap();
+        serializer.collect_str(&dt)
+    }
+}
+
+struct DateTimeVisitor;
+
+impl<'de> serde::de::Visitor<'de> for DateTimeVisitor {
+    type Value = DatetimeWrapper;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a formatted date and time string or a unix timestamp")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        OffsetDateTime::parse(value, &Iso8601::DEFAULT)
+            .map_err(E::custom)
+            .map(|dt| DatetimeWrapper { inner: dt })
+    }
+}
+
+/// Deserialize a value that optionally includes a timezone offset in its
+/// string representation
+///
+/// The value to be deserialized must be an rfc3339 string.
+///
+/// See [the `serde` module](./serde/index.html) for alternate
+/// deserialization formats.
+impl<'de> serde::de::Deserialize<'de> for DatetimeWrapper {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        deserializer.deserialize_str(DateTimeVisitor)
+    }
 }
 
 /// A [`MetricType`] describes common behavior across all metrics.
@@ -260,7 +321,7 @@ impl Metric {
                 json!(custom_distribution::snapshot(hist))
             }
             Metric::CustomDistributionLinear(hist) => json!(custom_distribution::snapshot(hist)),
-            Metric::Datetime(d, time_unit) => json!(get_iso_time_string(*d, *time_unit)),
+            Metric::Datetime(d, time_unit) => json!(get_iso_time_string(d.inner, *time_unit)),
             Metric::Experiment(e) => e.as_json(),
             Metric::Quantity(q) => json!(q),
             Metric::Rate(num, den) => {

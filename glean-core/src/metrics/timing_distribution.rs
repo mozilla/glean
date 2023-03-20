@@ -5,6 +5,7 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
+use std::time::Instant;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -60,7 +61,7 @@ pub struct TimingDistributionMetric {
     meta: Arc<CommonMetricDataInternal>,
     time_unit: TimeUnit,
     next_id: Arc<AtomicUsize>,
-    start_times: Arc<Mutex<HashMap<TimerId, u64>>>,
+    start_times: Arc<Mutex<HashMap<TimerId, Instant>>>,
 }
 
 /// Create a snapshot of the histogram with a time unit.
@@ -116,7 +117,7 @@ impl TimingDistributionMetric {
     ///
     /// A unique [`TimerId`] for the new timer.
     pub fn start(&self) -> TimerId {
-        let start_time = time::precise_time_ns();
+        let start_time = Instant::now();
         let id = self.next_id.fetch_add(1, Ordering::SeqCst).into();
         let metric = self.clone();
         crate::launch_with_glean(move |_glean| metric.set_start(id, start_time));
@@ -124,7 +125,7 @@ impl TimingDistributionMetric {
     }
 
     pub(crate) fn start_sync(&self) -> TimerId {
-        let start_time = time::precise_time_ns();
+        let start_time = Instant::now();
         let id = self.next_id.fetch_add(1, Ordering::SeqCst).into();
         let metric = self.clone();
         metric.set_start(id, start_time);
@@ -137,7 +138,7 @@ impl TimingDistributionMetric {
     ///
     /// Use [`start`](Self::start) instead.
     #[doc(hidden)]
-    pub fn set_start(&self, id: TimerId, start_time: u64) {
+    pub fn set_start(&self, id: TimerId, start_time: Instant) {
         let mut map = self.start_times.lock().expect("can't lock timings map");
         map.insert(id, start_time);
     }
@@ -155,19 +156,19 @@ impl TimingDistributionMetric {
     ///   same timespan metric.
     /// * `stop_time` - Timestamp in nanoseconds.
     pub fn stop_and_accumulate(&self, id: TimerId) {
-        let stop_time = time::precise_time_ns();
+        let stop_time = Instant::now();
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.set_stop_and_accumulate(glean, id, stop_time));
     }
 
-    fn set_stop(&self, id: TimerId, stop_time: u64) -> Result<u64, (ErrorType, &str)> {
+    fn set_stop(&self, id: TimerId, stop_time: Instant) -> Result<u64, (ErrorType, &str)> {
         let mut start_times = self.start_times.lock().expect("can't lock timings map");
         let start_time = match start_times.remove(&id) {
             Some(start_time) => start_time,
             None => return Err((ErrorType::InvalidState, "Timing not running")),
         };
 
-        let duration = match stop_time.checked_sub(start_time) {
+        let duration = match stop_time.checked_duration_since(start_time).map(|d| d.as_nanos() as u64) {
             Some(duration) => duration,
             None => {
                 return Err((
@@ -186,7 +187,7 @@ impl TimingDistributionMetric {
     ///
     /// Use [`stop_and_accumulate`](Self::stop_and_accumulate) instead.
     #[doc(hidden)]
-    pub fn set_stop_and_accumulate(&self, glean: &Glean, id: TimerId, stop_time: u64) {
+    pub fn set_stop_and_accumulate(&self, glean: &Glean, id: TimerId, stop_time: Instant) {
         if !self.should_record(glean) {
             let mut start_times = self.start_times.lock().expect("can't lock timings map");
             start_times.remove(&id);

@@ -6,6 +6,8 @@ use std::convert::TryFrom;
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
+use time::macros::format_description;
+use time::format_description::FormatItem;
 
 use crate::error::{Error, ErrorKind};
 
@@ -33,16 +35,16 @@ pub enum TimeUnit {
 
 impl TimeUnit {
     /// Formats the given time unit, truncating the time if needed.
-    pub fn format_pattern(self) -> &'static str {
+    pub fn format_pattern(self) -> &'static [FormatItem<'static>] {
         use TimeUnit::*;
         match self {
-            Nanosecond => "%Y-%m-%dT%H:%M:%S%.f%:z",
-            Microsecond => "%Y-%m-%dT%H:%M:%S%.6f%:z",
-            Millisecond => "%Y-%m-%dT%H:%M:%S%.3f%:z",
-            Second => "%Y-%m-%dT%H:%M:%S%:z",
-            Minute => "%Y-%m-%dT%H:%M%:z",
-            Hour => "%Y-%m-%dT%H%:z",
-            Day => "%Y-%m-%d%:z",
+            Nanosecond => format_description!("[year]-[month]-[day]T[hour]:[minute]:[second].[[subsecond][offset_hour sign:mandatory]:[offset_minute]"),
+            Microsecond => format_description!("[year]-[month]-[day]T[hour]:[minute]:[second].[[subsecond][offset_hour sign:mandatory]:[offset_minute]"),
+            Millisecond => format_description!("[year]-[month]-[day]T[hour]:[minute]:[second].[[subsecond][offset_hour sign:mandatory]:[offset_minute]"),
+            Second => format_description!("[year]-[month]-[day]T[hour]:[minute]:[second][offset_hour sign:mandatory]:[offset_minute]"),
+            Minute => format_description!("[year]-[month]-[day]T[hour]:[minute][offset_hour sign:mandatory]:[offset_minute]"),
+            Hour => format_description!("[year]-[month]-[day]T[hour][offset_hour sign:mandatory]:[offset_minute]"),
+            Day => format_description!("[year]-[month]-[day][offset_hour sign:mandatory]:[offset_minute]"),
         }
     }
 
