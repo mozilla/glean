@@ -357,7 +357,7 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 #### `extra_keys`
 
 The acceptable keys on the "extra" object sent with events.
-A maximum of 10 extra keys is allowed.
+A maximum of 15 extra keys is allowed.
 
 Each extra key contains additional metadata:
 
