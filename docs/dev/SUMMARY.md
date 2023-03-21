@@ -21,6 +21,7 @@
 - [Rust Component](core/index.md)
     - [Documentation guidelines](core/documentation-guidelines.md)
     - [Dependency Management](core/dependency-management.md)
+      - [Dependency Vetting](core/dependency-vetting.md)
     - [Adding a new metric type](core/new-metric-type.md)
         - [Kotlin](core/new-metric-type/kotlin.md)
         - [Swift](core/new-metric-type/swift.md)
