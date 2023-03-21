@@ -8,8 +8,6 @@ For a full overview over `cargo-vet`'s capabilities and usage see the [`cargo-ve
 New or updated dependencies need to be audited to allow their usage.
 Dependency audits are shared with downstream Mozilla projects.
 
-> **Note:** Please be thorough when auditing dependencies.
-
 ## 3-step guide
 
 * `cargo vet`
