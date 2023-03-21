@@ -395,6 +395,16 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Set configuration for metrics' disabled property, typically from a remote_settings
+     * experiment or rollout.
+     *
+     * @param json Stringified JSON map of metrics and their associated `disabled` property.
+     */
+    fun setMetricsDisabledConfig(json: String) {
+        gleanSetMetricsDisabledConfig(json)
+    }
+
+    /**
      * Set the logPing debug option, when this is `true`
      * the payload of assembled ping requests get logged.
      *
