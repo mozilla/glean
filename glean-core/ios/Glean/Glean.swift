@@ -312,6 +312,15 @@ public class Glean {
         gleanSetSourceTags(tags)
     }
 
+    /// Set configuration for metrics' disabled property, typically from remote_settings
+    /// experiment or rollout.
+    ///
+    /// - parameters:
+    ///    * json: Stringified JSON map of metrics and their associated `disabled` property.
+    public func setMetricsDisabledConfig(_ json: String) {
+        gleanSetMetricsDisabledConfig(json)
+    }
+
     /// When applications are launched using the custom URL scheme, this helper function will process
     /// the URL and parse the debug commands
     ///
