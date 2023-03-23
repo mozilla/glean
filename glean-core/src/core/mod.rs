@@ -527,6 +527,7 @@ impl Glean {
     }
 
     /// Gets a handle to the database.
+    #[track_caller] // If this fails we're interested in the caller.
     pub fn storage(&self) -> &Database {
         self.data_store.as_ref().expect("No database found")
     }
