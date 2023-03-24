@@ -253,9 +253,9 @@ jobs:
       - run:
           name: Install cargo-deny
           command: |
-            DENY_VERSION=0.13.5
+            DENY_VERSION=0.13.7
             DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=339014366d1ea1137fe425b35b7c0fb3b3c8a54f9bfb2b470f52cbb1a7904e17
+            DENY_SHA256=0e20f4302c1054a3f1a8e0e22eb15cfa3173c0e2dcbb62cfe7d6fe40dc27abd9
             curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
             echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
             tar -xvf "${DENY}.tar.gz"
@@ -264,6 +264,9 @@ jobs:
       - run:
           name: Run license check
           command: cargo deny check licenses
+      - run:
+          name: Run dependency ban check
+          command: cargo deny check bans
 
   Check vendored schema:
     docker:

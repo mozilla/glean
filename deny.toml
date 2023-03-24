@@ -10,3 +10,29 @@ allow = [
     "Zlib",
     "Unicode-DFS-2016",
 ]
+
+[bans]
+# Avoid duplications.
+# Exceptions defined below with a reason.
+multiple-versions = "deny"
+
+skip = [
+    # wasi 0.10 and 0.11 are allowed
+    # (m-c patches 0.10 to 0.11)
+    { name = "wasi", version = "0.11.0" },
+]
+
+# Avoid certain crates
+deny = [
+    # 0.42 allowed as part of env_logger, which is now optionally included
+    # and only used in Android dev builds
+    # done in order to stay compatible with mozilla-central
+    # see https://searchfox.org/mozilla-central/rev/47aea2f603cc18144afcedbd604a418f11e90f9b/python/mozbuild/mozbuild/vendor/vendor_rust.py#78-92
+    { name = "windows-sys", version = "> 0.42" },
+    { name = "windows_aarch64_msvc", version = "> 0.42" },
+    { name = "windows_i686_gnu", version = "> 0.42" },
+    { name = "windows_i686_msvc", version = "> 0.42" },
+    { name = "windows_x86_64_gnu", version = "> 0.42" },
+    { name = "windows_x86_64_msvc", version = "> 0.42" },
+    { name = "windows", version = "*" },
+]
