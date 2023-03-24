@@ -1,5 +1,10 @@
 # Unreleased changes
 
+* General
+  * Expose Server Knobs functionality via UniFFI for use on mobile
+* iOS
+  * BUGFIX: Prevent another test-only issue: The storage going away when the uploader reports back its status ([#2430](https://github.com/mozilla/glean/pull/2430))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v52.4.2...main)
 
 # v52.4.2 (2023-03-15)
