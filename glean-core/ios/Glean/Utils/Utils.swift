@@ -84,13 +84,49 @@ extension Date {
     }
 }
 
-/// Helper function to retrive the application's Application Support directory for persistent file storage
+/// Creates the path for persistent file storage using a custom data path or
+/// the default path (`glean_data`).
+///
+/// - parameters
+///     * customDataPath: An override for manually setting the data directory.
 ///
 /// - returns: `URL` of the Application Support directory
-func getGleanDirectory() -> URL {
+func generateGleanStoragePath(_ customDataPath: String? = nil) -> URL {
     let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
-    return documentsDirectory.appendingPathComponent("glean_data")
+
+    let dataPath: String
+    if customDataPath == nil {
+        dataPath = "glean_data"
+    } else {
+        dataPath = customDataPath!
+    }
+
+    return documentsDirectory.appendingPathComponent(dataPath)
+}
+
+/// Check if the data path provided is valid and writable.
+///
+/// - parameters
+///     * customDataPath: An override for manually setting the data directory.
+func canWriteToDatabasePath(_ customDataPath: String? = "") -> Bool {
+    // Do not allow empty strings or strings with leading or trailing spaces.
+    if customDataPath == "" || customDataPath!.hasPrefix(" ") || customDataPath!.hasSuffix(" ") {
+        return false
+    }
+
+    // Generate the full path that we want to write to using our custom data path.
+    let fullFilePath = generateGleanStoragePath(customDataPath).path
+
+    // If the file exists we need to ensure we can write to it.
+    if FileManager.default.fileExists(atPath: fullFilePath) {
+        if !FileManager.default.isWritableFile(atPath: fullFilePath) {
+            return false
+        }
+    }
+
+    // The database path is valid and writable.
+    return true
 }
 
 /// This struct creates a Boolean with atomic or synchronized access.

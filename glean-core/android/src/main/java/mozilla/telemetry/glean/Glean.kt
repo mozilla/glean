@@ -7,9 +7,9 @@ package mozilla.telemetry.glean
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
+import android.os.Looper
 import android.os.Process
 import android.util.Log
-import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
@@ -24,6 +24,8 @@ import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.calendarToDatetime
+import mozilla.telemetry.glean.utils.canWriteToDatabasePath
+import mozilla.telemetry.glean.utils.generateGleanStoragePath
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import java.util.Calendar
@@ -38,12 +40,14 @@ data class BuildInfo(val versionCode: String, val versionName: String, val build
 
 internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     override fun initializeFinished() {
-        // At this point, all metrics and events can be recorded.
-        // This should only be called from the main thread. This is enforced by
-        // the @MainThread decorator and the `assertOnUiThread` call.
-        MainScope().launch {
-            ProcessLifecycleOwner.get().lifecycle.addObserver(glean.gleanLifecycleObserver)
+        // Only set up the lifecycle observers if we don't provide a custom
+        // data path.
+        if (glean.getIsCustomDataPath() != null && glean.getIsCustomDataPath() == false) {
+            MainScope().launch {
+                ProcessLifecycleOwner.get().lifecycle.addObserver(glean.gleanLifecycleObserver)
+            }
         }
+
         glean.initialized = true
 
         if (glean.testingMode) {
@@ -58,6 +62,13 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     }
 
     override fun startMetricsPingScheduler(): Boolean {
+        // If we pass a custom data path, the metrics ping schedule should not
+        // be setup.
+        if (glean.getIsCustomDataPath() == true) {
+            glean.metricsPingScheduler?.cancel()
+            return false
+        }
+
         glean.metricsPingScheduler = MetricsPingScheduler(glean.applicationContext, glean.buildInfo)
         return glean.metricsPingScheduler!!.schedule()
     }
@@ -126,6 +137,8 @@ open class GleanInternalAPI internal constructor() {
     // Store the build information provided by the application.
     internal lateinit var buildInfo: BuildInfo
 
+    private var isCustomDataPath: Boolean? = null
+
     init {
         gleanEnableLogging()
     }
@@ -141,8 +154,6 @@ open class GleanInternalAPI internal constructor() {
      * A LifecycleObserver will be added to send pings when the application goes
      * into foreground and background.
      *
-     * This method must be called from the main thread.
-     *
      * @param applicationContext [Context] to access application features, such
      * as shared preferences
      * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
@@ -152,28 +163,57 @@ open class GleanInternalAPI internal constructor() {
      * @param buildInfo A Glean [BuildInfo] object with build-time metadata. This
      *     object is generated at build time by glean_parser at the import path
      *     ${YOUR_PACKAGE_ROOT}.GleanMetrics.GleanBuildInfo.buildInfo
+     * @param dataPath An optional [String] that specifies where to store
+     *     data locally on the device.
      */
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
-    @MainThread
     fun initialize(
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
-        buildInfo: BuildInfo
+        buildInfo: BuildInfo,
+        dataPath: String? = null
     ) {
-        // Glean initialization must be called on the main thread, or lifecycle
-        // registration may fail. This is also enforced at build time by the
-        // @MainThread decorator, but this run time check is also performed to
-        // be extra certain.
-        ThreadUtils.assertOnUiThread()
+        if (dataPath == null) {
+            // If no `dataPath` is provided, then we setup Glean as usual.
+            //
+            // Glean initialization must be called on the main thread, or lifecycle
+            // registration may fail.
+            ThreadUtils.assertOnUiThread()
 
-        // In certain situations Glean.initialize may be called from a process other than the main
-        // process.  In this case we want initialize to be a no-op and just return.
-        if (!isMainProcess(applicationContext)) {
-            Log.e(LOG_TAG, "Attempted to initialize Glean on a process other than the main process")
-            return
+            // In certain situations Glean.initialize may be called from a process other than the main
+            // process. In this case we want initialize to be a no-op and just return.
+            if (!isMainProcess(applicationContext)) {
+                Log.e(LOG_TAG, "Attempted to initialize Glean on a process other than the main process")
+                return
+            }
+
+            this.isCustomDataPath = false
+        } else {
+            // When the `dataPath` is provided, we need to make sure:
+            //   1. The call happens on the main thread of the non main process.
+            //   2. The database path provided is not `glean_data`.
+            //   3. The database path is valid and writable.
+
+            if (!isMainThread()) {
+                Log.e(LOG_TAG, "Attempted to initialize Glean on a thread other than the main thread")
+                return
+            }
+
+            if (dataPath == "glean_data") {
+                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
+                return
+            }
+
+            // Check that the database path we are trying to write to is valid and writable.
+            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, dataPath)) {
+                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path")
+                return
+            }
+
+            this.isCustomDataPath = true
         }
 
         if (isInitialized()) {
@@ -186,7 +226,11 @@ open class GleanInternalAPI internal constructor() {
 
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
-        this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
+
+        this.gleanDataDir = generateGleanStoragePath(
+            applicationContext.applicationInfo.dataDir,
+            dataPath
+        )
 
         // Execute startup off the main thread.
         Dispatchers.API.executeTask {
@@ -451,13 +495,16 @@ open class GleanInternalAPI internal constructor() {
      * @param context the application context to init Glean with
      * @param config the [Configuration] to init Glean with
      * @param clearStores if true, clear the contents of all stores
+     * @param uploadEnabled whether upload is enabled
+     * @param dataPath an optional [String] to specify where data should be deleted from locally
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun resetGlean(
         context: Context,
         config: Configuration,
         clearStores: Boolean,
-        uploadEnabled: Boolean = true
+        uploadEnabled: Boolean = true,
+        dataPath: String? = null
     ) {
         isMainProcess = null
 
@@ -466,7 +513,7 @@ open class GleanInternalAPI internal constructor() {
         PingUploadWorker.cancel(context)
 
         // Init Glean.
-        val gleanDataDir = File(context.applicationInfo.dataDir, GleanInternalAPI.GLEAN_DATA_DIR)
+        val gleanDataDir = generateGleanStoragePath(context.applicationInfo.dataDir, dataPath)
         Glean.testDestroyGleanHandle(clearStores, gleanDataDir.path)
         // Enable test mode.
         Glean.enableTestingMode()
@@ -554,6 +601,22 @@ open class GleanInternalAPI internal constructor() {
             ) ?: false
 
         return isMainProcess as Boolean
+    }
+
+    /**
+     * Returns true if the current process is being called from the
+     * main thread.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun isMainThread(): Boolean {
+        return Looper.getMainLooper().thread == Thread.currentThread()
+    }
+
+    /**
+     * Returns true if the Glean instance is using a custom data path.
+     */
+    internal fun getIsCustomDataPath(): Boolean? {
+        return this.isCustomDataPath
     }
 }
 

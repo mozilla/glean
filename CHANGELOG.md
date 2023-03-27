@@ -49,6 +49,11 @@
 * General
   * No functional change from v52.3.0, just CI updates.
 
+* Kotlin
+  * Allow the user to specify a custom data path when calling `initialize`.
+* iOS
+  * Allow the user to specify a custom data path when calling `initialize`.
+
 # v52.3.0 (2023-02-23)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.2.0...v52.3.0)

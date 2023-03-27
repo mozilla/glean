@@ -113,9 +113,13 @@ class SampleApplication : Application() {
 }
 ```
 
-The Glean Kotlin SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
+The Glean Kotlin SDK supports use across multiple processes. To configure this you call `initialize` as usual from your main process. From the secondary process you can call `initialize` again with the `dataPath` parameter. This allows you to store data locally in a separate location for the secondary process.
 
-Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
+Requirements for a secondary process
+- `initialize` must be called from the main thread
+- The reserved data path `glean_data` cannot be used
+
+**Note**: When initializing from a secondary process with a specified data path, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
 
 ### Consuming Glean through Android Components
 
@@ -174,8 +178,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-The Glean Swift SDK does not support use across multiple processes,
-and must only be initialized on the application's main process.
+The Glean Swift SDK supports use across multiple processes. To configure this you call `initialize` as usual from your main process. From the secondary process you can call `initialize` again with the `dataPath` parameter. This allows you to store data locally in a separate location for the secondary process.
+
+Requirements for a secondary process
+- `initialize` must be called from the main thread
+- The reserved data path `glean_data` cannot be used
+
+**Note**: When initializing from a secondary process with a specified data path, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
 
 </div>
 

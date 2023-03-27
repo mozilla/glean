@@ -19,3 +19,5 @@ The `submission_timestamp` is the time the ping was received at the telemetry en
 The "Baseline 4" ping illustrates an important corner case. When "Session 2" ended, the OS also shut down the entire process, and the Glean SDK did not have an opportunity to send a `baseline` ping immediately.  In this case, it is sent at the next available opportunity when the application starts up again in "Run 2".  This `baseline` ping is annotated with the reason code `dirty_startup`.
 
 The "Metrics 2" ping likewise illustrates another important corner case. "Metrics 1" was able to be sent at the target time of 04:00 (local device time) because the application was currently running.  However, the next time 04:00 came around, the application was not active, so the Glean SDK was unable to send a `metrics` ping.  It is sent at the next available opportunity, when the application starts up again in "Run 2".  This `metrics` ping is annotated with the reason code `overdue`.
+
+**NOTE**: If you are running Glean on a secondary process where to pass a custom `dataPath` to the `initialize` call for either the Kotlin or Swift SDKs, **these life-cycles will not be set up**.
