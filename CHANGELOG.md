@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v52.4.2...main)
 
 * Rust
-  * On RKV detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
+  * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
 
 # v52.4.2 (2023-03-15)
 
