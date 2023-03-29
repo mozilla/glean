@@ -44,7 +44,9 @@ import org.mockito.Mockito.mock
 import org.robolectric.shadows.ShadowLog
 import org.robolectric.shadows.ShadowProcess
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -882,5 +884,47 @@ class GleanTest {
         assertEquals("c0ffee", GleanInternalMetrics.appBuild.testGetValue())
         assertEquals("foo", GleanInternalMetrics.appDisplayVersion.testGetValue())
         assertEquals("2020-11-06T11:30:50+00:00", GleanInternalMetrics.buildDate.testGetValueAsString())
+    }
+
+    @Test
+    fun `Date header is set on actualy HTTP POST`() {
+        delayMetricsPing(context)
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
+
+        Glean.handleBackgroundEvent()
+
+        // Before the `Date` was set on submit,
+        // so waiting here would ensure the actual sending is later.
+        // Now we set the date on actual sending,
+        // so we can observe it close to receive time further below.
+        Thread.sleep(2000)
+
+        // Now trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val expected = Date()
+
+        val dateHeader = request!!.getHeader("Date")!!
+        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        val dateParsed = dateFormat.parse(dateHeader)!!
+
+        val diff = expected.getTime() - dateParsed.getTime()
+
+        // Send time is within 2 seconds of receive time
+        // Due to timings the uploader takes a bit of time to launch.
+        // Receiving the request takes a bit more.
+        // This can easily sum up to just above one second.
+        // We sleep for 2 seconds above, so if we check for less than 2 seconds here
+        // we're still below that sleep time.
+        assertTrue("Difference should be more than 0 seconds, was $diff", diff > 0)
+        assertTrue("Difference should be less than 2 seconds, was $diff", diff < 2000)
     }
 }
