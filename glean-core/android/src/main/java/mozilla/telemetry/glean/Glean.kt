@@ -163,8 +163,6 @@ open class GleanInternalAPI internal constructor() {
      * @param buildInfo A Glean [BuildInfo] object with build-time metadata. This
      *     object is generated at build time by glean_parser at the import path
      *     ${YOUR_PACKAGE_ROOT}.GleanMetrics.GleanBuildInfo.buildInfo
-     * @param dataPath An optional [String] that specifies where to store
-     *     data locally on the device.
      */
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
@@ -173,10 +171,9 @@ open class GleanInternalAPI internal constructor() {
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
-        buildInfo: BuildInfo,
-        dataPath: String? = null
+        buildInfo: BuildInfo
     ) {
-        if (dataPath == null) {
+        if (configuration.dataPath == null) {
             // If no `dataPath` is provided, then we setup Glean as usual.
             //
             // Glean initialization must be called on the main thread, or lifecycle
@@ -186,7 +183,10 @@ open class GleanInternalAPI internal constructor() {
             // In certain situations Glean.initialize may be called from a process other than the main
             // process. In this case we want initialize to be a no-op and just return.
             if (!isMainProcess(applicationContext)) {
-                Log.e(LOG_TAG, "Attempted to initialize Glean on a process other than the main process")
+                Log.e(
+                    LOG_TAG,
+                    "Attempted to initialize Glean on a process other than the main process without a dataPath"
+                )
                 return
             }
 
@@ -202,13 +202,13 @@ open class GleanInternalAPI internal constructor() {
                 return
             }
 
-            if (dataPath == "glean_data") {
+            if (configuration.dataPath == "glean_data") {
                 Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
                 return
             }
 
             // Check that the database path we are trying to write to is valid and writable.
-            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, dataPath)) {
+            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, configuration.dataPath)) {
                 Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path")
                 return
             }
@@ -229,7 +229,7 @@ open class GleanInternalAPI internal constructor() {
 
         this.gleanDataDir = generateGleanStoragePath(
             applicationContext.applicationInfo.dataDir,
-            dataPath
+            configuration.dataPath
         )
 
         // Execute startup off the main thread.
@@ -496,15 +496,13 @@ open class GleanInternalAPI internal constructor() {
      * @param config the [Configuration] to init Glean with
      * @param clearStores if true, clear the contents of all stores
      * @param uploadEnabled whether upload is enabled
-     * @param dataPath an optional [String] to specify where data should be deleted from locally
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     internal fun resetGlean(
         context: Context,
         config: Configuration,
         clearStores: Boolean,
-        uploadEnabled: Boolean = true,
-        dataPath: String? = null
+        uploadEnabled: Boolean = true
     ) {
         isMainProcess = null
 
@@ -513,7 +511,7 @@ open class GleanInternalAPI internal constructor() {
         PingUploadWorker.cancel(context)
 
         // Init Glean.
-        val gleanDataDir = generateGleanStoragePath(context.applicationInfo.dataDir, dataPath)
+        val gleanDataDir = generateGleanStoragePath(context.applicationInfo.dataDir, config.dataPath)
         Glean.testDestroyGleanHandle(clearStores, gleanDataDir.path)
         // Enable test mode.
         Glean.enableTestingMode()

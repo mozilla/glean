@@ -136,18 +136,18 @@ public class Glean {
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     ///     * buildInfo: A Glean `BuildInfo` object with build settings.
-    ///     * dataPath: An optional `String` that specifies where to store
-    ///       data locally on the device.
     public func initialize(uploadEnabled: Bool,
                            configuration: Configuration = Configuration(),
-                           buildInfo: BuildInfo, dataPath: String? = nil) {
+                           buildInfo: BuildInfo) {
         // If no `dataPath` is provided, then we setup Glean as usual.
-        if dataPath == nil {
+        if configuration.dataPath == nil {
             // In certain situations Glean.initialize may be called from a process other than the main
             // process such as an embedded extension. In this case we want to just return.
             // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
             if !checkIsMainProcess() {
-                logger.error("Attempted to initialize Glean on a process other than the main process")
+                logger.error(
+                    "Attempted to initialize Glean on a process other than the main process without a dataPath"
+                )
                 return
             }
 
@@ -163,13 +163,13 @@ public class Glean {
                 return
             }
 
-            if dataPath == "glean_data" {
+            if configuration.dataPath == "glean_data" {
                 logger.error("Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
                 return
             }
 
             // Check that the database path we are trying to write to is valid and writable.
-            if !canWriteToDatabasePath(dataPath) {
+            if !canWriteToDatabasePath(configuration.dataPath) {
                 logger.error("Attempted to initialize Glean with an invalid database path")
                 return
             }
@@ -186,7 +186,7 @@ public class Glean {
 
         self.buildInfo = buildInfo
         self.configuration = configuration
-        self.gleanDataPath = generateGleanStoragePath(dataPath).relativePath
+        self.gleanDataPath = generateGleanStoragePath(configuration.dataPath).relativePath
         let cfg = InternalConfiguration(
             dataPath: self.gleanDataPath!,
             applicationId: AppInfo.name,
@@ -461,12 +461,11 @@ public class Glean {
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
     ///     * uploadEnabled: whether upload is enabled
-    ///     * dataPath: an optional `String` to specify where data should be deleted from locally
     public func resetGlean(configuration: Configuration = Configuration(),
                            clearStores: Bool,
-                           uploadEnabled: Bool = true, dataPath: String? = nil) {
+                           uploadEnabled: Bool = true) {
         // Init Glean.
-        testDestroyGleanHandle(clearStores, dataPath)
+        testDestroyGleanHandle(clearStores, configuration.dataPath)
 
         // Reset isActive
         isActive = false
@@ -488,11 +487,6 @@ public class Glean {
                 second: 0
             )
         )
-        initialize(
-            uploadEnabled: uploadEnabled,
-            configuration: configuration,
-            buildInfo: buildInfo,
-            dataPath: dataPath
-        )
+        initialize(uploadEnabled: uploadEnabled, configuration: configuration, buildInfo: buildInfo)
     }
 }

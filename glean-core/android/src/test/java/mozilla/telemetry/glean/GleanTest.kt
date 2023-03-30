@@ -932,7 +932,8 @@ class GleanTest {
     fun `test glean is custom data path is set correctly`() {
         // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.testDestroyGleanHandle()
-        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo, dataPath = "glean_test")
+        val cfg = Configuration(dataPath = "glean_test")
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
         assertTrue(Glean.isCustomDataPath)
 
         // Initialize without a custom data path and ensure `isCustomDataPath` is false.
@@ -946,7 +947,8 @@ class GleanTest {
         Glean.testDestroyGleanHandle()
 
         // The path provided here is invalid because of the leading and trailing spaces.
-        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo, dataPath = " invalid db path ")
+        val cfg = Configuration(dataPath = " invalid db path ")
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
 
         // Since the path is invalid, Glean should not properly initialize.
         assertFalse(Glean.initialized)

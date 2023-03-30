@@ -299,7 +299,8 @@ class GleanTests: XCTestCase {
         Glean.shared.testDestroyGleanHandle()
 
         // The path provided here is invalid because of the leading and trailing spaces.
-        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo(), dataPath: " invalid db path ")
+        let cfg = Configuration(dataPath: " invalid db path ")
+        Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
 
         // Since the path is invalid, Glean should not propertly initialize.
         XCTAssertFalse(Glean.shared.isInitialized())
@@ -308,7 +309,8 @@ class GleanTests: XCTestCase {
     func testGleanIsCustomDataPathIsSetCorrectly() {
         // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.shared.testDestroyGleanHandle()
-        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo(), dataPath: "glean_test")
+        let cfg = Configuration(dataPath: "glean_test")
+        Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
         XCTAssertTrue(Glean.shared.isCustomDataPath)
 
         // Initialize without a custom data path and ensure `isCustomDataPath` is false.
