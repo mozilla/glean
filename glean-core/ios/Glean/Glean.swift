@@ -23,7 +23,7 @@ class OnGleanEventsImpl: OnGleanEvents {
     func initializeFinished() {
         // Only set up the lifecycle observer if we don't provide a custom
         // data path.
-        if self.glean.getIsCustomDataPath() != nil && self.glean.getIsCustomDataPath() == false {
+        if !self.glean.isCustomDataPath {
             // Run this off the main thread,
             // as it will trigger a ping submission,
             // which itself will trigger `triggerUpload()` on this class.
@@ -43,7 +43,7 @@ class OnGleanEventsImpl: OnGleanEvents {
     func startMetricsPingScheduler() -> Bool {
         // If we pass a custom data path, the metrics ping schedule should not
         // be setup.
-        if self.glean.getIsCustomDataPath() == true {
+        if self.glean.isCustomDataPath {
             self.glean.metricsPingScheduler = nil
             return false
         }
@@ -92,7 +92,7 @@ public class Glean {
     private var buildInfo: BuildInfo?
     fileprivate var observer: GleanLifecycleObserver?
     private var gleanDataPath: String?
-    private var isCustomDataPath: Bool?
+    var isCustomDataPath: Bool = false
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -422,11 +422,6 @@ public class Glean {
         }
 
         return isMainProcess!
-    }
-
-    /// Returns true if the Glean instance is using a custom data path.
-    public func getIsCustomDataPath() -> Bool? {
-        return self.isCustomDataPath
     }
 
     /// Test-only method to destroy the owned glean-core handle.

@@ -306,16 +306,14 @@ class GleanTests: XCTestCase {
     }
 
     func testGleanIsCustomDataPathIsSetCorrectly() {
-        // Initialize with a custom data path and ensure `getIsCustomDataPath` is true.
+        // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.shared.testDestroyGleanHandle()
         Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo(), dataPath: "glean_test")
-        XCTAssertNotNil(Glean.shared.getIsCustomDataPath())
-        XCTAssertTrue(Glean.shared.getIsCustomDataPath()!)
+        XCTAssertTrue(Glean.shared.isCustomDataPath)
 
-        // Initialize without a custom data path and ensure `getIsCustomDataPath` is false.
+        // Initialize without a custom data path and ensure `isCustomDataPath` is false.
         Glean.shared.testDestroyGleanHandle()
         Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
-        XCTAssertNotNil(Glean.shared.getIsCustomDataPath())
-        XCTAssertFalse(Glean.shared.getIsCustomDataPath()!)
+        XCTAssertFalse(Glean.shared.isCustomDataPath)
     }
 }

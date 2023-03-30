@@ -930,17 +930,15 @@ class GleanTest {
 
     @Test
     fun `test glean is custom data path is set correctly`() {
-        // Initialize with a custom data path and ensure `getIsCustomDataPath` is true.
+        // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.testDestroyGleanHandle()
         Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo, dataPath = "glean_test")
-        assertNotNull(Glean.getIsCustomDataPath())
-        assertTrue(Glean.getIsCustomDataPath()!!)
+        assertTrue(Glean.isCustomDataPath)
 
-        // Initialize without a custom data path and ensure `getIsCustomDataPath` is false.
+        // Initialize without a custom data path and ensure `isCustomDataPath` is false.
         Glean.testDestroyGleanHandle()
         Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
-        assertNotNull(Glean.getIsCustomDataPath())
-        assertFalse(Glean.getIsCustomDataPath()!!)
+        assertFalse(Glean.isCustomDataPath)
     }
 
     @Test

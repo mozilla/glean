@@ -42,7 +42,7 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     override fun initializeFinished() {
         // Only set up the lifecycle observers if we don't provide a custom
         // data path.
-        if (glean.getIsCustomDataPath() != null && glean.getIsCustomDataPath() == false) {
+        if (!glean.isCustomDataPath) {
             MainScope().launch {
                 ProcessLifecycleOwner.get().lifecycle.addObserver(glean.gleanLifecycleObserver)
             }
@@ -64,7 +64,7 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     override fun startMetricsPingScheduler(): Boolean {
         // If we pass a custom data path, the metrics ping schedule should not
         // be setup.
-        if (glean.getIsCustomDataPath() == true) {
+        if (glean.isCustomDataPath) {
             glean.metricsPingScheduler?.cancel()
             return false
         }
@@ -137,7 +137,7 @@ open class GleanInternalAPI internal constructor() {
     // Store the build information provided by the application.
     internal lateinit var buildInfo: BuildInfo
 
-    private var isCustomDataPath: Boolean? = null
+    internal var isCustomDataPath: Boolean = false
 
     init {
         gleanEnableLogging()
@@ -610,13 +610,6 @@ open class GleanInternalAPI internal constructor() {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun isMainThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
-    }
-
-    /**
-     * Returns true if the Glean instance is using a custom data path.
-     */
-    internal fun getIsCustomDataPath(): Boolean? {
-        return this.isCustomDataPath
     }
 }
 
