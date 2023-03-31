@@ -113,13 +113,13 @@ class SampleApplication : Application() {
 }
 ```
 
-The Glean Kotlin SDK supports use across multiple processes. To configure this you call `initialize` as usual from your main process. From the secondary process you can call `initialize` again with the `dataPath` parameter. This allows you to store data locally in a separate location for the secondary process.
+The Glean Kotlin SDK supports use across multiple processes. This is enabled by adding a `dataPath` value to the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to pass a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
-Requirements for a secondary process
-- `initialize` must be called from the main thread
-- The reserved data path `glean_data` cannot be used
+Requirements for a non-main process
+- `Glean.initialize` must be called from the main thread.
+- The default `dataPath` for Glean is `glean_data`. If you try and use `glean_data`, `Glean.initialize` will fail and throw an error.
 
-**Note**: When initializing from a secondary process with a specified data path, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
+**Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
 
 ### Consuming Glean through Android Components
 
@@ -178,13 +178,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-The Glean Swift SDK supports use across multiple processes. To configure this you call `initialize` as usual from your main process. From the secondary process you can call `initialize` again with the `dataPath` parameter. This allows you to store data locally in a separate location for the secondary process.
+The Glean Swift SDK supports use across multiple processes. This is enabled by adding a `dataPath` value to the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to pass a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
-Requirements for a secondary process
-- `initialize` must be called from the main thread
-- The reserved data path `glean_data` cannot be used
+Requirements for a non-main process 
+- `Glean.initialize` must be called from the main thread.
+- The default `dataPath` for Glean is `glean_data`. If you try and use `glean_data`, `Glean.initialize` will fail and throw an error.
 
-**Note**: When initializing from a secondary process with a specified data path, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
+**Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
 
 </div>
 
