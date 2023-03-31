@@ -5,6 +5,10 @@
 * General
   * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
   * Add the Date header as late as possible before the uploader acts ([#2436](https://github.com/mozilla/glean/pull/2436))
+* Kotlin
+  * Adds the ability to record metrics on a non-main process. This is enabled by passing a `dataPath` to the Glean configuration ([bug 1815233](https://bugzilla.mozilla.org/show_bug.cgi?id=1815233))
+* iOS
+  * Adds the ability to record metrics on a non-main process. This is enabled by passing a `dataPath` to the Glean configuration ([bug 1815233](https://bugzilla.mozilla.org/show_bug.cgi?id=1815233))
 
 # v52.4.3 (2023-03-24)
 
@@ -48,11 +52,6 @@
 
 * General
   * No functional change from v52.3.0, just CI updates.
-
-* Kotlin
-  * Allow the user to specify a custom data path when calling `initialize`.
-* iOS
-  * Allow the user to specify a custom data path when calling `initialize`.
 
 # v52.3.0 (2023-02-23)
 
