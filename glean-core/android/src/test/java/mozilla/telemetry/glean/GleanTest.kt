@@ -929,7 +929,7 @@ class GleanTest {
     }
 
     @Test
-    fun `test glean with custom data path is set correctly`() {
+    fun `Glean accepts a custom data path`() {
         // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.testDestroyGleanHandle()
         val cfg = Configuration(dataPath = "glean_test")
