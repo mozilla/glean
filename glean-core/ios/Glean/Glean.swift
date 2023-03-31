@@ -168,7 +168,7 @@ public class Glean {
             }
 
             // Check that the database path we are trying to write to is valid and writable.
-            if !canWriteToDatabasePath(configuration.dataPath) {
+            if !canWriteToDatabasePath(configuration.dataPath!) {
                 logger.error("Attempted to initialize Glean with an invalid database path")
                 return
             }

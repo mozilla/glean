@@ -109,9 +109,9 @@ func generateGleanStoragePath(_ customDataPath: String? = nil) -> URL {
 ///
 /// - parameters
 ///     * customDataPath: An override for manually setting the data directory.
-func canWriteToDatabasePath(_ customDataPath: String? = "") -> Bool {
+func canWriteToDatabasePath(_ customDataPath: String) -> Bool {
     // Do not allow empty strings or strings with leading or trailing spaces.
-    if customDataPath == "" || customDataPath!.hasPrefix(" ") || customDataPath!.hasSuffix(" ") {
+    if customDataPath == "" || customDataPath.hasPrefix(" ") || customDataPath.hasSuffix(" ") {
         return false
     }
 

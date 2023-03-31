@@ -30,12 +30,11 @@ fun generateGleanStoragePath(dataDir: String, customDataPath: String?): File {
  *
  * @param dataDir A [String] that specifies the base directory where we will
  *     store data.
- * @param customDataPath An optional [String] provided by the user to specify
- *     the specific path to store data.
+ * @param customDataPath A [String] provided by the user to specify the path to store data.
  */
-fun canWriteToDatabasePath(dataDir: String, customDataPath: String? = ""): Boolean {
+fun canWriteToDatabasePath(dataDir: String, customDataPath: String): Boolean {
     // Do not allow empty strings or strings with leading or trailing spaces.
-    if (customDataPath == "" || customDataPath!!.startsWith(" ") || customDataPath.endsWith(" ")) {
+    if (customDataPath == "" || customDataPath.startsWith(" ") || customDataPath.endsWith(" ")) {
         return false
     }
 
