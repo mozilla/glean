@@ -21,8 +21,7 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func initializeFinished() {
-        // Only set up the lifecycle observer if we don't provide a custom
-        // data path.
+        // Only set up the lifecycle observer if no dataPath is specified.
         if !self.glean.isCustomDataPath {
             // Run this off the main thread,
             // as it will trigger a ping submission,
@@ -257,7 +256,7 @@ public class Glean {
         gleanSetExperimentInactive(experimentId)
     }
 
-    /// Tests wheter an experiment is active, for testing purposes only.
+    /// Tests whether an experiment is active, for testing purposes only.
     ///
     /// - parameters:
     ///     * experimentId: The id of the experiment to look for.
@@ -381,7 +380,7 @@ public class Glean {
     ///
     /// The structure of the custom URL uses the following format:
     ///
-    /// `<protocol>://glean?<command 1>=<paramter 1>&<command 2>=<parameter 2> ...`
+    /// `<protocol>://glean?<command 1>=<parameter 1>&<command 2>=<parameter 2> ...`
     ///
     /// Where:
     ///
@@ -393,7 +392,7 @@ public class Glean {
     /// There are a few things to consider when creating the custom URL:
     ///
     /// - Invalid commands will trigger an error and be ignored.
-    /// - Not all commands are requred to be encoded in the URL, you can mix and match the commands that you need.
+    /// - Not all commands are required to be encoded in the URL, you can mix and match the commands that you need.
     /// - Special characters should be properly URL encoded and escaped since this needs to represent a valid URL.
     public func handleCustomUrl(url: URL) {
         GleanDebugUtility.handleCustomUrl(url: url)

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Looper
 import android.os.Process
 import android.util.Log
+import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
@@ -154,6 +155,8 @@ open class GleanInternalAPI internal constructor() {
      * A LifecycleObserver will be added to send pings when the application goes
      * into foreground and background.
      *
+     * This method must be called from the main thread.
+     *
      * @param applicationContext [Context] to access application features, such
      * as shared preferences
      * @param uploadEnabled A [Boolean] that determines whether telemetry is enabled.
@@ -167,21 +170,28 @@ open class GleanInternalAPI internal constructor() {
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
+    @MainThread
     fun initialize(
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        if (configuration.dataPath == null) {
-            // If no `dataPath` is provided, then we setup Glean as usual.
-            //
-            // Glean initialization must be called on the main thread, or lifecycle
-            // registration may fail.
-            ThreadUtils.assertOnUiThread()
+        // Glean initialization must be called on the main thread for BOTH main and
+        // background processes.
+        //
+        // If we don't initialize on the main thread lifecycle registration may fail when
+        // initializing on the main process. This is also enforced at build time by the
+        // @MainThread decorator, but this run time check is also performed to be extra certain.
+        ThreadUtils.assertOnUiThread()
 
-            // In certain situations Glean.initialize may be called from a process other than the main
-            // process. In this case we want initialize to be a no-op and just return.
+        // If no `dataPath` is provided, then we setup Glean as usual.
+        if (configuration.dataPath == null) {
+            // In certain situations Glean.initialize may be called from a process other than
+            // the main process. In this case we want initialize to be a no-op and just return.
+            //
+            // You can call Glean.initialize from a background process, but to do so you need
+            // to specify a dataPath in the Glean configuration.
             if (!isMainProcess(applicationContext)) {
                 Log.e(
                     LOG_TAG,
@@ -193,15 +203,11 @@ open class GleanInternalAPI internal constructor() {
             this.isCustomDataPath = false
         } else {
             // When the `dataPath` is provided, we need to make sure:
-            //   1. The call happens on the main thread of the non main process.
-            //   2. The database path provided is not `glean_data`.
-            //   3. The database path is valid and writable.
+            //   1. The database path provided is not `glean_data`.
+            //   2. The database path is valid and writable.
 
-            if (!isMainThread()) {
-                Log.e(LOG_TAG, "Attempted to initialize Glean on a thread other than the main thread")
-                return
-            }
-
+            // The default database path is `glean_data`, the background process and the main
+            // process cannot write to the same file.
             if (configuration.dataPath == "glean_data") {
                 Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
                 return

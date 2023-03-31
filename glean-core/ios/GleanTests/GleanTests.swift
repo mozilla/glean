@@ -302,7 +302,7 @@ class GleanTests: XCTestCase {
         let cfg = Configuration(dataPath: " invalid db path ")
         Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
 
-        // Since the path is invalid, Glean should not propertly initialize.
+        // Since the path is invalid, Glean should not properly initialize.
         XCTAssertFalse(Glean.shared.isInitialized())
     }
 
