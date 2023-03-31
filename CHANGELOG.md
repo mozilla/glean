@@ -2,17 +2,17 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.4.3...main)
 
+* General
+  * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
+
 # v52.4.3 (2023-03-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.2...v52.4.3)
 
 * General
   * Expose Server Knobs functionality via UniFFI for use on mobile
 * iOS
   * BUGFIX: Prevent another test-only issue: The storage going away when the uploader reports back its status ([#2430](https://github.com/mozilla/glean/pull/2430))
-
-[Full changelog](https://github.com/mozilla/glean/compare/v52.4.2...v52.4.3)
-
-* Rust
-  * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
 
 # v52.4.2 (2023-03-15)
 
