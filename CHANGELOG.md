@@ -4,6 +4,7 @@
 
 * General
   * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))
+  * Add the Date header as late as possible before the uploader acts ([#2436](https://github.com/mozilla/glean/pull/2436))
 
 # v52.4.3 (2023-03-24)
 
