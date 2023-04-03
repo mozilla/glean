@@ -946,8 +946,8 @@ class GleanTest {
     fun `test glean does not initialize with invalid DB path`() {
         Glean.testDestroyGleanHandle()
 
-        // The path provided here is invalid because of the leading and trailing spaces.
-        val cfg = Configuration(dataPath = " invalid db path ")
+        // The path provided here is invalid because it is an empty string.
+        val cfg = Configuration(dataPath = "")
         Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
 
         // Since the path is invalid, Glean should not properly initialize.

@@ -33,8 +33,8 @@ fun generateGleanStoragePath(dataDir: String, customDataPath: String?): File {
  * @param customDataPath A [String] provided by the user to specify the path to store data.
  */
 fun canWriteToDatabasePath(dataDir: String, customDataPath: String): Boolean {
-    // Do not allow empty strings or strings with leading or trailing spaces.
-    if (customDataPath == "" || customDataPath.startsWith(" ") || customDataPath.endsWith(" ")) {
+    // Do not allow empty strings.
+    if (customDataPath == "") {
         return false
     }
 

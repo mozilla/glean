@@ -11,7 +11,7 @@ class DataPathMetricTests: XCTestCase {
     }
 
     func testCanWriteToDatabasePathInvalidPath() {
-        let customDataPath = " invalid db path "
+        let customDataPath = ""
         XCTAssertFalse(canWriteToDatabasePath(customDataPath))
     }
 

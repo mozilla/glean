@@ -18,7 +18,7 @@ class DataPathUtilsTest {
 
     @Test
     fun `test can write to database path invalid path`() {
-        val customDataPath = " invalid db path "
+        val customDataPath = ""
         assertFalse(canWriteToDatabasePath(mockDataDir, customDataPath))
     }
 

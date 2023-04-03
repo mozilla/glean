@@ -298,8 +298,8 @@ class GleanTests: XCTestCase {
     func testGleanDoesNotInitializeWithInvalidDbPath() {
         Glean.shared.testDestroyGleanHandle()
 
-        // The path provided here is invalid because of the leading and trailing spaces.
-        let cfg = Configuration(dataPath: " invalid db path ")
+        // The path provided here is invalid because it is an empty string.
+        let cfg = Configuration(dataPath: "")
         Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
 
         // Since the path is invalid, Glean should not properly initialize.
