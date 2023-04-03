@@ -153,14 +153,8 @@ public class Glean {
             self.isCustomDataPath = false
         } else {
             // When the `dataPath` is provided, we need to make sure:
-            //   1. The call happens on the main thread of the non main process.
-            //   2. The database path provided is not `glean_data`.
-            //   3. The database path is valid and writeable.
-
-            if !Thread.isMainThread {
-                logger.error("Attempted to initialize Glean on a thread other than the main thread")
-                return
-            }
+            //   1. The database path provided is not `glean_data`.
+            //   2. The database path is valid and writeable.
 
             if configuration.dataPath == "glean_data" {
                 logger.error("Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")

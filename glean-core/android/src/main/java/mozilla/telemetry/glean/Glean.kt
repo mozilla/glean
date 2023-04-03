@@ -7,10 +7,8 @@ package mozilla.telemetry.glean
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
-import android.os.Looper
 import android.os.Process
 import android.util.Log
-import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.Job
@@ -170,23 +168,19 @@ open class GleanInternalAPI internal constructor() {
     @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     @JvmOverloads
     @Synchronized
-    @MainThread
     fun initialize(
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        // Glean initialization must be called on the main thread for BOTH main and
-        // background processes.
-        //
-        // If we don't initialize on the main thread lifecycle registration may fail when
-        // initializing on the main process. This is also enforced at build time by the
-        // @MainThread decorator, but this run time check is also performed to be extra certain.
-        ThreadUtils.assertOnUiThread()
-
-        // If no `dataPath` is provided, then we setup Glean as usual.
         if (configuration.dataPath == null) {
+            // If no `dataPath` is provided, then we setup Glean as usual.
+            //
+            // If we don't initialize on the main thread lifecycle registration may fail when
+            // initializing on the main process.
+            ThreadUtils.assertOnUiThread()
+
             // In certain situations Glean.initialize may be called from a process other than
             // the main process. In this case we want initialize to be a no-op and just return.
             //
@@ -605,15 +599,6 @@ open class GleanInternalAPI internal constructor() {
             ) ?: false
 
         return isMainProcess as Boolean
-    }
-
-    /**
-     * Returns true if the current process is being called from the
-     * main thread.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun isMainThread(): Boolean {
-        return Looper.getMainLooper().thread == Thread.currentThread()
     }
 }
 
