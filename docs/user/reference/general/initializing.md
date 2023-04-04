@@ -181,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 The Glean Swift SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
 Requirements for a non-main process 
-- `Glean.initialize` must be called from the main thread.
+- `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
 - The default `dataPath` for Glean is `glean_data`. If you try and use `glean_data`, `Glean.initialize` will fail and throw an error.
 
 **Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled baseline or metrics pings.
