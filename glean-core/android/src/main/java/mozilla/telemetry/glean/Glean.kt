@@ -174,7 +174,26 @@ open class GleanInternalAPI internal constructor() {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo
     ) {
-        if (configuration.dataPath == null) {
+        configuration.dataPath?.let { safeDataPath ->
+            // When the `dataPath` is provided, we need to make sure:
+            //   1. The database path provided is not `glean_data`.
+            //   2. The database path is valid and writable.
+
+            // The default database path is `glean_data`, the background process and the main
+            // process cannot write to the same file.
+            if (safeDataPath == "glean_data") {
+                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
+                return
+            }
+
+            // Check that the database path we are trying to write to is valid and writable.
+            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, safeDataPath)) {
+                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path")
+                return
+            }
+
+            this.isCustomDataPath = true
+        } ?: run {
             // If no `dataPath` is provided, then we setup Glean as usual.
             //
             // If we don't initialize on the main thread lifecycle registration may fail when
@@ -195,25 +214,6 @@ open class GleanInternalAPI internal constructor() {
             }
 
             this.isCustomDataPath = false
-        } else {
-            // When the `dataPath` is provided, we need to make sure:
-            //   1. The database path provided is not `glean_data`.
-            //   2. The database path is valid and writable.
-
-            // The default database path is `glean_data`, the background process and the main
-            // process cannot write to the same file.
-            if (configuration.dataPath == "glean_data") {
-                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
-                return
-            }
-
-            // Check that the database path we are trying to write to is valid and writable.
-            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, configuration.dataPath)) {
-                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path")
-                return
-            }
-
-            this.isCustomDataPath = true
         }
 
         if (isInitialized()) {

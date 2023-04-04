@@ -13,15 +13,14 @@ import java.io.File
  *     the specific path to store data.
  */
 fun generateGleanStoragePath(dataDir: String, customDataPath: String?): File {
-    val file: File = if (customDataPath == null) {
+    val file: File = customDataPath?.let { safeDataPath ->
+        File(dataDir, safeDataPath)
+    } ?: run {
         File(
             dataDir,
             GleanInternalAPI.GLEAN_DATA_DIR
         )
-    } else {
-        File(dataDir, customDataPath)
     }
-
     return file
 }
 
@@ -34,7 +33,7 @@ fun generateGleanStoragePath(dataDir: String, customDataPath: String?): File {
  */
 fun canWriteToDatabasePath(dataDir: String, customDataPath: String): Boolean {
     // Do not allow empty strings.
-    if (customDataPath == "") {
+    if (customDataPath.isEmpty()) {
         return false
     }
 
