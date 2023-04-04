@@ -178,7 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-The Glean Swift SDK supports use across multiple processes. This is enabled by adding a `dataPath` value to the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to pass a `dataPath` for your main process. This configuration should only be used by a non-main process.
+The Glean Swift SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
 Requirements for a non-main process 
 - `Glean.initialize` must be called from the main thread.
