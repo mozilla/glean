@@ -221,12 +221,10 @@ def _get_metric_objects(
 
     # Events and Pings also need to define an enumeration
     if metric.type == "event":
-        print(f"Event metric {metric.name} looking for extras")
         class_name = name + "_extra"
         class_name = Camelize(class_name)
         values = metric.allowed_extra_keys_with_types
         keys_class = _event_extra_factory(class_name, values)  # type: ignore
-        print(f"Event metric {metric.name} has extras {values} in {keys_class}")
         yield class_name, keys_class
     elif metric.type == "ping":
         enum_name = name + "_reason_codes"
