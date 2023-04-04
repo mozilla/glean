@@ -8,7 +8,7 @@
 * Kotlin
   * Adds the ability to record metrics on a non-main process. This is enabled by setting a `dataPath` in the Glean configuration ([bug 1815233](https://bugzilla.mozilla.org/show_bug.cgi?id=1815233))
 * iOS
-  * Adds the ability to record metrics on a non-main process. This is enabled by passing a `dataPath` to the Glean configuration ([bug 1815233](https://bugzilla.mozilla.org/show_bug.cgi?id=1815233))
+  * Adds the ability to record metrics on a non-main process. This is enabled by setting a `dataPath` in the Glean configuration ([bug 1815233](https://bugzilla.mozilla.org/show_bug.cgi?id=1815233))
 
 # v52.4.3 (2023-03-24)
 
