@@ -170,6 +170,7 @@ static STATE: OnceCell<Mutex<State>> = OnceCell::new();
 /// Get a reference to the global state object.
 ///
 /// Panics if no global state object was set.
+#[track_caller] // If this fails we're interested in the caller.
 fn global_state() -> &'static Mutex<State> {
     STATE.get().unwrap()
 }
