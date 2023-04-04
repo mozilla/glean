@@ -326,7 +326,6 @@ def test_event_enum_is_generated_correctly():
         ROOT.parent / "data" / "core.yaml", config={"allow_reserved": True}
     )
 
-    print(dir(metrics.environment))
     metrics.environment.event_example.record(
         metrics.environment.EventExampleExtra(key1="value1", key2="value2")
     )
