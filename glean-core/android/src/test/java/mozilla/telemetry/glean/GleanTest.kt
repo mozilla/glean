@@ -887,7 +887,7 @@ class GleanTest {
     }
 
     @Test
-    fun `Date header is set on actually HTTP POST`() {
+    fun `Date header is set on actual HTTP POST`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
         resetGlean(
