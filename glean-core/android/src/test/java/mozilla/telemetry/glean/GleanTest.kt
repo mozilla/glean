@@ -929,10 +929,12 @@ class GleanTest {
     }
 
     @Test
-    fun `Glean accepts a custom data path`() {
+    fun `Initialization succeeds with valid DB path`() {
         // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.testDestroyGleanHandle()
-        val cfg = Configuration(dataPath = "glean_test")
+        val cfg = Configuration(
+            dataPath = File(context.applicationInfo.dataDir, "glean_test").absolutePath
+        )
         Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
         assertTrue(Glean.isCustomDataPath)
 
@@ -943,7 +945,7 @@ class GleanTest {
     }
 
     @Test
-    fun `test glean does not initialize with invalid DB path`() {
+    fun `Initialization fails with invalid DB path`() {
         Glean.testDestroyGleanHandle()
 
         // The path provided here is invalid because it is an empty string.

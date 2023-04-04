@@ -5,8 +5,9 @@
 
 package mozilla.telemetry.glean.utils
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -14,22 +15,18 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DataPathUtilsTest {
-    private val mockDataDir = "mock_dataDir_path"
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun `test can write to database path invalid path`() {
+    fun `Cannot write to invalid database path`() {
         val customDataPath = ""
-        assertFalse(canWriteToDatabasePath(mockDataDir, customDataPath))
+        assertFalse(canWriteToDatabasePath(customDataPath))
     }
 
-    fun `test can write to database path valid path`() {
-        val customDataPath = "valid_db_path"
-        assertTrue(canWriteToDatabasePath(mockDataDir, customDataPath))
-    }
-
-    fun `test generate glean storage path has correct slug`() {
-        val customDataPath = "test_glean_data"
-        val path = generateGleanStoragePath(mockDataDir, customDataPath)
-        assertEquals(path.absolutePath.substringAfterLast("/"), customDataPath)
+    @Test
+    fun `Can write to valid database path`() {
+        val dataPath = context.applicationInfo.dataDir + "/valid_db_path"
+        assertTrue(canWriteToDatabasePath(dataPath))
     }
 }

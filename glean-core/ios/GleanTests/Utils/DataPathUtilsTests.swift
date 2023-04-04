@@ -10,19 +10,15 @@ class DataPathMetricTests: XCTestCase {
         resetGleanDiscardingInitialPings(testCase: self, tag: "PingTests")
     }
 
-    func testCanWriteToDatabasePathInvalidPath() {
+    func testCannotWriteToInvalidDatabasePath() {
         let customDataPath = ""
         XCTAssertFalse(canWriteToDatabasePath(customDataPath))
     }
 
-    func testCanWriteToDatabasePathValidPath() {
-        let customDataPath = "valid_db_path"
-        XCTAssertTrue(canWriteToDatabasePath(customDataPath))
-    }
-
-    func testGenerateGleanStoragePathHasCorrectSlug() {
-        let customDataPath = "test_glean_data"
-        let url = generateGleanStoragePath(customDataPath)
-        XCTAssertEqual(customDataPath, url.lastPathComponent)
+    func testCanWriteToValidDatabasePath() {
+        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        let dataPath = documentsDirectory.appendingPathComponent("valid_db_path").relativePath
+        XCTAssertTrue(canWriteToDatabasePath(dataPath))
     }
 }

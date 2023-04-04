@@ -138,10 +138,11 @@ public class Glean {
     public func initialize(uploadEnabled: Bool, configuration: Configuration = Configuration(), buildInfo: BuildInfo) {
         if let safeDataPath = configuration.dataPath {
             // When the `dataPath` is provided, we need to make sure:
-            //   1. The database path provided is not `glean_data`.
+            //   1. The database path provided is not the default glean database path.
             //   2. The database path is valid and writeable.
 
-            if safeDataPath == "glean_data" {
+            // The background process and the main process cannot write to the same file.
+            if safeDataPath == getGleanDirectory().relativePath {
                 logger.error("Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
                 return
             }
@@ -152,6 +153,7 @@ public class Glean {
                 return
             }
 
+            self.gleanDataPath = safeDataPath
             self.isCustomDataPath = true
         } else {
             // If no `dataPath` is provided, then we setup Glean as usual.
@@ -166,6 +168,7 @@ public class Glean {
                 return
             }
 
+            self.gleanDataPath = getGleanDirectory().relativePath
             self.isCustomDataPath = false
         }
 
@@ -178,7 +181,6 @@ public class Glean {
 
         self.buildInfo = buildInfo
         self.configuration = configuration
-        self.gleanDataPath = generateGleanStoragePath(configuration.dataPath).relativePath
         let cfg = InternalConfiguration(
             dataPath: self.gleanDataPath!,
             applicationId: AppInfo.name,
@@ -419,7 +421,7 @@ public class Glean {
     /// Test-only method to destroy the owned glean-core handle.
     func testDestroyGleanHandle(_ clearStores: Bool = false, _ customDataPath: String? = nil) {
         // If it was initialized this also clears the directory
-        let dataPath = generateGleanStoragePath(customDataPath).relativePath
+        let dataPath = customDataPath ?? getGleanDirectory().relativePath
         gleanTestDestroyGlean(clearStores, dataPath)
 
         if !isInitialized() {

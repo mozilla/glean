@@ -113,7 +113,7 @@ class DeletionRequestPingTests: XCTestCase {
         glean.enableTestingMode()
 
         // Create directory for pending deletion-request pings
-        let pendingDeletionRequestDir = generateGleanStoragePath().appendingPathComponent("deletion_request")
+        let pendingDeletionRequestDir = getGleanDirectory().appendingPathComponent("deletion_request")
         try! FileManager.default.createDirectory(
             atPath: pendingDeletionRequestDir.path,
             withIntermediateDirectories: true,

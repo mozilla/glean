@@ -24,7 +24,6 @@ import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.calendarToDatetime
 import mozilla.telemetry.glean.utils.canWriteToDatabasePath
-import mozilla.telemetry.glean.utils.generateGleanStoragePath
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import java.util.Calendar
@@ -179,19 +178,24 @@ open class GleanInternalAPI internal constructor() {
             //   1. The database path provided is not `glean_data`.
             //   2. The database path is valid and writable.
 
-            // The default database path is `glean_data`, the background process and the main
-            // process cannot write to the same file.
-            if (safeDataPath == "glean_data") {
-                Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
+            // The default database path is `{context.applicationInfo.dataDir}/glean_data`,
+            // the background process and the main process cannot write to the same file.
+            if (safeDataPath == File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR).absolutePath) {
+                Log.e(
+                    LOG_TAG,
+                    "Attempted to initialize Glean with an invalid database path " +
+                        "\"{context.applicationInfo.dataDir}/glean_data\" is reserved"
+                )
                 return
             }
 
             // Check that the database path we are trying to write to is valid and writable.
-            if (!canWriteToDatabasePath(applicationContext.applicationInfo.dataDir, safeDataPath)) {
+            if (!canWriteToDatabasePath(safeDataPath)) {
                 Log.e(LOG_TAG, "Attempted to initialize Glean with an invalid database path")
                 return
             }
 
+            this.gleanDataDir = File(safeDataPath)
             this.isCustomDataPath = true
         } ?: run {
             // If no `dataPath` is provided, then we setup Glean as usual.
@@ -213,6 +217,7 @@ open class GleanInternalAPI internal constructor() {
                 return
             }
 
+            this.gleanDataDir = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR)
             this.isCustomDataPath = false
         }
 
@@ -226,11 +231,6 @@ open class GleanInternalAPI internal constructor() {
 
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
-
-        this.gleanDataDir = generateGleanStoragePath(
-            applicationContext.applicationInfo.dataDir,
-            configuration.dataPath
-        )
 
         // Execute startup off the main thread.
         Dispatchers.API.executeTask {
@@ -511,7 +511,12 @@ open class GleanInternalAPI internal constructor() {
         PingUploadWorker.cancel(context)
 
         // Init Glean.
-        val gleanDataDir = generateGleanStoragePath(context.applicationInfo.dataDir, config.dataPath)
+        val gleanDataDir = config.dataPath?.let { safeDataPath ->
+            File(safeDataPath)
+        } ?: run {
+            File(context.applicationInfo.dataDir, GLEAN_DATA_DIR)
+        }
+
         Glean.testDestroyGleanHandle(clearStores, gleanDataDir.path)
         // Enable test mode.
         Glean.enableTestingMode()
