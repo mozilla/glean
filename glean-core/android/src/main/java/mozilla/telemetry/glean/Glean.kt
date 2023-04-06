@@ -25,6 +25,7 @@ import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.calendarToDatetime
 import mozilla.telemetry.glean.utils.canWriteToDatabasePath
 import mozilla.telemetry.glean.utils.getLocaleTag
+import org.json.JSONObject
 import java.io.File
 import java.util.Calendar
 
@@ -439,15 +440,19 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
-     * [DEPRECATED] Set configuration for metrics' disabled property, typically from a remote_settings
+     * Set configuration for metrics' disabled property, typically from a remote_settings
      * experiment or rollout.
      *
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
-     @DEPRECATED
     fun setMetricsDisabledConfig(json: String) {
         // Let's convert this to the new API for backwards compatibility
-        val jsonData: JSON = JSONObject(json)
+        val jsonData = JSONObject(json)
+        var invertedJsonData = JSONObject()
+        jsonData.keys().forEach {
+            invertedJsonData.put(it, !jsonData.getBoolean(it))
+        }
+        setMetricsEnabledConfig(invertedJsonData.toString())
     }
 
     /**
