@@ -28,7 +28,7 @@ use crossbeam_channel::unbounded;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
-use metrics::MetricsDisabledConfig;
+use metrics::MetricsEnabledConfig;
 
 mod common_metric_data;
 mod core;
@@ -773,13 +773,14 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
 }
 
-/// Sets a remote configuration for the metrics' disabled property
+/// Sets a remote configuration to override metrics' default enabled/disabled
+/// state
 ///
-/// See [`core::Glean::set_metrics_disabled_config`].
-pub fn glean_set_metrics_disabled_config(json: String) {
-    match MetricsDisabledConfig::try_from(json) {
+/// See [`core::Glean::set_metrics_enabled_config`].
+pub fn glean_set_metrics_enabled_config(json: String) {
+    match MetricsEnabledConfig::try_from(json) {
         Ok(cfg) => launch_with_glean(|glean| {
-            glean.set_metrics_disabled_config(cfg);
+            glean.set_metrics_enabled_config(cfg);
         }),
         Err(e) => {
             log::error!("Error setting metrics feature config: {:?}", e);

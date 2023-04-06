@@ -445,7 +445,17 @@ open class GleanInternalAPI internal constructor() {
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
     fun setMetricsDisabledConfig(json: String) {
-        gleanSetMetricsDisabledConfig(json)
+        // Stub intentionally left empty to avoid breaking changes
+    }
+
+    /**
+     * Set configuration to override metrics' enabled/disabled state, typically from a remote_settings
+     * experiment or rollout.
+     *
+     * @param json Stringified JSON map of metrics and their associated `disabled` property.
+     */
+    fun setMetricsEnabledConfig(json: String) {
+        gleanSetMetricsEnabledConfig(json)
     }
 
     /**
