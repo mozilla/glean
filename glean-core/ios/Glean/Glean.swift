@@ -358,7 +358,17 @@ public class Glean {
     /// - parameters:
     ///    * json: Stringified JSON map of metrics and their associated `disabled` property.
     public func setMetricsDisabledConfig(_ json: String) {
-        gleanSetMetricsDisabledConfig(json)
+        // Stubbed on purpose to prevent breaking changes
+    }
+
+    /// Set configuration to override metrics' default enabled/disabled state, typically from
+    /// a remote_settings experiment or rollout.
+    ///
+    /// - parameters:
+    ///    * json: Stringified JSON map of metric identifiers (category.name) to a boolean
+    ///            representing wether they are enabled
+    public func setMetricsEnabledConfig(_ json: String) {
+        gleanSetMetricsEnabledConfig(json)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process
