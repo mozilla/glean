@@ -887,7 +887,7 @@ class GleanTest {
     }
 
     @Test
-    fun `Date header is set on actualy HTTP POST`() {
+    fun `Date header is set on actual HTTP POST`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
         resetGlean(
@@ -926,5 +926,33 @@ class GleanTest {
         // we're still below that sleep time.
         assertTrue("Difference should be more than 0 seconds, was $diff", diff > 0)
         assertTrue("Difference should be less than 2 seconds, was $diff", diff < 2000)
+    }
+
+    @Test
+    fun `Initialization succeeds with valid DB path`() {
+        // Initialize with a custom data path and ensure `isCustomDataPath` is true.
+        Glean.testDestroyGleanHandle()
+        val cfg = Configuration(
+            dataPath = File(context.applicationInfo.dataDir, "glean_test").absolutePath
+        )
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
+        assertTrue(Glean.isCustomDataPath)
+
+        // Initialize without a custom data path and ensure `isCustomDataPath` is false.
+        Glean.testDestroyGleanHandle()
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
+        assertFalse(Glean.isCustomDataPath)
+    }
+
+    @Test
+    fun `Initialization fails with invalid DB path`() {
+        Glean.testDestroyGleanHandle()
+
+        // The path provided here is invalid because it is an empty string.
+        val cfg = Configuration(dataPath = "")
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
+
+        // Since the path is invalid, Glean should not properly initialize.
+        assertFalse(Glean.initialized)
     }
 }

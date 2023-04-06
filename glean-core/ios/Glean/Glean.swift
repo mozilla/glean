@@ -21,12 +21,16 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func initializeFinished() {
-        // Run this off the main thread,
-        // as it will trigger a ping submission,
-        // which itself will trigger `triggerUpload()` on this class.
-        Dispatchers.shared.launchAsync {
-            self.glean.observer = GleanLifecycleObserver()
+        // Only set up the lifecycle observer if no dataPath is specified.
+        if !self.glean.isCustomDataPath {
+            // Run this off the main thread,
+            // as it will trigger a ping submission,
+            // which itself will trigger `triggerUpload()` on this class.
+            Dispatchers.shared.launchAsync {
+                self.glean.observer = GleanLifecycleObserver()
+            }
         }
+
         self.glean.initialized = true
     }
 
@@ -36,6 +40,13 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func startMetricsPingScheduler() -> Bool {
+        // If we pass a custom data path, the metrics ping schedule should not
+        // be setup.
+        if self.glean.isCustomDataPath {
+            self.glean.metricsPingScheduler = nil
+            return false
+        }
+
         self.glean.metricsPingScheduler = MetricsPingScheduler(self.glean.testingMode.value)
         // Check for overdue metrics pings
         return self.glean.metricsPingScheduler!.schedule()
@@ -79,6 +90,8 @@ public class Glean {
     var configuration: Configuration?
     private var buildInfo: BuildInfo?
     fileprivate var observer: GleanLifecycleObserver?
+    private var gleanDataPath: String?
+    var isCustomDataPath: Bool = false
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -121,15 +134,42 @@ public class Glean {
     ///       If disabled, all persisted metrics, events and queued pings (except
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
-    public func initialize(uploadEnabled: Bool,
-                           configuration: Configuration = Configuration(),
-                           buildInfo: BuildInfo) {
-        // In certain situations Glean.initialize may be called from a process other than the main
-        // process such as an embedded extension. In this case we want to just return.
-        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
-        if !checkIsMainProcess() {
-            logger.error("Attempted to initialize Glean on a process other than the main process")
-            return
+    ///     * buildInfo: A Glean `BuildInfo` object with build settings.
+    public func initialize(uploadEnabled: Bool, configuration: Configuration = Configuration(), buildInfo: BuildInfo) {
+        if let safeDataPath = configuration.dataPath {
+            // When the `dataPath` is provided, we need to make sure:
+            //   1. The database path provided is not the default glean database path.
+            //   2. The database path is valid and writeable.
+
+            // The background process and the main process cannot write to the same file.
+            if safeDataPath == getGleanDirectory().relativePath {
+                logger.error("Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
+                return
+            }
+
+            // Check that the database path we are trying to write to is valid and writable.
+            if !canWriteToDatabasePath(safeDataPath) {
+                logger.error("Attempted to initialize Glean with an invalid database path")
+                return
+            }
+
+            self.gleanDataPath = safeDataPath
+            self.isCustomDataPath = true
+        } else {
+            // If no `dataPath` is provided, then we setup Glean as usual.
+            //
+            // In certain situations Glean.initialize may be called from a process other than the main
+            // process such as an embedded extension. In this case we want to just return.
+            // See https://bugzilla.mozilla.org/show_bug.cgi?id=1625157 for more information.
+            if !checkIsMainProcess() {
+                logger.error(
+                    "Attempted to initialize Glean on a process other than the main process without a dataPath"
+                )
+                return
+            }
+
+            self.gleanDataPath = getGleanDirectory().relativePath
+            self.isCustomDataPath = false
         }
 
         if self.isInitialized() {
@@ -142,7 +182,7 @@ public class Glean {
         self.buildInfo = buildInfo
         self.configuration = configuration
         let cfg = InternalConfiguration(
-            dataPath: getGleanDirectory().relativePath,
+            dataPath: self.gleanDataPath!,
             applicationId: AppInfo.name,
             languageBindingName: Constants.languageBindingName,
             uploadEnabled: uploadEnabled,
@@ -211,7 +251,7 @@ public class Glean {
         gleanSetExperimentInactive(experimentId)
     }
 
-    /// Tests wheter an experiment is active, for testing purposes only.
+    /// Tests whether an experiment is active, for testing purposes only.
     ///
     /// - parameters:
     ///     * experimentId: The id of the experiment to look for.
@@ -335,7 +375,7 @@ public class Glean {
     ///
     /// The structure of the custom URL uses the following format:
     ///
-    /// `<protocol>://glean?<command 1>=<paramter 1>&<command 2>=<parameter 2> ...`
+    /// `<protocol>://glean?<command 1>=<parameter 1>&<command 2>=<parameter 2> ...`
     ///
     /// Where:
     ///
@@ -347,7 +387,7 @@ public class Glean {
     /// There are a few things to consider when creating the custom URL:
     ///
     /// - Invalid commands will trigger an error and be ignored.
-    /// - Not all commands are requred to be encoded in the URL, you can mix and match the commands that you need.
+    /// - Not all commands are required to be encoded in the URL, you can mix and match the commands that you need.
     /// - Special characters should be properly URL encoded and escaped since this needs to represent a valid URL.
     public func handleCustomUrl(url: URL) {
         GleanDebugUtility.handleCustomUrl(url: url)
@@ -379,9 +419,9 @@ public class Glean {
     }
 
     /// Test-only method to destroy the owned glean-core handle.
-    func testDestroyGleanHandle(_ clearStores: Bool = false) {
+    func testDestroyGleanHandle(_ clearStores: Bool = false, _ customDataPath: String? = nil) {
         // If it was initialized this also clears the directory
-        let dataPath = getGleanDirectory().relativePath
+        let dataPath = customDataPath ?? getGleanDirectory().relativePath
         gleanTestDestroyGlean(clearStores, dataPath)
 
         if !isInitialized() {
@@ -414,11 +454,12 @@ public class Glean {
     /// - parameters:
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
+    ///     * uploadEnabled: whether upload is enabled
     public func resetGlean(configuration: Configuration = Configuration(),
                            clearStores: Bool,
                            uploadEnabled: Bool = true) {
         // Init Glean.
-        testDestroyGleanHandle(clearStores)
+        testDestroyGleanHandle(clearStores, configuration.dataPath)
 
         // Reset isActive
         isActive = false

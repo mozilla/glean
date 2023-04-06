@@ -294,4 +294,28 @@ class GleanTests: XCTestCase {
             GleanInternalMetrics.buildDate.testGetValue()
         )
     }
+
+    func testGleanDoesNotInitializeWithInvalidDbPath() {
+        Glean.shared.testDestroyGleanHandle()
+
+        // The path provided here is invalid because it is an empty string.
+        let cfg = Configuration(dataPath: "")
+        Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
+
+        // Since the path is invalid, Glean should not properly initialize.
+        XCTAssertFalse(Glean.shared.isInitialized())
+    }
+
+    func testGleanIsCustomDataPathIsSetCorrectly() {
+        // Initialize with a custom data path and ensure `isCustomDataPath` is true.
+        Glean.shared.testDestroyGleanHandle()
+        let cfg = Configuration(dataPath: "glean_test")
+        Glean.shared.initialize(uploadEnabled: true, configuration: cfg, buildInfo: stubBuildInfo())
+        XCTAssertTrue(Glean.shared.isCustomDataPath)
+
+        // Initialize without a custom data path and ensure `isCustomDataPath` is false.
+        Glean.shared.testDestroyGleanHandle()
+        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
+        XCTAssertFalse(Glean.shared.isCustomDataPath)
+    }
 }

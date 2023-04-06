@@ -84,13 +84,34 @@ extension Date {
     }
 }
 
-/// Helper function to retrive the application's Application Support directory for persistent file storage
+/// Helper function to retrieve the application's Application Support directory for persistent file storage.
 ///
 /// - returns: `URL` of the Application Support directory
 func getGleanDirectory() -> URL {
     let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
     let documentsDirectory = paths[0]
     return documentsDirectory.appendingPathComponent("glean_data")
+}
+
+/// Check if the data path provided is valid and writable.
+///
+/// - parameters
+///     * customDataPath: An override for manually setting the data directory.
+func canWriteToDatabasePath(_ customDataPath: String) -> Bool {
+    // Do not allow empty strings.
+    if customDataPath.isEmpty {
+        return false
+    }
+
+    // If the file exists we need to ensure we can write to it.
+    if FileManager.default.fileExists(atPath: customDataPath) {
+        if !FileManager.default.isWritableFile(atPath: customDataPath) {
+            return false
+        }
+    }
+
+    // The database path is valid and writable.
+    return true
 }
 
 /// This struct creates a Boolean with atomic or synchronized access.
