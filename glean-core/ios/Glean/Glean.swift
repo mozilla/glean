@@ -358,7 +358,24 @@ public class Glean {
     /// - parameters:
     ///    * json: Stringified JSON map of metrics and their associated `disabled` property.
     public func setMetricsDisabledConfig(_ json: String) {
-        // Stubbed on purpose to prevent breaking changes
+        // Let's convert this to the new API for backwards compatibility
+        if let jsonData = json.data(using: .utf8, allowLossyConversion: false) {
+            if let json = try? JSONSerialization.jsonObject(with: jsonData) {
+                if let jsonDict = json as? [String: Bool] {
+                    var newDict = [String: Bool]()
+                    jsonDict.forEach { k, v in
+                        newDict[k] = !v
+                    }
+                    if let newJsonData = try? JSONSerialization.data(
+                        withJSONObject: jsonDict,
+                        options: []) {
+                        if let newJsonString = String(data: newJsonData, encoding: .utf8) {
+                            setMetricsEnabledConfig(newJsonString)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /// Set configuration to override metrics' default enabled/disabled state, typically from

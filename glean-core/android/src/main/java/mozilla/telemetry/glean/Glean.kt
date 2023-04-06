@@ -439,13 +439,15 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
-     * Set configuration for metrics' disabled property, typically from a remote_settings
+     * [DEPRECATED] Set configuration for metrics' disabled property, typically from a remote_settings
      * experiment or rollout.
      *
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
+     @DEPRECATED
     fun setMetricsDisabledConfig(json: String) {
-        // Stub intentionally left empty to avoid breaking changes
+        // Let's convert this to the new API for backwards compatibility
+        val jsonData: JSON = JSONObject(json)
     }
 
     /**
