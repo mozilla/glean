@@ -1483,11 +1483,11 @@ mod test {
         // Create a new upload manager pointing to the same data_path as the glean instance.
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
 
-        // From manual testing we figured out an empty ping file is 324bytes,
-        // so this allows 3 pings.
+        // From manual testing we figured out a basically empty ping file is 399 bytes,
+        // so this allows 3 pings with some headroom in case of future changes.
         upload_manager
             .policy
-            .set_max_pending_pings_directory_size(Some(1000));
+            .set_max_pending_pings_directory_size(Some(1300));
         upload_manager.policy.set_max_pending_pings_count(Some(5));
 
         // Get a task once

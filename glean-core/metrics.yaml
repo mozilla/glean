@@ -337,7 +337,7 @@ glean.internal.metrics:
 
   start_time:
     type: datetime
-    time_unit: minute
+    time_unit: millisecond
     lifetime: user
     send_in_pings:
       - glean_internal_info
@@ -346,6 +346,7 @@ glean.internal.metrics:
       in local time and with minute precision, including timezone information.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1827852
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     data_sensitivity:
@@ -356,7 +357,7 @@ glean.internal.metrics:
 
   end_time:
     type: datetime
-    time_unit: minute
+    time_unit: millisecond
     lifetime: ping
     send_in_pings:
       - glean_internal_info
@@ -367,6 +368,7 @@ glean.internal.metrics:
       and is likely well before ping transmission time.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1827852
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     data_sensitivity:
