@@ -105,7 +105,7 @@ mozilla::glean::views::login_opened.Record(std::move(extra))
 **JavaScript**
 
 ```js
-const extra = { sourceOfLogin: "toolbar" };
+const extra = { source_of_login: "toolbar" }; // Extra Keys are *NOT* conjugated to camelCase
 Glean.views.loginOpened.record(extra);
 ```
 

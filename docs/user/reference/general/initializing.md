@@ -113,9 +113,13 @@ class SampleApplication : Application() {
 }
 ```
 
-The Glean Kotlin SDK does not support use across multiple processes, and must only be initialized on the application's main process. Initializing in other processes is a no-op.
+The Glean Kotlin SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
-Additionally, Glean must be initialized on the main (UI) thread of the applications main process. Failure to do so will throw an `IllegalThreadStateException`.
+Requirements for a non-main process
+- `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
+- The default `dataPath` for Glean is `{context.applicationInfo.dataDir}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
+
+**Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled [baseline](../../user/pings/baseline.md) or [metrics](../../user/pings/metrics.md) pings.
 
 ### Consuming Glean through Android Components
 
@@ -174,8 +178,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-The Glean Swift SDK does not support use across multiple processes,
-and must only be initialized on the application's main process.
+The Glean Swift SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
+
+Requirements for a non-main process 
+- `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
+- On iOS devices, Glean stores data in the Application Support directory. The default `dataPath` Glean uses is `{FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
+
+**Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled [baseline](../../user/pings/baseline.md) or [metrics](../../user/pings/metrics.md) pings.
 
 </div>
 

@@ -25,6 +25,7 @@ from glean import _builtins
 from glean import _util
 from glean.metrics import (
     CounterMetricType,
+    EventMetricType,
     CommonMetricData,
     Lifetime,
     PingType,
@@ -35,9 +36,46 @@ from glean.testing import _RecordingUploader
 from glean._uniffi import glean_set_test_mode
 
 GLEAN_APP_ID = "glean-python-test"
-
-
 ROOT = Path(__file__).parent
+
+
+def wait_for_requests(server, n=1, timeout=2):
+    """
+    Wait for `n` requests to be received by the server.
+
+    Raises a `TimeoutError` if the file doesn't exist within the timeout.
+    """
+    start_time = time.time()
+    while len(server.requests) < n:
+        time.sleep(0.1)
+        if time.time() - start_time > timeout:
+            raise TimeoutError(
+                f"Expected {n} requests within {timeout} seconds. Got {len(server.requests)}"
+            )
+
+
+def wait_for_ping(path, timeout=2) -> (str, str):
+    """
+    Wait for a ping to appear in `path` for at most `timeout` seconds.
+
+    Raises a `TimeoutError` if the file doesn't exist within the timeout.
+
+    Returns a tuple of (url path, payload).
+    """
+
+    start_time = time.time()
+    while not path.exists():
+        time.sleep(0.1)
+        if time.time() - start_time > timeout:
+            raise TimeoutError(f"No ping appeared in {path} within {timeout} seconds")
+
+    with path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+        payload = json.loads(serialized_ping)
+
+    os.remove(path)
+    return (url_path, payload)
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
@@ -433,14 +471,6 @@ def test_set_application_build_id():
     )
 
 
-def wait_for_requests(server, n=1, timeout=2):
-    start_time = time.time()
-    while len(server.requests) < n:
-        time.sleep(0.1)
-        if time.time() - start_time > timeout:
-            raise TimeoutError()
-
-
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_set_application_id_and_version(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
@@ -737,7 +767,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
     # Submit a custom ping.
     ping.submit()
 
-    url_path, payload = wait_for_ping(info_path, max_wait=20)
+    url_path, payload = wait_for_ping(info_path)
 
     # Validate we got the deletion-request ping
     assert "deletion-request" == url_path.split("/")[3]
@@ -753,25 +783,6 @@ def test_data_dir_is_required():
             upload_enabled=True,
             configuration=Glean._configuration,
         )
-
-
-def wait_for_ping(info_path, max_wait=10) -> (str, str):
-    while not info_path.exists():
-        time.sleep(0.1)
-        max_wait -= 1
-        if max_wait == 0:
-            break
-
-    if not info_path.exists():
-        raise RuntimeError("No ping received.")
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
-        payload = json.loads(serialized_ping)
-
-    os.remove(info_path)
-    return (url_path, payload)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
@@ -798,7 +809,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Making it active
     Glean.handle_client_active()
 
-    url_path, payload = wait_for_ping(info_path, max_wait=20)
+    url_path, payload = wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
     # It's an empty ping.
@@ -810,7 +821,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Making it inactive
     Glean.handle_client_inactive()
 
-    url_path, payload = wait_for_ping(info_path, max_wait=20)
+    url_path, payload = wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "inactive"
     assert "glean.baseline.duration" in payload["metrics"]["timespan"]
@@ -821,7 +832,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Once more active
     Glean.handle_client_active()
 
-    url_path, payload = wait_for_ping(info_path, max_wait=20)
+    url_path, payload = wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
     assert "timespan" not in payload["metrics"]
@@ -862,3 +873,50 @@ def test_sending_of_custom_pings(safe_httpserver):
     assert callback_was_called[0]
 
     assert 1 == len(safe_httpserver.requests)
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="uploader isn't started fast enough"
+)
+def test_max_events_overflow(tmpdir):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path),
+        ),
+    )
+
+    event = EventMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="testing",
+            lifetime=Lifetime.APPLICATION,
+            name="event",
+            send_in_pings=["events"],
+            dynamic_label=None,
+        ),
+        allowed_extra_keys=[],
+    )
+
+    # Records the event and triggers the ping due to max_events=1
+    event.record()
+
+    url_path, payload = wait_for_ping(info_path)
+
+    assert "events" == url_path.split("/")[3]
+    events = payload["events"]
+    reason = payload["ping_info"]["reason"]
+
+    assert "max_capacity" == reason
+    assert 1 == len(events)
+    assert "testing" == events[0]["category"]
+    assert "event" == events[0]["name"]
+    assert 0 == events[0]["timestamp"]

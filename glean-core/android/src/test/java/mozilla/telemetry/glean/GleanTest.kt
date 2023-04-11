@@ -44,7 +44,9 @@ import org.mockito.Mockito.mock
 import org.robolectric.shadows.ShadowLog
 import org.robolectric.shadows.ShadowProcess
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -882,5 +884,116 @@ class GleanTest {
         assertEquals("c0ffee", GleanInternalMetrics.appBuild.testGetValue())
         assertEquals("foo", GleanInternalMetrics.appDisplayVersion.testGetValue())
         assertEquals("2020-11-06T11:30:50+00:00", GleanInternalMetrics.buildDate.testGetValueAsString())
+    }
+
+    @Test
+    fun `Date header is set on actual HTTP POST`() {
+        delayMetricsPing(context)
+        val server = getMockWebServer()
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port
+            )
+        )
+
+        Glean.handleBackgroundEvent()
+
+        // Before the `Date` was set on submit,
+        // so waiting here would ensure the actual sending is later.
+        // Now we set the date on actual sending,
+        // so we can observe it close to receive time further below.
+        Thread.sleep(2000)
+
+        // Now trigger it to upload
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)
+        val expected = Date()
+
+        val dateHeader = request!!.getHeader("Date")!!
+        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        val dateParsed = dateFormat.parse(dateHeader)!!
+
+        val diff = expected.getTime() - dateParsed.getTime()
+
+        // Send time is within 2 seconds of receive time
+        // Due to timings the uploader takes a bit of time to launch.
+        // Receiving the request takes a bit more.
+        // This can easily sum up to just above one second.
+        // We sleep for 2 seconds above, so if we check for less than 2 seconds here
+        // we're still below that sleep time.
+        assertTrue("Difference should be more than 0 seconds, was $diff", diff > 0)
+        assertTrue("Difference should be less than 2 seconds, was $diff", diff < 2000)
+    }
+
+    @Test
+    fun `Initialization succeeds with valid DB path`() {
+        // Initialize with a custom data path and ensure `isCustomDataPath` is true.
+        Glean.testDestroyGleanHandle()
+        val cfg = Configuration(
+            dataPath = File(context.applicationInfo.dataDir, "glean_test").absolutePath
+        )
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
+        assertTrue(Glean.isCustomDataPath)
+
+        // Initialize without a custom data path and ensure `isCustomDataPath` is false.
+        Glean.testDestroyGleanHandle()
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
+        assertFalse(Glean.isCustomDataPath)
+    }
+
+    @Test
+    fun `Initialization fails with invalid DB path`() {
+        Glean.testDestroyGleanHandle()
+
+        // The path provided here is invalid because it is an empty string.
+        val cfg = Configuration(dataPath = "")
+        Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
+
+        // Since the path is invalid, Glean should not properly initialize.
+        assertFalse(Glean.initialized)
+    }
+
+    @Test
+    fun `remote metric configurations are correctly applied`() {
+        val stringMetric = StringMetricType(
+            CommonMetricData(
+                disabled = true,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "string_metric",
+                sendInPings = listOf("store1")
+            )
+        )
+
+        // Set a metric configuration which will enable the telemetry.string_metric
+        val metricConfig = """
+            {
+              "telemetry.string_metric": true
+            }
+        """.trimIndent()
+        Glean.setMetricsEnabledConfig(metricConfig)
+
+        // This should result in the metric being set to "foo"
+        stringMetric.set("foo")
+        assertNotNull(stringMetric.testGetValue())
+        assertEquals("foo", stringMetric.testGetValue())
+
+        // Set a metric configuration which will disable the telemetry.string_metric
+        // again, this time using the deprecated API to ensure backwards compatibility
+        val metricConfigBackwardsCompat = """
+            {
+              "telemetry.string_metric": true
+            }
+        """.trimIndent()
+        Glean.setMetricsDisabledConfig(metricConfigBackwardsCompat)
+
+        // This should not result in the metric being set to "bar", it should still
+        // contain the original "foo" string
+        stringMetric.set("bar")
+        assertNotNull(stringMetric.testGetValue())
+        assertEquals("foo", stringMetric.testGetValue())
     }
 }
