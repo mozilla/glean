@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.4.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.5.0...main)
+
+# v52.5.0 (2023-04-11)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.4.3...v52.5.0)
 
 * General
   * On Rkv detecting a corrupted database delete the old RKV, create a new one and log the error ([#2425](https://github.com/mozilla/glean/pull/2425))

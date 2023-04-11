@@ -4708,9 +4708,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean 52.4.3]( https://github.com/mozilla/glean )
+* [glean 52.5.0]( https://github.com/mozilla/glean )
 * [glean-build 7.1.0]( https://github.com/mozilla/glean )
-* [glean-core 52.4.3]( https://github.com/mozilla/glean )
+* [glean-core 52.5.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
