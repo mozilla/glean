@@ -90,7 +90,7 @@ impl PingMaker {
 
     /// Gets the formatted start and end times for this ping and update for the next ping.
     fn get_start_end_times(&self, glean: &Glean, storage_name: &str) -> (String, String) {
-        let time_unit = TimeUnit::Minute;
+        let time_unit = TimeUnit::Millisecond;
 
         let start_time = DatetimeMetric::new(
             CommonMetricData {
