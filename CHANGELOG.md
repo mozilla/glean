@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...main)
+
+# v52.6.0 (2023-04-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.5.0...v52.6.0)
+
+* Rust
+  * The Text metric type is now available in the Rust language bindings ([#2451](https://github.com/mozilla/glean/pull/2451))
 
 # v52.5.0 (2023-04-11)
 
