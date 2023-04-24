@@ -974,7 +974,7 @@ class GleanTest {
               "telemetry.string_metric": true
             }
         """.trimIndent()
-        Glean.setMetricsEnabledConfig(metricConfig)
+        Glean.setMetricsEnabledConfig("glean", metricConfig)
 
         // This should result in the metric being set to "foo"
         stringMetric.set("foo")

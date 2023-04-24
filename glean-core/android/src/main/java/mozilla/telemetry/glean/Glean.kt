@@ -458,7 +458,7 @@ open class GleanInternalAPI internal constructor() {
         jsonData.keys().forEach {
             invertedJsonData.put(it, !jsonData.getBoolean(it))
         }
-        setMetricsEnabledConfig(invertedJsonData.toString())
+        setMetricsEnabledConfig("glean", invertedJsonData.toString())
     }
 
     /**
@@ -467,8 +467,8 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
-    fun setMetricsEnabledConfig(json: String) {
-        gleanSetMetricsEnabledConfig(json)
+    fun setMetricsEnabledConfig(featureId: String, json: String) {
+        gleanSetMetricsEnabledConfig(featureId, json)
     }
 
     /**

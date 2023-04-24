@@ -808,10 +808,10 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
 /// state
 ///
 /// See [`core::Glean::set_metrics_enabled_config`].
-pub fn glean_set_metrics_enabled_config(json: String) {
+pub fn glean_set_metrics_enabled_config(feature_id: String, json: String) {
     match MetricsEnabledConfig::try_from(json) {
         Ok(cfg) => launch_with_glean(|glean| {
-            glean.set_metrics_enabled_config(cfg);
+            glean.set_metrics_enabled_config(feature_id, cfg);
         }),
         Err(e) => {
             log::error!("Error setting metrics feature config: {:?}", e);

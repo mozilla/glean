@@ -21,12 +21,12 @@ mod experiment;
 pub(crate) mod labeled;
 mod memory_distribution;
 mod memory_unit;
-mod metrics_enabled_config;
 mod numerator;
 mod ping;
 mod quantity;
 mod rate;
 mod recorded_experiment;
+mod server_knobs;
 mod string;
 mod string_list;
 mod text;
@@ -69,7 +69,7 @@ pub use self::uuid::UuidMetric;
 pub use crate::histogram::HistogramType;
 pub use recorded_experiment::RecordedExperiment;
 
-pub use self::metrics_enabled_config::MetricsEnabledConfig;
+pub use self::server_knobs::{FeatureMetricConfiguration, MetricsEnabledConfig};
 
 /// A snapshot of all buckets and the accumulated sum of a distribution.
 //
@@ -187,35 +187,50 @@ pub trait MetricType {
         let epoch = disabled_field >> 4;
         // Get the disabled flag from the lower nibble
         let disabled = disabled_field & 0xF;
-        // Get the current remote_settings epoch to see if we need to bother with the
-        // more expensive HashMap lookup
-        let remote_settings_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
-        if epoch == remote_settings_epoch {
-            return disabled == 0;
-        }
-        // The epoch's didn't match so we need to look up the disabled flag
-        // by the base_identifier from the in-memory HashMap
-        let metrics_enabled = &glean
-            .remote_settings_metrics_config
-            .lock()
-            .unwrap()
-            .metrics_enabled;
+
+        let mut remote_settings_epoch = 0u8;
+
+        // Check to see if there is a remote configuration for this metric and get the feature_id
         // Get the value from the remote configuration if it is there, otherwise return the default value.
-        let current_disabled = {
-            let base_id = self.meta().base_identifier();
-            let identifier = base_id
-                .split_once('/')
-                .map(|split| split.0)
-                .unwrap_or(&base_id);
-            // NOTE: The `!` preceding the `*is_enabled` is important for inverting the logic since the
-            // underlying property in the metrics.yaml is `disabled` and the outward API is treating it as
-            // if it were `enabled` to make it easier to understand.
-            if let Some(is_enabled) = metrics_enabled.get(identifier) {
-                u8::from(!*is_enabled)
+        let base_id = self.meta().base_identifier();
+        let identifier = base_id
+            .split_once('/')
+            .map(|split| split.0)
+            .unwrap_or(&base_id);
+        let current_disabled =
+            if let Some(feature_id) = glean.get_feature_id_for_metric(identifier.to_string()) {
+                // Get the current remote_settings epoch to see if we need to bother with the
+                // more expensive HashMap lookup
+                if let Some(config) = glean
+                    .remote_settings_metrics_config
+                    .lock()
+                    .unwrap()
+                    .get(&feature_id)
+                {
+                    remote_settings_epoch = config.epoch.load(Ordering::Acquire);
+
+                    if epoch == remote_settings_epoch {
+                        return disabled == 0;
+                    }
+                    // The epoch's didn't match so we need to look up the disabled flag
+                    // by the base_identifier from the in-memory HashMap
+                    let metrics_enabled = &config.config.lock().unwrap().metrics_enabled;
+
+                    // NOTE: The `!` preceding the `*is_enabled` is important for inverting the logic since the
+                    // underlying property in the metrics.yaml is `disabled` and the outward API is treating it as
+                    // if it were `enabled` to make it easier to understand.
+                    if let Some(is_enabled) = metrics_enabled.get(identifier) {
+                        u8::from(!*is_enabled)
+                    } else {
+                        u8::from(self.meta().inner.disabled)
+                    }
+                } else {
+                    // We shouldn't get here because if there wasn't a config then the previous check should have caught this
+                    u8::from(self.meta().inner.disabled)
+                }
             } else {
                 u8::from(self.meta().inner.disabled)
-            }
-        };
+            };
 
         // Re-encode the epoch and enabled status and update the metadata
         let new_disabled = (remote_settings_epoch << 4) | (current_disabled & 0xF);

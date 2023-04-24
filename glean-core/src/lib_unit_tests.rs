@@ -860,6 +860,7 @@ fn test_set_metrics_disabled() {
     )
     .to_string();
     glean.set_metrics_enabled_config(
+        "glean".to_string(),
         MetricsEnabledConfig::try_from(metrics_enabled_config).unwrap(),
     );
 
@@ -885,6 +886,7 @@ fn test_set_metrics_disabled() {
     // 4. Set a new configuration where the metrics are enabled
     metrics_enabled_config = json!({}).to_string();
     glean.set_metrics_enabled_config(
+        "glean".to_string(),
         MetricsEnabledConfig::try_from(metrics_enabled_config).unwrap(),
     );
 
@@ -912,11 +914,7 @@ fn test_set_metrics_disabled() {
 fn test_remote_settings_epoch() {
     let (glean, _t) = new_glean(None);
 
-    // 1. Ensure the starting epoch
-    let mut current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
-    assert_eq!(0u8, current_epoch, "Current epoch must start at 0");
-
-    // 2. Set a configuration which will trigger incrementing the epoch
+    // 1. Set a configuration which will trigger incrementing the epoch
     let metrics_enabled_config = json!(
         {
             "category.string_metric": false
@@ -924,12 +922,74 @@ fn test_remote_settings_epoch() {
     )
     .to_string();
     glean.set_metrics_enabled_config(
+        "glean".to_string(),
         MetricsEnabledConfig::try_from(metrics_enabled_config).unwrap(),
     );
 
-    // 3. Ensure the epoch updated
-    current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
+    // 2. Ensure the epoch updated
+    let current_epoch = glean
+        .remote_settings_metrics_config
+        .lock()
+        .unwrap()
+        .get(&"glean".to_string())
+        .unwrap()
+        .epoch
+        .load(Ordering::Acquire);
     assert_eq!(1u8, current_epoch, "Current epoch must match");
+
+    // 3. Set a configuration for a different feature, which will trigger
+    // incrementing the epoch for it
+    let metrics_enabled_config = json!({}).to_string();
+    glean.set_metrics_enabled_config(
+        "gleaner".to_string(),
+        MetricsEnabledConfig::try_from(metrics_enabled_config).unwrap(),
+    );
+
+    // 4. Ensure the epoch updated for the new feature
+    let current_epoch = glean
+        .remote_settings_metrics_config
+        .lock()
+        .unwrap()
+        .get(&"gleaner".to_string())
+        .unwrap()
+        .epoch
+        .load(Ordering::Acquire);
+    assert_eq!(1u8, current_epoch, "Current epoch must match");
+
+    // 5. Ensure the original epoch did not update for the new feature
+    let current_epoch = glean
+        .remote_settings_metrics_config
+        .lock()
+        .unwrap()
+        .get(&"glean".to_string())
+        .unwrap()
+        .epoch
+        .load(Ordering::Acquire);
+    assert_eq!(1u8, current_epoch, "Current epoch must match");
+
+    // 6. Set another configuration which will trigger incrementing the epoch
+    // for the first feature "glean"
+    let another_metrics_enabled_config = json!(
+        {
+            "category.string_metric": true
+        }
+    )
+    .to_string();
+    glean.set_metrics_enabled_config(
+        "glean".to_string(),
+        MetricsEnabledConfig::try_from(another_metrics_enabled_config).unwrap(),
+    );
+
+    // 7. Ensure the epoch updated for the original "glean" feature
+    let current_epoch = glean
+        .remote_settings_metrics_config
+        .lock()
+        .unwrap()
+        .get(&"glean".to_string())
+        .unwrap()
+        .epoch
+        .load(Ordering::Acquire);
+    assert_eq!(2u8, current_epoch, "Current epoch must match");
 }
 
 #[test]
@@ -958,11 +1018,20 @@ fn test_remote_settings_epoch_updates_in_metric() {
     )
     .to_string();
     glean.set_metrics_enabled_config(
+        "glean".to_string(),
         MetricsEnabledConfig::try_from(metrics_enabled_config).unwrap(),
     );
 
-    // 3. Ensure the epoch was updated
-    let current_epoch = glean.remote_settings_epoch.load(Ordering::Acquire);
+    // 3. Ensure the epoch was updated, this should be "0" since the configuration
+    // was newly applied
+    let current_epoch = glean
+        .remote_settings_metrics_config
+        .lock()
+        .unwrap()
+        .get(&"glean".to_string())
+        .unwrap()
+        .epoch
+        .load(Ordering::Acquire);
     assert_eq!(1u8, current_epoch, "Current epoch must update");
 
     // 4. Since the metric was disabled, setting a new value will be ignored

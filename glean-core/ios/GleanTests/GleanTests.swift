@@ -286,7 +286,7 @@ class GleanTests: XCTestCase {
   "telemetry.counter_metric": true
 }
 """
-        Glean.shared.setMetricsEnabledConfig(metricConfigStringifiedJson)
+        Glean.shared.setMetricsEnabledConfig("glean", json: metricConfigStringifiedJson)
 
         // Attempt to add to the counter, this should succeed.
         counter.add(1)

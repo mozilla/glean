@@ -12,7 +12,8 @@ use crate::event_database::EventDatabase;
 use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{
-    self, ExperimentMetric, Metric, MetricType, MetricsEnabledConfig, PingType, RecordedExperiment,
+    self, ExperimentMetric, FeatureMetricConfiguration, Metric, MetricType, MetricsEnabledConfig,
+    PingType, RecordedExperiment,
 };
 use crate::ping::PingMaker;
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
@@ -153,8 +154,8 @@ pub struct Glean {
     debug: DebugOptions,
     pub(crate) app_build: String,
     pub(crate) schedule_metrics_pings: bool,
-    pub(crate) remote_settings_epoch: AtomicU8,
-    pub(crate) remote_settings_metrics_config: Arc<Mutex<MetricsEnabledConfig>>,
+    pub(crate) remote_settings_metrics_config:
+        Arc<Mutex<HashMap<String, FeatureMetricConfiguration>>>,
 }
 
 impl Glean {
@@ -207,8 +208,7 @@ impl Glean {
             app_build: cfg.app_build.to_string(),
             // Subprocess doesn't use "metrics" pings so has no need for a scheduler.
             schedule_metrics_pings: false,
-            remote_settings_epoch: AtomicU8::new(0),
-            remote_settings_metrics_config: Arc::new(Mutex::new(MetricsEnabledConfig::new())),
+            remote_settings_metrics_config: Arc::new(Mutex::new(HashMap::new())),
         };
 
         // Ensuring these pings are registered.
@@ -711,14 +711,52 @@ impl Glean {
     /// # Arguments
     ///
     /// * `json` - The stringified JSON representation of a `MetricsEnabledConfig` object
-    pub fn set_metrics_enabled_config(&self, cfg: MetricsEnabledConfig) {
-        // Set the current MetricsEnabledConfig, keeping the lock until the epoch is
-        // updated to prevent against reading a "new" config but an "old" epoch
-        let mut lock = self.remote_settings_metrics_config.lock().unwrap();
-        *lock = cfg;
+    pub fn set_metrics_enabled_config(&self, feature_id: String, cfg: MetricsEnabledConfig) {
+        let mut remote_settings_metrics_config =
+            self.remote_settings_metrics_config.lock().unwrap();
+        if let Some(feature_metric_config) = remote_settings_metrics_config.get(&feature_id) {
+            // Set the current MetricsEnabledConfig, keeping the lock until the epoch is
+            // updated to prevent against reading a "new" config but an "old" epoch
+            let mut lock = feature_metric_config.config.lock().unwrap();
+            *lock = cfg;
 
-        // Update remote_settings epoch
-        self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
+            // Update the epoch for this feature
+            feature_metric_config.epoch.fetch_add(1, Ordering::SeqCst);
+        } else {
+            // There isn't an existing feature-id so create a new entry for it with the
+            // configuration that was provided. We start with a value of 1 in order to allow
+            // metrics to catch the first update since they start with a 0.
+            remote_settings_metrics_config.insert(
+                feature_id,
+                FeatureMetricConfiguration {
+                    epoch: AtomicU8::new(1),
+                    config: Arc::new(Mutex::new(cfg)),
+                },
+            );
+        }
+    }
+
+    /// Performs a lookup by metric_id (<category>.<name>) to get the feature identifier
+    /// associated with it if the metric has a remote configuration applied. Used by
+    /// created metrics to check if there is an updated remote configuration to apply for
+    /// the associated feature.
+    ///
+    /// # Arguments
+    ///
+    /// * `metric_id` - The metric identifier in the format <category>.<name>
+    pub(crate) fn get_feature_id_for_metric(&self, metric_id: String) -> Option<String> {
+        let remote_settings_metrics_config = self.remote_settings_metrics_config.lock().unwrap();
+        if let Some((feature_id, _)) = remote_settings_metrics_config.iter().find(|&(_, config)| {
+            if let Ok(config) = config.config.lock() {
+                config.metrics_enabled.keys().any(|id| *id == metric_id)
+            } else {
+                false
+            }
+        }) {
+            Some(feature_id.clone())
+        } else {
+            None
+        }
     }
 
     /// Persists [`Lifetime::Ping`] data that might be in memory in case

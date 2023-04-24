@@ -30,7 +30,7 @@ namespace glean {
     RecordedExperiment? glean_test_get_experiment_data(string experiment_id);
 
     // Server Knobs API
-    void glean_set_metrics_enabled_config(string json);
+    void glean_set_metrics_enabled_config(string feature_id, string json);
 
     boolean glean_set_debug_view_tag(string tag);
     boolean glean_set_source_tags(sequence<string> tags);

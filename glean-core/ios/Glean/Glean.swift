@@ -376,7 +376,7 @@ public class Glean {
                         withJSONObject: jsonDict,
                         options: []) {
                         if let newJsonString = String(data: newJsonData, encoding: .utf8) {
-                            setMetricsEnabledConfig(newJsonString)
+                            setMetricsEnabledConfig("glean", json: newJsonString)
                         }
                     }
                 }
@@ -390,8 +390,8 @@ public class Glean {
     /// - parameters:
     ///    * json: Stringified JSON map of metric identifiers (category.name) to a boolean
     ///            representing wether they are enabled
-    public func setMetricsEnabledConfig(_ json: String) {
-        gleanSetMetricsEnabledConfig(json)
+    public func setMetricsEnabledConfig(_ featureId: String, json: String) {
+        gleanSetMetricsEnabledConfig(featureId, json)
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process

@@ -172,8 +172,8 @@ pub fn set_experiment_inactive(experiment_id: String) {
 /// Set the remote configuration values for the metrics' disabled property
 ///
 /// See [`glean_core::Glean::set_metrics_enabled_config`].
-pub fn glean_set_metrics_enabled_config(json: String) {
-    glean_core::glean_set_metrics_enabled_config(json)
+pub fn glean_set_metrics_enabled_config(feature_id: String, json: String) {
+    glean_core::glean_set_metrics_enabled_config(feature_id, json)
 }
 
 /// Performs the collection/cleanup operations required by becoming active.
