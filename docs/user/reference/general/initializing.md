@@ -67,6 +67,7 @@ Below are listed the configuration options available on most SDKs.
 - `httpUploader`: A custom HTTP uploader instance, that will overwrite Glean's provided uploader. Useful
 for users that wish to use specific uploader implementations. See [Custom Uploaders](#custom-uploaders)
 for more information on how and when the use this feature.
+- `logLevel`: The level for how verbose the internal logging is. The level filter options in order from least to most verbose are: `Off`, `Error`, `Warn`, `Info`, `Debug`, `Trace`. See the [`log` crate docs](https://docs.rs/log/latest/log/) for more information.
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 
