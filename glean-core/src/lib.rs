@@ -565,8 +565,18 @@ pub fn shutdown() {
         glean.set_dirty_flag(false);
     });
 
-    // We need to wait for above task to finish.
-    dispatcher::block_on_queue();
+    // We need to wait for above task to finish,
+    // but we also don't wait around forever.
+    //
+    // TODO: Make the timeout configurable?
+    // The default hang watchdog on Firefox waits 60s,
+    // Glean's `uploader_shutdown` further below waits up to 30s.
+    if dispatcher::block_on_queue_timeout(Duration::from_secs(10)).is_err() {
+        log::error!(
+            "Timeout while blocking on the dispatcher. No further shutdown cleanup will happen."
+        );
+        return;
+    }
 
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
