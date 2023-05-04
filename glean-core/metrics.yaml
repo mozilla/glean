@@ -744,6 +744,23 @@ glean.validation:
       - jrediger@mozilla.com
     expires: never
 
+  shutdown_dispatcher_wait:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Time waited for the dispatcher to unblock during shutdown.
+      Most samples are expected to be below the 10s timeout used.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1828066
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1828066#c7
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
 glean:
   restarted:
     type: event

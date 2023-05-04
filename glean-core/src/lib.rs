@@ -571,12 +571,25 @@ pub fn shutdown() {
     // TODO: Make the timeout configurable?
     // The default hang watchdog on Firefox waits 60s,
     // Glean's `uploader_shutdown` further below waits up to 30s.
+    let timer_id = core::with_glean(|glean| {
+        glean
+            .additional_metrics
+            .shutdown_dispatcher_wait
+            .start_sync()
+    });
     if dispatcher::block_on_queue_timeout(Duration::from_secs(10)).is_err() {
         log::error!(
             "Timeout while blocking on the dispatcher. No further shutdown cleanup will happen."
         );
         return;
     }
+    let stop_time = time::precise_time_ns();
+    core::with_glean(|glean| {
+        glean
+            .additional_metrics
+            .shutdown_dispatcher_wait
+            .set_stop_and_accumulate(glean, timer_id, stop_time);
+    });
 
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);
