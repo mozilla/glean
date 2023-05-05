@@ -190,7 +190,8 @@ public class Glean {
             delayPingLifetimeIo: false,
             appBuild: "0.0.0",
             useCoreMps: false,
-            trimDataToRegisteredPings: false
+            trimDataToRegisteredPings: false,
+            logLevel: configuration.logLevel
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)

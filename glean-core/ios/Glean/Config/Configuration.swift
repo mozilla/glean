@@ -9,6 +9,7 @@ public struct Configuration {
     let maxEvents: Int32?
     let channel: String?
     let dataPath: String?
+    let logLevel: LevelFilter?
 
     struct Constants {
         static let defaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org"
@@ -23,15 +24,18 @@ public struct Configuration {
     ///   * serverEndpoint the server endpoint Glean should send data to
     ///   * dataPath an optional String that specifies where to store data locally on the device.
     ///   This should ONLY be used when setting up Glean on a non-main process.
+    ///   * logLevel an optional log level that controls how verbose the internal logging is.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
         serverEndpoint: String? = nil,
-        dataPath: String? = nil
+        dataPath: String? = nil,
+        logLevel: LevelFilter? = nil
     ) {
         self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.maxEvents = maxEvents
         self.channel = channel
         self.dataPath = dataPath
+        self.logLevel = logLevel
     }
 }

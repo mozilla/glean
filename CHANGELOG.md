@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...main)
 
+* General
+  * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
+
 # v52.6.0 (2023-04-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.5.0...v52.6.0)
