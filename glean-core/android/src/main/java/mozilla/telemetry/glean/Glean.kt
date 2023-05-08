@@ -422,7 +422,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
-    internal fun setDebugViewTag(value: String): Boolean {
+    fun setDebugViewTag(value: String): Boolean {
         return gleanSetDebugViewTag(value)
     }
 
@@ -479,7 +479,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the option.
      */
-    internal fun setLogPings(value: Boolean) {
+    fun setLogPings(value: Boolean) {
         gleanSetLogPings(value)
     }
 

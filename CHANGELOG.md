@@ -6,6 +6,7 @@
   * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
 * Kotlin
   * Update Kotlin to version 1.8.21 ([#2462](https://github.com/mozilla/glean/pull/2462))
+  * Make debugging APIs available on Android ([Bug 1830937](https://bugzilla.mozilla.org/show_bug.cgi?id=1830937))
 
 # v52.6.0 (2023-04-20)
 
