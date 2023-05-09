@@ -26,3 +26,6 @@ tasks:
       commands:
         - ['cargo', 'clippy', '--version']
         - ['cargo', 'clippy', '--verbose', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
+    extra:
+      excludeBranches:
+        - release

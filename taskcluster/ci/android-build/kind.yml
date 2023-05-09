@@ -40,3 +40,6 @@ tasks:
         - 'testDebugUnitTest'
       using: gradlew
       use-caches: true
+    extra:
+      excludeBranches:
+        - release
