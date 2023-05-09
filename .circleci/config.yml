@@ -15,6 +15,9 @@ definitions:
         ignore: /.*/
       tags:
         only: /^v.*/
+  - ci_filters: &ci-filters
+      branches:
+        ignore: release
 
 ##########################################################################
 # COMMANDS
@@ -1082,21 +1085,33 @@ workflows:
   version: 2
   lint:
     jobs:
-      - Lint YAML with yamllint
-      - License check
-      - Lint Rust with clippy
-      - Docs internal metrics check
-      - Lint Android with ktlint and detekt
-      - Lint Python
-      - Check vendored schema
-      - Check Rust formatting
-      - Check Swift formatting
+      - Lint YAML with yamllint:
+          filters: *ci-filters
+      - License check:
+          filters: *ci-filters
+      - Lint Rust with clippy:
+          filters: *ci-filters
+      - Docs internal metrics check:
+          filters: *ci-filters
+      - Lint Android with ktlint and detekt:
+          filters: *ci-filters
+      - Lint Python:
+          filters: *ci-filters
+      - Check vendored schema:
+          filters: *ci-filters
+      - Check Rust formatting:
+          filters: *ci-filters
+      - Check Swift formatting:
+          filters: *ci-filters
 
   ci:
     jobs:
-      - Rust tests - stable
-      - Rust tests - minimum version
-      - Android tests
+      - Rust tests - stable:
+          filters: *ci-filters
+      - Rust tests - minimum version:
+          filters: *ci-filters
+      - Android tests:
+          filters: *ci-filters
       # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
           filters:
@@ -1106,28 +1121,42 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_6 tests
-      - Python 3_6 tests minimum dependencies
-      - Python 3_7 tests
-      - Python 3_8 tests
-      - Python 3_9 tests
-      - Python 3_9 tests minimum dependencies
-      - Python 3_9 on Alpine tests
-      - Python 3_10 tests
-      - Python Windows x86_64 tests
-      - Python Windows i686 tests
+      - Python 3_6 tests:
+          filters: *ci-filters
+      - Python 3_6 tests minimum dependencies:
+          filters: *ci-filters
+      - Python 3_7 tests:
+          filters: *ci-filters
+      - Python 3_8 tests:
+          filters: *ci-filters
+      - Python 3_9 tests:
+          filters: *ci-filters
+      - Python 3_9 tests minimum dependencies:
+          filters: *ci-filters
+      - Python 3_9 on Alpine tests:
+          filters: *ci-filters
+      - Python 3_10 tests:
+          filters: *ci-filters
+      - Python Windows x86_64 tests:
+          filters: *ci-filters
+      - Python Windows i686 tests:
+          filters: *ci-filters
 
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
+          filters: *ci-filters
       - Generate Python documentation:
           requires:
             - Python 3_10 tests
+          filters: *ci-filters
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Python documentation
-      - docs-spellcheck
+          filters: *ci-filters
+      - docs-spellcheck:
+          filters: *ci-filters
       - docs-deploy:
           requires:
             - docs-linkcheck
@@ -1143,19 +1172,25 @@ workflows:
           type: approval
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
       - iOS build and test:
           requires:
             - hold
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
       - iOS integration test:
           requires:
             - hold
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
 
   release:
     jobs:
