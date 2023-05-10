@@ -49,6 +49,6 @@ class Logger {
     ///     * message: The message to log
     ///     * level: The `LogLevel` at which to output the message
     private func log(_ message: String, type: OSLogType) {
-        os_log("%@", log: self.log, type: type, message)
+        os_log("%{public}@", log: self.log, type: type, message)
     }
 }
