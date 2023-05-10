@@ -4,6 +4,8 @@
 
 * General
   * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
+  * Added a timeout waiting for the dispatcher at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
+  * Added a new Glean metric `glean.validation.shutdown_dispatcher_wait` measuring the wait time at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
 * Kotlin
   * Update Kotlin to version 1.8.21 ([#2462](https://github.com/mozilla/glean/pull/2462))
   * Make debugging APIs available on Android ([Bug 1830937](https://bugzilla.mozilla.org/show_bug.cgi?id=1830937))
