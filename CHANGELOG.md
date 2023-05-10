@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...main)
+
+# v52.7.0 (2023-05-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...v52.7.0)
 
 * General
   * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
