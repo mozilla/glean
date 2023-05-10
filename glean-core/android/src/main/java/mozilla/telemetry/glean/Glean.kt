@@ -244,7 +244,8 @@ open class GleanInternalAPI internal constructor() {
                 delayPingLifetimeIo = false,
                 appBuild = "none",
                 useCoreMps = false,
-                trimDataToRegisteredPings = false
+                trimDataToRegisteredPings = false,
+                logLevel = configuration.logLevel
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -421,7 +422,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
-    internal fun setDebugViewTag(value: String): Boolean {
+    fun setDebugViewTag(value: String): Boolean {
         return gleanSetDebugViewTag(value)
     }
 
@@ -478,7 +479,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the option.
      */
-    internal fun setLogPings(value: Boolean) {
+    fun setLogPings(value: Boolean) {
         gleanSetLogPings(value)
     }
 

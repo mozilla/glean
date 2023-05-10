@@ -1,6 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...main)
+
+# v52.7.0 (2023-05-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...v52.7.0)
+
+* General
+  * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
+  * Added a timeout waiting for the dispatcher at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
+  * Added a new Glean metric `glean.validation.shutdown_dispatcher_wait` measuring the wait time at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
+* Kotlin
+  * Update Kotlin to version 1.8.21 ([#2462](https://github.com/mozilla/glean/pull/2462))
+  * Make debugging APIs available on Android ([Bug 1830937](https://bugzilla.mozilla.org/show_bug.cgi?id=1830937))
 
 # v52.6.0 (2023-04-20)
 

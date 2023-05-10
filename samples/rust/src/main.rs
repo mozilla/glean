@@ -37,6 +37,7 @@ fn main() {
         uploader: None,
         use_core_mps: true,
         trim_data_to_registered_pings: false,
+        log_level: None,
     };
 
     let client_info = ClientInfoMetrics {

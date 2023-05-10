@@ -4331,9 +4331,9 @@ You may use this code under the terms of either license.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 52.6.0]( https://github.com/mozilla/glean )
+* [glean 52.7.0]( https://github.com/mozilla/glean )
 * [glean-build 7.1.0]( https://github.com/mozilla/glean )
-* [glean-core 52.6.0]( https://github.com/mozilla/glean )
+* [glean-core 52.7.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```

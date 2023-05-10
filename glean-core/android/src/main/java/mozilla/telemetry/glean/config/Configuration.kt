@@ -4,6 +4,7 @@
 
 package mozilla.telemetry.glean.config
 
+import mozilla.telemetry.glean.internal.LevelFilter
 import mozilla.telemetry.glean.net.HttpURLConnectionUploader
 import mozilla.telemetry.glean.net.PingUploader
 
@@ -18,6 +19,7 @@ import mozilla.telemetry.glean.net.PingUploader
  *           sent along with all the pings, in the `client_info` section.
  * @property dataPath An optional [String] that specifies where to store data locally on the device.
  *           This should ONLY be used when setting up Glean on a non-main process.
+ * @property logLevel An optional [LevelFilter] that controls how verbose the internal logging is.
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -27,7 +29,8 @@ data class Configuration @JvmOverloads constructor(
     // default values for the lines below are ever changed, they are required
     // to change in the public constructor below.
     val httpClient: PingUploader = HttpURLConnectionUploader(),
-    val dataPath: String? = null
+    val dataPath: String? = null,
+    val logLevel: LevelFilter? = null
 ) {
     companion object {
         /**
