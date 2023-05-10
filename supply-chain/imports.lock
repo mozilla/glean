@@ -1,6 +1,13 @@
 
 # cargo-vet imports lock
 
+[[publisher.zeitstempel]]
+version = "0.1.1"
+when = "2021-03-18"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
 [[audits.bytecode-alliance.audits.arrayref]]
 who = "Nick Fitzgerald <fitzgen@gmail.com>"
 criteria = "safe-to-deploy"

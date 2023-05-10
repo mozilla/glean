@@ -355,7 +355,3 @@ criteria = "safe-to-deploy"
 [[exemptions.xshell-venv]]
 version = "1.1.0"
 criteria = "safe-to-deploy"
-
-[[exemptions.zeitstempel]]
-version = "0.1.1"
-criteria = "safe-to-deploy"
