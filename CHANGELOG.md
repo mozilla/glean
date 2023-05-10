@@ -4,6 +4,8 @@
 
 * Rust
   * Timing distribution traits now expose `accumulate_samples` and `accumulate_raw_samples_nanos`. This is a breaking change for consumers that make use of the trait as they will need to implement the new functions ([Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745))
+* Swift
+  * Make debugging APIs available on Swift ([#2470](https://github.com/mozilla/glean/pull/2470))
 
 # v52.7.0 (2023-05-10)
 

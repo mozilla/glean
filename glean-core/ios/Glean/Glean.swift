@@ -328,7 +328,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    func setDebugViewTag(_ tag: String) -> Bool {
+    public func setDebugViewTag(_ tag: String) -> Bool {
         return gleanSetDebugViewTag(tag)
     }
 
@@ -337,7 +337,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the option.
-    func setLogPings(_ value: Bool) {
+    public func setLogPings(_ value: Bool) {
         gleanSetLogPings(value)
     }
 
