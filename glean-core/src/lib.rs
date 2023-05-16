@@ -128,6 +128,17 @@ pub struct InternalConfiguration {
     pub trim_data_to_registered_pings: bool,
     /// The internal logging level.
     pub log_level: Option<LevelFilter>,
+    /// The rate at which pings may be uploaded before they are throttled.
+    pub rate_limit: Option<PingRateLimit>,
+}
+
+/// How to specify the rate at which pings may be uploaded before they are throttled.
+#[derive(Debug, Clone)]
+pub struct PingRateLimit {
+    /// Length of time in seconds of a ping uploading interval.
+    pub seconds_per_interval: u64,
+    /// Number of pings that may be uploaded in a ping uploading interval.
+    pub pings_per_interval: u32,
 }
 
 /// Launches a new task on the global dispatch queue with a reference to the Glean singleton.

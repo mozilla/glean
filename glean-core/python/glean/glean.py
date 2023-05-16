@@ -231,6 +231,7 @@ class Glean:
             app_build=cls._application_build_id,
             trim_data_to_registered_pings=False,
             log_level=None,
+            rate_limit=None,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
