@@ -192,6 +192,7 @@ public class Glean {
             useCoreMps: false,
             trimDataToRegisteredPings: false,
             logLevel: configuration.logLevel
+            rateLimit: nil,
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
