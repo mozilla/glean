@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...main)
 
+* General
+  * The ability to merge remote metric configurations has been added. This will enable better sharing of Server Knobs between experiments and rollouts running at the same time. ([Bug 1833381](https://bugzilla.mozilla.org/show_bug.cgi?id=1833381))
 * Rust
   * Timing distribution traits now expose `accumulate_samples` and `accumulate_raw_samples_nanos`. This is a breaking change for consumers that make use of the trait as they will need to implement the new functions ([Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745))
 * Swift
