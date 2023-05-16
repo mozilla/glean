@@ -12,8 +12,8 @@ use crate::event_database::EventDatabase;
 use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{
-    self, ExperimentMetric, FeatureMetricConfiguration, Metric, MetricType, MetricsEnabledConfig,
-    PingType, RecordedExperiment,
+    self, ExperimentMetric, FeatureConfigurationMap, FeatureMetricConfiguration, Metric,
+    MetricType, MetricsEnabledConfig, PingType, RecordedExperiment,
 };
 use crate::ping::PingMaker;
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
@@ -154,8 +154,7 @@ pub struct Glean {
     debug: DebugOptions,
     pub(crate) app_build: String,
     pub(crate) schedule_metrics_pings: bool,
-    pub(crate) remote_settings_metrics_config:
-        Arc<Mutex<HashMap<String, FeatureMetricConfiguration>>>,
+    pub(crate) remote_settings_metrics_config: Arc<Mutex<FeatureConfigurationMap>>,
 }
 
 impl Glean {
@@ -710,7 +709,8 @@ impl Glean {
     ///
     /// # Arguments
     ///
-    /// * `json` - The stringified JSON representation of a `MetricsEnabledConfig` object
+    /// * `feature_id` - The id of the feature supplying the configuration
+    /// * `cfg` - The stringified JSON representation of a `MetricsEnabledConfig` object
     pub fn set_metrics_enabled_config(&self, feature_id: String, cfg: MetricsEnabledConfig) {
         let mut remote_settings_metrics_config =
             self.remote_settings_metrics_config.lock().unwrap();
@@ -748,7 +748,7 @@ impl Glean {
         let remote_settings_metrics_config = self.remote_settings_metrics_config.lock().unwrap();
         if let Some((feature_id, _)) = remote_settings_metrics_config.iter().find(|&(_, config)| {
             if let Ok(config) = config.config.lock() {
-                config.metrics_enabled.keys().any(|id| *id == metric_id)
+                config.metrics_enabled.contains_key(&metric_id)
             } else {
                 false
             }

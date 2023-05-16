@@ -69,7 +69,9 @@ pub use self::uuid::UuidMetric;
 pub use crate::histogram::HistogramType;
 pub use recorded_experiment::RecordedExperiment;
 
-pub use self::server_knobs::{FeatureMetricConfiguration, MetricsEnabledConfig};
+pub use self::server_knobs::{
+    FeatureConfigurationMap, FeatureMetricConfiguration, MetricsEnabledConfig,
+};
 
 /// A snapshot of all buckets and the accumulated sum of a distribution.
 //

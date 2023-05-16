@@ -10,6 +10,10 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
+/// Represents a map of "feature-id" strings as keys to values that are of type
+/// [`FeatureMetricConfiguration`]
+pub type FeatureConfigurationMap = HashMap<String, FeatureMetricConfiguration>;
+
 /// Represents a remote feature configuration and an "epoch" used to determine
 /// if the locally cached copy of the configuration is stale.
 #[derive(Debug)]
