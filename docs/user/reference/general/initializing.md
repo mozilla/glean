@@ -119,6 +119,7 @@ The Glean Kotlin SDK supports use across multiple processes. This is enabled by 
 Requirements for a non-main process
 - `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
 - The default `dataPath` for Glean is `{context.applicationInfo.dataDir}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
+- [Set the default process name](https://developer.android.com/reference/androidx/work/Configuration.Builder#setDefaultProcessName(java.lang.String)) as your main process. If this is not set up correctly, pings from the non-main process will not send. `Configuration.Builder().setDefaultProcessName(<main_process_name>)`
 
 **Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled [baseline](../../user/pings/baseline.md) or [metrics](../../user/pings/metrics.md) pings.
 
