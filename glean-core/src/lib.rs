@@ -274,6 +274,11 @@ pub fn glean_initialize(
     initialize_inner(cfg, client_info, callbacks);
 }
 
+/// Shuts down Glean in an orderly fashion.
+pub fn glean_shutdown() {
+    shutdown();
+}
+
 /// Creates and initializes a new Glean object for use in a subprocess.
 ///
 /// Importantly, this will not send any pings at startup, since that

@@ -394,6 +394,11 @@ public class Glean {
         gleanSetMetricsEnabledConfig(json)
     }
 
+    /// Shuts down Glean in an orderly fashion
+    public func shutdown() {
+        gleanShutdown()
+    }
+
     /// When applications are launched using the custom URL scheme, this helper function will process
     /// the URL and parse the debug commands
     ///
