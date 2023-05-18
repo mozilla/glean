@@ -6,6 +6,7 @@
   * Timing distribution traits now expose `accumulate_samples` and `accumulate_raw_samples_nanos`. This is a breaking change for consumers that make use of the trait as they will need to implement the new functions ([Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745))
 * Swift
   * Make debugging APIs available on Swift ([#2470](https://github.com/mozilla/glean/pull/2470))
+  * Added a shutdown API for Swift. This should only be necessary for when Glean is running in a process other than the main process (like in the VPN daemon, for instance)([Bug 1832324](https://bugzilla.mozilla.org/show_bug.cgi?id=1832324))
 
 # v52.7.0 (2023-05-10)
 

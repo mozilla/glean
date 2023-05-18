@@ -13,6 +13,9 @@ namespace glean {
     // It will return immediately.
     void glean_initialize(InternalConfiguration cfg, ClientInfoMetrics client_info, OnGleanEvents callbacks);
 
+    /// Shuts down Glean in an orderly fashion.
+    void glean_shutdown();
+
     // Creates and initializes a new Glean object for use in a subprocess.
     //
     // Importantly, this will not send any pings at startup, since that
