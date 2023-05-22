@@ -13,9 +13,11 @@ This provides the ability to do the following:
 - Visibility into sampling and sampling rates for remotely configured metrics.
 
 ## Contents
-- [Example Scenarios](example-scenarios.md)
-- [Product Integration](product-integration.md)
-- [Experimenter Configuration](experimenter-configuration.md)
+- [Example Scenarios](./example-scenarios.md)
+- [Product Integration](./product-integration.md)
+- [Experimenter Configuration](./experimenter-configuration.md)
+- [Advanced Topics](./advanced-topics.md)
+- [Frequently Asked Questions](./faq.md)
 
 [Control Plane]: https://en.wikipedia.org/wiki/Control_plane
 [Nimbus]: https://experimenter.info
