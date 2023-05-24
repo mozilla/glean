@@ -4,11 +4,7 @@
 
 Since each feature defined as a Nimbus Feature can independently provide a Glean configuration, these must be merged together into a cohesive configuration for the entire set of metrics collected by Glean.
 
-In order to accomplish this, Glean uses the same feature identifier used by Nimbus. Provide this id when calling the Glean API to set the configuration.
-
-This means that any existing configuration that is associated with a particular feature identifier will be overwritten if a new configuration is provided with the same identifier.
-
-Configurations from all identifiers will be merged together along with the default values in the metrics.yaml file and applied to the appropriate metrics.
+Configurations will be merged together along with the default values in the metrics.yaml file and applied to the appropriate metrics. Only the latest configuration provided for a given metric will be applied and any previously configured metrics that are omitted from the new configuration will not be changed.
 
 ### Example
 
@@ -132,6 +128,6 @@ In each case, Glean only updates the configuration associated with the feature t
 
 ### Merging Caveats
 
-Because there is currently nothing that ties a particular Nimbus Feature to a set of metrics, care must be taken to avoid feature overlap over a particular metric. If two different features supply  conflicting configurations for the same metric identifier, then whether or not the metric is enabled will likely come down to a race condition of whoever set the configuration last
+Because there is currently nothing that ties a particular Nimbus Feature to a set of metrics, care must be taken to avoid feature overlap over a particular metric. If two different features supply conflicting configurations for the same metric, then whether or not the metric is enabled will likely come down to a race condition of whoever set the configuration last.
 
 [Example Scenarios]: example-scenarios.md
