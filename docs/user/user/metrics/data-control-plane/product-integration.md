@@ -15,24 +15,23 @@ variables:
     "Glean metric configuration"
 ```
 
-This definition allows for configuration to be set in a Nimbus rollout or experiment and fetched by the client to be applied based on the enrollment. Once the Feature Variable has been defined, the final step is to fetch the configuration from Nimbus and supply it to the Glean API function along with the identifier for the feature. This can be done during initialization and again any time afterwards, such as in response to receiving an updated configuration from Nimbus. Only the latest configuration provided will be applied. An example call to set a configuration from the “urlbar” Nimbus Feature could look like this:
+This definition allows for configuration to be set in a Nimbus rollout or experiment and fetched by the client to be applied based on the enrollment. Once the Feature Variable has been defined, the final step is to fetch the configuration from Nimbus and supply it to the Glean API. This can be done during initialization and again any time afterwards, such as in response to receiving an updated configuration from Nimbus. Only the latest configuration provided will be applied and any previously configured metrics that are omitted from the new configuration will not be changed. An example call to set a configuration from the “urlbar” Nimbus Feature could look like this:
 
 ```JavaScript
-Services.fog.setMetricsFeatureConfig("urlbar",
-  JSON.stringify(
-    Lazy.NimbusFeatures.urlbar.getVariable("gleanMetricConfiguration")
-  )
+let cfg = lazy.NimbusFeatures.urlbar.getVariable(
+  "gleanMetricConfiguration"
 );
+Services.fog.setMetricsFeatureConfig(JSON.stringify(cfg));
 ```
 
 It is also recommended to register to listen for updates for the Nimbus Feature and apply new configurations as soon as possible. The following example illustrates how the “urlbar” Nimbus Feature might register and update the metric configuration:
 
 ```JavaScript
 lazy.NimbusFeatures.urlbar.onUpdate(() => {
-  let cfg = lazy.NimbusFeatures.glean.getVariable(
+  let cfg = lazy.NimbusFeatures.urlbar.getVariable(
     "gleanMetricConfiguration"
   );
-  Services.fog.setMetricsFeatureConfig("urlbar", JSON.stringify(cfg));
+  Services.fog.setMetricsFeatureConfig(JSON.stringify(cfg));
 });
 ```
 
@@ -54,7 +53,7 @@ features:
         default: "{}"
 ```
 
-Once the Feature Variable has been defined, the final step is to fetch the configuration from Nimbus and supply it to the Glean API function along with the identifier for the feature. This can be done during initialization and again any time afterwards, such as in response to receiving an updated configuration from Nimbus. Only the latest configuration provided will be applied. An example call to set a configuration from the “homescreen” Nimbus Feature could look like this:
+Once the Feature Variable has been defined, the final step is to fetch the configuration from Nimbus and supply it to the Glean API. This can be done during initialization and again any time afterwards, such as in response to receiving an updated configuration from Nimbus. Only the latest configuration provided will be applied and any previously configured metrics that are omitted from the new configuration will not be changed. An example call to set a configuration from the “homescreen” Nimbus Feature could look like this:
 
 ```Swift
 Glean.setMetricsEnabledConfig(FxNimbus.features.homescreen.value().metricsEnabled)
