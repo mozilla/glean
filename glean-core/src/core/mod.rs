@@ -714,8 +714,10 @@ impl Glean {
     pub fn set_metrics_enabled_config(&self, cfg: MetricsEnabledConfig) {
         // Set the current MetricsEnabledConfig, keeping the lock until the epoch is
         // updated to prevent against reading a "new" config but an "old" epoch
-        let mut lock = self.remote_settings_metrics_config.lock().unwrap();
-        *lock = cfg;
+        let mut metric_config = self.remote_settings_metrics_config.lock().unwrap();
+
+        // Merge the exising configuration with the supplied one
+        metric_config.metrics_enabled.extend(cfg.metrics_enabled);
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
