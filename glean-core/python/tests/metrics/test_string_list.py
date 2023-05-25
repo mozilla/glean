@@ -128,10 +128,10 @@ def test_long_string_lists_are_truncated():
         )
     )
 
-    for i in range(21):
+    for i in range(101):
         metric.add(f"value{i}")
 
     snapshot = metric.test_get_value()
-    assert 20 == len(snapshot)
+    assert 100 == len(snapshot)
 
     assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE)

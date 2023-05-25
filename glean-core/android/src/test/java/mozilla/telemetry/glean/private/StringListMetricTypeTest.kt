@@ -188,12 +188,12 @@ class StringListMetricTypeTest {
             )
         )
 
-        for (x in 0..20) {
+        for (x in 0..100) {
             stringListMetric.add("value$x")
         }
 
         val snapshot = stringListMetric.testGetValue("store1")!!
-        assertEquals(20, snapshot.size)
+        assertEquals(100, snapshot.size)
 
         assertEquals(1, stringListMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
