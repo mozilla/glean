@@ -101,8 +101,8 @@ Glean.search.engines.add("duck duck go");
 
 #### Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
-* Fixed maximum list length: 20 items. Additional strings are dropped.
+* Fixed maximum string length: 100. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
+* Fixed maximum list length: 100 items. Additional strings are dropped.
 
 ### `set`
 
@@ -188,8 +188,8 @@ Glean.search.engines.set(["wikipedia", "duck duck go"]);
 
 #### Limits
 
-* Fixed maximum string length: 50. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
-* Fixed maximum list length: 20 items. Additional strings are dropped.
+* Fixed maximum string length: 100. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
+* Fixed maximum list length: 100 items. Additional strings are dropped.
 
 ## Testing API
 
