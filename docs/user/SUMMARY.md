@@ -73,6 +73,7 @@
     - [Quantity](reference/metrics/quantity.md)
     - [Rate](reference/metrics/rate.md)
     - [Text](reference/metrics/text.md)
+    - [Object](reference/metrics/object.md)
 - [Pings](reference/pings/index.md)
 
 # SDK Specific Information
