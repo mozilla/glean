@@ -2,12 +2,15 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...main)
 
+* Rust
+  * New metric type: Object ([#2489](https://github.com/mozilla/glean/pull/2489))
+
 # v57.0.0 (2024-02-12)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...v57.0.0)
 
 * General
-  * Added an experimental event listener API ([#2719](https://github.com/mozilla/glean/pull/2719)) 
+  * Added an experimental event listener API ([#2719](https://github.com/mozilla/glean/pull/2719))
 * Android
   * BREAKING CHANGE: Update JNA to version 5.14.0. Projects using older JNA releases may encounter errors until they update. ([#2727](https://github.com/mozilla/glean/pull/2727))
   * Set the target Android SDK to version 34 ([#2709](https://github.com/mozilla/glean/pull/2709))
