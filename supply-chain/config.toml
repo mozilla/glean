@@ -180,10 +180,6 @@ criteria = "safe-to-deploy"
 version = "0.1.4"
 criteria = "safe-to-deploy"
 
-[[exemptions.lmdb-rkv]]
-version = "0.14.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.lmdb-rkv-sys]]
 version = "0.11.2"
 criteria = "safe-to-deploy"
@@ -288,6 +284,10 @@ criteria = "safe-to-deploy"
 version = "1.0.105"
 criteria = "safe-to-deploy"
 
+[[exemptions.syn]]
+version = "2.0.18"
+criteria = "safe-to-deploy"
+
 [[exemptions.tempfile]]
 version = "3.4.0"
 criteria = "safe-to-deploy"
@@ -296,24 +296,12 @@ criteria = "safe-to-deploy"
 version = "1.2.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.thiserror]]
-version = "1.0.37"
-criteria = "safe-to-deploy"
-
-[[exemptions.thiserror-impl]]
-version = "1.0.37"
-criteria = "safe-to-deploy"
-
 [[exemptions.time]]
 version = "0.1.45"
 criteria = "safe-to-deploy"
 
 [[exemptions.toml]]
 version = "0.5.10"
-criteria = "safe-to-deploy"
-
-[[exemptions.unicode-ident]]
-version = "1.0.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.uuid]]
