@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
+use std::sync::OnceLock;
 use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, FixedOffset};
-use once_cell::sync::OnceCell;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
@@ -23,7 +23,7 @@ use crate::{
     DEFAULT_MAX_EVENTS, GLEAN_SCHEMA_VERSION, GLEAN_VERSION, KNOWN_CLIENT_ID,
 };
 
-static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
+static GLEAN: OnceLock<Mutex<Glean>> = OnceLock::new();
 
 pub fn global_glean() -> Option<&'static Mutex<Glean>> {
     GLEAN.get()
@@ -31,7 +31,7 @@ pub fn global_glean() -> Option<&'static Mutex<Glean>> {
 
 /// Sets or replaces the global Glean object.
 pub fn setup_glean(glean: Glean) -> Result<()> {
-    // The `OnceCell` type wrapping our Glean is thread-safe and can only be set once.
+    // The `OnceLock` type wrapping our Glean is thread-safe and can only be set once.
     // Therefore even if our check for it being empty succeeds, setting it could fail if a
     // concurrent thread is quicker in setting it.
     // However this will not cause a bigger problem, as the second `set` operation will just fail.

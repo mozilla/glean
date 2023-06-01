@@ -4,8 +4,8 @@
 
 use std::cmp;
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
-use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};
@@ -41,7 +41,7 @@ pub struct PrecomputedLinear {
     // Don't serialize the (potentially large) array of ranges, instead compute them on first
     // access.
     #[serde(skip)]
-    bucket_ranges: OnceCell<Vec<u64>>,
+    bucket_ranges: OnceLock<Vec<u64>>,
     min: u64,
     max: u64,
     bucket_count: usize,
@@ -78,7 +78,7 @@ impl Histogram<PrecomputedLinear> {
             count: 0,
             sum: 0,
             bucketing: PrecomputedLinear {
-                bucket_ranges: OnceCell::new(),
+                bucket_ranges: OnceLock::new(),
                 min,
                 max,
                 bucket_count,

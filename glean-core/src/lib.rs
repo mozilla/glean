@@ -20,13 +20,14 @@ use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::OnceLock;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
 use crossbeam_channel::unbounded;
 use log::{self, LevelFilter};
-use once_cell::sync::{Lazy, OnceCell};
+use once_cell::sync::Lazy;
 use uuid::Uuid;
 
 use metrics::MetricsEnabledConfig;
@@ -91,12 +92,12 @@ pub(crate) const DELETION_REQUEST_PINGS_DIRECTORY: &str = "deletion_request";
 static INITIALIZE_CALLED: AtomicBool = AtomicBool::new(false);
 
 /// Keep track of the debug features before Glean is initialized.
-static PRE_INIT_DEBUG_VIEW_TAG: OnceCell<Mutex<String>> = OnceCell::new();
+static PRE_INIT_DEBUG_VIEW_TAG: OnceLock<Mutex<String>> = OnceLock::new();
 static PRE_INIT_LOG_PINGS: AtomicBool = AtomicBool::new(false);
-static PRE_INIT_SOURCE_TAGS: OnceCell<Mutex<Vec<String>>> = OnceCell::new();
+static PRE_INIT_SOURCE_TAGS: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
 
 /// Keep track of pings registered before Glean is initialized.
-static PRE_INIT_PING_REGISTRATION: OnceCell<Mutex<Vec<metrics::PingType>>> = OnceCell::new();
+static PRE_INIT_PING_REGISTRATION: OnceLock<Mutex<Vec<metrics::PingType>>> = OnceLock::new();
 
 /// Global singleton of the handles of the glean.init threads.
 /// For joining. For tests.
@@ -168,7 +169,7 @@ struct State {
 /// A global singleton storing additional state for Glean.
 ///
 /// Requires a Mutex, because in tests we can actual reset this.
-static STATE: OnceCell<Mutex<State>> = OnceCell::new();
+static STATE: OnceLock<Mutex<State>> = OnceLock::new();
 
 /// Get a reference to the global state object.
 ///
@@ -180,7 +181,7 @@ fn global_state() -> &'static Mutex<State> {
 
 /// Set or replace the global bindings State object.
 fn setup_state(state: State) {
-    // The `OnceCell` type wrapping our state is thread-safe and can only be set once.
+    // The `OnceLock` type wrapping our state is thread-safe and can only be set once.
     // Therefore even if our check for it being empty succeeds, setting it could fail if a
     // concurrent thread is quicker in setting it.
     // However this will not cause a bigger problem, as the second `set` operation will just fail.
@@ -1044,7 +1045,7 @@ pub fn glean_set_dirty_flag(new_value: bool) {
 }
 
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
-static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
+static FD_LOGGER: OnceLock<fd_logger::FdLogger> = OnceLock::new();
 
 /// Initialize the logging system to send JSON messages to a file descriptor
 /// (Unix) or file handle (Windows).
