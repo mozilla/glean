@@ -5,7 +5,9 @@
 use std::io::Read;
 use std::sync::{Arc, Barrier, Mutex};
 use std::thread::{self, ThreadId};
+use std::time::{Duration, Instant};
 
+use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
 use serde_json::Value as JsonValue;
 
@@ -1273,4 +1275,85 @@ fn signaling_done() {
     for &count in map.values() {
         assert_eq!(1, count, "each thread should call upload only once");
     }
+}
+
+#[test]
+fn configure_ping_throttling() {
+    let _lock = lock_test();
+
+    let (s, r) = crossbeam_channel::bounded::<String>(1);
+
+    // Define a fake uploader that reports back the submission URL
+    // using a crossbeam channel.
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<String>,
+        done: Arc<std::sync::atomic::AtomicBool>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            url: String,
+            _body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            if self.done.load(std::sync::atomic::Ordering::SeqCst) {
+                // If we've outlived the test, just lie.
+                return net::UploadResult::http_status(200);
+            }
+            self.sender.send(url).unwrap();
+            net::UploadResult::http_status(200)
+        }
+    }
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    let done = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let mut cfg = ConfigurationBuilder::new(true, tmpname, GLOBAL_APPLICATION_ID)
+        .with_server_endpoint("invalid-test-host")
+        .with_uploader(FakeUploader {
+            sender: s,
+            done: Arc::clone(&done),
+        })
+        .build();
+    let pings_per_interval = 10;
+    cfg.rate_limit = Some(glean_core::PingRateLimit {
+        seconds_per_interval: 1,
+        pings_per_interval,
+    });
+
+    let _t = new_glean(Some(cfg), true);
+
+    // Define a new ping.
+    const PING_NAME: &str = "test-ping";
+    let custom_ping = private::PingType::new(PING_NAME, true, true, vec![]);
+
+    // Submit and receive it `pings_per_interval` times.
+    for _ in 0..pings_per_interval {
+        custom_ping.submit(None);
+
+        // Wait for the ping to arrive.
+        let url = r.recv().unwrap();
+        assert!(url.contains(PING_NAME));
+    }
+
+    // Submit one ping more than the rate limit permits.
+    custom_ping.submit(None);
+
+    // We'd expect it to be received within 250ms if it weren't throttled.
+    let now = Instant::now();
+    assert_eq!(
+        r.recv_deadline(now + Duration::from_millis(250)),
+        Err(RecvTimeoutError::Timeout)
+    );
+
+    // We still have to deal with that eleventh ping.
+    // When it eventually processes after the throttle interval, this'll tell
+    // it that it's done.
+    done.store(true, std::sync::atomic::Ordering::SeqCst);
+    // Unfortunately, we'll still be stuck waiting the full
+    // `seconds_per_interval` before running the next test, since shutting down
+    // will wait for the queue to clear.
 }
