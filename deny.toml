@@ -20,8 +20,6 @@ skip = [
     # wasi 0.10 and 0.11 are allowed
     # (m-c patches 0.10 to 0.11)
     { name = "wasi", version = "0.11.0" },
-    # Allow both syn v1 and v2 for the time being
-    { name = "syn", version = "1.0.105" },
 ]
 
 # Avoid certain crates

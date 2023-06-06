@@ -6,7 +6,16 @@ use std::env;
 
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
-use uniffi_bindgen::generate_bindings;
+use uniffi::{generate_bindings, TargetLanguage};
+
+fn parse_language(lang: &str) -> anyhow::Result<uniffi::TargetLanguage> {
+    match lang {
+        "kotlin" => Ok(TargetLanguage::Kotlin),
+        "python" => Ok(TargetLanguage::Python),
+        "swift" => Ok(TargetLanguage::Swift),
+        _ => bail!("Unknown language"),
+    }
+}
 
 fn main() -> anyhow::Result<()> {
     let mut args = env::args().skip(1);
@@ -23,7 +32,9 @@ fn main() -> anyhow::Result<()> {
         if let Some(arg) = arg.strip_prefix("--") {
             match arg {
                 "language" => {
-                    target_languages.push(args.next().context("--language needs a parameter")?)
+                    let lang = args.next().context("--language needs a parameter")?;
+                    let lang = parse_language(&lang)?;
+                    target_languages.push(lang);
                 }
                 "out-dir" => out_dir = Some(args.next().context("--out-dir needs a parameter")?),
                 "no-format" => {
@@ -38,7 +49,6 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
-    let target_languages: Vec<&str> = target_languages.iter().map(|s| &s[..]).collect();
     let out_dir = out_dir.map(Utf8PathBuf::from);
 
     if udl_file.is_none() {

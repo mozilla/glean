@@ -1,6 +1,62 @@
 
 # cargo-vet imports lock
 
+[[publisher.uniffi]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_bindgen]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_build]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_checksum_derive]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_core]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_macros]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_meta]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
+[[publisher.uniffi_testing]]
+version = "0.24.1"
+when = "2023-06-23"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
 [[publisher.zeitstempel]]
 version = "0.1.1"
 when = "2021-03-18"
@@ -171,96 +227,6 @@ and suss out bugs. I've historically reviewed this crate in the past and it
 is similar to what it once was back then. Skimming over the crate there is
 nothing suspicious and it's everything you'd expect a Rust URL parser to be.
 """
-
-[[audits.bytecode-alliance.audits.windows-sys]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_aarch64_gnullvm]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_aarch64_gnullvm]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_aarch64_msvc]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_aarch64_msvc]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_i686_gnu]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_i686_gnu]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_i686_msvc]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_i686_msvc]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_gnu]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_gnu]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_gnullvm]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_gnullvm]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_msvc]]
-who = "Dan Gohman <dev@sunfishcode.online>"
-criteria = "safe-to-deploy"
-version = "0.42.0"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves."
-
-[[audits.bytecode-alliance.audits.windows_x86_64_msvc]]
-who = "Pat Hickey <phickey@fastly.com>"
-criteria = "safe-to-deploy"
-delta = "0.42.0 -> 0.42.1"
-notes = "This is a Windows API bindings library maintained by Microsoft themselves. The diff is just adding license files."
 
 [[audits.chromeos.audits.ctor]]
 who = "George Burgess IV <gbiv@google.com>"

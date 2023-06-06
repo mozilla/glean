@@ -40,24 +40,28 @@ checksum = "a4c527152e37cf757a3f78aae5a06fbeefdb07ccc535c980a3208ee3060dd544"
 
 [[package]]
 name = "askama"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb98f10f371286b177db5eeb9a6e5396609555686a35e1d4f7b9a9c6d8af0139"
+checksum = "47cbc3cf73fa8d9833727bbee4835ba5c421a0d65b72daf9a7b5d0e0f9cfb57e"
 dependencies = [
  "askama_derive",
  "askama_escape",
- "askama_shared",
 ]
 
 [[package]]
 name = "askama_derive"
-version = "0.11.2"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87bf87e6e8b47264efa9bde63d6225c6276a52e05e91bf37eaa8afd0032d6b71"
+checksum = "c22fbe0413545c098358e56966ff22cdd039e10215ae213cfbd65032b119fc94"
 dependencies = [
- "askama_shared",
+ "basic-toml",
+ "mime",
+ "mime_guess",
+ "nom",
  "proc-macro2",
- "syn 1.0.105",
+ "quote",
+ "serde",
+ "syn",
 ]
 
 [[package]]
@@ -67,27 +71,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "619743e34b5ba4e9703bba34deac3427c72507c7159f5fd030aea8cac0cfe341"
 
 [[package]]
-name = "askama_shared"
-version = "0.12.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf722b94118a07fcbc6640190f247334027685d4e218b794dbfe17c32bf38ed0"
-dependencies = [
- "askama_escape",
- "mime",
- "mime_guess",
- "nom",
- "proc-macro2",
- "quote",
- "serde",
- "syn 1.0.105",
- "toml",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
+name = "basic-toml"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c0de75129aa8d0cceaf750b89013f0e08804d6ec61416da787b35ad0d7cddf1"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "bincode"
@@ -210,7 +206,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1586fa608b1dab41f667475b4a41faec5ba680aee428bfa5de4ea520fdc6e901"
 dependencies = [
  "quote",
- "syn 2.0.18",
+ "syn",
 ]
 
 [[package]]
@@ -235,7 +231,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "camino",
- "uniffi_bindgen",
+ "uniffi",
 ]
 
 [[package]]
@@ -447,7 +443,7 @@ checksum = "20cc83c51f04b1ad3b24cbac53d2ec1a138d699caabe05d315cb8538e8624d01"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.18",
+ "syn",
 ]
 
 [[package]]
@@ -817,13 +813,13 @@ dependencies = [
 
 [[package]]
 name = "scroll_derive"
-version = "0.11.0"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdbda6ac5cd1321e724fa9cee216f3a61885889b896f073b8f82322789c5250e"
+checksum = "1db149f81d46d2deba7cd3c50772474707729550221e69588478ebf9ada425ae"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.105",
+ "syn",
 ]
 
 [[package]]
@@ -852,7 +848,7 @@ checksum = "8c805777e3930c8883389c602315a24224bcc738b63905ef87cd1420353ea93e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.18",
+ "syn",
 ]
 
 [[package]]
@@ -877,17 +873,6 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
-
-[[package]]
-name = "syn"
-version = "1.0.105"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60b9b43d45702de4c839cb9b51d9f529c5dd26a4aff255b42b1ebc03e88ee908"
-dependencies = [
- "proc-macro2",
- "quote",
- "unicode-ident",
-]
 
 [[package]]
 name = "syn"
@@ -945,7 +930,7 @@ checksum = "f9456a42c5b0d803c8cd86e73dd7cc9edd429499f37a3550d286d5e86720569f"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.18",
+ "syn",
 ]
 
 [[package]]
@@ -1015,11 +1000,12 @@ dependencies = [
 
 [[package]]
 name = "uniffi"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f71cc01459bc34cfe43fabf32b39f1228709bc6db1b3a664a92940af3d062376"
+checksum = "6da26ba712a8547207ededc70f3e0952c09754be9516c320f71731d2f18daf3e"
 dependencies = [
  "anyhow",
+ "uniffi_bindgen",
  "uniffi_build",
  "uniffi_core",
  "uniffi_macros",
@@ -1027,14 +1013,14 @@ dependencies = [
 
 [[package]]
 name = "uniffi_bindgen"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbbba5103051c18f10b22f80a74439ddf7100273f217a547005d2735b2498994"
+checksum = "29bff3ba24868022fc82e2f1558f3a0fdcc2655e1335459a35f25d1ec4ff1d0c"
 dependencies = [
  "anyhow",
  "askama",
- "bincode",
  "camino",
+ "cargo_metadata",
  "fs-err",
  "glob",
  "goblin",
@@ -1051,9 +1037,9 @@ dependencies = [
 
 [[package]]
 name = "uniffi_build"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ee1a28368ff3d83717e3d3e2e15a66269c43488c3f036914131bb68892f29fb"
+checksum = "52b7cd03e17b997469e5438d1a491c3b9e2d41c2a87c86fd91ba96e87aecba6a"
 dependencies = [
  "anyhow",
  "camino",
@@ -1062,19 +1048,19 @@ dependencies = [
 
 [[package]]
 name = "uniffi_checksum_derive"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03de61393a42b4ad4984a3763c0600594ac3e57e5aaa1d05cede933958987c03"
+checksum = "af98d58e238b6aef9ff62a93b5c60caa710bdb49351434a639b9bd7b4c84c808"
 dependencies = [
  "quote",
- "syn 1.0.105",
+ "syn",
 ]
 
 [[package]]
 name = "uniffi_core"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a2b4852d638d74ca2d70e450475efb6d91fe6d54a7cd8d6bd80ad2ee6cd7daa"
+checksum = "68640fa1b5dfbb4ccc149057c81b40adc51a01d295ce798c15c6c76f7e899907"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1088,9 +1074,9 @@ dependencies = [
 
 [[package]]
 name = "uniffi_macros"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa03394de21e759e0022f1ea8d992d2e39290d735b9ed52b1f74b20a684f794e"
+checksum = "76f72684ff48a8ff0ee95fde6dbcfa687236ad1789dc18205cb3305432a7b35c"
 dependencies = [
  "bincode",
  "camino",
@@ -1099,7 +1085,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde",
- "syn 1.0.105",
+ "syn",
  "toml",
  "uniffi_build",
  "uniffi_meta",
@@ -1107,20 +1093,23 @@ dependencies = [
 
 [[package]]
 name = "uniffi_meta"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "66fdab2c436aed7a6391bec64204ec33948bfed9b11b303235740771f85c4ea6"
+checksum = "fe3388a58b13dad8f0cdcbdee1c59af6408608ce8d85a3ef5d1429369ca7b217"
 dependencies = [
+ "anyhow",
+ "bytes",
  "serde",
  "siphasher",
  "uniffi_checksum_derive",
+ "uniffi_core",
 ]
 
 [[package]]
 name = "uniffi_testing"
-version = "0.23.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92b0570953ec41d97ce23e3b92161ac18231670a1f97523258a6d2ab76d7f76c"
+checksum = "4fb437a2c8565249274e381fd88bc75b539897f321b79022c9fe7e275d2c2bbb"
 dependencies = [
  "anyhow",
  "camino",
