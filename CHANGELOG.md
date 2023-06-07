@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
+
+# v53.0.0 (2023-06-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...v53.0.0)
 
 * General
   * Adds the capability to merge remote metric configurations, enabling multiple Nimbus Features or components to share this functionality ([Bug 1833381](https://bugzilla.mozilla.org/show_bug.cgi?id=1833381))
