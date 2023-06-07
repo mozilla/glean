@@ -1,6 +1,21 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
+
+# v53.0.0 (2023-06-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...v53.0.0)
+
+* General
+  * Adds the capability to merge remote metric configurations, enabling multiple Nimbus Features or components to share this functionality ([Bug 1833381](https://bugzilla.mozilla.org/show_bug.cgi?id=1833381))
+  * StringList metric type limits have been increased. The length of strings allowed has been increased from 50 to 100 to match the String metric type, and the list length has been increased from 20 to 100 ([Bug 1833870](https://bugzilla.mozilla.org/show_bug.cgi?id=1833870))
+  * Make ping rate limiting configurable on Glean init. ([bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630))
+* Rust
+  * Timing distribution traits now expose `accumulate_samples` and `accumulate_raw_samples_nanos`. This is a breaking change for consumers that make use of the trait as they will need to implement the new functions ([Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745))
+* iOS
+  * Make debugging APIs available on Swift ([#2470](https://github.com/mozilla/glean/pull/2470))
+  * Added a shutdown API for Swift. This should only be necessary for when Glean is running in a process other than the main process (like in the VPN daemon, for instance)([Bug 1832324](https://bugzilla.mozilla.org/show_bug.cgi?id=1832324))
+  * Glean for iOS is now being built with Xcode 14.3 ([#2253](https://github.com/mozilla/glean/pull/2253))
 
 # v52.7.0 (2023-05-10)
 

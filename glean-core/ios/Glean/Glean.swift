@@ -191,7 +191,8 @@ public class Glean {
             appBuild: "0.0.0",
             useCoreMps: false,
             trimDataToRegisteredPings: false,
-            logLevel: configuration.logLevel
+            logLevel: configuration.logLevel,
+            rateLimit: nil
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
@@ -328,7 +329,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    func setDebugViewTag(_ tag: String) -> Bool {
+    public func setDebugViewTag(_ tag: String) -> Bool {
         return gleanSetDebugViewTag(tag)
     }
 
@@ -337,7 +338,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the option.
-    func setLogPings(_ value: Bool) {
+    public func setLogPings(_ value: Bool) {
         gleanSetLogPings(value)
     }
 
@@ -392,6 +393,11 @@ public class Glean {
     ///            representing wether they are enabled
     public func setMetricsEnabledConfig(_ json: String) {
         gleanSetMetricsEnabledConfig(json)
+    }
+
+    /// Shuts down Glean in an orderly fashion
+    public func shutdown() {
+        gleanShutdown()
     }
 
     /// When applications are launched using the custom URL scheme, this helper function will process

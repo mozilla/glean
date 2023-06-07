@@ -38,6 +38,7 @@ fn main() {
         use_core_mps: true,
         trim_data_to_registered_pings: false,
         log_level: None,
+        rate_limit: None,
     };
 
     let client_info = ClientInfoMetrics {

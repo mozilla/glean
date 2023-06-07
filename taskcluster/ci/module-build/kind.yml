@@ -37,3 +37,6 @@ task-defaults:
       - ':{module_name}:checkMavenArtifacts'
     using: gradlew
     use-caches: true
+  extra:
+    excludeBranches:
+      - release

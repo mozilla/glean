@@ -141,11 +141,11 @@ class StringListMetricTests: XCTestCase {
             disabled: false
         ))
 
-        for n in 0 ... 20 {
+        for n in 0 ... 100 {
             stringListMetric.add(String(format: "value%02d", n))
         }
 
-        XCTAssertEqual(20, stringListMetric.testGetValue()!.count)
+        XCTAssertEqual(100, stringListMetric.testGetValue()!.count)
         XCTAssertEqual(1, stringListMetric.testGetNumRecordedErrors(.invalidValue))
     }
 }

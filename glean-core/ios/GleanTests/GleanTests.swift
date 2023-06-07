@@ -9,6 +9,7 @@ import XCTest
 
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
 
+// swiftlint:disable type_body_length
 class GleanTests: XCTestCase {
     var expectation: XCTestExpectation?
 
@@ -367,4 +368,63 @@ class GleanTests: XCTestCase {
         Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo())
         XCTAssertFalse(Glean.shared.isCustomDataPath)
     }
+
+    func testShutdown() {
+        // This test relies on Glean not being initialized
+        Glean.shared.testDestroyGleanHandle()
+
+        // We expect 10 pings later
+        stubServerReceive { pingType, _ in
+            if pingType == "baseline" {
+                // Ignore initial "active" baseline ping
+                return
+            }
+
+            XCTAssertEqual("custom", pingType)
+
+            // Fulfill test's expectation once we parsed the incoming data.
+            DispatchQueue.main.async {
+                // Let the response get processed before we mark the expectation fulfilled
+                self.expectation?.fulfill()
+            }
+        }
+
+        let customPing = Ping<NoReasonCodes>(
+            name: "custom",
+            includeClientId: true,
+            sendIfEmpty: false,
+            reasonCodes: []
+        )
+
+        let counter = CounterMetricType(CommonMetricData(
+            category: "telemetry",
+            name: "counter_metric",
+            sendInPings: ["custom"],
+            lifetime: .application,
+            disabled: false
+        ))
+
+        expectation = expectation(description: "Completed upload")
+        expectation?.expectedFulfillmentCount = 10
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        MetricsPingScheduler(true).updateSentDate(now)
+        // Restart glean
+        Glean.shared.resetGlean(clearStores: false)
+
+        // Set data and try to submit a custom ping 10x.
+        for _ in (0..<10) {
+            counter.add(1)
+            customPing.submit()
+        }
+
+        Glean.shared.shutdown()
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
 }
+// swiftlint:enable type_body_length

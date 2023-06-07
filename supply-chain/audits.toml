@@ -1,6 +1,14 @@
 
 # cargo-vet audits file
 
+[[wildcard-audits.zeitstempel]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 48
+start = "2021-03-03"
+end = "2024-05-10"
+notes = "Maintained by me"
+
 [[audits.crossbeam-channel]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"

@@ -63,8 +63,6 @@ RUN apt-get update -qq \
         # <TODO: Is this still true?>.
         g++ \
         libxml2-dev \
-        # Python 2 for tooltool
-        python \
         python3 \
         python3-pip \
         python3-venv \
@@ -122,7 +120,7 @@ RUN chown -R worker:worker /builds/worker/android-sdk
 RUN \
     curl -sfSL --retry 5 --retry-delay 10 \
          -o /usr/local/bin/tooltool.py \
-         https://raw.githubusercontent.com/mozilla/build-tooltool/36511dae0ead6848017e2d569b1f6f1b36984d40/tooltool.py && \
+         https://raw.githubusercontent.com/mozilla-releng/tooltool/master/client/tooltool.py && \
          chmod +x /usr/local/bin/tooltool.py
 
 # %include-run-task

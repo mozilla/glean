@@ -245,7 +245,8 @@ open class GleanInternalAPI internal constructor() {
                 appBuild = "none",
                 useCoreMps = false,
                 trimDataToRegisteredPings = false,
-                logLevel = configuration.logLevel
+                logLevel = configuration.logLevel,
+                rateLimit = null
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
