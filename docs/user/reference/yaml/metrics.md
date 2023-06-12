@@ -265,18 +265,33 @@ used by websites, add-ons, and other 3rd-party software that interact with Firef
 Information about the user’s direct engagement with Firefox. Examples include how many tabs,
 add-ons, or windows a user has open; uses of specific Firefox features; session length,
 scrolls and clicks; and the status of discrete user preferences.
+It also includes information about the user's in-product journeys and product choices helpful to understand engagement (attitudes).
+For example, selections of add-ons or tiles to determine potential interest categories etc.
 
-##### Category 3: Web activity data (`web_activity`)
+##### Category 3: Stored Content & Communications (`stored_content`)
 
-Information about user web browsing that could be considered sensitive.
-Examples include users’ specific web browsing history; general information
-about their web browsing history (such as TLDs or categories of webpages visited over time);
-and potentially certain types of interaction data about specific webpages visited.
+_(formerly Web activity data, `web_activity`)_
 
-##### Category 4: Highly sensitive data (`highly_sensitive`)
+Information about what people store, sync, communicate or connect to where the information is generally considered
+to be more sensitive and personal in nature.
+Examples include users' saved URLs or URL history, specific web browsing history,
+general information about their web browsing history (such as TLDs or categories of webpages visited over time)
+and potentially certain types of interaction data about specific web pages or stories visited
+(such as highlighted portions of a story).
+It also includes information such as content saved by users to an individual account like saved URLs,
+tags, notes, passwords and files as well as communications that users have with one another through a Mozilla service.
+
+##### Category 4: Highly sensitive data or clearly identifiable personal data (`highly_sensitive`)
 
 Information that directly identifies a person, or if combined with other data could identify a person.
-Examples include e-mail, usernames, identifiers such as google ad id, apple id, Firefox account,
-city or country (unless small ones are explicitly filtered out), or certain cookies.
-It may be embedded within specific website content, such as memory contents, dumps,
-captures of screen data, or DOM data.
+This data may be embedded within specific website content, such as memory contents, dumps, captures of screen data, or DOM data.
+Examples include account registration data like name, password, and email address associated with an account,
+payment data in connection with subscriptions or donations, contact information such as phone numbers or mailing addresses,
+email addresses associated with surveys, promotions and customer support contacts.
+It also includes any data from different categories that, when combined, can identify a person, device, household or account.
+For example Category 1 log data combined with Category 3 saved URLs.
+Additional examples are: voice audio commands (including a voice audio file),
+speech-to-text or text-to-speech (including transcripts), biometric data, demographic information,
+and precise location data associated with a persistent identifier, individual or small population cohorts.
+This is location inferred or determined from mechanisms other than IP such as wi-fi access points, Bluetooth beacons,
+cell phone towers or provided directly to us, such as in a survey or a profile.
