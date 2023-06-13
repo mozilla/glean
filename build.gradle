@@ -15,8 +15,8 @@ buildscript {
         coroutines: '1.7.1',
         jna: '5.13.0',
         junit: '4.12',
-        mockito: '3.11.2',
-        mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
+        mockito: '5.3.1',
+        mockwebserver: '4.11.0', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.8.21',
         robolectric: '4.10.1',
         rust_android_plugin: '0.9.3',
@@ -25,7 +25,7 @@ buildscript {
         androidx_annotation: '1.6.0',
         androidx_appcompat: '1.6.1',
         androidx_browser: '1.5.0',
-        androidx_core: '1.10.0',
+        androidx_core: '1.10.1',
         androidx_espresso: '3.5.1',
         androidx_junit: '1.1.5',
         androidx_lifecycle: '2.6.1',
