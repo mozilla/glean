@@ -267,7 +267,14 @@ except:
                 standardOutput = new ByteArrayOutputStream()
                 errorOutput = standardOutput
                 doLast {
-                    if (execResult.exitValue != 0) {
+                    def exitValue
+                    // Gradle 8 renamed it to `executionResult`. We handle both cases.
+                    if (hasProperty("executionResult")) {
+                        exitValue = executionResult.exitValue
+                    } else {
+                        exitValue = execResult.exitValue
+                    }
+                    if (exitValue != 0) {
                         throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
