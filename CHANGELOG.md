@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
 
+* Android
+  * Update minimum supported Java bytecode generation to JVM 17 ([#2498](https://github.com/mozilla/glean/pull/2498/))
+
 # v53.0.0 (2023-06-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...v53.0.0)
