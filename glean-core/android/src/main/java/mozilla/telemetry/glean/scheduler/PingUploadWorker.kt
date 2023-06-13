@@ -95,6 +95,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      *
      * @return The [androidx.work.ListenableWorker.Result] of the computation
      */
+    @OptIn(ExperimentalUnsignedTypes::class)
     @Suppress("ReturnCount")
     override fun doWork(): Result {
         do {

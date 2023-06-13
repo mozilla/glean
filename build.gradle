@@ -38,7 +38,8 @@ buildscript {
         ndkVersion: "25.2.9519653", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 33,
         targetSdkVersion: 33,
-        minSdkVersion: 21, // So that we can publish for aarch64.
+        minSdkVersion: 21,
+        jvmTargetCompatibility: 11,
     ]
 
     repositories {
@@ -143,15 +144,22 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-    // Enable Kotlin warnings as errors for all modules
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions.allWarningsAsErrors = true
-        kotlinOptions {
-            // FIXME: Currently required for `toUByteArray` in the ping uploader.
-            // Should probably be handled with an annotation.
-            freeCompilerArgs += [
-                "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
-            ]
+
+    // Kotlin settings applicable to all modules.
+    afterEvaluate {
+        if (it.hasProperty('android')) {
+            android {
+                // This shouldn't be needed anymore with AGP 8.1.0+
+                // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+                compileOptions {
+                    sourceCompatibility rootProject.ext.build.jvmTargetCompatibility
+                    targetCompatibility rootProject.ext.build.jvmTargetCompatibility
+                }
+            }
+        }
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+            kotlinOptions.allWarningsAsErrors = true
+            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
