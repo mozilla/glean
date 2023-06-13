@@ -259,6 +259,7 @@ open class GleanInternalAPI internal constructor() {
                 trimDataToRegisteredPings = false,
                 logLevel = configuration.logLevel,
                 rateLimit = null,
+                enableEventTimestamps = configuration.enableEventTimestamps,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)

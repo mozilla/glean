@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.2.0...main)
 
+* General
+  * Experimental: Add configuration to add a wall clock timestamp to all events ([#2513](https://github.com/mozilla/glean/issues/2513))
 * Python
   * Switched the build system to maturin. This should not have any effect on consumers. ([#2345](https://github.com/mozilla/glean/pull/2345))
   * BREAKING CHANGE: Dropped support for Python 3.6 ([#2345](https://github.com/mozilla/glean/pull/2345))
