@@ -5,6 +5,8 @@
 * Python
   * Switched the build system to maturin. This should not have any effect on consumers. ([#2345](https://github.com/mozilla/glean/pull/2345))
   * BREAKING CHANGE: Dropped support for Python 3.6 ([#2345](https://github.com/mozilla/glean/pull/2345))
+* Kotlin
+  * Update to Gradle v8.2.1 ([#2516](https://github.com/mozilla/glean/pull/2516))
 
 # v53.2.0 (2023-08-02)
 
@@ -15,7 +17,7 @@
 * Rust
   * The Ping Rate Limit type is now accessible in the Rust Language Binding ([#2528](https://github.com/mozilla/glean/pull/2528))
   * Gracefully handle a failure when starting the upload thread. Glean no longer crashes in that case. ([#2545](https://github.com/mozilla/glean/pull/2545))
-  * `locale` now exposed through the RLB so it can be set by consumers ([2531](https://github.com/mozilla/glean/pull/2531))
+  * `locale` now exposed through the RLB so it can be set by consumers ([#2531](https://github.com/mozilla/glean/pull/2531))
 * Python
   * Added the shutdown API for Python to ensure orderly shutdown and waiting for uploader processes ([#2538](https://github.com/mozilla/glean/pull/2538))
 * Kotlin

@@ -29,6 +29,7 @@ ext.gleanNamespace = "mozilla.telemetry.glean"
 
 android {
     compileSdkVersion rootProject.ext.build.compileSdkVersion
+    namespace "mozilla.telemetry.glean"
 
     defaultConfig {
         minSdkVersion rootProject.ext.build['minSdkVersion']
@@ -58,12 +59,22 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     sourceSets {
         test.resources.srcDirs += "$buildDir/rustJniLibs/desktop"
         // Add glean-native's build directory to our resource path so that
         // we can actually find it during tests. (Unfortunately, each project
         // has their own build dir)
         test.resources.srcDirs += "${project(':glean-native').buildDir}/rustJniLibs/desktop"
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 
     // Uncomment to include debug symbols in native library builds.
@@ -85,35 +96,37 @@ android {
 }
 
 afterEvaluate {
-    jacoco {
-      toolVersion = "0.8.7"
-    }
-
-    task jacocoTestReport(type: JacocoReport) {
-        reports {
-            xml.enabled = true
-            html.enabled = true
+    if (project.hasProperty("coverage")) {
+        jacoco {
+          toolVersion = "0.8.10"
         }
 
-        def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
-                          '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
-        def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
-        def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
-        def mainSrc = "$project.projectDir/src/main/java"
+        task jacocoTestReport(type: JacocoReport) {
+            reports {
+                xml.required = true
+                html.required = true
+            }
 
-        sourceDirectories.from = files([mainSrc])
-        classDirectories.from = files([kotlinDebugTree, javaDebugTree])
-        executionData.from = fileTree(dir: project.buildDir, includes: [
-                'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
-        ])
-    }
+            def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+                              '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
+            def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+            def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+            def mainSrc = "$project.projectDir/src/main/java"
 
-    tasks.withType(Test) {
-      jacoco.includeNoLocationClasses = true
-      // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
-      jacoco.excludes = ['jdk.internal.*']
+            sourceDirectories.from = files([mainSrc])
+            classDirectories.from = files([kotlinDebugTree, javaDebugTree])
+            executionData.from = fileTree(dir: project.buildDir, includes: [
+                    'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+            ])
+        }
 
-      finalizedBy jacocoTestReport
+        tasks.withType(Test) {
+          jacoco.includeNoLocationClasses = true
+          // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+          jacoco.excludes = ['jdk.internal.*']
+
+          finalizedBy jacocoTestReport
+        }
     }
 }
 

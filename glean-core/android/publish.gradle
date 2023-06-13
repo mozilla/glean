@@ -19,30 +19,12 @@ ext.configurePublish = {
     def theArtifactId = project.ext.artifactId
     def theDescription = project.ext.description
 
-    task sourcesJar(type: Jar) {
-        from android.sourceSets.main.java.srcDirs
-        classifier = 'sources'
-    }
-
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
     publishing {
         publications {
             aar(MavenPublication) {
                 project.afterEvaluate {
                     from components.release
                 }
-                artifact sourcesJar
-                // Can't publish Javadoc yet: Glean isn't well behaved.
-                // artifact javadocJar
 
                 // If this goes haywire with
                 // 'Cannot configure the 'publishing' extension after it has been accessed.',
