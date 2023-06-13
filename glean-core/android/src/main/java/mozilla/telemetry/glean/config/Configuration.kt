@@ -20,6 +20,7 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property dataPath An optional [String] that specifies where to store data locally on the device.
  *           This should ONLY be used when setting up Glean on a non-main process.
  * @property logLevel An optional [LevelFilter] that controls how verbose the internal logging is.
+ * @property enableEventTimestamps (Experimental) Whether to add a wallclock timestamp to all events.
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -31,6 +32,7 @@ data class Configuration @JvmOverloads constructor(
     val httpClient: PingUploader = HttpURLConnectionUploader(),
     val dataPath: String? = null,
     val logLevel: LevelFilter? = null,
+    val enableEventTimestamps: Boolean = false,
 ) {
     companion object {
         /**

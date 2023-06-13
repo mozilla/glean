@@ -39,6 +39,7 @@ fn main() {
         trim_data_to_registered_pings: false,
         log_level: None,
         rate_limit: None,
+        enable_event_timestamps: false,
     };
 
     let client_info = ClientInfoMetrics {
