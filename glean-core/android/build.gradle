@@ -69,19 +69,6 @@ android {
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 
-    // This is required to support new AndroidX support libraries.
-    // See mozilla-mobile/android-components#842
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-
     testOptions {
         unitTests.all {
             testLogging {
