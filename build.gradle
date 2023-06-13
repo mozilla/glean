@@ -12,7 +12,7 @@ buildscript {
     // versions below must match the ones in that repository.
     ext.versions = [
         android_gradle_plugin: '7.4.2',
-        coroutines: '1.6.4',
+        coroutines: '1.7.1',
         jna: '5.13.0',
         junit: '4.12',
         mockito: '3.11.2',
