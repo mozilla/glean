@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
 
+* General
+  * Gracefully handle the waiting thread going away during shutdown ([#2503](https://github.com/mozilla/glean/pull/2503))
 * Android
   * Update minimum supported Java byte code generation to 17 ([#2498](https://github.com/mozilla/glean/pull/2498/))
 
