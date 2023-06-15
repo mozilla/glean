@@ -99,19 +99,19 @@ class DatetimeMetricType:
         Returns:
             value (datetime.datetime): value of the stored metric.
         """
-        dt = self._inner.test_get_value(ping_name)
-        if not dt:
+        value = self._inner.test_get_value(ping_name)
+        if not value:
             return None
 
-        tz = tzoffset(dt.offset_seconds)
+        tz = tzoffset(value.offset_seconds)
         dt = datetime.datetime(
-            year=dt.year,
-            month=dt.month,
-            day=dt.day,
-            hour=dt.hour,
-            minute=dt.minute,
-            second=dt.second,
-            microsecond=round(dt.nanosecond / 1000),
+            year=value.year,
+            month=value.month,
+            day=value.day,
+            hour=value.hour,
+            minute=value.minute,
+            second=value.second,
+            microsecond=round(value.nanosecond / 1000),
             tzinfo=tz,
         )
         return dt
