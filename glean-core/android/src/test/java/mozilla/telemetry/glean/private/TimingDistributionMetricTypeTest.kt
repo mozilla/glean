@@ -38,9 +38,9 @@ class TimingDistributionMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "timing_distribution",
-                sendInPings = listOf("store1")
+                sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // Accumulate a few values
@@ -74,7 +74,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         val id = metric.start()
@@ -83,7 +83,7 @@ class TimingDistributionMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Disabled TimingDistributions should not record data.",
-            metric.testGetValue()
+            metric.testGetValue(),
         )
     }
 
@@ -98,7 +98,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
         assertNull(metric.testGetValue())
     }
@@ -114,7 +114,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution",
                 sendInPings = listOf("store1", "store2", "store3"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // Accumulate a few values
@@ -159,7 +159,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         // Accumulate a few values
@@ -196,7 +196,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         val timerId = metric.start()
@@ -218,7 +218,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         val timerId = metric.start()
@@ -238,7 +238,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         metric.stopAndAccumulate(GleanTimerId(1337UL))
@@ -255,7 +255,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // Create a test function to "measure". This works by mocking the getElapsedNanos return
@@ -298,7 +298,7 @@ class TimingDistributionMetricTypeTest {
                 name = "inlined",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // We define a function that measures the whole function call runtime
@@ -332,7 +332,7 @@ class TimingDistributionMetricTypeTest {
                 name = "timing_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         // Create a test function that throws a NPE

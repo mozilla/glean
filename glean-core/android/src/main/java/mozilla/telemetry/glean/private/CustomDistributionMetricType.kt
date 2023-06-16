@@ -30,7 +30,7 @@ class CustomDistributionMetricType(
     rangeMin: Long,
     rangeMax: Long,
     bucketCount: Long,
-    histogramType: HistogramType
+    histogramType: HistogramType,
 ) : HistogramBase {
     val inner = CustomDistributionMetric(meta, rangeMin, rangeMax, bucketCount, histogramType)
 

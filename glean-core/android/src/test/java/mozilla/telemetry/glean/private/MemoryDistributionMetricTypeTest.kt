@@ -31,7 +31,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution",
                 sendInPings = listOf("store1"),
             ),
-            memoryUnit = MemoryUnit.KILOBYTE
+            memoryUnit = MemoryUnit.KILOBYTE,
         )
 
         // Accumulate a few values
@@ -64,7 +64,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution",
                 sendInPings = listOf("store1"),
             ),
-            memoryUnit = MemoryUnit.GIGABYTE
+            memoryUnit = MemoryUnit.GIGABYTE,
         )
 
         metric.accumulate(2048L)
@@ -91,7 +91,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution",
                 sendInPings = listOf("store1"),
             ),
-            memoryUnit = MemoryUnit.KILOBYTE
+            memoryUnit = MemoryUnit.KILOBYTE,
         )
 
         metric.accumulate(1L)
@@ -99,7 +99,7 @@ class MemoryDistributionMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "MemoryDistributions without a lifetime should not record data.",
-            metric.testGetValue()
+            metric.testGetValue(),
         )
     }
 
@@ -114,7 +114,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution",
                 sendInPings = listOf("store1"),
             ),
-            memoryUnit = MemoryUnit.KILOBYTE
+            memoryUnit = MemoryUnit.KILOBYTE,
         )
         assertNull(metric.testGetValue())
     }
@@ -130,7 +130,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution",
                 sendInPings = listOf("store1", "store2", "store3"),
             ),
-            memoryUnit = MemoryUnit.KILOBYTE
+            memoryUnit = MemoryUnit.KILOBYTE,
         )
 
         // Accumulate a few values
@@ -172,7 +172,7 @@ class MemoryDistributionMetricTypeTest {
                 name = "memory_distribution_samples",
                 sendInPings = listOf("store1"),
             ),
-            memoryUnit = MemoryUnit.KILOBYTE
+            memoryUnit = MemoryUnit.KILOBYTE,
         )
 
         // Accumulate a few values

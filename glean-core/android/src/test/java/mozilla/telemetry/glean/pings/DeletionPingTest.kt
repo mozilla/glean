@@ -63,9 +63,10 @@ class DeletionPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = false
+            clearStores = true,
+            uploadEnabled = false,
         )
         triggerWorkManager(context)
 
@@ -82,9 +83,10 @@ class DeletionPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = true,
+            uploadEnabled = true,
         )
 
         // Get directory for pending deletion-request pings
@@ -140,9 +142,10 @@ class DeletionPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = false
+            clearStores = true,
+            uploadEnabled = false,
         )
         triggerWorkManager(context)
 

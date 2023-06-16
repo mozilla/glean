@@ -43,7 +43,7 @@ object GleanBuildInfo {
         BuildInfo(
             versionCode = "0.0.1",
             versionName = "0.0.1",
-            buildDate = stubBuildDate()
+            buildDate = stubBuildDate(),
         )
     }
 }
@@ -61,10 +61,11 @@ object GleanBuildInfo {
 internal fun checkPingSchema(content: JSONObject) {
     val os = System.getProperty("os.name")?.lowercase()
     val pythonExecutable =
-        if (os?.indexOf("win")?.compareTo(0) == 0)
+        if (os?.indexOf("win")?.compareTo(0) == 0) {
             "${BuildConfig.GLEAN_MINICONDA_DIR}/python"
-        else
+        } else {
             "${BuildConfig.GLEAN_MINICONDA_DIR}/bin/python"
+        }
 
     val proc = ProcessBuilder(
         listOf(
@@ -73,8 +74,8 @@ internal fun checkPingSchema(content: JSONObject) {
             "glean_parser",
             "check",
             "-s",
-            "${BuildConfig.GLEAN_PING_SCHEMA_PATH}"
-        )
+            "${BuildConfig.GLEAN_PING_SCHEMA_PATH}",
+        ),
     ).redirectOutput(ProcessBuilder.Redirect.INHERIT)
         .redirectError(ProcessBuilder.Redirect.INHERIT)
     val process = proc.start()
@@ -120,7 +121,7 @@ internal fun resetGlean(
     config: Configuration = Configuration(),
     clearStores: Boolean = true,
     redirectRobolectricLogs: Boolean = true,
-    uploadEnabled: Boolean = true
+    uploadEnabled: Boolean = true,
 ) {
     if (redirectRobolectricLogs) {
         ShadowLog.stream = System.out
@@ -184,7 +185,7 @@ internal fun getWorkerStatus(context: Context, tag: String): WorkerStatus {
 internal fun waitForEnqueuedWorker(
     context: Context,
     workTag: String,
-    timeoutMillis: Long = 5000
+    timeoutMillis: Long = 5000,
 ) = runBlocking {
     withTimeout(timeoutMillis) {
         do {
@@ -208,7 +209,7 @@ internal fun triggerWorkManager(context: Context) {
     val status = getWorkerStatus(context, workerTag)
     Assert.assertTrue(
         "A scheduled $workerTag must exist",
-        status.isEnqueued
+        status.isEnqueued,
     )
 
     // Trigger WorkManager using TestDriver
@@ -261,8 +262,8 @@ internal fun delayMetricsPing(
     buildInfo: BuildInfo = BuildInfo(
         versionCode = "0.0.1",
         versionName = "0.0.1",
-        buildDate = stubBuildDate()
-    )
+        buildDate = stubBuildDate(),
+    ),
 ) {
     // Set the current system time to a known datetime.
     val fakeNow = Calendar.getInstance()
@@ -323,7 +324,7 @@ fun waitForPingContent(
     pingName: String,
     pingReason: String?,
     server: MockWebServer,
-    maxAttempts: Int = 3
+    maxAttempts: Int = 3,
 ): JSONObject? {
     var parsedPayload: JSONObject? = null
     @Suppress("LoopWithTooManyJumpStatements")

@@ -66,9 +66,10 @@ class CustomPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = true,
+            uploadEnabled = true,
         )
 
         // Define a new custom ping inline.
@@ -76,7 +77,7 @@ class CustomPingTest {
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = true,
-            reasonCodes = emptyList()
+            reasonCodes = emptyList(),
         )
 
         customPing.submit()
@@ -93,9 +94,10 @@ class CustomPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = true,
+            uploadEnabled = true,
         )
 
         // Define a new custom ping inline.
@@ -103,7 +105,7 @@ class CustomPingTest {
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = true,
-            reasonCodes = emptyList()
+            reasonCodes = emptyList(),
         )
 
         // Trigger the ping twice.
@@ -142,9 +144,10 @@ class CustomPingTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true, uploadEnabled = true
+            clearStores = true,
+            uploadEnabled = true,
         )
 
         val pingName = "custom-events-1"
@@ -158,7 +161,7 @@ class CustomPingTest {
                 name = "click",
                 sendInPings = listOf(pingName),
             ),
-            allowedExtraKeys = emptyList()
+            allowedExtraKeys = emptyList(),
         )
         // and record it in the currently initialized Glean instance.
         click.record(NoExtras())
@@ -174,16 +177,17 @@ class CustomPingTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = emptyList()
+            reasonCodes = emptyList(),
         )
 
         // This is equivalent to a consumer calling `Glean.initialize` at startup
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = false, uploadEnabled = true
+            clearStores = false,
+            uploadEnabled = true,
         )
 
         // There should be no ping upload worker,

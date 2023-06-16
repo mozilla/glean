@@ -45,15 +45,15 @@ class PingTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom",
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
 
         val counter = CounterMetricType(
@@ -62,8 +62,8 @@ class PingTypeTest {
                 category = "test",
                 lifetime = Lifetime.PING,
                 name = "counter",
-                sendInPings = listOf("custom")
-            )
+                sendInPings = listOf("custom"),
+            ),
         )
 
         counter.add()
@@ -110,15 +110,15 @@ class PingTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom_ping",
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
 
         val counter = CounterMetricType(
@@ -127,8 +127,8 @@ class PingTypeTest {
                 category = "test",
                 lifetime = Lifetime.PING,
                 name = "counter",
-                sendInPings = listOf("custom_ping")
-            )
+                sendInPings = listOf("custom_ping"),
+            ),
         )
 
         counter.add()
@@ -156,15 +156,15 @@ class PingTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
 
         val counter = CounterMetricType(
@@ -173,8 +173,8 @@ class PingTypeTest {
                 category = "test",
                 lifetime = Lifetime.PING,
                 name = "counter",
-                sendInPings = listOf("custom-ping")
-            )
+                sendInPings = listOf("custom-ping"),
+            ),
         )
 
         counter.add()
@@ -202,15 +202,15 @@ class PingTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         val customPing = PingType<NoReasonCodes>(
             name = "custom",
             includeClientId = false,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
 
         val counter = CounterMetricType(
@@ -219,8 +219,8 @@ class PingTypeTest {
                 category = "test",
                 lifetime = Lifetime.PING,
                 name = "counter",
-                sendInPings = listOf("custom")
-            )
+                sendInPings = listOf("custom"),
+            ),
         )
 
         counter.add()
@@ -249,8 +249,8 @@ class PingTypeTest {
                 category = "test",
                 lifetime = Lifetime.PING,
                 name = "counter",
-                sendInPings = listOf("unknown")
-            )
+                sendInPings = listOf("unknown"),
+            ),
         )
 
         val context = getContext()
@@ -258,8 +258,8 @@ class PingTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         counter.add()
@@ -269,7 +269,7 @@ class PingTypeTest {
 
         assertFalse(
             "We shouldn't have any pings scheduled",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued,
         )
     }
 }

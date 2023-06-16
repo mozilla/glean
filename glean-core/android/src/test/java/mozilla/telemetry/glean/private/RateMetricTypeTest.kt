@@ -33,8 +33,8 @@ class RateMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "rate_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         assertNull(rateMetric.testGetValue())
@@ -57,15 +57,15 @@ class RateMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "rate_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         rateMetric.addToNumerator(1)
         rateMetric.addToDenominator(1)
         assertNull(
             "rates must not be recorded if they are disabled",
-            rateMetric.testGetValue()
+            rateMetric.testGetValue(),
         )
     }
 
@@ -76,7 +76,7 @@ class RateMetricTypeTest {
             name = "rate1",
             sendInPings = listOf("store1"),
             lifetime = Lifetime.APPLICATION,
-            disabled = false
+            disabled = false,
         )
 
         val meta2 = CommonMetricData(
@@ -84,7 +84,7 @@ class RateMetricTypeTest {
             name = "rate2",
             sendInPings = listOf("store1"),
             lifetime = Lifetime.APPLICATION,
-            disabled = false
+            disabled = false,
         )
 
         val denom = DenominatorMetricType(
@@ -93,9 +93,9 @@ class RateMetricTypeTest {
                 name = "counter",
                 sendInPings = listOf("store1"),
                 lifetime = Lifetime.APPLICATION,
-                disabled = false
+                disabled = false,
             ),
-            listOf(meta1, meta2)
+            listOf(meta1, meta2),
         )
 
         val num1 = NumeratorMetricType(meta1)

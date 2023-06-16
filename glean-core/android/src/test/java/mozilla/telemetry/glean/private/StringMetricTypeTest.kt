@@ -35,8 +35,8 @@ class StringMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Record two strings of the same type, with a little delay.
@@ -60,8 +60,8 @@ class StringMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "stringMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the string.
@@ -69,7 +69,7 @@ class StringMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Strings must not be recorded if they are disabled",
-            stringMetric.testGetValue()
+            stringMetric.testGetValue(),
         )
     }
 
@@ -81,8 +81,8 @@ class StringMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "stringMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(stringMetric.testGetValue())
     }
@@ -96,8 +96,8 @@ class StringMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         // Record two strings of the same type, with a little delay.
@@ -120,8 +120,8 @@ class StringMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         stringMetric.set("0123456789".repeat(11))

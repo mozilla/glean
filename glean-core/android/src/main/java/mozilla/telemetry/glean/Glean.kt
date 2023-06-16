@@ -172,7 +172,7 @@ open class GleanInternalAPI internal constructor() {
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
-        buildInfo: BuildInfo
+        buildInfo: BuildInfo,
     ) {
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
@@ -185,7 +185,7 @@ open class GleanInternalAPI internal constructor() {
                 Log.e(
                     LOG_TAG,
                     "Attempted to initialize Glean with an invalid database path " +
-                        "\"{context.applicationInfo.dataDir}/glean_data\" is reserved"
+                        "\"{context.applicationInfo.dataDir}/glean_data\" is reserved",
                 )
                 return
             }
@@ -213,7 +213,7 @@ open class GleanInternalAPI internal constructor() {
             if (!isMainProcess(applicationContext)) {
                 Log.e(
                     LOG_TAG,
-                    "Attempted to initialize Glean on a process other than the main process without a dataPath"
+                    "Attempted to initialize Glean on a process other than the main process without a dataPath",
                 )
                 return
             }
@@ -246,7 +246,7 @@ open class GleanInternalAPI internal constructor() {
                 useCoreMps = false,
                 trimDataToRegisteredPings = false,
                 logLevel = configuration.logLevel,
-                rateLimit = null
+                rateLimit = null,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -304,7 +304,7 @@ open class GleanInternalAPI internal constructor() {
     fun setExperimentActive(
         experimentId: String,
         branch: String,
-        extra: Map<String, String>? = null
+        extra: Map<String, String>? = null,
     ) {
         var map = extra ?: mapOf()
         gleanSetExperimentActive(experimentId, branch, map)
@@ -361,7 +361,7 @@ open class GleanInternalAPI internal constructor() {
             // https://developer.android.com/reference/android/os/Build
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
-            locale = getLocaleTag()
+            locale = getLocaleTag(),
         )
     }
 
@@ -526,7 +526,7 @@ open class GleanInternalAPI internal constructor() {
         context: Context,
         config: Configuration,
         clearStores: Boolean,
-        uploadEnabled: Boolean = true
+        uploadEnabled: Boolean = true,
     ) {
         isMainProcess = null
 

@@ -33,7 +33,7 @@ import java.util.TimerTask
 internal class MetricsPingScheduler(
     private val applicationContext: Context,
     private val buildInfo: BuildInfo,
-    migratedLastSentDate: String? = null
+    migratedLastSentDate: String? = null,
 ) {
     internal val sharedPreferences: SharedPreferences by lazy {
         applicationContext.getSharedPreferences(this.javaClass.canonicalName, Context.MODE_PRIVATE)
@@ -96,7 +96,7 @@ internal class MetricsPingScheduler(
     internal fun schedulePingCollection(
         now: Calendar,
         sendTheNextCalendarDay: Boolean,
-        reason: Pings.metricsReasonCodes
+        reason: Pings.metricsReasonCodes,
     ) {
         // Compute how many milliseconds until the next time the metrics ping
         // needs to collect data.
@@ -146,7 +146,7 @@ internal class MetricsPingScheduler(
     internal fun getMillisecondsUntilDueTime(
         sendTheNextCalendarDay: Boolean,
         now: Calendar,
-        dueHourOfTheDay: Int = DUE_HOUR_OF_THE_DAY
+        dueHourOfTheDay: Int = DUE_HOUR_OF_THE_DAY,
     ): Long {
         val nowInMillis = now.timeInMillis
         val dueTime = getDueTimeForToday(now, dueHourOfTheDay)
@@ -179,7 +179,7 @@ internal class MetricsPingScheduler(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun isAfterDueTime(
         now: Calendar,
-        dueHourOfTheDay: Int = DUE_HOUR_OF_THE_DAY
+        dueHourOfTheDay: Int = DUE_HOUR_OF_THE_DAY,
     ): Boolean {
         val nowInMillis = now.timeInMillis
         val dueTime = getDueTimeForToday(now, dueHourOfTheDay)
@@ -253,7 +253,7 @@ internal class MetricsPingScheduler(
                 // the right time?  This covers (2)
                 Log.i(
                     LOG_TAG,
-                    "The 'metrics' ping is scheduled for immediate collection, ${safeDateToString(now.time)}"
+                    "The 'metrics' ping is scheduled for immediate collection, ${safeDateToString(now.time)}",
                 )
 
                 // Since `schedule` is only ever called from Glean.initialize, we need to ensure
@@ -286,7 +286,7 @@ internal class MetricsPingScheduler(
         @Suppress("MaxLineLength")
         Log.i(
             LOG_TAG,
-            "Collecting the 'metrics' ping, now = ${safeDateToString(now.time)}, startup = $startupPing, reason = $reasonString"
+            "Collecting the 'metrics' ping, now = ${safeDateToString(now.time)}, startup = $startupPing, reason = $reasonString",
         )
         if (startupPing) {
             // **IMPORTANT**
@@ -372,7 +372,7 @@ internal class MetricsPingScheduler(
  */
 internal class MetricsPingTimer(
     val scheduler: MetricsPingScheduler,
-    val reason: Pings.metricsReasonCodes
+    val reason: Pings.metricsReasonCodes,
 ) : TimerTask() {
     companion object {
         private const val LOG_TAG = "glean/MetricsPingTimer"

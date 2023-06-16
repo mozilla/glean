@@ -40,8 +40,8 @@ class DatetimeMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "datetime_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         val value = Calendar.getInstance()
@@ -84,8 +84,8 @@ class DatetimeMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "datetimeMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the datetime.
@@ -106,7 +106,7 @@ class DatetimeMetricTypeTest {
                 name = "datetimeMetric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         val nowDate = Date()

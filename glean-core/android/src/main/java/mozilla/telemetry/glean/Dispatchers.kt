@@ -56,7 +56,7 @@ internal object Dispatchers {
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
     var API = WaitableCoroutineScope(
         CoroutineScope(
-            newSingleThreadContext("GleanAPIPool") + supervisorJob
-        )
+            newSingleThreadContext("GleanAPIPool") + supervisorJob,
+        ),
     )
 }

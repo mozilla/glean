@@ -30,7 +30,7 @@ enum class NoReasonCodes(
     /**
      * @suppress
      */
-    val value: Int
+    val value: Int,
 ) : ReasonCode {
     // deliberately empty
 }
@@ -48,7 +48,7 @@ class PingType<ReasonCodesEnum> (
     name: String,
     includeClientId: Boolean,
     sendIfEmpty: Boolean,
-    val reasonCodes: List<String>
+    val reasonCodes: List<String>,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
     private val innerPing: GleanPingType
@@ -58,7 +58,7 @@ class PingType<ReasonCodesEnum> (
             name = name,
             includeClientId = includeClientId,
             sendIfEmpty = sendIfEmpty,
-            reasonCodes = reasonCodes
+            reasonCodes = reasonCodes,
         )
     }
 

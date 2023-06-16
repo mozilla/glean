@@ -61,7 +61,7 @@ class PingUploadWorkerTest {
         // Verify that the worker is enqueued
         Assert.assertTrue(
             "PingUploadWorker is enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued,
         )
 
         // Cancel the worker
@@ -70,7 +70,7 @@ class PingUploadWorkerTest {
         // Verify worker has been cancelled
         Assert.assertFalse(
             "PingUploadWorker is not enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued,
         )
     }
 }

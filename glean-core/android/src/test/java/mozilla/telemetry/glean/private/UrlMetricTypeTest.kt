@@ -29,8 +29,8 @@ class UrlMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "url_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Record two URLs of the same type, with a little delay.
@@ -54,8 +54,8 @@ class UrlMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "urlMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the URL.
@@ -63,7 +63,7 @@ class UrlMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Url must not be recorded if they are disabled",
-            urlMetric.testGetValue()
+            urlMetric.testGetValue(),
         )
     }
 
@@ -75,8 +75,8 @@ class UrlMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "urlMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(urlMetric.testGetValue())
     }
@@ -90,8 +90,8 @@ class UrlMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "url_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         urlMetric.set("glean://value")
@@ -113,8 +113,8 @@ class UrlMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "url_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
