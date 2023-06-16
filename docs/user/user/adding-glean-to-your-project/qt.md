@@ -6,7 +6,7 @@ Nevertheless this is just one of the required steps for integrating Glean succes
 
 ## Requirements
 
-* Python >= 3.6
+* Python >= 3.7
 * Qt >= 5.15.2
 
 ## Setting up the dependency
