@@ -704,25 +704,6 @@ jobs:
           name: Python lints
           command: make lint-python
 
-  Python 3_6 tests:
-    docker:
-      - image: cimg/python:3.6
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
-  Python 3_6 tests minimum dependencies:
-    docker:
-      - image: cimg/python:3.6
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - run:
-          command: |
-            echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
-      - test-python
-
   Python 3_7 tests:
     docker:
       - image: cimg/python:3.7
@@ -1110,10 +1091,6 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_6 tests:
-          filters: *ci-filters
-      - Python 3_6 tests minimum dependencies:
-          filters: *ci-filters
       - Python 3_7 tests:
           filters: *ci-filters
       - Python 3_8 tests:
