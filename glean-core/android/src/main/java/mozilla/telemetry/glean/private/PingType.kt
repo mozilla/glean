@@ -17,7 +17,9 @@ import mozilla.telemetry.glean.internal.PingType as GleanPingType
  * This is automatically implemented for generated enums.
  */
 interface ReasonCode {
-    fun code(): Int = throw IllegalStateException("can't determine reason code")
+    fun code(): Int {
+        error("can't determine reason code")
+    }
 }
 
 /**
