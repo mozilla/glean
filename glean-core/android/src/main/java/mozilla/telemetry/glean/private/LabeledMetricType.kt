@@ -30,7 +30,7 @@ class LabeledMetricType<T>(
     name: String,
     private val labels: Set<String>? = null,
     private val sendInPings: List<String>,
-    private val subMetric: T
+    private val subMetric: T,
 ) {
     // The inner labeled metric, from which actual metrics are constructed.
     private val inner: Any
@@ -41,7 +41,7 @@ class LabeledMetricType<T>(
             name = name,
             sendInPings = sendInPings,
             disabled = disabled,
-            lifetime = lifetime
+            lifetime = lifetime,
         )
 
         this.inner = when (subMetric) {

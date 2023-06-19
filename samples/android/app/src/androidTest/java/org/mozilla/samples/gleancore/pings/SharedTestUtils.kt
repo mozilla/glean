@@ -68,7 +68,7 @@ fun waitForPingContent(
     pingName: String,
     pingReason: String?,
     server: MockWebServer,
-    maxAttempts: Int = 3
+    maxAttempts: Int = 3,
 ): JSONObject? {
     var parsedPayload: JSONObject? = null
     @Suppress("LoopWithTooManyJumpStatements")

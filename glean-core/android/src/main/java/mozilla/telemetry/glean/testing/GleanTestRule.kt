@@ -38,7 +38,7 @@ import java.util.Calendar
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestRule(
     val context: Context,
-    val configToUse: Configuration = Configuration()
+    val configToUse: Configuration = Configuration(),
 ) : TestWatcher() {
     /**
      * Invoked when a test is about to start.
@@ -71,7 +71,7 @@ class GleanTestRule(
         Glean.resetGlean(
             context = context,
             config = configToUse,
-            clearStores = true
+            clearStores = true,
         )
     }
 }

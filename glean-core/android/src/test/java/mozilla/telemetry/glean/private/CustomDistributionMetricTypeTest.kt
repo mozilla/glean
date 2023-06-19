@@ -36,7 +36,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
 
         // Accumulate a few values
@@ -71,7 +71,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
 
         // Attempt to store to the distribution
@@ -80,7 +80,7 @@ class CustomDistributionMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Disabled CustomDistributions should not record data.",
-            metric.testGetValue()
+            metric.testGetValue(),
         )
     }
 
@@ -98,7 +98,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
         assertNull(metric.testGetValue())
     }
@@ -117,7 +117,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
 
         // Accumulate a few values
@@ -160,7 +160,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
 
         // Accumulate a few values
@@ -193,7 +193,7 @@ class CustomDistributionMetricTypeTest {
             rangeMin = 0L,
             rangeMax = 60000L,
             bucketCount = 100,
-            histogramType = HistogramType.EXPONENTIAL
+            histogramType = HistogramType.EXPONENTIAL,
         )
 
         // Accumulate a few values

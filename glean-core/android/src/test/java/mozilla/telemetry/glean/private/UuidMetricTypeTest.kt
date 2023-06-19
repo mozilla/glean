@@ -35,8 +35,8 @@ class UuidMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "uuid_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Check that there is no UUID recorded
@@ -65,8 +65,8 @@ class UuidMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "uuidMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the uuid.
@@ -74,7 +74,7 @@ class UuidMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Uuids must not be recorded if they are disabled",
-            uuidMetric.testGetValue()
+            uuidMetric.testGetValue(),
         )
     }
 
@@ -86,8 +86,8 @@ class UuidMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "uuidMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(uuidMetric.testGetValue())
     }
@@ -101,8 +101,8 @@ class UuidMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "uuid_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         // Record two uuids of the same type, with a little delay.

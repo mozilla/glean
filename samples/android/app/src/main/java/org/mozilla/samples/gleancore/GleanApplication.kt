@@ -34,7 +34,7 @@ class GleanApplication : Application() {
         Glean.initialize(
             applicationContext = applicationContext,
             uploadEnabled = true,
-            buildInfo = GleanBuildInfo.buildInfo
+            buildInfo = GleanBuildInfo.buildInfo,
         )
 
         Test.timespan.start()

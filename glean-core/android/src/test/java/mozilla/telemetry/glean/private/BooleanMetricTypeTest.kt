@@ -35,8 +35,8 @@ class BooleanMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "boolean_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Record two booleans of the same type, with a little delay.
@@ -59,8 +59,8 @@ class BooleanMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "booleanMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the boolean.
@@ -79,8 +79,8 @@ class BooleanMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "booleanMetric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(booleanMetric.testGetValue())
     }
@@ -94,8 +94,8 @@ class BooleanMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "boolean_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         // Record two booleans of the same type, with a little delay.

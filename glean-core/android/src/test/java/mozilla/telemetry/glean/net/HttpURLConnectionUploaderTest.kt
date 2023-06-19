@@ -62,7 +62,7 @@ class HttpURLConnectionUploaderTest {
         val expectedHeaders = mapOf(
             "Content-Type" to "application/json; charset=utf-8",
             "Test-header" to "SomeValue",
-            "OtherHeader" to "Glean/Test 25.0.2"
+            "OtherHeader" to "Glean/Test 25.0.2",
         )
         uploader.upload(testPath, testPing.toByteArray(Charsets.UTF_8), expectedHeaders)
 
@@ -70,7 +70,7 @@ class HttpURLConnectionUploaderTest {
         val headerValueCaptor = argumentCaptor<String>()
         verify(connection, times(expectedHeaders.size)).setRequestProperty(
             headerNameCaptor.capture(),
-            headerValueCaptor.capture()
+            headerValueCaptor.capture(),
         )
 
         val capturedHeader = headerNameCaptor.allValues.zip(headerValueCaptor.allValues)
@@ -78,12 +78,12 @@ class HttpURLConnectionUploaderTest {
             assertEquals(
                 "Header names must be correctly reported",
                 capturedHeader[index].first,
-                header.first
+                header.first,
             )
             assertEquals(
                 "Header values must be correctly reported",
                 capturedHeader[index].second,
-                header.second
+                header.second,
             )
         }
     }
@@ -100,7 +100,7 @@ class HttpURLConnectionUploaderTest {
 
         assertEquals(
             client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap()),
-            HttpStatus(200)
+            HttpStatus(200),
         )
         verify<HttpURLConnection>(connection, times(1)).disconnect()
     }
@@ -111,7 +111,7 @@ class HttpURLConnectionUploaderTest {
         server.enqueue(MockResponse().setBody("OK"))
 
         val testConfig = testDefaultConfig.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
         )
 
         val client = HttpURLConnectionUploader()
@@ -139,7 +139,7 @@ class HttpURLConnectionUploaderTest {
         server.enqueue(MockResponse().setBody("OK"))
 
         val testConfig = testDefaultConfig.copy(
-            serverEndpoint = "http://localhost:" + server.port
+            serverEndpoint = "http://localhost:" + server.port,
         )
 
         // Set the default cookie manager/handler to be used for the http upload.

@@ -30,7 +30,7 @@ data class Configuration @JvmOverloads constructor(
     // to change in the public constructor below.
     val httpClient: PingUploader = HttpURLConnectionUploader(),
     val dataPath: String? = null,
-    val logLevel: LevelFilter? = null
+    val logLevel: LevelFilter? = null,
 ) {
     companion object {
         /**

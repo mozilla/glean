@@ -37,7 +37,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Record a timespan.
@@ -59,7 +59,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Record a timespan.
@@ -72,7 +72,7 @@ class TimespanMetricTypeTest {
         // Check that data was not recorded.
         assertNull(
             "The API should not record a counter if metric is disabled",
-            metric.testGetValue()
+            metric.testGetValue(),
         )
     }
 
@@ -87,7 +87,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Record a timespan.
@@ -98,7 +98,7 @@ class TimespanMetricTypeTest {
         // Check that data was not recorded.
         assertNull(
             "The API should not record a counter if metric is cancelled",
-            metric.testGetValue()
+            metric.testGetValue(),
         )
         assertEquals(1, metric.testGetNumRecordedErrors(ErrorType.INVALID_STATE))
     }
@@ -113,7 +113,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
         assertNull(metric.testGetValue())
     }
@@ -129,7 +129,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1", "store2"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Record a timespan.
@@ -151,7 +151,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1", "store2"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Record a timespan.
@@ -175,7 +175,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // Record a timespan.
@@ -201,7 +201,7 @@ class TimespanMetricTypeTest {
                 name = "explicit_timespan",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         metric.setRawNanos(timespanNanos)
@@ -220,7 +220,7 @@ class TimespanMetricTypeTest {
                 name = "explicit_timespan_1",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         metric.setRawNanos(timespanNanos)
@@ -243,7 +243,7 @@ class TimespanMetricTypeTest {
                 name = "explicit_timespan_2",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         metric.start()
@@ -267,7 +267,7 @@ class TimespanMetricTypeTest {
                 name = "explicit_timespan_3",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.SECOND
+            timeUnit = TimeUnit.SECOND,
         )
 
         metric.start()
@@ -290,7 +290,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Create a function to measure, which also returns a value to test that we properly pass
@@ -322,7 +322,7 @@ class TimespanMetricTypeTest {
                 name = "inlined",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.NANOSECOND
+            timeUnit = TimeUnit.NANOSECOND,
         )
 
         // We define a function that measures the whole function call runtime
@@ -354,7 +354,7 @@ class TimespanMetricTypeTest {
                 name = "timespan_metric",
                 sendInPings = listOf("store1"),
             ),
-            timeUnit = TimeUnit.MILLISECOND
+            timeUnit = TimeUnit.MILLISECOND,
         )
 
         // Create a function that will throw a NPE

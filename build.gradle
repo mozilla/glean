@@ -200,7 +200,7 @@ configurations {
 }
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.45.1") {
+    ktlint("com.pinterest:ktlint:0.49.1") {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
         }
@@ -219,6 +219,7 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
     args "-F", "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED") // workaround for java.lang.ExceptionInInitializerError
 }
 
 // Extremely unsophisticated way to publish a local development version while hiding implementation details.
