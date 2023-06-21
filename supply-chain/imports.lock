@@ -95,6 +95,12 @@ criteria = "safe-to-deploy"
 version = "1.0.0"
 notes = "I am the author of this crate."
 
+[[audits.bytecode-alliance.audits.errno-dragonfly]]
+who = "Jamey Sharp <jsharp@fastly.com>"
+criteria = "safe-to-deploy"
+version = "0.1.2"
+notes = "This should be portable to any POSIX system and seems like it should be part of the libc crate, but at any rate it's safe as is."
+
 [[audits.bytecode-alliance.audits.form_urlencoded]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
@@ -104,6 +110,11 @@ This is a small crate for working with url-encoded forms which doesn't have any
 more than what it says on the tin. Contains one `unsafe` block related to
 performance around utf-8 validation which is fairly easy to verify as correct.
 """
+
+[[audits.bytecode-alliance.audits.glob]]
+who = "Jamey Sharp <jsharp@fastly.com>"
+criteria = "safe-to-deploy"
+delta = "0.3.1 -> 0.3.0"
 
 [[audits.bytecode-alliance.audits.heck]]
 who = "Alex Crichton <alex@alexcrichton.com>"
@@ -228,21 +239,6 @@ is similar to what it once was back then. Skimming over the crate there is
 nothing suspicious and it's everything you'd expect a Rust URL parser to be.
 """
 
-[[audits.chromeos.audits.ctor]]
-who = "George Burgess IV <gbiv@google.com>"
-criteria = "safe-to-run"
-version = "0.1.26"
-
-[[audits.chromeos.audits.textwrap]]
-who = "ChromeOS"
-criteria = "safe-to-run"
-version = "0.15.2"
-
-[[audits.chromeos.audits.version_check]]
-who = "George Burgess IV <gbiv@google.com>"
-criteria = "safe-to-deploy"
-version = "0.9.4"
-
 [[audits.embark-studios.audits.anyhow]]
 who = "Johan Andersson <opensource@embark-studios.com>"
 criteria = "safe-to-deploy"
@@ -265,6 +261,30 @@ who = "Johan Andersson <opensource@embark-studios.com>"
 criteria = "safe-to-deploy"
 version = "1.0.40"
 notes = "Found no unsafe or ambient capabilities used"
+
+[[audits.google.audits.ctor]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-run"
+version = "0.1.26"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.glob]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-deploy"
+version = "0.3.1"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.textwrap]]
+who = "ChromeOS"
+criteria = "safe-to-run"
+version = "0.15.2"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.version_check]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-deploy"
+version = "0.9.4"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
 
 [[audits.isrg.audits.once_cell]]
 who = "Brandon Pitman <bran@bran.land>"
@@ -533,232 +553,6 @@ aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-ch
 who = "Mike Hommey <mh+mozilla@glandium.org>"
 criteria = "safe-to-deploy"
 delta = "0.1.21 -> 0.1.22"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Travis Long <tlong@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.19.3"
-notes = "Maintained by the Glean and Application Services teams"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.3 -> 0.19.6"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Perry McManis <pmcmanis@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.6 -> 0.20.0"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.20.0 -> 0.21.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-delta = "0.21.0 -> 0.21.1"
-notes = "No changes."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Travis Long <tlong@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.19.3"
-notes = "Maintained by the Glean and Application Services teams."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.3 -> 0.19.6"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Perry McManis <pmcmanis@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.6 -> 0.20.0"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.20.0 -> 0.21.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-delta = "0.21.0 -> 0.21.1"
-notes = "I authored the changes in this version."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_bindgen]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Travis Long <tlong@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.19.3"
-notes = "Maintained by the Glean and Application Services teams."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.3 -> 0.19.6"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Perry McManis <pmcmanis@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.6 -> 0.20.0"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.20.0 -> 0.21.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-delta = "0.21.0 -> 0.21.1"
-notes = "No changes."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_build]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_checksum_derive]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-version = "0.21.1"
-notes = "I authored this crate."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_checksum_derive]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_core]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.23.0"
-notes = "Maintained by the Glean and Application Services teams."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Travis Long <tlong@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.19.3"
-notes = "Maintained by the Glean and Application Services teams."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.3 -> 0.19.6"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Perry McManis <pmcmanis@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.6 -> 0.20.0"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.20.0 -> 0.21.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-delta = "0.21.0 -> 0.21.1"
-notes = "No changes."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_macros]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_meta]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.19.6"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_meta]]
-who = "Perry McManis <pmcmanis@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.19.6 -> 0.20.0"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_meta]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.20.0 -> 0.21.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_meta]]
-who = "Mike Hommey <mh+mozilla@glandium.org>"
-criteria = "safe-to-deploy"
-delta = "0.21.0 -> 0.21.1"
-notes = "I authored the changes in this version."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_meta]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-delta = "0.21.1 -> 0.23.0"
-notes = "Maintained by the Glean and Application Services team."
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.uniffi_testing]]
-who = "Jan-Erik Rediger <jrediger@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.23.0"
-notes = "Maintained by the Glean and Application Services team."
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.weedle2]]
