@@ -25,9 +25,6 @@
 
 import Foundation
 
-// swiftlint:disable force_try
-// REASON: Used on infallible operations
-
 /// A "static"-only namespace around a series of functions that operate on buffers returned from the `Darwin.sysctl` function
 struct Sysctl {
     /// Possible errors.
@@ -162,3 +159,5 @@ struct Sysctl {
         return (try? Sysctl.string(for: [CTL_KERN, KERN_OSVERSION])) ?? "Unknown"
     }
 }
+
+// swiftlint:enable line_length

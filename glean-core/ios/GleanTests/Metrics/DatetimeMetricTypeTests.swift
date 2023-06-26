@@ -42,6 +42,7 @@ class DatetimeMetricTypeTests: XCTestCase {
         let date1 = Date.fromISO8601String(dateString: testString, precision: metric.timeUnit)
         XCTAssertEqual(date1, metric.testGetValue())
     }
+    // swiftlint:enable function_parameter_count
 
     func testDatetimeSavesToStorage() {
         let datetimeMetric = DatetimeMetricType(CommonMetricData(
