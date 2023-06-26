@@ -128,7 +128,6 @@ final class BaselinePingTests: XCTestCase {
     }
     */
 
-    // swiftlint:disable force_cast
     func testSendingOfStartupBaselinePingWithAppLifetimeMetric() {
         // Set the dirty flag.
         gleanSetDirtyFlag(true)
@@ -179,5 +178,4 @@ final class BaselinePingTests: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
-    // swiftlint:enable force_cast
 }

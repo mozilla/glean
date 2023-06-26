@@ -73,8 +73,6 @@ public class LabeledMetricType<T> {
     ///     * label: The label
     /// - returns: The specific metric for that label
     public subscript(label: String) -> T {
-        // swiftlint:disable force_cast
-        // REASON: We return the same type as the `subMetric` we match against
 
         switch self.inner {
         case is LabeledCounter:

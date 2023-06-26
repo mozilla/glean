@@ -6,8 +6,6 @@ import Glean
 import Swifter
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in below test cases to cause errors if data is missing
 class ViewControllerTest: XCTestCase {
     var app: XCUIApplication!
     var expectation: XCTestExpectation?

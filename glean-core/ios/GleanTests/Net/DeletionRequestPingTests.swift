@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class DeletionRequestPingTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
