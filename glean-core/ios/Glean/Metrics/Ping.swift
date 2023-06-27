@@ -35,13 +35,20 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
     var testCallback: ((ReasonCodesEnum?) throws -> Void)?
 
     /// The public constructor used by automatically generated metrics.
-    public init(name: String, includeClientId: Bool, sendIfEmpty: Bool, reasonCodes: [String]) {
+    public init(
+        name: String,
+        includeClientId: Bool,
+        sendIfEmpty: Bool,
+        preciseTimestamps: Bool,
+        reasonCodes: [String]
+    ) {
         self.name = name
         self.reasonCodes = reasonCodes
         self.innerPing = PingType(
             name,
             includeClientId,
             sendIfEmpty,
+            preciseTimestamps,
             reasonCodes
         )
     }

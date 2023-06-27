@@ -248,6 +248,7 @@ class GleanDebugActivityTest {
             name = "custom",
             includeClientId = false,
             sendIfEmpty = true,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 

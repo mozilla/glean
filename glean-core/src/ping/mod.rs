@@ -89,9 +89,12 @@ impl PingMaker {
     }
 
     /// Gets the formatted start and end times for this ping and update for the next ping.
-    fn get_start_end_times(&self, glean: &Glean, storage_name: &str) -> (String, String) {
-        let time_unit = TimeUnit::Millisecond;
-
+    fn get_start_end_times(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+        time_unit: TimeUnit,
+    ) -> (String, String) {
         let start_time = DatetimeMetric::new(
             CommonMetricData {
                 name: format!("{}#start", storage_name),
@@ -119,8 +122,14 @@ impl PingMaker {
         (start_time_data, end_time_data)
     }
 
-    fn get_ping_info(&self, glean: &Glean, storage_name: &str, reason: Option<&str>) -> JsonValue {
-        let (start_time, end_time) = self.get_start_end_times(glean, storage_name);
+    fn get_ping_info(
+        &self,
+        glean: &Glean,
+        storage_name: &str,
+        reason: Option<&str>,
+        precision: TimeUnit,
+    ) -> JsonValue {
+        let (start_time, end_time) = self.get_start_end_times(glean, storage_name, precision);
         let mut map = json!({
             "seq": self.get_ping_seq(glean, storage_name),
             "start_time": start_time,
@@ -270,7 +279,13 @@ impl PingMaker {
             );
         }
 
-        let ping_info = self.get_ping_info(glean, ping.name(), reason);
+        let precision = if ping.precise_timestamps() {
+            TimeUnit::Millisecond
+        } else {
+            TimeUnit::Minute
+        };
+
+        let ping_info = self.get_ping_info(glean, ping.name(), reason, precision);
         let client_info = self.get_client_info(glean, ping.include_client_id());
 
         let mut json = json!({
