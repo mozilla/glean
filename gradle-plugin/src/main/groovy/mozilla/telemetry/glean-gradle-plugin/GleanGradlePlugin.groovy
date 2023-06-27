@@ -251,14 +251,7 @@ except:
                     // time, otherwise the `namespace` property won't be available.
                     TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
                     def configProvider = buildConfigProvider.get()
-                    def originalPackageName
-                    // In Gradle 6.x `getBuildConfigPackageName` was repalced by `namespace`.
-                    // We want to be forward compatible, so we check that first or fallback to the old method.
-                    if (configProvider.hasProperty("namespace")) {
-                        originalPackageName = configProvider.namespace.get()
-                    } else {
-                        originalPackageName = configProvider.getBuildConfigPackageName().get()
-                    }
+                    def originalPackageName = configProvider.namespace.get()
 
                     args "-s"
                     args "namespace=${originalPackageName}.GleanMetrics"
