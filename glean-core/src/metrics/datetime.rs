@@ -16,11 +16,7 @@ use crate::CommonMetricData;
 use crate::Glean;
 
 use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
-
-/// A datetime type.
-///
-/// Used to feed data to the `DatetimeMetric`.
-pub type ChronoDatetime = DateTime<FixedOffset>;
+use time::{Date, OffsetDateTime, Time, UtcOffset};
 
 /// Representation of a date, time and timezone.
 #[derive(Clone, PartialEq, Eq)]
@@ -94,20 +90,20 @@ impl MetricType for DatetimeMetric {
     }
 }
 
-impl From<ChronoDatetime> for Datetime {
-    fn from(dt: ChronoDatetime) -> Self {
+impl From<OffsetDateTime> for Datetime {
+    fn from(dt: OffsetDateTime) -> Self {
         let date = dt.date();
         let time = dt.time();
-        let tz = dt.timezone();
+        let tz = dt.offset();
         Self {
             year: date.year(),
-            month: date.month(),
-            day: date.day(),
-            hour: time.hour(),
-            minute: time.minute(),
-            second: time.second(),
+            month: date.month() as u32,
+            day: date.day() as u32,
+            hour: time.hour() as u32,
+            minute: time.minute() as u32,
+            second: time.second() as u32,
             nanosecond: time.nanosecond(),
-            offset_seconds: tz.local_minus_utc(),
+            offset_seconds: tz.whole_seconds(),
         }
     }
 }
@@ -149,8 +145,8 @@ impl DatetimeMetric {
         let value = match value {
             None => local_now_with_offset(),
             Some(dt) => {
-                let timezone_offset = FixedOffset::east_opt(dt.offset_seconds);
-                if timezone_offset.is_none() {
+                let timezone_offset = UtcOffset::from_whole_seconds(dt.offset_seconds);
+                if timezone_offset.is_err() {
                     let msg = format!(
                         "Invalid timezone offset {}. Not recording.",
                         dt.offset_seconds
@@ -159,30 +155,23 @@ impl DatetimeMetric {
                     return;
                 };
 
-                let datetime_obj = FixedOffset::east(dt.offset_seconds)
-                    .ymd_opt(dt.year, dt.month, dt.day)
-                    .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
+                let date = Date::from_calendar_date(dt.year, (dt.month as u8).try_into().unwrap(), dt.day as u8).unwrap();
+                let time = Time::from_hms_nano(dt.hour as u8, dt.minute as u8, dt.second as u8, dt.nanosecond).unwrap();
+                let datetime_obj = OffsetDateTime::from_unix_timestamp(0)
+                    .unwrap()
+                    .replace_date(date)
+                    .replace_time(time)
+                    .replace_offset(timezone_offset.unwrap());
 
-                if let Some(dt) = datetime_obj.single() {
-                    dt
-                } else {
-                    record_error(
-                        glean,
-                        &self.meta,
-                        ErrorType::InvalidValue,
-                        "Invalid input data. Not recording.",
-                        None,
-                    );
-                    return;
-                }
+                datetime_obj
             }
         };
 
         self.set_sync_chrono(glean, value);
     }
 
-    pub(crate) fn set_sync_chrono(&self, glean: &Glean, value: ChronoDatetime) {
-        let value = Metric::Datetime(value, self.time_unit);
+    pub(crate) fn set_sync_chrono(&self, glean: &Glean, value: OffsetDateTime) {
+        let value = Metric::Datetime(value.into(), self.time_unit);
         glean.storage().record(glean, &self.meta, &value)
     }
 
@@ -192,7 +181,7 @@ impl DatetimeMetric {
         &self,
         glean: &Glean,
         ping_name: S,
-    ) -> Option<ChronoDatetime> {
+    ) -> Option<OffsetDateTime> {
         let (d, tu) = self.get_value_inner(glean, ping_name.into())?;
 
         // The string version of the test function truncates using string
@@ -200,47 +189,37 @@ impl DatetimeMetric {
         // try to truncate with `get_iso_time_string` and then parse it back
         // in a `Datetime`. So we need to truncate manually.
         let time = d.time();
-        match tu {
-            TimeUnit::Nanosecond => d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond(),
-            ),
-            TimeUnit::Microsecond => {
-                eprintln!(
-                    "microseconds. nanoseconds={}, nanoseconds/1000={}",
-                    time.nanosecond(),
-                    time.nanosecond() / 1000
-                );
-                d.date().and_hms_nano_opt(
-                    time.hour(),
-                    time.minute(),
-                    time.second(),
-                    time.nanosecond() / 1000,
-                )
-            }
-            TimeUnit::Millisecond => d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / 1000000,
-            ),
-            TimeUnit::Second => {
-                d.date()
-                    .and_hms_nano_opt(time.hour(), time.minute(), time.second(), 0)
-            }
-            TimeUnit::Minute => d.date().and_hms_nano_opt(time.hour(), time.minute(), 0, 0),
-            TimeUnit::Hour => d.date().and_hms_nano_opt(time.hour(), 0, 0, 0),
-            TimeUnit::Day => d.date().and_hms_nano_opt(0, 0, 0, 0),
-        }
+        let dt = match tu {
+            TimeUnit::Nanosecond => d,
+            TimeUnit::Microsecond => d.replace_nanosecond(0).unwrap(),
+            TimeUnit::Millisecond => d.replace_microsecond(0).unwrap(),
+            TimeUnit::Second => d.replace_millisecond(0).unwrap(),
+            TimeUnit::Minute => d.replace_millisecond(0).unwrap().replace_second(0).unwrap(),
+            TimeUnit::Hour => d
+                .replace_millisecond(0)
+                .unwrap()
+                .replace_second(0)
+                .unwrap()
+                .replace_minute(0)
+                .unwrap(),
+            TimeUnit::Day => d
+                .replace_millisecond(0)
+                .unwrap()
+                .replace_second(0)
+                .unwrap()
+                .replace_minute(0)
+                .unwrap()
+                .replace_hour(0)
+                .unwrap(),
+        };
+        Some(dt)
     }
 
     fn get_value_inner(
         &self,
         glean: &Glean,
         ping_name: Option<&str>,
-    ) -> Option<(ChronoDatetime, TimeUnit)> {
+    ) -> Option<(OffsetDateTime, TimeUnit)> {
         let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
         match StorageManager.snapshot_metric(
@@ -249,7 +228,7 @@ impl DatetimeMetric {
             &self.meta.identifier(glean),
             self.meta.inner.lifetime,
         ) {
-            Some(Metric::Datetime(d, tu)) => Some((d, tu)),
+            Some(Metric::Datetime(d, tu)) => Some((d.inner, tu)),
             _ => None,
         }
     }

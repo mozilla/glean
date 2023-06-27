@@ -4,7 +4,7 @@
 
 use std::convert::TryInto;
 use std::sync::{Arc, RwLock};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -27,7 +27,7 @@ use crate::Glean;
 pub struct TimespanMetric {
     meta: Arc<CommonMetricDataInternal>,
     time_unit: TimeUnit,
-    start_time: Arc<RwLock<Option<u64>>>,
+    start_time: Arc<RwLock<Option<Instant>>>,
 }
 
 impl MetricType for TimespanMetric {
@@ -57,7 +57,7 @@ impl TimespanMetric {
     /// [`set_stop`](TimespanMetric::set_stop)): in that case the original start
     /// time will be preserved.
     pub fn start(&self) {
-        let start_time = time::precise_time_ns();
+        let start_time = Instant::now();
 
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.set_start(glean, start_time));
@@ -65,7 +65,7 @@ impl TimespanMetric {
 
     /// Set start time synchronously.
     #[doc(hidden)]
-    pub fn set_start(&self, glean: &Glean, start_time: u64) {
+    pub fn set_start(&self, glean: &Glean, start_time: Instant) {
         if !self.should_record(glean) {
             return;
         }
@@ -93,7 +93,7 @@ impl TimespanMetric {
     ///
     /// This will record an error if no [`set_start`](TimespanMetric::set_start) was called.
     pub fn stop(&self) {
-        let stop_time = time::precise_time_ns();
+        let stop_time = Instant::now();
 
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.set_stop(glean, stop_time));
@@ -101,7 +101,7 @@ impl TimespanMetric {
 
     /// Set stop time synchronously.
     #[doc(hidden)]
-    pub fn set_stop(&self, glean: &Glean, stop_time: u64) {
+    pub fn set_stop(&self, glean: &Glean, stop_time: Instant) {
         // Need to write in either case, so get the lock first.
         let mut lock = self
             .start_time
@@ -127,7 +127,10 @@ impl TimespanMetric {
         }
 
         let start_time = lock.take().unwrap();
-        let duration = match stop_time.checked_sub(start_time) {
+        let duration = match stop_time
+            .checked_duration_since(start_time)
+            .map(|d| d.as_nanos() as u64)
+        {
             Some(duration) => duration,
             None => {
                 record_error(
