@@ -37,9 +37,9 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
         callback(pingType, payload)
 
         return HTTPStubsResponse(
-            jsonObject: [],
+            data: Data("OK".utf8),
             statusCode: 200,
-            headers: ["Content-Type": "application/json"]
+            headers: nil
         )
     }
 }
