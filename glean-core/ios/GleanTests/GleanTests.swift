@@ -257,6 +257,7 @@ class GleanTests: XCTestCase {
             name: "custom",
             includeClientId: true,
             sendIfEmpty: false,
+            preciseTimestamps: true,
             reasonCodes: []
         )
 
@@ -412,6 +413,7 @@ class GleanTests: XCTestCase {
             name: "custom",
             includeClientId: true,
             sendIfEmpty: false,
+            preciseTimestamps: true,
             reasonCodes: []
         )
 

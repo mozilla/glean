@@ -29,7 +29,7 @@ pub mod glean_metrics {
 
 #[allow(non_upper_case_globals)]
 pub static PrototypePing: Lazy<PingType> =
-    Lazy::new(|| PingType::new("prototype", true, true, vec![]));
+    Lazy::new(|| PingType::new("prototype", true, true, true, vec![]));
 
 fn main() {
     env_logger::init();

@@ -275,7 +275,11 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
     )
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     counter_metric.add(10)
@@ -291,7 +295,11 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     custom_ping.submit()
@@ -353,7 +361,11 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     ping_name = "custom_ping_1"
     ping = PingType(
-        name=ping_name, include_client_id=True, send_if_empty=False, reason_codes=[]
+        name=ping_name,
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
     string_metric = StringMetricType(
         CommonMetricData(
@@ -678,7 +690,11 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     monkeypatch.setattr(subprocess, "Popen", broken_process)
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=True, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     custom_ping.submit()
@@ -746,7 +762,11 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
 
     ping_name = "preinit_ping"
     ping = PingType(
-        name=ping_name, include_client_id=True, send_if_empty=True, reason_codes=[]
+        name=ping_name,
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     # Submit a ping prior to calling initialize
@@ -807,6 +827,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
         name="sample_ping_1",
         include_client_id=True,
         send_if_empty=True,
+        precise_timestamps=True,
         reason_codes=[],
     )
 
@@ -911,7 +932,11 @@ def test_sending_of_custom_pings(safe_httpserver):
     )
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     counter_metric.add()
@@ -990,7 +1015,11 @@ def test_glean_shutdown(safe_httpserver):
     Glean._reset()
 
     custom_ping = PingType(
-        name="custom", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="custom",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=False,
+        reason_codes=[],
     )
 
     counter = CounterMetricType(

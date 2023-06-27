@@ -53,6 +53,7 @@ class PingTypeTest {
             name = "custom",
             includeClientId = true,
             sendIfEmpty = false,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 
@@ -118,6 +119,7 @@ class PingTypeTest {
             name = "custom_ping",
             includeClientId = true,
             sendIfEmpty = false,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 
@@ -164,6 +166,7 @@ class PingTypeTest {
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = false,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 
@@ -210,6 +213,7 @@ class PingTypeTest {
             name = "custom",
             includeClientId = false,
             sendIfEmpty = false,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 
@@ -258,6 +262,7 @@ class PingTypeTest {
             includeClientId = false,
             sendIfEmpty = false,
             reasonCodes = listOf(),
+            preciseTimestamps = true,
         )
 
         val counter = CounterMetricType(

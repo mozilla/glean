@@ -505,6 +505,7 @@ class EventMetricTypeTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
+            preciseTimestamps = true,
             reasonCodes = listOf(),
         )
 
