@@ -160,9 +160,9 @@ class GleanTests: XCTestCase {
             }
 
             return HTTPStubsResponse(
-                jsonObject: [],
+                data: Data("OK".utf8),
                 statusCode: 200,
-                headers: ["Content-Type": "application/json"]
+                headers: nil
             )
         }
 
@@ -198,9 +198,9 @@ class GleanTests: XCTestCase {
             }
 
             return HTTPStubsResponse(
-                jsonObject: [],
+                data: Data("OK".utf8),
                 statusCode: 200,
-                headers: ["Content-Type": "application/json"]
+                headers: nil
             )
         }
 
