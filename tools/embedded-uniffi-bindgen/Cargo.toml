@@ -9,5 +9,4 @@ publish = false
 [dependencies]
 anyhow = "1"
 camino = "1.1.1"
-# TODO: Depend on `uniffi`, but avoid the clap dependency.
-uniffi_bindgen = { version = "0.23.0", default-features = false }
+uniffi = { version = "0.24.1", default-features = false, features = ["bindgen"] }

@@ -63,7 +63,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
             WorkManager.getInstance(context).enqueueUniqueWork(
                 PING_WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
-                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG)
+                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG),
             )
 
             // Only flush pings immediately if sending to a test endpoint,
@@ -95,6 +95,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      *
      * @return The [androidx.work.ListenableWorker.Result] of the computation
      */
+    @OptIn(ExperimentalUnsignedTypes::class)
     @Suppress("ReturnCount")
     override fun doWork(): Result {
         do {
@@ -109,7 +110,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         action.request.path,
                         body,
                         action.request.headers,
-                        Glean.configuration
+                        Glean.configuration,
                     )
 
                     // Process the upload response

@@ -37,11 +37,41 @@ the details of which are reproduced below.
     <name>Apache License 2.0: humantime</name>
     <url>https://github.com/tailhook/humantime</url>
   </license>  <license>
+    <name>Apache License 2.0: anyhow</name>
+    <url>https://github.com/dtolnay/anyhow</url>
+  </license>  <license>
+    <name>Apache License 2.0: basic-toml</name>
+    <url>https://github.com/dtolnay/basic-toml</url>
+  </license>  <license>
     <name>Apache License 2.0: inherent</name>
     <url>https://github.com/dtolnay/inherent</url>
   </license>  <license>
     <name>Apache License 2.0: libc</name>
     <url>https://github.com/rust-lang/libc</url>
+  </license>  <license>
+    <name>Apache License 2.0: proc-macro2</name>
+    <url>https://github.com/dtolnay/proc-macro2</url>
+  </license>  <license>
+    <name>Apache License 2.0: quote</name>
+    <url>https://github.com/dtolnay/quote</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_derive</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: syn</name>
+    <url>https://github.com/dtolnay/syn</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror-impl</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
+    <name>Apache License 2.0: unicode-ident</name>
+    <url>https://github.com/dtolnay/unicode-ident</url>
   </license>  <license>
     <name>Apache License 2.0: askama</name>
     <url>https://github.com/djc/askama</url>
@@ -51,9 +81,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: askama_escape</name>
     <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: anyhow</name>
-    <url>https://github.com/dtolnay/anyhow</url>
   </license>  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
@@ -106,6 +133,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: linux-raw-sys</name>
     <url>https://github.com/sunfishcode/linux-raw-sys</url>
   </license>  <license>
+    <name>Apache License 2.0: log</name>
+    <url>https://github.com/rust-lang/log</url>
+  </license>  <license>
     <name>Apache License 2.0: mime</name>
     <url>https://github.com/hyperium/mime</url>
   </license>  <license>
@@ -130,38 +160,17 @@ the details of which are reproduced below.
     <name>Apache License 2.0: plain</name>
     <url>https://github.com/randomites/plain</url>
   </license>  <license>
-    <name>Apache License 2.0: proc-macro2</name>
-    <url>https://github.com/dtolnay/proc-macro2</url>
-  </license>  <license>
-    <name>Apache License 2.0: quote</name>
-    <url>https://github.com/dtolnay/quote</url>
-  </license>  <license>
     <name>Apache License 2.0: rustix</name>
     <url>https://github.com/bytecodealliance/rustix</url>
   </license>  <license>
     <name>Apache License 2.0: semver</name>
     <url>https://github.com/dtolnay/semver</url>
   </license>  <license>
-    <name>Apache License 2.0: serde</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde_derive</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
     <name>Apache License 2.0: serde_json</name>
     <url>https://github.com/serde-rs/json</url>
   </license>  <license>
-    <name>Apache License 2.0: syn</name>
-    <url>https://github.com/dtolnay/syn</url>
-  </license>  <license>
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror</name>
-    <url>https://github.com/dtolnay/thiserror</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror-impl</name>
-    <url>https://github.com/dtolnay/thiserror</url>
   </license>  <license>
     <name>Apache License 2.0: time</name>
     <url>https://github.com/time-rs/time</url>
@@ -174,9 +183,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: unicode-bidi</name>
     <url>https://github.com/servo/unicode-bidi</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicode-ident</name>
-    <url>https://github.com/dtolnay/unicode-ident</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
@@ -205,26 +211,11 @@ the details of which are reproduced below.
     <name>Apache License 2.0: fs-err</name>
     <url>https://github.com/andrewhickman/fs-err</url>
   </license>  <license>
-    <name>Apache License 2.0: log</name>
-    <url>https://github.com/rust-lang/log</url>
-  </license>  <license>
-    <name>Apache License 2.0: num_cpus</name>
-    <url>https://github.com/seanmonstar/num_cpus</url>
-  </license>  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>  <license>
     <name>Apache License 2.0: android_log-sys</name>
     <url>https://github.com/nercury/android_log-sys-rs</url>
   </license>  <license>
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
-  </license>  <license>
-    <name>Apache License 2.0: askama_shared</name>
-    <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: chrono</name>
-    <url>https://github.com/chronotope/chrono</url>
   </license>  <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
@@ -241,8 +232,8 @@ the details of which are reproduced below.
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
   </license>  <license>
-    <name>Apache License 2.0: unicode-normalization</name>
-    <url>https://github.com/unicode-rs/unicode-normalization</url>
+    <name>Apache License 2.0: chrono</name>
+    <url>https://github.com/chronotope/chrono</url>
   </license>  <license>
     <name>BSD 2-Clause "Simplified" License: arrayref</name>
     <url>https://github.com/droundy/arrayref</url>
@@ -306,18 +297,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
-  </license>  <license>
-    <name>MIT License: byteorder</name>
-    <url>https://github.com/BurntSushi/byteorder</url>
-  </license>  <license>
-    <name>MIT License: memchr</name>
-    <url>https://github.com/BurntSushi/memchr</url>
-  </license>  <license>
-    <name>MIT License: termcolor</name>
-    <url>https://github.com/BurntSushi/termcolor</url>
-  </license>  <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>

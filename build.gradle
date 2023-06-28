@@ -12,11 +12,11 @@ buildscript {
     // versions below must match the ones in that repository.
     ext.versions = [
         android_gradle_plugin: '7.4.2',
-        coroutines: '1.6.4',
+        coroutines: '1.7.1',
         jna: '5.13.0',
         junit: '4.12',
-        mockito: '3.11.2',
-        mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
+        mockito: '5.3.1',
+        mockwebserver: '4.11.0', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.8.21',
         robolectric: '4.10.1',
         rust_android_plugin: '0.9.3',
@@ -25,7 +25,7 @@ buildscript {
         androidx_annotation: '1.6.0',
         androidx_appcompat: '1.6.1',
         androidx_browser: '1.5.0',
-        androidx_core: '1.10.0',
+        androidx_core: '1.10.1',
         androidx_espresso: '3.5.1',
         androidx_junit: '1.1.5',
         androidx_lifecycle: '2.6.1',
@@ -38,7 +38,8 @@ buildscript {
         ndkVersion: "25.2.9519653", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 33,
         targetSdkVersion: 33,
-        minSdkVersion: 21, // So that we can publish for aarch64.
+        minSdkVersion: 21,
+        jvmTargetCompatibility: 17,
     ]
 
     repositories {
@@ -64,7 +65,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.19.0")
+    id("io.gitlab.arturbosch.detekt").version("1.23.0")
 }
 
 allprojects {
@@ -143,15 +144,22 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-    // Enable Kotlin warnings as errors for all modules
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions.allWarningsAsErrors = true
-        kotlinOptions {
-            // FIXME: Currently required for `toUByteArray` in the ping uploader.
-            // Should probably be handled with an annotation.
-            freeCompilerArgs += [
-                "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
-            ]
+
+    // Kotlin settings applicable to all modules.
+    afterEvaluate {
+        if (it.hasProperty('android')) {
+            android {
+                // This shouldn't be needed anymore with AGP 8.1.0+
+                // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+                compileOptions {
+                    sourceCompatibility rootProject.ext.build.jvmTargetCompatibility
+                    targetCompatibility rootProject.ext.build.jvmTargetCompatibility
+                }
+            }
+        }
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+            kotlinOptions.allWarningsAsErrors = true
+            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
@@ -173,7 +181,6 @@ subprojects {
 
 detekt {
     input = files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc")
-    failFast = false
     config = files("${projectDir}/.detekt.yml")
     buildUponDefaultConfig = true
     reports {
@@ -193,7 +200,7 @@ configurations {
 }
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.45.1") {
+    ktlint("com.pinterest:ktlint:0.49.1") {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
         }
@@ -212,6 +219,7 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
     args "-F", "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED") // workaround for java.lang.ExceptionInInitializerError
 }
 
 // Extremely unsophisticated way to publish a local development version while hiding implementation details.

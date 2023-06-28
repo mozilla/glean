@@ -31,10 +31,12 @@ class GleanDebugActivity : Activity() {
          * Sends the ping with the given name immediately
          */
         const val SEND_PING_EXTRA_KEY = "sendPing"
+
         /**
          * If set to `true`, pings are dumped to logcat, defaults to `false`.
          */
         const val LOG_PINGS_EXTRA_KEY = "logPings"
+
         /**
          * Tags all outgoing pings as debug pings to make them available for real-time validation.
          * The value must match the pattern `[a-zA-Z0-9-]{1,20}`.
@@ -84,8 +86,11 @@ class GleanDebugActivity : Activity() {
 
         // Make sure that at least one of the supported commands was used.
         val supportedCommands = listOf(
-            SEND_PING_EXTRA_KEY, LOG_PINGS_EXTRA_KEY, NEXT_ACTIVITY_TO_RUN,
-            TAG_DEBUG_VIEW_EXTRA_KEY, SOURCE_TAGS_KEY
+            SEND_PING_EXTRA_KEY,
+            LOG_PINGS_EXTRA_KEY,
+            NEXT_ACTIVITY_TO_RUN,
+            TAG_DEBUG_VIEW_EXTRA_KEY,
+            SOURCE_TAGS_KEY,
         )
 
         var nextActivityName: String? = null

@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...main)
+
+# v53.1.0 (2023-06-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...v53.1.0)
+
+* General
+  * Gracefully handle the waiting thread going away during shutdown ([#2503](https://github.com/mozilla/glean/pull/2503))
+  * Updated to UniFFI 0.24.1 ([#2510](https://github.com/mozilla/glean/pull/2510))
+  * Try blocking shutdown 10s for init to complete ([#2518](https://github.com/mozilla/glean/pull/2518))
+* Android
+  * Update minimum supported Java byte code generation to 17 ([#2498](https://github.com/mozilla/glean/pull/2498/))
 
 # v53.0.0 (2023-06-07)
 

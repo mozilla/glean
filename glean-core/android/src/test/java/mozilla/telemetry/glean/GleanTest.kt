@@ -72,8 +72,8 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         Glean.handleBackgroundEvent()
@@ -96,8 +96,8 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         Glean.setDebugViewTag("this-ping-is-tagged")
@@ -118,8 +118,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         Glean.setUploadEnabled(false)
 
@@ -130,11 +130,13 @@ class GleanTest {
     @Test
     fun `test experiments recording`() {
         Glean.setExperimentActive(
-            "experiment_test", "branch_a"
+            "experiment_test",
+            "branch_a",
         )
         Glean.setExperimentActive(
-            "experiment_api", "branch_b",
-            mapOf("test_key" to "value")
+            "experiment_api",
+            "branch_b",
+            mapOf("test_key" to "value"),
         )
         assertTrue(Glean.testIsExperimentActive("experiment_api"))
         assertTrue(Glean.testIsExperimentActive("experiment_test"))
@@ -156,11 +158,13 @@ class GleanTest {
         Glean.testDestroyGleanHandle()
 
         Glean.setExperimentActive(
-            "experiment_set_preinit", "branch_a"
+            "experiment_set_preinit",
+            "branch_a",
         )
 
         Glean.setExperimentActive(
-            "experiment_preinit_disabled", "branch_a"
+            "experiment_preinit_disabled",
+            "branch_a",
         )
 
         Glean.setExperimentInactive("experiment_preinit_disabled")
@@ -184,17 +188,17 @@ class GleanTest {
                 category = "ui",
                 lifetime = Lifetime.PING,
                 name = "click",
-                sendInPings = listOf("events")
+                sendInPings = listOf("events"),
             ),
-            allowedExtraKeys = emptyList()
+            allowedExtraKeys = emptyList(),
         )
 
         delayMetricsPing(context)
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         // Fake calling the lifecycle observer.
@@ -268,7 +272,7 @@ class GleanTest {
                             2,
                             json.getJSONObject("metrics")
                                 .getJSONObject("counter")
-                                .getLong("glean.validation.foreground_count")
+                                .getLong("glean.validation.foreground_count"),
                         )
                     }
                 } else {
@@ -294,9 +298,9 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            false
+            false,
         )
 
         try {
@@ -327,7 +331,7 @@ class GleanTest {
         // Remove the Glean's data directory.
         val gleanDir = File(
             context.applicationInfo.dataDir,
-            GleanInternalAPI.GLEAN_DATA_DIR
+            GleanInternalAPI.GLEAN_DATA_DIR,
         )
         assertTrue(gleanDir.deleteRecursively())
 
@@ -350,8 +354,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "counter_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Destroy Glean, so that the dispatcher will queue tasks until flushed.
@@ -381,7 +385,7 @@ class GleanTest {
         Glean.initialize(
             context,
             true,
-            buildInfo = GleanBuildInfo.buildInfo
+            buildInfo = GleanBuildInfo.buildInfo,
         )
 
         val afterConfig = Glean.configuration
@@ -459,8 +463,8 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         val pingName = "custom_ping_1"
@@ -468,7 +472,7 @@ class GleanTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
             CommonMetricData(
@@ -476,8 +480,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "string_metric",
-                sendInPings = listOf(pingName)
-            )
+                sendInPings = listOf(pingName),
+            ),
         )
 
         // This test relies on testing mode to be disabled, since we need to prove the
@@ -521,8 +525,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "string_metric",
-                sendInPings = listOf("default")
-            )
+                sendInPings = listOf("default"),
+            ),
         )
 
         stringMetric.set("TEST VALUE")
@@ -556,7 +560,7 @@ class GleanTest {
         Glean.metricsPingScheduler!!.schedulePingCollection(
             Calendar.getInstance(),
             true,
-            Pings.metricsReasonCodes.overdue
+            Pings.metricsReasonCodes.overdue,
         )
         // Enqueue a worker to send the baseline ping
         Pings.baseline.submit(Pings.baselineReasonCodes.active)
@@ -564,11 +568,11 @@ class GleanTest {
         // Verify that the workers are enqueued
         assertTrue(
             "PingUploadWorker is enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued,
         )
         assertTrue(
             "MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler!!.timer != null
+            Glean.metricsPingScheduler!!.timer != null,
         )
 
         Glean.setUploadEnabled(true)
@@ -578,11 +582,11 @@ class GleanTest {
         // before initializing glean.
         assertTrue(
             "PingUploadWorker is enqueued",
-            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued
+            getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued,
         )
         assertTrue(
             "MetricsPingWorker is enqueued",
-            Glean.metricsPingScheduler!!.timer != null
+            Glean.metricsPingScheduler!!.timer != null,
         )
 
         // Toggle upload enabled to false
@@ -591,7 +595,7 @@ class GleanTest {
         // Verify workers have been cancelled
         assertTrue(
             "MetricsPingWorker is not enqueued",
-            Glean.metricsPingScheduler!!.timer == null
+            Glean.metricsPingScheduler!!.timer == null,
         )
     }
 
@@ -613,7 +617,7 @@ class GleanTest {
             Glean.initialize(
                 context,
                 true,
-                buildInfo = GleanBuildInfo.buildInfo
+                buildInfo = GleanBuildInfo.buildInfo,
             )
         }
     }
@@ -633,8 +637,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "repeatedly",
-                sendInPings = listOf("metrics")
-            )
+                sendInPings = listOf("metrics"),
+            ),
         )
 
         repeat(1010) {
@@ -645,10 +649,10 @@ class GleanTest {
         resetGlean(
             context,
             config = Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
             clearStores = false,
-            uploadEnabled = true
+            uploadEnabled = true,
         )
 
         Pings.metrics.submit()
@@ -666,12 +670,12 @@ class GleanTest {
                 .getJSONObject("counter")
         assertTrue(
             "Ping payload: $jsonContent",
-            10 <= counters.getInt("glean.error.preinit_tasks_overflow")
+            10 <= counters.getInt("glean.error.preinit_tasks_overflow"),
         )
         assertEquals(
             "Ping payload: $jsonContent",
             1000,
-            counters.getInt("telemetry.repeatedly")
+            counters.getInt("telemetry.repeatedly"),
         )
     }
 
@@ -681,18 +685,18 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            uploadEnabled = true
+            uploadEnabled = true,
         )
 
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
             uploadEnabled = false,
-            clearStores = false
+            clearStores = false,
         )
 
         // Now trigger it to upload
@@ -709,18 +713,18 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            uploadEnabled = false
+            uploadEnabled = false,
         )
 
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
             uploadEnabled = false,
-            clearStores = false
+            clearStores = false,
         )
 
         assertEquals(0, server.requestCount)
@@ -737,8 +741,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "app_lifetime",
-                sendInPings = listOf("baseline")
-            )
+                sendInPings = listOf("baseline"),
+            ),
         )
         stringMetric.set("HELLOOOOO!")
 
@@ -749,9 +753,9 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = false
+            clearStores = false,
         )
 
         try {
@@ -782,7 +786,7 @@ class GleanTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val server = getMockWebServer()
         val config = Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
         )
 
         Glean.setDebugViewTag("valid-tag")
@@ -833,7 +837,7 @@ class GleanTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
             CommonMetricData(
@@ -841,13 +845,13 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "string_metric",
-                sendInPings = listOf(pingName)
-            )
+                sendInPings = listOf(pingName),
+            ),
         )
 
         val server = getMockWebServer()
         val config = Glean.configuration.copy(
-            serverEndpoint = "http://" + server.hostName + ":" + server.port
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
         )
         Glean.initialize(context, true, config, GleanBuildInfo.buildInfo)
 
@@ -878,7 +882,9 @@ class GleanTest {
         val buildDate = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"))
             .also { cal -> cal.set(2020, 10, 6, 11, 30, 50) }
         Glean.initialize(
-            context, true, buildInfo = BuildInfo(versionName = "foo", versionCode = "c0ffee", buildDate = buildDate)
+            context,
+            true,
+            buildInfo = BuildInfo(versionName = "foo", versionCode = "c0ffee", buildDate = buildDate),
         )
 
         assertEquals("c0ffee", GleanInternalMetrics.appBuild.testGetValue())
@@ -893,8 +899,8 @@ class GleanTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
-            )
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
         )
 
         Glean.handleBackgroundEvent()
@@ -933,7 +939,7 @@ class GleanTest {
         // Initialize with a custom data path and ensure `isCustomDataPath` is true.
         Glean.testDestroyGleanHandle()
         val cfg = Configuration(
-            dataPath = File(context.applicationInfo.dataDir, "glean_test").absolutePath
+            dataPath = File(context.applicationInfo.dataDir, "glean_test").absolutePath,
         )
         Glean.initialize(context, true, cfg, buildInfo = GleanBuildInfo.buildInfo)
         assertTrue(Glean.isCustomDataPath)
@@ -964,8 +970,8 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Set a metric configuration which will enable the telemetry.string_metric

@@ -43,7 +43,7 @@ class NoExtras : EventExtras {
  * data and making sure that limits are enforced.
  */
 class EventMetricType<ExtraObject> internal constructor(
-    private var inner: EventMetric
+    private var inner: EventMetric,
 ) where ExtraObject : EventExtras {
     /**
      * The public constructor used by automatically generated metrics.

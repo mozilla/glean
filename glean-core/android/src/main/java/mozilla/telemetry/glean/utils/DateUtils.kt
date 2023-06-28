@@ -21,7 +21,7 @@ internal val DATE_FORMAT_PATTERNS = mapOf(
     TimeUnit.SECOND to "yyyy-MM-dd'T'HH:mm:ssZ",
     TimeUnit.MINUTE to "yyyy-MM-dd'T'HH:mmZ",
     TimeUnit.HOUR to "yyyy-MM-dd'T'HHZ",
-    TimeUnit.DAY to "yyyy-MM-ddZ"
+    TimeUnit.DAY to "yyyy-MM-ddZ",
 )
 
 // A mapping from the length of the date string to the format that would parse
@@ -34,7 +34,7 @@ internal val DATE_FORMAT_PATTERN_BY_LENGTH = mapOf(
     24 to "yyyy-MM-dd'T'HH:mm:ssZ",
     21 to "yyyy-MM-dd'T'HH:mmZ",
     18 to "yyyy-MM-dd'T'HHZ",
-    15 to "yyyy-MM-ddZ"
+    15 to "yyyy-MM-ddZ",
 )
 
 internal val DATE_FORMAT_PATTERN_VALUES = DATE_FORMAT_PATTERNS.values.toSet()
@@ -48,7 +48,7 @@ internal val DATE_FORMAT_PATTERN_VALUES = DATE_FORMAT_PATTERNS.values.toSet()
  */
 internal fun getISOTimeString(
     date: Date = Date(),
-    truncateTo: TimeUnit = TimeUnit.MINUTE
+    truncateTo: TimeUnit = TimeUnit.MINUTE,
 ): String {
     val cal = Calendar.getInstance()
     cal.setTime(date)
@@ -64,7 +64,7 @@ internal fun getISOTimeString(
  */
 internal fun getISOTimeString(
     calendar: Calendar,
-    truncateTo: TimeUnit = TimeUnit.MINUTE
+    truncateTo: TimeUnit = TimeUnit.MINUTE,
 ): String {
     val dateFormat = SimpleDateFormat(DATE_FORMAT_PATTERNS[truncateTo], Locale.US)
     dateFormat.setTimeZone(calendar.getTimeZone())
@@ -136,8 +136,8 @@ internal fun calendarToDatetime(cal: Calendar): Datetime {
         second = cal.get(Calendar.SECOND).toUInt(),
         nanosecond = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()).toUInt(),
         offsetSeconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
-            cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET)
-        ).toInt()
+            cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET),
+        ).toInt(),
     )
 
     return dt

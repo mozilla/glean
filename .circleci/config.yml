@@ -418,7 +418,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2023.02.1
+      - image: cimg/android:2023.06-browsers
     steps:
       - checkout
       - android-setup
@@ -428,7 +428,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2023.02.1
+      - image: cimg/android:2023.06-browsers
     steps:
       - checkout
       - skip-if-doc-only
@@ -489,8 +489,9 @@ jobs:
           name: Install lint tools
           command: |
             export HOMEBREW_NO_AUTO_UPDATE=1
-            # swiftlint 0.50.1
-            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/dd10ef27e1327dd3dfc6f428565a83402d4abc24/Formula/swiftlint.rb > swiftlint.rb
+            export HOMEBREW_NO_INSTALL_CLEANUP=1
+            # swiftlint 0.52.3
+            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/a8712178bbbd19247abab91f3fb2eae240f8249c/Formula/swiftlint.rb > swiftlint.rb
             brew install ./swiftlint.rb
       - run:
           name: Run swiftlint

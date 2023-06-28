@@ -7,11 +7,11 @@ version = "0.6"
 [imports.bytecode-alliance]
 url = "https://raw.githubusercontent.com/bytecodealliance/wasmtime/main/supply-chain/audits.toml"
 
-[imports.chromeos]
-url = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/main/cargo-vet/audits.toml?format=TEXT"
-
 [imports.embark-studios]
 url = "https://raw.githubusercontent.com/EmbarkStudios/rust-ecosystem/main/audits.toml"
+
+[imports.google]
+url = "https://raw.githubusercontent.com/google/supply-chain/main/audits.toml"
 
 [imports.isrg]
 url = "https://raw.githubusercontent.com/divviup/libprio-rs/main/supply-chain/audits.toml"
@@ -42,10 +42,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.askama_escape]]
 version = "0.10.3"
-criteria = "safe-to-deploy"
-
-[[exemptions.askama_shared]]
-version = "0.12.2"
 criteria = "safe-to-deploy"
 
 [[exemptions.bincode]]
@@ -96,10 +92,6 @@ criteria = "safe-to-deploy"
 version = "0.2.8"
 criteria = "safe-to-deploy"
 
-[[exemptions.errno-dragonfly]]
-version = "0.1.2"
-criteria = "safe-to-deploy"
-
 [[exemptions.fastrand]]
 version = "1.7.0"
 criteria = "safe-to-deploy"
@@ -114,10 +106,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.getrandom]]
 version = "0.2.8"
-criteria = "safe-to-deploy"
-
-[[exemptions.glob]]
-version = "0.3.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.goblin]]
@@ -178,10 +166,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.linux-raw-sys]]
 version = "0.1.4"
-criteria = "safe-to-deploy"
-
-[[exemptions.lmdb-rkv]]
-version = "0.14.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.lmdb-rkv-sys]]
@@ -285,7 +269,7 @@ version = "1.1.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.syn]]
-version = "1.0.105"
+version = "2.0.18"
 criteria = "safe-to-deploy"
 
 [[exemptions.tempfile]]
@@ -296,24 +280,12 @@ criteria = "safe-to-deploy"
 version = "1.2.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.thiserror]]
-version = "1.0.37"
-criteria = "safe-to-deploy"
-
-[[exemptions.thiserror-impl]]
-version = "1.0.37"
-criteria = "safe-to-deploy"
-
 [[exemptions.time]]
 version = "0.1.45"
 criteria = "safe-to-deploy"
 
 [[exemptions.toml]]
 version = "0.5.10"
-criteria = "safe-to-deploy"
-
-[[exemptions.unicode-ident]]
-version = "1.0.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.uuid]]
@@ -342,6 +314,38 @@ criteria = "safe-to-deploy"
 
 [[exemptions.winapi-x86_64-pc-windows-gnu]]
 version = "0.4.0"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows-sys]]
+version = "0.42.0"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_aarch64_gnullvm]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_aarch64_msvc]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_i686_gnu]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_i686_msvc]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_x86_64_gnu]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_x86_64_gnullvm]]
+version = "0.42.1"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows_x86_64_msvc]]
+version = "0.42.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.xshell]]

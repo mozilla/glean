@@ -4,7 +4,7 @@
 
 # We use this specific version because our decision task also runs on this one.
 # We also use that same version in decisionlib.py
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 MAINTAINER Jan-Erik Rediger "janerik@mozilla.com"
 
@@ -50,7 +50,7 @@ ENV \
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
         # To compile Android stuff.
-        openjdk-11-jdk \
+        openjdk-17-jdk \
         git \
         curl \
         # Required by symbolstore.py.
@@ -70,6 +70,8 @@ RUN apt-get update -qq \
         python3-setuptools \
         # Required to extract the Android SDK/NDK.
         unzip \
+        # Required to extract tar.bz2 archives.
+        bzip2 \
         # Required by tooltool to extract tar.xz archives.
         xz-utils \
         # Required to unpack compiler

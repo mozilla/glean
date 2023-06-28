@@ -8,6 +8,9 @@ disabled_rules:
   # We're pretty careful about this already, but it's a pain to disable
   # and reenable in the cases where we're sure.
   - force_try
+  # We're pretty careful about this already, but it's a pain to disable
+  # and reenable in the cases where we're sure (mostly tests).
+  - force_cast
   # We'll get to these when we get to them!
   - todo
 

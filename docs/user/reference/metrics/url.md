@@ -343,8 +343,8 @@ refer to the metrics [YAML format](../yaml/index.md) reference page.
 ## Note on `data_sensitivity` of URL metrics
 
 > URL metrics can only either be on categories 3 or 4, namely
-> ["Web activity data"](../yaml/metrics.md#category-3-web-activity-data-web_activity) or
-> ["Highly sensitive data"](../yaml/metrics.md#category-4-highly-sensitive-data-highly_sensitive).
+> ["Stored Content & Communications"](../yaml/metrics.md#category-3-stored-content--communications-stored_content) or
+> ["Highly sensitive data"](../yaml/metrics.md#category-4-highly-sensitive-data-or-clearly-identifiable-personal-data-highly_sensitive).
 
 ### Extra metric parameters
 

@@ -48,8 +48,8 @@ class AccumulationsBeforeGleanInitTest {
                 category = "test.telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "pre_init_counter",
-                sendInPings = listOf("metrics")
-            )
+                sendInPings = listOf("metrics"),
+            ),
         )
 
         val labeledCounterMetric = LabeledMetricType(
@@ -58,7 +58,7 @@ class AccumulationsBeforeGleanInitTest {
             lifetime = Lifetime.APPLICATION,
             name = "pre_init_counter",
             sendInPings = listOf("metrics"),
-            subMetric = counterMetric
+            subMetric = counterMetric,
         )
 
         labeledCounterMetric["label1"].add(1)

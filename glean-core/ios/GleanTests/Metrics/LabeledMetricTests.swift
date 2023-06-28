@@ -5,8 +5,6 @@
 @testable import Glean
 import XCTest
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class LabeledMetricTypeTests: XCTestCase {
     override func setUp() {
         resetGleanDiscardingInitialPings(testCase: self, tag: "LabeledMetricTypeTests")

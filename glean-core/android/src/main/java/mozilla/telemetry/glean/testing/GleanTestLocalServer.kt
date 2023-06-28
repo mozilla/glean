@@ -37,7 +37,7 @@ import java.util.concurrent.Executors
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 class GleanTestLocalServer(
     val context: Context,
-    private val localPort: Int
+    private val localPort: Int,
 ) : TestWatcher() {
     /**
      * Invoked when a test is about to start.

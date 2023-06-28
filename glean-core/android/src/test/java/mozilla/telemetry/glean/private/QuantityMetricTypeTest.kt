@@ -35,8 +35,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "quantity_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         assertNull(quantityMetric.testGetValue())
@@ -64,8 +64,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "quantity_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to increment the quantity
@@ -73,7 +73,7 @@ class QuantityMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Quantities must not be recorded if they are disabled",
-            quantityMetric.testGetValue()
+            quantityMetric.testGetValue(),
         )
     }
 
@@ -87,8 +87,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "quantity_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the quantity.
@@ -96,7 +96,7 @@ class QuantityMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Quantities must not be recorded if they are disabled",
-            quantityMetric.testGetValue()
+            quantityMetric.testGetValue(),
         )
     }
 
@@ -108,8 +108,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "quantity_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(quantityMetric.testGetValue())
     }
@@ -123,8 +123,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "quantity_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         quantityMetric.set(1L)
@@ -144,8 +144,8 @@ class QuantityMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "quantity_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         quantityMetric.set(-10L)
