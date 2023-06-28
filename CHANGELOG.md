@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...main)
+
+# v53.1.0 (2023-06-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...v53.1.0)
 
 * General
   * Gracefully handle the waiting thread going away during shutdown ([#2503](https://github.com/mozilla/glean/pull/2503))
