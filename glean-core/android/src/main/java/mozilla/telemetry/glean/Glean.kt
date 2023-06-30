@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package mozilla.telemetry.glean
 
 import android.app.ActivityManager
@@ -16,7 +18,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.internal.* // ktlint-disable no-wildcard-imports
+import mozilla.telemetry.glean.internal.*
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
