@@ -12,13 +12,13 @@ buildscript {
     // versions below must match the ones in that repository.
     ext.versions = [
         android_gradle_plugin: '7.4.2',
-        coroutines: '1.7.1',
+        coroutines: '1.7.2',
         jna: '5.13.0',
-        junit: '4.12',
-        mockito: '5.3.1',
+        junit: '4.13.2',
+        mockito: '5.4.0',
         mockwebserver: '4.11.0', // This is different than a-c, but we're fine, it's only tests.
         kotlin: '1.8.21',
-        robolectric: '4.10.1',
+        robolectric: '4.10.3',
         rust_android_plugin: '0.9.3',
 
         // Android X dependencies
