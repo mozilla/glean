@@ -53,7 +53,7 @@ internal object Dispatchers {
      * A coroutine scope to make it easy to dispatch API calls off the main thread.
      * This needs to be a `var` so that our tests can override this.
      */
-    @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+    @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     var API = WaitableCoroutineScope(
         CoroutineScope(
             newSingleThreadContext("GleanAPIPool") + supervisorJob,
