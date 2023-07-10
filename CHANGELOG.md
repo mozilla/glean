@@ -1,6 +1,44 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...main)
+
+# v53.1.0 (2023-06-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...v53.1.0)
+
+* General
+  * Gracefully handle the waiting thread going away during shutdown ([#2503](https://github.com/mozilla/glean/pull/2503))
+  * Updated to UniFFI 0.24.1 ([#2510](https://github.com/mozilla/glean/pull/2510))
+  * Try blocking shutdown 10s for init to complete ([#2518](https://github.com/mozilla/glean/pull/2518))
+* Android
+  * Update minimum supported Java byte code generation to 17 ([#2498](https://github.com/mozilla/glean/pull/2498/))
+
+# v53.0.0 (2023-06-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.7.0...v53.0.0)
+
+* General
+  * Adds the capability to merge remote metric configurations, enabling multiple Nimbus Features or components to share this functionality ([Bug 1833381](https://bugzilla.mozilla.org/show_bug.cgi?id=1833381))
+  * StringList metric type limits have been increased. The length of strings allowed has been increased from 50 to 100 to match the String metric type, and the list length has been increased from 20 to 100 ([Bug 1833870](https://bugzilla.mozilla.org/show_bug.cgi?id=1833870))
+  * Make ping rate limiting configurable on Glean init. ([bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630))
+* Rust
+  * Timing distribution traits now expose `accumulate_samples` and `accumulate_raw_samples_nanos`. This is a breaking change for consumers that make use of the trait as they will need to implement the new functions ([Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745))
+* iOS
+  * Make debugging APIs available on Swift ([#2470](https://github.com/mozilla/glean/pull/2470))
+  * Added a shutdown API for Swift. This should only be necessary for when Glean is running in a process other than the main process (like in the VPN daemon, for instance)([Bug 1832324](https://bugzilla.mozilla.org/show_bug.cgi?id=1832324))
+  * Glean for iOS is now being built with Xcode 14.3 ([#2253](https://github.com/mozilla/glean/pull/2253))
+
+# v52.7.0 (2023-05-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v52.6.0...v52.7.0)
+
+* General
+  * Allow user to configure how verbose the internal logging is ([#2459](https://github.com/mozilla/glean/pull/2459))
+  * Added a timeout waiting for the dispatcher at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
+  * Added a new Glean metric `glean.validation.shutdown_dispatcher_wait` measuring the wait time at shutdown ([#2461](https://github.com/mozilla/glean/pull/2461))
+* Kotlin
+  * Update Kotlin to version 1.8.21 ([#2462](https://github.com/mozilla/glean/pull/2462))
+  * Make debugging APIs available on Android ([Bug 1830937](https://bugzilla.mozilla.org/show_bug.cgi?id=1830937))
 
 # v52.6.0 (2023-04-20)
 

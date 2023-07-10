@@ -26,7 +26,7 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
         return upload(
             url = config.serverEndpoint + path,
             data = data,
-            headers = headers
+            headers = headers,
         )
     }
 }

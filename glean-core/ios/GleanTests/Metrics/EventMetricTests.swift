@@ -57,8 +57,6 @@ struct SomeExtras: EventExtras {
     }
 }
 
-// swiftlint:disable force_cast
-// REASON: Used in a test
 class EventMetricTypeTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?

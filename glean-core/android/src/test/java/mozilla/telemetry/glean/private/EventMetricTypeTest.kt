@@ -93,7 +93,7 @@ class EventMetricTypeTest {
                 name = "click",
                 sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = listOf("object_id", "other")
+            allowedExtraKeys = listOf("object_id", "other"),
         )
 
         // Record two events of the same type, with a little delay.
@@ -121,7 +121,7 @@ class EventMetricTypeTest {
         assertTrue(
             "The sequence of the events must be preserved" +
                 ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp
+            firstEvent.timestamp <= secondEvent.timestamp,
         )
     }
 
@@ -136,7 +136,7 @@ class EventMetricTypeTest {
                 name = "click",
                 sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = listOf("object_id")
+            allowedExtraKeys = listOf("object_id"),
         )
 
         // Record two events of the same type, with a little delay.
@@ -160,7 +160,7 @@ class EventMetricTypeTest {
         assertTrue(
             "The sequence of the events must be preserved" +
                 ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp
+            firstEvent.timestamp <= secondEvent.timestamp,
         )
     }
 
@@ -174,9 +174,9 @@ class EventMetricTypeTest {
                 category = "ui",
                 lifetime = Lifetime.PING,
                 name = "click",
-                sendInPings = listOf("store1")
+                sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = emptyList()
+            allowedExtraKeys = emptyList(),
         )
 
         // Attempt to store the event.
@@ -185,7 +185,7 @@ class EventMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "Events must not be recorded if they are disabled",
-            click.testGetValue()
+            click.testGetValue(),
         )
     }
 
@@ -197,9 +197,9 @@ class EventMetricTypeTest {
                 category = "ui",
                 lifetime = Lifetime.PING,
                 name = "testEvent",
-                sendInPings = listOf("store1")
+                sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = emptyList()
+            allowedExtraKeys = emptyList(),
         )
         assertNull(testEvent.testGetValue())
     }
@@ -215,7 +215,7 @@ class EventMetricTypeTest {
                 name = "click",
                 sendInPings = listOf("store1", "store2"),
             ),
-            allowedExtraKeys = listOf("object_id")
+            allowedExtraKeys = listOf("object_id"),
         )
 
         // Record two events of the same type, with a little delay.
@@ -241,7 +241,7 @@ class EventMetricTypeTest {
         assertTrue(
             "The sequence of the events must be preserved" +
                 ", first: ${firstEvent.timestamp}, second: ${secondEvent.timestamp}",
-            firstEvent.timestamp <= secondEvent.timestamp
+            firstEvent.timestamp <= secondEvent.timestamp,
         )
     }
 
@@ -255,7 +255,7 @@ class EventMetricTypeTest {
                 name = "event_metric",
                 sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = listOf("test_name")
+            allowedExtraKeys = listOf("test_name"),
         )
         Glean.setUploadEnabled(true)
         eventMetric.record(EventMetricExtras(testName = "event1"))
@@ -279,9 +279,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true
+            clearStores = true,
         )
 
         val event = EventMetricType<TestEventExtras>(
@@ -292,7 +292,7 @@ class EventMetricTypeTest {
                 lifetime = Lifetime.PING,
                 sendInPings = listOf("events"),
             ),
-            allowedExtraKeys = listOf("some_extra")
+            allowedExtraKeys = listOf("some_extra"),
         )
 
         event.record(TestEventExtras(someExtra = "bar"))
@@ -302,9 +302,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = false
+            clearStores = false,
         )
 
         triggerWorkManager(context)
@@ -313,7 +313,7 @@ class EventMetricTypeTest {
         assertEquals("POST", request.method)
         val applicationId = "mozilla-telemetry-glean-test"
         assert(
-            request.path!!.startsWith("/submit/$applicationId/events/")
+            request.path!!.startsWith("/submit/$applicationId/events/"),
         )
         val pingJsonData = request.getPlainBody()
         val pingJson = JSONObject(pingJsonData)
@@ -321,11 +321,11 @@ class EventMetricTypeTest {
         assertNotNull(pingJson.opt("events"))
         assertEquals(
             1,
-            pingJson.getJSONArray("events").length()
+            pingJson.getJSONArray("events").length(),
         )
         assertEquals(
             "startup",
-            pingJson.getJSONObject("ping_info").getString("reason")
+            pingJson.getJSONObject("ping_info").getString("reason"),
         )
     }
 
@@ -340,9 +340,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true
+            clearStores = true,
         )
 
         val event = EventMetricType<TestEventExtras>(
@@ -353,7 +353,7 @@ class EventMetricTypeTest {
                 lifetime = Lifetime.PING,
                 sendInPings = listOf("events"),
             ),
-            allowedExtraKeys = listOf("some_extra")
+            allowedExtraKeys = listOf("some_extra"),
         )
 
         // Record an event in the current run.
@@ -371,9 +371,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = false
+            clearStores = false,
         )
 
         event.record(TestEventExtras(someExtra = "post-init"))
@@ -389,17 +389,17 @@ class EventMetricTypeTest {
         assertEquals(
             "Ping payload: $pingJson",
             "startup",
-            pingJson.getJSONObject("ping_info").getString("reason")
+            pingJson.getJSONObject("ping_info").getString("reason"),
         )
         assertEquals(
             "Ping payload: $pingJson",
             1,
-            pingJson.getJSONArray("events").length()
+            pingJson.getJSONArray("events").length(),
         )
         assertEquals(
             "Ping payload: $pingJson",
             "run1",
-            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra")
+            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra"),
         )
 
         Glean.submitPingByName("events", "inactive")
@@ -415,19 +415,19 @@ class EventMetricTypeTest {
         assertEquals(
             "Ping payload: $pingJson",
             "inactive",
-            pingJson.getJSONObject("ping_info").getString("reason")
+            pingJson.getJSONObject("ping_info").getString("reason"),
         )
         assertEquals(
             2,
-            pingJson.getJSONArray("events").length()
+            pingJson.getJSONArray("events").length(),
         )
         assertEquals(
             "pre-init",
-            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra")
+            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra"),
         )
         assertEquals(
             "post-init",
-            pingJson.getJSONArray("events").getJSONObject(1).getJSONObject("extra").getString("some_extra")
+            pingJson.getJSONArray("events").getJSONObject(1).getJSONObject("extra").getString("some_extra"),
         )
     }
 
@@ -442,7 +442,7 @@ class EventMetricTypeTest {
                 name = "click",
                 sendInPings = listOf("store1"),
             ),
-            allowedExtraKeys = listOf("object_id", "other")
+            allowedExtraKeys = listOf("object_id", "other"),
         )
 
         val longString = "0123456789".repeat(51)
@@ -466,9 +466,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = true
+            clearStores = true,
         )
 
         val pingName = "another-ping-2"
@@ -480,7 +480,7 @@ class EventMetricTypeTest {
                 lifetime = Lifetime.PING,
                 sendInPings = listOf(pingName, "events"), // also send in builtin ping
             ),
-            allowedExtraKeys = listOf("some_extra")
+            allowedExtraKeys = listOf("some_extra"),
         )
 
         // Let's record a single event. This will be queued up but not be sent.
@@ -494,9 +494,9 @@ class EventMetricTypeTest {
         resetGlean(
             context,
             Glean.configuration.copy(
-                serverEndpoint = "http://" + server.hostName + ":" + server.port
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
             ),
-            clearStores = false
+            clearStores = false,
         )
 
         // Create and register a ping AFTER Glean.initialize
@@ -505,7 +505,7 @@ class EventMetricTypeTest {
             name = pingName,
             includeClientId = true,
             sendIfEmpty = false,
-            reasonCodes = listOf()
+            reasonCodes = listOf(),
         )
 
         // Trigger worker task to upload the pings in the background.

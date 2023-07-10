@@ -34,6 +34,9 @@ raw_xcode*log
 *.egg-info
 dist/
 
+# Wine stuff
+winpython/
+
 samples/ios/app/.venv/
 .mypy_cache/
 .coverage

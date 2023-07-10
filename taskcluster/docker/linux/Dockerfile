@@ -4,7 +4,7 @@
 
 # We use this specific version because our decision task also runs on this one.
 # We also use that same version in decisionlib.py
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 MAINTAINER Jan-Erik Rediger "janerik@mozilla.com"
 
@@ -50,7 +50,7 @@ ENV \
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
         # To compile Android stuff.
-        openjdk-11-jdk \
+        openjdk-17-jdk \
         git \
         curl \
         # Required by symbolstore.py.
@@ -63,8 +63,6 @@ RUN apt-get update -qq \
         # <TODO: Is this still true?>.
         g++ \
         libxml2-dev \
-        # Python 2 for tooltool
-        python \
         python3 \
         python3-pip \
         python3-venv \
@@ -72,6 +70,8 @@ RUN apt-get update -qq \
         python3-setuptools \
         # Required to extract the Android SDK/NDK.
         unzip \
+        # Required to extract tar.bz2 archives.
+        bzip2 \
         # Required by tooltool to extract tar.xz archives.
         xz-utils \
         # Required to unpack compiler
@@ -122,7 +122,7 @@ RUN chown -R worker:worker /builds/worker/android-sdk
 RUN \
     curl -sfSL --retry 5 --retry-delay 10 \
          -o /usr/local/bin/tooltool.py \
-         https://raw.githubusercontent.com/mozilla/build-tooltool/36511dae0ead6848017e2d569b1f6f1b36984d40/tooltool.py && \
+         https://raw.githubusercontent.com/mozilla-releng/tooltool/master/client/tooltool.py && \
          chmod +x /usr/local/bin/tooltool.py
 
 # %include-run-task

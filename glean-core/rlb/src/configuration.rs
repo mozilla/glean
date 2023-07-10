@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use log::LevelFilter;
+
 use crate::net::PingUploader;
 
 use std::path::PathBuf;
@@ -34,6 +36,10 @@ pub struct Configuration {
     /// Unless you know that all your and your libraries' pings are appropriately registered
     /// _before_ init, you shouldn't use this.
     pub trim_data_to_registered_pings: bool,
+    /// The internal logging level.
+    pub log_level: Option<LevelFilter>,
+    /// The rate pings may be uploaded before they are throttled.
+    pub rate_limit: Option<glean_core::PingRateLimit>,
 }
 
 /// Configuration builder.
@@ -68,6 +74,12 @@ pub struct Builder {
     /// _before_ init, you shouldn't use this.
     /// Default: `false`
     pub trim_data_to_registered_pings: bool,
+    /// Optional: The internal logging level.
+    /// Default: `None`
+    pub log_level: Option<LevelFilter>,
+    /// Optional: The internal ping upload rate limit.
+    /// Default: `None`
+    pub rate_limit: Option<glean_core::PingRateLimit>,
 }
 
 impl Builder {
@@ -87,6 +99,8 @@ impl Builder {
             uploader: None,
             use_core_mps: false,
             trim_data_to_registered_pings: false,
+            log_level: None,
+            rate_limit: None,
         }
     }
 
@@ -102,6 +116,8 @@ impl Builder {
             uploader: self.uploader,
             use_core_mps: self.use_core_mps,
             trim_data_to_registered_pings: self.trim_data_to_registered_pings,
+            log_level: self.log_level,
+            rate_limit: self.rate_limit,
         }
     }
 

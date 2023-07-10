@@ -25,6 +25,7 @@ use std::thread;
 use std::time::Duration;
 
 use crossbeam_channel::unbounded;
+use log::{self, LevelFilter};
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
@@ -125,6 +126,19 @@ pub struct InternalConfiguration {
     pub use_core_mps: bool,
     /// Whether Glean should, on init, trim its event storage to only the registered pings.
     pub trim_data_to_registered_pings: bool,
+    /// The internal logging level.
+    pub log_level: Option<LevelFilter>,
+    /// The rate at which pings may be uploaded before they are throttled.
+    pub rate_limit: Option<PingRateLimit>,
+}
+
+/// How to specify the rate at which pings may be uploaded before they are throttled.
+#[derive(Debug, Clone)]
+pub struct PingRateLimit {
+    /// Length of time in seconds of a ping uploading interval.
+    pub seconds_per_interval: u64,
+    /// Number of pings that may be uploaded in a ping uploading interval.
+    pub pings_per_interval: u32,
 }
 
 /// Launches a new task on the global dispatch queue with a reference to the Glean singleton.
@@ -271,6 +285,11 @@ pub fn glean_initialize(
     initialize_inner(cfg, client_info, callbacks);
 }
 
+/// Shuts down Glean in an orderly fashion.
+pub fn glean_shutdown() {
+    shutdown();
+}
+
 /// Creates and initializes a new Glean object for use in a subprocess.
 ///
 /// Importantly, this will not send any pings at startup, since that
@@ -305,6 +324,11 @@ fn initialize_inner(
         .spawn(move || {
             let upload_enabled = cfg.upload_enabled;
             let trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
+
+            // Set the internal logging level.
+            if let Some(level) = cfg.log_level {
+                log::set_max_level(level)
+            }
 
             let glean = match Glean::new(cfg) {
                 Ok(glean) => glean,
@@ -450,6 +474,10 @@ fn initialize_inner(
             });
 
             // Signal Dispatcher that init is complete
+            // bug 1839433: It is important that this happens after any init tasks
+            // that shutdown() depends on. At time of writing that's only setting up
+            // the global Glean, but it is probably best to flush the preinit queue
+            // as late as possible in the glean.init thread.
             match dispatcher::flush_init() {
                 Ok(task_count) if task_count > 0 => {
                     core::with_glean(|glean| {
@@ -539,26 +567,78 @@ fn uploader_shutdown() {
 
 /// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
-    // Either init was never called or Glean was not fully initialized
-    // (e.g. due to an error).
-    // There's the potential that Glean is not initialized _yet_,
-    // but in progress. That's fine, we shutdown either way before doing any work.
-    if !was_initialize_called() || core::global_glean().is_none() {
+    // Shutdown might have been called
+    // 1) Before init was called
+    //    * (data loss, oh well. Not enough time to do squat)
+    // 2) After init was called, but before it completed
+    //    * (we're willing to wait a little bit for init to complete)
+    // 3) After init completed
+    //    * (we can shut down immediately)
+
+    // Case 1: "Before init was called"
+    if !was_initialize_called() {
         log::warn!("Shutdown called before Glean is initialized");
         if let Err(e) = dispatcher::kill() {
             log::error!("Can't kill dispatcher thread: {:?}", e);
         }
-
         return;
     }
 
+    // Case 2: "After init was called, but before it completed"
+    if core::global_glean().is_none() {
+        log::warn!("Shutdown called before Glean is initialized. Waiting.");
+        // We can't join on the `glean.init` thread because there's no (easy) way
+        // to do that with a timeout. Instead, we wait for the preinit queue to
+        // empty, which is the last meaningful thing we do on that thread.
+
+        // TODO: Make the timeout configurable?
+        // We don't need the return value, as we're less interested in whether
+        // this times out than we are in whether there's a Global Glean at the end.
+        let _ = dispatcher::block_on_queue_timeout(Duration::from_secs(10));
+    }
+    // We can't shut down Glean if there's no Glean to shut down.
+    if core::global_glean().is_none() {
+        log::warn!("Waiting for Glean initialization timed out. Exiting.");
+        if let Err(e) = dispatcher::kill() {
+            log::error!("Can't kill dispatcher thread: {:?}", e);
+        }
+        return;
+    }
+
+    // Case 3: "After init completed"
     crate::launch_with_glean_mut(|glean| {
         glean.cancel_metrics_ping_scheduler();
         glean.set_dirty_flag(false);
     });
 
-    // We need to wait for above task to finish.
-    dispatcher::block_on_queue();
+    // We need to wait for above task to finish,
+    // but we also don't wait around forever.
+    //
+    // TODO: Make the timeout configurable?
+    // The default hang watchdog on Firefox waits 60s,
+    // Glean's `uploader_shutdown` further below waits up to 30s.
+    let timer_id = core::with_glean(|glean| {
+        glean
+            .additional_metrics
+            .shutdown_dispatcher_wait
+            .start_sync()
+    });
+    let blocked = dispatcher::block_on_queue_timeout(Duration::from_secs(10));
+
+    // Always record the dispatcher wait, regardless of the timeout.
+    let stop_time = time::precise_time_ns();
+    core::with_glean(|glean| {
+        glean
+            .additional_metrics
+            .shutdown_dispatcher_wait
+            .set_stop_and_accumulate(glean, timer_id, stop_time);
+    });
+    if blocked.is_err() {
+        log::error!(
+            "Timeout while blocking on the dispatcher. No further shutdown cleanup will happen."
+        );
+        return;
+    }
 
     if let Err(e) = dispatcher::shutdown() {
         log::error!("Can't shutdown dispatcher thread: {:?}", e);

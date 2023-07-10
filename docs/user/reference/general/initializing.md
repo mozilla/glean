@@ -67,6 +67,10 @@ Below are listed the configuration options available on most SDKs.
 - `httpUploader`: A custom HTTP uploader instance, that will overwrite Glean's provided uploader. Useful
 for users that wish to use specific uploader implementations. See [Custom Uploaders](#custom-uploaders)
 for more information on how and when the use this feature.
+- `logLevel`: The level for how verbose the internal logging is. The level filter options in order from least to most verbose are: `Off`, `Error`, `Warn`, `Info`, `Debug`, `Trace`. See the [`log` crate docs](https://docs.rs/log/latest/log/) for more information.
+- `rateLimit`: Optional.
+  Specifies the maximum number of pings that can be uploaded per interval of a specified number of seconds.
+  Default is to use the SDK default (presently 15 pings per 60s interval).
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 
@@ -118,6 +122,7 @@ The Glean Kotlin SDK supports use across multiple processes. This is enabled by 
 Requirements for a non-main process
 - `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
 - The default `dataPath` for Glean is `{context.applicationInfo.dataDir}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
+- [Set the default process name](https://developer.android.com/reference/androidx/work/Configuration.Builder#setDefaultProcessName(java.lang.String)) as your main process. If this is not set up correctly, pings from the non-main process will not send. `Configuration.Builder().setDefaultProcessName(<main_process_name>)`
 
 **Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled [baseline](../../user/pings/baseline.md) or [metrics](../../user/pings/metrics.md) pings.
 

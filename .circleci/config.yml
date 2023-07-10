@@ -15,6 +15,9 @@ definitions:
         ignore: /.*/
       tags:
         only: /^v.*/
+  - ci_filters: &ci-filters
+      branches:
+        ignore: release
 
 ##########################################################################
 # COMMANDS
@@ -415,7 +418,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2023.02.1
+      - image: cimg/android:2023.06-browsers
     steps:
       - checkout
       - android-setup
@@ -425,7 +428,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2023.02.1
+      - image: cimg/android:2023.06-browsers
     steps:
       - checkout
       - skip-if-doc-only
@@ -478,7 +481,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "14.0"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -486,8 +489,9 @@ jobs:
           name: Install lint tools
           command: |
             export HOMEBREW_NO_AUTO_UPDATE=1
-            # swiftlint 0.50.1
-            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/dd10ef27e1327dd3dfc6f428565a83402d4abc24/Formula/swiftlint.rb > swiftlint.rb
+            export HOMEBREW_NO_INSTALL_CLEANUP=1
+            # swiftlint 0.52.3
+            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/a8712178bbbd19247abab91f3fb2eae240f8249c/Formula/swiftlint.rb > swiftlint.rb
             brew install ./swiftlint.rb
       - run:
           name: Run swiftlint
@@ -497,7 +501,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -510,14 +514,14 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v13
+          key: swift-docs-gems-v15
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v13
+          key: swift-docs-gems-v15
           paths:
             - ~/.gem/ruby/2.7.6
       - run:
@@ -535,7 +539,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
@@ -604,7 +608,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -626,8 +630,8 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UDID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 11 Simulator (14' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UDID"
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
+            xcrun simctl boot "$UUID"
       - run:
           name: Build XCFramework archive
           command: |
@@ -662,7 +666,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -904,7 +908,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - install-rustup
@@ -919,7 +923,7 @@ jobs:
           name: Build macOS x86_64 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_BUILD_TARGET: x86_64-apple-darwin
             GLEAN_BUILD_VARIANT: release
@@ -927,16 +931,16 @@ jobs:
           name: Build macOS aarch64 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
-            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk
+            SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
             GLEAN_BUILD_TARGET: aarch64-apple-darwin
             GLEAN_BUILD_VARIANT: release
       - run:
           name: Build macOS universal2 wheel
           command: |
             cd glean-core/python
-            .venv3.9/bin/python3 setup.py bdist_wheel
+            .venv3.11/bin/python3 setup.py bdist_wheel
           environment:
             GLEAN_BUILD_TARGET: universal
             GLEAN_BUILD_VARIANT: release
@@ -946,7 +950,7 @@ jobs:
             cd glean-core/python
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload dist/*
+            .venv3.11/bin/python3 -m twine upload dist/*
       - install-ghr-darwin
       - run:
           name: Publish to Github
@@ -1082,21 +1086,33 @@ workflows:
   version: 2
   lint:
     jobs:
-      - Lint YAML with yamllint
-      - License check
-      - Lint Rust with clippy
-      - Docs internal metrics check
-      - Lint Android with ktlint and detekt
-      - Lint Python
-      - Check vendored schema
-      - Check Rust formatting
-      - Check Swift formatting
+      - Lint YAML with yamllint:
+          filters: *ci-filters
+      - License check:
+          filters: *ci-filters
+      - Lint Rust with clippy:
+          filters: *ci-filters
+      - Docs internal metrics check:
+          filters: *ci-filters
+      - Lint Android with ktlint and detekt:
+          filters: *ci-filters
+      - Lint Python:
+          filters: *ci-filters
+      - Check vendored schema:
+          filters: *ci-filters
+      - Check Rust formatting:
+          filters: *ci-filters
+      - Check Swift formatting:
+          filters: *ci-filters
 
   ci:
     jobs:
-      - Rust tests - stable
-      - Rust tests - minimum version
-      - Android tests
+      - Rust tests - stable:
+          filters: *ci-filters
+      - Rust tests - minimum version:
+          filters: *ci-filters
+      - Android tests:
+          filters: *ci-filters
       # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
           filters:
@@ -1106,28 +1122,42 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_6 tests
-      - Python 3_6 tests minimum dependencies
-      - Python 3_7 tests
-      - Python 3_8 tests
-      - Python 3_9 tests
-      - Python 3_9 tests minimum dependencies
-      - Python 3_9 on Alpine tests
-      - Python 3_10 tests
-      - Python Windows x86_64 tests
-      - Python Windows i686 tests
+      - Python 3_6 tests:
+          filters: *ci-filters
+      - Python 3_6 tests minimum dependencies:
+          filters: *ci-filters
+      - Python 3_7 tests:
+          filters: *ci-filters
+      - Python 3_8 tests:
+          filters: *ci-filters
+      - Python 3_9 tests:
+          filters: *ci-filters
+      - Python 3_9 tests minimum dependencies:
+          filters: *ci-filters
+      - Python 3_9 on Alpine tests:
+          filters: *ci-filters
+      - Python 3_10 tests:
+          filters: *ci-filters
+      - Python Windows x86_64 tests:
+          filters: *ci-filters
+      - Python Windows i686 tests:
+          filters: *ci-filters
 
       - Generate Rust documentation:
           requires:
             - docs-spellcheck
+          filters: *ci-filters
       - Generate Python documentation:
           requires:
             - Python 3_10 tests
+          filters: *ci-filters
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Python documentation
-      - docs-spellcheck
+          filters: *ci-filters
+      - docs-spellcheck:
+          filters: *ci-filters
       - docs-deploy:
           requires:
             - docs-linkcheck
@@ -1143,19 +1173,25 @@ workflows:
           type: approval
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
       - iOS build and test:
           requires:
             - hold
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
       - iOS integration test:
           requires:
             - hold
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - release
 
   release:
     jobs:

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package mozilla.telemetry.glean
 
 import android.app.ActivityManager
@@ -16,7 +18,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.config.Configuration
-import mozilla.telemetry.glean.internal.* // ktlint-disable no-wildcard-imports
+import mozilla.telemetry.glean.internal.*
 import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
@@ -172,7 +174,7 @@ open class GleanInternalAPI internal constructor() {
         applicationContext: Context,
         uploadEnabled: Boolean,
         configuration: Configuration = Configuration(),
-        buildInfo: BuildInfo
+        buildInfo: BuildInfo,
     ) {
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
@@ -185,7 +187,7 @@ open class GleanInternalAPI internal constructor() {
                 Log.e(
                     LOG_TAG,
                     "Attempted to initialize Glean with an invalid database path " +
-                        "\"{context.applicationInfo.dataDir}/glean_data\" is reserved"
+                        "\"{context.applicationInfo.dataDir}/glean_data\" is reserved",
                 )
                 return
             }
@@ -213,7 +215,7 @@ open class GleanInternalAPI internal constructor() {
             if (!isMainProcess(applicationContext)) {
                 Log.e(
                     LOG_TAG,
-                    "Attempted to initialize Glean on a process other than the main process without a dataPath"
+                    "Attempted to initialize Glean on a process other than the main process without a dataPath",
                 )
                 return
             }
@@ -244,7 +246,9 @@ open class GleanInternalAPI internal constructor() {
                 delayPingLifetimeIo = false,
                 appBuild = "none",
                 useCoreMps = false,
-                trimDataToRegisteredPings = false
+                trimDataToRegisteredPings = false,
+                logLevel = configuration.logLevel,
+                rateLimit = null,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -302,7 +306,7 @@ open class GleanInternalAPI internal constructor() {
     fun setExperimentActive(
         experimentId: String,
         branch: String,
-        extra: Map<String, String>? = null
+        extra: Map<String, String>? = null,
     ) {
         var map = extra ?: mapOf()
         gleanSetExperimentActive(experimentId, branch, map)
@@ -359,7 +363,7 @@ open class GleanInternalAPI internal constructor() {
             // https://developer.android.com/reference/android/os/Build
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
-            locale = getLocaleTag()
+            locale = getLocaleTag(),
         )
     }
 
@@ -421,7 +425,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
-    internal fun setDebugViewTag(value: String): Boolean {
+    fun setDebugViewTag(value: String): Boolean {
         return gleanSetDebugViewTag(value)
     }
 
@@ -478,7 +482,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the option.
      */
-    internal fun setLogPings(value: Boolean) {
+    fun setLogPings(value: Boolean) {
         gleanSetLogPings(value)
     }
 
@@ -524,7 +528,7 @@ open class GleanInternalAPI internal constructor() {
         context: Context,
         config: Configuration,
         clearStores: Boolean,
-        uploadEnabled: Boolean = true
+        uploadEnabled: Boolean = true,
     ) {
         isMainProcess = null
 

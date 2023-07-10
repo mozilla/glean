@@ -35,8 +35,8 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Record two lists using add and set
@@ -70,8 +70,8 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Record two lists using set and add
@@ -105,8 +105,8 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
         // Attempt to store the string list using set.
@@ -114,7 +114,7 @@ class StringListMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "StringLists must not be recorded if they are disabled",
-            stringListMetric.testGetValue()
+            stringListMetric.testGetValue(),
         )
 
         // Attempt to store the string list using add.
@@ -122,7 +122,7 @@ class StringListMetricTypeTest {
         // Check that nothing was recorded.
         assertNull(
             "StringLists must not be recorded if they are disabled",
-            stringListMetric.testGetValue()
+            stringListMetric.testGetValue(),
         )
     }
 
@@ -134,8 +134,8 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
         assertNull(stringListMetric.testGetValue())
     }
@@ -149,8 +149,8 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1", "store2")
-            )
+                sendInPings = listOf("store1", "store2"),
+            ),
         )
 
         // Record two lists using add and set
@@ -184,16 +184,16 @@ class StringListMetricTypeTest {
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
                 name = "string_list_metric",
-                sendInPings = listOf("store1")
-            )
+                sendInPings = listOf("store1"),
+            ),
         )
 
-        for (x in 0..20) {
+        for (x in 0..100) {
             stringListMetric.add("value$x")
         }
 
         val snapshot = stringListMetric.testGetValue("store1")!!
-        assertEquals(20, snapshot.size)
+        assertEquals(100, snapshot.size)
 
         assertEquals(1, stringListMetric.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
     }
