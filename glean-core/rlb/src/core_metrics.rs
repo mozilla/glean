@@ -14,7 +14,6 @@ pub struct ClientInfoMetrics {
     /// The product-provided release channel (e.g. "beta").
     pub channel: Option<String>,
     /// The locale of the application during initialization (e.g. "es-ES").
-    /// If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
     pub locale: Option<String>,
 }
 
