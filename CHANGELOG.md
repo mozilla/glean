@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...main)
 
+* Rust
+  * The Ping Rate Limit type is now accessible in the Rust Language Binding ([#2528](https://github.com/mozilla/glean/pull/2528))
+  
 # v53.1.0 (2023-06-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v53.0.0...v53.1.0)
