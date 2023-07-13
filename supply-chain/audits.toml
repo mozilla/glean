@@ -103,6 +103,11 @@ criteria = "safe-to-run"
 delta = "0.1.26 -> 0.2.2"
 notes = "Dependency updates only"
 
+[[audits.ctor]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.2.2 -> 0.2.4"
+
 [[audits.inherent]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
