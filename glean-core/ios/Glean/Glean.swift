@@ -329,7 +329,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * value: The value of the tag, which must be a valid HTTP header value.
-    public func setDebugViewTag(_ tag: String) -> Bool {
+    @discardableResult public func setDebugViewTag(_ tag: String) -> Bool {
         return gleanSetDebugViewTag(tag)
     }
 
