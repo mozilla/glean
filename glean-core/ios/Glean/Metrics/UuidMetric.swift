@@ -22,7 +22,7 @@ public class UuidMetricType {
     /// Generate a new UUID and set it in the metric store.
     ///
     /// - returns: The `UUID` that was generated or `nil` if disabled.
-    public func generateAndSet() -> UUID {
+    @discardableResult public func generateAndSet() -> UUID {
         let uuid = inner.generateAndSet()
         return UUID(uuidString: uuid)!
     }
