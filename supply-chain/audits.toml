@@ -114,6 +114,12 @@ criteria = "safe-to-deploy"
 delta = "1.0.5 -> 1.0.7"
 notes = "Dependency updates only"
 
+[[audits.inherent]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.7 -> 1.0.9"
+notes = "Dependency updates"
+
 [[audits.log]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -126,11 +132,23 @@ criteria = "safe-to-deploy"
 delta = "1.0.57 -> 1.0.59"
 notes = "Enabled on Wasm"
 
+[[audits.proc-macro2]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.63 -> 1.0.66"
+notes = "Removed special support for some really old Rust versions"
+
 [[audits.quote]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.27 -> 1.0.28"
 notes = "Enabled on wasm targets"
+
+[[audits.quote]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.28 -> 1.0.31"
+notes = "Minimal changes and removal of the build.rs"
 
 [[audits.scroll_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -149,6 +167,12 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.150 -> 1.0.160"
 notes = "Update of syn dependency and thus largely changes to adopt the newer API"
+
+[[audits.syn]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "2.0.18 -> 2.0.26"
+notes = "Dependency update & internal refactorings"
 
 [[audits.unicode-ident]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
