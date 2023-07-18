@@ -5,6 +5,8 @@
 * Rust
   * The Ping Rate Limit type is now accessible in the Rust Language Binding ([#2528](https://github.com/mozilla/glean/pull/2528))
   * `locale` now exposed through the RLB so it can be set by consumers ([2527](https://github.com/mozilla/glean/pull/2527))
+* Python
+  * Added the shutdown API for Python to ensure orderly shutdown and waiting for uploader processes ([#2538](https://github.com/mozilla/glean/pull/2538))
 
 # v53.1.0 (2023-06-28)
 
