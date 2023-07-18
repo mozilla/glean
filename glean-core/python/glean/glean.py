@@ -427,5 +427,16 @@ class Glean:
         """
         _uniffi.glean_handle_client_inactive()
 
+    @classmethod
+    def shutdown(cls):
+        """
+        Shuts down Glean in an orderly fashion.
+        """
+        _uniffi.glean_shutdown()
+
+        # On top of the Glean shutdown
+        # we also wait for the process dispatcher to finish.
+        ProcessDispatcher._wait_for_last_process()
+
 
 __all__ = ["Glean"]

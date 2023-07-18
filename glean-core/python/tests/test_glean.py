@@ -920,3 +920,44 @@ def test_max_events_overflow(tmpdir):
     assert "testing" == events[0]["category"]
     assert "event" == events[0]["name"]
     assert 0 == events[0]["timestamp"]
+
+
+def test_glean_shutdown(safe_httpserver):
+    """
+    In theory we want to test that `Glean.shutdown` here waits for Glean
+    and any uploader to shut down.
+    In practice because the process dispatcher runs using multiprocessing
+    this test will succeed regardless of the `Glean.shutdown` call.
+    """
+
+    Glean._reset()
+
+    custom_ping = PingType(
+        name="custom", include_client_id=True, send_if_empty=False, reason_codes=[]
+    )
+
+    counter = CounterMetricType(
+        CommonMetricData(
+            category="telemetry",
+            name="counter_metric",
+            send_in_pings=["custom"],
+            lifetime=Lifetime.APPLICATION,
+            disabled=False,
+            dynamic_label=None,
+        )
+    )
+
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Configuration(server_endpoint=safe_httpserver.url),
+    )
+
+    for _ in range(10):
+        counter.add(1)
+        custom_ping.submit()
+
+    Glean.shutdown()
+    wait_for_requests(safe_httpserver, n=10)
+    assert 10 == len(safe_httpserver.requests)
