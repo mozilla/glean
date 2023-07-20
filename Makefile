@@ -49,7 +49,7 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: setup-python ## Build the Python bindings
-	$(GLEAN_PYENV)/bin/python3 -m build
+	$(GLEAN_PYENV)/bin/python3 -m build --no-isolation
 	$(GLEAN_PYENV)/bin/python3 -m pip install -e glean-core/python
 
 build-xcframework:
