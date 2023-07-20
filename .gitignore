@@ -38,6 +38,8 @@ dist/
 winpython/
 
 samples/ios/app/.venv/
+samples/python/.venv*/
+samples/python/data
 .mypy_cache/
 .coverage
 htmlcov/
