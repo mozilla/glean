@@ -485,6 +485,8 @@ function afterLogin(aDuration) {
 Get the currently-stored value.  
 Returns the timespan as a integer in the metric's time unit if data is stored.  
 Returns a language-specific empty/null value if no data is stored.
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 {{#include ../../../shared/tab_header.md}}
 <div data-lang="Kotlin" class="tab">
@@ -523,7 +525,7 @@ assert metrics.auth.login_time.test_get_value() > 0
 ```Rust
 use glean_metrics::auth;
 
-assert!(auth::login_time.test_get_value().unwrap() > 0);
+assert!(auth::login_time.test_get_value(None).unwrap() > 0);
 ```
 </div>
 <div data-lang="JavaScript" class="tab">

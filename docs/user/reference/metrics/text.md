@@ -100,6 +100,8 @@ article.content.set(extractedText);
 Gets the recorded value for a given text metric.  
 Returns the string if data is stored.  
 Returns `null` if no data is stored.
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 {{#include ../../../shared/tab_header.md}}
 

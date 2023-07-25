@@ -121,6 +121,8 @@ Glean.install.firstRun.set(value.getTime() * 1000);
 
 Get the recorded value for a given datetime metric as a language-specific Datetime object.  
 Returns a language-specific empty/null value if no data is stored.
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 {{#include ../../../shared/tab_header.md}}
 
