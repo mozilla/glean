@@ -6,6 +6,7 @@ package org.mozilla.samples.gleancore
 
 import android.app.Application
 import android.util.Log
+import androidx.work.Configuration
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.Basic
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
@@ -17,7 +18,16 @@ import java.util.UUID
 
 private const val TAG = "Glean"
 
-class GleanApplication : Application() {
+class GleanApplication : Application(), Configuration.Provider {
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            // This is required for Glean to be able to enqueue the PingUploadWorker
+            // from both the daemon and the main app.
+            .setDefaultProcessName(packageName)
+            .setMinimumLoggingLevel(Log.INFO)
+            .build()
+    }
 
     override fun onCreate() {
         super.onCreate()

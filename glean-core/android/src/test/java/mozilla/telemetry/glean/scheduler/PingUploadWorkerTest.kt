@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.BackoffPolicy
+import androidx.work.ListenableWorker
 import androidx.work.NetworkType
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
@@ -50,7 +52,10 @@ class PingUploadWorkerTest {
 
     @Test
     fun testDoWorkSuccess() {
-        val result = pingUploadWorker!!.doWork()
+        var result: ListenableWorker.Result
+        runBlocking {
+            result = pingUploadWorker!!.doRemoteWork()
+        }
         Assert.assertTrue(result.toString().contains("Success"))
     }
 

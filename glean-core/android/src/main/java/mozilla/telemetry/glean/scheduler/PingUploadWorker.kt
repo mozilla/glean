@@ -4,17 +4,23 @@
 
 package mozilla.telemetry.glean.scheduler
 
+import android.content.ComponentName
 import android.content.Context
 import android.os.SystemClock
+import android.provider.ContactsContract.Directory.PACKAGE_NAME
 import androidx.annotation.VisibleForTesting
 import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
+import androidx.work.Data
+import androidx.work.ListenableWorker
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
+import androidx.work.multiprocess.RemoteCoroutineWorker
+import androidx.work.multiprocess.RemoteListenableWorker.ARGUMENT_CLASS_NAME
+import androidx.work.multiprocess.RemoteListenableWorker.ARGUMENT_PACKAGE_NAME
+import androidx.work.multiprocess.RemoteWorkerService
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.internal.PingUploadTask
 import mozilla.telemetry.glean.internal.UploadTaskAction
@@ -39,10 +45,28 @@ internal fun buildConstraints(): Constraints = Constraints.Builder()
  *
  * @return [OneTimeWorkRequest] representing the task for the [WorkManager] to enqueue and run
  */
-internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest {
+internal inline fun <reified W : RemoteCoroutineWorker> buildWorkRequest(tag: String): OneTimeWorkRequest {
     return OneTimeWorkRequestBuilder<W>()
         .addTag(tag)
         .setConstraints(buildConstraints())
+        .build()
+}
+
+private fun buildOneTimeWorkRemoteWorkRequest(
+    componentName: ComponentName
+    , listenableWorkerClass: Class<out ListenableWorker>
+): OneTimeWorkRequest {
+
+    // ARGUMENT_PACKAGE_NAME and ARGUMENT_CLASS_NAME are used to determine the service
+    // that a Worker binds to. By specifying these parameters, we can designate the process a
+    // Worker runs in.
+    val data: Data = Data.Builder()
+        .putString(ARGUMENT_PACKAGE_NAME, componentName.packageName)
+        .putString(ARGUMENT_CLASS_NAME, componentName.className)
+        .build()
+
+    return OneTimeWorkRequest.Builder(listenableWorkerClass)
+        .setInputData(data)
         .build()
 }
 
@@ -50,7 +74,7 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
  * @suppress This is internal only, don't show it in the docs.
  */
-class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class PingUploadWorker(context: Context, params: WorkerParameters) : RemoteCoroutineWorker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 
@@ -60,11 +84,14 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
          * @param context the application [Context] to get the [WorkManager] instance for
          */
         internal fun enqueueWorker(context: Context) {
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                PING_WORKER_TAG,
-                ExistingWorkPolicy.KEEP,
-                buildWorkRequest<PingUploadWorker>(PING_WORKER_TAG),
+            val serviceName = RemoteWorkerService::class.java.name
+            val componentName = ComponentName(PACKAGE_NAME, serviceName)
+            val oneTimeWorkRequest = buildOneTimeWorkRemoteWorkRequest(
+                componentName,
+                PingUploadWorker::class.java
             )
+
+            WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
             // Only flush pings immediately if sending to a test endpoint,
             // which means we're probably in instrumented tests.
@@ -97,7 +124,7 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      */
     @OptIn(ExperimentalUnsignedTypes::class)
     @Suppress("ReturnCount")
-    override fun doWork(): Result {
+    override suspend fun doRemoteWork(): Result {
         do {
             when (val action = gleanGetUploadTask()) {
                 is PingUploadTask.Upload -> {

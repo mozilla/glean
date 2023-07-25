@@ -147,6 +147,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle"
     implementation "androidx.lifecycle:lifecycle-process:$versions.androidx_lifecycle"
     implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
+    implementation "androidx.work:work-multiprocess:$versions.androidx_work"
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries

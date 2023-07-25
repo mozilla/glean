@@ -4,5 +4,10 @@
         <activity android:name=".debug.GleanDebugActivity"
             android:launchMode="singleInstance"
             android:exported="true" />
+
+        <service
+            android:name="androidx.work.multiprocess.RemoteWorkerService"
+            android:exported="true"
+            android:process=":gleanUploadWorker" />
     </application>
 </manifest>
