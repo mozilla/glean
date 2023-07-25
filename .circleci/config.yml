@@ -84,6 +84,10 @@ commands:
           command: |
             glean-core/rlb/tests/test-shutdown-blocking.sh
       - run:
+          name: Run Rust RLB crash test
+          command: |
+            glean-core/rlb/tests/test-thread-crashing.sh
+      - run:
           name: Upload coverage report
           command: |
             pip3 install glean_parser
