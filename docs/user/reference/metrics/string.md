@@ -130,6 +130,8 @@ Glean.searchDefault.name.set("wikipedia");
 Get the recorded value for a given string metric.  
 Returns the string if data is stored.  
 Returns a language-specific empty/null value if no data is stored.
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 The recorded value may have been truncated. See ["Limits"](#limits) section above.
 
