@@ -43,6 +43,7 @@ env_logger = { version = "0.10.0", default-features = false, features = ["auto-c
 tempfile = "3.1.0"
 jsonschema-valid = "0.5.0"
 flate2 = "1.0.19"
+libc = "0.2"
 
 [features]
 preinit_million_queue = ["glean-core/preinit_million_queue"]
