@@ -4,6 +4,7 @@
 
 package org.mozilla.samples.gleancore
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,12 @@ open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        // Start the background service to test recording metrics and sending pings in from off
+        // the main process
+        startService(
+            Intent(this, SampleBackgroundProcess::class.java),
+        )
 
         setContentView(binding.root)
 

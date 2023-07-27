@@ -148,6 +148,20 @@ custom:
     notification_emails:
       - CHANGE-ME@test-only.com
     expires: 2
+  bg_counter:
+    type: counter
+    description: |
+      A custom counter incremented in background process
+    lifetime: ping
+    send_in_pings:
+      - background
+    bugs:
+      - https://bugzilla.mozilla.org/1547330
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@test-only.com
+    expires: 2
 
 legacy_ids:
   client_id:
