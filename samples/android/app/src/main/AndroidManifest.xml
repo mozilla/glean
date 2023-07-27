@@ -38,9 +38,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
-        <service android:name=".SampleBackgroundProcess"
-            android:process=":sampleBackgroundProcess" />
 
         <!--
           Sample activity alias for testing.
@@ -50,5 +47,28 @@
             android:targetActivity=".MainActivity"
             android:exported="true">
         </activity-alias>
+
+        <!--
+          Define a background service to test running Glean from off the main process
+        -->
+        <service android:name=".SampleBackgroundProcess"
+            android:process=":sampleBackgroundProcess" />
+
+        <!--
+          Disable default WorkManager initialization so we can use a custom
+          provider in order to test background service operation
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- If you are using androidx.startup to initialize other components -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
     </application>
 </manifest>

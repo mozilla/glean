@@ -154,7 +154,7 @@ custom:
       A custom counter incremented in background process
     lifetime: ping
     send_in_pings:
-      - bg-sample
+      - background
     bugs:
       - https://bugzilla.mozilla.org/1547330
     data_reviews:

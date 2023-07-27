@@ -1,7 +1,6 @@
 package org.mozilla.samples.gleancore
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -14,20 +13,42 @@ import org.mozilla.samples.gleancore.GleanMetrics.Pings
 import java.io.File
 import java.util.Calendar
 
-class SampleBackgroundProcess: Service() {
+/**
+ * A simple sample background service for the purpose of testing Glean running in a background
+ * process. This service records a counter and then submits a ping as it starts.
+ */
+class SampleBackgroundProcess : Service() {
     private var mBinder: Binder = Binder()
 
+    /**
+     * Required override, don't need to do anything here so we
+     * just return a default Binder
+     */
     override fun onBind(p0: Intent?): IBinder? {
+        return mBinder
+    }
+
+    /**
+     * Entry point when the Service gets started by ServiceIntent
+     */
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(TAG, "Service Started by Intent")
+
         initializeGlean()
 
         Custom.bgCounter.add()
         Pings.background.submit()
 
-        return mBinder
+        return super.onStartCommand(intent, flags, startId)
     }
 
+    /**
+     * Initialize Glean for the background process with a custom data path
+     */
     private fun initializeGlean() {
         val customDataPath = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR).path
+        Log.i(TAG, "Initializing Glean on background process with path: $customDataPath")
+
         Glean.registerPings(Pings)
         Glean.initialize(
             applicationContext = this.applicationContext,
@@ -49,17 +70,14 @@ class SampleBackgroundProcess: Service() {
             ),
         )
 
-        Log.i("sample_bg_service", "Initialized Glean in background service")
+        Log.i(TAG, "Initialized Glean in background service")
     }
 
     companion object {
+        // A custom data path to use for the background service
         internal const val GLEAN_DATA_DIR: String = "sample_background_service"
 
-        @JvmStatic
-        fun startService(c: Context) {
-            c.applicationContext.startService(
-                Intent(c.applicationContext, SampleBackgroundProcess::class.java),
-            )
-        }
+        // A log tag for background service log messages
+        internal const val TAG: String = "sample_bg_service"
     }
 }
