@@ -22,6 +22,8 @@ class GleanApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        SampleBackgroundProcess.startService(applicationContext)
+
         // Register the sample application's custom pings.
         Glean.registerPings(Pings)
 

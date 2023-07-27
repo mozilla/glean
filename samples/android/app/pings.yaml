@@ -20,3 +20,13 @@ sample:
     - N/A
   notification_emails:
     - CHANGE-ME@example.com
+background:
+  description: |
+    A sample custom ping sent from the background process.
+  include_client_id: true
+  bugs:
+    - https://bugzilla.mozilla.org/123456789
+  data_reviews:
+    - N/A
+  notification_emails:
+    - CHANGE-ME@example.com

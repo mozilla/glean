@@ -38,6 +38,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <service android:name=".SampleBackgroundProcess"
+            android:process=":sampleBackgroundProcess" />
 
         <!--
           Sample activity alias for testing.
