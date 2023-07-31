@@ -16,16 +16,16 @@ import org.mozilla.samples.gleancore.databinding.ActivityMainBinding
 
 open class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var serviceIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        serviceIntent = Intent(this, SampleBackgroundProcess::class.java)
 
         // Start the background service to test recording metrics and sending pings in from off
         // the main process
-        startService(
-            Intent(this, SampleBackgroundProcess::class.java),
-        )
+        startService(serviceIntent)
 
         setContentView(binding.root)
 
@@ -79,5 +79,10 @@ open class MainActivity : AppCompatActivity() {
         }
 
         Test.timespan.stop()
+    }
+
+    override fun onDestroy() {
+        stopService(serviceIntent)
+        super.onDestroy()
     }
 }

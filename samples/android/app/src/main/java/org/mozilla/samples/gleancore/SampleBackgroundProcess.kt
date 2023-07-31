@@ -18,14 +18,12 @@ import java.util.Calendar
  * process. This service records a counter and then submits a ping as it starts.
  */
 class SampleBackgroundProcess : Service() {
-    private var mBinder: Binder = Binder()
-
     /**
      * Required override, don't need to do anything here so we
      * just return a default Binder
      */
-    override fun onBind(p0: Intent?): IBinder? {
-        return mBinder
+    override fun onBind(intent: Intent?): IBinder {
+        return Binder()
     }
 
     /**
