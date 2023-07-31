@@ -10,6 +10,8 @@
   * `locale` now exposed through the RLB so it can be set by consumers ([2527](https://github.com/mozilla/glean/pull/2527))
 * Python
   * Added the shutdown API for Python to ensure orderly shutdown and waiting for uploader processes ([#2538](https://github.com/mozilla/glean/pull/2538))
+* Kotlin
+  * Move running of upload task when Glean is running in a background service to use the internal Glean Dispatchers rather than WorkManager. [Bug 1844533](https://bugzilla.mozilla.org/show_bug.cgi?id=1844533)
 
 # v53.1.0 (2023-06-28)
 

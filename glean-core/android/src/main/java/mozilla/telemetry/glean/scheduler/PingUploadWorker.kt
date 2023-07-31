@@ -74,6 +74,47 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
         }
 
         /**
+         * Perform the upload task synchronously.
+         *
+         * This will be called from the [doWork] function of the [PingUploadWorker] when Glean is
+         * being run from the main process of an application, but for background services it will
+         * be called from the Glean.Dispatchers couroutine scope to avoid WorkManager complexity
+         * for multi-process applications. See Bug1844533 for more information.
+         *
+         * @param context the application [Context]
+         */
+        @OptIn(ExperimentalUnsignedTypes::class)
+        internal fun performUpload() {
+            do {
+                when (val action = gleanGetUploadTask()) {
+                    is PingUploadTask.Upload -> {
+                        // Upload the ping request.
+                        // If the status is `null` there was some kind of unrecoverable error
+                        // so we return a known unrecoverable error status code
+                        // which will ensure this gets treated as such.
+                        val body = action.request.body.toUByteArray().asByteArray()
+                        val result = Glean.httpClient.doUpload(
+                            action.request.path,
+                            body,
+                            action.request.headers,
+                            Glean.configuration,
+                        )
+
+                        // Process the upload response
+                        when (gleanProcessPingUploadResponse(action.request.documentId, result)) {
+                            UploadTaskAction.NEXT -> continue
+                            UploadTaskAction.END -> break
+                        }
+                    }
+                    is PingUploadTask.Wait -> SystemClock.sleep(action.time.toLong())
+                    is PingUploadTask.Done -> break
+                }
+            } while (true)
+            // Limits are enforced by glean-core to avoid an inifinite loop here.
+            // Whenever a limit is reached, this binding will receive `PingUploadTask.Done` and step out.
+        }
+
+        /**
          * Function to cancel any pending ping upload workers
          *
          * @param context the application [Context] to get the [WorkManager] instance for
@@ -95,38 +136,8 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
      *
      * @return The [androidx.work.ListenableWorker.Result] of the computation
      */
-    @OptIn(ExperimentalUnsignedTypes::class)
-    @Suppress("ReturnCount")
     override fun doWork(): Result {
-        do {
-            when (val action = gleanGetUploadTask()) {
-                is PingUploadTask.Upload -> {
-                    // Upload the ping request.
-                    // If the status is `null` there was some kind of unrecoverable error
-                    // so we return a known unrecoverable error status code
-                    // which will ensure this gets treated as such.
-                    val body = action.request.body.toUByteArray().asByteArray()
-                    val result = Glean.httpClient.doUpload(
-                        action.request.path,
-                        body,
-                        action.request.headers,
-                        Glean.configuration,
-                    )
-
-                    // Process the upload response
-                    val nextAction = gleanProcessPingUploadResponse(action.request.documentId, result)
-                    when (nextAction) {
-                        UploadTaskAction.NEXT -> continue
-                        UploadTaskAction.END -> break
-                    }
-                }
-                is PingUploadTask.Wait -> SystemClock.sleep(action.time.toLong())
-                is PingUploadTask.Done -> break
-            }
-        } while (true)
-        // Limits are enforced by glean-core to avoid an inifinite loop here.
-        // Whenever a limit is reached, this binding will receive `PingUploadTask.Done` and step out.
-
+        performUpload()
         return Result.success()
     }
 }

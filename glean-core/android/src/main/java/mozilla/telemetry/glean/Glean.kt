@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.net.BaseUploader
 import mozilla.telemetry.glean.scheduler.GleanLifecycleObserver
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
+import mozilla.telemetry.glean.scheduler.PingUploadWorker.Companion.performUpload
 import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.calendarToDatetime
 import mozilla.telemetry.glean.utils.canWriteToDatabasePath
@@ -59,7 +60,16 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     }
 
     override fun triggerUpload() {
-        PingUploadWorker.enqueueWorker(glean.applicationContext)
+        if (!glean.isCustomDataPath) {
+            PingUploadWorker.enqueueWorker(glean.applicationContext)
+        } else {
+            // WorkManager wants to run on the main thread/process typically, so when Glean is
+            // running in a background process we will instead just use the internal Glean
+            // coroutine dispatcher to run the upload task.
+            Dispatchers.API.executeTask {
+                performUpload()
+            }
+        }
     }
 
     override fun startMetricsPingScheduler(): Boolean {

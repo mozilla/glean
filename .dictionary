@@ -1,4 +1,4 @@
-personal_ws-1.1 en 267 utf-8
+personal_ws-1.1 en 268 utf-8
 AAR
 AARs
 ABI
@@ -98,6 +98,7 @@ VPN
 Wasm
 WebRender
 Webpack
+WorkManager
 XCFramework
 Xcode
 YAML
