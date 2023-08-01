@@ -162,11 +162,23 @@ criteria = "safe-to-deploy"
 delta = "1.0.150 -> 1.0.160"
 notes = "Small API improvements, fixing broken code generation for edge cases and updating to syn v2"
 
+[[audits.serde]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.163 -> 1.0.179"
+notes = "Internal refactorings and some new trait implementations"
+
 [[audits.serde_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.150 -> 1.0.160"
 notes = "Update of syn dependency and thus largely changes to adopt the newer API"
+
+[[audits.serde_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.163 -> 1.0.179"
+notes = "Internal refactorings and dependency updates"
 
 [[audits.syn]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -179,3 +191,9 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.8 -> 1.0.9"
 notes = "Dependency updates only"
+
+[[audits.uuid]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.3.0 -> 1.4.1"
+notes = "Internal refactoring, new target support"
