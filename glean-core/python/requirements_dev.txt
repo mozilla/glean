@@ -9,7 +9,7 @@ pdoc3==0.10.0
 pip
 pytest-localserver==0.8.0
 MarkupSafe==2.0.1
-pytest-runner==5.3.1
+pytest-runner==6.0.0
 pytest==7.0.1
 semver==2.13.0
 setuptools-git==1.2
