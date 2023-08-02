@@ -103,11 +103,22 @@ criteria = "safe-to-run"
 delta = "0.1.26 -> 0.2.2"
 notes = "Dependency updates only"
 
+[[audits.ctor]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.2.2 -> 0.2.4"
+
 [[audits.inherent]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.5 -> 1.0.7"
 notes = "Dependency updates only"
+
+[[audits.inherent]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.7 -> 1.0.9"
+notes = "Dependency updates"
 
 [[audits.log]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -121,11 +132,23 @@ criteria = "safe-to-deploy"
 delta = "1.0.57 -> 1.0.59"
 notes = "Enabled on Wasm"
 
+[[audits.proc-macro2]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.63 -> 1.0.66"
+notes = "Removed special support for some really old Rust versions"
+
 [[audits.quote]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.27 -> 1.0.28"
 notes = "Enabled on wasm targets"
+
+[[audits.quote]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.28 -> 1.0.31"
+notes = "Minimal changes and removal of the build.rs"
 
 [[audits.scroll_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -139,14 +162,38 @@ criteria = "safe-to-deploy"
 delta = "1.0.150 -> 1.0.160"
 notes = "Small API improvements, fixing broken code generation for edge cases and updating to syn v2"
 
+[[audits.serde]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.163 -> 1.0.179"
+notes = "Internal refactorings and some new trait implementations"
+
 [[audits.serde_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.150 -> 1.0.160"
 notes = "Update of syn dependency and thus largely changes to adopt the newer API"
 
+[[audits.serde_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.163 -> 1.0.179"
+notes = "Internal refactorings and dependency updates"
+
+[[audits.syn]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "2.0.18 -> 2.0.26"
+notes = "Dependency update & internal refactorings"
+
 [[audits.unicode-ident]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.8 -> 1.0.9"
 notes = "Dependency updates only"
+
+[[audits.uuid]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.3.0 -> 1.4.1"
+notes = "Internal refactoring, new target support"

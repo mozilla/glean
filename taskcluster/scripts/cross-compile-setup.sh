@@ -35,7 +35,7 @@ export TARGET_CFLAGS="-DNDEBUG"
 #
 # To update:
 # * Go to https://firefox-ci-tc.services.mozilla.com/tasks/index/gecko.cache.level-3.toolchains.v3
-# * Find the tasks for `linux64-clang-12-macosx-cross` and `linux64-cctools-port-clang-12` (or higher Clang version)
+# * Find the tasks for `clang-dist-toolchain` and `linux64-cctools-port`
 # * Per task, follow the link to the latest indexed task
 # * In the detail view, click "View Task"
 # * In the task view, click "See more"
@@ -45,13 +45,14 @@ export TARGET_CFLAGS="-DNDEBUG"
 #   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
 pushd /builds/worker
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port-clang-12.hash.247392feb5811691ce42b7469f957956282c88d39a7e507f1852bae68f407548/artifacts/public/build/cctools.tar.xz > cctools.tar.xz
-tar -xf cctools.tar.xz
-rm cctools.tar.xz
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port.hash.bec815dd1e64cd75ba803c1f002c646e151c784d804791bffbc23b2ae41f545f/artifacts/public/build/cctools.tar.zst > cctools.tar.zst
+tar -I zstd -xf cctools.tar.zst
+rm cctools.tar.zst
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-clang-12-macosx-cross.hash.985aa3998f3e6ebcaa4baf70df7dd5e265d9a8d59fa551fd7bdd5d9030224070/artifacts/public/build/clang.tar.zst > clang.tar.zst
-tar -I zstd -xf clang.tar.zst
-rm clang.tar.zst
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.clang-dist-toolchain.hash.9e5dd392eefd9eb1ef3ff7aa40d2823f60b280cb54d716e0f85f0b50573e0d69/artifacts/public/build/clang-dist-toolchain.tar.xz > clang-dist-toolchain.tar.xz
+tar -xf clang-dist-toolchain.tar.xz
+mv builds/worker/toolchains/clang clang
+rm clang-dist-toolchain.tar.xz
 popd
 
 pushd /tmp

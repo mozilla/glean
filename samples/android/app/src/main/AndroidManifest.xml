@@ -47,5 +47,11 @@
             android:targetActivity=".MainActivity"
             android:exported="true">
         </activity-alias>
+
+        <!--
+          Define a background service to test running Glean from off the main process
+        -->
+        <service android:name=".SampleBackgroundProcess"
+            android:process=":sampleBackgroundProcess" />
     </application>
 </manifest>

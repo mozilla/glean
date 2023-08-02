@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # This file defines the built-in pings that are recorded by the Glean SDK. They
-# are automatically converted to Rust code at build time using the
+# are automatically converted to Python code at run time using the
 # `glean_parser` PyPI package.
 
 ---

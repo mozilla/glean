@@ -28,10 +28,6 @@ audit-as-crates-io = false
 [policy.sample]
 audit-as-crates-io = false
 
-[[exemptions.adler]]
-version = "1.0.2"
-criteria = "safe-to-deploy"
-
 [[exemptions.android_log-sys]]
 version = "0.2.0"
 criteria = "safe-to-deploy"
