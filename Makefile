@@ -5,7 +5,6 @@ help:
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 GLEAN_PYENV := $(abspath $(shell python3 -c "import sys; print('.venv' + '.'.join(str(x) for x in sys.version_info[:2]))"))
-GLEAN_PYDEPS := ${GLEAN_PYDEPS}
 # Read the `GLEAN_BUILD_VARIANT` variable, default to debug.
 # If set it is passed as a flag to cargo, so we prefix it with `--`
 ifeq ($(GLEAN_BUILD_VARIANT),)
@@ -26,11 +25,6 @@ $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
 	$(GLEAN_PYENV)/bin/pip install --upgrade pip wheel setuptools
 	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
-	sh -c "if [ \"$(GLEAN_PYDEPS)\" = \"min\" ]; then \
-		$(GLEAN_PYENV)/bin/pip install requirements-builder; \
-		$(GLEAN_PYENV)/bin/requirements-builder --level=min glean-core/python/setup.py > min_requirements.txt; \
-		$(GLEAN_PYENV)/bin/pip install -r min_requirements.txt; \
-	fi"
 
 # All builds
 
