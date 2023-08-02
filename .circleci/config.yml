@@ -726,17 +726,6 @@ jobs:
       - checkout
       - test-python
 
-  Python 3_9 tests minimum dependencies:
-    docker:
-      - image: cimg/python:3.9
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - run:
-          command: |
-            echo "export GLEAN_PYDEPS=min" >> $BASH_ENV
-      - test-python
-
   Python 3_9 on Alpine tests:
     docker:
       - image: python:3.9-alpine
@@ -1096,8 +1085,6 @@ workflows:
       - Python 3_8 tests:
           filters: *ci-filters
       - Python 3_9 tests:
-          filters: *ci-filters
-      - Python 3_9 tests minimum dependencies:
           filters: *ci-filters
       - Python 3_9 on Alpine tests:
           filters: *ci-filters
