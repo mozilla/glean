@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v53.2.0...main)
+
+# v53.2.0 (2023-08-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v53.1.0...v53.2.0)
 
 * General
   * Update `glean_parser` to v8.1.0. Subsequently, metric names now have a larger limit of 70 characters ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v8.1.0))
