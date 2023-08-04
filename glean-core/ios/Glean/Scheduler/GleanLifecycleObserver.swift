@@ -23,9 +23,11 @@ class GleanLifecycleObserver {
             object: nil
         )
 
-        // We handle init the same as an foreground event,
+        // We handle init the same as an foreground event if the app is in the foreground,
         // as we won't get the enter-foreground notification.
-        Glean.shared.handleForegroundEvent()
+        if UIApplication.shared.applicationState == .active {
+            Glean.shared.handleForegroundEvent()
+        }
     }
 
     @objc func appWillEnterForeground(notification _: NSNotification) {
