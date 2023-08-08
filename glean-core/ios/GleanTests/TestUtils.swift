@@ -50,46 +50,11 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 /// This also prevents outgoing network requests during unit tests while
 /// still allowing us to use the default telemetry endpoint.
 func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearStores: Bool = true) {
-    let expectation = testCase.expectation(description: "\(tag): Ping Received")
-
-    // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
-    // outgoing network requests and prevent actual requests being made from tests.
-    // We wait for 2 pings, in this order:
-    //
-    // 1. baseline ping with reason "dirty-startup"
-    // 2. baseline ping with reason "active"
-    //
-    // Once we received the "active" baseline ping we're good to go.
-    // All subsequent pings should be from the test itself.
-    stubServerReceive { pingType, json in
-        if pingType != "baseline" {
-            return
-        }
-        let pingInfo = json?["ping_info"] as? [String: Any]
-        let reason = pingInfo?["reason"] as? String
-        if reason != "active" {
-            return
-        }
-
-        // Fulfill test's expectation once we parsed the incoming data.
-        DispatchQueue.main.async {
-            // Let the response get processed before we mark the expectation fulfilled
-            expectation.fulfill()
-        }
-    }
-
-    // We may recieve more than one ping, using this function means we don't care about any of them
-    expectation.assertForOverFulfill = false
-
     // Force NO overdue metrics ping. We only expect baseline pings.
     let mps = MetricsPingScheduler(true)
     mps.updateSentDate(Date())
 
     Glean.shared.resetGlean(clearStores: clearStores)
-
-    testCase.waitForExpectations(timeout: 5.0) { error in
-        XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
-    }
 
     // In case this isn't the first test, there might be pending operations.
     // We wait for them to finish, so they don't clutter the next tests.
