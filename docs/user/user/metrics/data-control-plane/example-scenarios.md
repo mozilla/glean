@@ -25,6 +25,8 @@ Through [Nimbus], we have the ability to sample the population by setting the au
 
 This can be used to slowly roll out instrumentations to the population in order to validate the data we are collecting before measuring the entire population and potentially avoiding costs and  overhead by collecting data that isn’t useful.
 
+> *Note:* this functionality is intended to be used to _sample metrics for a subset of the population_, not for turning metrics on for the entire population. To do that you can just enable the metrics by default by setting `disabled: false` in the metrics.yaml. Then you can "down-sample" if necessary (see Scenario 2 below).
+
 ## Scenario 2
 
 > *Landing a metric that is enabled by default and then disabling it for a segment of the population*
