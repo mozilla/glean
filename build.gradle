@@ -11,7 +11,7 @@ buildscript {
     // changing them. Please note that, for using in Android-Components, the
     // versions below must match the ones in that repository.
     ext.versions = [
-        android_gradle_plugin: '8.0.2',
+        android_gradle_plugin: '8.3.0-rc02',
         coroutines: '1.7.2',
         jna: '5.14.0',
         junit: '4.13.2',
@@ -144,22 +144,10 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-
     // Kotlin settings applicable to all modules.
     afterEvaluate {
-        if (it.hasProperty('android')) {
-            android {
-                // This shouldn't be needed anymore with AGP 8.1.0+
-                // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-                compileOptions {
-                    sourceCompatibility rootProject.ext.build.jvmTargetCompatibility
-                    targetCompatibility rootProject.ext.build.jvmTargetCompatibility
-                }
-            }
-        }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
-            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
