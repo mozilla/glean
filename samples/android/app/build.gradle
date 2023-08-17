@@ -9,6 +9,10 @@ plugins {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
+}
+
 android {
     namespace "org.mozilla.samples.gleancore"
     compileSdkVersion rootProject.ext.build.compileSdkVersion
