@@ -32,6 +32,7 @@ import Glean
 
 Glean.shared.setDebugViewTag("my-tag")
 ```
+
 </div>
 <div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
