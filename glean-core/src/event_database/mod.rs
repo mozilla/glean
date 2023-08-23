@@ -285,7 +285,7 @@ impl EventDatabase {
         {
             let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
             for store_name in meta.inner.send_in_pings.iter() {
-                let store = db.entry(store_name.to_string()).or_insert_with(Vec::new);
+                let store = db.entry(store_name.to_string()).or_default();
                 let execution_counter = CounterMetric::new(CommonMetricData {
                     name: "execution_counter".into(),
                     category: store_name.into(),
