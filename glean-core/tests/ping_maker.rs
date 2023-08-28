@@ -75,6 +75,27 @@ fn get_client_info_must_report_all_the_available_data() {
 }
 
 #[test]
+fn test_metrics_must_report_experimentation_id() {
+    let (glean, ping_maker, ping_type, _t) = set_up_basic_ping();
+
+    // Set an expermentation id annotation
+    glean.set_experimentation_id("test-experimentation-id".to_string());
+
+    let ping = ping_maker
+        .collect(&glean, &ping_type, None, "", "")
+        .unwrap();
+    let metrics = ping.content["metrics"].as_object().unwrap();
+    let strings = metrics["string"].as_object().unwrap();
+    assert_eq!(
+        strings["client.annotation.experimentation_id"]
+            .as_str()
+            .unwrap(),
+        "test-experimentation-id",
+        "experimentation ids must match"
+    );
+}
+
+#[test]
 fn collect_must_report_none_when_no_data_is_stored() {
     // NOTE: This is a behavior change from glean-ac which returned an empty
     // string in this case. As this is an implementation detail and not part of

@@ -855,6 +855,25 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
 }
 
+/// An experimentation identifier derived and provided by the application
+/// for the purpose of enrollment and unification of telemetry across a
+/// client/server application.
+///
+/// Glean will add this experimentation id annotation to along with all pings
+/// that are sent. This information is not persisted between runs.
+///
+/// See [`core::Glean::set_experimentation_id`].
+pub fn glean_set_experimentation_id(experimentation_id: String) {
+    launch_with_glean(|glean| glean.set_experimentation_id(experimentation_id))
+}
+
+/// TEST ONLY FUNCTION.
+/// Gets stored experimenation id annotation.
+pub fn glean_test_get_experimentation_id() -> Option<String> {
+    block_on_dispatcher();
+    core::with_glean(|glean| glean.test_get_experimentation_id())
+}
+
 /// Sets a remote configuration to override metrics' default enabled/disabled
 /// state
 ///

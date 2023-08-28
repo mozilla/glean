@@ -178,6 +178,30 @@ fn experiments_status_is_correctly_toggled() {
 }
 
 #[test]
+fn experimentation_id_is_set_correctly() {
+    let t = tempfile::tempdir().unwrap();
+    let name = t.path().display().to_string();
+    let glean = Glean::with_options(&name, "org.mozilla.glean.tests", true);
+
+    // Define an experimentation id to test
+    let experimentation_id = "test-experimentation-id";
+
+    // Set the experimentation identifier
+    glean.set_experimentation_id(experimentation_id.into());
+
+    // Check that the correct value was stored
+    if let Some(exp_id) = glean
+        .additional_metrics
+        .experimentation_id
+        .get_value(&glean, "all-pings")
+    {
+        assert_eq!(exp_id, experimentation_id, "Experimentation ids must match");
+    } else {
+        panic!("The experimentation id must not be `None`");
+    }
+}
+
+#[test]
 fn client_id_and_first_run_date_must_be_regenerated() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();

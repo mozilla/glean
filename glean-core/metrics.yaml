@@ -394,6 +394,25 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+client.annotation:
+  experimentation_id:
+    type: string
+    lifetime: application
+    send_in_pings:
+      - all-pings
+    description: |
+      An experimentation identifier derived and provided by the application
+      for the purpose of experimenation enrollment.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.error:
   invalid_value:
     type: labeled_counter

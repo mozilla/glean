@@ -27,6 +27,10 @@ pub struct AdditionalMetrics {
 
     /// Time waited for the dispatcher to unblock during shutdown.
     pub shutdown_dispatcher_wait: TimingDistributionMetric,
+
+    /// An experimentation identifier derived and provided by the application
+    /// for the purpose of experimentation enrollment.
+    pub experimentation_id: StringMetric,
 }
 
 impl CoreMetrics {
@@ -112,6 +116,15 @@ impl AdditionalMetrics {
                 },
                 TimeUnit::Millisecond,
             ),
+
+            experimentation_id: StringMetric::new(CommonMetricData {
+                name: "experimentation_id".into(),
+                category: "client.annotation".into(),
+                send_in_pings: vec!["all-pings".into()],
+                lifetime: Lifetime::Application,
+                disabled: false,
+                dynamic_label: None,
+            }),
         }
     }
 }

@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
@@ -718,6 +722,31 @@ impl Glean {
     pub fn test_get_experiment_data(&self, experiment_id: String) -> Option<RecordedExperiment> {
         let metric = ExperimentMetric::new(self, experiment_id);
         metric.test_get_value(self)
+    }
+
+    /// Set an experimentation identifier derived and provided by the application
+    /// for the purpose of enrollment and unification of telemetry across a
+    /// client/server application.
+    ///
+    /// Glean will add this experimentation id annotation to along with all pings
+    /// that are sent. This information is not persisted between runs.
+    ///
+    /// # Arguments
+    ///
+    /// * `experimentation_id` - The experimentation id annotation.
+    pub fn set_experimentation_id(&self, experimentation_id: String) {
+        self.additional_metrics
+            .experimentation_id
+            .set_sync(self, experimentation_id);
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets stored experimenation id annotation.
+    pub fn test_get_experimentation_id(&self) -> Option<String> {
+        self.additional_metrics
+            .experimentation_id
+            .get_value(self, None)
     }
 
     /// Set configuration to override the default metric enabled/disabled state, typically from a
