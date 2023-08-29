@@ -185,6 +185,59 @@ FOG.setExperimentInactive("blue-button-effective");
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `setExperimentationId`
+
+Set an experimentation enrollment identifier that is derived and provided by the application.
+This can be useful for the purpose unification of telemetry across a client/server experiment.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+Glean.setExperimentationId("alpha-beta-gamma-delta")
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Glean.shared.setExperimentationId(experimentationId: "alpha-beta-gamma-delta")
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+Glean.set_experimentation_id("alpha-beta-gamma-delta")
+```
+</div>
+
+<div data-lang="JavaScript" class="tab" data-bug="1850323"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+glean_set_experimentation_id("alpha-beta-gamma-delta".to_string());
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab" data-bug="1850479"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Limits
+
+The experimentation ID is subject to the same limitations as a `StringMetricType`.
+
+#### Recorded errors
+
+The experimentation ID will produce the same errors as a `StringMetricType`.
+
 ## Testing API
 
 ### `testIsExperimentActive`
@@ -305,8 +358,61 @@ Assert.equals(
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `testGetExperimentationId`
+
+Returns the current Experimentation ID, if any.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+assertEquals("alpha-beta-gamma-delta", Glean.testGetExperimentationId())
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+XCTAssertEqual(
+  "alpha-beta-gamma-delta",
+  Glean.shared.testGetExperimentationId()!,
+  "Experimenatation ids must match"
+)
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
+```
+</div>
+
+<div data-lang="JavaScript" class="tab" data-bug="1850323"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+assert_eq!(
+  "alpha-beta-gamma-delta".to_string(),
+  glean_test_get_experimentation_id(),
+  "Experimentation id must match"
+);
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab" data-bug="1850479"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
 * [Python API docs](../../../python/glean/metrics/quantity.html)
 * [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
+* [String Metric Type](../metrics/string.md)

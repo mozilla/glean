@@ -406,7 +406,7 @@ client.annotation:
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201
     data_reviews:
-      - TBD
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201#c5
     data_sensitivity:
       - technical
     notification_emails:
