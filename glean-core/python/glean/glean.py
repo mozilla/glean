@@ -405,6 +405,35 @@ class Glean:
             raise RuntimeError("Experiment data is not set")
 
     @classmethod
+    def set_experimentation_id(cls, experimentation_id: str) -> None:
+        """
+        Set an experimentation identifier derived and provided by the application
+        for the purpose of enrollment and unification of telemetry across a
+        client/server experiment.
+
+        Note: Glean will add this experimentation id annotation to all pings that
+        are sent, and the experimentation id is not persisted between runs.
+
+        Args:
+            experimentation_id (str): The experimentation id to annotate all pings with.
+        """
+        _uniffi.glean_set_experimentation_id(experimentation_id)
+
+    @classmethod
+    def test_get_experimentation_id(cls) -> str:
+        """
+        Returns the stored experimentation id, for testing purposes only.
+
+        Returns:
+            experimentation_id (str): The experimentation id set by the client.
+        """
+        experimentation_id = _uniffi.glean_test_get_experimentation_id()
+        if experimentation_id is not None:
+            return experimentation_id
+        else:
+            raise RuntimeError("Experimentation id is not set")
+
+    @classmethod
     def handle_client_active(cls):
         """
         Performs the collection/cleanup operations required by becoming active.
