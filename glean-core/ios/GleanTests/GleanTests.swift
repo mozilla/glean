@@ -103,6 +103,15 @@ class GleanTests: XCTestCase {
         )
     }
 
+    func testGleanExperimentationIdIsSet() {
+        Glean.shared.setExperimentationId(experimentationId: "alpha-beta-gamma-delta")
+        XCTAssertEqual(
+            "alpha-beta-gamma-delta",
+            Glean.shared.testGetExperimentationId()!,
+            "Experimenatation ids must match"
+        )
+    }
+
     func testGleanIsNotInitializedFromOtherProcesses() {
         // Check to see if Glean is initialized
         XCTAssert(Glean.shared.isInitialized())

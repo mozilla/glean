@@ -276,6 +276,28 @@ public class Glean {
         return gleanTestGetExperimentData(experimentId)
     }
 
+    /// Set an experimentation identifier derived and provided by the application
+    /// for the purpose of enrollment and unification of telemetry across a
+    /// client/server experiment.
+    ///
+    /// Note: Glean will add this experimentation id annotation to all pings that
+    /// are sent, and the experimentation id is not persisted between runs.
+    ///
+    /// - parameters:
+    ///     * experimentationId: the experimentation id annotation to set.
+    public func setExperimentationId(experimentationId: String) {
+        return gleanSetExperimentationId(experimentationId)
+    }
+
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Returns the stored experimentation id, for testing purposes only.
+    ///
+    /// - returns: the 'String' experimentation id if set, and `nil` otherwise.
+    public func testGetExperimentationId() -> String? {
+        return gleanTestGetExperimentationId()
+    }
+
     /// Returns true if the Glean SDK has been initialized.
     func isInitialized() -> Bool {
         return self.initialized
