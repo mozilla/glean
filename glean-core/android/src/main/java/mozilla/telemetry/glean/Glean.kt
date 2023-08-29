@@ -356,6 +356,31 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Set an experimentation identifier derived and provided by the application
+     * for the purpose of enrollment and unification of telemetry across a
+     * client/server experiment.
+     *
+     * Note: Glean will add this experimentation id annotation to all pings that
+     * are sent, and the experimentation id is not persisted between runs.
+     *
+     * @param experimentationId the experimentation id annotation to set.
+     */
+    fun setExperimentationId(experimentationId: String) {
+        return gleanSetExperimentationId(experimentationId)
+    }
+
+    /**
+     * Returns the stored experimentation id, for testing purposes only.
+     *
+     * @return the [String] experimentation id
+     * @throws [NullPointerException] if no experimentation id is set.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetExperimentationId(): String {
+        return gleanTestGetExperimentationId() ?: throw NullPointerException("Experimentation Id is not set")
+    }
+
+    /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
     internal fun getClientInfo(configuration: Configuration, buildInfo: BuildInfo): ClientInfoMetrics {

@@ -176,6 +176,12 @@ class GleanTest {
         assertFalse(Glean.testIsExperimentActive("experiment_preinit_disabled"))
     }
 
+    @Test
+    fun `test experimentation id recording`() {
+        Glean.setExperimentationId("alpha-beta-gamma-delta")
+        assertEquals("alpha-beta-gamma-delta", Glean.testGetExperimentationId())
+    }
+
     // Suppressing our own deprecation before we move over to the new event recording API.
     @Test
     @Suppress("ComplexMethod", "LongMethod", "NestedBlockDepth", "DEPRECATION")
