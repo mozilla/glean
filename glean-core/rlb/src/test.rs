@@ -9,6 +9,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
+use glean_core::{glean_set_experimentation_id, glean_test_get_experimentation_id};
 use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
@@ -140,6 +141,24 @@ fn test_experiments_recording_before_glean_inits() {
     assert!(!test_is_experiment_active(
         "experiment_preinit_disabled".to_string()
     ));
+}
+
+#[test]
+fn test_experimentation_id_recording() {
+    let _lock = lock_test();
+    let _t = new_glean(None, true);
+
+    glean_set_experimentation_id("alpha-beta-gamma-delta".into());
+
+    if let Some(exp_id) = glean_test_get_experimentation_id() {
+        assert_eq!(
+            "alpha-beta-gamma-delta".to_string(),
+            exp_id,
+            "Experimentation id must match"
+        );
+    } else {
+        panic!("Experimentation id must not be None");
+    }
 }
 
 #[test]

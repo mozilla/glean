@@ -171,6 +171,24 @@ pub fn set_experiment_inactive(experiment_id: String) {
     glean_core::glean_set_experiment_inactive(experiment_id)
 }
 
+/// An experimentation identifier derived and provided by the application
+/// for the purpose of enrollment and unification of telemetry across a
+/// client/server application.
+///
+/// Glean will add this experimentation id annotation to along with all pings
+/// that are sent. This information is not persisted between runs.
+///
+/// See [`glean_core::Glean::set_experimentation_id`].
+pub fn set_experimenation_id(experimentation_id: String) {
+    glean_core::glean_set_experimentation_id(experimentation_id)
+}
+
+/// TEST ONLY FUNCTION.
+/// Gets stored experimenation id annotation.
+pub fn test_get_experimentation_id() -> Option<String> {
+    glean_core::glean_test_get_experimentation_id()
+}
+
 /// Set the remote configuration values for the metrics' disabled property
 ///
 /// See [`glean_core::Glean::set_metrics_enabled_config`].
