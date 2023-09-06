@@ -87,7 +87,7 @@ fn test_metrics_must_report_experimentation_id() {
     let metrics = ping.content["metrics"].as_object().unwrap();
     let strings = metrics["string"].as_object().unwrap();
     assert_eq!(
-        strings["client.annotation.experimentation_id"]
+        strings["glean.client.annotation.experimentation_id"]
             .as_str()
             .unwrap(),
         "test-experimentation-id",

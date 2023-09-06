@@ -394,7 +394,7 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
-client.annotation:
+glean.client.annotation:
   experimentation_id:
     type: string
     lifetime: application

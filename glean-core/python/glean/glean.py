@@ -407,15 +407,13 @@ class Glean:
     @classmethod
     def set_experimentation_id(cls, experimentation_id: str) -> None:
         """
-        Set an experimentation identifier derived and provided by the application
-        for the purpose of enrollment and unification of telemetry across a
-        client/server experiment.
+        Set an experimentation identifier.
 
-        Note: Glean will add this experimentation id annotation to all pings that
-        are sent, and the experimentation id is not persisted between runs.
+        Note: Glean will add this experimentation id to all pings that are sent,
+        and the experimentation id is not persisted between runs.
 
         Args:
-            experimentation_id (str): The experimentation id to annotate all pings with.
+            experimentation_id (str): The experimentation id to set.
         """
         _uniffi.glean_set_experimentation_id(experimentation_id)
 

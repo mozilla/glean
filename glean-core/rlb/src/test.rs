@@ -150,15 +150,12 @@ fn test_experimentation_id_recording() {
 
     glean_set_experimentation_id("alpha-beta-gamma-delta".into());
 
-    if let Some(exp_id) = glean_test_get_experimentation_id() {
-        assert_eq!(
-            "alpha-beta-gamma-delta".to_string(),
-            exp_id,
-            "Experimentation id must match"
-        );
-    } else {
-        panic!("Experimentation id must not be None");
-    }
+    let exp_id = glean_test_get_experimentation_id().expect("Experimentation id must not be None");
+    assert_eq!(
+        "alpha-beta-gamma-delta".to_string(),
+        exp_id,
+        "Experimentation id must match"
+    );
 }
 
 #[test]
