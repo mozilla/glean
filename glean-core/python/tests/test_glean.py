@@ -613,6 +613,52 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     assert 0 == len(safe_httpserver.requests)
 
 
+def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+
+    Glean.set_experimentation_id("alpha-beta-gamma-delta")
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+        ),
+    )
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+        ),
+    )
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert "deletion-request" == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
+
+    assert {
+        "glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"
+    } == json_content["metrics"]["string"]
+
+
 def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 

@@ -757,6 +757,74 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
 }
 
 #[test]
+fn deletion_request_ping_contains_experimentation_id() {
+    let _lock = lock_test();
+
+    let (s, r) = crossbeam_channel::bounded::<JsonValue>(1);
+
+    // Define a fake uploader that reports back the submission URL
+    // using a crossbeam channel.
+    #[derive(Debug)]
+    pub struct FakeUploader {
+        sender: crossbeam_channel::Sender<JsonValue>,
+    }
+    impl net::PingUploader for FakeUploader {
+        fn upload(
+            &self,
+            _url: String,
+            body: Vec<u8>,
+            _headers: Vec<(String, String)>,
+        ) -> net::UploadResult {
+            let mut gzip_decoder = GzDecoder::new(&body[..]);
+            let mut body_str = String::with_capacity(body.len());
+            let data: JsonValue = gzip_decoder
+                .read_to_string(&mut body_str)
+                .ok()
+                .map(|_| &body_str[..])
+                .or_else(|| std::str::from_utf8(&body).ok())
+                .and_then(|payload| serde_json::from_str(payload).ok())
+                .unwrap();
+            self.sender.send(data).unwrap();
+            net::UploadResult::http_status(200)
+        }
+    }
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), GLOBAL_APPLICATION_ID)
+        .with_server_endpoint("invalid-test-host")
+        .build();
+
+    let _t = new_glean(Some(cfg), true);
+
+    glean_core::glean_set_experimentation_id("alpha-beta-gamma-delta".to_string());
+
+    // Now reset Glean and disable upload: it should still send a deletion request
+    // ping even though we're just starting.
+    test_reset_glean(
+        ConfigurationBuilder::new(false, tmpname, GLOBAL_APPLICATION_ID)
+            .with_server_endpoint("invalid-test-host")
+            .with_uploader(FakeUploader { sender: s })
+            .build(),
+        ClientInfoMetrics::unknown(),
+        false,
+    );
+
+    // Wait for the ping to arrive and check the experimentation id matches
+    let url = r.recv().unwrap();
+    let metrics = url.get("metrics").unwrap();
+    let strings = metrics.get("string").unwrap();
+    assert_eq!(
+        "alpha-beta-gamma-delta",
+        strings
+            .get("glean.client.annotation.experimentation_id")
+            .unwrap()
+    );
+}
+
+#[test]
 fn test_sending_of_startup_baseline_ping_with_application_lifetime_metric() {
     let _lock = lock_test();
 

@@ -147,4 +147,24 @@ class DeletionRequestPingTests: XCTestCase {
         let clientId = clientInfo["client_id"] as! String
         XCTAssertEqual(clientId, "test-only")
     }
+
+    func testDeletionRequestPingsContainExperimentationId() {
+        Glean.shared.resetGlean(clearStores: true)
+
+        setupHttpResponseStub("deletion-request")
+        expectation = expectation(description: "Completed upload")
+
+        Glean.shared.setExperimentationId(experimentationId: "alpha-beta-gamma-delta")
+
+        Glean.shared.setUploadEnabled(false)
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        let metrics = lastPingJson!["metrics"] as! [String: Any]
+        let strings = metrics["string"] as! [String: Any]
+        let experimentationId = strings["glean.client.annotation.experimentation_id"] as! String
+        XCTAssertEqual(experimentationId, "alpha-beta-gamma-delta")
+    }
 }
