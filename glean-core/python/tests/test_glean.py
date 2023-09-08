@@ -177,6 +177,17 @@ def test_experiments_recording_before_glean_inits():
     assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
 
 
+def test_exeperimentation_id_recording():
+    Glean._reset()
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Configuration(experimentation_id="alpha-beta-gamma-delta"),
+    )
+    assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
+
+
 @pytest.mark.skip
 def test_sending_of_background_pings():
     pass
