@@ -470,7 +470,8 @@ fn with_event_timestamps() {
         trim_data_to_registered_pings: false,
         log_level: None,
         rate_limit: None,
-        enable_event_timestamps: true, // Enabling event timestamps
+        enable_event_timestamps: true,
+        experimentation_id: None, // Enabling event timestamps
     };
     let glean = Glean::new(cfg).unwrap();
 

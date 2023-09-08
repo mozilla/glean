@@ -71,6 +71,7 @@ for more information on how and when the use this feature.
 - `rateLimit`: Optional.
   Specifies the maximum number of pings that can be uploaded per interval of a specified number of seconds.
   Default is to use the SDK default (presently 15 pings per 60s interval).
+- `experimentationId`: Optional identifier derived by the application to be sent in all pings for the purpose of experimentation. See the experiments API documentation for more information.
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 

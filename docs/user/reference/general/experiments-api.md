@@ -185,6 +185,20 @@ FOG.setExperimentInactive("blue-button-effective");
 
 {{#include ../../../shared/tab_footer.md}}
 
+### Set an experimentation identifier
+
+An experimentation enrollment identifier that is derived and provided by the application can be set through the configuration object passed into the `initialize` function. See the section on [Initializing Glean](initializing.md) for more information on how to set this within the `Configuration` object.
+
+This identifier will be set during initialization and sent along with all pings sent by Glean, unless that ping is has opted out of sending the client_id. This identifier is not persisted by Glean and must be persisted by the application if necessary for it to remain consistent between runs.
+
+#### Limits
+
+The experimentation ID is subject to the same limitations as a `StringMetricType`.
+
+#### Recorded errors
+
+The experimentation ID will produce the same errors as a `StringMetricType`.
+
 ## Testing API
 
 ### `testIsExperimentActive`
@@ -305,8 +319,61 @@ Assert.equals(
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `testGetExperimentationId`
+
+Returns the current Experimentation ID, if any.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+assertEquals("alpha-beta-gamma-delta", Glean.testGetExperimentationId())
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+XCTAssertEqual(
+  "alpha-beta-gamma-delta",
+  Glean.shared.testGetExperimentationId()!,
+  "Experimenatation ids must match"
+)
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
+```
+</div>
+
+<div data-lang="JavaScript" class="tab" data-bug="1850323"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+assert_eq!(
+  "alpha-beta-gamma-delta".to_string(),
+  glean_test_get_experimentation_id(),
+  "Experimentation id must match"
+);
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab" data-bug="1850479"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
 * [Python API docs](../../../python/glean/metrics/quantity.html)
 * [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
+* [String Metric Type](../metrics/string.md)

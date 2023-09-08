@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
@@ -115,6 +119,7 @@ where
 ///     log_level: None,
 ///     rate_limit: None,
 ///     enable_event_timestamps: false,
+///     experimentation_id: None,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, vec![]);
@@ -243,6 +248,14 @@ impl Glean {
         let data_path = Path::new(&cfg.data_path);
         glean.data_store = Some(Database::new(data_path, cfg.delay_ping_lifetime_io)?);
 
+        // Set experimentation identifier (if any)
+        if let Some(experimentation_id) = &cfg.experimentation_id {
+            glean
+                .additional_metrics
+                .experimentation_id
+                .set_sync(&glean, experimentation_id.to_string());
+        }
+
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
         if cfg.upload_enabled {
@@ -306,6 +319,7 @@ impl Glean {
             log_level: None,
             rate_limit: None,
             enable_event_timestamps: false,
+            experimentation_id: None,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -718,6 +732,15 @@ impl Glean {
     pub fn test_get_experiment_data(&self, experiment_id: String) -> Option<RecordedExperiment> {
         let metric = ExperimentMetric::new(self, experiment_id);
         metric.test_get_value(self)
+    }
+
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets stored experimenation id annotation.
+    pub fn test_get_experimentation_id(&self) -> Option<String> {
+        self.additional_metrics
+            .experimentation_id
+            .get_value(self, None)
     }
 
     /// Set configuration to override the default metric enabled/disabled state, typically from a
