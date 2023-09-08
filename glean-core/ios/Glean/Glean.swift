@@ -193,7 +193,8 @@ public class Glean {
             trimDataToRegisteredPings: false,
             logLevel: configuration.logLevel,
             rateLimit: nil,
-            enableEventTimestamps: configuration.enableEventTimestamps
+            enableEventTimestamps: configuration.enableEventTimestamps,
+            experimentationId: configuration.experimentationId
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
@@ -274,6 +275,15 @@ public class Glean {
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(_ experimentId: String) -> RecordedExperiment? {
         return gleanTestGetExperimentData(experimentId)
+    }
+
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Returns the stored experimentation id, for testing purposes only.
+    ///
+    /// - returns: the 'String' experimentation id if set, and `nil` otherwise.
+    public func testGetExperimentationId() -> String? {
+        return gleanTestGetExperimentationId()
     }
 
     /// Returns true if the Glean SDK has been initialized.
