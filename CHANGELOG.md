@@ -9,6 +9,7 @@
   * BREAKING CHANGE: Dropped support for Python 3.6 ([#2345](https://github.com/mozilla/glean/pull/2345))
 * Kotlin
   * Update to Gradle v8.2.1 ([#2516](https://github.com/mozilla/glean/pull/2516))
+  * Increase Android compile SDK to version 34 ([#2614](https://github.com/mozilla/glean/pull/2614))
 
 # v53.2.0 (2023-08-02)
 
