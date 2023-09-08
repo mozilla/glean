@@ -9,6 +9,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
+use glean_core::glean_test_get_experimentation_id;
 use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
@@ -140,6 +141,31 @@ fn test_experiments_recording_before_glean_inits() {
     assert!(!test_is_experiment_active(
         "experiment_preinit_disabled".to_string()
     ));
+}
+
+#[test]
+fn test_experimentation_id_recording() {
+    let _lock = lock_test();
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    destroy_glean(true, &tmpname);
+
+    test_reset_glean(
+        ConfigurationBuilder::new(true, tmpname, GLOBAL_APPLICATION_ID)
+            .with_server_endpoint("invalid-test-host")
+            .with_experimentation_id("alpha-beta-gamma-delta".to_string())
+            .build(),
+        ClientInfoMetrics::unknown(),
+        false,
+    );
+
+    let exp_id = glean_test_get_experimentation_id().expect("Experimentation id must not be None");
+    assert_eq!(
+        "alpha-beta-gamma-delta".to_string(),
+        exp_id,
+        "Experimentation id must match"
+    );
 }
 
 #[test]
