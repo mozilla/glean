@@ -4,7 +4,7 @@
 
 * General
   * Experimental: Add configuration to add a wall clock timestamp to all events ([#2513](https://github.com/mozilla/glean/issues/2513))
-  * Add an API to set an Experimentation ID that will be annotated to all pings ([#2606](https://github.com/mozilla/glean/pull/2606))
+  * Add an API to set an Experimentation ID that will be annotated to all pings ([Bug 1848201](https://bugzilla.mozilla.org/show_bug.cgi?id=1848201))
 * Python
   * Switched the build system to maturin. This should not have any effect on consumers. ([#2345](https://github.com/mozilla/glean/pull/2345))
   * BREAKING CHANGE: Dropped support for Python 3.6 ([#2345](https://github.com/mozilla/glean/pull/2345))
