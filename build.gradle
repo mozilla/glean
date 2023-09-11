@@ -144,12 +144,10 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-
     // Kotlin settings applicable to all modules.
     afterEvaluate {
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
-            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
