@@ -11,6 +11,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 android {
+    namespace "mozilla.telemetry.glean_native"
+
     ndkVersion rootProject.ext.build.ndkVersion
     compileSdkVersion rootProject.ext.build.compileSdkVersion
 
@@ -36,8 +38,18 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     sourceSets {
         test.jniLibs.srcDirs += "$buildDir/rustJniLibs/desktop"
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 
     // Uncomment to include debug symbols in native library builds.

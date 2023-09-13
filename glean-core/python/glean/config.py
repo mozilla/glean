@@ -33,6 +33,7 @@ class Configuration:
         max_events: int = DEFAULT_MAX_EVENTS,
         ping_uploader: Optional[net.BaseUploader] = None,
         allow_multiprocessing: bool = True,
+        enable_event_timestamps: bool = False,
     ):
         """
         Args:
@@ -46,6 +47,8 @@ class Configuration:
                 implementation. Defaults to `glean.net.HttpClientUploader`.
             allow_multiprocessing (bool): When True (default), use a subprocess
                 to offload some work (such as ping uploading).
+            enable_event_timestamps (bool): (Experimental) Whether to add a
+                wallclock timestamp to all events. Default: `false`.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
@@ -56,6 +59,7 @@ class Configuration:
             ping_uploader = net.HttpClientUploader()
         self._ping_uploader = ping_uploader
         self._allow_multiprocessing = allow_multiprocessing
+        self._enable_event_timestamps = enable_event_timestamps
 
     @property
     def server_endpoint(self) -> str:
@@ -85,6 +89,11 @@ class Configuration:
         return self._max_events
 
     # max_events can't be changed after Glean is initialized
+
+    @property
+    def enable_event_timestamps(self) -> bool:
+        """(Experimental) Whether to add a wallclock timestamp to all events."""
+        return self._enable_event_timestamps
 
     @property
     def ping_uploader(self) -> net.BaseUploader:

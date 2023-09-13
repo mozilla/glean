@@ -24,7 +24,7 @@ def reset_glean(
     application_id: str,
     application_version: str,
     configuration: Optional[Configuration] = None,
-    clear_stores: bool = True
+    clear_stores: bool = True,
 ) -> None:
     """
     Resets the Glean singleton.

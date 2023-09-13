@@ -116,6 +116,8 @@ Glean.stability.crashCount["native_code_crash"].add(3);
 Gets the recorded value for a given label in a labeled counter metric.  
 Returns the count if data is stored.  
 Returns a language-specific empty/null value if no data is stored.
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 {{#include ../../../shared/tab_header.md}}
 

@@ -36,8 +36,8 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
-# Update the version in glean-core/python/setup.py
-FILE=glean-core/python/setup.py
+# Update the version in pyproject.toml
+FILE=pyproject.toml
 run $SED -i.bak -E \
     -e "s/\"glean_parser~=[0-9.]+\"/\"glean_parser~=${NEW_VERSION_MAJOR_MINOR}\"/" \
     "${WORKSPACE_ROOT}/${FILE}"

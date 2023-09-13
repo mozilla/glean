@@ -232,6 +232,7 @@ class Glean:
             trim_data_to_registered_pings=False,
             log_level=None,
             rate_limit=None,
+            enable_event_timestamps=configuration.enable_event_timestamps,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)

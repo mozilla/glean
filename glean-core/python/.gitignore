@@ -30,7 +30,3 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-glean/glean.h
-glean/metrics.yaml
-glean/pings.yaml

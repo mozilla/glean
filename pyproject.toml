@@ -1,0 +1,47 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "glean-sdk"
+version = "54.0.0"
+requires-python = ">=3.7"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: 3",
+]
+description = "Mozilla's Glean Telemetry SDK: The Machine that Goes 'Ping!'"
+readme = "README.md"
+license = { file = "LICENSE" }
+maintainers = [
+  {name = "The Glean Team", email = "glean-team@mozilla.com"}
+]
+
+dependencies = [
+  "semver>=2.13.0",
+  "glean_parser~=8.1",
+]
+
+[project.urls]
+homepage = "https://mozilla.github.io/glean/"
+repository = "https://github.com/mozilla/glean"
+changelog = "https://mozilla.github.io/glean/book/appendix/changelog/sdk.html"
+
+[tool.maturin]
+python-source = "glean-core/python"
+module-name = "glean._uniffi"
+bindings = "uniffi"
+manifest-path = "glean-core/bundle/Cargo.toml"
+
+[tool.flake8]
+max-line-length = 100
+exclude = ["glean-core/python/glean/_uniffi/glean.py"]
+ignore = [
+    "W503" # line break before binary operator - black formats it that way
+]
+
+[tool.coverage.run]
+source = ["glean"]

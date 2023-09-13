@@ -7,7 +7,12 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.transform.ArtifactTransform
+import org.gradle.api.artifacts.transform.TransformAction
+import org.gradle.api.artifacts.transform.TransformParameters
+import org.gradle.api.artifacts.transform.TransformOutputs
+import org.gradle.api.artifacts.transform.InputArtifact
+import org.gradle.api.provider.Provider
+import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.artifacts.ComponentMetadataRule
 import org.gradle.api.artifacts.ComponentMetadataContext
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
@@ -28,13 +33,17 @@ import java.util.concurrent.Semaphore
  * A helper class to extract metrics.yaml files from AAR files.
  */
 @SuppressWarnings("GrPackage")
-class GleanMetricsYamlTransform extends ArtifactTransform {
-    List<File> transform(File file) {
+abstract class GleanMetricsYamlTransform implements TransformAction<TransformParameters.None> {
+    @InputArtifact
+    abstract Provider<FileSystemLocation> getInputArtifact()
+
+    @Override
+    void transform(TransformOutputs outputs) {
+        def file = inputArtifact.get().asFile
         def f = new File(file, "metrics.yaml")
         if (f.exists()) {
-            return [f]
+            outputs.file(f)
         }
-        return []
     }
 }
 
@@ -242,14 +251,7 @@ except:
                     // time, otherwise the `namespace` property won't be available.
                     TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
                     def configProvider = buildConfigProvider.get()
-                    def originalPackageName
-                    // In Gradle 6.x `getBuildConfigPackageName` was reaplced by `namespace`.
-                    // We want to be forward compatible, so we check that first or fallback to the old method.
-                    if (configProvider.hasProperty("namespace")) {
-                        originalPackageName = configProvider.namespace.get()
-                    } else {
-                        originalPackageName = configProvider.getBuildConfigPackageName().get()
-                    }
+                    def originalPackageName = configProvider.namespace.get()
 
                     args "-s"
                     args "namespace=${originalPackageName}.GleanMetrics"
@@ -267,7 +269,7 @@ except:
                 standardOutput = new ByteArrayOutputStream()
                 errorOutput = standardOutput
                 doLast {
-                    if (execResult.exitValue != 0) {
+                    if (executionResult.get().exitValue != 0) {
                         throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
@@ -341,7 +343,7 @@ except:
                 standardOutput = new ByteArrayOutputStream()
                 errorOutput = standardOutput
                 doLast {
-                    if (execResult.exitValue != 0) {
+                    if (executionResult.get().exitValue != 0) {
                         throw new GradleException("Glean documentation generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
@@ -525,19 +527,14 @@ except:
         // Gradle composite build.
         if (project.ext.has("allowMetricsFromAAR")) {
             project.dependencies {
-                registerTransform { reg ->
+                registerTransform(GleanMetricsYamlTransform) {
                     // The type here should be
                     // `com.android.build.gradle.internal.publishing.AndroidArtifacts.ArtifactType.EXPLODED_AAR.getType())`,
                     // but there's no good way to access the including script's classpath from `apply from:`
                     // scripts. See https://stackoverflow.com/a/37060550. The 'android-exploded-aar' string is
                     // very unlikely to change, so it's just hard-coded.
-                    reg.getFrom().attribute(
-                            ArtifactAttributes.ARTIFACT_FORMAT,
-                            'android-exploded-aar')
-                    reg.getTo().attribute(
-                            ArtifactAttributes.ARTIFACT_FORMAT,
-                            'glean-metrics-yaml')
-                    reg.artifactTransform(GleanMetricsYamlTransform.class)
+                    from.attribute(ArtifactAttributes.ARTIFACT_FORMAT, "android-exploded-aar")
+                    to.attribute(ArtifactAttributes.ARTIFACT_FORMAT, "glean-metrics-yaml")
                 }
             }
         }
@@ -555,13 +552,13 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "53.2.0"
+        project.ext.glean_version = "54.0.0"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
         // offline builds, and is mentioned in the documentation for offline
         // builds.
-        println("Requires ${parserVersion}")
+        println("Requires glean_parser ${parserVersion}")
 
         File envDir = setupPythonEnvironmentTasks(project, parserVersion)
         // Store in both gleanCondaDir (for backward compatibility reasons) and
