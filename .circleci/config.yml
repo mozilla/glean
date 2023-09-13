@@ -878,7 +878,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
 
   pypi-macos-release:
     macos:
@@ -916,7 +916,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
 
   pypi-windows-x86_64-release:
     docker:
@@ -935,7 +935,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
 
   pypi-windows-i686-release:
     docker:
@@ -954,7 +954,7 @@ jobs:
           name: Publish to Github
           command: |
             # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} dist
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
 
   ###########################################################################
   # Docs
