@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v53.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...main)
+
+# v54.0.0 (2023-09-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v53.2.0...v54.0.0)
 
 * General
   * Experimental: Add configuration to add a wall clock timestamp to all events ([#2513](https://github.com/mozilla/glean/issues/2513))
