@@ -248,18 +248,37 @@ impl PingUploadManager {
     /// # Returns
     ///
     /// The `JoinHandle` to the spawned thread
-    pub fn scan_pending_pings_directories(&self) -> std::thread::JoinHandle<()> {
+    pub fn scan_pending_pings_directories(
+        &self,
+        trigger_upload: bool,
+    ) -> std::thread::JoinHandle<()> {
         let local_manager = self.directory_manager.clone();
         let local_cached_pings = self.cached_pings.clone();
         let local_flag = self.processed_pending_pings.clone();
         thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
-                let mut local_cached_pings = local_cached_pings
-                    .write()
-                    .expect("Can't write to pending pings cache.");
-                local_cached_pings.extend(local_manager.process_dirs());
-                local_flag.store(true, Ordering::SeqCst);
+                {
+                    // Be sure to drop local_cached_pings lock before triggering upload.
+                    let mut local_cached_pings = local_cached_pings
+                        .write()
+                        .expect("Can't write to pending pings cache.");
+                    local_cached_pings.extend(local_manager.process_dirs());
+                    local_flag.store(true, Ordering::SeqCst);
+                }
+                if trigger_upload {
+                    crate::dispatcher::launch(|| {
+                        if let Some(state) = crate::maybe_global_state().and_then(|s| s.lock().ok())
+                        {
+                            if let Err(e) = state.callbacks.trigger_upload() {
+                                log::error!(
+                                    "Triggering upload after pending ping scan failed. Error: {}",
+                                    e
+                                );
+                            }
+                        }
+                    });
+                }
             })
             .expect("Unable to spawn thread to process pings directories.")
     }
@@ -280,7 +299,7 @@ impl PingUploadManager {
 
         // When building for tests, always scan the pending pings directories and do it sync.
         upload_manager
-            .scan_pending_pings_directories()
+            .scan_pending_pings_directories(false)
             .join()
             .unwrap();
 
