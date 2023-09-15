@@ -315,6 +315,9 @@ class PingTypeTest {
         counter.add()
         assertEquals(1, counter.testGetValue())
 
+        // We might have some work queued by init that we'll need to clear.
+        triggerWorkManager(context)
+
         Glean.submitPingByName("unknown")
 
         assertFalse(

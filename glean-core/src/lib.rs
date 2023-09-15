@@ -195,6 +195,14 @@ fn global_state() -> &'static Mutex<State> {
     STATE.get().unwrap()
 }
 
+/// Attempt to get a reference to the global state object.
+///
+/// If it hasn't been set yet, we return None.
+#[track_caller] // If this fails we're interested in the caller.
+fn maybe_global_state() -> Option<&'static Mutex<State>> {
+    STATE.get()
+}
+
 /// Set or replace the global bindings State object.
 fn setup_state(state: State) {
     // The `OnceCell` type wrapping our state is thread-safe and can only be set once.

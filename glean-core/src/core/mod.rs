@@ -195,7 +195,7 @@ impl Glean {
         // We only scan the pending ping directories when calling this from a subprocess,
         // when calling this from ::new we need to scan the directories after dealing with the upload state.
         if scan_directories {
-            let _scanning_thread = upload_manager.scan_pending_pings_directories();
+            let _scanning_thread = upload_manager.scan_pending_pings_directories(false);
         }
 
         let start_time = local_now_with_offset();
@@ -294,7 +294,7 @@ impl Glean {
         // If upload is disabled, we delete all pending pings files
         // and we need to do that **before** scanning the pending pings folder
         // to ensure we don't enqueue pings before their files are deleted.
-        let _scanning_thread = glean.upload_manager.scan_pending_pings_directories();
+        let _scanning_thread = glean.upload_manager.scan_pending_pings_directories(true);
 
         Ok(glean)
     }
