@@ -111,7 +111,8 @@ Glean.controls.refreshPressed.add(5);
 
 #### Recorded errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md): If the counter is incremented by `0` or a negative value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If the counter is incremented by a negative value
+  (or, in versions up to and including 54.0.0, `0`).
 * [`invalid_type`](../../user/metrics/error-reporting.md): If a floating point or non-number value is given.
 
 #### Limits
