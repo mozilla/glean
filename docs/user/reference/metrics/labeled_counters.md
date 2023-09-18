@@ -99,7 +99,8 @@ Glean.stability.crashCount["native_code_crash"].add(3);
 
 #### Recorded Errors
 
-* [`invalid_value`](../../user/metrics/error-reporting.md): if the counter is incremented by `0` or a negative value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): if the counter is incremented by a negative value
+  (or, in versions up to and including 54.0.0, `0`).
 * [`invalid_type`](../../user/metrics/error-reporting.md): if a floating point or non-number value is given.
 {{#include ../../_includes/label-errors.md}}
 
