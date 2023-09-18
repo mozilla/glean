@@ -2,7 +2,7 @@ auditwheel==5.3.0
 black==23.3.0
 coverage[toml]==7.2.2
 flake8==6.1.0; python_version >= '3.8'
-flake8-bugbear==23.7.10; python_version >= '3.8'
+flake8-bugbear==23.9.16; python_version >= '3.8'
 Flake8-pyproject==1.2.3
 jsonschema==3.2.0
 mypy==1.4.1
