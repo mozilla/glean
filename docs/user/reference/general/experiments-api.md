@@ -193,11 +193,11 @@ This identifier will be set during initialization and sent along with all pings 
 
 #### Limits
 
-The experimentation ID is subject to the same limitations as a `StringMetricType`.
+The experimentation ID is subject to the same limitations as a [string metric type](../metrics/string.md#limits).
 
 #### Recorded errors
 
-The experimentation ID will produce the same errors as a `StringMetricType`.
+The experimentation ID will produce the same errors as a [string metric type](../metrics/string.md#recorded-errors).
 
 ## Testing API
 
@@ -373,7 +373,6 @@ assert_eq!(
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
-* [Python API docs](../../../python/glean/metrics/quantity.html)
-* [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
-* [String Metric Type](../metrics/string.md)
+* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC19setExperimentActive_6branch5extraySS_SSSDyS2SGSgtF)
+* [Python API docs](../../../python/glean/index.html#glean.Glean.set_experiment_active)
+* [Rust API docs](../../../docs/glean/fn.set_experiment_active.html)
