@@ -222,7 +222,7 @@ impl PingMaker {
     ) -> Option<Ping<'a>> {
         info!("Collecting {}", ping.name());
 
-        let metrics_data = StorageManager.snapshot_as_json(glean.storage(), ping.name(), true);
+        let mut metrics_data = StorageManager.snapshot_as_json(glean.storage(), ping.name(), true);
         let events_data = glean
             .event_storage()
             .snapshot_as_json(glean, ping.name(), true);
@@ -239,6 +239,26 @@ impl PingMaker {
                 "Storage for {} empty. Ping will still be sent.",
                 ping.name()
             );
+        }
+
+        // Due to the way the experimentation identifier could link datasets that are intentionally unlinked,
+        // it will not be included in pings that specifically exclude the Glean client-id.
+        if !ping.include_client_id()
+            && glean.test_get_experimentation_id().is_some()
+            && metrics_data.is_some()
+        {
+            let metrics = metrics_data.as_mut().unwrap().as_object_mut().unwrap();
+            let strings = metrics.get_mut("string").unwrap().as_object_mut().unwrap();
+
+            strings.remove("glean.client.annotation.experimentation_id");
+
+            if strings.keys().len() == 0 {
+                metrics.remove("string");
+            }
+
+            if metrics.keys().len() == 0 {
+                metrics_data = None;
+            }
         }
 
         let ping_info = self.get_ping_info(glean, ping.name(), reason);
