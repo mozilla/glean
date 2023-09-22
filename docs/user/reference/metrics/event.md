@@ -130,6 +130,8 @@ Returns a language-specific empty/null value if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
+> **Note**: By default as of `v2.0.2` Glean.js sets `maxEvents=1` by default. If you try and call `testGetValue()` for a recorded event with `maxEvents=1`, `snapshot` will not include your event. For your testing instance, you can set `maxEvents` to a value greater than 1 to test recording events with `testGetValue()`.
+
 {{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
