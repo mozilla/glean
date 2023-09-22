@@ -860,6 +860,12 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
 ///
 /// See [`core::Glean::set_metrics_enabled_config`].
 pub fn glean_set_metrics_enabled_config(json: String) {
+    // An empty config means it is not set,
+    // so we avoid logging an error about it.
+    if json.is_empty() {
+        return;
+    }
+
     match MetricsEnabledConfig::try_from(json) {
         Ok(cfg) => launch_with_glean(|glean| {
             glean.set_metrics_enabled_config(cfg);
