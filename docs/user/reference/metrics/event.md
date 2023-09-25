@@ -12,14 +12,10 @@ Each event contains the following data:
 
 {{#include ../../../shared/blockquote-info.html}}
 
-## Are you sure you need an event metric?
+## Immediate submission or batching?
 
-> Events are best-suited to measuring user behavior, where the frequency of events is relatively low and the order of the events matters. Therefore, events should be the default choice for most user-behavior telemetry.
->
-> For other types of telemetry (e.g. performance or stability), events may be too expensive metric type to record, transmit, store and, most importantly, analyze. In those cases, consider lighter metrics, such as [counters](counter.md).
->  
-> When in doubt, refer to the
-> [metric type choosing guide](../../user/metrics/adding-new-metrics.mdl#choosing-a-metric-type).
+> In the Glean JavaScript SDK (Glean.js), since version 2.0.2, events are submitted immediately by default.
+> In all the other SDKs, events are batched and sent together by default in the [events ping](../../pings/events.md).
 
 ## Recording API
 
