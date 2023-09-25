@@ -125,6 +125,37 @@ fn test_metrics_must_report_experimentation_id() {
 }
 
 #[test]
+fn experimentation_id_is_removed_if_send_if_empty_is_false() {
+    // Initialize Glean with an experimentation id, it should be removed if the ping is empty
+    // and send_if_empty is false.
+    let (tempdir, _) = tempdir();
+    let mut glean = Glean::new(glean_core::InternalConfiguration {
+        data_path: tempdir.path().display().to_string(),
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: false,
+        experimentation_id: Some("test-experimentation-id".to_string()),
+    })
+    .unwrap();
+    let ping_maker = PingMaker::new();
+
+    let unknown_ping_type = PingType::new("unknown", true, false, vec![]);
+    glean.register_ping_type(&unknown_ping_type);
+
+    assert!(ping_maker
+        .collect(&glean, &unknown_ping_type, None, "", "")
+        .is_none());
+}
+
+#[test]
 fn collect_must_report_none_when_no_data_is_stored() {
     // NOTE: This is a behavior change from glean-ac which returned an empty
     // string in this case. As this is an implementation detail and not part of

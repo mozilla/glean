@@ -227,6 +227,40 @@ impl PingMaker {
             .event_storage()
             .snapshot_as_json(glean, ping.name(), true);
 
+        // Due to the way the experimentation identifier could link datasets that are intentionally unlinked,
+        // it will not be included in pings that specifically exclude the Glean client-id.
+        if (!ping.include_client_id() || !ping.send_if_empty())
+            && glean.test_get_experimentation_id().is_some()
+            && metrics_data.is_some()
+        {
+            // There is a lot of unwrapping here, but that's fine because the `if` conditions above mean that the
+            // experimentation id is present in the metrics.
+            let metrics = metrics_data.as_mut().unwrap().as_object_mut().unwrap();
+            let metrics_count = metrics.len();
+            let strings = metrics.get_mut("string").unwrap().as_object_mut().unwrap();
+            let string_count = strings.len();
+
+            if !ping.include_client_id() {
+                strings.remove("glean.client.annotation.experimentation_id");
+            } else {
+                // Handle the send_if_empty case by checking if this is the only metric in the data. If this is the only
+                // metric in the data, and this is a ping that should not be sent if empty, then we should remove the
+                // experimentation id metric so `is_empty` below is correct.
+                if metrics_count == 1 && string_count == 1 {
+                    //
+                    strings.remove("glean.client.annotation.experimentation_id");
+                }
+            }
+
+            if strings.is_empty() {
+                metrics.remove("string");
+            }
+
+            if metrics.is_empty() {
+                metrics_data = None;
+            }
+        }
+
         let is_empty = metrics_data.is_none() && events_data.is_none();
         if !ping.send_if_empty() && is_empty {
             info!("Storage for {} empty. Bailing out.", ping.name());
@@ -239,26 +273,6 @@ impl PingMaker {
                 "Storage for {} empty. Ping will still be sent.",
                 ping.name()
             );
-        }
-
-        // Due to the way the experimentation identifier could link datasets that are intentionally unlinked,
-        // it will not be included in pings that specifically exclude the Glean client-id.
-        if !ping.include_client_id()
-            && glean.test_get_experimentation_id().is_some()
-            && metrics_data.is_some()
-        {
-            let metrics = metrics_data.as_mut().unwrap().as_object_mut().unwrap();
-            let strings = metrics.get_mut("string").unwrap().as_object_mut().unwrap();
-
-            strings.remove("glean.client.annotation.experimentation_id");
-
-            if strings.keys().len() == 0 {
-                metrics.remove("string");
-            }
-
-            if metrics.keys().len() == 0 {
-                metrics_data = None;
-            }
         }
 
         let ping_info = self.get_ping_info(glean, ping.name(), reason);
