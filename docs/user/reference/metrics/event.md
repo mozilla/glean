@@ -15,7 +15,7 @@ Each event contains the following data:
 ## Immediate submission or batching?
 
 > In the Glean JavaScript SDK (Glean.js), since version 2.0.2, events are submitted immediately by default.
-> In all the other SDKs, events are batched and sent together by default in the [events ping](../../pings/events.md).
+> In all the other SDKs, events are batched and sent together by default in the [events ping](../../user/pings/events.md).
 
 ## Recording API
 
