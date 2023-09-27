@@ -34,6 +34,7 @@ class Configuration:
         ping_uploader: Optional[net.BaseUploader] = None,
         allow_multiprocessing: bool = True,
         enable_event_timestamps: bool = False,
+        experimentation_id: Optional[str] = None,
     ):
         """
         Args:
@@ -60,6 +61,7 @@ class Configuration:
         self._ping_uploader = ping_uploader
         self._allow_multiprocessing = allow_multiprocessing
         self._enable_event_timestamps = enable_event_timestamps
+        self._experimentation_id = experimentation_id
 
     @property
     def server_endpoint(self) -> str:
@@ -94,6 +96,11 @@ class Configuration:
     def enable_event_timestamps(self) -> bool:
         """(Experimental) Whether to add a wallclock timestamp to all events."""
         return self._enable_event_timestamps
+
+    @property
+    def experimentation_id(self) -> Optional[str]:
+        """An experimentation id that will be sent in all pings"""
+        return self._experimentation_id
 
     @property
     def ping_uploader(self) -> net.BaseUploader:

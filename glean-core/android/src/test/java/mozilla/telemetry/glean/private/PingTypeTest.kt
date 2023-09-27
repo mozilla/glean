@@ -240,6 +240,56 @@ class PingTypeTest {
     }
 
     @Test
+    fun `test pings that exclude client_id also excludes experimentation id`() {
+        val server = getMockWebServer()
+
+        val context = getContext()
+        delayMetricsPing(context)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                experimentationId = "alpha-beta-gamma-delta",
+            ),
+        )
+
+        val customPing = PingType<NoReasonCodes>(
+            name = "custom",
+            includeClientId = false,
+            sendIfEmpty = false,
+            reasonCodes = listOf(),
+        )
+
+        val counter = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.PING,
+                name = "counter",
+                sendInPings = listOf("custom"),
+            ),
+        )
+
+        counter.add()
+        assertEquals(1, counter.testGetValue())
+
+        assertEquals("alpha-beta-gamma-delta", Glean.testGetExperimentationId())
+
+        customPing.submit()
+        // Trigger worker task to upload the pings in the background
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
+        assertEquals("custom", docType)
+
+        val pingJson = JSONObject(request.getPlainBody())
+        assertNull(pingJson.getJSONObject("client_info").opt("client_id"))
+        assertNull(pingJson.optJSONObject("metrics")?.optJSONObject("string")?.opt("glean.client.annotation.experimentation_id"))
+        checkPingSchema(pingJson)
+    }
+
+    @Test
     fun `Sending a ping with an unknown name is a no-op`() {
         val server = getMockWebServer()
 

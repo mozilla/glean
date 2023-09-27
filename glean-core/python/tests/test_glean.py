@@ -177,6 +177,17 @@ def test_experiments_recording_before_glean_inits():
     assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
 
 
+def test_exeperimentation_id_recording():
+    Glean._reset()
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Configuration(experimentation_id="alpha-beta-gamma-delta"),
+    )
+    assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
+
+
 @pytest.mark.skip
 def test_sending_of_background_pings():
     pass
@@ -606,6 +617,52 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     )
 
     assert 0 == len(safe_httpserver.requests)
+
+
+def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+            experimentation_id="alpha-beta-gamma-delta",
+        ),
+    )
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+            experimentation_id="alpha-beta-gamma-delta",
+        ),
+    )
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert "deletion-request" == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
+
+    assert {
+        "glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"
+    } == json_content["metrics"]["string"]
 
 
 def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):

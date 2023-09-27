@@ -11,6 +11,7 @@ public struct Configuration {
     let dataPath: String?
     let logLevel: LevelFilter?
     let enableEventTimestamps: Bool
+    let experimentationId: String?
 
     struct Constants {
         static let defaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org"
@@ -33,7 +34,8 @@ public struct Configuration {
         serverEndpoint: String? = nil,
         dataPath: String? = nil,
         logLevel: LevelFilter? = nil,
-        enableEventTimestamps: Bool = false
+        enableEventTimestamps: Bool = false,
+        experimentationId: String? = nil
     ) {
         self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.maxEvents = maxEvents
@@ -41,5 +43,6 @@ public struct Configuration {
         self.dataPath = dataPath
         self.logLevel = logLevel
         self.enableEventTimestamps = enableEventTimestamps
+        self.experimentationId = experimentationId
     }
 }

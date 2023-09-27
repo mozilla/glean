@@ -132,6 +132,10 @@ pub struct InternalConfiguration {
     pub rate_limit: Option<PingRateLimit>,
     /// (Experimental) Whether to add a wallclock timestamp to all events.
     pub enable_event_timestamps: bool,
+    /// An experimentation identifier derived by the application to be sent with all pings, it should
+    /// be noted that this has an underlying StringMetric and so should conform to the limitations that
+    /// StringMetric places on length, etc.
+    pub experimentation_id: Option<String>,
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
@@ -853,6 +857,13 @@ pub fn glean_set_experiment_inactive(experiment_id: String) {
 pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedExperiment> {
     block_on_dispatcher();
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
+}
+
+/// TEST ONLY FUNCTION.
+/// Gets stored experimenation id annotation.
+pub fn glean_test_get_experimentation_id() -> Option<String> {
+    block_on_dispatcher();
+    core::with_glean(|glean| glean.test_get_experimentation_id())
 }
 
 /// Sets a remote configuration to override metrics' default enabled/disabled

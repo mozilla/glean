@@ -13,6 +13,8 @@ import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
+import mozilla.telemetry.glean.utils.decompressGZIP
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -162,5 +164,39 @@ class DeletionPingTest {
 
         // 'baseline' ping is removed from disk.
         assertEquals(0, pendingPingDir.listFiles()?.size)
+    }
+
+    @Test
+    fun `deletion-request pings include experimentation id`() {
+        val server = getMockWebServer()
+        val context = getContext()
+
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+                experimentationId = "alpha-beta-gamma-delta",
+            ),
+            clearStores = true,
+            uploadEnabled = true,
+        )
+
+        // Disabling upload generates a deletion ping
+        Glean.setUploadEnabled(false)
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
+        assertEquals("deletion-request", docType)
+
+        val body = decompressGZIP(request.body.readByteArray())
+
+        // Parse the body back into JSON
+        val deletionPing = JSONObject(body)
+        val metrics = deletionPing.getJSONObject("metrics")
+        val strings = metrics.getJSONObject("string")
+        val experimentationId = strings.getString("glean.client.annotation.experimentation_id")
+
+        assertEquals("Experimentation ids must match", "alpha-beta-gamma-delta", experimentationId)
     }
 }
