@@ -192,7 +192,7 @@ let first = &snapshot[0];
 assert_eq!("login_opened", first.name);
 
 let extra = event.extra.unwrap();
-assert_eq!("toolbar", extra.source_of_login);
+assert_eq!(Some(&"toolbar".to_string()), extra.get("source_of_login"));
 ```
 
 </div>
