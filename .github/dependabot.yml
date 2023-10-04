@@ -15,7 +15,3 @@ updates:
     ignore:
       # Updated in lockstep across all implementations
       - dependency-name: "glean_parser"
-    groups:
-      python-packages:
-        patterns:
-          - "*"
