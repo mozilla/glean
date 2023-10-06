@@ -17,6 +17,22 @@ by setting the `VIRTUAL_ENV` environment variable. Example:
 VIRTUAL_ENV="my/venv/path" npx glean --help
 ```
 
+By default Glean will try and use specific binaries based on the platform: `python.exe` on windows and `python3` everywhere else. You can customize the Python binary used through environment variables. You are able to define both `GLEAN_PYTHON` and `GLEAN_PIP`. Example:
+
+Mac:
+
+```bash
+export GLEAN_PYTHON=<path_to_python_binary>
+export GLEAN_PIP=<path_to_pip_binary>
+```
+
+Windows:
+
+```bat
+SET GLEAN_PYTHON=<path_to_python_binary>
+SET GLEAN_PIP=<path_to_pip_binary>
+```
+
 {{#include ../../../shared/blockquote-info.html}}
 
 ### What if the `glean` command is called from inside an active virtual environment?
