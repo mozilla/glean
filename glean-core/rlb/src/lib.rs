@@ -173,7 +173,7 @@ pub fn set_experiment_inactive(experiment_id: String) {
 }
 
 /// TEST ONLY FUNCTION.
-/// Gets stored experimenation id.
+/// Gets stored experimentation id.
 pub fn test_get_experimentation_id() -> Option<String> {
     glean_core::glean_test_get_experimentation_id()
 }

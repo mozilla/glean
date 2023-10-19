@@ -404,7 +404,7 @@ glean.client.annotation:
       - all-pings
     description: |
       An experimentation identifier derived and provided by the application
-      for the purpose of experimenation enrollment.
+      for the purpose of experimentation enrollment.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201
     data_reviews:
