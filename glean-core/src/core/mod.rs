@@ -736,7 +736,7 @@ impl Glean {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Gets stored experimenation id annotation.
+    /// Gets stored experimentation id annotation.
     pub fn test_get_experimentation_id(&self) -> Option<String> {
         self.additional_metrics
             .experimentation_id

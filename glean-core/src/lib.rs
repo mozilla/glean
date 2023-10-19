@@ -868,7 +868,7 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
 }
 
 /// TEST ONLY FUNCTION.
-/// Gets stored experimenation id annotation.
+/// Gets stored experimentation id annotation.
 pub fn glean_test_get_experimentation_id() -> Option<String> {
     block_on_dispatcher();
     core::with_glean(|glean| glean.test_get_experimentation_id())
