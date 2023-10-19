@@ -498,8 +498,6 @@ glean.error:
       Only sent if the buffer ever overflows.
 
       In Version 0 this reported the total number of tasks enqueued.
-    unit:
-      tasks
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482
     data_reviews:
