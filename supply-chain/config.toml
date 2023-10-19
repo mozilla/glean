@@ -2,7 +2,7 @@
 # cargo-vet config file
 
 [cargo-vet]
-version = "0.6"
+version = "0.8"
 
 [imports.bytecode-alliance]
 url = "https://raw.githubusercontent.com/bytecodealliance/wasmtime/main/supply-chain/audits.toml"
@@ -84,14 +84,6 @@ criteria = "safe-to-deploy"
 version = "0.10.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.errno]]
-version = "0.2.8"
-criteria = "safe-to-deploy"
-
-[[exemptions.fastrand]]
-version = "1.7.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.flate2]]
 version = "1.0.25"
 criteria = "safe-to-deploy"
@@ -120,21 +112,9 @@ criteria = "safe-to-deploy"
 version = "1.0.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.instant]]
-version = "0.1.12"
-criteria = "safe-to-deploy"
-
-[[exemptions.io-lifetimes]]
-version = "1.0.4"
-criteria = "safe-to-deploy"
-
 [[exemptions.iri-string]]
 version = "0.5.6"
 criteria = "safe-to-run"
-
-[[exemptions.is-terminal]]
-version = "0.4.2"
-criteria = "safe-to-deploy"
 
 [[exemptions.iso8601]]
 version = "0.4.2"
@@ -158,10 +138,6 @@ criteria = "safe-to-run"
 
 [[exemptions.libc]]
 version = "0.2.139"
-criteria = "safe-to-deploy"
-
-[[exemptions.linux-raw-sys]]
-version = "0.1.4"
 criteria = "safe-to-deploy"
 
 [[exemptions.lmdb-rkv-sys]]
@@ -268,10 +244,6 @@ criteria = "safe-to-deploy"
 version = "3.4.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.termcolor]]
-version = "1.2.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.time]]
 version = "0.1.45"
 criteria = "safe-to-deploy"
@@ -300,44 +272,44 @@ criteria = "safe-to-deploy"
 version = "0.4.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.winapi-util]]
-version = "0.1.5"
-criteria = "safe-to-deploy"
-
 [[exemptions.winapi-x86_64-pc-windows-gnu]]
 version = "0.4.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows-sys]]
-version = "0.42.0"
+version = "0.48.0"
+criteria = "safe-to-deploy"
+
+[[exemptions.windows-targets]]
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_aarch64_gnullvm]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_aarch64_msvc]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_i686_gnu]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_i686_msvc]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_x86_64_gnu]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_x86_64_gnullvm]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows_x86_64_msvc]]
-version = "0.42.1"
+version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.xshell]]
