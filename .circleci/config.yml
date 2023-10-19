@@ -90,7 +90,7 @@ commands:
       - run:
           name: Upload coverage report
           command: |
-            pip3 install glean_parser
+            pip3 install $(grep glean_parser pyproject.toml | tr -d ',"')
             glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
             bin/codecov.sh -X yaml -f codecov.json
 
