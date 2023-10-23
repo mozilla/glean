@@ -22,6 +22,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: windows-sys</name>
     <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
+    <name>Apache License 2.0: windows-targets</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
     <name>Apache License 2.0: windows_x86_64_gnu</name>
     <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
@@ -85,6 +88,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>  <license>
+    <name>Apache License 2.0: bitflags</name>
+    <url>https://github.com/bitflags/bitflags</url>
+  </license>  <license>
     <name>Apache License 2.0: camino</name>
     <url>https://github.com/camino-rs/camino</url>
   </license>  <license>
@@ -120,9 +126,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
-  </license>  <license>
-    <name>Apache License 2.0: io-lifetimes</name>
-    <url>https://github.com/sunfishcode/io-lifetimes</url>
   </license>  <license>
     <name>Apache License 2.0: itoa</name>
     <url>https://github.com/dtolnay/itoa</url>
@@ -265,23 +268,14 @@ the details of which are reproduced below.
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
   </license>  <license>
-    <name>MIT License: is-terminal</name>
-    <url>https://github.com/sunfishcode/is-terminal</url>
-  </license>  <license>
     <name>MIT License: byteorder</name>
     <url>https://github.com/BurntSushi/byteorder</url>
   </license>  <license>
     <name>MIT License: memchr</name>
     <url>https://github.com/BurntSushi/memchr</url>
   </license>  <license>
-    <name>MIT License: termcolor</name>
-    <url>https://github.com/BurntSushi/termcolor</url>
-  </license>  <license>
     <name>MIT License: mime_guess</name>
     <url>https://github.com/abonander/mime_guess</url>
-  </license>  <license>
-    <name>MIT License: winapi-util</name>
-    <url>https://github.com/BurntSushi/winapi-util</url>
   </license>  <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>

@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v55.0.0...main)
+
+# v55.0.0 (2023-10-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...v55.0.0)
 
 * General
   * BREAKING CHANGE: Adding `0` to a `counter` or `labeled_counter` metric will be silently ignored instead of raising an `invalid_value` error ([bug 1762859](https://bugzilla.mozilla.org/show_bug.cgi?id=1762859))

@@ -840,8 +840,9 @@ The following text applies to code linked from these dependencies:
 
 The following text applies to code linked from these dependencies:
 
-* [windows-sys 0.42.0]( https://github.com/microsoft/windows-rs )
-* [windows_x86_64_gnu 0.42.1]( https://github.com/microsoft/windows-rs )
+* [windows-sys 0.48.0]( https://github.com/microsoft/windows-rs )
+* [windows-targets 0.48.5]( https://github.com/microsoft/windows-rs )
+* [windows_x86_64_gnu 0.48.5]( https://github.com/microsoft/windows-rs )
 
 ```
                                  Apache License
@@ -2098,22 +2099,22 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [bitflags 1.3.2]( https://github.com/bitflags/bitflags )
+* [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.4]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
 * [crossbeam-channel 0.5.8]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
-* [fastrand 1.7.0]( https://github.com/smol-rs/fastrand )
+* [fastrand 2.0.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.26]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
 * [glob 0.3.0]( https://github.com/rust-lang/glob )
 * [heck 0.4.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
 * [idna 0.3.0]( https://github.com/servo/rust-url/ )
-* [io-lifetimes 1.0.4]( https://github.com/sunfishcode/io-lifetimes )
 * [itoa 1.0.4]( https://github.com/dtolnay/itoa )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
-* [linux-raw-sys 0.1.4]( https://github.com/sunfishcode/linux-raw-sys )
+* [linux-raw-sys 0.4.10]( https://github.com/sunfishcode/linux-raw-sys )
 * [log 0.4.18]( https://github.com/rust-lang/log )
 * [mime 0.3.16]( https://github.com/hyperium/mime )
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
@@ -2123,10 +2124,10 @@ The following text applies to code linked from these dependencies:
 * [paste 1.0.10]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.2.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
-* [rustix 0.36.7]( https://github.com/bytecodealliance/rustix )
+* [rustix 0.38.13]( https://github.com/bytecodealliance/rustix )
 * [semver 1.0.14]( https://github.com/dtolnay/semver )
 * [serde_json 1.0.89]( https://github.com/serde-rs/json )
-* [tempfile 3.4.0]( https://github.com/Stebalien/tempfile )
+* [tempfile 3.8.0]( https://github.com/Stebalien/tempfile )
 * [time 0.1.45]( https://github.com/time-rs/time )
 * [toml 0.5.10]( https://github.com/toml-rs/toml )
 * [unicase 2.6.0]( https://github.com/seanmonstar/unicase )
@@ -4434,7 +4435,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 The following text applies to code linked from these dependencies:
 
 * [cargo_metadata 0.15.2]( https://github.com/oli-obk/cargo_metadata )
-* [is-terminal 0.4.2]( https://github.com/sunfishcode/is-terminal )
 
 ```
 Permission is hereby granted, free of charge, to any
@@ -4469,7 +4469,6 @@ The following text applies to code linked from these dependencies:
 
 * [byteorder 1.4.3]( https://github.com/BurntSushi/byteorder )
 * [memchr 2.5.0]( https://github.com/BurntSushi/memchr )
-* [termcolor 1.2.0]( https://github.com/BurntSushi/termcolor )
 
 ```
 The MIT License (MIT)
@@ -4525,37 +4524,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-
-```
-## MIT License
-<span id="MIT"></span>
-
-The following text applies to code linked from these dependencies:
-
-* [winapi-util 0.1.5]( https://github.com/BurntSushi/winapi-util )
-
-```
-The MIT License (MIT)
-
-Copyright (c) 2017 Andrew Gallant
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
 
 ```
 ## MIT License
@@ -4718,9 +4686,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 54.0.0]( https://github.com/mozilla/glean )
-* [glean-build 8.1.0]( https://github.com/mozilla/glean )
-* [glean-core 54.0.0]( https://github.com/mozilla/glean )
+* [glean 55.0.0]( https://github.com/mozilla/glean )
+* [glean-build 10.0.0]( https://github.com/mozilla/glean )
+* [glean-core 55.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
