@@ -4,7 +4,7 @@
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -12,7 +12,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -20,7 +20,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -28,7 +28,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -36,7 +36,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -44,7 +44,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -52,7 +52,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-08-31"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -60,7 +60,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
@@ -68,7 +68,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.zeitstempel]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48
+user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2021-03-03"
 end = "2024-05-10"
 notes = "Maintained by me"
@@ -90,6 +90,12 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 version = "0.1.2"
 notes = "TOML parser, forked from toml 0.5"
+
+[[audits.bitflags]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "2.4.0 -> 2.4.1"
+notes = "Only allowing new clippy lints"
 
 [[audits.crossbeam-channel]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -161,6 +167,11 @@ criteria = "safe-to-deploy"
 delta = "1.0.28 -> 1.0.31"
 notes = "Minimal changes and removal of the build.rs"
 
+[[audits.redox_syscall]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.2.16 -> 0.3.5"
+
 [[audits.scroll_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -197,6 +208,11 @@ criteria = "safe-to-deploy"
 delta = "2.0.18 -> 2.0.26"
 notes = "Dependency update & internal refactorings"
 
+[[audits.tempfile]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "3.4.0 -> 3.5.0"
+
 [[audits.unicode-ident]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -208,3 +224,21 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.3.0 -> 1.4.1"
 notes = "Internal refactoring, new target support"
+
+[[trusted.is-terminal]]
+criteria = "safe-to-deploy"
+user-id = 6825 # Dan Gohman (sunfishcode)
+start = "2022-01-22"
+end = "2024-10-19"
+
+[[trusted.linux-raw-sys]]
+criteria = "safe-to-deploy"
+user-id = 6825 # Dan Gohman (sunfishcode)
+start = "2021-06-12"
+end = "2024-10-19"
+
+[[trusted.rustix]]
+criteria = "safe-to-deploy"
+user-id = 6825 # Dan Gohman (sunfishcode)
+start = "2021-10-29"
+end = "2024-10-19"

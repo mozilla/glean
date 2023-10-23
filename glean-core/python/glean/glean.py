@@ -233,6 +233,7 @@ class Glean:
             log_level=None,
             rate_limit=None,
             enable_event_timestamps=configuration.enable_event_timestamps,
+            experimentation_id=configuration.experimentation_id,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
@@ -403,6 +404,20 @@ class Glean:
             return data
         else:
             raise RuntimeError("Experiment data is not set")
+
+    @classmethod
+    def test_get_experimentation_id(cls) -> str:
+        """
+        Returns the stored experimentation id, for testing purposes only.
+
+        Returns:
+            experimentation_id (str): The experimentation id set by the client.
+        """
+        experimentation_id = _uniffi.glean_test_get_experimentation_id()
+        if experimentation_id is not None:
+            return experimentation_id
+        else:
+            raise RuntimeError("Experimentation id is not set")
 
     @classmethod
     def handle_client_active(cls):

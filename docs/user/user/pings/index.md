@@ -54,16 +54,18 @@ _Type: [Datetime](../../reference/metrics/datetime.md),
 Lifetime: [User](../../reference/yaml/metrics.md#user)_
 
 The time of the start of collection of the data in the ping, in local time
-and with minute precision, including timezone information.
+and with millisecond precision (by default), including timezone information.
+(_Note_: Custom pings can opt-out of precise timestamps and use minute precision.)
 
 #### `end_time`
 
 _Type: [Datetime](../../reference/metrics/datetime.md),
 Lifetime: [Ping](../../reference/yaml/metrics.md#ping-default)_
 
-The time of the end of collection of the data in the ping, in local time and with minute precision,
-including timezone information. This is also the time this ping was generated
-and is likely well before ping transmission time.
+The time of the end of collection of the data in the ping, in local time
+and with millisecond precision (by default), including timezone information.
+This is also the time this ping was generated and is likely well before ping transmission time.
+(_Note_: Custom pings can opt-out of precise timestamps and use minute precision.)
 
 #### `reason` _(optional)_
 

@@ -12,14 +12,10 @@ Each event contains the following data:
 
 {{#include ../../../shared/blockquote-info.html}}
 
-## Are you sure you need an event metric?
+## Immediate submission or batching?
 
-> Events are best-suited to measuring user behavior, where the frequency of events is relatively low and the order of the events matters. Therefore, events should be the default choice for most user-behavior telemetry.
->
-> For other types of telemetry (e.g. performance or stability), events may be too expensive metric type to record, transmit, store and, most importantly, analyze. In those cases, consider lighter metrics, such as [counters](counter.md).
->  
-> When in doubt, refer to the
-> [metric type choosing guide](../../user/metrics/adding-new-metrics.mdl#choosing-a-metric-type).
+> In the Glean JavaScript SDK (Glean.js), since version 2.0.2, events are submitted immediately by default.
+> In all the other SDKs, events are batched and sent together by default in the [events ping](../../user/pings/events.md).
 
 ## Recording API
 
@@ -130,6 +126,8 @@ Returns a language-specific empty/null value if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
+> **Note**: By default as of `v2.0.2` Glean.js sets `maxEvents=1` by default. If you try and call `testGetValue()` for a recorded event with `maxEvents=1`, `snapshot` will not include your event. For your testing instance, you can set `maxEvents` to a value greater than 1 to test recording events with `testGetValue()`.
+
 {{#include ../../../shared/tab_header.md}}
 
 <div data-lang="Kotlin" class="tab">
@@ -141,6 +139,7 @@ val snapshot = Views.loginOpened.testGetValue()
 assertEquals(2, snapshot.size)
 val first = snapshot.single()
 assertEquals("login_opened", first.name)
+assertEquals("toolbar", first.extra?.getValue("source_of_login"))
 ```
 
 </div>
@@ -162,6 +161,7 @@ val snapshot = try! Views.loginOpened.testGetValue()
 XCTAssertEqual(2, snapshot.size)
 val first = snapshot[0]
 XCTAssertEqual("login_opened", first.name)
+XCTAssertEqual("toolbar", first.extra?["source_of_login"])
 ```
 
 </div>
@@ -176,6 +176,7 @@ snapshot = metrics.views.login_opened.test_get_value()
 assert 2 == len(snapshot)
 first = snapshot[0]
 assert "login_opened" == first.name
+assert "toolbar" == first.extra["source_of_login"]
 ```
 
 </div>
@@ -189,6 +190,9 @@ var snapshot = views::login_opened.test_get_value(None).unwrap();
 assert_eq!(2, snapshot.len());
 let first = &snapshot[0];
 assert_eq!("login_opened", first.name);
+
+let extra = event.extra.unwrap();
+assert_eq!(Some(&"toolbar".to_string()), extra.get("source_of_login"));
 ```
 
 </div>
@@ -200,8 +204,9 @@ import * as views from "./path/to/generated/files/views.js";
 
 const snapshot = await views.loginOpened.testGetValue();
 assert.strictEqual(2, snapshot.length);
-const first = snapshot[0]
-assert.strictEqual("login_opened", first.name)
+const first = snapshot[0];
+assert.strictEqual("login_opened", first.name);
+assert.strictEqual("toolbar", first.extra.source_of_login);
 ```
 
 </div>
@@ -217,6 +222,17 @@ auto optEvents = mozilla::glean::views::login_opened.TestGetValue();
 auto events = optEvents.extract();
 ASSERT_EQ(2UL, events.Length());
 ASSERT_STREQ("login_opened", events[0].mName.get());
+
+// Note that the list of extra key/value pairs can be in any order.
+ASSERT_EQ(1UL, events[0].mExtra.Length());
+auto extra = events[0].mExtra[0];
+
+auto key = std::get<0>(extra);
+auto value = std::get<1>(extra);
+
+ASSERT_STREQ("source_of_login"_ns, key.get())
+ASSERT_STREQ("toolbar", value.get());
+}
 ```
 
 **JavaScript**
@@ -225,6 +241,8 @@ ASSERT_STREQ("login_opened", events[0].mName.get());
 var events = Glean.views.loginOpened.testGetValue();
 Assert.equal(2, events.length);
 Assert.equal("login_opened", events[0].name);
+
+Assert.equal("toolbar", events[0].extra.source_of_login);
 ```
 
 </div>

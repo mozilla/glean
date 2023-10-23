@@ -33,6 +33,7 @@ data class Configuration @JvmOverloads constructor(
     val dataPath: String? = null,
     val logLevel: LevelFilter? = null,
     val enableEventTimestamps: Boolean = false,
+    val experimentationId: String? = null,
 ) {
     companion object {
         /**

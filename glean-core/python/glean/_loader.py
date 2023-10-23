@@ -60,6 +60,7 @@ _ARGS = [
     "range_min",
     "reason_codes",
     "send_in_pings",
+    "precise_timestamps",
     "time_unit",
 ]
 

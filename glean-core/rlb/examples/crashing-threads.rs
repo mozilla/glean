@@ -58,9 +58,10 @@ mod unix {
         // thread 3 = MPS
         // thread 4 = uploader for first metrics ping <- this is the one we want to fail
         // thread 5 = uploader for prototype ping <- this is the one we want to fail
-        // thread 6 = shutdown wait thread
+        // thread 6 = post-init uploader <- this needs to fail, too
+        // thread 7 = shutdown wait thread
         let spawned = ALLOW_THREAD_SPAWNED.fetch_add(1, Ordering::SeqCst);
-        if spawned == 4 || spawned == 5 {
+        if spawned == 4 || spawned == 5 || spawned == 6 {
             return -1;
         }
 
@@ -87,7 +88,7 @@ pub mod glean_metrics {
 
 #[allow(non_upper_case_globals)]
 pub static PrototypePing: Lazy<PingType> =
-    Lazy::new(|| PingType::new("prototype", true, true, vec![]));
+    Lazy::new(|| PingType::new("prototype", true, true, true, vec![]));
 
 fn main() {
     env_logger::init();

@@ -59,6 +59,10 @@ def test_recording_upload_errors_doesnt_clobber_database(
     tmpdir = Path(tmpdir)
 
     Glean._reset()
+
+    # Force the ping upload worker into a separate process
+    monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
+
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
@@ -80,9 +84,11 @@ def test_recording_upload_errors_doesnt_clobber_database(
 
     safe_httpserver.serve_content(b"", code=400)
 
-    # Force the ping upload worker into a separate process
-    monkeypatch.setattr(PingUploadWorker, "process", PingUploadWorker._process)
     Glean._configuration._server_endpoint = safe_httpserver.url
+
+    # There might be an early ping upload process from init. Wait for it.
+    ProcessDispatcher._wait_for_last_process()
+
     _builtins.pings.baseline.submit()
     # `Ping.submit()` is async on the Rust dispatcher.
     # We briefly wait to give it a chance to trigger.

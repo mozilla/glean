@@ -10,7 +10,6 @@ import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
-import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -25,7 +24,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -77,6 +76,7 @@ class CustomPingTest {
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = true,
+            preciseTimestamps = true,
             reasonCodes = emptyList(),
         )
 
@@ -105,6 +105,7 @@ class CustomPingTest {
             name = "custom-ping",
             includeClientId = true,
             sendIfEmpty = true,
+            preciseTimestamps = true,
             reasonCodes = emptyList(),
         )
 
@@ -176,9 +177,14 @@ class CustomPingTest {
         val customPing = PingType<NoReasonCodes>(
             name = pingName,
             includeClientId = true,
-            sendIfEmpty = false,
+            sendIfEmpty = true,
+            preciseTimestamps = true,
             reasonCodes = emptyList(),
         )
+
+        // The PingUploadWorker might be queued for at-init reasons, so to ensure
+        // init didn't submit this custom ping we submit it deliberately only once,
+        // and assert that we didn't receive it twice.
 
         // This is equivalent to a consumer calling `Glean.initialize` at startup
         resetGlean(
@@ -190,17 +196,15 @@ class CustomPingTest {
             uploadEnabled = true,
         )
 
-        // There should be no ping upload worker,
-        // because there is no ping to upload.
-        assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
-
-        // But if the custom ping is specifically submitted,
+        // If the custom ping is specifically submitted,
         // it should be received.
         customPing.submit()
         // Trigger work manager once.
         // This should launch one worker that handles all pending pings.
         triggerWorkManager(context)
         var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        // Assert we only got the one:
+        assertNull(server.takeRequest(2L, TimeUnit.SECONDS))
         var docType = request.path!!.split("/")[3]
         assertEquals(pingName, docType)
 

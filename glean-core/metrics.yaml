@@ -337,7 +337,7 @@ glean.internal.metrics:
 
   start_time:
     type: datetime
-    time_unit: minute
+    time_unit: millisecond
     lifetime: user
     send_in_pings:
       - glean_internal_info
@@ -346,6 +346,7 @@ glean.internal.metrics:
       in local time and with minute precision, including timezone information.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1827852
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     data_sensitivity:
@@ -356,7 +357,7 @@ glean.internal.metrics:
 
   end_time:
     type: datetime
-    time_unit: minute
+    time_unit: millisecond
     lifetime: ping
     send_in_pings:
       - glean_internal_info
@@ -367,6 +368,7 @@ glean.internal.metrics:
       and is likely well before ping transmission time.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1556966
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1827852
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1512938#c3
     data_sensitivity:
@@ -388,6 +390,25 @@ glean.internal.metrics:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1557048
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1609218#c4
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+glean.client.annotation:
+  experimentation_id:
+    type: string
+    lifetime: application
+    send_in_pings:
+      - all-pings
+    description: |
+      An experimentation identifier derived and provided by the application
+      for the purpose of experimentation enrollment.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1848201#c5
     data_sensitivity:
       - technical
     notification_emails:
@@ -479,8 +500,6 @@ glean.error:
       Only sent if the buffer ever overflows.
 
       In Version 0 this reported the total number of tasks enqueued.
-    unit:
-      tasks
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482
     data_reviews:

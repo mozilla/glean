@@ -4,6 +4,15 @@ Debugging features in JavaScript can be enabled through APIs exposed on the Glea
 For more information on the available features and how to enable them,
 see the [Debugging API reference](../../reference/debug/index.md).
 
+## Debugging in the browser
+
+Websites running Glean allow you to debug at runtime using the `window.Glean` object in the browser console. You can start debugging by simply:
+
+1. [Opening the browser console](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/What_are_browser_developer_tools#the_javascript_console)
+2. Calling one of the `window.Glean` APIs: `window.Glean.setLogPings`, `window.Glean.setDebugViewTag`, `window.Glean.setSourceTags`.
+
+These debugging options will persist for the length of the current page session. Once the tab is closed, you will need to make those API calls again.
+
 ## Sending pings
 
 Unlike other platforms, JavaScript doesn't expose convenience methods to send pings on demand.

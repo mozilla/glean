@@ -103,6 +103,25 @@ class GleanTests: XCTestCase {
         )
     }
 
+    func testGleanExperimentationIdIsSet() {
+        Glean.shared.resetGlean(
+            configuration: Configuration(
+                maxEvents: nil,
+                channel: nil,
+                serverEndpoint: nil,
+                dataPath: nil,
+                logLevel: nil,
+                enableEventTimestamps: false,
+                experimentationId: "alpha-beta-gamma-delta"
+            ),
+            clearStores: true)
+        XCTAssertEqual(
+            "alpha-beta-gamma-delta",
+            Glean.shared.testGetExperimentationId()!,
+            "Experimenatation ids must match"
+        )
+    }
+
     func testGleanIsNotInitializedFromOtherProcesses() {
         // Check to see if Glean is initialized
         XCTAssert(Glean.shared.isInitialized())
@@ -238,6 +257,7 @@ class GleanTests: XCTestCase {
             name: "custom",
             includeClientId: true,
             sendIfEmpty: false,
+            preciseTimestamps: true,
             reasonCodes: []
         )
 
@@ -393,6 +413,7 @@ class GleanTests: XCTestCase {
             name: "custom",
             includeClientId: true,
             sendIfEmpty: false,
+            preciseTimestamps: true,
             reasonCodes: []
         )
 

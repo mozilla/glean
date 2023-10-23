@@ -1,6 +1,6 @@
 [package]
 name = "glean"
-version = "54.0.0"
+version = "55.0.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
@@ -15,7 +15,7 @@ include = [
   "/tests",
   "/Cargo.toml",
 ]
-rust-version = "1.62"
+rust-version = "1.63"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
@@ -23,7 +23,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "54.0.0"
+version = "55.0.0"
 
 [dependencies]
 crossbeam-channel = "0.5"
@@ -39,7 +39,7 @@ time = "0.1.40"
 whatsys = "0.3.0"
 
 [dev-dependencies]
-env_logger = { version = "0.10.0", default-features = false, features = ["auto-color", "humantime"] }
+env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
 tempfile = "3.1.0"
 jsonschema-valid = "0.5.0"
 flate2 = "1.0.19"

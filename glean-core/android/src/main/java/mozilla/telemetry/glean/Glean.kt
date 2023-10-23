@@ -260,6 +260,7 @@ open class GleanInternalAPI internal constructor() {
                 logLevel = configuration.logLevel,
                 rateLimit = null,
                 enableEventTimestamps = configuration.enableEventTimestamps,
+                experimentationId = configuration.experimentationId,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -353,6 +354,17 @@ open class GleanInternalAPI internal constructor() {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentData(experimentId: String): RecordedExperiment {
         return gleanTestGetExperimentData(experimentId) ?: throw NullPointerException("Experiment data is not set")
+    }
+
+    /**
+     * Returns the stored experimentation id, for testing purposes only.
+     *
+     * @return the [String] experimentation id
+     * @throws [NullPointerException] if no experimentation id is set.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetExperimentationId(): String {
+        return gleanTestGetExperimentationId() ?: throw NullPointerException("Experimentation Id is not set")
     }
 
     /**

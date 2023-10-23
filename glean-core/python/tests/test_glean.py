@@ -177,6 +177,17 @@ def test_experiments_recording_before_glean_inits():
     assert not Glean.test_is_experiment_active("experiment_preinit_disabled")
 
 
+def test_exeperimentation_id_recording():
+    Glean._reset()
+    Glean._initialize_with_tempdir_for_testing(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        configuration=Configuration(experimentation_id="alpha-beta-gamma-delta"),
+    )
+    assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
+
+
 @pytest.mark.skip
 def test_sending_of_background_pings():
     pass
@@ -264,7 +275,11 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
     )
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     counter_metric.add(10)
@@ -280,7 +295,11 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     custom_ping.submit()
@@ -342,7 +361,11 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     ping_name = "custom_ping_1"
     ping = PingType(
-        name=ping_name, include_client_id=True, send_if_empty=False, reason_codes=[]
+        name=ping_name,
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
     string_metric = StringMetricType(
         CommonMetricData(
@@ -608,6 +631,52 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     assert 0 == len(safe_httpserver.requests)
 
 
+def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+            experimentation_id="alpha-beta-gamma-delta",
+        ),
+    )
+
+    Glean._reset()
+
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=False,
+        data_dir=data_dir,
+        configuration=Configuration(
+            ping_uploader=_RecordingUploader(info_path),
+            experimentation_id="alpha-beta-gamma-delta",
+        ),
+    )
+
+    while not info_path.exists():
+        time.sleep(0.1)
+
+    with info_path.open("r") as fd:
+        url_path = fd.readline()
+        serialized_ping = fd.readline()
+
+    assert "deletion-request" == url_path.split("/")[3]
+
+    json_content = json.loads(serialized_ping)
+
+    assert {
+        "glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"
+    } == json_content["metrics"]["string"]
+
+
 def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
 
@@ -621,7 +690,11 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
     monkeypatch.setattr(subprocess, "Popen", broken_process)
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=True, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     custom_ping.submit()
@@ -689,7 +762,11 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
 
     ping_name = "preinit_ping"
     ping = PingType(
-        name=ping_name, include_client_id=True, send_if_empty=True, reason_codes=[]
+        name=ping_name,
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     # Submit a ping prior to calling initialize
@@ -750,6 +827,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
         name="sample_ping_1",
         include_client_id=True,
         send_if_empty=True,
+        precise_timestamps=True,
         reason_codes=[],
     )
 
@@ -854,7 +932,11 @@ def test_sending_of_custom_pings(safe_httpserver):
     )
 
     custom_ping = PingType(
-        name="store1", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        reason_codes=[],
     )
 
     counter_metric.add()
@@ -933,7 +1015,11 @@ def test_glean_shutdown(safe_httpserver):
     Glean._reset()
 
     custom_ping = PingType(
-        name="custom", include_client_id=True, send_if_empty=False, reason_codes=[]
+        name="custom",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=False,
+        reason_codes=[],
     )
 
     counter = CounterMetricType(
