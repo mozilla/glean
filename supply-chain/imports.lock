@@ -9,8 +9,8 @@ user-login = "sunfishcode"
 user-name = "Dan Gohman"
 
 [[publisher.rustix]]
-version = "0.38.13"
-when = "2023-09-10"
+version = "0.38.20"
+when = "2023-10-19"
 user-id = 6825
 user-login = "sunfishcode"
 user-name = "Dan Gohman"
@@ -540,6 +540,12 @@ criteria = "safe-to-deploy"
 version = "1.4.0"
 notes = "I have read over the macros, and audited the unsafe code."
 aggregated-from = "https://raw.githubusercontent.com/mozilla/cargo-vet/main/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.libc]]
+who = "Mike Hommey <mh+mozilla@glandium.org>"
+criteria = "safe-to-deploy"
+delta = "0.2.147 -> 0.2.148"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.lmdb-rkv]]
 who = "Bobby Holley <bobbyholley@gmail.com>"
