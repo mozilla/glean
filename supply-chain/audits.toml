@@ -231,6 +231,12 @@ user-id = 6825 # Dan Gohman (sunfishcode)
 start = "2022-01-22"
 end = "2024-10-19"
 
+[[trusted.jsonschema-valid]]
+criteria = "safe-to-run"
+user-id = 48 # Jan-Erik Rediger (badboy)
+start = "2020-02-26"
+end = "2024-11-08"
+
 [[trusted.linux-raw-sys]]
 criteria = "safe-to-deploy"
 user-id = 6825 # Dan Gohman (sunfishcode)

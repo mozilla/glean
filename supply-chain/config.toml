@@ -132,10 +132,6 @@ criteria = "safe-to-deploy"
 version = "0.3.4"
 criteria = "safe-to-run"
 
-[[exemptions.jsonschema-valid]]
-version = "0.5.1"
-criteria = "safe-to-run"
-
 [[exemptions.libc]]
 version = "0.2.139"
 criteria = "safe-to-deploy"
