@@ -30,7 +30,7 @@ option can be changed at [initialization](../../reference/general/initializing.m
 > Since the Glean Python and JavaScript SDKs don't have a generic concept of "inactivity",
 > case (1) above cannot be handled automatically.
 >
-> On Python, users can call the [`handle_client_inactive`](../../../python/glean/#glean.Glean.handle_client_inactive)
+> On Python, users can call the [`handle_client_inactive`](../../../python/glean/index.html#glean.Glean.handle_client_inactive)
 > API to let Glean know the app is inactive and that will trigger submission of the `events` ping.
 >
 > On JavaScript there is no such API and only cases (2) and (3) apply.

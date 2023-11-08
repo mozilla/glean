@@ -133,7 +133,7 @@ timestamps are always increasing.
 
 ##### Checking for decreasing time offsets between restarts
 
-> When this edge case is hit, Glean records an [`InvalidValue` error](../error-reporting.md)
+> When this edge case is hit, Glean records an [`InvalidValue` error](../metrics/error-reporting.md)
 > for the `glean.restarted` metric. This metric may be consulted at analysis time.
 > It is sent in the same ping where the error happened.
 

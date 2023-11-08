@@ -36,8 +36,8 @@
 [^5]: Sent on startup when pending events are stored and when reaching the limit. Additionally sent when [`handle_client_inactive`][rs_client_inactive] is called.
 
 
-[py_client_active]: ../../../python/glean/#glean.Glean.handle_client_active
-[py_client_inactive]: ../../../python/glean/#glean.Glean.handle_client_inactive
+[py_client_active]: ../../../python/glean/index.html#glean.Glean.handle_client_active
+[py_client_inactive]: ../../../python/glean/index.html#glean.Glean.handle_client_inactive
 [rs_client_active]: ../../../docs/glean/fn.handle_client_active.html
 [rs_client_inactive]: ../../../docs/glean/fn.handle_client_inactive.html
 [rs_configuration]: ../../../docs/glean/struct.Configuration.html
