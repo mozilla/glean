@@ -334,6 +334,6 @@ N/A
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/CounterMetricType.html)
-* [Python API docs](../../../python/glean/metrics/counter.html)
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.CounterMetric)
 * [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)
 * [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)
