@@ -25,7 +25,7 @@ Every ping payload has the following keys at the top-level:
 The following keys are only present if any metrics or events were recorded for the given ping:
 
 - The `metrics` section contains the submitted values for all metric types
-  except for [events](../metrics/event.md). It has keys for each of the metric types,
+  except for [events](../../reference/metrics/event.md). It has keys for each of the metric types,
   under which is data for each metric.
 
 - The `events` section contains the events recorded in the ping.

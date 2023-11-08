@@ -24,7 +24,7 @@ Glean in an Android project.
 
 Since crashes will be instrumented with some custom metrics, the next step will be to add a `metrics.yaml` file to define the
 metrics used to record the crash information and a `pings.yaml` file to define a custom ping which will give some control over
-the scheduling of the uploading.  See ["Adding new metrics"](../../user/adding-new-metrics.md) for more information about adding metrics.
+the scheduling of the uploading.  See ["Adding new metrics"](../../user/metrics/adding-new-metrics.md) for more information about adding metrics.
 
 What metric type should be used to represent the crash data?  While this could be implemented several ways, an [event](../../reference/metrics/event.md) is an
 excellent choice, simply because events capture information in a nice concise way and they have a built-in way of passing
