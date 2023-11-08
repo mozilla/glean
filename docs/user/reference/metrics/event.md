@@ -401,6 +401,6 @@ Each extra key contains additional metadata:
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/EventMetricType.html)
-* [Python API docs](../../../python/glean/metrics/event.html)
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.EventMetricType)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)
 * [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_event.default.html)
