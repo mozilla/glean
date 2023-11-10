@@ -372,12 +372,6 @@ version = "0.3.1"
 aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
 
 [[audits.google.audits.textwrap]]
-who = "ChromeOS"
-criteria = "safe-to-run"
-version = "0.15.2"
-aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
-
-[[audits.google.audits.textwrap]]
 who = "George Burgess IV <gbiv@google.com>"
 criteria = "safe-to-run"
 version = "0.16.0"
