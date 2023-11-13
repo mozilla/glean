@@ -9,8 +9,6 @@ use glean_core::traits;
 
 use crate::{ErrorType, RecordedEvent};
 
-pub use glean_core::traits::NoExtraKeys;
-
 // We need to wrap the glean-core type: otherwise if we try to implement
 // the trait for the metric in `glean_core::metrics` we hit error[E0117]:
 // only traits defined in the current crate can be implemented for arbitrary
@@ -70,7 +68,7 @@ mod test {
         let _lock = lock_test();
         let _t = new_glean(None, true);
 
-        let metric: EventMetric<NoExtraKeys> = EventMetric::new(CommonMetricData {
+        let metric: EventMetric<traits::NoExtraKeys> = EventMetric::new(CommonMetricData {
             name: "event".into(),
             category: "test".into(),
             send_in_pings: vec!["test1".into()],
