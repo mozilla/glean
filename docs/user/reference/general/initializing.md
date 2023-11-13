@@ -82,9 +82,9 @@ To learn about SDK specific configuration options available, refer to the [Refer
 > Glean must **always** be initialized with real values.
 >
 > Always pass the user preference, e.g. `Glean.initialize(uploadEnabled=userSettings.telemetryEnabled)` or the equivalent for your application.
-> Never call `Glean.initialize(uploadEnabled=true)` if `true` is a placeholder value that later gets reset by `Glean.setUploadEnabled(false)` and vice-versa.
 >
-> Depending on the provided placeholder value, this might trigger the generation of new client ids or the submission of bogus [`deletion-request` pings](../../user/pings/deletion-request.md).
+> Calling `Glean.setUploadEnabled(false)` at a later point will trigger [`deletion-request` pings](../../user/pings/deletion-request.md) and regenerate client IDs.
+> This should only be done if the user preference actually changes.
 
 {{#include ../../../shared/tab_header.md}}
 
