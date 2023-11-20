@@ -340,6 +340,7 @@ dependencies = [
 name = "glean-build"
 version = "10.0.0"
 dependencies = [
+ "tempfile",
  "xshell-venv",
 ]
 

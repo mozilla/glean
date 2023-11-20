@@ -110,6 +110,7 @@ impl Builder {
         let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
         let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
+        venv.pip_install("setuptools")?;
         venv.pip_install(&glean_parser)?;
 
         for file in &self.files {
@@ -121,5 +122,35 @@ impl Builder {
         venv.run_module("glean_parser", &args)?;
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::{env, fs, path::PathBuf};
+
+    use super::*;
+
+    #[test]
+    fn test_builder() {
+        let package_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        // clean out the previous venv, if it exists
+        let venv_dir = package_root.join("target").join("venv-py3-glean_parser");
+        if venv_dir.exists() {
+            fs::remove_dir_all(venv_dir).unwrap();
+        }
+        let metrics_yaml = package_root
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .join("samples")
+            .join("rust")
+            .join("metrics.yaml");
+        let out_dir = tempfile::tempdir().unwrap();
+        Builder::with_output(out_dir.path().to_string_lossy())
+            .file(metrics_yaml.to_string_lossy())
+            .generate()
+            .expect("Error generating Glean bindings");
     }
 }
