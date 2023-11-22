@@ -4,8 +4,6 @@
 
 
 import locale
-import sys
-import time
 
 
 def get_locale_tag() -> str:
@@ -34,19 +32,6 @@ def get_locale_tag() -> str:
     value = value.replace("_", "-")
 
     return value
-
-
-if sys.version_info >= (3, 7):
-    time_ns = time.monotonic_ns
-else:
-
-    def time_ns() -> int:
-        """
-        Get time from a monotonic timer in nanoseconds.
-
-        On Python prior to 3.7, this may have less than nanosecond resolution.
-        """
-        return int(time.monotonic() * 1000000000.0)
 
 
 class classproperty:

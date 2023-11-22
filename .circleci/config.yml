@@ -686,14 +686,6 @@ jobs:
           name: Python lints
           command: make lint-python
 
-  Python 3_7 tests:
-    docker:
-      - image: cimg/python:3.7
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
   Python 3_8 tests:
     docker:
       - image: cimg/python:3.8
@@ -1062,8 +1054,6 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_7 tests:
-          filters: *ci-filters
       - Python 3_8 tests:
           filters: *ci-filters
       - Python 3_9 tests:
