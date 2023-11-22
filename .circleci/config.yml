@@ -724,6 +724,20 @@ jobs:
           root: .
           paths: .venv3.10
 
+  Python 3_11 tests:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - test-python
+
+  Python 3_12 tests:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - test-python
+
   Python Windows x86_64 tests:
     docker:
       - image: cimg/python:3.8
@@ -1061,6 +1075,10 @@ workflows:
       - Python 3_9 on Alpine tests:
           filters: *ci-filters
       - Python 3_10 tests:
+          filters: *ci-filters
+      - Python 3_11 tests:
+          filters: *ci-filters
+      - Python 3_12 tests:
           filters: *ci-filters
       - Python Windows x86_64 tests:
           filters: *ci-filters
