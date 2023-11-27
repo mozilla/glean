@@ -505,4 +505,4 @@ describe("myTestSuite", () => {
 - [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC10initialize13uploadEnabled13configuration9buildInfoySb_AA13ConfigurationVAA05BuildG0VtF)
 - [Python API docs](../../../python/glean/index.html#glean.Glean.initialize)
 - [Rust API docs](../../../docs/glean/fn.initialize.html)
-- [JavaScript API docs](https://mozilla.github.io/glean.js/modules/core_glean.default.html#initialize)
+- [JavaScript API docs](https://mozilla.github.io/glean.js/functions/core_glean.default.initialize.html)
