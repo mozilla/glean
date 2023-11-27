@@ -74,6 +74,7 @@ fn main() -> anyhow::Result<()> {
         target_languages,
         out_dir.as_deref(),
         None,
+        Some("glean_core"),
         false,
     )?;
 
