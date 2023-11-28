@@ -28,7 +28,16 @@ skip = [
 
 # Avoid certain crates
 deny = [
-    # We can allow the windows-sys and windows_$arch crates,
-    # now that m-c allows them (and potentially overrides some uses)
-    { name = "windows", version = "*" },
+  # We can allow the windows-sys and windows_$arch crates,
+  # now that m-c allows them (and potentially overrides some uses)
+
+  # We do not want to pull in the `windows` crate.
+  # We _only_ allow it as a dependency in the chain from `uniffi_core`;
+  # this will be overriden in m-c.
+  # See https://embarkstudios.github.io/cargo-deny/checks/bans/cfg.html#the-wrappers-field-optional for the wrapper configuration
+  # We allow the chain from uniffi_core to windows here.
+  { name = "oneshot", version = "*", wrappers = ["uniffi_core"] },
+  { name = "loom", version = "*", wrappers = ["oneshot"] },
+  { name = "generator", version = "*", wrappers = ["loom"] },
+  { name = "windows", version = "0.48.0", wrappers = ["generator"] },
 ]
