@@ -23,60 +23,67 @@ user-login = "sunfishcode"
 user-name = "Dan Gohman"
 
 [[publisher.uniffi]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_bindgen]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_build]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_checksum_derive]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_core]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_macros]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_meta]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.uniffi_testing]]
-version = "0.24.1"
-when = "2023-06-23"
-user-id = 48
-user-login = "badboy"
-user-name = "Jan-Erik Rediger"
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
+
+[[publisher.uniffi_udl]]
+version = "0.25.2"
+when = "2023-11-20"
+user-id = 111105
+user-login = "mhammond"
+user-name = "Mark Hammond"
 
 [[publisher.zeitstempel]]
 version = "0.1.1"
@@ -134,6 +141,12 @@ who = "Pat Hickey <phickey@fastly.com>"
 criteria = "safe-to-deploy"
 version = "0.1.2"
 notes = "no build, no ambient capabilities, no unsafe"
+
+[[audits.bytecode-alliance.audits.cc]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+version = "1.0.73"
+notes = "I am the author of this crate."
 
 [[audits.bytecode-alliance.audits.cfg-if]]
 who = "Alex Crichton <alex@alexcrichton.com>"
@@ -209,6 +222,11 @@ criteria = "safe-to-deploy"
 delta = "0.2.148 -> 0.2.149"
 notes = "Lots of new functions and constants for new platforms and nothing out of the ordinary for what one would expect of the `libc` crate."
 
+[[audits.bytecode-alliance.audits.matchers]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+version = "0.1.0"
+
 [[audits.bytecode-alliance.audits.miniz_oxide]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
@@ -223,6 +241,18 @@ its own longevity should be relatively hardened against some of the more common
 compression-related issues.
 """
 
+[[audits.bytecode-alliance.audits.nu-ansi-term]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+version = "0.46.0"
+notes = "one use of unsafe to call windows specific api to get console handle."
+
+[[audits.bytecode-alliance.audits.overload]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+version = "0.1.1"
+notes = "small crate, only defines macro-rules!, nicely documented as well"
+
 [[audits.bytecode-alliance.audits.percent-encoding]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
@@ -232,6 +262,11 @@ This crate is a single-file crate that does what it says on the tin. There are
 a few `unsafe` blocks related to utf-8 validation which are locally verifiable
 as correct and otherwise this crate is good to go.
 """
+
+[[audits.bytecode-alliance.audits.pin-utils]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+version = "0.1.0"
 
 [[audits.bytecode-alliance.audits.pkg-config]]
 who = "Pat Hickey <phickey@fastly.com>"
@@ -348,6 +383,12 @@ who = "Johan Andersson <opensource@embark-studios.com>"
 criteria = "safe-to-deploy"
 version = "1.0.40"
 notes = "Found no unsafe or ambient capabilities used"
+
+[[audits.embark-studios.audits.valuable]]
+who = "Johan Andersson <opensource@embark-studios.com>"
+criteria = "safe-to-deploy"
+version = "0.1.0"
+notes = "No unsafe usage or ambient capabilities, sane build script"
 
 [[audits.google.audits.ctor]]
 who = "George Burgess IV <gbiv@google.com>"
@@ -525,6 +566,12 @@ version = "0.15.2"
 notes = "I reviewed the whole code base. Parser for the output of cargo-metadata, relying mostly on serde. No unsafe code used."
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
+[[audits.mozilla.audits.cc]]
+who = "Mike Hommey <mh+mozilla@glandium.org>"
+criteria = "safe-to-deploy"
+delta = "1.0.73 -> 1.0.78"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
 [[audits.mozilla.audits.either]]
 who = "Nika Layzell <nika@thelayzells.com>"
 criteria = "safe-to-deploy"
@@ -679,6 +726,18 @@ aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-ch
 who = "Chris H-C <chutten@mozilla.com>"
 criteria = "safe-to-deploy"
 version = "0.18.4"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.rustversion]]
+who = "Bobby Holley <bobbyholley@gmail.com>"
+criteria = "safe-to-deploy"
+version = "1.0.9"
+notes = """
+This crate has a build-time component and procedural macro logic, which I looked
+at enough to convince myself it wasn't going to do anything dramatically wrong.
+I don't think logic bugs in the version parsing etc can realistically introduce
+a security vulnerability.
+"""
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.tempfile]]
