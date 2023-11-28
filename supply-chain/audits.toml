@@ -16,7 +16,29 @@ start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
 
+[[wildcard-audits.uniffi]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2021-11-22"
+end = "2024-11-28"
+
 [[wildcard-audits.uniffi_bindgen]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 48 # Jan-Erik Rediger (badboy)
+start = "2022-05-05"
+end = "2024-06-21"
+notes = "Maintained by the Glean and Application Services teams"
+
+[[wildcard-audits.uniffi_bindgen]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2021-11-22"
+end = "2024-11-28"
+
+[[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
@@ -27,12 +49,26 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2021-11-22"
+end = "2024-11-28"
+
+[[wildcard-audits.uniffi_checksum_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_checksum_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2023-11-20"
+end = "2024-11-28"
+
+[[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
@@ -43,10 +79,9 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 48 # Jan-Erik Rediger (badboy)
-start = "2022-05-05"
-end = "2024-06-21"
-notes = "Maintained by the Glean and Application Services teams"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2023-11-20"
+end = "2024-11-28"
 
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -56,6 +91,13 @@ start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
 
+[[wildcard-audits.uniffi_macros]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2021-11-22"
+end = "2024-11-28"
+
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -64,6 +106,13 @@ start = "2022-08-31"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
 
+[[wildcard-audits.uniffi_meta]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2023-11-20"
+end = "2024-11-28"
+
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -71,6 +120,20 @@ user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
 end = "2024-06-21"
 notes = "Maintained by the Glean and Application Services teams"
+
+[[wildcard-audits.uniffi_testing]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2023-11-20"
+end = "2024-11-28"
+
+[[wildcard-audits.uniffi_udl]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2023-11-20"
+end = "2024-11-28"
 
 [[wildcard-audits.zeitstempel]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -178,6 +241,12 @@ notes = "Minimal changes and removal of the build.rs"
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.2.16 -> 0.3.5"
+
+[[audits.rustversion]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.9 -> 1.0.14"
+notes = "Doc updates, minimal CI changes and a fix to build-script reruns"
 
 [[audits.scroll_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
