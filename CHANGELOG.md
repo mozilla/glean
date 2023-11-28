@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...main)
 
+* General
+  * Errors are now recorded in cases where we had to create a new data store for Glean due to a failure ([bug 1815253](https://bugzilla.mozilla.org/show_bug.cgi?id=1815253))
 * iOS
   * Glean for iOS is now being built with Xcode 15.1 ([#2669](https://github.com/mozilla/glean/pull/2669))
 
