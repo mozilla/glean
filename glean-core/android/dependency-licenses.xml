@@ -223,6 +223,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>  <license>
+    <name>Apache License 2.0: oneshot</name>
+    <url>https://github.com/faern/oneshot</url>
+  </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>
   </license>  <license>
@@ -335,6 +338,9 @@ the details of which are reproduced below.
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_testing</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: uniffi_udl</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
