@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v55.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...main)
+
+# v56.0.0 (2023-11-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v55.0.0...v56.0.0)
 
 * General
   * Updated to UniFFI 0.25.2 ([#2678](https://github.com/mozilla/glean/pull/2678))
