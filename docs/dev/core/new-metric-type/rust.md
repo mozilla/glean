@@ -39,5 +39,5 @@ pub use glean_core::Counter;
 ## Documentation
 
 Don't forget to document the new Rust API in the Book's page on the Metric Type
-(e.g. [Counter](../../../book/user/metrics/counter.html)).
+(e.g. [Counter](../../../book/reference/metrics/counter.html)).
 Add a tab for Rust, and mimic any other language's example.

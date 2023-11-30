@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "55.0.0"
+version = "56.0.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -18,7 +18,7 @@ include = [
   "/uniffi.toml",
   "/build.rs",
 ]
-rust-version = "1.63"
+rust-version = "1.65"
 
 [package.metadata.glean]
 glean-parser = "10.0.0"
@@ -40,7 +40,7 @@ flate2 = "1.0.19"
 zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
-uniffi = { version = "0.24.1", default-features = false }
+uniffi = { version = "0.25.2", default-features = false }
 time = "0.1.40"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
 
@@ -57,7 +57,7 @@ iso8601 = "0.4"
 ctor = "0.2.2"
 
 [build-dependencies]
-uniffi = { version = "0.24.1", default-features = false, features = ["build"] }
+uniffi = { version = "0.25.2", default-features = false, features = ["build"] }
 
 [features]
 # Increases the preinit queue limit to 10^6

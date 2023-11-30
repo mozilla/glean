@@ -16,7 +16,7 @@ from .._uniffi import (
     glean_initialize_for_subprocess,
     glean_process_ping_upload_response,
 )
-from .._uniffi import InternalConfiguration, UploadTaskAction
+from .._uniffi import InternalConfiguration, UploadTaskAction, PingUploadTask
 from .._process_dispatcher import ProcessDispatcher
 
 
@@ -134,7 +134,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
     while True:
         task = glean_get_upload_task()
 
-        if task.is_upload():
+        if isinstance(task, PingUploadTask.UPLOAD):
             # Ping data is available for upload: parse the structure but make
             # sure to let Rust free the memory.
             request = task.request
@@ -155,7 +155,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             else:  # action == UploadTaskAction.END
                 return True
 
-        elif task.is_wait():
+        elif isinstance(task, PingUploadTask.WAIT):
             time.sleep(task.time / 1000)
         elif task.is_done():
             return True

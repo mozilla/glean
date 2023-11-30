@@ -1691,7 +1691,7 @@ The following text applies to code linked from these dependencies:
 * [anyhow 1.0.71]( https://github.com/dtolnay/anyhow )
 * [basic-toml 0.1.2]( https://github.com/dtolnay/basic-toml )
 * [inherent 1.0.9]( https://github.com/dtolnay/inherent )
-* [libc 0.2.147]( https://github.com/rust-lang/libc )
+* [libc 0.2.149]( https://github.com/rust-lang/libc )
 * [proc-macro2 1.0.66]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.31]( https://github.com/dtolnay/quote )
 * [serde 1.0.179]( https://github.com/serde-rs/serde )
@@ -2124,7 +2124,7 @@ The following text applies to code linked from these dependencies:
 * [paste 1.0.10]( https://github.com/dtolnay/paste )
 * [percent-encoding 2.2.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
-* [rustix 0.38.13]( https://github.com/bytecodealliance/rustix )
+* [rustix 0.38.20]( https://github.com/bytecodealliance/rustix )
 * [semver 1.0.14]( https://github.com/dtolnay/semver )
 * [serde_json 1.0.89]( https://github.com/serde-rs/json )
 * [tempfile 3.8.0]( https://github.com/Stebalien/tempfile )
@@ -3824,6 +3824,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [lmdb-rkv-sys 0.11.2]( https://github.com/mozilla/lmdb-rs.git )
+* [oneshot 0.1.6]( https://github.com/faern/oneshot )
 * [siphasher 0.3.10]( https://github.com/jedisct1/rust-siphash )
 * [tinyvec_macros 0.1.0]( https://github.com/Soveu/tinyvec_macros )
 * [winapi-x86_64-pc-windows-gnu 0.4.0]( https://github.com/retep998/winapi-rs )
@@ -4686,9 +4687,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 55.0.0]( https://github.com/mozilla/glean )
+* [glean 56.0.0]( https://github.com/mozilla/glean )
 * [glean-build 10.0.0]( https://github.com/mozilla/glean )
-* [glean-core 55.0.0]( https://github.com/mozilla/glean )
+* [glean-core 56.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5075,14 +5076,15 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_checksum_derive 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_core 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.24.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_testing 0.24.1]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_checksum_derive 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_core 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_testing 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_udl 0.25.2]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0

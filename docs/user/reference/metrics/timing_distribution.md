@@ -758,7 +758,7 @@ The allowed values for `time_unit` are:
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/TimingDistributionMetricType.html)
-* [Python API docs](../../../python/glean/metrics/timing_distribution.html)
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.TimingDistributionMetricType)
 
 ## Simulator
 

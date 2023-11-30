@@ -386,5 +386,5 @@ N/A
 ## Reference
 
 * [Swift API docs](../../../swift/Classes/StringListMetricType.html)
-* [Python API docs](../../../python/glean/metrics/string_list.html)
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.StringListMetric)
 * [Rust API docs](../../../docs/glean/private/struct.StringListMetric.html)

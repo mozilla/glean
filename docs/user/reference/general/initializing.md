@@ -81,10 +81,10 @@ To learn about SDK specific configuration options available, refer to the [Refer
 
 > Glean must **always** be initialized with real values.
 >
-> Always pass the user preference, e.g. `Glean.initialize(upload=userSettings.telemetry_enabled)` or the equivalent for your application.
-> Never call `Glean.initialize(upload=true)` if `true` is a placeholder value that later gets reset by `Glean.setUploadEnabled(false)` and vice-versa.
+> Always pass the user preference, e.g. `Glean.initialize(uploadEnabled=userSettings.telemetryEnabled)` or the equivalent for your application.
 >
-> Depending on the provided placeholder value, this might trigger the generation of new client ids or the submission of bogus [`deletion-request` pings](../../user/pings/deletion-request.md).
+> Calling `Glean.setUploadEnabled(false)` at a later point will trigger [`deletion-request` pings](../../user/pings/deletion-request.md) and regenerate client IDs.
+> This should only be done if the user preference actually changes.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -120,7 +120,8 @@ class SampleApplication : Application() {
 
 The Glean Kotlin SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
-Requirements for a non-main process
+Requirements for a non-main process:
+
 - `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
 - The default `dataPath` for Glean is `{context.applicationInfo.dataDir}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
 - [Set the default process name](https://developer.android.com/reference/androidx/work/Configuration.Builder#setDefaultProcessName(java.lang.String)) as your main process. If this is not set up correctly, pings from the non-main process will not send. `Configuration.Builder().setDefaultProcessName(<main_process_name>)`
@@ -186,7 +187,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 The Glean Swift SDK supports use across multiple processes. This is enabled by setting a `dataPath` value in the `Glean.Configuration` object passed to `Glean.initialize`. You **do not** need to set a `dataPath` for your main process. This configuration should only be used by a non-main process.
 
-Requirements for a non-main process 
+Requirements for a non-main process:
+
 - `Glean.initialize` must be called with the `dataPath` value set in the `Glean.Configuration`.
 - On iOS devices, Glean stores data in the Application Support directory. The default `dataPath` Glean uses is `{FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]}/glean_data`. If you try to use this path, `Glean.initialize` will fail and throw an error.
 
@@ -503,4 +505,4 @@ describe("myTestSuite", () => {
 - [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC10initialize13uploadEnabled13configuration9buildInfoySb_AA13ConfigurationVAA05BuildG0VtF)
 - [Python API docs](../../../python/glean/index.html#glean.Glean.initialize)
 - [Rust API docs](../../../docs/glean/fn.initialize.html)
-- [JavaScript API docs](https://mozilla.github.io/glean.js/modules/core_glean.default.html#initialize)
+- [JavaScript API docs](https://mozilla.github.io/glean.js/functions/core_glean.default.initialize.html)
