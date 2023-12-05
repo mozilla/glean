@@ -566,7 +566,13 @@ jobs:
             fi
       - run:
           name: Generate Swift documentation
-          command: bash bin/build-swift-docs.sh
+          command: |
+            # Skip doc generation for pull requests.
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              bash bin/build-swift-docs.sh
+            else
+              mkdir -p build/docs/swift
+            fi
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: raw_xcodebuild.log
@@ -576,7 +582,6 @@ jobs:
       - persist_to_workspace:
           root: build/
           paths: docs/swift
-      - skip-if-doc-only
       - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
