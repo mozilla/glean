@@ -124,16 +124,15 @@ logging.basicConfig(level=logging.DEBUG)
 
 The Glean Python bindings use the following tools:
 
-- Linting: [flake8](http://flake8.pycqa.org/en/latest/)
-- Formatting: [black](https://black.readthedocs.io/en/stable/)
+- Linting/Formatting: [ruff](https://docs.astral.sh/ruff/)
 - Type-checking: [mypy](http://mypy-lang.org/)
 
 ### Manual method
 
 ```bash
 $ cd glean-core/python
-$ flake8 glean tests
-$ black glean tests
+$ ruff check glean tests
+$ ruff format glean tests
 $ mypy glean
 ```
 
