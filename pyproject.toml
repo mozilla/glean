@@ -36,12 +36,9 @@ module-name = "glean._uniffi"
 bindings = "uniffi"
 manifest-path = "glean-core/bundle/Cargo.toml"
 
-[tool.flake8]
-max-line-length = 100
-exclude = ["glean-core/python/glean/_uniffi/glean.py"]
-ignore = [
-    "W503" # line break before binary operator - black formats it that way
-]
-
 [tool.coverage.run]
 source = ["glean"]
+
+[tool.ruff]
+extend-exclude = ["glean-core/python/glean/_uniffi/glean.py"]
+line-length = 100

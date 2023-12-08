@@ -115,10 +115,12 @@ shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-lint-python: setup-python ## Run flake8 and black to lint Python code
-	$(GLEAN_PYENV)/bin/python3 -m flake8 glean-core/python/glean glean-core/python/tests
-	$(GLEAN_PYENV)/bin/python3 -m black --check --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi\/ glean-core/python/glean glean-core/python/tests
+lint-python: setup-python ## Run ruff and mypy to lint Python code
+	$(GLEAN_PYENV)/bin/python3 -m ruff check glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
+
+lint-python-fix: setup-python ## Run ruff and mypy to lint Python code
+	$(GLEAN_PYENV)/bin/python3 -m ruff check --fix glean-core/python/glean glean-core/python/tests
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
 
@@ -127,8 +129,8 @@ lint-python: setup-python ## Run flake8 and black to lint Python code
 fmt-rust: ## Format all Rust code
 	cargo fmt --all
 
-fmt-python: setup-python ## Run black to format Python code
-	$(GLEAN_PYENV)/bin/python3 -m black --exclude \(\.venv.\*\)\|\(.eggs\)\|_uniffi\/ glean-core/python/glean glean-core/python/tests
+fmt-python: setup-python ## Run ruff to format Python code
+	$(GLEAN_PYENV)/bin/python3 -m ruff format glean-core/python/glean glean-core/python/tests
 
 fmt-kotlin:  ## Run ktlint to format KOtlin code
 	./gradlew ktlintFormat
