@@ -88,10 +88,6 @@ criteria = "safe-to-deploy"
 version = "2.9.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.generator]]
-version = "0.7.5"
-criteria = "safe-to-deploy"
-
 [[exemptions.getrandom]]
 version = "0.2.8"
 criteria = "safe-to-deploy"
@@ -140,10 +136,6 @@ criteria = "safe-to-deploy"
 version = "0.11.2"
 criteria = "safe-to-deploy"
 
-[[exemptions.loom]]
-version = "0.5.6"
-criteria = "safe-to-deploy"
-
 [[exemptions.memchr]]
 version = "2.5.0"
 criteria = "safe-to-deploy"
@@ -172,10 +164,6 @@ criteria = "safe-to-deploy"
 version = "1.17.1"
 criteria = "safe-to-deploy"
 
-[[exemptions.oneshot]]
-version = "0.1.6"
-criteria = "safe-to-deploy"
-
 [[exemptions.ordered-float]]
 version = "3.2.0"
 criteria = "safe-to-deploy"
@@ -188,10 +176,6 @@ criteria = "safe-to-deploy"
 version = "1.0.10"
 criteria = "safe-to-deploy"
 
-[[exemptions.pin-project-lite]]
-version = "0.2.13"
-criteria = "safe-to-deploy"
-
 [[exemptions.plain]]
 version = "0.2.3"
 criteria = "safe-to-deploy"
@@ -202,22 +186,14 @@ criteria = "safe-to-deploy"
 
 [[exemptions.regex]]
 version = "1.6.0"
-criteria = "safe-to-deploy"
-
-[[exemptions.regex-automata]]
-version = "0.1.10"
-criteria = "safe-to-deploy"
+criteria = "safe-to-run"
 
 [[exemptions.regex-syntax]]
 version = "0.6.27"
-criteria = "safe-to-deploy"
+criteria = "safe-to-run"
 
 [[exemptions.ryu]]
 version = "1.0.11"
-criteria = "safe-to-deploy"
-
-[[exemptions.scoped-tls]]
-version = "1.0.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.scroll]]
@@ -244,16 +220,8 @@ criteria = "safe-to-deploy"
 version = "1.0.89"
 criteria = "safe-to-deploy"
 
-[[exemptions.sharded-slab]]
-version = "0.1.7"
-criteria = "safe-to-deploy"
-
 [[exemptions.siphasher]]
 version = "0.3.10"
-criteria = "safe-to-deploy"
-
-[[exemptions.smallvec]]
-version = "1.11.2"
 criteria = "safe-to-deploy"
 
 [[exemptions.static_assertions]]
@@ -268,36 +236,12 @@ criteria = "safe-to-deploy"
 version = "3.4.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.thread_local]]
-version = "1.1.7"
-criteria = "safe-to-deploy"
-
 [[exemptions.time]]
 version = "0.1.45"
 criteria = "safe-to-deploy"
 
 [[exemptions.toml]]
 version = "0.5.10"
-criteria = "safe-to-deploy"
-
-[[exemptions.tracing]]
-version = "0.1.40"
-criteria = "safe-to-deploy"
-
-[[exemptions.tracing-attributes]]
-version = "0.1.27"
-criteria = "safe-to-deploy"
-
-[[exemptions.tracing-core]]
-version = "0.1.32"
-criteria = "safe-to-deploy"
-
-[[exemptions.tracing-log]]
-version = "0.2.0"
-criteria = "safe-to-deploy"
-
-[[exemptions.tracing-subscriber]]
-version = "0.3.18"
 criteria = "safe-to-deploy"
 
 [[exemptions.uuid]]
@@ -322,10 +266,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.winapi-x86_64-pc-windows-gnu]]
 version = "0.4.0"
-criteria = "safe-to-deploy"
-
-[[exemptions.windows]]
-version = "0.48.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows-sys]]
