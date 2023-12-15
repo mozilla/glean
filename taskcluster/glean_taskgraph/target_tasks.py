@@ -3,15 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from taskgraph.target_tasks import _target_task, filter_for_tasks_for
+from taskgraph.target_tasks import register_target_task, filter_for_tasks_for
 
 
-@_target_task('pr-skip')
+@register_target_task('pr-skip')
 def target_tasks_pr_skip(full_task_graph, parameters, graph_config):
     return []
 
 
-@_target_task('pr-full')
+@register_target_task('pr-full')
 def target_tasks_default(full_task_graph, parameters, graph_config):
     """Target the tasks which have indicated they should be run on this project
     via the `run_on_projects` attributes."""
@@ -22,7 +22,7 @@ def target_tasks_default(full_task_graph, parameters, graph_config):
     return [l for l, task in full_task_graph.tasks.items() if filter(task)]
 
 
-@_target_task('pr-normal')
+@register_target_task('pr-normal')
 def target_tasks_default(full_task_graph, parameters, graph_config):
     """Target the tasks which have indicated they should be run on this project
     via the `run_on_projects` attributes."""
