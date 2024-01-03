@@ -489,7 +489,7 @@ except:
                 condaBootstrapDir,
                 "Miniconda3"
             )
-            project.tasks.whenTaskAdded { task ->
+            project.tasks.configureEach { task ->
                 if (task.name.startsWith('Bootstrap_CONDA')) {
                     task.dependsOn(createBuildDir)
 
