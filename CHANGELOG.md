@@ -7,6 +7,8 @@
   * Update `glean_parser` to v11.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v11.0.0))
 * iOS
   * Glean for iOS is now being built with Xcode 15.1 ([#2669](https://github.com/mozilla/glean/pull/2669))
+* Android
+  * Replaced `whenTaskAdded` with `configureEach` in `GleanGradlePlugin` to avoid unnecessary configuration. ([#2697](https://github.com/mozilla/glean/pull/2697))
 
 # v56.0.0 (2023-11-30)
 
@@ -16,8 +18,6 @@
   * Updated to UniFFI 0.25.2 ([#2678](https://github.com/mozilla/glean/pull/2678))
 * iOS
   * Dropped support for iOS < 15 ([#2681](https://github.com/mozilla/glean/pull/2681))
-* Android
-  * Replaced `whenTaskAdded` with `configureEach` in `GleanGradlePlugin` to avoid unnecessary configuration. ([#2697](https://github.com/mozilla/glean/pull/2697))
 
 # v55.0.0 (2023-10-23)
 
