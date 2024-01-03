@@ -16,6 +16,8 @@
   * Updated to UniFFI 0.25.2 ([#2678](https://github.com/mozilla/glean/pull/2678))
 * iOS
   * Dropped support for iOS < 15 ([#2681](https://github.com/mozilla/glean/pull/2681))
+* Android
+  * Replaced `whenTaskAdded` with `configureEach` in `GleanGradlePlugin` to avoid unnecessary configuration. ([#2697](https://github.com/mozilla/glean/pull/2697))
 
 # v55.0.0 (2023-10-23)
 
