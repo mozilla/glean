@@ -277,6 +277,15 @@ public class Glean {
         return gleanTestGetExperimentData(experimentId)
     }
 
+    /// Dynamically set the experimentation identifier, as opposed to setting it through the configuration
+    /// during initialization.
+    ///
+    /// - parameters:
+    ///     * experimentationId: The `String` identifier to set
+    public func setExperimentationId(_ experimentationId: String) {
+        gleanSetExperimentationId(experimentationId)
+    }
+
     /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Returns the stored experimentation id, for testing purposes only.

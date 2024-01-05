@@ -357,6 +357,16 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Dynamically set the experimentation identifier, as opposed to setting it through the configuration
+     * during initialization.
+     *
+     * @param experimentationId the id to set for experimentation purposes
+     */
+    fun testGetExperimentationId(experimentationId: String) {
+        gleanSetExperimentationId(experimentationId)
+    }
+
+    /**
      * Returns the stored experimentation id, for testing purposes only.
      *
      * @return the [String] experimentation id

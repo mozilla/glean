@@ -406,6 +406,17 @@ class Glean:
             raise RuntimeError("Experiment data is not set")
 
     @classmethod
+    def set_experimentation_id(cls, experimentation_id: str):
+        """
+        Dynamically set the experimentation identifier, as opposed to setting it through
+        the configuration during initialization.
+
+        Args:
+            experimentation_id (str): The string experimentation identifier to set
+        """
+        _uniffi.glean_set_experimentation_id(experimentation_id)
+
+    @classmethod
     def test_get_experimentation_id(cls) -> str:
         """
         Returns the stored experimentation id, for testing purposes only.

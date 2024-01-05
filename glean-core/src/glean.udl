@@ -33,6 +33,7 @@ namespace glean {
     RecordedExperiment? glean_test_get_experiment_data(string experiment_id);
 
     // Experimentation ID API
+    void glean_set_experimentation_id(string experimentation_id);
     string? glean_test_get_experimentation_id();
 
     // Server Knobs API
