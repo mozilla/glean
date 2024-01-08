@@ -873,11 +873,11 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
 ///
 /// Note: it's probably a good idea to unenroll from any experiments when identifiers change.
 pub fn glean_set_experimentation_id(experimentation_id: String) {
-    core::with_glean(|glean| {
+    launch_with_glean(move |glean| {
         glean
             .additional_metrics
             .experimentation_id
-            .set_sync(glean, experimentation_id.to_string());
+            .set(experimentation_id);
     });
 }
 
