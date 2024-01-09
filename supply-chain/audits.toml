@@ -241,6 +241,16 @@ criteria = "safe-to-deploy"
 delta = "0.5.7 -> 0.5.8"
 notes = "Reviewed the fix, previous versions indeed had were able to trigger a race condition"
 
+[[audits.crossbeam-channel]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.5.8 -> 0.5.11"
+
+[[audits.crossbeam-utils]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.8.14 -> 0.8.19"
+
 [[audits.ctor]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-run"
