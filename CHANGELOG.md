@@ -5,6 +5,7 @@
 * General
   * Errors are now recorded in cases where we had to create a new data store for Glean due to a failure ([bug 1815253](https://bugzilla.mozilla.org/show_bug.cgi?id=1815253))
   * Update `glean_parser` to v11.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v11.0.0))
+  * Event metrics can now record a maximum of 50 keys in the event extra object ([Bug 1869429](https://bugzilla.mozilla.org/show_bug.cgi?id=1869429))
 * iOS
   * Glean for iOS is now being built with Xcode 15.1 ([#2669](https://github.com/mozilla/glean/pull/2669))
 * Android

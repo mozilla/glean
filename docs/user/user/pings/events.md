@@ -53,7 +53,7 @@ Each entry in the `events` array is an object with the following properties:
 
 - `"name"`: The name of the event, as defined in the `metrics.yaml` file.
 
-- `"extra"` (optional): A mapping of strings to strings providing additional data about the event. The keys are restricted to 40 characters and values in this map will never exceed 100 characters.
+- `"extra"` (optional): A mapping of strings to strings providing additional data about the event. Keys are restricted to 40 UTF-8 bytes while values in the `extra` object are limited a maximum length of 500 UTF-8 bytes.
   
 ### Example event JSON
 
