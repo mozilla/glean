@@ -291,6 +291,12 @@ criteria = "safe-to-deploy"
 delta = "0.4.17 -> 0.4.18"
 notes = "One dependency removed, others updated (which we don't rely on), some APIs (which we don't use) changed."
 
+[[audits.log]]
+who = "Kagami Sascha Rosylight <krosylight@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.4.18 -> 0.4.20"
+notes = "Only cfg attribute and internal macro changes and module refactorings"
+
 [[audits.oneshot-uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -325,6 +331,12 @@ notes = "Minimal changes and removal of the build.rs"
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.2.16 -> 0.3.5"
+
+[[audits.rkv]]
+who = "Kagami Sascha Rosylight <krosylight@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.18.4 -> 0.19.0"
+notes = "Maintained by Mozilla, no addition of unsafe blocks"
 
 [[audits.rustversion]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
