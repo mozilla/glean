@@ -13,7 +13,7 @@ include = [
   "/src",
   "/Cargo.toml",
 ]
-rust-version = "1.65"
+rust-version = "1.66"
 
 [dependencies]
 xshell-venv = "1.1.0"

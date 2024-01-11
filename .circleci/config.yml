@@ -353,7 +353,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.65.0"
+          rust-version: "1.66.1"
 
   Generate Rust documentation:
     docker:
