@@ -377,7 +377,7 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 #### `extra_keys`
 
 The acceptable keys on the "extra" object sent with events.
-A maximum of 15 extra keys is allowed.
+A maximum of 50 extra keys is allowed.
 
 Each extra key contains additional metadata:
 
@@ -393,7 +393,7 @@ Each extra key contains additional metadata:
 
 * In Glean.js the default value for `maxEvents` is 1. In all other SDKs it is 500.
 * Once the `maxEvents` threshold is reached on the client an "events" ping is immediately sent.
-* The `extra_keys` allows for a maximum of 15 keys.
+* The `extra_keys` allows for a maximum of 50 keys.
 * The keys in the `extra_keys` list must be in dotted snake case, with a maximum length of 40 bytes, when encoded as UTF-8.
 * The values in the `extras` object have a maximum length of 500 bytes when serialized and encoded as UTF-8.
   Longer values are truncated, and an `invalid_overflow` error is recorded.
