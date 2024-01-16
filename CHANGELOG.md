@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
+
+# v56.1.0 (2024-01-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...v56.1.0)
 
 * General
   * Errors are now recorded in cases where we had to create a new data store for Glean due to a failure ([bug 1815253](https://bugzilla.mozilla.org/show_bug.cgi?id=1815253))
