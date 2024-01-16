@@ -223,7 +223,7 @@ the details of which are reproduced below.
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>  <license>
-    <name>Apache License 2.0: oneshot</name>
+    <name>Apache License 2.0: oneshot-uniffi</name>
     <url>https://github.com/faern/oneshot</url>
   </license>  <license>
     <name>Apache License 2.0: siphasher</name>

@@ -8,7 +8,7 @@ For offline builds, the Python environment, and packages of `glean_parser` and i
 
 To build a Glean-using application in offline mode, do the following:
 
-- Install Python 3.7 or later and ensure it's on the `PATH`.
+- Install Python 3.8 or later and ensure it's on the `PATH`.
 
   - On Linux, installing Python from your Linux distribution's package manager is usually sufficient.
 

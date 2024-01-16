@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
+
+# v56.1.0 (2024-01-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...v56.1.0)
+
+* General
+  * Errors are now recorded in cases where we had to create a new data store for Glean due to a failure ([bug 1815253](https://bugzilla.mozilla.org/show_bug.cgi?id=1815253))
+  * Update `glean_parser` to v11.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v11.0.0))
+  * Event metrics can now record a maximum of 50 keys in the event extra object ([Bug 1869429](https://bugzilla.mozilla.org/show_bug.cgi?id=1869429))
+* iOS
+  * Glean for iOS is now being built with Xcode 15.1 ([#2669](https://github.com/mozilla/glean/pull/2669))
+* Android
+  * Replaced `whenTaskAdded` with `configureEach` in `GleanGradlePlugin` to avoid unnecessary configuration. ([#2697](https://github.com/mozilla/glean/pull/2697))
 
 # v56.0.0 (2023-11-30)
 
@@ -12,6 +25,9 @@
   * Dropped support for iOS < 15 ([#2681](https://github.com/mozilla/glean/pull/2681))
 
 # v55.0.0 (2023-10-23)
+
+* Python
+  * BREAKING CHANGE: Dropped support for Python 3.7 ([#]())
 
 [Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...v55.0.0)
 

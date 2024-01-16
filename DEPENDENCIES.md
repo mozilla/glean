@@ -2102,8 +2102,8 @@ The following text applies to code linked from these dependencies:
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.4]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.8]( https://github.com/crossbeam-rs/crossbeam )
-* [crossbeam-utils 0.8.8]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.11]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [fastrand 2.0.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.26]( https://github.com/rust-lang/flate2-rs )
@@ -3824,7 +3824,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [lmdb-rkv-sys 0.11.2]( https://github.com/mozilla/lmdb-rs.git )
-* [oneshot 0.1.6]( https://github.com/faern/oneshot )
+* [oneshot-uniffi 0.1.5]( https://github.com/faern/oneshot )
 * [siphasher 0.3.10]( https://github.com/jedisct1/rust-siphash )
 * [tinyvec_macros 0.1.0]( https://github.com/Soveu/tinyvec_macros )
 * [winapi-x86_64-pc-windows-gnu 0.4.0]( https://github.com/retep998/winapi-rs )
@@ -4687,9 +4687,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 56.0.0]( https://github.com/mozilla/glean )
-* [glean-build 10.0.0]( https://github.com/mozilla/glean )
-* [glean-core 56.0.0]( https://github.com/mozilla/glean )
+* [glean 56.1.0]( https://github.com/mozilla/glean )
+* [glean-build 11.0.1]( https://github.com/mozilla/glean )
+* [glean-core 56.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5076,15 +5076,15 @@ The following text applies to code linked from these dependencies:
 * [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [uniffi 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_build 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_checksum_derive 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_core 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_testing 0.25.2]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_udl 0.25.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_build 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_checksum_derive 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_core 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_testing 0.25.3]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_udl 0.25.3]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0

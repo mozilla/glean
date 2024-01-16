@@ -1,6 +1,6 @@
 [package]
 name = "glean-build"
-version = "10.0.0"
+version = "11.0.1"
 edition = "2021"
 description = "Glean SDK Rust build helper"
 repository = "https://github.com/mozilla/glean"
@@ -13,7 +13,7 @@ include = [
   "/src",
   "/Cargo.toml",
 ]
-rust-version = "1.65"
+rust-version = "1.66"
 
 [dependencies]
 xshell-venv = "1.1.0"

@@ -44,7 +44,6 @@ commands:
           command: |
             echo "export RUST_BACKTRACE=1" >> $BASH_ENV
             echo "export RUST_LOG=glean_core=debug" >> $BASH_ENV
-            echo "export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse" >> $BASH_ENV
             echo "export CARGO_INCREMENTAL=0" >> $BASH_ENV
       - run:
           name: Setup Rust toolchain
@@ -353,7 +352,7 @@ jobs:
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.65.0"
+          rust-version: "1.66.1"
 
   Generate Rust documentation:
     docker:
@@ -477,7 +476,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "14.3"
+      xcode: "15.1"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -486,8 +485,10 @@ jobs:
           command: |
             export HOMEBREW_NO_AUTO_UPDATE=1
             export HOMEBREW_NO_INSTALL_CLEANUP=1
-            # swiftlint 0.52.3
-            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/a8712178bbbd19247abab91f3fb2eae240f8249c/Formula/swiftlint.rb > swiftlint.rb
+            # swiftlint 0.53.0
+            SWIFTLINT_SHA256="6e7ca377eb3bbfe43e09825f91ca238382e68d6d1c79f947b0b6eeed79c13650"
+            curl https://raw.githubusercontent.com/Homebrew/homebrew-core/0e4a16c4875adafd3ef2cb39c587d0cbb19c618c/Formula/s/swiftlint.rb > swiftlint.rb
+            echo "${SWIFTLINT_SHA256} *swiftlint.rb" | shasum -a 256 -c -
             brew install ./swiftlint.rb
       - run:
           name: Run swiftlint
@@ -497,7 +498,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "14.3"
+      xcode: "15.1"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -510,16 +511,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v15
+          key: swift-docs-gems-v19
       - run:
           name: Install jazzy
           command: gem install jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v15
+          key: swift-docs-gems-v19
           paths:
-            - ~/.gem/ruby/2.7.6
+            - ~/.rbenv/versions/3.1.4/lib/ruby/gems/3.1.0
       - run:
           name: Setup build environment
           command: |
@@ -535,7 +536,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 15 Simulator (17' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
@@ -555,10 +556,6 @@ jobs:
             - target
           key: v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
-          name: Configure device logging
-          command: |
-            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
-      - run:
           name: Run iOS tests
           command: |
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
@@ -568,25 +565,22 @@ jobs:
             fi
       - run:
           name: Generate Swift documentation
-          command: bash bin/build-swift-docs.sh
+          command: |
+            # Skip doc generation for pull requests.
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              bash bin/build-swift-docs.sh
+            else
+              mkdir -p build/docs/swift
+            fi
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: raw_xcodebuild.log
       - store_artifacts:
           path: raw_xcodetest.log
           destination: raw_xcodetest.log
-      - run:
-          name: Collect device logs
-          command: |
-            xcrun simctl spawn booted log collect --output $(pwd)/ios-tests.logarchive
-            zip -r $(pwd)/device_logs.zip $(pwd)/ios-tests.logarchive
-      - store_artifacts:
-          path: device_logs.zip
-          destination: device_logs.zip
       - persist_to_workspace:
           root: build/
           paths: docs/swift
-      - skip-if-doc-only
       - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
@@ -604,7 +598,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "14.3"
+      xcode: "15.1"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -626,7 +620,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 14 Simulator (16' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 15 Simulator (17' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
       - run:
           name: Build XCFramework archive
@@ -640,29 +634,16 @@ jobs:
           path: raw_sample_xcodebuild.log
           destination: raw_sample_xcodebuild.log
       - run:
-          name: Configure device logging
-          command: |
-            xcrun simctl spawn booted log config --mode "level:debug" --subsystem org.mozilla.glean-sample-app
-      - run:
           name: Run sample app tests
           command: |
             bash bin/run-ios-sample-app-test.sh
       - store_artifacts:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log
-      - run:
-          name: Collect device logs
-          command: |
-            xcrun simctl spawn booted log collect --output $(pwd)/ios-integration-test.logarchive
-            zip -r $(pwd)/device_logs.zip $(pwd)/ios-integration-test.logarchive
-          when: always
-      - store_artifacts:
-          path: device_logs.zip
-          destination: device_logs.zip
 
   iOS Framework release:
     macos:
-      xcode: "14.3"
+      xcode: "15.1"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - checkout
@@ -704,14 +685,6 @@ jobs:
           name: Python lints
           command: make lint-python
 
-  Python 3_7 tests:
-    docker:
-      - image: cimg/python:3.7
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
   Python 3_8 tests:
     docker:
       - image: cimg/python:3.8
@@ -749,6 +722,20 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: .venv3.10
+
+  Python 3_11 tests:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - test-python
+
+  Python 3_12 tests:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - test-python
 
   Python Windows x86_64 tests:
     docker:
@@ -882,7 +869,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "14.3"
+      xcode: "15.1"
     resource_class: "macos.x86.medium.gen2"
     steps:
       - install-rustup
@@ -1080,8 +1067,6 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_7 tests:
-          filters: *ci-filters
       - Python 3_8 tests:
           filters: *ci-filters
       - Python 3_9 tests:
@@ -1089,6 +1074,10 @@ workflows:
       - Python 3_9 on Alpine tests:
           filters: *ci-filters
       - Python 3_10 tests:
+          filters: *ci-filters
+      - Python 3_11 tests:
+          filters: *ci-filters
+      - Python 3_12 tests:
           filters: *ci-filters
       - Python Windows x86_64 tests:
           filters: *ci-filters

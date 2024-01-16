@@ -706,6 +706,20 @@ glean.database:
       - glean-team@mozilla.com
     expires: never
 
+  rkv_load_error:
+    type: string
+    description: |
+      If there was an error loading the RKV database, record it.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1815253
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1815253
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.validation:
   foreground_count:
     type: counter

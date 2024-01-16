@@ -16,20 +16,22 @@ GLEAN_ROOT=$2
 # buildvariant from our xcconfigs
 BUILDVARIANT=$3
 
+if [[ -n "${DEVELOPER_SDK_DIR:-}" ]]; then
+#  # Assume we're in Xcode, which means we're probably cross-compiling.
+#  # In this case, we need to add an extra library search path for build scripts and proc-macros,
+#  # which run on the host instead of the target.
+#  # (macOS Big Sur does not have linkable libraries in /usr/lib/.)
+  local libpath
+  libpath="${DEVELOPER_SDK_DIR}/MacOSX.sdk/usr/lib"
+  export LIBRARY_PATH="${libpath}:${LIBRARY_PATH:-}"
+fi
+
 RELFLAG=
 if [[ "$BUILDVARIANT" != "debug" ]]; then
     RELFLAG=--release
 fi
 
 set -euvx
-
-if [[ -n "${SDK_DIR:-}" ]]; then
-  # Assume we're in Xcode, which means we're probably cross-compiling.
-  # In this case, we need to add an extra library search path for build scripts and proc-macros,
-  # which run on the host instead of the target.
-  # (macOS Big Sur does not have linkable libraries in /usr/lib/.)
-  export LIBRARY_PATH="${SDK_DIR}/usr/lib:${LIBRARY_PATH:-}"
-fi
 
 IS_SIMULATOR=0
 if [ "${LLVM_TARGET_TRIPLE_SUFFIX-}" = "-simulator" ]; then
