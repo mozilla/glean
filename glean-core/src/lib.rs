@@ -869,6 +869,18 @@ pub fn glean_test_get_experiment_data(experiment_id: String) -> Option<RecordedE
     core::with_glean(|glean| glean.test_get_experiment_data(experiment_id.to_owned()))
 }
 
+/// Set an experimentation identifier dynamically.
+///
+/// Note: it's probably a good idea to unenroll from any experiments when identifiers change.
+pub fn glean_set_experimentation_id(experimentation_id: String) {
+    launch_with_glean(move |glean| {
+        glean
+            .additional_metrics
+            .experimentation_id
+            .set(experimentation_id);
+    });
+}
+
 /// TEST ONLY FUNCTION.
 /// Gets stored experimentation id annotation.
 pub fn glean_test_get_experimentation_id() -> Option<String> {
