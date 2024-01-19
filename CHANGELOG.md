@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
 
+* Android
+  * Set the target Android SDK to version 34 ([#2709](https://github.com/mozilla/glean/pull/2709))
+
 # v56.1.0 (2024-01-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...v56.1.0)
