@@ -362,7 +362,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param experimentationId the id to set for experimentation purposes
      */
-    fun testGetExperimentationId(experimentationId: String) {
+    fun setExperimentationId(experimentationId: String) {
         gleanSetExperimentationId(experimentationId)
     }
 
