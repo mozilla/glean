@@ -5,6 +5,7 @@
 * Android
   * Set the target Android SDK to version 34 ([#2709](https://github.com/mozilla/glean/pull/2709))
   * Fixed an incorrectly named method. The method is now correctly named `setExperimentationId`.
+  * Update to Gradle v8.5 ([#2721](https://github.com/mozilla/glean/pull/2721))
   
 # v56.1.0 (2024-01-16)
 
