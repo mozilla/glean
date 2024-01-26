@@ -32,7 +32,7 @@ class Configuration:
         max_events: int = DEFAULT_MAX_EVENTS,
         ping_uploader: Optional[net.BaseUploader] = None,
         allow_multiprocessing: bool = True,
-        enable_event_timestamps: bool = False,
+        enable_event_timestamps: bool = True,
         experimentation_id: Optional[str] = None,
     ):
         """
@@ -48,7 +48,7 @@ class Configuration:
             allow_multiprocessing (bool): When True (default), use a subprocess
                 to offload some work (such as ping uploading).
             enable_event_timestamps (bool): (Experimental) Whether to add a
-                wallclock timestamp to all events. Default: `false`.
+                wallclock timestamp to all events. Default: `True`.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT

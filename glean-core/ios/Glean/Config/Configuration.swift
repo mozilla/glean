@@ -34,7 +34,7 @@ public struct Configuration {
         serverEndpoint: String? = nil,
         dataPath: String? = nil,
         logLevel: LevelFilter? = nil,
-        enableEventTimestamps: Bool = false,
+        enableEventTimestamps: Bool = true,
         experimentationId: String? = nil
     ) {
         self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
