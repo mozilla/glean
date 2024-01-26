@@ -32,7 +32,7 @@ data class Configuration @JvmOverloads constructor(
     val httpClient: PingUploader = HttpURLConnectionUploader(),
     val dataPath: String? = null,
     val logLevel: LevelFilter? = null,
-    val enableEventTimestamps: Boolean = false,
+    val enableEventTimestamps: Boolean = true,
     val experimentationId: String? = null,
 ) {
     companion object {

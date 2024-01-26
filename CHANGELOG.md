@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v58.0.0...main)
 
+* General
+  * Enable wall clock timestamp on all events by default ([#2767](https://github.com/mozilla/glean/issues/2767))
 * Rust
   * Timing distribution and Custom distributions now expose `accumulate_single_sample`. This includes their traits and consumers that make use of them will need to implement the new functions ([Bug 1881297](https://bugzilla.mozilla.org/show_bug.cgi?id=1881297))
 * Android

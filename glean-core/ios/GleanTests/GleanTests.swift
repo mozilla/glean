@@ -111,7 +111,7 @@ class GleanTests: XCTestCase {
                 serverEndpoint: nil,
                 dataPath: nil,
                 logLevel: nil,
-                enableEventTimestamps: false,
+                enableEventTimestamps: true,
                 experimentationId: "alpha-beta-gamma-delta"
             ),
             clearStores: true)
