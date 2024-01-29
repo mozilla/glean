@@ -27,9 +27,7 @@ class HttpClientUploader(base_uploader.BaseUploader):
     _DEFAULT_TIMEOUT = 10
 
     @classmethod
-    def upload(
-        cls, url: str, data: bytes, headers: Dict[str, str]
-    ) -> Union[
+    def upload(cls, url: str, data: bytes, headers: Dict[str, str]) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
