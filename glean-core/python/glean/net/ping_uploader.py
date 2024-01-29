@@ -16,9 +16,7 @@ else:
 
 
 class PingUploader(Protocol):
-    def upload(
-        self, url: str, data: bytes, headers: Dict[str, str]
-    ) -> Union[
+    def upload(self, url: str, data: bytes, headers: Dict[str, str]) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
