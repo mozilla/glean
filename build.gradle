@@ -24,7 +24,7 @@ buildscript {
         // Android X dependencies
         androidx_annotation: '1.7.1',
         androidx_appcompat: '1.6.1',
-        androidx_browser: '1.6.0',
+        androidx_browser: '1.7.0',
         androidx_core: '1.12.0',
         androidx_espresso: '3.5.1',
         androidx_junit: '1.1.5',
