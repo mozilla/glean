@@ -65,7 +65,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.1")
+    id("io.gitlab.arturbosch.detekt").version("1.23.5")
 }
 
 allprojects {
