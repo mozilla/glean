@@ -22,7 +22,7 @@ buildscript {
         rust_android_plugin: '0.9.3',
 
         // Android X dependencies
-        androidx_annotation: '1.7.0',
+        androidx_annotation: '1.7.1',
         androidx_appcompat: '1.6.1',
         androidx_browser: '1.6.0',
         androidx_core: '1.12.0',
