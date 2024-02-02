@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
 
 * Android
+  * BREAKING CHANGE: Update JNA to version 5.14.0. Projects using older JNA releases may encounter errors until they update. ([#2727](https://github.com/mozilla/glean/pull/2727))
   * Set the target Android SDK to version 34 ([#2709](https://github.com/mozilla/glean/pull/2709))
   * Fixed an incorrectly named method. The method is now correctly named `setExperimentationId`.
   * Update to Gradle v8.5 ([#2721](https://github.com/mozilla/glean/pull/2721))
