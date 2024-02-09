@@ -341,8 +341,9 @@ class GleanTests: XCTestCase {
     }
 
     func testForegroundCounter() {
-        // Glean is started by the test framework.
-        // That already triggers the first foreground event.
+        // Reset Glean to ensure that this isn't affected by concurrent tests
+        // This will trigger the initial "foreground" event
+        resetGleanDiscardingInitialPings(testCase: self, tag: "GleanTests")
 
         // Put it in the background
         Glean.shared.handleBackgroundEvent()

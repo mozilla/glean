@@ -49,6 +49,7 @@
     - [Annotating experiments](reference/general/experiments-api.md)
     - [Registering custom pings](reference/general/register-custom-pings.md)
     - [Shut down](reference/general/shutdown.md)
+    - [EXPERIMENTAL: Glean Event Listener](reference/general/glean-event-listener.md)
 - [Debugging](reference/debug/index.md)
     - [Log pings](reference/debug/logPings.md)
     - [Debug View Tag](reference/debug/debugViewTag.md)
