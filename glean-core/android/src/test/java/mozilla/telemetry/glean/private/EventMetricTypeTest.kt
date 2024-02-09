@@ -19,6 +19,7 @@ import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.internal.GleanEventListener
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.testing.GleanTestRule
@@ -523,5 +524,79 @@ class EventMetricTypeTest {
         // No events should be left, thus we don't receive it.
         ping.submit()
         assertNull(waitForPingContent(pingName, null, server))
+    }
+
+    @Test
+    fun `Event listener correct reports event recordings`() {
+        // Define some click events to listen for in the listener
+        val click1 = EventMetricType<ClickExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click1",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf(),
+        )
+        val click2 = EventMetricType<ClickExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click2",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf(),
+        )
+        val click3 = EventMetricType<ClickExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click3",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf(),
+        )
+
+        class TestEventListener : GleanEventListener {
+            val listenerTag = "TestEventListener"
+
+            var lastSeenId: String = ""
+            var count: Int = 0
+
+            override fun onEventRecorded(id: String) {
+                this.lastSeenId = id
+                this.count += 1
+            }
+        }
+
+        val listener = TestEventListener()
+
+        // Register the listener
+        Glean.registerEventListener(listener.listenerTag, listener)
+
+        // Check that events are properly reported
+        click1.record()
+        assertEquals("ids must match", "ui.click1", listener.lastSeenId)
+        assertTrue("count must be correct", listener.count == 1)
+        click2.record()
+        assertEquals("ids must match", "ui.click2", listener.lastSeenId)
+        assertTrue("count must be correct", listener.count == 2)
+        click3.record()
+        assertEquals("ids must match", "ui.click3", listener.lastSeenId)
+        assertTrue("count must be correct", listener.count == 3)
+
+        // Unregister the listener
+        Glean.unregisterEventListener(listener.listenerTag)
+
+        // Check that events are no longer reported
+        click1.record()
+        assertEquals("ids must match", "ui.click3", listener.lastSeenId)
+        assertTrue("count must be correct", listener.count == 3)
+        click2.record()
+        assertEquals("ids must match", "ui.click3", listener.lastSeenId)
+        assertTrue("count must be correct", listener.count == 3)
     }
 }

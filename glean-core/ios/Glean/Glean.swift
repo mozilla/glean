@@ -405,6 +405,23 @@ public class Glean {
         }
     }
 
+    /// EXPERIMENTAL: Register a listener to receive notification of event recordings
+    ///
+    /// - parameters:
+    ///     * tag: String used to identify the listener when unregistering it
+    ///     * listener: Implements `GleanEventListener` protocol
+    public func registerEventListener(tag: String, listener: GleanEventListener) {
+        gleanRegisterEventListener(tag, listener)
+    }
+
+    /// EXPERIMENTAL: Unregister a listener to receive notification of event recordings
+    ///
+    /// - parameters:
+    ///     * tag: String used to identify the listener when it was registered
+    public func unregisterEventListener(tag: String) {
+        gleanUnregisterEventListener(tag)
+    }
+
     /// Set configuration to override metrics' default enabled/disabled state, typically from
     /// a remote_settings experiment or rollout.
     ///

@@ -378,6 +378,28 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * EXPERIMENTAL: Register a listener to receive event recording notifications
+     *
+     * NOTE: Only one listener may be registered for a given tag. Each subsequent registration with
+     * that same tag replaces the currently registered listener.
+     *
+     * @param tag a tag to use when unregistering the listener
+     * @param listener implements the `GleanEventListener` interface
+     */
+    fun registerEventListener(tag: String, listener: GleanEventListener) {
+        gleanRegisterEventListener(tag, listener)
+    }
+
+    /**
+     * Unregister an event listener
+     *
+     * @param tag the tag used when registering the listener to be unregistered
+     */
+    fun unregisterEventListener(tag: String) {
+        gleanUnregisterEventListener(tag)
+    }
+
+    /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
     internal fun getClientInfo(configuration: Configuration, buildInfo: BuildInfo): ClientInfoMetrics {
