@@ -318,7 +318,6 @@ dependencies = [
 name = "glean"
 version = "57.0.0"
 dependencies = [
- "chrono",
  "crossbeam-channel",
  "env_logger",
  "flate2",
@@ -328,12 +327,8 @@ dependencies = [
  "libc",
  "log",
  "once_cell",
- "serde",
  "serde_json",
  "tempfile",
- "thiserror",
- "time",
- "uuid",
  "whatsys",
 ]
 
