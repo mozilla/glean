@@ -404,7 +404,6 @@ jobs:
             pushd glean-core
             cargo publish --verbose
 
-            sleep 30
             pushd rlb
             cargo publish --verbose
 
