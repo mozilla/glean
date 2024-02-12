@@ -395,7 +395,7 @@ jobs:
           name: Publish Cargo Package
           command: |
             # Login to crates.io so the following commands work
-            cargo login -- "$CRATES_IO_TOKEN"
+            cargo login "$CRATES_IO_TOKEN"
 
             # Publish all crates from CI.
             # The token is set in CircleCI settings.
