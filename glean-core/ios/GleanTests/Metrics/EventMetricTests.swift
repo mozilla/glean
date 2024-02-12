@@ -57,6 +57,17 @@ struct SomeExtras: EventExtras {
     }
 }
 
+class TestEventListener: GleanEventListener {
+    let listenerTag = "TestEventListener"
+    var lastSeenId: String = ""
+    var count: Int64 = 0
+
+    func onEventRecorded(_ id: String) {
+        self.lastSeenId = id
+        self.count += 1
+    }
+}
+
 class EventMetricTypeTests: XCTestCase {
     var expectation: XCTestExpectation?
     var lastPingJson: [String: Any]?
@@ -333,5 +344,63 @@ class EventMetricTypeTests: XCTestCase {
 
         metric.record(TestExtras(testName: String(repeating: "0123456789", count: 51)))
         XCTAssertEqual(1, metric.testGetNumRecordedErrors(.invalidOverflow))
+    }
+
+    func testEventListener() {
+        let event1 = EventMetricType<SomeExtras>(CommonMetricData(
+            category: "telemetry",
+            name: "test_event1",
+            sendInPings: ["events"],
+            lifetime: .ping,
+            disabled: false
+        ), ["some_extra"])
+
+        let event2 = EventMetricType<SomeExtras>(CommonMetricData(
+            category: "telemetry",
+            name: "test_event2",
+            sendInPings: ["events"],
+            lifetime: .ping,
+            disabled: false
+        ), ["some_extra"])
+
+        let event3 = EventMetricType<SomeExtras>(CommonMetricData(
+            category: "telemetry",
+            name: "test_event3",
+            sendInPings: ["events"],
+            lifetime: .ping,
+            disabled: false
+        ), ["some_extra"])
+
+        Glean.shared.resetGlean(clearStores: false)
+
+        let listener = TestEventListener()
+
+        // Register the listener
+        Glean.shared.registerEventListener(tag: listener.listenerTag, listener: listener)
+
+        // Ensure events are being reported via the callback
+        event1.record(SomeExtras(someExtra: "uno"))
+        XCTAssertEqual(1, listener.count)
+        XCTAssertEqual("telemetry.test_event1", listener.lastSeenId)
+        event2.record(SomeExtras(someExtra: "dos"))
+        XCTAssertEqual(2, listener.count)
+        XCTAssertEqual("telemetry.test_event2", listener.lastSeenId)
+        event3.record(SomeExtras(someExtra: "tres"))
+        XCTAssertEqual(3, listener.count)
+        XCTAssertEqual("telemetry.test_event3", listener.lastSeenId)
+
+        // Unregister the listener
+        Glean.shared.unregisterEventListener(tag: listener.listenerTag)
+
+        // Ensure events are no longer reported via the callback
+        event1.record(SomeExtras(someExtra: "uno"))
+        XCTAssertEqual(3, listener.count)
+        XCTAssertEqual("telemetry.test_event3", listener.lastSeenId)
+        event2.record(SomeExtras(someExtra: "dos"))
+        XCTAssertEqual(3, listener.count)
+        XCTAssertEqual("telemetry.test_event3", listener.lastSeenId)
+        event3.record(SomeExtras(someExtra: "tres"))
+        XCTAssertEqual(3, listener.count)
+        XCTAssertEqual("telemetry.test_event3", listener.lastSeenId)
     }
 }

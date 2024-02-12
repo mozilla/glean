@@ -24,3 +24,4 @@ The Glean SDKs provide a general API that supports the following operations. See
 | `registerPings` | Register custom pings generated from `pings.yaml`. | [Custom pings][custom-pings] |
 | `setExperimentActive` | Indicate that an experiment is running. | [Using the Experiments API][experiments-api] |
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
+| `registerEventListener` | Register a callback by which a consumer can be notified of all event metrics being recorded. | [Glean Event Listener](./glean-event-listener.md) |

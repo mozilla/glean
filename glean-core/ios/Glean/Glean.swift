@@ -277,6 +277,15 @@ public class Glean {
         return gleanTestGetExperimentData(experimentId)
     }
 
+    /// Dynamically set the experimentation identifier, as opposed to setting it through the configuration
+    /// during initialization.
+    ///
+    /// - parameters:
+    ///     * experimentationId: The `String` identifier to set
+    public func setExperimentationId(_ experimentationId: String) {
+        gleanSetExperimentationId(experimentationId)
+    }
+
     /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Returns the stored experimentation id, for testing purposes only.
@@ -394,6 +403,23 @@ public class Glean {
                 }
             }
         }
+    }
+
+    /// EXPERIMENTAL: Register a listener to receive notification of event recordings
+    ///
+    /// - parameters:
+    ///     * tag: String used to identify the listener when unregistering it
+    ///     * listener: Implements `GleanEventListener` protocol
+    public func registerEventListener(tag: String, listener: GleanEventListener) {
+        gleanRegisterEventListener(tag, listener)
+    }
+
+    /// EXPERIMENTAL: Unregister a listener to receive notification of event recordings
+    ///
+    /// - parameters:
+    ///     * tag: String used to identify the listener when it was registered
+    public func unregisterEventListener(tag: String) {
+        gleanUnregisterEventListener(tag)
     }
 
     /// Set configuration to override metrics' default enabled/disabled state, typically from

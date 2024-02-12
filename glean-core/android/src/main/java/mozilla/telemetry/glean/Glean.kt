@@ -357,6 +357,16 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Dynamically set the experimentation identifier, as opposed to setting it through the configuration
+     * during initialization.
+     *
+     * @param experimentationId the id to set for experimentation purposes
+     */
+    fun setExperimentationId(experimentationId: String) {
+        gleanSetExperimentationId(experimentationId)
+    }
+
+    /**
      * Returns the stored experimentation id, for testing purposes only.
      *
      * @return the [String] experimentation id
@@ -365,6 +375,28 @@ open class GleanInternalAPI internal constructor() {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetExperimentationId(): String {
         return gleanTestGetExperimentationId() ?: throw NullPointerException("Experimentation Id is not set")
+    }
+
+    /**
+     * EXPERIMENTAL: Register a listener to receive event recording notifications
+     *
+     * NOTE: Only one listener may be registered for a given tag. Each subsequent registration with
+     * that same tag replaces the currently registered listener.
+     *
+     * @param tag a tag to use when unregistering the listener
+     * @param listener implements the `GleanEventListener` interface
+     */
+    fun registerEventListener(tag: String, listener: GleanEventListener) {
+        gleanRegisterEventListener(tag, listener)
+    }
+
+    /**
+     * Unregister an event listener
+     *
+     * @param tag the tag used when registering the listener to be unregistered
+     */
+    fun unregisterEventListener(tag: String) {
+        gleanUnregisterEventListener(tag)
     }
 
     /**

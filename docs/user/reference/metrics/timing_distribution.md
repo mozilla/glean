@@ -321,6 +321,8 @@ This API is not currently exposed in Firefox Desktop, see [Bug 1829745](https://
 
 </div>
 
+{{#include ../../../shared/tab_footer.md}}
+
 #### Limits
 
 - Samples are limited to the maximum value for the given time unit.

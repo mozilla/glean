@@ -1,7 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...main)
 
+# v57.0.0 (2024-02-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...v57.0.0)
+
+* General
+  * Added an experimental event listener API ([#2719](https://github.com/mozilla/glean/pull/2719)) 
+* Android
+  * BREAKING CHANGE: Update JNA to version 5.14.0. Projects using older JNA releases may encounter errors until they update. ([#2727](https://github.com/mozilla/glean/pull/2727))
+  * Set the target Android SDK to version 34 ([#2709](https://github.com/mozilla/glean/pull/2709))
+  * Fixed an incorrectly named method. The method is now correctly named `setExperimentationId`.
+  * Update to Gradle v8.6 ([#2721](https://github.com/mozilla/glean/pull/2721)/[#2731](https://github.com/mozilla/glean/pull/2731))
+  
 # v56.1.0 (2024-01-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v56.0.0...v56.1.0)

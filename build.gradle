@@ -13,18 +13,18 @@ buildscript {
     ext.versions = [
         android_gradle_plugin: '8.0.2',
         coroutines: '1.7.2',
-        jna: '5.13.0',
+        jna: '5.14.0',
         junit: '4.13.2',
-        mockito: '5.5.0',
+        mockito: '5.10.0',
         mockwebserver: '4.11.0', // This is different than a-c, but we're fine, it's only tests.
-        kotlin: '1.8.21',
-        robolectric: '4.11',
+        kotlin: '1.8.22',
+        robolectric: '4.11.1',
         rust_android_plugin: '0.9.3',
 
         // Android X dependencies
-        androidx_annotation: '1.7.0',
+        androidx_annotation: '1.7.1',
         androidx_appcompat: '1.6.1',
-        androidx_browser: '1.6.0',
+        androidx_browser: '1.7.0',
         androidx_core: '1.12.0',
         androidx_espresso: '3.5.1',
         androidx_junit: '1.1.5',
@@ -37,7 +37,7 @@ buildscript {
     ext.build = [
         ndkVersion: "25.2.9519653", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 34,
-        targetSdkVersion: 33,
+        targetSdkVersion: 34,
         minSdkVersion: 21,
         jvmTargetCompatibility: 17,
     ]
@@ -65,7 +65,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.1")
+    id("io.gitlab.arturbosch.detekt").version("1.23.5")
 }
 
 allprojects {
