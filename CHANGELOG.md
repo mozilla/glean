@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...main)
+
+# v57.0.0 (2024-02-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v56.1.0...v57.0.0)
 
 * General
   * Added an experimental event listener API ([#2719](https://github.com/mozilla/glean/pull/2719)) 
