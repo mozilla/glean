@@ -7,6 +7,10 @@
 //! Individual metric types implement this trait to expose the specific metrics API.
 //! It can be used by wrapping implementations to guarantee API conformance.
 
+/// Re-export for use in generated code.
+#[doc(hidden)]
+pub extern crate serde as __serde;
+
 mod boolean;
 mod counter;
 mod custom_distribution;

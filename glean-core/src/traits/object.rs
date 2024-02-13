@@ -4,8 +4,7 @@
 
 use std::fmt::Display;
 
-use serde::Deserialize;
-pub use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 
 /// This type represents all possible errors that can occur when serializing or deserializing an object from/to JSON.
