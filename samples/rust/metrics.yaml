@@ -44,7 +44,7 @@ party:
       items:
         type: object
         properties:
-          color:
+          colour:
             type: string
           diameter:
             type: number

@@ -770,6 +770,7 @@ name = "sample"
 version = "0.1.0"
 dependencies = [
  "env_logger",
+ "flate2",
  "glean",
  "glean-build",
  "tempfile",
