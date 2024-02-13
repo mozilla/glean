@@ -54,6 +54,19 @@ fn main() {
 
     glean_metrics::test_metrics::sample_boolean.set(true);
 
+    use glean_metrics::party::{BalloonsObject, BalloonsObjectItem};
+    let balloons = BalloonsObject::from([
+        BalloonsObjectItem {
+            color: Some("red".to_string()),
+            diameter: Some(5),
+        },
+        BalloonsObjectItem {
+            color: Some("blue".to_string()),
+            diameter: None,
+        },
+    ]);
+    glean_metrics::party::balloons.set(balloons);
+
     glean_metrics::prototype.submit(None);
     // Need to wait a short time for Glean to actually act.
     thread::sleep(Duration::from_millis(100));
