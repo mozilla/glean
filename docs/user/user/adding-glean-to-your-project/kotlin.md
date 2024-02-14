@@ -122,12 +122,6 @@ ext.gleanGenerateMarkdownDocs = true
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ```
 
-{{#include ../../../shared/blockquote-warning.html}}
-
-##### Earlier versions
-
-> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
-
 {{#include ../../../shared/blockquote-info.html}}
 
 ##### Offline builds
