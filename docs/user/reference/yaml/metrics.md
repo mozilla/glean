@@ -104,12 +104,13 @@ See the list of [supported metric types](../metrics/index.md).
 
 {{#include ../../../shared/blockquote-warning.html}}
 
-##### Types must not be changed after release
+##### Types should not be changed after release
 
-> Once a metric is defined in a product, its `type` must not be changed.
-> The ingestion pipeline will not be able to handle such a change.
-> If a type change is required a new metric must be added with a new name and the new type.
-> This will require an additional data review, in which you can also reference the old data review.
+> Once a metric is defined in a product, its `type` should only be changed in rare circumstances.
+> It's better to rename the metric with the new type instead.
+> The ingestion pipeline will create a new column for a metric with a changed type.
+> Any new analysis will need to use the new column going forward.
+> The old column will still be populated with data from old clients.
 
 #### `description`
 
