@@ -124,6 +124,15 @@ apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 {{#include ../../../shared/blockquote-info.html}}
 
+##### Rosetta 2 required on Apple Silicon
+
+> On Apple Silicon machines (M1/M2/M3 MacBooks and iMacs) Rosetta 2 is required for the bundled Python.
+> See the [Apple documentation about Rosetta 2](https://support.apple.com/en-us/HT211861)
+> and [Bug 1775420](https://bugzilla.mozilla.org/show_bug.cgi?id=1775420) for details.  
+> You can install it with `softwareupdate --install-rosetta`
+
+{{#include ../../../shared/blockquote-info.html}}
+
 ##### Offline builds
 
 > The Glean Gradle plugin has limited support for [offline builds](../../language-bindings/android/android-offline-builds.md) of applications that use the Glean SDK.

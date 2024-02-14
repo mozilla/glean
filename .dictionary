@@ -1,4 +1,4 @@
-personal_ws-1.1 en 270 utf-8
+personal_ws-1.1 en 272 utf-8
 AAR
 AARs
 ABI
@@ -54,6 +54,7 @@ LLDB
 LMDB
 Lockwise
 MPL
+MacBooks
 Makefile
 Mingw
 Miniconda
@@ -167,6 +168,7 @@ gzipped
 homescreen
 hotfix
 html
+iMacs
 illumos
 init
 inlined
