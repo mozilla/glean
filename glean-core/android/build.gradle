@@ -105,7 +105,7 @@ afterEvaluate {
           toolVersion = "0.8.10"
         }
 
-        task jacocoTestReport(type: JacocoReport) {
+        tasks.register('jacocoTestReport', JacocoReport) {
             reports {
                 xml.required = true
                 html.required = true
@@ -124,12 +124,14 @@ afterEvaluate {
             ])
         }
 
-        tasks.withType(Test) {
-          jacoco.includeNoLocationClasses = true
-          // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
-          jacoco.excludes = ['jdk.internal.*']
+        tasks.withType(Test).tap {
+            configureEach {
+                jacoco.includeNoLocationClasses = true
+                // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+                jacoco.excludes = ['jdk.internal.*']
 
-          finalizedBy jacocoTestReport
+                finalizedBy jacocoTestReport
+            }
         }
     }
 }
@@ -196,7 +198,7 @@ dependencies {
 evaluationDependsOn(":glean-native")
 afterEvaluate {
   // The `cargoBuild` task isn't available until after evaluation.
-  android.libraryVariants.all { variant ->
+  android.libraryVariants.configureEach { variant ->
       def productFlavor = ""
       variant.productFlavors.each {
           productFlavor += "${it.name.capitalize()}"
@@ -210,7 +212,7 @@ afterEvaluate {
 apply from: "$projectDir/publish.gradle"
 ext.configurePublish()
 
-android.libraryVariants.all { variant ->
+android.libraryVariants.configureEach { variant ->
     def uniffiGeneratedPath = "generated/source/uniffi/${variant.name}/java"
     def udlFilePath = "../src/glean.udl"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {

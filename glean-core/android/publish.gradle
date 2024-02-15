@@ -71,5 +71,5 @@ ext.configurePublish = {
         }
     }
 
-    task checkMavenArtifacts
+    tasks.register('checkMavenArtifacts')
 }

@@ -28,7 +28,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
     def theArtifactId = project.ext.artifactId
     def theDescription = project.ext.description
 
-    task extractJnaResources(type: Sync) {
+    tasks.register('extractJnaResources', Sync) {
         dependsOn jnaForTestConfiguration
 
         from {
@@ -51,13 +51,13 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
         includeEmptyDirs false
     }
 
-    def forUnitTestsJarTask = task forUnitTestsJar(type: Jar) {
+    tasks.register('forUnitTestsJar', Jar) {
         from extractJnaResources
         from "$layout.buildDirectory/rustJniLibs/desktop"
     }
 
     project.afterEvaluate {
-        forUnitTestsJarTask.dependsOn(tasks["cargoBuild"])
+        forUnitTestsJar.dependsOn(tasks.named("cargoBuild"))
     }
 
     publishing {
@@ -162,10 +162,11 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
         }
     }
 
-    task checkMavenArtifacts
+    tasks.register('checkMavenArtifacts')
 
     publishing.publications.withType(MavenPublication).each {publication ->
-        def checkFileTask = task "checkFilesForMavenArtifact-${publication.artifactId}"(type: Exec) {
+        def checkFileTask = "checkFilesForMavenArtifact-${publication.artifactId}"
+        tasks.register(checkFileTask, Exec) {
             commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory, publication.artifactId
         }
         checkMavenArtifacts.dependsOn(checkFileTask)

@@ -78,7 +78,7 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.layout.buildDirectory
 }
 
@@ -146,7 +146,7 @@ subprojects {
 
     // Kotlin settings applicable to all modules.
     afterEvaluate {
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
             kotlinOptions.allWarningsAsErrors = true
         }
     }
@@ -195,19 +195,20 @@ dependencies {
     }
 }
 
-task ktlint(type: JavaExec, group: "verification") {
+tasks.register('ktlint', JavaExec) {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
     args "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
 }
 
-task ktlintFormat(type: JavaExec, group: "formatting") {
+tasks.register('ktlintFormat', JavaExec) {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
     args "-F", "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED") // workaround for java.lang.ExceptionInInitializerError
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    // workaround for java.lang.ExceptionInInitializerError
 }
 
 // Extremely unsophisticated way to publish a local development version while hiding implementation details.
@@ -215,6 +216,6 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
 // This shells out to a python script that tries to detect whether the working directory has changed since the last
 // time it was run, and it so then it shells out to `./gradlew publishToMavenLocal -Plocal=<timestamp>` to publish
 // a new version of of the code with an auto-incrementing version number.
-task autoPublishForLocalDevelopment(type: Exec) {
-  commandLine "./build-scripts/publish_to_maven_local_if_modified.py"
+tasks.register('autoPublishForLocalDevelopment', Exec) {
+    commandLine "./build-scripts/publish_to_maven_local_if_modified.py"
 }

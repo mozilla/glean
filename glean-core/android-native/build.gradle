@@ -110,7 +110,7 @@ dependencies {
 
 afterEvaluate {
     // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
+    android.libraryVariants.configureEach { variant ->
         def productFlavor = ""
         variant.productFlavors.each {
             productFlavor += "${it.name.capitalize()}"
