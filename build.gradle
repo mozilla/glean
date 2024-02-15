@@ -79,7 +79,7 @@ allprojects {
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
 
 // Avoid Gradle namespace collision.  This is here, rather than in `buildscript
@@ -157,11 +157,11 @@ subprojects {
         repositories {
             maven {
                 name = "rootProjectBuildDir"
-                url = "file://${project.rootProject.buildDir}/maven"
+                url = "file://${project.rootProject.layout.buildDirectory}/maven"
             }
             maven {
                 name = "projectBuildDir"
-                url = "file://${project.buildDir}/maven"
+                url = "file://${project.layout.buildDirectory}/maven"
             }
         }
     }

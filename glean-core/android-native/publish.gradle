@@ -39,7 +39,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
             zipTree(jnaForTestConfiguration.singleFile)
         }
 
-        into "${buildDir}/jnaResources/"
+        into "${layout.buildDirectory}/jnaResources/"
 
         eachFile { FileCopyDetails fcp ->
             // The intention is to just keep the various `*jnidispatch.*` files.
@@ -53,7 +53,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
 
     def forUnitTestsJarTask = task forUnitTestsJar(type: Jar) {
         from extractJnaResources
-        from "$buildDir/rustJniLibs/desktop"
+        from "$layout.buildDirectory/rustJniLibs/desktop"
     }
 
     project.afterEvaluate {
@@ -166,7 +166,7 @@ ext.configurePublish = { jnaForTestConfiguration = null ->
 
     publishing.publications.withType(MavenPublication).each {publication ->
         def checkFileTask = task "checkFilesForMavenArtifact-${publication.artifactId}"(type: Exec) {
-            commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.buildDir, publication.artifactId
+            commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory, publication.artifactId
         }
         checkMavenArtifacts.dependsOn(checkFileTask)
     }

@@ -72,7 +72,7 @@ android {
         // Add glean-native's build directory to our resource path so that
         // we can actually find it during tests. (Unfortunately, each project
         // has their own build dir)
-        test.resources.srcDirs += "${project(':glean-native').buildDir}/rustJniLibs/desktop"
+        test.resources.srcDirs += "${project(':glean-native').layout.buildDirectory}/rustJniLibs/desktop"
     }
 
     publishing {
@@ -113,13 +113,13 @@ afterEvaluate {
 
             def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
                               '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
-            def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
-            def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+            def kotlinDebugTree = fileTree(dir: "$project.layout.buildDirectory/tmp/kotlin-classes/debug", excludes: fileFilter)
+            def javaDebugTree = fileTree(dir: "$project.layout.buildDirectory/intermediates/classes/debug", excludes: fileFilter)
             def mainSrc = "$project.projectDir/src/main/java"
 
             sourceDirectories.from = files([mainSrc])
             classDirectories.from = files([kotlinDebugTree, javaDebugTree])
-            executionData.from = fileTree(dir: project.buildDir, includes: [
+            executionData.from = fileTree(dir: project.layout.buildDirectory, includes: [
                     'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
             ])
         }
@@ -215,8 +215,8 @@ android.libraryVariants.all { variant ->
     def udlFilePath = "../src/glean.udl"
     def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
         workingDir project.rootDir
-        commandLine 'cargo', 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/${udlFilePath}", '--language', 'kotlin', '--out-dir', "${buildDir}/${uniffiGeneratedPath}"
-        outputs.dir "${buildDir}/${uniffiGeneratedPath}"
+        commandLine 'cargo', 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/${udlFilePath}", '--language', 'kotlin', '--out-dir', "${layout.buildDirectory.asFile.get()}/${uniffiGeneratedPath}"
+        outputs.dir "${layout.buildDirectory}/${uniffiGeneratedPath}"
         // Re-generate if the interface definition changes.
         inputs.file "${project.projectDir}/../src/glean.udl"
         // Re-generate if our uniffi-bindgen tooling changes.
@@ -224,7 +224,7 @@ android.libraryVariants.all { variant ->
         // Re-generate if our uniffi-bindgen version changes.
         inputs.file "${project.rootDir}/Cargo.lock"
     }
-    variant.registerJavaGeneratingTask(t.get(), new File(buildDir, uniffiGeneratedPath))
+    variant.registerJavaGeneratingTask(t.get(), new File(layout.buildDirectory.asFile.get(), uniffiGeneratedPath))
 }
 
 // Generate markdown docs for the collected metrics.
