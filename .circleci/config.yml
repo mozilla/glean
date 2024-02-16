@@ -109,7 +109,7 @@ commands:
           name: Install missing Android SDK & NDK
           command: |
             sdkmanager \
-              "build-tools;33.0.2" \
+              "build-tools;34.0.0" \
               "ndk;25.2.9519653"
 
   android-setup:
@@ -412,7 +412,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2023.06-browsers
+      - image: cimg/android:2024.01.1-browsers
     steps:
       - checkout
       - android-setup
@@ -422,7 +422,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2023.06-browsers
+      - image: cimg/android:2024.01.1-browsers
     steps:
       - checkout
       - skip-if-doc-only
