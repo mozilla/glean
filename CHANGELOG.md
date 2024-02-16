@@ -6,6 +6,8 @@
   * Update `glean_parser` to v12.0.1 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v12.0.0))
 * Rust
   * New metric type: Object ([#2489](https://github.com/mozilla/glean/pull/2489))
+* Android
+  * Upgrade Android NDK to r26c ([#2745](https://github.com/mozilla/glean/pull/2745))
 
 # v57.0.0 (2024-02-12)
 
