@@ -8,7 +8,7 @@
 import groovy.json.JsonOutput
 
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    alias libs.plugins.gradle.python.envs
 }
 
 apply plugin: 'com.android.library'
@@ -98,7 +98,7 @@ android {
 afterEvaluate {
     if (project.hasProperty("coverage")) {
         jacoco {
-          toolVersion = "0.8.10"
+          toolVersion = libs.versions.jacoco
         }
 
         task jacocoTestReport(type: JacocoReport) {
@@ -148,18 +148,26 @@ configurations {
 }
 
 dependencies {
-    jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
-    implementation "net.java.dev.jna:jna:$versions.jna@aar"
+    jnaForTest(libs.jna) {
+        artifact {
+            extension ="jar"
+            type = "jar"
+        }
+    }
+    implementation(libs.jna) {
+        artifact {
+            extension ="aar"
+            type = "aar"
+        }
+    }
 
     implementation project(":glean-native")
 
-    // Note: the following version must be kept in sync
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
-
-    implementation "androidx.annotation:annotation:$versions.androidx_annotation"
-    implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-process:$versions.androidx_lifecycle"
-    implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
+    implementation libs.androidx.annotation
+    implementation libs.androidx.lifecycle.common
+    implementation libs.androidx.lifecycle.process
+    implementation libs.androidx.work
+    implementation libs.kotlinx.coroutines
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries
@@ -167,8 +175,8 @@ dependencies {
     // We can't simply create a separate package otherwise we would need
     // to provide a public API for the testing package to access the
     // Glean internals, which is something we would not want to do.
-    compileOnly "junit:junit:$versions.junit"
-    compileOnly "androidx.work:work-testing:$versions.androidx_work"
+    compileOnly libs.junit
+    compileOnly libs.test.work
 
     // For reasons unknown, resolving the jnaForTest configuration directly
     // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
@@ -178,15 +186,15 @@ dependencies {
     // causing it to be resolved.  Cloning first dissociates the configuration,
     // avoiding other configurations from being resolved.  Tricky!
     testImplementation files(configurations.jnaForTest.copyRecursive().files)
-    testImplementation "androidx.test.ext:junit:$versions.androidx_junit"
-    testImplementation "org.robolectric:robolectric:$versions.robolectric"
-    testImplementation "org.mockito:mockito-core:$versions.mockito"
-    testImplementation "androidx.test:core-ktx:$versions.androidx_test"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver"
-    testImplementation "androidx.work:work-testing:$versions.androidx_work"
+    testImplementation libs.mockito
+    testImplementation libs.mockwebserver
+    testImplementation libs.robolectric
+    testImplementation libs.test.core
+    testImplementation libs.test.junit.ext
+    testImplementation libs.test.work
 
-    androidTestImplementation "androidx.test:runner:$versions.androidx_test"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
+    androidTestImplementation libs.test.espresso.core
+    androidTestImplementation libs.test.runner
 }
 
 evaluationDependsOn(":glean-native")

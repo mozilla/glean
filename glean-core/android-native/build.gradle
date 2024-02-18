@@ -99,8 +99,18 @@ configurations {
 }
 
 dependencies {
-    jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
-    implementation "net.java.dev.jna:jna:$versions.jna@aar"
+    jnaForTest(libs.jna) {
+        artifact {
+            extension ="jar"
+            type = "jar"
+        }
+    }
+    implementation(libs.jna) {
+        artifact {
+            extension ="aar"
+            type = "aar"
+        }
+    }
 }
 
 afterEvaluate {
