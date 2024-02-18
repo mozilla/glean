@@ -7,33 +7,6 @@
 // https://github.com/mozilla/application-services/blob/84e077d1534dc287bbd472da658ce22eea5af032/build.gradle
 
 buildscript {
-    // Define the version of the used dependencies in a single place, to ease
-    // changing them. Please note that, for using in Android-Components, the
-    // versions below must match the ones in that repository.
-    ext.versions = [
-        android_gradle_plugin: '8.0.2',
-        coroutines: '1.7.2',
-        jna: '5.14.0',
-        junit: '4.13.2',
-        mockito: '5.10.0',
-        mockwebserver: '4.11.0', // This is different than a-c, but we're fine, it's only tests.
-        kotlin: '1.8.22',
-        robolectric: '4.11.1',
-        rust_android_plugin: '0.9.3',
-
-        // Android X dependencies
-        androidx_annotation: '1.7.1',
-        androidx_appcompat: '1.6.1',
-        androidx_browser: '1.7.0',
-        androidx_core: '1.12.0',
-        androidx_espresso: '3.5.1',
-        androidx_junit: '1.1.5',
-        androidx_lifecycle: '2.6.2',
-        androidx_test: '1.5.0',
-        androidx_work: '2.7.1',
-        androidx_uiautomator: '2.2.0',
-    ]
-
     ext.build = [
         ndkVersion: "25.2.9519653", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 34,
@@ -50,22 +23,21 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$versions.android_gradle_plugin"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
 
-        classpath "org.mozilla.rust-android-gradle:plugin:$versions.rust_android_plugin"
+        classpath libs.kotlin.gradle.plugin
+        classpath libs.mozilla.rust.android.gradle
+        classpath libs.tools.android.plugin
 
         // Yes, this is unusual.  We want to access some host-specific
         // computation at build time.
-        classpath "net.java.dev.jna:jna:$versions.jna"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath libs.jna
     }
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.23.5")
+    alias libs.plugins.detekt
 }
 
 allprojects {
@@ -200,7 +172,7 @@ configurations {
 }
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.50.0") {
+    ktlint(libs.ktlint) {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
         }

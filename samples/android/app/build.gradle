@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    alias libs.plugins.gradle.python.envs
 }
 
 apply plugin: 'com.android.application'
@@ -41,18 +41,17 @@ android {
 dependencies {
     implementation project(':glean')
 
-    implementation "androidx.appcompat:appcompat:$rootProject.versions.androidx_appcompat"
-    implementation "androidx.browser:browser:$rootProject.versions.androidx_browser"
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.browser
 
-
-    androidTestImplementation "androidx.test:core-ktx:$rootProject.versions.androidx_test"
-    androidTestImplementation "androidx.test:runner:$rootProject.versions.androidx_test"
-    androidTestImplementation "androidx.test:rules:$rootProject.versions.androidx_test"
-    androidTestImplementation "androidx.test.ext:junit:$rootProject.versions.androidx_junit"
-    androidTestImplementation "androidx.test.uiautomator:uiautomator:$rootProject.versions.androidx_uiautomator"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.versions.androidx_espresso"
-    androidTestImplementation "androidx.work:work-testing:$rootProject.versions.androidx_work"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$rootProject.versions.mockwebserver"
+    androidTestImplementation libs.mockwebserver
+    androidTestImplementation libs.test.core
+    androidTestImplementation libs.test.espresso.core
+    androidTestImplementation libs.test.junit.ext
+    androidTestImplementation libs.test.rules
+    androidTestImplementation libs.test.runner
+    androidTestImplementation libs.test.uiautomator
+    androidTestImplementation libs.test.work
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
