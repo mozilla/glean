@@ -40,6 +40,7 @@ class PingTests: XCTestCase {
             includeClientId: true,
             sendIfEmpty: false,
             preciseTimestamps: true,
+            includeInfoSections: true,
             reasonCodes: []
         )
 
@@ -86,6 +87,7 @@ class PingTests: XCTestCase {
             includeClientId: false,
             sendIfEmpty: false,
             preciseTimestamps: true,
+            includeInfoSections: true,
             reasonCodes: []
         )
 
@@ -122,6 +124,7 @@ class PingTests: XCTestCase {
             includeClientId: false,
             sendIfEmpty: true,
             preciseTimestamps: true,
+            includeInfoSections: true,
             reasonCodes: []
         )
 
@@ -213,6 +216,7 @@ class PingTests: XCTestCase {
             includeClientId: true,
             sendIfEmpty: true,
             preciseTimestamps: true,
+            includeInfoSections: true,
             reasonCodes: ["was_tested"]
         )
 

@@ -61,6 +61,7 @@ _ARGS = [
     "reason_codes",
     "send_in_pings",
     "precise_timestamps",
+    "include_info_sections",
     "time_unit",
 ]
 

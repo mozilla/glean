@@ -77,6 +77,7 @@ class CustomPingTest {
             includeClientId = true,
             sendIfEmpty = true,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = emptyList(),
         )
 
@@ -106,6 +107,7 @@ class CustomPingTest {
             includeClientId = true,
             sendIfEmpty = true,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = emptyList(),
         )
 
@@ -179,6 +181,7 @@ class CustomPingTest {
             includeClientId = true,
             sendIfEmpty = true,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = emptyList(),
         )
 
