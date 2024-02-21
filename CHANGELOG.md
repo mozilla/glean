@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
 
+* Android
+  * Updated Kotlin to version 1.9.22 ([#2737](https://github.com/mozilla/glean/pull/2737))
+
 # v59.0.0 (2024-03-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...v59.0.0)
