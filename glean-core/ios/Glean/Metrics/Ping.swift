@@ -40,6 +40,7 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
         includeClientId: Bool,
         sendIfEmpty: Bool,
         preciseTimestamps: Bool,
+        includeInfoSections: Bool,
         reasonCodes: [String]
     ) {
         self.name = name
@@ -49,6 +50,7 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
             includeClientId,
             sendIfEmpty,
             preciseTimestamps,
+            includeInfoSections,
             reasonCodes
         )
     }

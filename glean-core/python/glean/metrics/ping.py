@@ -16,6 +16,7 @@ class PingType:
         include_client_id: bool,
         send_if_empty: bool,
         precise_timestamps: bool,
+        include_info_sections: bool,
         reason_codes: List[str],
     ):
         """
@@ -26,7 +27,12 @@ class PingType:
         """
         self._reason_codes = reason_codes
         self._inner = GleanPingType(
-            name, include_client_id, send_if_empty, precise_timestamps, reason_codes
+            name,
+            include_client_id,
+            send_if_empty,
+            precise_timestamps,
+            include_info_sections,
+            reason_codes,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]
 

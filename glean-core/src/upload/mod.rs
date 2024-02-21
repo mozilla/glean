@@ -979,7 +979,14 @@ mod test {
         let (mut glean, _t) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit the ping multiple times
@@ -1011,7 +1018,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit the ping multiple times
@@ -1041,7 +1055,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
@@ -1071,7 +1092,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
@@ -1101,7 +1129,14 @@ mod test {
         let (mut glean, _t) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
@@ -1133,7 +1168,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
@@ -1221,7 +1263,14 @@ mod test {
         glean.set_debug_view_tag("valid-tag");
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit a ping
@@ -1267,7 +1316,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit the ping multiple times
@@ -1317,7 +1373,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // Submit the ping multiple times
@@ -1385,7 +1448,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         // How many pings we allow at maximum
@@ -1457,7 +1527,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         let expected_number_of_pings = 3;
@@ -1531,7 +1608,14 @@ mod test {
         let (mut glean, dir) = new_glean(None);
 
         // Register a ping for testing
-        let ping_type = PingType::new("test", true, /* send_if_empty */ true, true, vec![]);
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            vec![],
+        );
         glean.register_ping_type(&ping_type);
 
         let expected_number_of_pings = 2;
