@@ -9,7 +9,8 @@ use std::sync::atomic::Ordering;
 
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
+use serde_json::json;
+pub use serde_json::Value as JsonValue;
 
 mod boolean;
 mod counter;
