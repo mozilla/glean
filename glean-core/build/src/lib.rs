@@ -134,17 +134,21 @@ mod test {
 
     #[test]
     fn test_builder() {
-        let package_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        // We know this package's location, and it's up 2 folders from there.
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let package_root = manifest_dir.parent().unwrap().parent().unwrap();
+        // Ensure xshell-venv create the venv in the expected directory.
+        env::set_var(
+            "CARGO_TARGET_DIR",
+            package_root.join("target").display().to_string(),
+        );
+
         // clean out the previous venv, if it exists
         let venv_dir = package_root.join("target").join("venv-py3-glean_parser");
         if venv_dir.exists() {
             fs::remove_dir_all(venv_dir).unwrap();
         }
         let metrics_yaml = package_root
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
             .join("samples")
             .join("rust")
             .join("metrics.yaml");
