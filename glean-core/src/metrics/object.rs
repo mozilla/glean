@@ -6,13 +6,12 @@ use std::sync::Arc;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
+use crate::metrics::JsonValue;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
-
-use serde_json::Value as JsonValue;
 
 /// An object metric.
 ///
@@ -124,12 +123,14 @@ impl ObjectMetric {
 
     /// **Test-only API (exported for FFI purposes).**
     ///
-    /// Gets the currently stored value as JSON-encoded string.
+    /// Gets the currently stored value as JSON.
     ///
     /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
         crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
+        let value = crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()));
+        // We only store valid JSON
+        value.map(|val| serde_json::from_str(&val).unwrap())
     }
 
     /// **Exported for test purposes.**

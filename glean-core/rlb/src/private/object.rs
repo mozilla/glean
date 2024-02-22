@@ -4,6 +4,7 @@
 
 use std::marker::PhantomData;
 
+use glean_core::metrics::JsonValue;
 use glean_core::traits;
 
 use crate::ErrorType;
@@ -70,8 +71,7 @@ impl<K: traits::ObjectSerialize> ObjectMetric<K> {
     /// Gets the currently stored value as JSON-encoded string.
     ///
     /// This doesn't clear the stored value.
-    // TODO: Return the deserialized object instead.
-    pub fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<String> {
+    pub fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<JsonValue> {
         let ping_name = ping_name.into().map(|s| s.to_string());
         self.inner.test_get_value(ping_name)
     }
@@ -98,6 +98,8 @@ mod test {
     use crate::common_test::{lock_test, new_glean};
     use crate::CommonMetricData;
 
+    use serde_json::json;
+
     #[test]
     fn simple_array() {
         let _lock = lock_test();
@@ -116,7 +118,8 @@ mod test {
         metric.set(arr);
 
         let data = metric.test_get_value(None).expect("no object recorded");
-        assert_eq!("[1,2,3]", data);
+        let expected = json!([1, 2, 3]);
+        assert_eq!(expected, data);
     }
 
     #[test]
@@ -158,9 +161,10 @@ mod test {
         metric.set(balloons);
 
         let data = metric.test_get_value(None).expect("no object recorded");
-        assert_eq!(
-            "[{\"colour\":\"red\",\"diameter\":5},{\"colour\":\"green\"}]",
-            data
-        );
+        let expected = json!([
+            { "colour": "red", "diameter": 5 },
+            { "colour": "green" },
+        ]);
+        assert_eq!(expected, data);
     }
 }
