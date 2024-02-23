@@ -14,7 +14,7 @@ use serde_json::{json, Value as JsonValue};
 use crate::common_metric_data::{CommonMetricData, Lifetime};
 use crate::metrics::{CounterMetric, DatetimeMetric, Metric, MetricType, PingType, TimeUnit};
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
-use crate::upload::HeaderMap;
+use crate::upload::{HeaderMap, PingMetadata};
 use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::{Glean, Result, DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
@@ -363,11 +363,17 @@ impl PingMaker {
             file.write_all(ping.url_path.as_bytes())?;
             file.write_all(b"\n")?;
             file.write_all(::serde_json::to_string(&ping.content)?.as_bytes())?;
-            if !ping.headers.is_empty() {
-                file.write_all(b"\n{\"headers\":")?;
-                file.write_all(::serde_json::to_string(&ping.headers)?.as_bytes())?;
-                file.write_all(b"}")?;
-            }
+            file.write_all(b"\n")?;
+            let metadata = PingMetadata {
+                // We don't actually need to clone the headers except to match PingMetadata's ownership.
+                // But since we're going to write a file to disk in a sec,
+                // and HeaderMaps tend to have only like two things in them, tops,
+                // the cost is bearable.
+                headers: Some(ping.headers.clone()),
+                body_has_info_sections: Some(ping.includes_info_sections),
+                ping_name: Some(ping.name.to_string()),
+            };
+            file.write_all(::serde_json::to_string(&metadata)?.as_bytes())?;
         }
 
         if let Err(e) = std::fs::rename(&temp_ping_path, &ping_path) {
