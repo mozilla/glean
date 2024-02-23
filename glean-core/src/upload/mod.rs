@@ -26,10 +26,11 @@ use chrono::Utc;
 use crate::error::ErrorKind;
 use crate::TimerId;
 use crate::{internal_metrics::UploadMetrics, Glean};
-use directory::{PingDirectoryManager, PingPayloadsByDirectory};
+use directory::{PingDirectoryManager, PingPayload, PingPayloadsByDirectory};
 use policy::Policy;
 use request::create_date_header_value;
 
+pub use directory::PingMetadata;
 pub use request::{HeaderMap, PingRequest};
 pub use result::{UploadResult, UploadTaskAction};
 
@@ -455,7 +456,7 @@ impl PingUploadManager {
             // Thus, we reverse the order of the pending pings vector,
             // so that we iterate in descending order (newest -> oldest).
             cached_pings.pending_pings.reverse();
-            cached_pings.pending_pings.retain(|(file_size, (document_id, _, _, _))| {
+            cached_pings.pending_pings.retain(|(file_size, PingPayload {document_id, ..})| {
                 pending_pings_count += 1;
                 pending_pings_directory_size += file_size;
 
@@ -494,12 +495,32 @@ impl PingUploadManager {
             // Enqueue the remaining pending pings and
             // enqueue all deletion-request pings.
             let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
-            for (_, (document_id, path, body, headers)) in deletion_request_pings {
-                self.enqueue_ping(glean, &document_id, &path, &body, headers);
+            for (
+                _,
+                PingPayload {
+                    document_id,
+                    upload_path,
+                    json_body,
+                    headers,
+                    ..
+                },
+            ) in deletion_request_pings
+            {
+                self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers);
             }
             let pending_pings = cached_pings.pending_pings.drain(..);
-            for (_, (document_id, path, body, headers)) in pending_pings {
-                self.enqueue_ping(glean, &document_id, &path, &body, headers);
+            for (
+                _,
+                PingPayload {
+                    document_id,
+                    upload_path,
+                    json_body,
+                    headers,
+                    ..
+                },
+            ) in pending_pings
+            {
+                self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers);
             }
         }
     }
@@ -532,10 +553,15 @@ impl PingUploadManager {
     /// * `glean` - The Glean object holding the database.
     /// * `document_id` - The UUID of the ping in question.
     pub fn enqueue_ping_from_file(&self, glean: &Glean, document_id: &str) {
-        if let Some((doc_id, path, body, headers)) =
-            self.directory_manager.process_file(document_id)
+        if let Some(PingPayload {
+            document_id,
+            upload_path,
+            json_body,
+            headers,
+            ..
+        }) = self.directory_manager.process_file(document_id)
         {
-            self.enqueue_ping(glean, &doc_id, &path, &body, headers)
+            self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers)
         }
     }
 
@@ -1394,7 +1420,10 @@ mod test {
         // The pending pings array is sorted by date in ascending order,
         // the newest element is the last one.
         let (_, newest_ping) = &pending_pings.last().unwrap();
-        let (newest_ping_id, _, _, _) = &newest_ping;
+        let PingPayload {
+            document_id: newest_ping_id,
+            ..
+        } = &newest_ping;
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
@@ -1476,7 +1505,7 @@ mod test {
             .iter()
             .rev()
             .take(count_quota)
-            .map(|(_, ping)| ping.0.clone())
+            .map(|(_, ping)| ping.document_id.clone())
             .collect::<Vec<_>>();
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
@@ -1554,7 +1583,7 @@ mod test {
             .iter()
             .rev()
             .take(expected_number_of_pings)
-            .map(|(_, ping)| ping.0.clone())
+            .map(|(_, ping)| ping.document_id.clone())
             .collect::<Vec<_>>();
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
@@ -1635,7 +1664,7 @@ mod test {
             .iter()
             .rev()
             .take(expected_number_of_pings)
-            .map(|(_, ping)| ping.0.clone())
+            .map(|(_, ping)| ping.document_id.clone())
             .collect::<Vec<_>>();
 
         // Create a new upload manager pointing to the same data_path as the glean instance.
