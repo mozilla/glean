@@ -6,6 +6,8 @@
   * Update `glean_parser` to v12.0.1 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v12.0.0))
 * Rust
   * New metric type: Object ([#2489](https://github.com/mozilla/glean/pull/2489))
+* Android
+  * Updated Kotlin to version 1.9.22 ([#2737](https://github.com/mozilla/glean/pull/2737))
 
 # v57.0.0 (2024-02-12)
 
