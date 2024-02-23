@@ -18,11 +18,17 @@ use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 /// A representation of the data extracted from a ping file,
 #[derive(Clone, Debug, Default)]
 pub struct PingPayload {
+    /// The ping's doc_id.
     pub document_id: String,
+    /// The path to upload the ping to.
     pub upload_path: String,
+    /// The ping body as JSON-encoded string.
     pub json_body: String,
+    /// HTTP headers to include in the upload request.
     pub headers: Option<HeaderMap>,
+    /// Whether the ping body contains {client|ping}_info
     pub body_has_info_sections: bool,
+    /// The ping's name. (Also likely in the upload_path.)
     pub ping_name: String,
 }
 

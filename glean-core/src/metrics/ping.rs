@@ -6,6 +6,7 @@ use std::fmt;
 use std::sync::Arc;
 
 use crate::ping::PingMaker;
+use crate::upload::PingPayload;
 use crate::Glean;
 
 use uuid::Uuid;
@@ -195,13 +196,17 @@ impl PingType {
                     // so both scenarios should be impossible.
                     let content =
                         ::serde_json::to_string(&ping.content).expect("ping serialization failed");
-                    glean.upload_manager.enqueue_ping(
-                        glean,
-                        ping.doc_id,
-                        ping.url_path,
-                        &content,
-                        Some(ping.headers),
-                    );
+                    // TODO: Shouldn't we consolidate on a single collected Ping representation?
+                    let ping = PingPayload {
+                        document_id: ping.doc_id.to_string(),
+                        upload_path: ping.url_path.to_string(),
+                        json_body: content,
+                        headers: Some(ping.headers),
+                        body_has_info_sections: self.0.include_info_sections,
+                        ping_name: self.0.name.to_string(),
+                    };
+
+                    glean.upload_manager.enqueue_ping(glean, ping);
                     return true;
                 }
 
