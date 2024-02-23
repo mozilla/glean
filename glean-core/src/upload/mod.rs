@@ -26,11 +26,11 @@ use chrono::Utc;
 use crate::error::ErrorKind;
 use crate::TimerId;
 use crate::{internal_metrics::UploadMetrics, Glean};
-use directory::{PingDirectoryManager, PingPayload, PingPayloadsByDirectory};
+use directory::{PingDirectoryManager, PingPayloadsByDirectory};
 use policy::Policy;
 use request::create_date_header_value;
 
-pub use directory::PingMetadata;
+pub use directory::{PingMetadata, PingPayload};
 pub use request::{HeaderMap, PingRequest};
 pub use result::{UploadResult, UploadTaskAction};
 
@@ -323,19 +323,19 @@ impl PingUploadManager {
     ///
     /// Returns the `PingRequest` or `None` if unable to build,
     /// in which case it will delete the ping file and record an error.
-    fn build_ping_request(
-        &self,
-        glean: &Glean,
-        document_id: &str,
-        path: &str,
-        body: &str,
-        headers: Option<HeaderMap>,
-    ) -> Option<PingRequest> {
+    fn build_ping_request(&self, glean: &Glean, ping: PingPayload) -> Option<PingRequest> {
+        let PingPayload {
+            document_id,
+            upload_path: path,
+            json_body: body,
+            headers,
+            ..
+        } = ping;
         let mut request = PingRequest::builder(
             &self.language_binding_name,
             self.policy.max_ping_body_size(),
         )
-        .document_id(document_id)
+        .document_id(&document_id)
         .path(path)
         .body(body);
 
@@ -347,7 +347,7 @@ impl PingUploadManager {
             Ok(request) => Some(request),
             Err(e) => {
                 log::warn!("Error trying to build ping request: {}", e);
-                self.directory_manager.delete_file(document_id);
+                self.directory_manager.delete_file(&document_id);
 
                 // Record the error.
                 // Currently the only possible error is PingBodyOverflow.
@@ -363,23 +363,21 @@ impl PingUploadManager {
     }
 
     /// Enqueue a ping for upload.
-    pub fn enqueue_ping(
-        &self,
-        glean: &Glean,
-        document_id: &str,
-        path: &str,
-        body: &str,
-        headers: Option<HeaderMap>,
-    ) {
+    pub fn enqueue_ping(&self, glean: &Glean, ping: PingPayload) {
         let mut queue = self
             .queue
             .write()
             .expect("Can't write to pending pings queue.");
 
+        let PingPayload {
+            ref document_id,
+            upload_path: ref path,
+            ..
+        } = ping;
         // Checks if a ping with this `document_id` is already enqueued.
         if queue
             .iter()
-            .any(|request| request.document_id == document_id)
+            .any(|request| request.document_id.as_str() == document_id)
         {
             log::warn!(
                 "Attempted to enqueue a duplicate ping {} at {}.",
@@ -405,7 +403,7 @@ impl PingUploadManager {
         }
 
         log::trace!("Enqueuing ping {} at {}", document_id, path);
-        if let Some(request) = self.build_ping_request(glean, document_id, path, body, headers) {
+        if let Some(request) = self.build_ping_request(glean, ping) {
             queue.push_back(request)
         }
     }
@@ -494,34 +492,14 @@ impl PingUploadManager {
 
             // Enqueue the remaining pending pings and
             // enqueue all deletion-request pings.
-            let deletion_request_pings = cached_pings.deletion_request_pings.drain(..);
-            for (
-                _,
-                PingPayload {
-                    document_id,
-                    upload_path,
-                    json_body,
-                    headers,
-                    ..
-                },
-            ) in deletion_request_pings
-            {
-                self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers);
-            }
-            let pending_pings = cached_pings.pending_pings.drain(..);
-            for (
-                _,
-                PingPayload {
-                    document_id,
-                    upload_path,
-                    json_body,
-                    headers,
-                    ..
-                },
-            ) in pending_pings
-            {
-                self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers);
-            }
+            cached_pings
+                .deletion_request_pings
+                .drain(..)
+                .for_each(|(_, ping)| self.enqueue_ping(glean, ping));
+            cached_pings
+                .pending_pings
+                .drain(..)
+                .for_each(|(_, ping)| self.enqueue_ping(glean, ping));
         }
     }
 
@@ -553,15 +531,8 @@ impl PingUploadManager {
     /// * `glean` - The Glean object holding the database.
     /// * `document_id` - The UUID of the ping in question.
     pub fn enqueue_ping_from_file(&self, glean: &Glean, document_id: &str) {
-        if let Some(PingPayload {
-            document_id,
-            upload_path,
-            json_body,
-            headers,
-            ..
-        }) = self.directory_manager.process_file(document_id)
-        {
-            self.enqueue_ping(glean, &document_id, &upload_path, &json_body, headers)
+        if let Some(ping) = self.directory_manager.process_file(document_id) {
+            self.enqueue_ping(glean, ping);
         }
     }
 
@@ -909,7 +880,17 @@ mod test {
         let upload_manager = PingUploadManager::no_policy(dir.path());
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: Uuid::new_v4().to_string(),
+                upload_path: PATH.into(),
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "ping-name".into(),
+            },
+        );
 
         // Try and get the next request.
         // Verify request was returned
@@ -926,7 +907,17 @@ mod test {
         // Enqueue a ping multiple times
         let n = 10;
         for _ in 0..n {
-            upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+            upload_manager.enqueue_ping(
+                &glean,
+                PingPayload {
+                    document_id: Uuid::new_v4().to_string(),
+                    upload_path: PATH.into(),
+                    json_body: "".into(),
+                    headers: None,
+                    body_has_info_sections: true,
+                    ping_name: "ping-name".into(),
+                },
+            );
         }
 
         // Verify a request is returned for each submitted ping
@@ -954,7 +945,17 @@ mod test {
 
         // Enqueue the max number of pings allowed per uploading window
         for _ in 0..max_pings_per_interval {
-            upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+            upload_manager.enqueue_ping(
+                &glean,
+                PingPayload {
+                    document_id: Uuid::new_v4().to_string(),
+                    upload_path: PATH.into(),
+                    json_body: "".into(),
+                    headers: None,
+                    body_has_info_sections: true,
+                    ping_name: "ping-name".into(),
+                },
+            );
         }
 
         // Verify a request is returned for each submitted ping
@@ -964,7 +965,17 @@ mod test {
         }
 
         // Enqueue just one more ping
-        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: Uuid::new_v4().to_string(),
+                upload_path: PATH.into(),
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "ping-name".into(),
+            },
+        );
 
         // Verify that we are indeed told to wait because we are at capacity
         match upload_manager.get_upload_task(&glean, false) {
@@ -987,7 +998,17 @@ mod test {
 
         // Enqueue a ping multiple times
         for _ in 0..10 {
-            upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+            upload_manager.enqueue_ping(
+                &glean,
+                PingPayload {
+                    document_id: Uuid::new_v4().to_string(),
+                    upload_path: PATH.into(),
+                    json_body: "".into(),
+                    headers: None,
+                    body_has_info_sections: true,
+                    ping_name: "ping-name".into(),
+                },
+            );
         }
 
         // Clear the queue
@@ -1242,7 +1263,17 @@ mod test {
         let path2 = format!("/submit/app_id/test-ping/1/{}", doc2);
 
         // Enqueue a ping
-        upload_manager.enqueue_ping(&glean, &doc1, &path1, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: doc1.clone(),
+                upload_path: path1,
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "test-ping".into(),
+            },
+        );
 
         // Try and get the first request.
         let req = match upload_manager.get_upload_task(&glean, false) {
@@ -1252,7 +1283,17 @@ mod test {
         assert_eq!(doc1, req.document_id);
 
         // Schedule the next one while the first one is "in progress"
-        upload_manager.enqueue_ping(&glean, &doc2, &path2, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: doc2.clone(),
+                upload_path: path2,
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "test-ping".into(),
+            },
+        );
 
         // Mark as processed
         upload_manager.process_ping_upload_response(
@@ -1323,8 +1364,28 @@ mod test {
         let path = format!("/submit/app_id/test-ping/1/{}", doc_id);
 
         // Try to enqueue a ping with the same doc_id twice
-        upload_manager.enqueue_ping(&glean, &doc_id, &path, "", None);
-        upload_manager.enqueue_ping(&glean, &doc_id, &path, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: doc_id.clone(),
+                upload_path: path.clone(),
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "test-ping".into(),
+            },
+        );
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: doc_id,
+                upload_path: path,
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "test-ping".into(),
+            },
+        );
 
         // Get a task once
         let task = upload_manager.get_upload_task(&glean, false);
@@ -1735,8 +1796,28 @@ mod test {
         upload_manager.set_rate_limiter(secs_per_interval, max_pings_per_interval);
 
         // Enqueue two pings
-        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
-        upload_manager.enqueue_ping(&glean, &Uuid::new_v4().to_string(), PATH, "", None);
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: Uuid::new_v4().to_string(),
+                upload_path: PATH.into(),
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "ping-name".into(),
+            },
+        );
+        upload_manager.enqueue_ping(
+            &glean,
+            PingPayload {
+                document_id: Uuid::new_v4().to_string(),
+                upload_path: PATH.into(),
+                json_body: "".into(),
+                headers: None,
+                body_has_info_sections: true,
+                ping_name: "ping-name".into(),
+            },
+        );
 
         // Get the first ping, it should be returned normally.
         match upload_manager.get_upload_task(&glean, false) {
@@ -1792,12 +1873,28 @@ mod test {
         let upload_manager = PingUploadManager::no_policy(dir.path());
 
         // Enqueue a ping and start processing it
-        let identifier = &Uuid::new_v4().to_string();
-        upload_manager.enqueue_ping(&glean, identifier, PATH, "", None);
+        let identifier = &Uuid::new_v4();
+        let ping = PingPayload {
+            document_id: identifier.to_string(),
+            upload_path: PATH.into(),
+            json_body: "".into(),
+            headers: None,
+            body_has_info_sections: true,
+            ping_name: "ping-name".into(),
+        };
+        upload_manager.enqueue_ping(&glean, ping);
         assert!(upload_manager.get_upload_task(&glean, false).is_upload());
 
         // Attempt to re-enqueue the same ping
-        upload_manager.enqueue_ping(&glean, identifier, PATH, "", None);
+        let ping = PingPayload {
+            document_id: identifier.to_string(),
+            upload_path: PATH.into(),
+            json_body: "".into(),
+            headers: None,
+            body_has_info_sections: true,
+            ping_name: "ping-name".into(),
+        };
+        upload_manager.enqueue_ping(&glean, ping);
 
         // No new pings should have been enqueued so the upload task is Done.
         assert_eq!(
@@ -1808,7 +1905,7 @@ mod test {
         // Process the upload response
         upload_manager.process_ping_upload_response(
             &glean,
-            identifier,
+            &identifier.to_string(),
             UploadResult::http_status(200),
         );
     }
