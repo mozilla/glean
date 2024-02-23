@@ -329,7 +329,8 @@ impl PingUploadManager {
             upload_path: path,
             json_body: body,
             headers,
-            ..
+            body_has_info_sections,
+            ping_name,
         } = ping;
         let mut request = PingRequest::builder(
             &self.language_binding_name,
@@ -337,7 +338,9 @@ impl PingUploadManager {
         )
         .document_id(&document_id)
         .path(path)
-        .body(body);
+        .body(body)
+        .body_has_info_sections(body_has_info_sections)
+        .ping_name(ping_name);
 
         if let Some(headers) = headers {
             request = request.headers(headers);
