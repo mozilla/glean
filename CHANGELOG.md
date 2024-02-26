@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...main)
 
 * General
-  * Update `glean_parser` to v12.0.1 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v12.0.0))
+  * Update `glean_parser` to v13.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v13.0.0))
 * Rust
   * New metric type: Object ([#2489](https://github.com/mozilla/glean/pull/2489))
 * Android
