@@ -55,7 +55,7 @@ impl<K: traits::ObjectSerialize> ObjectMetric<K> {
     /// # Arguments
     ///
     /// * `object` - JSON representation of the object to set.
-    pub fn set_str(&self, object: String) {
+    pub fn set_string(&self, object: String) {
         let data = match K::from_str(&object) {
             Ok(data) => data,
             Err(_) => {
@@ -165,6 +165,28 @@ mod test {
             { "colour": "red", "diameter": 5 },
             { "colour": "green" },
         ]);
+        assert_eq!(expected, data);
+    }
+
+    #[test]
+    fn set_string_api() {
+        let _lock = lock_test();
+        let _t = new_glean(None, true);
+
+        type SimpleArray = Vec<i64>;
+
+        let metric: ObjectMetric<SimpleArray> = ObjectMetric::new(CommonMetricData {
+            name: "object".into(),
+            category: "test".into(),
+            send_in_pings: vec!["test1".into()],
+            ..Default::default()
+        });
+
+        let arr_str = String::from("[1, 2, 3]");
+        metric.set_string(arr_str);
+
+        let data = metric.test_get_value(None).expect("no object recorded");
+        let expected = json!([1, 2, 3]);
         assert_eq!(expected, data);
     }
 }

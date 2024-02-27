@@ -78,27 +78,6 @@ impl ObjectMetric {
         });
     }
 
-    /// Sets to the specified structure from a string in JSON encoding
-    ///
-    /// # Arguments
-    ///
-    /// * `glean` - the Glean instance this metric belongs to.
-    /// * `value` - the value to set.
-    pub fn set_str(&self, value: String) {
-        let metric = self.clone();
-        crate::launch_with_glean(move |glean| {
-            let value = match serde_json::from_str(&value) {
-                Ok(s) => s,
-                Err(_) => {
-                    let msg = "Cannot set invalid json";
-                    record_error(glean, &metric.meta, ErrorType::InvalidValue, msg, None);
-                    return;
-                }
-            };
-            metric.set_sync(glean, value)
-        })
-    }
-
     /// Get current value
     #[doc(hidden)]
     pub fn get_value<'a, S: Into<Option<&'a str>>>(
