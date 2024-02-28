@@ -18,7 +18,7 @@ rust-android-gradle = "0.9.3"
 androidx-annotation = "1.7.1"
 androidx-appcompat = "1.6.1"
 androidx-browser = "1.7.0"
-androidx-lifecycle = "2.6.2"
+androidx-lifecycle = "2.7.0"
 androidx-work = "2.9.0"
 
 # JNA
