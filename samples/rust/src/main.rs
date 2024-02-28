@@ -22,12 +22,10 @@ pub mod glean_metrics {
 struct MovingUploader(String);
 
 impl net::PingUploader for MovingUploader {
-    fn upload(
-        &self,
-        url: String,
-        body: Vec<u8>,
-        headers: Vec<(String, String)>,
-    ) -> net::UploadResult {
+    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+        let net::PingUploadRequest {
+            body, url, headers, ..
+        } = upload_request;
         let mut gzip_decoder = GzDecoder::new(&body[..]);
         let mut s = String::with_capacity(body.len());
 

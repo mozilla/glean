@@ -6,6 +6,7 @@
   * Update `glean_parser` to v13.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v13.0.0))
 * Rust
   * New metric type: Object ([#2489](https://github.com/mozilla/glean/pull/2489))
+  * BREAKING CHANGE: Support pings without `{client|ping}_info` sections ([#2756](https://github.com/mozilla/glean/pull/2756))
 * Android
   * Upgrade Android NDK to r26c ([#2745](https://github.com/mozilla/glean/pull/2745))
 

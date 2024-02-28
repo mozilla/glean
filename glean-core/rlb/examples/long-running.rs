@@ -33,12 +33,7 @@ pub mod glean_metrics {
 struct FakeUploader;
 
 impl net::PingUploader for FakeUploader {
-    fn upload(
-        &self,
-        _url: String,
-        _body: Vec<u8>,
-        _headers: Vec<(String, String)>,
-    ) -> net::UploadResult {
+    fn upload(&self, _upload_request: net::PingUploadRequest) -> net::UploadResult {
         thread::sleep(time::Duration::from_millis(100));
         net::UploadResult::http_status(200)
     }
