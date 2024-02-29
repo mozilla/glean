@@ -122,11 +122,14 @@ ext.gleanGenerateMarkdownDocs = true
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ```
 
-{{#include ../../../shared/blockquote-warning.html}}
+{{#include ../../../shared/blockquote-info.html}}
 
-##### Earlier versions
+##### Rosetta 2 required on Apple Silicon
 
-> **Note:** Earlier versions of Glean used a Gradle script (`sdk_generator.gradle`) rather than a Gradle plugin. Its use is deprecated and projects should be updated to use the Gradle plugin as described above.
+> On Apple Silicon machines (M1/M2/M3 MacBooks and iMacs) Rosetta 2 is required for the bundled Python.
+> See the [Apple documentation about Rosetta 2](https://support.apple.com/en-us/HT211861)
+> and [Bug 1775420](https://bugzilla.mozilla.org/show_bug.cgi?id=1775420) for details.  
+> You can install it with `softwareupdate --install-rosetta`
 
 {{#include ../../../shared/blockquote-info.html}}
 

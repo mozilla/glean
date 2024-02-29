@@ -40,6 +40,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: humantime</name>
     <url>https://github.com/tailhook/humantime</url>
   </license>  <license>
+    <name>Apache License 2.0: fd-lock</name>
+    <url>https://github.com/yoshuawuyts/fd-lock</url>
+  </license>  <license>
     <name>Apache License 2.0: anyhow</name>
     <url>https://github.com/dtolnay/anyhow</url>
   </license>  <license>

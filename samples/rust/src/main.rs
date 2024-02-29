@@ -3,16 +3,58 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::env;
+use std::fs::File;
+use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 
 use tempfile::Builder;
 
-use glean::{ClientInfoMetrics, Configuration};
+use flate2::read::GzDecoder;
+use glean::{net, ClientInfoMetrics, ConfigurationBuilder};
 
 pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
+}
+
+#[derive(Debug)]
+struct MovingUploader(String);
+
+impl net::PingUploader for MovingUploader {
+    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+        let net::PingUploadRequest {
+            body, url, headers, ..
+        } = upload_request;
+        let mut gzip_decoder = GzDecoder::new(&body[..]);
+        let mut s = String::with_capacity(body.len());
+
+        let data = gzip_decoder
+            .read_to_string(&mut s)
+            .ok()
+            .map(|_| &s[..])
+            .or_else(|| std::str::from_utf8(&body).ok())
+            .unwrap();
+
+        let mut out_path = PathBuf::from(&self.0);
+        out_path.push("sent_pings");
+        std::fs::create_dir_all(&out_path).unwrap();
+
+        let docid = url.rsplit('/').next().unwrap();
+        out_path.push(format!("{docid}.json"));
+        let mut fp = File::create(out_path).unwrap();
+
+        // pseudo-JSON, let's hope this works.
+        writeln!(fp, "{{").unwrap();
+        writeln!(fp, "  \"url\": {url},").unwrap();
+        for (key, val) in headers {
+            writeln!(fp, "  \"{key}\": \"{val}\",").unwrap();
+        }
+        writeln!(fp, "}}").unwrap();
+        writeln!(fp, "{data}").unwrap();
+
+        net::UploadResult::http_status(200)
+    }
 }
 
 fn main() {
@@ -27,21 +69,12 @@ fn main() {
         root.path().to_path_buf()
     };
 
-    let cfg = Configuration {
-        data_path,
-        application_id: "org.mozilla.glean_core.example".into(),
-        upload_enabled: true,
-        max_events: None,
-        delay_ping_lifetime_io: false,
-        server_endpoint: Some("invalid-test-host".into()),
-        uploader: None,
-        use_core_mps: true,
-        trim_data_to_registered_pings: false,
-        log_level: None,
-        rate_limit: None,
-        enable_event_timestamps: false,
-        experimentation_id: None,
-    };
+    let uploader = MovingUploader(data_path.display().to_string());
+    let cfg = ConfigurationBuilder::new(true, data_path, "org.mozilla.glean_core.example")
+        .with_server_endpoint("invalid-test-host")
+        .with_use_core_mps(true)
+        .with_uploader(uploader)
+        .build();
 
     let client_info = ClientInfoMetrics {
         app_build: env!("CARGO_PKG_VERSION").to_string(),
@@ -53,6 +86,19 @@ fn main() {
     glean::initialize(cfg, client_info);
 
     glean_metrics::test_metrics::sample_boolean.set(true);
+
+    use glean_metrics::party::{BalloonsObject, BalloonsObjectItem};
+    let balloons = BalloonsObject::from([
+        BalloonsObjectItem {
+            colour: Some("red".to_string()),
+            diameter: Some(5),
+        },
+        BalloonsObjectItem {
+            colour: Some("blue".to_string()),
+            diameter: None,
+        },
+    ]);
+    glean_metrics::party::balloons.set(balloons);
 
     glean_metrics::prototype.submit(None);
     // Need to wait a short time for Glean to actually act.

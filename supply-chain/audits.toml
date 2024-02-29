@@ -262,6 +262,12 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-run"
 delta = "0.2.2 -> 0.2.4"
 
+[[audits.fd-lock]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "3.0.12 -> 3.0.13"
+notes = "Dependency updates only"
+
 [[audits.flate2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -396,6 +402,12 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.3.0 -> 1.4.1"
 notes = "Internal refactoring, new target support"
+
+[[audits.xshell-venv]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.1.0 -> 1.2.0"
+notes = "Added a file lock on the created directory"
 
 [[trusted.is-terminal]]
 criteria = "safe-to-deploy"

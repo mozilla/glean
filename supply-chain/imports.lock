@@ -163,6 +163,24 @@ criteria = "safe-to-deploy"
 version = "0.1.2"
 notes = "This should be portable to any POSIX system and seems like it should be part of the libc crate, but at any rate it's safe as is."
 
+[[audits.bytecode-alliance.audits.fd-lock]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+version = "3.0.9"
+notes = "This crate uses unsafe to make Windows syscalls, to borrow an Fd with an appropriate lifetime, and to zero a windows API structure that appears to have a valid representation with zeroed memory."
+
+[[audits.bytecode-alliance.audits.fd-lock]]
+who = "Pat Hickey <phickey@fastly.com>"
+criteria = "safe-to-deploy"
+delta = "3.0.9 -> 3.0.10"
+notes = "Just a dependency version bump"
+
+[[audits.bytecode-alliance.audits.fd-lock]]
+who = "Dan Gohman <dev@sunfishcode.online>"
+criteria = "safe-to-deploy"
+delta = "3.0.10 -> 3.0.12"
+notes = "Just a dependency version bump"
+
 [[audits.bytecode-alliance.audits.form_urlencoded]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"

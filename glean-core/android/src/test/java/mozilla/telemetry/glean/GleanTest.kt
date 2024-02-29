@@ -479,6 +479,7 @@ class GleanTest {
             includeClientId = true,
             sendIfEmpty = false,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
@@ -845,6 +846,7 @@ class GleanTest {
             includeClientId = true,
             sendIfEmpty = false,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(

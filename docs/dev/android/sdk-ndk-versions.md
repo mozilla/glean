@@ -2,13 +2,13 @@
 
 The Glean SDK implementation is currently build against the following versions:
 
-* SDK API 33
-    * Look for `android-33` in the SDK manager
-    * or install with: `sdkmanager --verbose "platforms;android-33"`
+* SDK API 34
+    * Look for `android-34` in the SDK manager
+    * or install with: `sdkmanager --verbose "platforms;android-34"`
 * Android Command line tools
-    * Download link: <https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip>
-* NDK r25
-    * Download link: <https://dl.google.com/android/repository/android-ndk-r25c-linux.zip>
+    * Download link: <https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip>
+* NDK r26
+    * Download link: <https://dl.google.com/android/repository/android-ndk-r26c-linux.zip>
 
 For the full setup see [Setup the Android Build Environment](setup-android-build-environment.html).
 
@@ -20,10 +20,10 @@ All locations need to be updated on upgrades:
     * `dev/android/setup-android-build-environment.md`
 * CI configuration
     * `.circleci/config.yml`
-        * `sdkmanager 'build-tools;33.0.2'`
-        * `image: circleci/android:2023.02.1`
+        * `sdkmanager 'build-tools;34.0.0'`
+        * `image: circleci/android:2024.01.1-browsers`
     * `taskcluster/docker/linux/Dockerfile`.
-        * `ENV ANDROID_BUILD_TOOLS "33.0.2"`
-        * `ENV ANDROID_SDK_VERSION "9477386"`
-        * `ENV ANDROID_PLATFORM_VERSION "33"`
-        * `ENV ANDROID_NDK_VERSION "25.2.9519653"`
+        * `ENV ANDROID_BUILD_TOOLS "34.0.0"`
+        * `ENV ANDROID_SDK_VERSION "11076708"`
+        * `ENV ANDROID_PLATFORM_VERSION "34"`
+        * `ENV ANDROID_NDK_VERSION "26.2.11394342"`

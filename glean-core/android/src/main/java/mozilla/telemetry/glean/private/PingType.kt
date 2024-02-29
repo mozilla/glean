@@ -49,6 +49,7 @@ class PingType<ReasonCodesEnum> (
     includeClientId: Boolean,
     sendIfEmpty: Boolean,
     preciseTimestamps: Boolean,
+    includeInfoSections: Boolean,
     val reasonCodes: List<String>,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
@@ -60,6 +61,7 @@ class PingType<ReasonCodesEnum> (
             includeClientId = includeClientId,
             sendIfEmpty = sendIfEmpty,
             preciseTimestamps = preciseTimestamps,
+            includeInfoSections = includeInfoSections,
             reasonCodes = reasonCodes,
         )
     }

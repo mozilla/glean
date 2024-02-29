@@ -507,6 +507,7 @@ class EventMetricTypeTest {
             includeClientId = true,
             sendIfEmpty = false,
             preciseTimestamps = true,
+            includeInfoSections = true,
             reasonCodes = listOf(),
         )
 

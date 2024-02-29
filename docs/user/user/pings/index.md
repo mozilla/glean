@@ -16,11 +16,14 @@ that are assembled out of the box without any developer intervention.
 Every ping payload has the following keys at the top-level:
 
 - The [`ping_info` section](#the-ping_info-section) contains core metadata
-  that is included in **every** ping.
+  that is included in every ping that doesn't set the
+  `metadata.include_info_sections` property to `false`.
 
 - The [`client_info` section](#the-client_info-section) contains information that identifies the client.
-  It is included in most pings (including all built-in pings), but may be excluded from pings
-  where we don't want to connect client information with the other metrics in the ping.
+  It is included in every ping that doesn't set the
+  `metadata.include_info_sections` property to `false`.
+  When included, it contains a persistent client identifier `client_id`,
+  except when the `include_client_id` property is set to `false`.
 
 The following keys are only present if any metrics or events were recorded for the given ping:
 
@@ -36,7 +39,8 @@ for more details for each metric type in the `metrics` and `events` section.
 ### The `ping_info` section
 
 Metadata about the ping itself.
-This section is included in **every** ping.
+This section is included in every ping that doesn't set the
+`metadata.include_info_sections` property to `false`.
 
 The following fields are included in the `ping_info` section.
 Optional fields are marked accordingly.
@@ -102,6 +106,9 @@ A limited amount of metrics that are generally useful across products.
 The data is provided by the embedding application or automatically fetched by the Glean SDK.
 It is collected at initialization time and sent in every ping afterwards.
 For historical reasons it contains metrics that are only useful on a certain platform.
+
+This section is included in every ping that doesn't set the
+`metadata.include_info_sections` property to `false`.
 
 {{#include ../../../shared/blockquote-info.html}}
 
