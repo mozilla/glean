@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v58.0.0...main)
+
+# v58.0.0 (2024-02-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...v58.0.0)
 
 * General
   * Update `glean_parser` to v13.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v13.0.0))
