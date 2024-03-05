@@ -198,6 +198,14 @@ user-id = 127697 # bendk
 start = "2023-10-18"
 end = "2024-12-12"
 
+[[wildcard-audits.weedle2]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 127697 # bendk
+start = "2022-06-16"
+end = "2025-03-05"
+notes = "Maintained by Mozilla"
+
 [[wildcard-audits.zeitstempel]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -280,6 +288,12 @@ criteria = "safe-to-deploy"
 delta = "1.0.25 -> 1.0.26"
 notes = "Few dep updates, internal refactorings"
 
+[[audits.goblin]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.7.1 -> 0.8.0"
+notes = "MSRV bump, no unsafe changes"
+
 [[audits.inherent]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -314,6 +328,12 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 version = "0.1.5"
 notes = "Fork of the oneshot crate; modified to remove a test dependency only."
+
+[[audits.oneshot-uniffi]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.1.5 -> 0.1.6"
+notes = "Synced with the orginal crate, no new unsafe"
 
 [[audits.proc-macro2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -356,11 +376,21 @@ criteria = "safe-to-deploy"
 delta = "1.0.9 -> 1.0.14"
 notes = "Doc updates, minimal CI changes and a fix to build-script reruns"
 
+[[audits.scroll]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.11.0 -> 0.12.0"
+
 [[audits.scroll_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.11.0 -> 0.11.1"
 notes = "Dependency syn v2 update only"
+
+[[audits.scroll_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.11.1 -> 0.12.0"
 
 [[audits.serde]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -386,6 +416,11 @@ criteria = "safe-to-deploy"
 delta = "1.0.163 -> 1.0.179"
 notes = "Internal refactorings and dependency updates"
 
+[[audits.smawk]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.3.2"
+
 [[audits.syn]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -397,11 +432,21 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "3.4.0 -> 3.5.0"
 
+[[audits.textwrap]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.15.0"
+
 [[audits.unicode-ident]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.8 -> 1.0.9"
 notes = "Dependency updates only"
+
+[[audits.unicode-linebreak]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.1.5"
 
 [[audits.uuid]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"

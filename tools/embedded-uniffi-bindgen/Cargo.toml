@@ -9,4 +9,5 @@ publish = false
 [dependencies]
 anyhow = "1"
 camino = "1.1.1"
-uniffi = { version = "0.25.2", default-features = false, features = ["bindgen"] }
+uniffi = { version = "0.27.0", default-features = false, features = ["bindgen"] }
+uniffi_bindgen = { version = "0.27.0", default-features = false }
