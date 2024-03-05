@@ -6,7 +6,6 @@
 Provides an object to pass configuration to Glean.
 """
 
-
 from typing import Optional
 
 

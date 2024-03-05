@@ -7,7 +7,6 @@
 Utilities for writing unit tests involving Glean.
 """
 
-
 import gzip
 from pathlib import Path
 from typing import Dict, Optional, Union

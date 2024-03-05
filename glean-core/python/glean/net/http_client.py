@@ -7,7 +7,6 @@ This module contains a ping uploader based on the Python stdlib's http.client
 module.
 """
 
-
 import http.client
 import logging
 import socket
@@ -27,7 +26,9 @@ class HttpClientUploader(base_uploader.BaseUploader):
     _DEFAULT_TIMEOUT = 10
 
     @classmethod
-    def upload(cls, url: str, data: bytes, headers: Dict[str, str]) -> Union[
+    def upload(
+        cls, url: str, data: bytes, headers: Dict[str, str]
+    ) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,

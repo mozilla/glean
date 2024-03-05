@@ -10,7 +10,6 @@ This needs to be here and not at the top-level of the package to avoid
 ambiguity between the `glean` and `glean.glean` import paths.
 """
 
-
 if __name__ == "__main__":  # pragma: no cover
     import base64
     import logging

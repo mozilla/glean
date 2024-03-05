@@ -7,7 +7,6 @@
 This module loads the built-in metrics and pings.
 """
 
-
 from pkg_resources import resource_filename
 
 
