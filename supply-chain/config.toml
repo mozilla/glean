@@ -224,10 +224,6 @@ criteria = "safe-to-deploy"
 version = "0.3.10"
 criteria = "safe-to-deploy"
 
-[[exemptions.static_assertions]]
-version = "1.1.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.syn]]
 version = "2.0.18"
 criteria = "safe-to-deploy"

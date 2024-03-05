@@ -40,7 +40,7 @@ flate2 = "1.0.19"
 zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
 thiserror = "1.0.4"
-uniffi = { version = "0.25.2", default-features = false }
+uniffi = { version = "0.27.0", default-features = false }
 time = "0.1.40"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
 
@@ -57,7 +57,7 @@ iso8601 = "0.4"
 ctor = "0.2.2"
 
 [build-dependencies]
-uniffi = { version = "0.25.2", default-features = false, features = ["build"] }
+uniffi = { version = "0.27.0", default-features = false, features = ["build"] }
 
 [features]
 # Increases the preinit queue limit to 10^6

@@ -5,6 +5,7 @@
 * General
   * Hide `glean_timestamp` from event extras in tests ([#2776](https://github.com/mozilla/glean/pull/2776))
   * Add a configuration option to disable internal pings ([#2786](https://github.com/mozilla/glean/pull/2786/))
+  * Updated to UniFFI 0.27.0 ([#2762](https://github.com/mozilla/glean/pull/2762))
 
 # v58.1.0 (2024-03-12)
 
