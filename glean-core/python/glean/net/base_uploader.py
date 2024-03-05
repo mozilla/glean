@@ -6,7 +6,6 @@
 A base class for ping uploaders.
 """
 
-
 from typing import Union, Dict, TYPE_CHECKING
 
 

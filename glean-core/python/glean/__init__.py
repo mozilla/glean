@@ -4,7 +4,6 @@
 
 """Top-level package for Glean SDK."""
 
-
 import warnings
 
 

@@ -6,7 +6,6 @@
 The main Glean general API.
 """
 
-
 import atexit
 import logging
 from pathlib import Path
