@@ -147,7 +147,7 @@ class CustomDistributionMetricTypeTest {
     }
 
     @Test
-    fun `The accumulateSamples API correctly stores values`() {
+    fun `The accumulateSample APIs correctly store values`() {
         // Define a custom distribution metric which will be stored in multiple stores
         val metric = CustomDistributionMetricType(
             CommonMetricData(
@@ -177,6 +177,13 @@ class CustomDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[2])
         // Check that the 3L fell into the third bucket
         assertEquals(1L, snapshot.values[3])
+
+        // Check that the single sample API records correctly.
+        metric.accumulateSingleSample(4L)
+
+        val snapshotTwo = metric.testGetValue("store1")!!
+        assertEquals(10L, snapshotTwo.sum)
+        assertEquals(4L, snapshotTwo.count)
     }
 
     @Test

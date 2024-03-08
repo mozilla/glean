@@ -276,17 +276,7 @@ void onPageLoaded(Event e) {
 ```
 
 </div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-import Glean
-
-func onPageLoaded() {
-    Pages.pageLoad.accumulateSamples(samples)
-}
-```
-
-</div>
+<div data-lang="Swift" class="tab"></div>
 <div data-lang="Python" class="tab">
 
 ```Python
@@ -301,7 +291,13 @@ class PageHandler:
 </div>
 <div data-lang="Rust" class="tab">
 
-This API is not currently exposed in Rust, see [Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745).
+```Rust
+use glean_metrics::pages;
+
+fn on_page_loaded() {
+    pages::page_load.accumulate_samples(samples);
+}
+```
 
 </div>
 <div data-lang="JavaScript" class="tab">
@@ -317,24 +313,112 @@ function onPageLoaded() {
 </div>
 <div data-lang="Firefox Desktop" class="tab">
 
-This API is not currently exposed in Firefox Desktop, see [Bug 1829745](https://bugzilla.mozilla.org/show_bug.cgi?id=1829745).
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::pages::page_load.AccumulateRawSamples(sample);
+```
+
+**JavaScript**
+
+This operation is not currently supported in JavaScript.
 
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `accumulateSingleSample`
+
+Accumulates a single signed sample and appends it to the metric. Prefer this
+for the common use case of having a single value to avoid having to pass
+a collection over a foreign language interface.
+
+A signed value is required so that the platform-specific code can provide 
+us with a 64 bit signed integer if no `u64` comparable type is available. 
+This will take care of filtering and reporting errors for a negative
+sample.
+
+Please note that this assumes that the provided sample is already in
+the "unit" declared by the instance of the metric type (e.g. if the
+instance this method was called on is using `TimeUnit::Second`, then
+`sample` is assumed to be in that unit).
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Pages
+
+fun onPageLoaded(e: Event) {
+    Pages.pageLoad.accumulateSingleSample(sample)
+}
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Pages;
+
+void onPageLoaded(Event e) {
+    Pages.INSTANCE.pageLoad().accumulateSingleSample(sample);
+}
+```
+
+</div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+class PageHandler:
+    def on_page_loaded(self, event):
+        metrics.pages.page_load.accumulate_single_sample(sample)
+```
+
+</div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::pages;
+
+fn on_page_loaded() {
+    pages::page_load.accumulate_single_sample(sample);
+}
+```
+
+</div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+function onPageLoaded() {
+    pages.pageLoad.accumulateSingleSample(sample);
+}
+```
+
+</div>
+<div data-lang="Firefox Desktop" class="tab">
+
+This API is not currently exposed in Firefox Desktop, see [Bug 1884183](https://bugzilla.mozilla.org/show_bug.cgi?id=1884183).
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+
 #### Limits
 
 - Samples are limited to the maximum value for the given time unit.
 - Only non-negative values may be recorded (`>= 0`).
-
-#### Recorded Errors
-
 - Negative values are discarded and an `ErrorType::InvalidValue` is generated for each instance.
 - Samples that are longer than maximum sample time for the given unit generate an `ErrorType::InvalidOverflow` error for each instance.
-
-{{#include ../../../shared/tab_footer.md}}
-
 
 #### Recorded errors
 
