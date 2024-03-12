@@ -68,17 +68,11 @@ class PingUploadWorker:
 
 # Ping files are UUIDs.  This matches UUIDs for filtering purposes.
 _FILE_PATTERN = re.compile(
-    "[0-9a-fA-F]{8}-"
-    "[0-9a-fA-F]{4}-"
-    "[0-9a-fA-F]{4}-"
-    "[0-9a-fA-F]{4}-"
-    "[0-9a-fA-F]{12}"
+    "[0-9a-fA-F]{8}-" "[0-9a-fA-F]{4}-" "[0-9a-fA-F]{4}-" "[0-9a-fA-F]{4}-" "[0-9a-fA-F]{12}"
 )
 
 
-def _parse_ping_headers(
-    headers_as_json: str, document_id: str
-) -> List[Tuple[str, str]]:
+def _parse_ping_headers(headers_as_json: str, document_id: str) -> List[Tuple[str, str]]:
     """
     Parse the headers coming from FFI.
 

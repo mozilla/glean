@@ -13,14 +13,10 @@ from pkg_resources import resource_filename
 from ._loader import load_metrics, load_pings
 
 
-metrics = load_metrics(
-    resource_filename(__name__, "metrics.yaml"), config={"allow_reserved": True}
-)
+metrics = load_metrics(resource_filename(__name__, "metrics.yaml"), config={"allow_reserved": True})
 
 
-pings = load_pings(
-    resource_filename(__name__, "pings.yaml"), config={"allow_reserved": True}
-)
+pings = load_pings(resource_filename(__name__, "pings.yaml"), config={"allow_reserved": True})
 
 
 __all__ = ["metrics", "pings"]

@@ -130,9 +130,7 @@ def test_invalid_uuid_string():
     )
 
     uuid_metric.set("NOT-A-UUID!!!")
-    assert (
-        uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
-    )
+    assert uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
 
 
 def test_what_looks_like_it_might_be_uuid(tmpdir):
@@ -199,9 +197,7 @@ def test_what_looks_like_it_might_be_uuid(tmpdir):
 
     # A character too long and you are out!
     random_uuid.set(random + "a")
-    assert (
-        random_uuid.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
-    )
+    assert random_uuid.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
 
     chksum_uuid.set(chksum)
     random_uuid.set(random)

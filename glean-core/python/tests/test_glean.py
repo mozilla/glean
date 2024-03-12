@@ -318,8 +318,7 @@ def test_the_app_channel_must_be_correctly_set():
         configuration=Configuration(channel="my-test-channel"),
     )
     assert (
-        "my-test-channel"
-        == _builtins.metrics.glean.internal.metrics.app_channel.test_get_value()
+        "my-test-channel" == _builtins.metrics.glean.internal.metrics.app_channel.test_get_value()
     )
 
 
@@ -357,9 +356,7 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
-    monkeypatch.setattr(
-        Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
-    )
+    monkeypatch.setattr(Glean._configuration, "ping_uploader", _RecordingUploader(info_path))
 
     ping_name = "custom_ping_1"
     ping = PingType(
@@ -492,9 +489,7 @@ def test_set_application_build_id():
         upload_enabled=True,
     )
 
-    assert (
-        "123ABC" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
-    )
+    assert "123ABC" == _builtins.metrics.glean.internal.metrics.app_build.test_get_value()
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
@@ -675,9 +670,9 @@ def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_u
 
     json_content = json.loads(serialized_ping)
 
-    assert {
-        "glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"
-    } == json_content["metrics"]["string"]
+    assert {"glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"} == json_content[
+        "metrics"
+    ]["string"]
 
 
 def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
@@ -783,9 +778,7 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
         configuration=Glean._configuration,
     )
 
-    monkeypatch.setattr(
-        Glean._configuration, "ping_uploader", _RecordingUploader(info_path)
-    )
+    monkeypatch.setattr(Glean._configuration, "ping_uploader", _RecordingUploader(info_path))
 
     while not info_path.exists():
         time.sleep(0.1)
@@ -814,8 +807,7 @@ def test_app_display_version_unknown():
     )
 
     assert (
-        "Unknown"
-        == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
+        "Unknown" == _builtins.metrics.glean.internal.metrics.app_display_version.test_get_value()
     )
 
 
@@ -964,9 +956,7 @@ def test_sending_of_custom_pings(safe_httpserver):
     assert 1 == len(safe_httpserver.requests)
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="uploader isn't started fast enough"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="uploader isn't started fast enough")
 def test_max_events_overflow(tmpdir):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
