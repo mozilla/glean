@@ -30,6 +30,7 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
      * Additional functionality
      */
 
+    fun accumulateSingleSample(sample: Long) = inner.accumulateSingleSample(sample)
     override fun accumulateSamples(samples: List<Long>) = inner.accumulateSamples(samples)
 
     /**

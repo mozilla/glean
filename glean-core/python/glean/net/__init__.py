@@ -7,7 +7,6 @@
 Network functionality for Glean.
 """
 
-
 from .base_uploader import BaseUploader
 from .http_client import HttpClientUploader
 from .ping_uploader import PingUploader

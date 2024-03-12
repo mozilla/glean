@@ -37,23 +37,8 @@ Graphics.INSTANCE.checkerboardPeak().accumulateSamples(listOf(23));
 ```
 
 </div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-Graphics.checkerboardPeak.accumulateSamples([23])
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-metrics.graphics.checkerboard_peak.accumulate_samples([23])
-```
-
-</div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -91,6 +76,61 @@ Glean.graphics.checkerboardPeak.accumulateSamples([23])
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
+
+### `accumulateSingleSample`
+
+Accumulates one sample and appends it to the metric.
+
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Graphics
+
+Graphics.checkerboardPeak.accumulateSingleSample(23)
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Graphics;
+
+Graphics.INSTANCE.checkerboardPeak().accumulateSingleSample(23);
+```
+
+</div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::graphics;
+
+graphics::checkerboard_peak.accumulate_single_sample(23);
+```
+
+</div>
+<div data-lang="JavaScript" class="tab">
+
+```js
+import * as graphics from "./path/to/generated/files/graphics.js";
+
+graphics.checkerboardPeak.accumulateSingleSample(23);
+```
+
+</div>
+<div data-lang="Firefox Desktop" class="tab">
+
+This API is not currently exposed in Firefox Desktop, see [Bug 1884183](https://bugzilla.mozilla.org/show_bug.cgi?id=1884183).
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 
 #### Limits
 
@@ -149,43 +189,8 @@ assertEquals(1L, snapshot.count);
 ```
 
 </div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Get snapshot.
-let snapshot = graphics.checkerboardPeak.testGetValue()
-
-// Does the sum have the expected value?
-XCTAssertEqual(23, snapshot.sum)
-
-// Does the count have the expected value?
-XCTAssertEqual(1, snapshot.count)
-
-// Buckets are indexed by their lower bound.
-XCTAssertEqual(1L, snapshot.values[19])
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Get snapshot.
-snapshot = metrics.graphics.checkerboard_peak.test_get_value()
-
-# Does the sum have the expected value?
-assert 23 == snapshot.sum
-
-# Does the count have the expected value?
-assert 1 == snapshot.count
-
-# Buckets are indexed by their lower bound.
-assert 1 == snapshot.values[19]
-```
-
-</div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -275,27 +280,8 @@ assertEquals(
 ```
 
 </div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-// Assert that no errors were recorded.
-XCTAssertEqual(0, Graphics.checkerboardPeak.testGetNumRecordedErrors(.invalidValue))
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-# Assert that no errors were recorded.
-assert 0 == metrics.graphics.checkerboard_peak.test_get_num_recorded_errors(
-    ErrorType.INVALID_VALUE
-)
-```
-
-</div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust

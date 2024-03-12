@@ -37,6 +37,7 @@ class CustomDistributionMetricType(
     /**
      * Delegate common methods to the underlying type directly.
      */
+    fun accumulateSingleSample(sample: Long) = inner.accumulateSingleSample(sample)
     override fun accumulateSamples(samples: List<Long>) = inner.accumulateSamples(samples)
 
     /**

@@ -149,7 +149,7 @@ class TimingDistributionMetricTypeTest {
     }
 
     @Test
-    fun `The accumulateSamples API correctly stores timing values`() {
+    fun `The accumulateSamples APIs correctly store timing values`() {
         // Define a timing distribution metric
         val metric = TimingDistributionMetricType(
             CommonMetricData(
@@ -182,6 +182,17 @@ class TimingDistributionMetricTypeTest {
         assertEquals(1L, snapshot.values[984625593])
         assertEquals(1L, snapshot.values[1969251187])
         assertEquals(1L, snapshot.values[2784941737])
+
+        // Assure the single sample API properly records.
+        metric.accumulateSingleSample(4L)
+
+        // Check that this new data was properly recorded in the second ping.
+        val snapshotTwo = metric.testGetValue("store1")!!
+        // Check the sum
+        assertEquals(10L * secondsToNanos, snapshotTwo.sum)
+
+        // Check that we got the right number of samples.
+        assertEquals(snapshotTwo.count, 4L)
     }
 
     @Test

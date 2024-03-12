@@ -109,9 +109,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/rust-cli/env_logger/</url>
   </license>  <license>
-    <name>Apache License 2.0: errno</name>
-    <url>https://github.com/lambda-fairy/rust-errno</url>
-  </license>  <license>
     <name>Apache License 2.0: fastrand</name>
     <url>https://github.com/smol-rs/fastrand</url>
   </license>  <license>
@@ -301,6 +298,18 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
+    <name>Mozilla Public License 2.0: glean</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-build</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: zeitstempel</name>
+    <url>https://github.com/badboy/zeitstempel</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: embedded-uniffi-bindgen</name>
     <url>https://crates.io/crates/embedded-uniffi-bindgen</url>
   </license>  <license>
@@ -336,18 +345,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_udl</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-build</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: zeitstempel</name>
-    <url>https://github.com/badboy/zeitstempel</url>
   </license>  <license>
     <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
