@@ -2302,7 +2302,7 @@ The following text applies to code linked from these dependencies:
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.4]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.11]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.12]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [fastrand 2.0.0]( https://github.com/smol-rs/fastrand )
@@ -4887,9 +4887,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 58.0.0]( https://github.com/mozilla/glean )
+* [glean 58.1.0]( https://github.com/mozilla/glean )
 * [glean-build 13.0.0]( https://github.com/mozilla/glean )
-* [glean-core 58.0.0]( https://github.com/mozilla/glean )
+* [glean-core 58.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```

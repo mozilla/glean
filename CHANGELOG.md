@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v58.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...main)
+
+# v58.1.0 (2024-03-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v58.0.0...v58.1.0)
 
 * General
   * Enable wall clock timestamp on all events by default ([#2767](https://github.com/mozilla/glean/issues/2767))
