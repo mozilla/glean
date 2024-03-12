@@ -22,9 +22,7 @@ from glean import __version__ as glean_version
 # Use `bin/update-schema.sh latest` to update it to the latest upstream version.`
 this_dir = Path(__file__)
 # removing the file name and 3 layers of directories
-GLEAN_PING_SCHEMA_PATH = (
-    this_dir.parent.parent.parent.parent / "glean.1.schema.json"
-).resolve()
+GLEAN_PING_SCHEMA_PATH = (this_dir.parent.parent.parent.parent / "glean.1.schema.json").resolve()
 
 # Turn on all logging when running the unit tests
 logging.getLogger(None).setLevel(logging.INFO)
@@ -32,9 +30,7 @@ logging.getLogger(None).setLevel(logging.INFO)
 
 # This will be run before every test in the entire test suite
 def pytest_runtest_setup(item):
-    testing.reset_glean(
-        application_id="glean-python-test", application_version=glean_version
-    )
+    testing.reset_glean(application_id="glean-python-test", application_version=glean_version)
 
 
 # The pytest-localserver server occasionally deadlocks.  This is a workaround posted at

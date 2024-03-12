@@ -117,6 +117,4 @@ def test_negative_values_are_not_counted():
 
     # Check that the counter was not incremented
     assert 1 == counter_metric.test_get_value("store1")
-    assert 1 == counter_metric.test_get_num_recorded_errors(
-        testing.ErrorType.INVALID_VALUE
-    )
+    assert 1 == counter_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE)

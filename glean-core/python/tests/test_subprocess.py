@@ -9,9 +9,5 @@ def test_subprocess_works():
     import sys
 
     # Importing glean shouldn't affect subprocess.
-    output = (
-        subprocess.check_output([sys.executable, "-c", "print('hello')"])
-        .decode()
-        .strip()
-    )
+    output = subprocess.check_output([sys.executable, "-c", "print('hello')"]).decode().strip()
     assert output == "hello"
