@@ -326,12 +326,10 @@ def test_event_enum_is_generated_correctly():
         metrics.environment.EventExampleExtra(key1="value1", key2="value2")
     )
 
-    extra = metrics.environment.event_example.test_get_value()[0].extra
-    del extra["glean_timestamp"]
     assert {
         "key1": "value1",
         "key2": "value2",
-    } == extra
+    } == metrics.environment.event_example.test_get_value()[0].extra
 
 
 def test_event_extra_is_generated_correctly():
@@ -344,12 +342,10 @@ def test_event_extra_is_generated_correctly():
         metrics.core.PreferenceToggledExtra(preference="value1", enabled=True)
     )
 
-    extra = metrics.core.preference_toggled.test_get_value()[0].extra
-    del extra["glean_timestamp"]
     assert {
         "preference": "value1",
         "enabled": "true",
-    } == extra
+    } == metrics.core.preference_toggled.test_get_value()[0].extra
 
 
 def test_the_convenient_extrakeys_api():
