@@ -18,6 +18,9 @@
 * Python
   * Timing Distributions now have both a `accumulate_samples` and `accumulate_single_sample` ([Bug 1881297](https://bugzilla.mozilla.org/show_bug.cgi?id=1881297))
 
+* General
+  * Timing Distribution's timer ids now begin at 1, rather than 0, to make some multi-language use cases easier. ([2777](https://bugzilla.mozilla.org/show_bug.cgi?id=1882584))
+
 # v58.0.0 (2024-02-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v57.0.0...v58.0.0)
