@@ -2,8 +2,6 @@
 
 Record structured data.
 
-{{#include ../../../shared/blockquote-warning.html}}
-
 ## Recording API
 
 ### `set`
