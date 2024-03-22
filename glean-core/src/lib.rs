@@ -17,7 +17,6 @@
 
 use std::borrow::Cow;
 use std::collections::HashMap;
-use std::convert::TryFrom;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
@@ -25,7 +24,7 @@ use std::thread;
 use std::time::Duration;
 
 use crossbeam_channel::unbounded;
-use log::{self, LevelFilter};
+use log::LevelFilter;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 

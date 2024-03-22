@@ -6,12 +6,10 @@
 // the lib.rs file.
 
 use std::collections::HashSet;
-use std::iter::FromIterator;
 
 use serde_json::json;
 
 use super::*;
-use crate::metrics::{StringMetric, TimeUnit, TimespanMetric, TimingDistributionMetric};
 
 const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
