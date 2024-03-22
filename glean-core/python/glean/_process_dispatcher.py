@@ -123,7 +123,7 @@ class ProcessDispatcher:
             # Explicitly pass the contents of `sys.path` as `PYTHONPATH` to the
             # subprocess so that there aren't any module search path
             # differences.
-            python_path = ":".join(sys.path)
+            python_path = (";" if os.name == "nt" else ":").join(sys.path)
 
             # We re-use the existing environment and overwrite only the `PYTHONPATH`
             env = os.environ.copy()
