@@ -12,6 +12,7 @@ public struct Configuration {
     let logLevel: LevelFilter?
     let enableEventTimestamps: Bool
     let experimentationId: String?
+    let enableInternalPings: Bool
 
     struct Constants {
         static let defaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org"
@@ -27,7 +28,10 @@ public struct Configuration {
     ///   * dataPath an optional String that specifies where to store data locally on the device.
     ///   This should ONLY be used when setting up Glean on a non-main process.
     ///   * logLevel an optional log level that controls how verbose the internal logging is.
-    ///   * enableEventTimestamps (Experimental) whether to add a wallclock timestamp to all events.
+    ///   * enableEventTimestamps (Experimental) whether to add a wallclock timestamp to all events
+    ///   * experimentationId An experimentation identifier derived by the application
+    ///   to be sent with all pings.
+    ///   * enableInternalPings Whether to enable internal pings.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -35,7 +39,8 @@ public struct Configuration {
         dataPath: String? = nil,
         logLevel: LevelFilter? = nil,
         enableEventTimestamps: Bool = true,
-        experimentationId: String? = nil
+        experimentationId: String? = nil,
+        enableInternalPings: Bool = true
     ) {
         self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.maxEvents = maxEvents
@@ -44,5 +49,6 @@ public struct Configuration {
         self.logLevel = logLevel
         self.enableEventTimestamps = enableEventTimestamps
         self.experimentationId = experimentationId
+        self.enableInternalPings = enableInternalPings
     }
 }

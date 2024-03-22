@@ -34,6 +34,7 @@ class Configuration:
         allow_multiprocessing: bool = True,
         enable_event_timestamps: bool = True,
         experimentation_id: Optional[str] = None,
+        enable_internal_pings: bool = True,
     ):
         """
         Args:
@@ -49,6 +50,9 @@ class Configuration:
                 to offload some work (such as ping uploading).
             enable_event_timestamps (bool): (Experimental) Whether to add a
                 wallclock timestamp to all events. Default: `True`.
+            experimentation_id (string): An experimentation identifier derived
+                by the application to be sent with all pings. Default: None.
+            enable_internal_pings (bool): Whether to enable internal pings. Default: `True`.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
@@ -61,6 +65,7 @@ class Configuration:
         self._allow_multiprocessing = allow_multiprocessing
         self._enable_event_timestamps = enable_event_timestamps
         self._experimentation_id = experimentation_id
+        self._enable_internal_pings = enable_internal_pings
 
     @property
     def server_endpoint(self) -> str:
@@ -100,6 +105,11 @@ class Configuration:
     def experimentation_id(self) -> Optional[str]:
         """An experimentation id that will be sent in all pings"""
         return self._experimentation_id
+
+    @property
+    def enable_internal_pings(self) -> bool:
+        """Whether to enable internal pings."""
+        return self._enable_internal_pings
 
     @property
     def ping_uploader(self) -> net.BaseUploader:

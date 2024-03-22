@@ -194,7 +194,8 @@ public class Glean {
             logLevel: configuration.logLevel,
             rateLimit: nil,
             enableEventTimestamps: configuration.enableEventTimestamps,
-            experimentationId: configuration.experimentationId
+            experimentationId: configuration.experimentationId,
+            enableInternalPings: configuration.enableInternalPings
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
