@@ -21,6 +21,9 @@ import mozilla.telemetry.glean.net.PingUploader
  *           This should ONLY be used when setting up Glean on a non-main process.
  * @property logLevel An optional [LevelFilter] that controls how verbose the internal logging is.
  * @property enableEventTimestamps (Experimental) Whether to add a wallclock timestamp to all events.
+ * @property experimentationId An experimentation identifier derived by the application
+ *           to be sent with all pings.
+ * @property enableInternalPings Whether to enable internal pings.
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -34,6 +37,7 @@ data class Configuration @JvmOverloads constructor(
     val logLevel: LevelFilter? = null,
     val enableEventTimestamps: Boolean = true,
     val experimentationId: String? = null,
+    val enableInternalPings: Boolean = true,
 ) {
     companion object {
         /**

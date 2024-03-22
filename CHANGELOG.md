@@ -4,6 +4,7 @@
 
 * General
   * Hide `glean_timestamp` from event extras in tests ([#2776](https://github.com/mozilla/glean/pull/2776))
+  * Add a configuration option to disable internal pings ([#2786](https://github.com/mozilla/glean/pull/2786/))
 
 # v58.1.0 (2024-03-12)
 
