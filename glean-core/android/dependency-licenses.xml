@@ -70,10 +70,10 @@ the details of which are reproduced below.
     <name>Apache License 2.0: syn</name>
     <url>https://github.com/dtolnay/syn</url>
   </license>  <license>
-    <name>Apache License 2.0: thiserror</name>
+    <name>Apache License 2.0: thiserror-impl</name>
     <url>https://github.com/dtolnay/thiserror</url>
   </license>  <license>
-    <name>Apache License 2.0: thiserror-impl</name>
+    <name>Apache License 2.0: thiserror</name>
     <url>https://github.com/dtolnay/thiserror</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-ident</name>
@@ -298,26 +298,26 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean</name>
+    <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
+    <name>Mozilla Public License 2.0: glean</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: embedded-uniffi-bindgen</name>
-    <url>https://crates.io/crates/embedded-uniffi-bindgen</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle-android</name>
     <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: embedded-uniffi-bindgen</name>
+    <url>https://crates.io/crates/embedded-uniffi-bindgen</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
