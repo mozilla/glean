@@ -137,9 +137,7 @@ def _event_extra_factory(name: str, argnames: List[Tuple[str, str]]) -> Any:
         for key, value in kwargs.items():
             typ = next((t for (k, t) in argnames if key == k), None)
             if typ is None:
-                raise TypeError(
-                    f"Argument '{key}' not valid for {self.__class__.__name__}"
-                )
+                raise TypeError(f"Argument '{key}' not valid for {self.__class__.__name__}")
             elif typ == "boolean" and isinstance(value, bool):
                 pass
             elif typ == "string" and isinstance(value, str):
@@ -147,9 +145,7 @@ def _event_extra_factory(name: str, argnames: List[Tuple[str, str]]) -> Any:
             elif typ == "quantity" and isinstance(value, int):
                 pass
             else:
-                raise TypeError(
-                    f"Field '{key}' requires type {typ} in {self.__class__.__name__}"
-                )
+                raise TypeError(f"Field '{key}' requires type {typ} in {self.__class__.__name__}")
             setattr(self, key, value)
 
     def to_ffi_extra(self):

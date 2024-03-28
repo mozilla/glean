@@ -116,6 +116,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck bin/check-artifact.sh
 
 lint-python: setup-python ## Run ruff and mypy to lint Python code
+	$(GLEAN_PYENV)/bin/python3 -m ruff format --diff glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m ruff check glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
 

@@ -70,9 +70,7 @@ def test_the_api_must_correctly_cancel():
     timespan_metric.stop()
 
     assert not timespan_metric.test_get_value()
-    assert 1 == timespan_metric.test_get_num_recorded_errors(
-        testing.ErrorType.INVALID_STATE
-    )
+    assert 1 == timespan_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
 
 
 def test_get_value_throws_if_nothing_is_stored():
@@ -128,9 +126,7 @@ def test_records_an_error_if_started_twice():
     timespan_metric.stop()
 
     assert timespan_metric.test_get_value("store2") >= 0
-    assert 1 == timespan_metric.test_get_num_recorded_errors(
-        testing.ErrorType.INVALID_STATE
-    )
+    assert 1 == timespan_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
 
 
 def test_value_unchanged_if_stopped_twice():

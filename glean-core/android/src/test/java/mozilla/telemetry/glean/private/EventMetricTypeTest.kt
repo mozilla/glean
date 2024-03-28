@@ -600,4 +600,29 @@ class EventMetricTypeTest {
         assertEquals("ids must match", "ui.click3", listener.lastSeenId)
         assertTrue("count must be correct", listener.count == 3)
     }
+
+    @Test
+    fun `Only user-defined extra keys are exposed in tests`() {
+        val click = EventMetricType<ClickExtras>(
+            CommonMetricData(
+                disabled = false,
+                category = "ui",
+                lifetime = Lifetime.PING,
+                name = "click",
+                sendInPings = listOf("store1"),
+            ),
+            allowedExtraKeys = listOf("object_id", "other"),
+        )
+
+        click.record()
+
+        // Check that data was properly recorded.
+        val snapshot = click.testGetValue()!!
+        assertEquals(1, snapshot.size)
+
+        val ev = snapshot[0]
+        assertEquals("ui", ev.category)
+        assertEquals("click", ev.name)
+        assertNull(ev.extra)
+    }
 }

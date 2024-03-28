@@ -44,9 +44,7 @@ def get_upload_failure_metric():
     )
 
 
-def test_recording_upload_errors_doesnt_clobber_database(
-    tmpdir, safe_httpserver, monkeypatch
-):
+def test_recording_upload_errors_doesnt_clobber_database(tmpdir, safe_httpserver, monkeypatch):
     """
     Test that running the ping uploader subprocess doesn't clobber the
     database. If, under some bug, the subprocess had "upload_enabled" set to
@@ -113,9 +111,7 @@ def test_recording_upload_errors_doesnt_clobber_database(
 def test_400_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=400)
 
-    response = HttpClientUploader.upload(
-        url=safe_httpserver.url, data=b"{}", headers={}
-    )
+    response = HttpClientUploader.upload(url=safe_httpserver.url, data=b"{}", headers={})
 
     assert isinstance(response, ping_uploader.UploadResult.HTTP_STATUS)
     assert 400 == response.code
@@ -125,9 +121,7 @@ def test_400_error(safe_httpserver):
 def test_500_error(safe_httpserver):
     safe_httpserver.serve_content(b"", code=500)
 
-    response = HttpClientUploader.upload(
-        url=safe_httpserver.url, data=b"{}", headers={}
-    )
+    response = HttpClientUploader.upload(url=safe_httpserver.url, data=b"{}", headers={})
 
     assert isinstance(response, ping_uploader.UploadResult.HTTP_STATUS)
     assert 500 == response.code
@@ -135,9 +129,7 @@ def test_500_error(safe_httpserver):
 
 
 def test_unknown_scheme():
-    response = HttpClientUploader.upload(
-        url="ftp://example.com/", data=b"{}", headers={}
-    )
+    response = HttpClientUploader.upload(url="ftp://example.com/", data=b"{}", headers={})
 
     assert isinstance(response, ping_uploader.UploadResult.UNRECOVERABLE_FAILURE)
 
@@ -184,9 +176,7 @@ def test_ping_upload_worker_single_process(safe_httpserver):
 
 def test_unknown_url_no_exception():
     # Shouldn't leak any socket or HTTPExceptions
-    response = HttpClientUploader.upload(
-        url="http://nowhere.example.com", data=b"{}", headers={}
-    )
+    response = HttpClientUploader.upload(url="http://nowhere.example.com", data=b"{}", headers={})
 
     assert isinstance(response, ping_uploader.UploadResult.RECOVERABLE_FAILURE)
 

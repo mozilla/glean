@@ -97,9 +97,7 @@ def test_setting_a_long_url_records_an_error():
     expected = "glean://" + (long_path_base * 1023)
 
     assert expected == url_metric.test_get_value()
-    assert 1 == url_metric.test_get_num_recorded_errors(
-        testing.ErrorType.INVALID_OVERFLOW
-    )
+    assert 1 == url_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_OVERFLOW)
 
 
 def test_setting_a_url_as_none():

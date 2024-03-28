@@ -7,6 +7,7 @@ use std::env;
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
 use uniffi::{generate_bindings, TargetLanguage};
+use uniffi_bindgen::BindingGeneratorDefault;
 
 fn parse_language(lang: &str) -> anyhow::Result<uniffi::TargetLanguage> {
     match lang {
@@ -68,10 +69,15 @@ fn main() -> anyhow::Result<()> {
         bail!("Need output directory.")
     }
 
+    let generator = BindingGeneratorDefault {
+        target_languages,
+        try_format_code: false,
+    };
+
     generate_bindings(
         &udl_file.unwrap(),
         config.as_deref(),
-        target_languages,
+        generator,
         out_dir.as_deref(),
         None,
         Some("glean_core"),

@@ -1897,8 +1897,8 @@ The following text applies to code linked from these dependencies:
 * [serde 1.0.179]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.179]( https://github.com/serde-rs/serde )
 * [syn 2.0.26]( https://github.com/dtolnay/syn )
-* [thiserror 1.0.40]( https://github.com/dtolnay/thiserror )
 * [thiserror-impl 1.0.40]( https://github.com/dtolnay/thiserror )
+* [thiserror 1.0.40]( https://github.com/dtolnay/thiserror )
 * [unicode-ident 1.0.9]( https://github.com/dtolnay/unicode-ident )
 
 ```
@@ -4887,9 +4887,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean 58.1.0]( https://github.com/mozilla/glean )
+* [glean-core 59.0.0]( https://github.com/mozilla/glean )
 * [glean-build 13.0.0]( https://github.com/mozilla/glean )
-* [glean-core 58.1.0]( https://github.com/mozilla/glean )
+* [glean 59.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5273,9 +5273,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
+* [embedded-uniffi-bindgen 0.1.0]( https://crates.io/crates/embedded-uniffi-bindgen )
 * [uniffi 0.25.3]( https://github.com/mozilla/uniffi-rs )
 * [uniffi_bindgen 0.25.3]( https://github.com/mozilla/uniffi-rs )
 * [uniffi_build 0.25.3]( https://github.com/mozilla/uniffi-rs )

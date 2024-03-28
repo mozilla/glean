@@ -86,9 +86,7 @@ class DatetimeMetricType:
 
         return dt.isoformat()
 
-    def test_get_value(
-        self, ping_name: Optional[str] = None
-    ) -> Optional[datetime.datetime]:
+    def test_get_value(self, ping_name: Optional[str] = None) -> Optional[datetime.datetime]:
         """
         Returns the stored value for testing purposes only.
 

@@ -109,23 +109,21 @@ class ProcessDispatcher:
             # that Glean controls. This approach may need to change to pass over a pipe
             # if it becomes too large.
 
-            payload = base64.b64encode(
-                pickle.dumps((Glean._simple_log_level, func, args))
-            ).decode("ascii")
+            payload = base64.b64encode(pickle.dumps((Glean._simple_log_level, func, args))).decode(
+                "ascii"
+            )
 
             if len(payload) > 4096:
                 log.warning("data payload to subprocess is greater than 4096 bytes")
 
             # Help coverage.py do coverage across processes
             if cls._doing_coverage:
-                os.environ["COVERAGE_PROCESS_START"] = str(
-                    Path("pyproject.toml").absolute()
-                )
+                os.environ["COVERAGE_PROCESS_START"] = str(Path("pyproject.toml").absolute())
 
             # Explicitly pass the contents of `sys.path` as `PYTHONPATH` to the
             # subprocess so that there aren't any module search path
             # differences.
-            python_path = ":".join(sys.path)
+            python_path = os.pathsep.join(sys.path)
 
             # We re-use the existing environment and overwrite only the `PYTHONPATH`
             env = os.environ.copy()

@@ -23,9 +23,7 @@ def test_builtin_pings():
 def test_working_metric():
     metrics = load_metrics(ROOT / "data" / "core.yaml", config={"allow_reserved": True})
 
-    assert metrics.core_ping.flash_usage.__doc__.startswith(
-        "The number of times the flash plugin"
-    )
+    assert metrics.core_ping.flash_usage.__doc__.startswith("The number of times the flash plugin")
 
     metrics.core_ping.flash_usage.add(1)
 

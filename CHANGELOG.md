@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
+
+# v59.0.0 (2024-03-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...v59.0.0)
+
+* General
+  * Hide `glean_timestamp` from event extras in tests ([#2776](https://github.com/mozilla/glean/pull/2776))
+  * Timing Distribution's timer ids now begin at 1, rather than 0, to make some multi-language use cases easier. ([2777](https://bugzilla.mozilla.org/show_bug.cgi?id=1882584))
+  * Add a configuration option to disable internal pings ([#2786](https://github.com/mozilla/glean/pull/2786/))
+  * Updated to UniFFI 0.27.0 ([#2762](https://github.com/mozilla/glean/pull/2762))
 
 # v58.1.0 (2024-03-12)
 
