@@ -116,22 +116,10 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-
     // Kotlin settings applicable to all modules.
     afterEvaluate {
-        if (it.hasProperty('android')) {
-            android {
-                // This shouldn't be needed anymore with AGP 8.1.0+
-                // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-                compileOptions {
-                    sourceCompatibility rootProject.ext.build.jvmTargetCompatibility
-                    targetCompatibility rootProject.ext.build.jvmTargetCompatibility
-                }
-            }
-        }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
-            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
