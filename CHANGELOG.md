@@ -4,6 +4,7 @@
 
 * General
   * Hide `glean_timestamp` from event extras in tests ([#2776](https://github.com/mozilla/glean/pull/2776))
+  * Timing Distribution's timer ids now begin at 1, rather than 0, to make some multi-language use cases easier. ([2777](https://bugzilla.mozilla.org/show_bug.cgi?id=1882584))
   * Add a configuration option to disable internal pings ([#2786](https://github.com/mozilla/glean/pull/2786/))
   * Updated to UniFFI 0.27.0 ([#2762](https://github.com/mozilla/glean/pull/2762))
 
@@ -19,9 +20,6 @@
   * Timing and Custom Distributions now have a `accumulate_single_sample` API that don't require use of a collection ([Bug 1881297](https://bugzilla.mozilla.org/show_bug.cgi?id=1881297))
 * Python
   * Timing Distributions now have both a `accumulate_samples` and `accumulate_single_sample` ([Bug 1881297](https://bugzilla.mozilla.org/show_bug.cgi?id=1881297))
-
-* General
-  * Timing Distribution's timer ids now begin at 1, rather than 0, to make some multi-language use cases easier. ([2777](https://bugzilla.mozilla.org/show_bug.cgi?id=1882584))
 
 # v58.0.0 (2024-02-29)
 
