@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
+
+# v59.0.0 (2024-03-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...v59.0.0)
 
 * General
   * Hide `glean_timestamp` from event extras in tests ([#2776](https://github.com/mozilla/glean/pull/2776))
