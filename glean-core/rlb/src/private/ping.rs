@@ -27,7 +27,11 @@ impl PingType {
     /// * `name` - The name of the ping.
     /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
     /// * `send_if_empty` - Whether the ping should be sent empty or not.
+    /// * `precise_timestamps` - Whether the ping should use precise timestamps for the start and end time.
+    /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
     /// * `reason_codes` - The valid reason codes for this ping.
+    /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
+    ///   ping will still be collected and is discarded instead of being submitted.
     pub fn new<A: Into<String>>(
         name: A,
         include_client_id: bool,
@@ -35,6 +39,7 @@ impl PingType {
         precise_timestamps: bool,
         include_info_sections: bool,
         reason_codes: Vec<String>,
+        enabled: bool,
     ) -> Self {
         let inner = glean_core::metrics::PingType::new(
             name.into(),
@@ -43,6 +48,7 @@ impl PingType {
             precise_timestamps,
             include_info_sections,
             reason_codes,
+            enabled,
         );
 
         Self {

@@ -21,7 +21,7 @@ pub struct InternalPings {
 impl InternalPings {
     pub fn new(enabled: bool) -> InternalPings {
         InternalPings {
-            baseline: PingType::new_internal(
+            baseline: PingType::new(
                 "baseline",
                 true,
                 true,
@@ -34,7 +34,7 @@ impl InternalPings {
                 ],
                 enabled,
             ),
-            metrics: PingType::new_internal(
+            metrics: PingType::new(
                 "metrics",
                 true,
                 false,
@@ -49,7 +49,7 @@ impl InternalPings {
                 ],
                 enabled,
             ),
-            events: PingType::new_internal(
+            events: PingType::new(
                 "events",
                 true,
                 false,
@@ -69,6 +69,7 @@ impl InternalPings {
                 true,
                 true,
                 vec!["at_init".to_string(), "set_upload_enabled".to_string()],
+                true // The deletion-request should not be disabled
             ),
         }
     }

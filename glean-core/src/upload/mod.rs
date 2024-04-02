@@ -1032,6 +1032,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1071,6 +1072,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1108,6 +1110,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1145,6 +1148,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1182,6 +1186,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1221,6 +1226,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1336,6 +1342,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1409,6 +1416,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1466,6 +1474,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1544,6 +1553,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1623,6 +1633,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 
@@ -1704,6 +1715,7 @@ mod test {
             true,
             true,
             vec![],
+            true,
         );
         glean.register_ping_type(&ping_type);
 

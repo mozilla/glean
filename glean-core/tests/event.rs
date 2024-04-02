@@ -168,6 +168,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
             true,
             true,
             vec!["max_capacity".to_string()],
+            true,
         ));
     }
 
@@ -453,6 +454,7 @@ fn event_storage_trimming() {
             true,
             true,
             vec![],
+            true,
         ));
 
         glean.on_ready_to_submit_pings(true);

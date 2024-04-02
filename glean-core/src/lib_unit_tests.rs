@@ -1168,7 +1168,7 @@ fn disabled_pings_are_not_submitted() {
     let dir = tempfile::tempdir().unwrap();
     let (mut glean, _t) = new_glean(Some(dir));
 
-    let ping = PingType::new_internal("custom-disabled", true, false, true, true, vec![], false);
+    let ping = PingType::new("custom-disabled", true, false, true, true, vec![], false);
     glean.register_ping_type(&ping);
 
     // We need to store a metric as an empty ping is not stored.
