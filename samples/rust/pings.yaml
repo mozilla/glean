@@ -20,3 +20,4 @@ prototype:
     - N/A
   notification_emails:
     - CHANGE-ME@example.com
+  enabled: true
