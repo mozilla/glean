@@ -18,6 +18,7 @@ class PingType:
         precise_timestamps: bool,
         include_info_sections: bool,
         # enabled: bool,  -- Not currently enabled for python bindings
+        schedules_pings: List[str],
         reason_codes: List[str],
     ):
         """
@@ -34,6 +35,7 @@ class PingType:
             precise_timestamps,
             include_info_sections,
             True,
+            schedules_pings,
             reason_codes,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]

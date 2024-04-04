@@ -260,6 +260,7 @@ class GleanTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: []
         )
 
@@ -399,6 +400,7 @@ class GleanTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: []
         )
 

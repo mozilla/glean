@@ -81,6 +81,7 @@ class CustomPingTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 
@@ -112,6 +113,7 @@ class CustomPingTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 
@@ -187,6 +189,7 @@ class CustomPingTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 

@@ -251,6 +251,7 @@ class GleanDebugActivityTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 

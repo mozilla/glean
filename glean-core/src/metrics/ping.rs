@@ -31,6 +31,8 @@ struct InnerPing {
     pub include_info_sections: bool,
     /// Whether this ping is enabled.
     pub enabled: bool,
+    /// Other pings that should be scheduled when this ping is sent.
+    pub schedules_pings: Vec<String>,
     /// The "reason" codes that this ping can send
     pub reason_codes: Vec<String>,
 }
@@ -44,6 +46,7 @@ impl fmt::Debug for PingType {
             .field("precise_timestamps", &self.0.precise_timestamps)
             .field("include_info_sections", &self.0.include_info_sections)
             .field("enabled", &self.0.enabled)
+            .field("schedules_pings", &self.0.schedules_pings)
             .field("reason_codes", &self.0.reason_codes)
             .finish()
     }
@@ -74,6 +77,30 @@ impl PingType {
         precise_timestamps: bool,
         include_info_sections: bool,
         enabled: bool,
+        schedules_pings: Vec<String>,
+        reason_codes: Vec<String>,
+    ) -> Self {
+        Self::new_internal(
+            name,
+            include_client_id,
+            send_if_empty,
+            precise_timestamps,
+            include_info_sections,
+            enabled,
+            schedules_pings,
+            reason_codes,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new_internal<A: Into<String>>(
+        name: A,
+        include_client_id: bool,
+        send_if_empty: bool,
+        precise_timestamps: bool,
+        include_info_sections: bool,
+        enabled: bool,
+        schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
     ) -> Self {
         let this = Self(Arc::new(InnerPing {
@@ -83,6 +110,7 @@ impl PingType {
             precise_timestamps,
             include_info_sections,
             enabled,
+            schedules_pings,
             reason_codes,
         }));
 
@@ -123,6 +151,10 @@ impl PingType {
         }
 
         self.0.enabled
+    }
+
+    pub(crate) fn schedules_pings(&self) -> &Vec<String> {
+        &self.0.schedules_pings
     }
 
     /// Submits the ping for eventual uploading.

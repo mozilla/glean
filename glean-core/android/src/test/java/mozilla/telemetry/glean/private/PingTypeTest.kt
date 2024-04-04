@@ -56,6 +56,7 @@ class PingTypeTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 
@@ -124,6 +125,7 @@ class PingTypeTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 
@@ -173,6 +175,7 @@ class PingTypeTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 
@@ -222,6 +225,7 @@ class PingTypeTest {
             preciseTimestamps = true,
             includeInfoSections = true,
             enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 
@@ -270,6 +274,7 @@ class PingTypeTest {
             includeClientId = false,
             sendIfEmpty = false,
             preciseTimestamps = true,
+            schedulesPings = emptyList(),
             includeInfoSections = true,
             enabled = true,
             reasonCodes = listOf(),
