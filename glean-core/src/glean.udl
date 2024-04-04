@@ -47,7 +47,7 @@ namespace glean {
     void glean_unregister_event_listener(string tag);
 
     // Server Knobs API
-    void glean_set_metrics_enabled_config(string json);
+    void glean_set_remote_settings_config(string json);
 
     boolean glean_set_debug_view_tag(string tag);
     boolean glean_set_source_tags(sequence<string> tags);

@@ -990,25 +990,10 @@ class GleanTest {
               "telemetry.string_metric": true
             }
         """.trimIndent()
-        Glean.setMetricsEnabledConfig(metricConfig)
+        Glean.setRemoteSettingsConfig(metricConfig)
 
         // This should result in the metric being set to "foo"
         stringMetric.set("foo")
-        assertNotNull(stringMetric.testGetValue())
-        assertEquals("foo", stringMetric.testGetValue())
-
-        // Set a metric configuration which will disable the telemetry.string_metric
-        // again, this time using the deprecated API to ensure backwards compatibility
-        val metricConfigBackwardsCompat = """
-            {
-              "telemetry.string_metric": true
-            }
-        """.trimIndent()
-        Glean.setMetricsDisabledConfig(metricConfigBackwardsCompat)
-
-        // This should not result in the metric being set to "bar", it should still
-        // contain the original "foo" string
-        stringMetric.set("bar")
         assertNotNull(stringMetric.testGetValue())
         assertEquals("foo", stringMetric.testGetValue())
     }

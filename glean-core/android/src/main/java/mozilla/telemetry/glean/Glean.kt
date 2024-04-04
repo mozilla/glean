@@ -500,34 +500,13 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
-     * Set configuration for metrics' disabled property, typically from a remote_settings
-     * experiment or rollout.
-     *
-     * @param json Stringified JSON map of metrics and their associated `disabled` property.
-     */
-    fun setMetricsDisabledConfig(json: String) {
-        // Let's convert this to the new API for backwards compatibility
-        // In order to convert to the new API we need to flip all of the boolean values that
-        // are contained in the map contained in the supplied JSON string. We do this by
-        // parsing the string and then iterating through the keys to create a new object with
-        // the boolean values inverted. Finally, we turn this back into a string to pass into
-        // the `setMetricsEnabledConfig` function.
-        val jsonData = JSONObject(json)
-        var invertedJsonData = JSONObject()
-        jsonData.keys().forEach {
-            invertedJsonData.put(it, !jsonData.getBoolean(it))
-        }
-        setMetricsEnabledConfig(invertedJsonData.toString())
-    }
-
-    /**
      * Set configuration to override metrics' enabled/disabled state, typically from a remote_settings
      * experiment or rollout.
      *
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
-    fun setMetricsEnabledConfig(json: String) {
-        gleanSetMetricsEnabledConfig(json)
+    fun setRemoteSettingsConfig(json: String) {
+        gleanSetRemoteSettingsConfig(json)
     }
 
     /**

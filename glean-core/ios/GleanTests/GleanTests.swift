@@ -308,31 +308,9 @@ class GleanTests: XCTestCase {
   "telemetry.counter_metric": true
 }
 """
-        Glean.shared.setMetricsEnabledConfig(metricConfigStringifiedJson)
+        Glean.shared.setRemoteSettingsConfig(metricConfigStringifiedJson)
 
         // Attempt to add to the counter, this should succeed.
-        counter.add(1)
-        if let value = counter.testGetValue() {
-            XCTAssertEqual(1, value)
-        } else {
-            XCTAssert(false, "Failed to set metric config to enable counter")
-        }
-
-        // Set a metric configuration that disables the telemetry.counter_metric
-        // again, this time using the old API to ensure backwards compatibility.
-        // The old API was inverted and mapped directly to the metrics.yaml property
-        // for each metric named 'disabled'. So in this case `true` means the metric
-        // is disabled.
-        let metricConfigBackwardsCompatible =
-"""
-{
-  "telemetry.counter_metric": false
-}
-"""
-        Glean.shared.setMetricsDisabledConfig(metricConfigBackwardsCompatible)
-
-        // Attempt to add to the counter, this should not record so the value should
-        // remain at 1
         counter.add(1)
         if let value = counter.testGetValue() {
             XCTAssertEqual(1, value)

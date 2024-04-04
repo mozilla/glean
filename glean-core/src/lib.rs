@@ -28,7 +28,7 @@ use log::LevelFilter;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
-use metrics::MetricsEnabledConfig;
+use metrics::RemoteSettingsConfig;
 
 mod common_metric_data;
 mod core;
@@ -910,17 +910,17 @@ pub fn glean_test_get_experimentation_id() -> Option<String> {
 /// Sets a remote configuration to override metrics' default enabled/disabled
 /// state
 ///
-/// See [`core::Glean::set_metrics_enabled_config`].
-pub fn glean_set_metrics_enabled_config(json: String) {
+/// See [`core::Glean::set_remote_settings_config`].
+pub fn glean_set_remote_settings_config(json: String) {
     // An empty config means it is not set,
     // so we avoid logging an error about it.
     if json.is_empty() {
         return;
     }
 
-    match MetricsEnabledConfig::try_from(json) {
+    match RemoteSettingsConfig::try_from(json) {
         Ok(cfg) => launch_with_glean(|glean| {
-            glean.set_metrics_enabled_config(cfg);
+            glean.set_remote_settings_config(cfg);
         }),
         Err(e) => {
             log::error!("Error setting metrics feature config: {:?}", e);
