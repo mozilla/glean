@@ -80,7 +80,6 @@ It may contain [markdown syntax](https://www.markdownguide.org/basic-syntax/).
 _default: `{}`_
 
 A dictionary of extra metadata associated with this ping.
-Currently the only allowed key is `tags` (see below).
 
 ##### `tags`
 
@@ -89,6 +88,20 @@ _default: `[]`_
 A list of tag names associated with this ping.
 Must correspond to an entry specified in a [tags file](./tags.md).
 
+##### `ping_schedule`
+
+_default: `[]`_
+
+A list of ping names. When one of *those* pings is sent, then *this* ping is
+also sent, with the same `reason`. This is useful if you want a ping to
+be scheduled and sent at the same frequency as another ping, like `baseline`.
+
+> Pings cannot list themselves under `ping_schedule`, however it is possible to
+> accidentally create cycles of pings where Ping A schedules Ping B, which
+> schedules Ping C, which in turn schedules Ping A. This can result in a
+> constant stream of pings being sent. Please use caution with `ping_schedule`,
+> and ensure that you have not accidentally created any cycles with the
+> ping references.
 
 #### `include_client_id`
 
