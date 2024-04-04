@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
 
+* Added support for `ping_schedule` metadata property so that pings can be scheduled to be sent when other pings are sent. (([#2791]https://github.com/mozilla/glean/pull/2791))
+
 # v59.0.0 (2024-03-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v58.1.0...v59.0.0)

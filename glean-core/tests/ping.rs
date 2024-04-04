@@ -247,3 +247,25 @@ fn events_ping_with_metric_but_no_events_is_not_sent() {
     assert!(events_ping.submit_sync(&glean, None));
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
+
+#[test]
+fn test_scheduled_pings_are_sent() {
+    let (mut glean, _t) = new_glean(None);
+
+    let piggyback_ping = PingType::new("piggyback", true, true, true, true, vec![], vec![]);
+    glean.register_ping_type(&piggyback_ping);
+
+    let trigger_ping = PingType::new(
+        "trigger",
+        true,
+        true,
+        true,
+        true,
+        vec!["piggyback".into()],
+        vec![],
+    );
+    glean.register_ping_type(&trigger_ping);
+
+    assert!(trigger_ping.submit_sync(&glean, None));
+    assert_eq!(2, get_queued_pings(glean.get_data_path()).unwrap().len());
+}

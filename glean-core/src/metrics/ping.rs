@@ -138,7 +138,7 @@ impl PingType {
         self.0.include_info_sections
     }
 
-    pub(crate) fn schedules_pings(&self) -> &Vec<String> {
+    pub(crate) fn schedules_pings(&self) -> &[String] {
         &self.0.schedules_pings
     }
 
@@ -259,6 +259,17 @@ impl PingType {
                     "The ping '{}' was submitted and will be sent as soon as possible",
                     ping.name
                 );
+
+                if !ping.schedules_pings.is_empty() {
+                    log::info!(
+                        "The ping '{}' is being used to schedule other pings: {:?}",
+                        ping.name,
+                        ping.schedules_pings
+                    );
+                    for scheduled_ping_name in &ping.schedules_pings {
+                        glean.submit_ping_by_name(scheduled_ping_name, reason);
+                    }
+                }
 
                 true
             }
