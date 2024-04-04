@@ -187,9 +187,9 @@ pub fn test_get_experimentation_id() -> Option<String> {
 
 /// Set the remote configuration values for the metrics' disabled property
 ///
-/// See [`glean_core::Glean::set_metrics_enabled_config`].
-pub fn glean_set_metrics_enabled_config(json: String) {
-    glean_core::glean_set_metrics_enabled_config(json)
+/// See [`glean_core::Glean::set_remote_settings_config`].
+pub fn glean_set_remote_settings_config(json: String) {
+    glean_core::glean_set_remote_settings_config(json)
 }
 
 /// Performs the collection/cleanup operations required by becoming active.

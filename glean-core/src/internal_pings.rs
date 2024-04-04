@@ -69,7 +69,7 @@ impl InternalPings {
                 true,
                 true,
                 vec!["at_init".to_string(), "set_upload_enabled".to_string()],
-                true // The deletion-request should not be disabled
+                true, // The deletion-request should not be disabled
             ),
         }
     }

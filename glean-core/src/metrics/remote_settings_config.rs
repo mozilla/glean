@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct MetricsEnabledConfig {
+pub struct RemoteSettingsConfig {
     /// This is a `HashMap` consisting of base_identifiers as keys
     /// and bool values representing an override for the `disabled`
     /// property of the metric, only inverted to reduce confusion.
@@ -27,14 +27,14 @@ pub struct MetricsEnabledConfig {
     pub metrics_enabled: HashMap<String, bool>,
 }
 
-impl MetricsEnabledConfig {
-    /// Creates a new MetricsEnabledConfig
+impl RemoteSettingsConfig {
+    /// Creates a new RemoteSettingsConfig
     pub fn new() -> Self {
         Default::default()
     }
 }
 
-impl TryFrom<String> for MetricsEnabledConfig {
+impl TryFrom<String> for RemoteSettingsConfig {
     type Error = crate::ErrorKind;
 
     fn try_from(json: String) -> Result<Self, Self::Error> {

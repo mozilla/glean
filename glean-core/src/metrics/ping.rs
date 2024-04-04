@@ -73,7 +73,7 @@ impl PingType {
         precise_timestamps: bool,
         include_info_sections: bool,
         reason_codes: Vec<String>,
-        enabled: bool
+        enabled: bool,
     ) -> Self {
         let this = Self(Arc::new(InnerPing {
             name: name.into(),
@@ -85,7 +85,7 @@ impl PingType {
             enabled,
         }));
 
-         // Register this ping.
+        // Register this ping.
         // That will happen asynchronously and not block operation.
         crate::register_ping_type(&this);
 
@@ -210,8 +210,8 @@ impl PingType {
                         // fails or it contains maps with non-string keys.
                         // However `ping.content` is already a `JsonValue`,
                         // so both scenarios should be impossible.
-                        let content =
-                            ::serde_json::to_string(&ping.content).expect("ping serialization failed");
+                        let content = ::serde_json::to_string(&ping.content)
+                            .expect("ping serialization failed");
                         // TODO: Shouldn't we consolidate on a single collected Ping representation?
                         let ping = PingPayload {
                             document_id: ping.doc_id.to_string(),
