@@ -17,6 +17,7 @@ class PingType:
         send_if_empty: bool,
         precise_timestamps: bool,
         include_info_sections: bool,
+        schedules_pings: List[str],
         reason_codes: List[str],
     ):
         """
@@ -32,6 +33,7 @@ class PingType:
             send_if_empty,
             precise_timestamps,
             include_info_sections,
+            schedules_pings,
             reason_codes,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]

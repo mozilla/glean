@@ -34,6 +34,7 @@ impl PingType {
         send_if_empty: bool,
         precise_timestamps: bool,
         include_info_sections: bool,
+        schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
     ) -> Self {
         let inner = glean_core::metrics::PingType::new(
@@ -42,6 +43,7 @@ impl PingType {
             send_if_empty,
             precise_timestamps,
             include_info_sections,
+            schedules_pings,
             reason_codes,
         );
 

@@ -292,7 +292,7 @@ enum ErrorType {
 };
 
 interface PingType {
-    constructor(string name, boolean include_client_id, boolean send_if_empty, boolean precise_timestamps, boolean include_info_sections, sequence<string> reason_codes);
+    constructor(string name, boolean include_client_id, boolean send_if_empty, boolean precise_timestamps, boolean include_info_sections, sequence<string> schedules_pings, sequence<string> reason_codes);
     void submit(optional string? reason = null);
 };
 

@@ -27,6 +27,7 @@ impl InternalPings {
                 true,
                 true,
                 true,
+                vec![],
                 vec![
                     "active".to_string(),
                     "dirty_startup".to_string(),
@@ -40,6 +41,7 @@ impl InternalPings {
                 false,
                 true,
                 true,
+                vec![],
                 vec![
                     "overdue".to_string(),
                     "reschedule".to_string(),
@@ -55,6 +57,7 @@ impl InternalPings {
                 false,
                 true,
                 true,
+                vec![],
                 vec![
                     "startup".to_string(),
                     "inactive".to_string(),
@@ -68,6 +71,7 @@ impl InternalPings {
                 true,
                 true,
                 true,
+                vec![],
                 vec!["at_init".to_string(), "set_upload_enabled".to_string()],
             ),
         }

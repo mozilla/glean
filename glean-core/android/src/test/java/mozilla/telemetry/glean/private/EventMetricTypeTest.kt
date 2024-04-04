@@ -508,6 +508,7 @@ class EventMetricTypeTest {
             sendIfEmpty = false,
             preciseTimestamps = true,
             includeInfoSections = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 

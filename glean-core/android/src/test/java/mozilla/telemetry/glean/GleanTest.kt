@@ -480,6 +480,7 @@ class GleanTest {
             sendIfEmpty = false,
             preciseTimestamps = true,
             includeInfoSections = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
@@ -847,6 +848,7 @@ class GleanTest {
             sendIfEmpty = false,
             preciseTimestamps = true,
             includeInfoSections = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(

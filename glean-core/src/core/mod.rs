@@ -123,7 +123,7 @@ where
 ///     enable_internal_pings: true,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
-/// let ping = PingType::new("sample", true, false, true, true, vec![]);
+/// let ping = PingType::new("sample", true, false, true, true, vec![], vec![]);
 /// glean.register_ping_type(&ping);
 ///
 /// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {

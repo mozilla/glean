@@ -250,6 +250,7 @@ class GleanDebugActivityTest {
             sendIfEmpty = true,
             preciseTimestamps = true,
             includeInfoSections = true,
+            schedulesPings = emptyList(),
             reasonCodes = listOf(),
         )
 
