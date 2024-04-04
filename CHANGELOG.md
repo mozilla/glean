@@ -5,6 +5,7 @@
 * General
   * BREAKING CHANGE: Server Knobs API changes requiring changes to consuming applications which make use of Server Knobs ([Bug 1889114](https://bugzilla.mozilla.org/show_bug.cgi?id=1889114))
   * BREAKING CHANGE: Deprecated Server Knobs API `setMetricsDisabled` has been removed from all bindings. ([#2792](https://github.com/mozilla/glean/pull/2792))
+  * Added support for `ping_schedule` metadata property so that pings can be scheduled to be sent when other pings are sent. (([#2791]https://github.com/mozilla/glean/pull/2791))
 * Android
   * Updated Kotlin to version 1.9.23 ([#2737](https://github.com/mozilla/glean/pull/2737))
 
