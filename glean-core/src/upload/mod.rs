@@ -1033,6 +1033,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1073,6 +1074,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1110,6 +1112,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);
@@ -1149,6 +1152,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1186,6 +1190,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);
@@ -1226,6 +1231,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);
@@ -1343,6 +1349,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1417,6 +1424,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1474,6 +1482,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);
@@ -1554,6 +1563,7 @@ mod test {
             true,
             true,
             vec![],
+            vec![],
         );
         glean.register_ping_type(&ping_type);
 
@@ -1633,6 +1643,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);
@@ -1715,6 +1726,7 @@ mod test {
             true,
             true,
             true,
+            vec![],
             vec![],
         );
         glean.register_ping_type(&ping_type);

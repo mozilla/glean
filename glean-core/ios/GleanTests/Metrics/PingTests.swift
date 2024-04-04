@@ -42,6 +42,7 @@ class PingTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: []
         )
 
@@ -90,6 +91,7 @@ class PingTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: []
         )
 
@@ -128,6 +130,7 @@ class PingTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: []
         )
 
@@ -221,6 +224,7 @@ class PingTests: XCTestCase {
             preciseTimestamps: true,
             includeInfoSections: true,
             enabled: true,
+            schedulesPings: [],
             reasonCodes: ["was_tested"]
         )
 

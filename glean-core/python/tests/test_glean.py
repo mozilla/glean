@@ -280,6 +280,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
         send_if_empty=False,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -301,6 +302,7 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
         send_if_empty=False,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -365,6 +367,7 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
         send_if_empty=False,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
     string_metric = StringMetricType(
@@ -693,6 +696,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
         send_if_empty=True,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -766,6 +770,7 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
         send_if_empty=True,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -826,6 +831,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
         send_if_empty=True,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -935,6 +941,7 @@ def test_sending_of_custom_pings(safe_httpserver):
         send_if_empty=False,
         precise_timestamps=True,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 
@@ -1017,6 +1024,7 @@ def test_glean_shutdown(safe_httpserver):
         send_if_empty=False,
         precise_timestamps=False,
         include_info_sections=True,
+        schedules_pings=[],
         reason_codes=[],
     )
 

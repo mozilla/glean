@@ -31,6 +31,8 @@ impl PingType {
     /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
     /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
     ///   ping will still be collected and is discarded instead of being submitted.
+    /// * `schedules_pings` - A list of pings which are triggered for submission when this ping is 
+    ///   submitted.
     /// * `reason_codes` - The valid reason codes for this ping.
     pub fn new<A: Into<String>>(
         name: A,
@@ -39,6 +41,7 @@ impl PingType {
         precise_timestamps: bool,
         include_info_sections: bool,
         enabled: bool,
+        schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
     ) -> Self {
         let inner = glean_core::metrics::PingType::new(
@@ -48,6 +51,7 @@ impl PingType {
             precise_timestamps,
             include_info_sections,
             enabled,
+            schedules_pings,
             reason_codes,
         );
 

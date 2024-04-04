@@ -28,6 +28,7 @@ impl InternalPings {
                 true,
                 true,
                 enabled,
+                vec![],
                 vec![
                     "active".to_string(),
                     "dirty_startup".to_string(),
@@ -41,6 +42,7 @@ impl InternalPings {
                 true,
                 true,
                 enabled,
+                vec![],
                 vec![
                     "overdue".to_string(),
                     "reschedule".to_string(),
@@ -56,6 +58,7 @@ impl InternalPings {
                 true,
                 true,
                 enabled,
+                vec![],
                 vec![
                     "startup".to_string(),
                     "inactive".to_string(),
@@ -69,6 +72,7 @@ impl InternalPings {
                 true,
                 true,
                 true, // The deletion-request should not be disabled
+                vec![],
                 vec!["at_init".to_string(), "set_upload_enabled".to_string()],
             ),
         }
