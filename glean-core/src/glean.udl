@@ -640,3 +640,19 @@ interface TextMetric {
 
     i32 test_get_num_recorded_errors(ErrorType error);
 };
+
+// JSON data encoded into a string
+[Custom]
+typedef string JsonValue;
+
+interface ObjectMetric {
+    constructor(CommonMetricData meta);
+
+    void set_string(string object);
+
+    JsonValue? test_get_value(optional string? ping_name = null);
+
+    i32 test_get_num_recorded_errors(ErrorType error);
+
+    void record_schema_error();
+};
