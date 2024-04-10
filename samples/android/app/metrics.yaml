@@ -177,3 +177,24 @@ legacy_ids:
     notification_emails:
       - CHANGE-ME@example.com
     expires: 2
+
+party:
+  balloons:
+    type: object
+    description: A collection of balloons
+    bugs:
+      - https://bugzilla.mozilla.org/TODO
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          colour:
+            type: string
+          diameter:
+            type: number

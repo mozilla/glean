@@ -8,6 +8,7 @@
   * Added support for `ping_schedule` metadata property so that pings can be scheduled to be sent when other pings are sent. (([#2791]https://github.com/mozilla/glean/pull/2791))
 * Android
   * Updated Kotlin to version 1.9.23 ([#2737](https://github.com/mozilla/glean/pull/2737))
+  * New metric type: Object ([#2796](https://github.com/mozilla/glean/pull/2796))
 
 # v59.0.0 (2024-03-28)
 
