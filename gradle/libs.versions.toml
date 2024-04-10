@@ -10,6 +10,7 @@ android-plugin = "8.0.2"
 # Kotlin
 kotlin-compiler = "1.9.23"
 kotlinx-coroutines = "1.8.0"
+kotlinx-serialization = "1.6.3"
 
 # Mozilla
 rust-android-gradle = "0.9.3"
@@ -48,10 +49,12 @@ python-envs = "0.0.31"
 [libraries]
 # AGP
 tools-android-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-plugin" }
+tools-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin-compiler" }
 
 # Kotlin
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-compiler" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Mozilla
 mozilla-rust-android-gradle = { group = "org.mozilla.rust-android-gradle", name = "plugin", version.ref = "rust-android-gradle" }

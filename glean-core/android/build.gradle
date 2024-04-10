@@ -14,6 +14,7 @@ plugins {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
+apply plugin: 'kotlinx-serialization'
 
 /*
  * This defines the location of the JSON schema used to validate the pings
@@ -168,6 +169,7 @@ dependencies {
     implementation libs.androidx.lifecycle.process
     implementation libs.androidx.work
     implementation libs.kotlinx.coroutines
+    api libs.kotlinx.serialization
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries
