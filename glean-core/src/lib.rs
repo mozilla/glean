@@ -68,9 +68,9 @@ pub use crate::metrics::labeled::{
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
     DenominatorMetric, DistributionData, EventMetric, MemoryDistributionMetric, MemoryUnit,
-    NumeratorMetric, PingType, QuantityMetric, Rate, RateMetric, RecordedEvent, RecordedExperiment,
-    StringListMetric, StringMetric, TextMetric, TimeUnit, TimerId, TimespanMetric,
-    TimingDistributionMetric, UrlMetric, UuidMetric,
+    NumeratorMetric, ObjectMetric, PingType, QuantityMetric, Rate, RateMetric, RecordedEvent,
+    RecordedExperiment, StringListMetric, StringMetric, TextMetric, TimeUnit, TimerId,
+    TimespanMetric, TimingDistributionMetric, UrlMetric, UuidMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult, UploadTaskAction};
 
@@ -1227,6 +1227,20 @@ mod ffi {
 
         fn from_custom(obj: Self) -> Self::Builtin {
             obj.into_owned()
+        }
+    }
+
+    type JsonValue = serde_json::Value;
+
+    impl UniffiCustomTypeConverter for JsonValue {
+        type Builtin = String;
+
+        fn into_custom(val: Self::Builtin) -> uniffi::Result<Self> {
+            Ok(serde_json::from_str(&val)?)
+        }
+
+        fn from_custom(obj: Self) -> Self::Builtin {
+            serde_json::to_string(&obj).unwrap()
         }
     }
 }
