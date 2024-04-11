@@ -6,6 +6,7 @@ import Glean
 import UIKit
 
 typealias BrowserEngagement = GleanMetrics.BrowserEngagement
+typealias Party = GleanMetrics.Party
 
 class ViewController: UIViewController {
     let telemetryPrefKey = "GleanUploadEnabled"
@@ -55,6 +56,12 @@ class ViewController: UIViewController {
 
         // Increment the custom counter that goes into the sample ping
         Custom.counter.add()
+
+        // Record an object
+        var balloons: Party.BalloonsObject = []
+        balloons.append(Party.BalloonsObjectItem(colour: "red", diameter: 5))
+        balloons.append(Party.BalloonsObjectItem(colour: "green"))
+        Party.balloons.set(balloons)
 
         // This is referencing the event ping named 'click' from the metrics.yaml file. In
         // order to illustrate adding extra information to the event, it is also adding to the

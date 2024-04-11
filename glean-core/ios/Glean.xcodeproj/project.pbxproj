@@ -58,6 +58,7 @@
 		BFFE33AB232927C3005348FE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE33AA232927C3005348FE /* Utils.swift */; };
 		C27E756329D4A67800C6AADD /* DataPathUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27E756229D4A67800C6AADD /* DataPathUtilsTests.swift */; };
 		CD062129284110970006370D /* TextMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD062128284110970006370D /* TextMetric.swift */; };
+		CD07A4DE2BC808AE007A0F1C /* ObjectMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD07A4DD2BC808AE007A0F1C /* ObjectMetric.swift */; };
 		CD0CADA427E216810015A997 /* glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD08C8527E21104007C8400 /* glean.swift */; };
 		CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */; };
 		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
@@ -67,6 +68,7 @@
 		CD70CF9A2850D79200FC2014 /* OHHTTPStubsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF992850D79200FC2014 /* OHHTTPStubsSwift */; };
 		CD81DCFA282A8F9B00347965 /* RateMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81DCF9282A8F9A00347965 /* RateMetric.swift */; };
 		CD81DCFC282A911400347965 /* RateMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81DCFB282A911400347965 /* RateMetricTests.swift */; };
+		CD9DA7852BC809BE00E18F31 /* ObjectMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */; };
 		CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */; };
 		CDD08C8627E21104007C8400 /* gleanFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD08C8427E21104007C8400 /* gleanFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -139,12 +141,14 @@
 		BFFE33AA232927C3005348FE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		C27E756229D4A67800C6AADD /* DataPathUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPathUtilsTests.swift; sourceTree = "<group>"; };
 		CD062128284110970006370D /* TextMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextMetric.swift; sourceTree = "<group>"; };
+		CD07A4DD2BC808AE007A0F1C /* ObjectMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectMetric.swift; sourceTree = "<group>"; };
 		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
 		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
 		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
 		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
 		CD81DCF9282A8F9A00347965 /* RateMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateMetric.swift; sourceTree = "<group>"; };
 		CD81DCFB282A911400347965 /* RateMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateMetricTests.swift; sourceTree = "<group>"; };
+		CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectMetricTests.swift; sourceTree = "<group>"; };
 		CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 		CDD08C8427E21104007C8400 /* gleanFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gleanFFI.h; sourceTree = "<group>"; };
 		CDD08C8527E21104007C8400 /* glean.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = glean.swift; sourceTree = "<group>"; };
@@ -313,6 +317,7 @@
 		BF43A8C5232A4B5F00545310 /* Metrics */ = {
 			isa = PBXGroup;
 			children = (
+				CD07A4DD2BC808AE007A0F1C /* ObjectMetric.swift */,
 				AC06529B26E032E300D92D5E /* QuantityMetric.swift */,
 				1F6A8FEF233C049D007837D5 /* BooleanMetric.swift */,
 				BF43A8C6232A4BA400545310 /* CounterMetric.swift */,
@@ -336,6 +341,7 @@
 		BF43A8CB232A613100545310 /* Metrics */ = {
 			isa = PBXGroup;
 			children = (
+				CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */,
 				AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */,
 				1F6A8FF1233C068A007837D5 /* BooleanMetricTypeTest.swift */,
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
@@ -599,6 +605,7 @@
 				1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */,
 				CD81DCFA282A8F9B00347965 /* RateMetric.swift in Sources */,
 				BFE1CDC8233B73B30019EE47 /* Unreachable.swift in Sources */,
+				CD07A4DE2BC808AE007A0F1C /* ObjectMetric.swift in Sources */,
 				1F58920D23C7D615007D2D80 /* MetricsPingScheduler.swift in Sources */,
 				BF7CC0A62473F61C003B166D /* Metrics.swift in Sources */,
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
@@ -631,6 +638,7 @@
 				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
 				AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
+				CD9DA7852BC809BE00E18F31 /* ObjectMetricTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,
 				BF80AA5B2399301300A8B172 /* HttpPingUploaderTests.swift in Sources */,
 				1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */,
