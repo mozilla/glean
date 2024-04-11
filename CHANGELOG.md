@@ -9,6 +9,8 @@
 * Android
   * Updated Kotlin to version 1.9.23 ([#2737](https://github.com/mozilla/glean/pull/2737))
   * New metric type: Object ([#2796](https://github.com/mozilla/glean/pull/2796))
+* iOS
+  * New metric type: Object ([#2796](https://github.com/mozilla/glean/pull/2796))
 
 # v59.0.0 (2024-03-28)
 
