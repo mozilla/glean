@@ -48,6 +48,10 @@ impl ObjectMetric {
     /// * `value` - the value to set.
     #[doc(hidden)]
     pub fn set_sync(&self, glean: &Glean, value: JsonValue) {
+        if !self.should_record(glean) {
+            return;
+        }
+
         let value = Metric::Object(serde_json::to_string(&value).unwrap());
         glean.storage().record(glean, &self.meta, &value)
     }
