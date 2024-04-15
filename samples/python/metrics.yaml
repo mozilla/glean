@@ -24,3 +24,27 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
+
+party:
+  balloons:
+    type: object
+    description: |
+      Just testing objects
+    bugs:
+      - https://bugzilla.mozilla.org/1839640
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          colour:
+            type: string
+          diameter:
+            type: number

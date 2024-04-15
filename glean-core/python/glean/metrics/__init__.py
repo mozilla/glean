@@ -25,6 +25,7 @@ from .._uniffi import StringListMetric as StringListMetricType
 # Export wrapper implementations for metric types
 from .datetime import DatetimeMetricType
 from .event import EventMetricType, EventExtras, RecordedEvent
+from .object import ObjectMetricType, ObjectSerialize
 from .labeled import (
     LabeledBooleanMetricType,
     LabeledCounterMetricType,
@@ -51,6 +52,8 @@ __all__ = [
     "Lifetime",
     "MemoryDistributionMetricType",
     "MemoryUnit",
+    "ObjectMetricType",
+    "ObjectSerialize",
     "PingType",
     "QuantityMetricType",
     "RecordedEvent",
