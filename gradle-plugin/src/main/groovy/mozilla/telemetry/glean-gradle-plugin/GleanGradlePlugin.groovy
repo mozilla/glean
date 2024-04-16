@@ -53,7 +53,7 @@ class GleanPlugin implements Plugin<Project> {
     private String GLEAN_PARSER_VERSION = "13.0"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
-    private String MINICONDA_VERSION = "4.5.11"
+    private String MINICONDA_VERSION = "24.3.0-0"
 
     private String TASK_NAME_PREFIX = "gleanGenerateMetrics"
 
@@ -480,9 +480,9 @@ except:
 
                 // If we have a git package (a la `git+https://github.com`) we install that.
                 if (parserVersion.matches("git.+")) {
-                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", [parserVersion]
+                    conda "Miniconda3", "Miniconda3-py311_${MINICONDA_VERSION}", "64", [parserVersion]
                 } else {
-                    conda "Miniconda3", "Miniconda3-${MINICONDA_VERSION}", "64", ["glean_parser~=${parserVersion}"]
+                    conda "Miniconda3", "Miniconda3-py311_${MINICONDA_VERSION}", "64", ["glean_parser~=${parserVersion}"]
                 }
             }
             File envDir = new File(
