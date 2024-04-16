@@ -43,7 +43,7 @@ mod pings {
 
     #[allow(non_upper_case_globals)]
     pub static validation: Lazy<PingType> = Lazy::new(|| {
-        glean::private::PingType::new("validation", true, true, true, true, vec![], true)
+        glean::private::PingType::new("validation", true, true, true, true, true, vec![])
     });
 }
 

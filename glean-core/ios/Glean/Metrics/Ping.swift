@@ -41,8 +41,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
         sendIfEmpty: Bool,
         preciseTimestamps: Bool,
         includeInfoSections: Bool,
-        reasonCodes: [String],
-        enabled: Bool = true
+        enabled: Bool,
+        reasonCodes: [String]
     ) {
         self.name = name
         self.reasonCodes = reasonCodes
@@ -52,8 +52,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
             sendIfEmpty,
             preciseTimestamps,
             includeInfoSections,
-            reasonCodes,
-            enabled
+            enabled,
+            reasonCodes
         )
     }
 

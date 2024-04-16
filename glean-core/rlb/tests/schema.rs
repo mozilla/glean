@@ -171,7 +171,7 @@ fn validate_against_schema() {
 
     // Define a new ping and submit it.
     let custom_ping =
-        glean::private::PingType::new(PING_NAME, true, true, true, true, vec![], true);
+        glean::private::PingType::new(PING_NAME, true, true, true, true, true, vec![]);
     custom_ping.submit(None);
 
     // Wait for the ping to arrive.

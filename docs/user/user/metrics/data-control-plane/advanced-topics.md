@@ -38,7 +38,9 @@ In this state, let’s create two rollouts which will provide configurations for
 
             // Glean metric config
             "gleanMetricConfiguration": {
+              "metrics_enabled": {
                 "A.event": true
+              }
             }
         }
         ```
@@ -51,7 +53,9 @@ In this state, let’s create two rollouts which will provide configurations for
 
             // Glean metric config
             "gleanMetricConfiguration": {
+              "metrics_enabled": {
                 "B.event": true
+              }
             }
         }
         ```
@@ -74,7 +78,9 @@ In this state, let’s end the rollout for Feature B, start a rollout for Featur
 
             // Glean metric config
             "gleanMetricConfiguration": {
+              "metrics_enabled": {
                 "A.event": false
+              }
             }
         }
         ```
@@ -90,7 +96,9 @@ In this state, let’s end the rollout for Feature B, start a rollout for Featur
 
             // Glean metric config
             "gleanMetricConfiguration": {
+              "metrics_enabled": {
                 "C.event": true
+              }
             }
         }
         ```
@@ -110,7 +118,9 @@ Finally, in this state, let’s end the rollout for Feature C along with the exp
 
             // Glean metric config
             "gleanMetricConfiguration": {
+              "metrics_enabled": {
                 "A.event": true
+              }
             }
         }
         ```

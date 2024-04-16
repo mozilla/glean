@@ -910,8 +910,8 @@ pub fn glean_test_get_experimentation_id() -> Option<String> {
 /// Sets a remote configuration to override metrics' default enabled/disabled
 /// state
 ///
-/// See [`core::Glean::set_remote_settings_config`].
-pub fn glean_set_remote_settings_config(json: String) {
+/// See [`core::Glean::apply_server_knobs_config`].
+pub fn glean_apply_server_knobs_config(json: String) {
     // An empty config means it is not set,
     // so we avoid logging an error about it.
     if json.is_empty() {
@@ -920,7 +920,7 @@ pub fn glean_set_remote_settings_config(json: String) {
 
     match RemoteSettingsConfig::try_from(json) {
         Ok(cfg) => launch_with_glean(|glean| {
-            glean.set_remote_settings_config(cfg);
+            glean.apply_server_knobs_config(cfg);
         }),
         Err(e) => {
             log::error!("Error setting metrics feature config: {:?}", e);

@@ -44,14 +44,15 @@ enum class NoReasonCodes(
  *
  * @property reasonCodes The list of acceptable reason codes for this ping.
  */
+@Suppress("LongParameterList")
 class PingType<ReasonCodesEnum> (
     name: String,
     includeClientId: Boolean,
     sendIfEmpty: Boolean,
     preciseTimestamps: Boolean,
     includeInfoSections: Boolean,
+    enabled: Boolean,
     val reasonCodes: List<String>,
-    enabled: Boolean = true,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
     private val innerPing: GleanPingType

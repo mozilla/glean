@@ -23,8 +23,14 @@ pub struct RemoteSettingsConfig {
     /// If a particular metric has a value of `true` here, it means
     /// the default of the metric will be overriden and set to the
     /// enabled state.
-    #[serde(flatten)]
+    #[serde(default)]
     pub metrics_enabled: HashMap<String, bool>,
+
+    /// This is a `HashMap` consisting of ping names as keys and
+    /// boolean values representing on override for the default
+    /// enabled state of the ping of the same name.
+    #[serde(default)]
+    pub pings_enabled: HashMap<String, bool>,
 }
 
 impl RemoteSettingsConfig {
