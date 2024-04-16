@@ -10,13 +10,45 @@ Sets an object metric to a specific value.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Party
+
+var balloons = Party.BalloonsObject()
+balloons.add(Party.BalloonsObjectItem(colour = "red", diameter = 5))
+balloons.add(Party.BalloonsObjectItem(colour = "green"))
+Party.balloons.set(balloons)
+```
+
+</div>
 
 <div data-lang="Java" class="tab"></div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
 
-<div data-lang="Python" class="tab"></div>
+```Swift
+var balloons: Party.BalloonsObject = []
+balloons.append(Party.BalloonsObjectItem(colour: "red", diameter: 5))
+balloons.append(Party.BalloonsObjectItem(colour: "green"))
+Party.balloons.set(balloons)
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+balloons = metrics.BalloonsObject()
+balloons.append(BalloonsObjectItem(colour="red", diameter=5))
+balloons.append(BalloonsObjectItem(colour="green"))
+metrics.party.balloons.set(balloons)
+```
+
+</div>
 
 <div data-lang="Rust" class="tab"></div>
 
@@ -35,7 +67,7 @@ let balloons = [
   { colour: "red", diameter: 5 },
   { colour: "blue", diameter: 7 },
 ];
-Glean.testOnly.balloons.set(balloons);
+Glean.party.balloons.set(balloons);
 ```
 
 </div>
@@ -62,13 +94,39 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Party
+
+val snapshot = metric.testGetValue()!!
+assertEquals(1, snapshot.jsonArray.size)
+```
+
+</div>
 
 <div data-lang="Java" class="tab"></div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
 
-<div data-lang="Python" class="tab"></div>
+```Swift
+let snapshot = (try! Party.balloons.testGetValue()) as! [Any]
+XCTAssertEqual(1, snapshot.size)
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+snapshot = metrics.party.balloons.test_get_value()
+assert 2 == len(snapshot)
+```
+
+</div>
 
 <div data-lang="Rust" class="tab"></div>
 
@@ -89,7 +147,7 @@ Assert.equal(
     { colour: "red", diameter: 5 },
     { colour: "blue", diameter: 7 },
   ],
-  Glean.testOnly.balloons.testGetValue()
+  Glean.party.balloons.testGetValue()
 );
 ```
 
@@ -103,13 +161,42 @@ Gets the number of errors recorded for a given text metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Party
+
+assertEquals(
+    0,
+    Party.balloons.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
+```
+
+</div>
 
 <div data-lang="Java" class="tab"></div>
 
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
 
-<div data-lang="Python" class="tab"></div>
+```Swift
+XCTAssertEqual(0, Party.balloons.testGetNumRecordedErrors(.invalidValue))
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+from glean.testing import ErrorType
+metrics = load_metrics("metrics.yaml")
+
+assert 0 == metrics.party.balloons.test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
 
 <div data-lang="Rust" class="tab"></div>
 
@@ -151,3 +238,4 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 ## Data questions
 
+* What is the crash stack after a Firefox main process crash?
