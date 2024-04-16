@@ -123,7 +123,7 @@ where
 ///     enable_internal_pings: true,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
-/// let ping = PingType::new("sample", true, false, true, true, vec![], true);
+/// let ping = PingType::new("sample", true, false, true, true, true, vec![]);
 /// glean.register_ping_type(&ping);
 ///
 /// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
@@ -763,16 +763,21 @@ impl Glean {
     ///
     /// # Arguments
     ///
-    /// * `json` - The stringified JSON representation of a `RemoteSettingsConfig` object
-    pub fn set_remote_settings_config(&self, cfg: RemoteSettingsConfig) {
+    /// * `cfg` - The stringified JSON representation of a `RemoteSettingsConfig` object
+    pub fn apply_server_knobs_config(&self, cfg: RemoteSettingsConfig) {
         // Set the current RemoteSettingsConfig, keeping the lock until the epoch is
         // updated to prevent against reading a "new" config but an "old" epoch
         let mut remote_settings_config = self.remote_settings_config.lock().unwrap();
 
-        // Merge the exising configuration with the supplied one
+        // Merge the exising metrics configuration with the supplied one
         remote_settings_config
             .metrics_enabled
             .extend(cfg.metrics_enabled);
+
+        // Merge the exising ping configuration with the supplied one
+        remote_settings_config
+            .pings_enabled
+            .extend(cfg.pings_enabled);
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);

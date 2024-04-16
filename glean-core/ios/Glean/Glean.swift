@@ -398,8 +398,8 @@ public class Glean {
     /// - parameters:
     ///    * json: Stringified JSON map of metric identifiers (category.name) to a boolean
     ///            representing wether they are enabled
-    public func setRemoteSettingsConfig(_ json: String) {
-        gleanSetRemoteSettingsConfig(json)
+    public func applyServerKnobsConfig(_ json: String) {
+        gleanApplyServerKnobsConfig(json)
     }
 
     /// Shuts down Glean in an orderly fashion

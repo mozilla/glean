@@ -28,7 +28,6 @@ import mozilla.telemetry.glean.utils.ThreadUtils
 import mozilla.telemetry.glean.utils.calendarToDatetime
 import mozilla.telemetry.glean.utils.canWriteToDatabasePath
 import mozilla.telemetry.glean.utils.getLocaleTag
-import org.json.JSONObject
 import java.io.File
 import java.util.Calendar
 
@@ -505,8 +504,8 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param json Stringified JSON map of metrics and their associated `disabled` property.
      */
-    fun setRemoteSettingsConfig(json: String) {
-        gleanSetRemoteSettingsConfig(json)
+    fun applyServerKnobsConfig(json: String) {
+        gleanApplyServerKnobsConfig(json)
     }
 
     /**

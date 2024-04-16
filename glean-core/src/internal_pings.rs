@@ -27,12 +27,12 @@ impl InternalPings {
                 true,
                 true,
                 true,
+                enabled,
                 vec![
                     "active".to_string(),
                     "dirty_startup".to_string(),
                     "inactive".to_string(),
                 ],
-                enabled,
             ),
             metrics: PingType::new(
                 "metrics",
@@ -40,6 +40,7 @@ impl InternalPings {
                 false,
                 true,
                 true,
+                enabled,
                 vec![
                     "overdue".to_string(),
                     "reschedule".to_string(),
@@ -47,7 +48,6 @@ impl InternalPings {
                     "tomorrow".to_string(),
                     "upgrade".to_string(),
                 ],
-                enabled,
             ),
             events: PingType::new(
                 "events",
@@ -55,12 +55,12 @@ impl InternalPings {
                 false,
                 true,
                 true,
+                enabled,
                 vec![
                     "startup".to_string(),
                     "inactive".to_string(),
                     "max_capacity".to_string(),
                 ],
-                enabled,
             ),
             deletion_request: PingType::new(
                 "deletion-request",
@@ -68,8 +68,8 @@ impl InternalPings {
                 true,
                 true,
                 true,
-                vec!["at_init".to_string(), "set_upload_enabled".to_string()],
                 true, // The deletion-request should not be disabled
+                vec!["at_init".to_string(), "set_upload_enabled".to_string()],
             ),
         }
     }

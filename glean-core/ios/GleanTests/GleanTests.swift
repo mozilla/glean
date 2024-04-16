@@ -259,6 +259,7 @@ class GleanTests: XCTestCase {
             sendIfEmpty: false,
             preciseTimestamps: true,
             includeInfoSections: true,
+            enabled: true,
             reasonCodes: []
         )
 
@@ -305,10 +306,12 @@ class GleanTests: XCTestCase {
         let metricConfigStringifiedJson =
 """
 {
-  "telemetry.counter_metric": true
+  "metrics_enabled": {
+    "telemetry.counter_metric": true
+  }
 }
 """
-        Glean.shared.setRemoteSettingsConfig(metricConfigStringifiedJson)
+        Glean.shared.applyServerKnobsConfig(metricConfigStringifiedJson)
 
         // Attempt to add to the counter, this should succeed.
         counter.add(1)
@@ -395,6 +398,7 @@ class GleanTests: XCTestCase {
             sendIfEmpty: false,
             preciseTimestamps: true,
             includeInfoSections: true,
+            enabled: true,
             reasonCodes: []
         )
 

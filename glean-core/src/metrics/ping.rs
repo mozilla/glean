@@ -29,10 +29,10 @@ struct InnerPing {
     pub precise_timestamps: bool,
     /// Whether to include the {client|ping}_info sections on assembly.
     pub include_info_sections: bool,
-    /// The "reason" codes that this ping can send
-    pub reason_codes: Vec<String>,
     /// Whether this ping is enabled.
     pub enabled: bool,
+    /// The "reason" codes that this ping can send
+    pub reason_codes: Vec<String>,
 }
 
 impl fmt::Debug for PingType {
@@ -43,6 +43,7 @@ impl fmt::Debug for PingType {
             .field("send_if_empty", &self.0.send_if_empty)
             .field("precise_timestamps", &self.0.precise_timestamps)
             .field("include_info_sections", &self.0.include_info_sections)
+            .field("enabled", &self.0.enabled)
             .field("reason_codes", &self.0.reason_codes)
             .finish()
     }
@@ -63,17 +64,17 @@ impl PingType {
     /// * `send_if_empty` - Whether the ping should be sent empty or not.
     /// * `precise_timestamps` - Whether the ping should use precise timestamps for the start and end time.
     /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
-    /// * `reason_codes` - The valid reason codes for this ping.
     /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
     ///   ping will still be collected but is discarded rather than being submitted.
+    /// * `reason_codes` - The valid reason codes for this ping.
     pub fn new<A: Into<String>>(
         name: A,
         include_client_id: bool,
         send_if_empty: bool,
         precise_timestamps: bool,
         include_info_sections: bool,
-        reason_codes: Vec<String>,
         enabled: bool,
+        reason_codes: Vec<String>,
     ) -> Self {
         let this = Self(Arc::new(InnerPing {
             name: name.into(),
@@ -81,8 +82,8 @@ impl PingType {
             send_if_empty,
             precise_timestamps,
             include_info_sections,
-            reason_codes,
             enabled,
+            reason_codes,
         }));
 
         // Register this ping.
@@ -112,7 +113,15 @@ impl PingType {
         self.0.include_info_sections
     }
 
-    pub(crate) fn enabled(&self) -> bool {
+    pub(crate) fn enabled(&self, glean: &Glean) -> bool {
+        let remote_settings_config = &glean.remote_settings_config.lock().unwrap();
+
+        if !remote_settings_config.pings_enabled.is_empty() {
+            if let Some(remote_enabled) = remote_settings_config.pings_enabled.get(self.name()) {
+                return *remote_enabled;
+            }
+        }
+
         self.0.enabled
     }
 
@@ -189,59 +198,59 @@ impl PingType {
                 false
             }
             Some(ping) => {
-                if self.enabled() {
-                    // This metric is recorded *after* the ping is collected (since
-                    // that is the only way to know *if* it will be submitted). The
-                    // implication of this is that the count for a metrics ping will
-                    // be included in the *next* metrics ping.
-                    glean
-                        .additional_metrics
-                        .pings_submitted
-                        .get(ping.name)
-                        .add_sync(glean, 1);
-
-                    if let Err(e) = ping_maker.store_ping(glean.get_data_path(), &ping) {
-                        log::warn!(
-                            "IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.",
-                            e
-                        );
-                        glean.additional_metrics.io_errors.add_sync(glean, 1);
-                        // `serde_json::to_string` only fails if serialization of the content
-                        // fails or it contains maps with non-string keys.
-                        // However `ping.content` is already a `JsonValue`,
-                        // so both scenarios should be impossible.
-                        let content = ::serde_json::to_string(&ping.content)
-                            .expect("ping serialization failed");
-                        // TODO: Shouldn't we consolidate on a single collected Ping representation?
-                        let ping = PingPayload {
-                            document_id: ping.doc_id.to_string(),
-                            upload_path: ping.url_path.to_string(),
-                            json_body: content,
-                            headers: Some(ping.headers),
-                            body_has_info_sections: self.0.include_info_sections,
-                            ping_name: self.0.name.to_string(),
-                        };
-
-                        glean.upload_manager.enqueue_ping(glean, ping);
-                        return true;
-                    }
-
-                    glean.upload_manager.enqueue_ping_from_file(glean, &doc_id);
-
-                    log::info!(
-                        "The ping '{}' was submitted and will be sent as soon as possible",
-                        ping.name
-                    );
-
-                    true
-                } else {
+                if !self.enabled(glean) {
                     log::info!(
                         "The ping '{}' is disabled and will be discarded and not submitted",
                         ping.name
                     );
 
-                    false
+                    return false;
                 }
+
+                // This metric is recorded *after* the ping is collected (since
+                // that is the only way to know *if* it will be submitted). The
+                // implication of this is that the count for a metrics ping will
+                // be included in the *next* metrics ping.
+                glean
+                    .additional_metrics
+                    .pings_submitted
+                    .get(ping.name)
+                    .add_sync(glean, 1);
+
+                if let Err(e) = ping_maker.store_ping(glean.get_data_path(), &ping) {
+                    log::warn!(
+                        "IO error while writing ping to file: {}. Enqueuing upload of what we have in memory.",
+                        e
+                    );
+                    glean.additional_metrics.io_errors.add_sync(glean, 1);
+                    // `serde_json::to_string` only fails if serialization of the content
+                    // fails or it contains maps with non-string keys.
+                    // However `ping.content` is already a `JsonValue`,
+                    // so both scenarios should be impossible.
+                    let content =
+                        ::serde_json::to_string(&ping.content).expect("ping serialization failed");
+                    // TODO: Shouldn't we consolidate on a single collected Ping representation?
+                    let ping = PingPayload {
+                        document_id: ping.doc_id.to_string(),
+                        upload_path: ping.url_path.to_string(),
+                        json_body: content,
+                        headers: Some(ping.headers),
+                        body_has_info_sections: self.0.include_info_sections,
+                        ping_name: self.0.name.to_string(),
+                    };
+
+                    glean.upload_manager.enqueue_ping(glean, ping);
+                    return true;
+                }
+
+                glean.upload_manager.enqueue_ping_from_file(glean, &doc_id);
+
+                log::info!(
+                    "The ping '{}' was submitted and will be sent as soon as possible",
+                    ping.name
+                );
+
+                true
             }
         }
     }

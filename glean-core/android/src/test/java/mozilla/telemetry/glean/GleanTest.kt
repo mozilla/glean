@@ -480,6 +480,7 @@ class GleanTest {
             sendIfEmpty = false,
             preciseTimestamps = true,
             includeInfoSections = true,
+            enabled = true,
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
@@ -847,6 +848,7 @@ class GleanTest {
             sendIfEmpty = false,
             preciseTimestamps = true,
             includeInfoSections = true,
+            enabled = true,
             reasonCodes = listOf(),
         )
         val stringMetric = StringMetricType(
@@ -987,10 +989,12 @@ class GleanTest {
         // Set a metric configuration which will enable the telemetry.string_metric
         val metricConfig = """
             {
-              "telemetry.string_metric": true
+              "metrics_enabled": {
+                "telemetry.string_metric": true
+              }
             }
         """.trimIndent()
-        Glean.setRemoteSettingsConfig(metricConfig)
+        Glean.applyServerKnobsConfig(metricConfig)
 
         // This should result in the metric being set to "foo"
         stringMetric.set("foo")
