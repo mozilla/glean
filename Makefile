@@ -140,7 +140,7 @@ fmt-kotlin:  ## Run ktlint to format KOtlin code
 
 # Docs
 
-docs: rust-docs ## Build the Rust API documentation
+docs: docs-rust ## Build the Rust API documentation
 
 docs-rust: ## Build the Rust documentation
 	bin/build-rust-docs.sh
@@ -151,7 +151,7 @@ docs-swift: ## Build the Swift documentation
 docs-python: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
 
-.PHONY: docs rust-docs swift-docs
+.PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
 	$(GLEAN_PYENV)/bin/pip install glean_parser~=13.0
