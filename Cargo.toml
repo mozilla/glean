@@ -13,7 +13,6 @@ members = [
 
 default-members = [
   "glean-core",
-  "glean-core/rlb",
   "tools/embedded-uniffi-bindgen",
 ]
 
