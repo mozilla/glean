@@ -3,4 +3,4 @@
 # This is a host tool. Do not listen to the build target.
 unset CARGO_BUILD_TARGET
 
-exec cargo run --package embedded-uniffi-bindgen -- $*
+exec cargo run --package uniffi-bindgen -- $*

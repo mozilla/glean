@@ -1,2 +1,2 @@
 [alias]
-uniffi-bindgen = ["run", "--package", "embedded-uniffi-bindgen", "--"]
+uniffi-bindgen = ["run", "--package", "uniffi-bindgen", "--"]
