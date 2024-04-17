@@ -107,7 +107,16 @@ fn empty_pings_with_flag_are_sent() {
 
     let ping1 = PingType::new("custom-ping1", true, true, true, true, true, vec![], vec![]);
     glean.register_ping_type(&ping1);
-    let ping2 = PingType::new("custom-ping2", true, false, true, true, true, vec![], vec![]);
+    let ping2 = PingType::new(
+        "custom-ping2",
+        true,
+        false,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+    );
     glean.register_ping_type(&ping2);
 
     // No data is stored in either of the custom pings
@@ -252,11 +261,12 @@ fn events_ping_with_metric_but_no_events_is_not_sent() {
 fn test_scheduled_pings_are_sent() {
     let (mut glean, _t) = new_glean(None);
 
-    let piggyback_ping = PingType::new("piggyback", true, true, true, true, vec![], vec![]);
+    let piggyback_ping = PingType::new("piggyback", true, true, true, true, true, vec![], vec![]);
     glean.register_ping_type(&piggyback_ping);
 
     let trigger_ping = PingType::new(
         "trigger",
+        true,
         true,
         true,
         true,
