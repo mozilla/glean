@@ -160,7 +160,7 @@ commands:
       - run:
           name: Build Windows wheel
           command: |
-            make build-python-wheel CARGO_BUILD_TARGET=x86_64-pc-windows-gnu
+            make build-python-wheel GLEAN_BUILD_TARGET=x86_64-pc-windows-gnu
 
   build-windows-i686-wheel:
     steps:
@@ -174,7 +174,7 @@ commands:
       - run:
           name: Build Windows wheel
           command: |
-            make build-python-wheel CARGO_BUILD_TARGET=i686-pc-windows-gnu
+            make build-python-wheel GLEAN_BUILD_TARGET=i686-pc-windows-gnu
 
   install-python-windows-deps:
     steps:
@@ -882,11 +882,11 @@ jobs:
       - run:
           name: Build macOS x86_64 wheel
           command: |
-            make build-python-wheel CARGO_BUILD_TARGET=x86_64-apple-darwin
+            make build-python-wheel GLEAN_BUILD_TARGET=x86_64-apple-darwin
       - run:
           name: Build macOS aarch64 wheel
           command: |
-            make build-python-wheel CARGO_BUILD_TARGET=aarch64-apple-darwin
+            make build-python-wheel GLEAN_BUILD_TARGET=aarch64-apple-darwin
       - run:
           name: Build macOS universal2 wheel
           command: |
