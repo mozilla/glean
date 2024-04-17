@@ -43,17 +43,14 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: setup-python ## Build the Python bindings
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
 		$(GLEAN_PYENV)/bin/maturin develop
 
 build-python-wheel: setup-python  ## Build a Python wheel
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
 		$(GLEAN_PYENV)/bin/maturin build --release $(MATURIN_FLAG)
 
 build-python-sdist: setup-python ## Build a Python source distribution
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
 		$(GLEAN_PYENV)/bin/maturin build --release --sdist $(MATURIN_FLAG)
 
