@@ -890,7 +890,7 @@ jobs:
       - run:
           name: Build macOS universal2 wheel
           command: |
-            make build-python-wheel MATURIN_FLAG="--target universal2-apple-darwin"
+            make build-python-wheel GLEAN_BUILD_TARGET="universal2-apple-darwin"
       - run:
           name: Upload wheels to PyPI
           command: |

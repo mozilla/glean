@@ -48,11 +48,11 @@ build-python: setup-python ## Build the Python bindings
 
 build-python-wheel: setup-python  ## Build a Python wheel
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
-		$(GLEAN_PYENV)/bin/maturin build --release $(MATURIN_FLAG) $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+		$(GLEAN_PYENV)/bin/maturin build --release $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 build-python-sdist: setup-python ## Build a Python source distribution
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
-		$(GLEAN_PYENV)/bin/maturin build --release --sdist $(MATURIN_FLAG)
+		$(GLEAN_PYENV)/bin/maturin build --release --sdist
 
 build-xcframework:
 	./bin/build-xcframework.sh
