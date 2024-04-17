@@ -20,3 +20,7 @@ crate-type = ["staticlib", "cdylib"]
 [dependencies.glean-core]
 # No version specified, we build against what's available here.
 path = ".."
+
+# Needed in order for maturin to find it during builds from `sdist`
+[dev-dependencies.uniffi-bindgen]
+path = "../../tools/embedded-uniffi-bindgen"
