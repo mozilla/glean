@@ -35,6 +35,7 @@ python-source = "glean-core/python"
 module-name = "glean._uniffi"
 bindings = "uniffi"
 manifest-path = "glean-core/bundle/Cargo.toml"
+include = [{ path = "tools/embedded-uniffi-bindgen/**/*", format = "sdist" }]
 
 [tool.coverage.run]
 source = ["glean"]
