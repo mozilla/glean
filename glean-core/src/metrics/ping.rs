@@ -70,6 +70,7 @@ impl PingType {
     /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
     ///   ping will still be collected but is discarded rather than being submitted.
     /// * `reason_codes` - The valid reason codes for this ping.
+    #[allow(clippy::too_many_arguments)]
     pub fn new<A: Into<String>>(
         name: A,
         include_client_id: bool,

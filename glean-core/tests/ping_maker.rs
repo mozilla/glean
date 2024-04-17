@@ -189,7 +189,8 @@ fn seq_number_must_be_sequential() {
 
     for i in 0..=1 {
         for ping_name in ["store1", "store2"].iter() {
-            let ping_type = PingType::new(*ping_name, true, false, true, true, true, vec![], vec![]);
+            let ping_type =
+                PingType::new(*ping_name, true, false, true, true, true, vec![], vec![]);
             let ping = ping_maker
                 .collect(&glean, &ping_type, None, "", "")
                 .unwrap();

@@ -49,7 +49,8 @@ fn send_a_ping() {
 
     // Define a new ping and submit it.
     const PING_NAME: &str = "test-ping";
-    let custom_ping = private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
+    let custom_ping =
+        private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
     custom_ping.submit(None);
 
     // Wait for the ping to arrive.
@@ -90,7 +91,8 @@ fn send_a_ping_without_info_sections() {
 
     // Define a new ping and submit it.
     const PING_NAME: &str = "noinfo-ping";
-    let custom_ping = private::PingType::new(PING_NAME, true, true, true, false, true, vec![], vec![]);
+    let custom_ping =
+        private::PingType::new(PING_NAME, true, true, true, false, true, vec![], vec![]);
     custom_ping.submit(None);
 
     // Wait for the ping to arrive.
@@ -1097,7 +1099,16 @@ fn flipping_upload_enabled_respects_order_of_events() {
         .build();
 
     // We create a ping and a metric before we initialize Glean
-    let sample_ping = PingType::new("sample-ping-1", true, false, true, true, true, vec![], vec![]);
+    let sample_ping = PingType::new(
+        "sample-ping-1",
+        true,
+        false,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+    );
     let metric = private::StringMetric::new(CommonMetricData {
         name: "string_metric".into(),
         category: "telemetry".into(),
@@ -1310,7 +1321,8 @@ fn signaling_done() {
 
     // Define a new ping and submit it.
     const PING_NAME: &str = "test-ping";
-    let custom_ping = private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
+    let custom_ping =
+        private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
     custom_ping.submit(None);
     custom_ping.submit(None);
 
@@ -1381,7 +1393,8 @@ fn configure_ping_throttling() {
 
     // Define a new ping.
     const PING_NAME: &str = "test-ping";
-    let custom_ping = private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
+    let custom_ping =
+        private::PingType::new(PING_NAME, true, true, true, true, true, vec![], vec![]);
 
     // Submit and receive it `pings_per_interval` times.
     for _ in 0..pings_per_interval {

@@ -31,9 +31,10 @@ impl PingType {
     /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
     /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
     ///   ping will still be collected and is discarded instead of being submitted.
-    /// * `schedules_pings` - A list of pings which are triggered for submission when this ping is 
+    /// * `schedules_pings` - A list of pings which are triggered for submission when this ping is
     ///   submitted.
     /// * `reason_codes` - The valid reason codes for this ping.
+    #[allow(clippy::too_many_arguments)]
     pub fn new<A: Into<String>>(
         name: A,
         include_client_id: bool,
