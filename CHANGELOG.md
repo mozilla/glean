@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
 
 * Android
-  * Updated Kotlin to version 1.9.22 ([#2737](https://github.com/mozilla/glean/pull/2737))
+  * Updated Kotlin to version 1.9.23 ([#2737](https://github.com/mozilla/glean/pull/2737))
 
 # v59.0.0 (2024-03-28)
 
