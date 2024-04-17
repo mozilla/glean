@@ -18,17 +18,17 @@ if ! command -v x86_64-w64-mingw32-gcc >/dev/null; then
   exit 1
 fi
 
+rustup target add x86_64-pc-windows-gnu
+
 set -e # exit on failure
 set -x # show all commands
 
-make setup-python
-pushd glean-core/python
-GLEAN_BUILD_TARGET=x86_64-pc-windows-gnu \
-GLEAN_BUILD_VARIANT=release \
-  .venv3.8/bin/python3 setup.py bdist_wheel
-popd
-
+export CC_x86_64_pc_windows_gnu="$(command -v x86_64-w64-mingw32-gcc)"
 export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(command -v x86_64-w64-mingw32-gcc)"
+
+make setup-python
+make build-python-wheel GLEAN_BUILD_TARGET=x86_64-pc-windows-gnu
+
 export WINPYTHON="wine64 winpython/python.exe"
 export WINEDEBUG=-all
 
@@ -52,7 +52,7 @@ fi
 # requirements_dev.txt
 find ~/.cache/pip -name "*win_amd64.whl" -exec $WINPYTHON -m pip install {} \;
 $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
-$WINPYTHON -m pip install glean-core/python/dist/*win_amd64.whl --no-warn-script-location
+$WINPYTHON -m pip install target/wheels/*win_amd64.whl --no-warn-script-location
 
 # run tests
 $WINPYTHON -m pytest -s glean-core/python/tests
