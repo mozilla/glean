@@ -30,6 +30,8 @@ inherent = "1"
 log = "0.4.8"
 once_cell = "1.18.0"
 whatsys = "0.3.0"
+# crates.io has 0.1.0, m-c has 0.0.2, this makes things highly confusing.
+malloc_size_of = { version = "< 1", package = "wr_malloc_size_of" }
 
 [dev-dependencies]
 crossbeam-channel = "0.5"

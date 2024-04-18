@@ -13,6 +13,7 @@ use std::sync::RwLock;
 
 use crate::ErrorKind;
 
+use malloc_size_of::MallocSizeOf;
 use rkv::migrator::Migrator;
 use rkv::{MigrateError, StoreError, StoreOptions};
 
@@ -189,6 +190,30 @@ pub struct Database {
 
     /// RKV load state
     rkv_load_state: RkvLoadState,
+}
+
+impl MallocSizeOf for Database {
+    fn size_of(&self, _ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
+        // TODO: Fill in gaps.
+
+        let mut n = 0;
+
+        n += 0; // self.rkv.size_of(ops) -- not implemented.
+        n += 0; // self.user_store.size_of(ops) -- not implemented.
+
+        n += self
+            .ping_lifetime_data
+            .as_ref()
+            .map(|_data| {
+                // TODO: servo's malloc_size_of implements it for BTreeMap.
+                //let lock = data.read().unwrap();
+                //(*lock).size_of(ops)
+                0
+            })
+            .unwrap_or(0);
+
+        n
+    }
 }
 
 impl std::fmt::Debug for Database {

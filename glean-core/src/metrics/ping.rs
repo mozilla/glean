@@ -9,6 +9,7 @@ use crate::ping::PingMaker;
 use crate::upload::PingPayload;
 use crate::Glean;
 
+use malloc_size_of_derive::MallocSizeOf;
 use uuid::Uuid;
 
 /// Stores information about a ping.
@@ -18,6 +19,7 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct PingType(Arc<InnerPing>);
 
+#[derive(MallocSizeOf)]
 struct InnerPing {
     /// The name of the ping.
     pub name: String,
@@ -48,6 +50,14 @@ impl fmt::Debug for PingType {
             .field("include_info_sections", &self.0.include_info_sections)
             .field("reason_codes", &self.0.reason_codes)
             .finish()
+    }
+}
+
+impl ::malloc_size_of::MallocSizeOf for PingType {
+    fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
+        // Note: This is behind an `Arc`.
+        // `size_of` should only be called on the main thread to avoid double-counting.
+        self.0.size_of(ops)
     }
 }
 

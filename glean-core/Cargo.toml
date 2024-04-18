@@ -43,6 +43,10 @@ thiserror = "1.0.4"
 uniffi = { version = "0.27.0", default-features = false }
 time = "0.1.40"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
+# the version on crates.io depends on syn v1, but m-c uses a patched on with syn v2
+malloc_size_of_derive = "0.1.2"
+# crates.io has 0.1.0, m-c has 0.0.2, this makes things highly confusing.
+malloc_size_of = { version = "< 1", package = "wr_malloc_size_of" }
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.12.0", default-features = false }

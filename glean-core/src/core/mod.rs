@@ -8,6 +8,7 @@ use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, FixedOffset};
+use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 
 use crate::database::Database;
@@ -142,7 +143,7 @@ where
 ///
 /// In specific language bindings, this is usually wrapped in a singleton and all metric recording goes to a single instance of this object.
 /// In the Rust core, it is possible to create multiple instances, which is used in testing.
-#[derive(Debug)]
+#[derive(Debug, MallocSizeOf)]
 pub struct Glean {
     upload_enabled: bool,
     pub(crate) data_store: Option<Database>,
@@ -151,9 +152,11 @@ pub struct Glean {
     pub(crate) additional_metrics: AdditionalMetrics,
     pub(crate) database_metrics: DatabaseMetrics,
     pub(crate) internal_pings: InternalPings,
+    #[ignore_malloc_size_of = "libstd type"]
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
+    #[ignore_malloc_size_of = "non-allocating type"]
     start_time: DateTime<FixedOffset>,
     max_events: u32,
     is_first_run: bool,
@@ -161,7 +164,9 @@ pub struct Glean {
     debug: DebugOptions,
     pub(crate) app_build: String,
     pub(crate) schedule_metrics_pings: bool,
+    #[ignore_malloc_size_of = "atomic not allocated"]
     pub(crate) remote_settings_epoch: AtomicU8,
+    #[ignore_malloc_size_of = "TODO"]
     pub(crate) remote_settings_metrics_config: Arc<Mutex<MetricsEnabledConfig>>,
     pub(crate) with_timestamps: bool,
 }
