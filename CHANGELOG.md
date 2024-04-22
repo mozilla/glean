@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...main)
+
+# v60.0.0 (2024-04-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...v60.0.0)
 
 * General
   * BREAKING CHANGE: Server Knobs API changes requiring changes to consuming applications which make use of Server Knobs ([Bug 1889114](https://bugzilla.mozilla.org/show_bug.cgi?id=1889114))

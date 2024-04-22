@@ -31,6 +31,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
   </license>  <license>
+    <name>Apache License 2.0: unicode-linebreak</name>
+    <url>https://github.com/axelf4/unicode-linebreak</url>
+  </license>  <license>
     <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
@@ -108,6 +111,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/rust-cli/env_logger/</url>
+  </license>  <license>
+    <name>Apache License 2.0: errno</name>
+    <url>https://github.com/lambda-fairy/rust-errno</url>
   </license>  <license>
     <name>Apache License 2.0: fastrand</name>
     <url>https://github.com/smol-rs/fastrand</url>
@@ -193,6 +199,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
   </license>  <license>
+    <name>Apache License 2.0: unicode-width</name>
+    <url>https://github.com/unicode-rs/unicode-width</url>
+  </license>  <license>
     <name>Apache License 2.0: url</name>
     <url>https://github.com/servo/rust-url</url>
   </license>  <license>
@@ -259,8 +268,14 @@ the details of which are reproduced below.
     <name>MIT License: weedle2</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
+    <name>MIT License: textwrap</name>
+    <url>https://github.com/mgeisler/textwrap</url>
+  </license>  <license>
     <name>MIT License: scroll_derive</name>
     <url>https://github.com/m4b/scroll</url>
+  </license>  <license>
+    <name>MIT License: smawk</name>
+    <url>https://github.com/mgeisler/smawk</url>
   </license>  <license>
     <name>MIT License: dashmap</name>
     <url>https://github.com/xacrimon/dashmap</url>
@@ -298,26 +313,14 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-build</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: zeitstempel</name>
-    <url>https://github.com/badboy/zeitstempel</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle-android</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: embedded-uniffi-bindgen</name>
-    <url>https://crates.io/crates/embedded-uniffi-bindgen</url>
+    <name>Mozilla Public License 2.0: uniffi-bindgen</name>
+    <url>https://crates.io/crates/uniffi-bindgen</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
@@ -345,6 +348,18 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_udl</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-build</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: zeitstempel</name>
+    <url>https://github.com/badboy/zeitstempel</url>
   </license>  <license>
     <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
