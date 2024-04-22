@@ -80,7 +80,7 @@ features:
 Once the Feature Variable has been defined, the final step is to fetch the configuration from Nimbus and supply it to the Glean API. This can be done during initialization and again any time afterwards, such as in response to receiving an updated configuration from Nimbus. Only the latest configuration provided will be applied and any previously configured metrics that are omitted from the new configuration will not be changed. An example call to set a configuration from the “homescreen” Nimbus Feature could look like this:
 
 ```Swift
-Glean.setMetricsEnabledConfig(FxNimbus.features.homescreen.value().metricsEnabled)
+Glean.applyServerKnobsConfig(FxNimbus.features.homescreen.value().metricsEnabled)
 ```
 
 Since mobile experiments only update on initialization of the application, it isn't necessary to register to listen for notifications for experiment updates.

@@ -13,9 +13,11 @@ This configuration would be what is entered into the branch configuration setup 
 ```json
 {
   "gleanMetricConfiguration": {
-    "urlbar.abandonment": true,
-    "urlbar.engagement": true,
-    "urlbar.impression": true
+    "metrics_enabled": {
+      "urlbar.abandonment": true,
+      "urlbar.engagement": true,
+      "urlbar.impression": true
+    }
   }
 }
 ```

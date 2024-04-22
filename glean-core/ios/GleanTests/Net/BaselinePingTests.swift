@@ -178,4 +178,46 @@ final class BaselinePingTests: XCTestCase {
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
     }
+
+    func testDisablingBaselinePing() {
+        // Set up the test stub based on the default telemetry endpoint
+        stubServerReceive { _, _ in
+            XCTFail("Should not have recieved any ping")
+        }
+
+        // Set up the expectation that will NOT be fulfilled by the stub above.  If it is
+        // then it will trigger an assertion due to the `assertForOverFulfill` property.
+        expectation = expectation(description: "Baseline Ping Received")
+
+        // So we can wait for expectations below, we will go ahead and fulfill the
+        // expectation.  We want to assert if the ping is triggered and over fulfills it
+        // from the stub above.
+        expectation?.fulfill()
+
+        // Set the last time the "metrics" ping was sent to now. This is required for us to not
+        // send a metrics pings the first time we initialize Glean and to keep it from interfering
+        // with these tests.
+        let now = Date()
+        Glean.shared.metricsPingScheduler!.updateSentDate(now)
+
+                // Set a metric configuration that enables telemetry.counter_metric
+        let metricConfigStringifiedJson =
+"""
+{
+  "pings_enabled": {
+    "baseline": false
+  }
+}
+"""
+        Glean.shared.applyServerKnobsConfig(metricConfigStringifiedJson)
+
+        // Resetting Glean doesn't trigger lifecycle events in tests so we must call the method
+        // invoked by the lifecycle observer directly. We must also reset the `isActive` flag in
+        // order to have the correct state to test.
+        Glean.shared.isActive = false
+        Glean.shared.handleForegroundEvent()
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+    }
 }

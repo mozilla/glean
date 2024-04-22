@@ -21,7 +21,7 @@ All examples omit the step of resetting Glean for tests to focus solely on metri
 
 <div data-lang="Kotlin" class="tab">
 
-```kotlin
+```Kotlin
 // Record a metric value with extra to validate against
 GleanMetrics.BrowserEngagement.click.record(
     BrowserEngagementExtras(font = "Courier")

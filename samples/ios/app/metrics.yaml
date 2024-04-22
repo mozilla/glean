@@ -166,3 +166,24 @@ legacy_ids:
     expires: 2100-01-01
     no_lint:
       - EXPIRATION_DATE_TOO_FAR
+
+party:
+  balloons:
+    type: object
+    description: A collection of balloons
+    bugs:
+      - https://bugzilla.mozilla.org/TODO
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          colour:
+            type: string
+          diameter:
+            type: number

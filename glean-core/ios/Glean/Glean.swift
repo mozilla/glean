@@ -375,37 +375,6 @@ public class Glean {
         gleanSetSourceTags(tags)
     }
 
-    /// Set configuration for metrics' disabled property, typically from remote_settings
-    /// experiment or rollout.
-    ///
-    /// - parameters:
-    ///    * json: Stringified JSON map of metrics and their associated `disabled` property.
-    public func setMetricsDisabledConfig(_ json: String) {
-        // Let's convert this to the new API for backwards compatibility
-        // In order to convert to the new API we need to flip all of the boolean values that
-        // are contained in the map contained in the supplied JSON string. We do this by
-        // parsing the string and then iterating through the keys to create a new object with
-        // the boolean values inverted. Finally, we turn this back into a string to pass into
-        // the `setMetricsEnabledConfig` function.
-        if let jsonData = json.data(using: .utf8, allowLossyConversion: false) {
-            if let json = try? JSONSerialization.jsonObject(with: jsonData) {
-                if let jsonDict = json as? [String: Bool] {
-                    var newDict = [String: Bool]()
-                    jsonDict.forEach { k, v in
-                        newDict[k] = !v
-                    }
-                    if let newJsonData = try? JSONSerialization.data(
-                        withJSONObject: jsonDict,
-                        options: []) {
-                        if let newJsonString = String(data: newJsonData, encoding: .utf8) {
-                            setMetricsEnabledConfig(newJsonString)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /// EXPERIMENTAL: Register a listener to receive notification of event recordings
     ///
     /// - parameters:
@@ -429,8 +398,8 @@ public class Glean {
     /// - parameters:
     ///    * json: Stringified JSON map of metric identifiers (category.name) to a boolean
     ///            representing wether they are enabled
-    public func setMetricsEnabledConfig(_ json: String) {
-        gleanSetMetricsEnabledConfig(json)
+    public func applyServerKnobsConfig(_ json: String) {
+        gleanApplyServerKnobsConfig(json)
     }
 
     /// Shuts down Glean in an orderly fashion

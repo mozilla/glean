@@ -10,6 +10,7 @@ import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
 import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
+import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.private.CommonMetricData
 import mozilla.telemetry.glean.private.EventMetricType
 import mozilla.telemetry.glean.private.Lifetime
@@ -24,6 +25,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
@@ -78,6 +80,8 @@ class CustomPingTest {
             sendIfEmpty = true,
             preciseTimestamps = true,
             includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 
@@ -108,6 +112,8 @@ class CustomPingTest {
             sendIfEmpty = true,
             preciseTimestamps = true,
             includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 
@@ -182,6 +188,8 @@ class CustomPingTest {
             sendIfEmpty = true,
             preciseTimestamps = true,
             includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
             reasonCodes = emptyList(),
         )
 
@@ -220,5 +228,56 @@ class CustomPingTest {
         val name = event.getString("name")
         assertEquals("ui.click", "$category.$name")
         assertEquals(0, event.getLong("timestamp"))
+    }
+
+    @Test
+    fun `custom pings can be disabled remotely`() {
+        delayMetricsPing(context)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
+            clearStores = true,
+            uploadEnabled = true,
+        )
+
+        // Define a new custom ping inline.
+        val customPing = PingType<NoReasonCodes>(
+            name = "custom-ping",
+            includeClientId = true,
+            sendIfEmpty = true,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = emptyList(),
+        )
+
+        customPing.submit()
+        triggerWorkManager(context)
+
+        val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
+        val docType = request.path!!.split("/")[3]
+        assertEquals("custom-ping", docType)
+
+        // Now disable the custom ping using Server Knobs
+        val remoteSettingsConfig = """
+            {
+              "pings_enabled": {
+                "custom-ping": false
+              }
+            }
+        """.trimIndent()
+        Glean.applyServerKnobsConfig(remoteSettingsConfig)
+
+        customPing.submit()
+        // Check that the work is scheduled
+        val workerTag = PingUploadWorker.PING_WORKER_TAG
+        val status = getWorkerStatus(context, workerTag)
+        assertFalse(
+            "No ping should be enqueued",
+            status.isEnqueued,
+        )
     }
 }

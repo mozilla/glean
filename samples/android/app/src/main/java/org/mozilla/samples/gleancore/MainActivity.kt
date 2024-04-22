@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import mozilla.telemetry.glean.Glean
 import org.mozilla.samples.gleancore.GleanMetrics.BrowserEngagement
+import org.mozilla.samples.gleancore.GleanMetrics.Party
 import org.mozilla.samples.gleancore.GleanMetrics.Pings
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.databinding.ActivityMainBinding
@@ -44,6 +45,12 @@ open class MainActivity : AppCompatActivity() {
 
             // Increments the test_counter metric from the metrics.yaml file.
             Test.counter.add()
+
+            // Record an object
+            val balloons = Party.BalloonsObject()
+            balloons.add(Party.BalloonsObjectItem(colour = "red", diameter = 5))
+            balloons.add(Party.BalloonsObjectItem(colour = "green"))
+            Party.balloons.set(balloons)
 
             // This is referencing the event ping named 'click' from the metrics.yaml file. In
             // order to illustrate adding extra information to the event, it is also adding to the

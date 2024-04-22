@@ -43,19 +43,16 @@ build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
 
 build-python: setup-python ## Build the Python bindings
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
 		$(GLEAN_PYENV)/bin/maturin develop
 
 build-python-wheel: setup-python  ## Build a Python wheel
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
-		$(GLEAN_PYENV)/bin/maturin build --release $(MATURIN_FLAG)
+		$(GLEAN_PYENV)/bin/maturin build --release $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 build-python-sdist: setup-python ## Build a Python source distribution
-	PATH=$(PWD)/bin:$(PATH) \
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
-		$(GLEAN_PYENV)/bin/maturin build --release --sdist $(MATURIN_FLAG)
+		$(GLEAN_PYENV)/bin/maturin build --release --sdist
 
 build-xcframework:
 	./bin/build-xcframework.sh
@@ -140,7 +137,7 @@ fmt-kotlin:  ## Run ktlint to format KOtlin code
 
 # Docs
 
-docs: rust-docs ## Build the Rust API documentation
+docs: docs-rust ## Build the Rust API documentation
 
 docs-rust: ## Build the Rust documentation
 	bin/build-rust-docs.sh
@@ -151,10 +148,10 @@ docs-swift: ## Build the Swift documentation
 docs-python: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
 
-.PHONY: docs rust-docs swift-docs
+.PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=13.0
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=14.0
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \
