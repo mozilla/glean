@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...main)
 
+* Rust
+  * New `TimingDistribution` API for no-allocation single-duration accumulation. ([bug 1892097](https://bugzilla.mozilla.org/show_bug.cgi?id=1892097))
+
 # v60.0.0 (2024-04-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...v60.0.0)
