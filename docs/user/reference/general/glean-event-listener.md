@@ -18,6 +18,8 @@ Glean will ensure that event recordings are reported to listeners in the same or
 
 ## Examples
 
+{{#include ../../../shared/tab_header.md}}
+
 <div data-lang="Kotlin" class="tab">
 
 ```kotlin
