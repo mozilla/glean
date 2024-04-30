@@ -219,8 +219,8 @@ commands:
           name: Get ghr release tool
           command: |
             GHR_VERSION=v0.16.2
-            GHR=ghr_${GHR_VERSION}_darwin_amd64
-            GHR_SHA256=da2e6592a50c725660684d5ff19cd3751a28cc3948dc69dab9ec98940b5e33ac
+            GHR=ghr_${GHR_VERSION}_darwin_arm64
+            GHR_SHA256=f762742b3a1a6a10c87ca1bfcc043e9e535ce4d1defa02e4e9d5a4875c1116ba
             curl -sfSL --retry 5 -O "https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/${GHR}.zip"
             echo "${GHR_SHA256} *${GHR}.zip" | shasum -a 256 -c -
             unzip "${GHR}.zip"
@@ -873,7 +873,7 @@ jobs:
       - run:
           name: Install Python development tools for host
           command: |
-            rustup target add aarch64-apple-darwin
+            rustup target add x86_64-apple-darwin
             make setup-python
       - run:
           name: Build macOS x86_64 wheel
