@@ -506,14 +506,14 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v19
+          key: swift-docs-gems-v20
       - run:
           name: Install jazzy
-          command: gem install jazzy
+          command: gem install --no-document jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v19
+          key: swift-docs-gems-v20
           paths:
             - ~/.rbenv/versions/3.1.4/lib/ruby/gems/3.1.0
       - run:
