@@ -524,8 +524,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -608,8 +608,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.x86_64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/clang"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
