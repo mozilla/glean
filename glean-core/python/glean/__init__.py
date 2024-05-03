@@ -7,7 +7,7 @@
 import warnings
 
 
-import importlib.metadata
+from pkg_resources import get_distribution, DistributionNotFound
 from semver import VersionInfo  # type: ignore
 
 
@@ -21,8 +21,8 @@ from ._loader import load_metrics, load_pings
 
 __version__: str = "unknown"
 try:
-    __version__ = importlib.metadata.version("glean-sdk")
-except importlib.metadata.PackageNotFoundError:  # pragma: no cover
+    __version__ = str(get_distribution("glean-sdk").version)
+except DistributionNotFound:  # pragma: no cover
     pass
 
 
