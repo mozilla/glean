@@ -749,8 +749,15 @@ jobs:
             wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip
             mkdir winpython
             unzip python-3.8.2-embed-amd64.zip -d winpython
-            echo "export WINPYTHON=\"wine64 winpython/python.exe\"" >> $BASH_ENV
+            echo "export WINPYTHON=\"wine64-stable winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
+      - run:
+          name: Build bcryptprimitives.dll shim
+          command: |
+            rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target x86_64-pc-windows-gnu
+            # This preloads our bcryptprimitives shim.
+            shimpath='Z:\\\\home\\\\circleci\\\\project\\\\wine_shims\\\\bcryptprimitives.dll'
+            echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
       - run:
           name: Run tests
           command: |
@@ -777,6 +784,13 @@ jobs:
             unzip python-3.8.2-embed-win32.zip -d winpython
             echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
+      - run:
+          name: Build bcryptprimitives.dll shim
+          command: |
+            rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target i686-pc-windows-gnu
+            # This preloads our bcryptprimitives shim.
+            shimpath='Z:\\\\home\\\\circleci\\\\project\\\\wine_shims\\\\bcryptprimitives.dll'
+            echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
       - run:
           name: Run tests
           command: |
