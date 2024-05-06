@@ -306,3 +306,34 @@ A [Text](../../../book/reference/metrics/text.md) is represented by its string v
 ```json
 "sample string"
 ```
+
+### Object
+
+An [Object](../../../book/reference/metrics/object.md) is represented as either a JSON array or JSON object,
+depending on the allowed structure.
+Missing values (`null`) and empty arrays will not be serialized in the payload.
+
+#### Example
+
+Object:
+
+```json
+{
+  "colour": "red",
+  "diameter": 5
+}
+```
+
+Array with objects:
+
+```json
+[
+  {
+    "type": "ERROR",
+    "address": "0x000000"
+  },
+  {
+    "type": "ERROR"
+  }
+]
+```
