@@ -26,6 +26,7 @@ androidx-work = "2.9.0"
 jna = "5.14.0"
 
 # Linting and Static Analysis
+dependency-analysis = "1.31.0"
 detekt = "1.23.5"
 ktlint = "0.50.0"
 
@@ -89,5 +90,6 @@ mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", versio
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 gradle-python-envs = { id = "com.jetbrains.python.envs", version.ref = "python-envs" }
