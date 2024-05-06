@@ -328,9 +328,6 @@ the details of which are reproduced below.
     <name>Mozilla Public License 2.0: uniffi_bindgen</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: uniffi_build</name>
-    <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_checksum_derive</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>

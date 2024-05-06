@@ -1,6 +1,15 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.1.0...main)
+
+# v60.1.0 (2024-05-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...v60.1.0)
+
+* Rust
+  * New `TimingDistribution` API for no-allocation single-duration accumulation. ([bug 1892097](https://bugzilla.mozilla.org/show_bug.cgi?id=1892097))
+* Python
+  * Replace use of deprecated functionality (and make installs work on Python 3.12) ([#2820](https://github.com/mozilla/glean/pull/2820))
 
 # v60.0.0 (2024-04-22)
 
