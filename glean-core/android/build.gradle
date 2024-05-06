@@ -155,7 +155,7 @@ dependencies {
             type = "jar"
         }
     }
-    implementation(libs.jna) {
+    api(libs.jna) {
         artifact {
             extension ="aar"
             type = "aar"
