@@ -42,7 +42,6 @@ dependencies {
     implementation project(':glean')
 
     implementation libs.androidx.appcompat
-    implementation libs.androidx.browser
 
     androidTestImplementation libs.mockwebserver
     androidTestImplementation libs.test.core
@@ -51,7 +50,6 @@ dependencies {
     androidTestImplementation libs.test.rules
     androidTestImplementation libs.test.runner
     androidTestImplementation libs.test.uiautomator
-    androidTestImplementation libs.test.work
 }
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
