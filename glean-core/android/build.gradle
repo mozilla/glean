@@ -180,14 +180,6 @@ dependencies {
     compileOnly libs.junit
     compileOnly libs.test.work
 
-    // For reasons unknown, resolving the jnaForTest configuration directly
-    // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
-    // change attributes of configuration ':PROJECT:kapt' after it has been
-    // resolved`.  I think that the configuration is being made a
-    // super-configuration of the testImplementation and then the `.files` is
-    // causing it to be resolved.  Cloning first dissociates the configuration,
-    // avoiding other configurations from being resolved.  Tricky!
-    testImplementation files(configurations.jnaForTest.copyRecursive().files)
     testImplementation libs.mockito
     testImplementation libs.mockwebserver
     testImplementation libs.robolectric
