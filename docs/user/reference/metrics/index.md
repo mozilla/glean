@@ -43,6 +43,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Text](text.md): Records a single long Unicode text, used when the limits on `String` are too low.
 
+* [Object](object.md): Record structured data.
+
 ## Labeled metrics
 
 There are two types of metrics listed above - *labeled* and *unlabeled* metrics. If a metric is *labeled*, it means that for a single metric entry you define in `metrics.yaml`, you can record into multiple metrics under the same name, each of the same type and identified by a different string label.
