@@ -127,9 +127,6 @@ internal fun resetGlean(
         ShadowLog.stream = System.out
     }
 
-    // We're using the WorkManager in a bunch of places, and Glean will crash
-    // in tests without this line. Let's simply put it here.
-    WorkManagerTestInitHelper.initializeTestWorkManager(context)
     Glean.resetGlean(context, config, clearStores, uploadEnabled = uploadEnabled)
 }
 

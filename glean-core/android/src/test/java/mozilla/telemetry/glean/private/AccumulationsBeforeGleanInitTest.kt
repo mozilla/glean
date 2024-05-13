@@ -28,11 +28,19 @@ class AccumulationsBeforeGleanInitTest {
     val context: Context
         get() = ApplicationProvider.getApplicationContext()
 
-    @After
     @Before
-    fun cleanup() {
+    fun setup() {
         Glean.testDestroyGleanHandle()
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
+    }
+
+    @After
+    fun cleanup() {
+        Glean.testDestroyGleanHandle()
+
+        // This closes the database to help prevent leaking it during tests.
+        // See Bug1719905 for more info.
+        WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
     private fun forceInitGlean() {

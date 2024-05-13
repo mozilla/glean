@@ -74,4 +74,12 @@ class GleanTestRule(
             clearStores = true,
         )
     }
+
+    override fun finished(description: Description?) {
+        // This closes the database to help prevent leaking it during tests.
+        // See Bug1719905 for more info.
+        WorkManagerTestInitHelper.closeWorkDatabase()
+
+        super.finished(description)
+    }
 }
