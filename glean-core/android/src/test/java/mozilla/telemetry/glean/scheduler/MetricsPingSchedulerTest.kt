@@ -71,6 +71,10 @@ class MetricsPingSchedulerTest {
         // Once all data is cleared, destroy the handle.
         // Individual tests will start Glean if necessary.
         Glean.testDestroyGleanHandle()
+
+        // This closes the database to help prevent leaking it during tests.
+        // See Bug1719905 for more info.
+        WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
     @Test

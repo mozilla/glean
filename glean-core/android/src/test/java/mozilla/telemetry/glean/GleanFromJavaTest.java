@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.work.testing.WorkManagerTestInitHelper;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,11 @@ public class GleanFromJavaTest {
     @Before
     public void setup() {
         WorkManagerTestInitHelper.initializeTestWorkManager(appContext);
+    }
+
+    @After
+    public void cleanup() {
+        WorkManagerTestInitHelper.closeWorkDatabase();
     }
 
     @Test
