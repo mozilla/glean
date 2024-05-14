@@ -41,7 +41,7 @@
     - [Python](user/debugging/python.md)
     - [JavaScript](user/debugging/javascript.md)
 - [Walkthroughs and How-tos](user/howto/index.md)
-    - [Server Knobs Walkthrough](user/howto//server-knobs-walkthrough/server-knobs-walkthrough.md)
+    - [Server Knobs Walkthrough](user/howto/server-knobs-walkthrough/server-knobs-walkthrough.md)
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
