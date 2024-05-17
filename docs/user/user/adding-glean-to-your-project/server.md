@@ -12,7 +12,7 @@ This method is intended for collecting user-level behavioral events in server en
 
 ## How to add Glean server side collection to your service
 
-1. Integrate [glean_parser](https://github.com/mozilla/glean_parser#usage) into your build system. Follow instructions for other SDK-enabled platforms, e.g. [JavaScript](./javascript.md). Use a server outputter to generate logging code. Glean_parser currently supports [Go](https://github.com/mozilla/glean_parser/blob/main/glean_parser/go_server.py), [JavaScript/Typescript](https://github.com/mozilla/glean_parser/blob/main/glean_parser/javascript_server.py), [Python](https://github.com/mozilla/glean_parser/blob/main/glean_parser/python_server.py), and [Ruby](https://github.com/mozilla/glean_parser/blob/main/glean_parser/ruby_server.py).
+1. Integrate [`glean_parser`](https://github.com/mozilla/glean_parser#usage) into your build system. Follow instructions for other SDK-enabled platforms, e.g. [JavaScript](./javascript.md). Use a server outputter to generate logging code. `glean_parser` currently supports [Go](https://github.com/mozilla/glean_parser/blob/main/glean_parser/go_server.py), [JavaScript/Typescript](https://github.com/mozilla/glean_parser/blob/main/glean_parser/javascript_server.py), [Python](https://github.com/mozilla/glean_parser/blob/main/glean_parser/python_server.py), and [Ruby](https://github.com/mozilla/glean_parser/blob/main/glean_parser/ruby_server.py).
 2. Define your metrics in `metrics.yaml`
 3. Request a [data review](https://wiki.mozilla.org/Firefox/Data_Collection) for the collected data
 4. [Add your product to probe-scraper](./enable-data-ingestion.html#add-your-product-to-probe-scraper)
