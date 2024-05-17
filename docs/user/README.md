@@ -26,6 +26,8 @@ To get started adding Glean to your project, choose one of the following guides:
   - Get started adding Glean to a Qt/QML application or library.
 <!-- - **[Firefox Desktop](TODO)**
   - Get started adding Glean to a Firefox Desktop component. -->
+- **[Server](./user/adding-glean-to-your-project/server.md)**
+  - Get started adding Glean to a server-side application.
 
 For development documentation on the `Glean SDK`, refer to [the Glean SDK development book](../dev/index.html).
 

@@ -159,6 +159,7 @@ exe
 experimentId
 ffi
 fi
+frontend
 func
 gfritzsche
 glibc
@@ -209,6 +210,7 @@ npm
 ns
 ol
 ons
+outputter
 pdoc
 perrymcmanis
 pidcat
