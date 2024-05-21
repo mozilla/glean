@@ -720,6 +720,22 @@ glean.database:
       - glean-team@mozilla.com
     expires: never
 
+  write_time:
+    type: timing_distribution
+    time_unit: microsecond
+    description: |
+      The time it takes for a write-commit for the Glean database.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1896193
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1896193#c4
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: never
+
 glean.validation:
   foreground_count:
     type: counter

@@ -280,6 +280,19 @@ class MetricsPingSchedulerTest {
         // Setup a test server and make Glean point to it.
         val server = getMockWebServer()
 
+        // Trick Glean into not sending the overdue ping which will have `glean.databse` metrics.
+        val fakeNow = Calendar.getInstance()
+        fakeNow.clear()
+        @Suppress("MagicNumber") // it's a fixed date only used in tests.
+        fakeNow.set(2015, 6, 11, 2, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+
+        // Set the last sent date to yesterday.
+        val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
+        val mps = MetricsPingScheduler(context, buildInfo)
+
+        mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
+
         resetGlean(
             context,
             Configuration(

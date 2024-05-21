@@ -4,6 +4,7 @@
 
 * General
   * Bump the string length limit to 255 characters ([#2857](https://github.com/mozilla/glean/pull/2857))
+  * New metric `glean.database.write_time` to measure database writes ([#2845](https://github.com/mozilla/glean/pull/2845))
 * Android
   * Delay log init until Glean is getting initialized ([#2858](https://github.com/mozilla/glean/pull/2858))
   * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
