@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.2.0...main)
+
+# v60.2.0 (2024-05-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.1.0...v60.2.0)
 
 * Rust
   * Accept a ping schedule map on initialize ([#2839](https://github.com/mozilla/glean/pull/2839))
