@@ -6,9 +6,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.BackoffPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkerParameters
+import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.getWorkerStatus
 import mozilla.telemetry.glean.resetGlean
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -30,9 +32,18 @@ class PingUploadWorkerTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
+        WorkManagerTestInitHelper.initializeTestWorkManager(context)
+
         MockitoAnnotations.openMocks(this)
         resetGlean(context, config = Configuration())
         pingUploadWorker = PingUploadWorker(context, workerParams!!)
+    }
+
+    @After
+    fun cleanup() {
+        // This closes the database to help prevent leaking it during tests.
+        // See Bug1719905 for more info.
+        WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
     @Test

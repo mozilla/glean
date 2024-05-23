@@ -208,7 +208,28 @@ assert 0 == metrics.party.balloons.test_get_num_recorded_errors(
 
 ## Metric parameters
 
-Example text metric definition:
+The definition for an object metric type accepts a `structure` parameter.
+This defines the accepted structure of the object using a subset of [JSON schema](https://json-schema.org/draft/2020-12/json-schema-core).
+
+The allowed types are:
+
+* `string`
+* `number`
+* `boolean`
+* `array`
+* `object`
+
+The `array` type takes an `items` parameter, that does define the element types it can hold.  
+The `object` type takes a `properties` parameter, that defines the nested object structure.
+
+`array` and `object` metrics can be nested.  
+No other schema parameters are allowed.  
+All fields are optional.
+
+Data is validated against this schema at recording time.  
+Missing values will not be serialized into the payload.
+
+### Example object metric definition:
 
 ```yaml
 party:

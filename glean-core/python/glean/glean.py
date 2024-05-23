@@ -234,6 +234,7 @@ class Glean:
             enable_event_timestamps=configuration.enable_event_timestamps,
             experimentation_id=configuration.experimentation_id,
             enable_internal_pings=configuration.enable_internal_pings,
+            ping_schedule={},
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)

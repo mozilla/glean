@@ -209,7 +209,6 @@ tasks:
                                       GLEAN_HEAD_REF: '${head_branch}'
                                       GLEAN_HEAD_REV: '${head_sha}'
                                       GLEAN_HEAD_TAG: '${head_tag}'
-                                      GLEAN_PIP_REQUIREMENTS: taskcluster/requirements.txt
                                       GLEAN_REPOSITORY_TYPE: git
                                       REPOSITORIES: {$json: {glean: "Glean"}}
                                       ANDROID_SDK_ROOT: /builds/worker/android-sdk
@@ -231,7 +230,7 @@ tasks:
                             # Note: This task is built server side without the context or tooling that
                             # exist in tree so we must hard code the hash
                             image:
-                                mozillareleases/taskgraph:decision-c4ac262880970ca484105929e02dd12f00214d5f2603ab6ce4c0d17de5cd0280@sha256:2dd667994aa13fccdcdcede85c570a5eb4a5247e42875a9e95a135ef774ee469
+                                mozillareleases/taskgraph:decision-v8.1.0@sha256:ffed8883c6f3e505dd88bafd7a153103b768c77609bf0cbafd15dd602ba95352
 
                             maxRunTime: 1800
 
@@ -249,10 +248,10 @@ tasks:
                                       then: >
                                           cd /builds/worker/checkouts/vcs &&
                                           ln -s /builds/worker/artifacts artifacts &&
-                                          ~/.local/bin/taskgraph action-callback
+                                          taskgraph action-callback
                                       else: >
                                           ln -s /builds/worker/artifacts artifacts &&
-                                          ~/.local/bin/taskgraph decision
+                                          taskgraph decision
                                           --pushlog-id='0'
                                           --pushdate='0'
                                           --project='${project}'

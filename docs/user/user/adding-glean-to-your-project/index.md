@@ -41,5 +41,6 @@ Additionally, applications (but not libraries) **must**:
 > - [Rust](./rust.md)
 > - [Swift](./swift.md)
 > - [Qt/QML](./qt.md)
+> - [Server](./server.md)
 
 [Glean Dictionary]: https://dictionary.telemetry.mozilla.org

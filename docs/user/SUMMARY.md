@@ -9,6 +9,7 @@
   - [Rust](user/adding-glean-to-your-project/rust.md)
   - [JavaScript](user/adding-glean-to-your-project/javascript.md)
   - [Qt/QML](user/adding-glean-to-your-project/qt.md)
+  - [Server](user/adding-glean-to-your-project/server.md)
   - [Enable data ingestion](user/adding-glean-to-your-project/enable-data-ingestion.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
 - [Metrics](user/metrics/adding-new-metrics.md)
@@ -40,6 +41,8 @@
     - [iOS](user/debugging/ios.md)
     - [Python](user/debugging/python.md)
     - [JavaScript](user/debugging/javascript.md)
+- [Walkthroughs and How-tos](user/howto/index.md)
+    - [Server Knobs Walkthrough](user/howto/server-knobs-walkthrough/server-knobs-walkthrough.md)
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
