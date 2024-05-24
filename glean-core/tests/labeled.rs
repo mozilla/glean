@@ -180,7 +180,7 @@ fn can_create_labeled_memory_distribution_metric() {
     assert_eq!(
         json!({
             "labeled_memory_distribution": {
-                "telemetry.labeled_metric": { "label1": { "sum": 42, "values": {"41": 1, "43": 0} } }
+                "telemetry.labeled_metric": { "label1": { "sum": 42, "values": {"41": 1} } }
             }
         }),
         snapshot
@@ -215,7 +215,7 @@ fn can_create_labeled_timing_distribution_metric() {
     assert_eq!(
         json!({
             "labeled_timing_distribution": {
-                "telemetry.labeled_metric": { "label1": { "sum": 42, "values": {"41": 1, "45": 0} } }
+                "telemetry.labeled_metric": { "label1": { "sum": 42, "values": {"41": 1} } }
             }
         }),
         snapshot
