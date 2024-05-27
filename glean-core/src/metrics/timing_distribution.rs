@@ -53,6 +53,10 @@ impl From<usize> for TimerId {
     }
 }
 
+// How many samples to batch before writing to the database.
+// #221: Chosen by fair dice roll.
+const BATCH_SIZE: usize = 1000;
+
 /// A timing distribution metric.
 ///
 /// Timing distributions are used to accumulate and store time measurement, for analyzing distributions of the timing data.
@@ -62,6 +66,8 @@ pub struct TimingDistributionMetric {
     time_unit: TimeUnit,
     next_id: Arc<AtomicUsize>,
     start_times: Arc<Mutex<HashMap<TimerId, u64>>>,
+    batch: Arc<Mutex<Box<[u64]>>>,
+    batch_idx: Arc<AtomicUsize>,
 }
 
 /// Create a snapshot of the histogram with a time unit.
@@ -94,11 +100,14 @@ impl MetricType for TimingDistributionMetric {
 impl TimingDistributionMetric {
     /// Creates a new timing distribution metric.
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        let batch = Arc::new(Mutex::new(vec![0; BATCH_SIZE].into_boxed_slice()));
         Self {
             meta: Arc::new(meta.into()),
             time_unit,
             next_id: Arc::new(AtomicUsize::new(1)),
             start_times: Arc::new(Mutex::new(Default::default())),
+            batch,
+            batch_idx: Arc::new(AtomicUsize::new(0)),
         }
     }
 
@@ -225,6 +234,22 @@ impl TimingDistributionMetric {
             return;
         }
 
+        // Getting access to the current batch.
+        let mut batch = self.batch.lock().unwrap();
+        let idx = self.batch_idx.fetch_add(1, Ordering::Release);
+        dbg!(idx, BATCH_SIZE);
+        if idx < BATCH_SIZE-1 {
+            batch[idx] = duration;
+        }
+
+        // Batch not full. We're good.
+        if idx != BATCH_SIZE-1 {
+            return;
+        }
+
+        // Reset index.
+        self.batch_idx.store(0, Ordering::Release);
+
         // Let's be defensive here:
         // The uploader tries to store some timing distribution metrics,
         // but in tests that storage might be gone already.
@@ -234,12 +259,16 @@ impl TimingDistributionMetric {
         if let Some(storage) = glean.storage_opt() {
             storage.record_with(glean, &self.meta, |old_value| match old_value {
                 Some(Metric::TimingDistribution(mut hist)) => {
-                    hist.accumulate(duration);
+                    for &duration in batch.iter() {
+                        hist.accumulate(duration);
+                    }
                     Metric::TimingDistribution(hist)
                 }
                 _ => {
                     let mut hist = Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE);
-                    hist.accumulate(duration);
+                    for &duration in batch.iter() {
+                        hist.accumulate(duration);
+                    }
                     Metric::TimingDistribution(hist)
                 }
             });
@@ -339,13 +368,38 @@ impl TimingDistributionMetric {
         let mut num_too_long_samples = 0;
         let max_sample_time = self.time_unit.as_nanos(MAX_SAMPLE_TIME);
 
+        let batched_samples = if samples.len() == 1 {
+            // Getting access to the current batch.
+            let mut batch = self.batch.lock().unwrap();
+            let idx = self.batch_idx.fetch_add(1, Ordering::Release);
+            dbg!(idx, BATCH_SIZE);
+            if idx < BATCH_SIZE-1 {
+                batch[idx] = samples[0] as u64;
+            }
+
+            // Batch not full. We're good.
+            if idx != BATCH_SIZE-1 {
+                return;
+            }
+
+            // Reset index.
+            self.batch_idx.store(0, Ordering::Release);
+
+            batch.to_vec()
+        } else {
+            vec![]
+        };
+
+        let mut batched_samples: Vec<i64> = batched_samples.into_iter().map(|i| i as i64).collect();
+        batched_samples.extend(&samples[1..]);
+
         glean.storage().record_with(glean, &self.meta, |old_value| {
             let mut hist = match old_value {
                 Some(Metric::TimingDistribution(hist)) => hist,
                 _ => Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE),
             };
 
-            for &sample in samples.iter() {
+            for &sample in batched_samples.iter() {
                 if sample < 0 {
                     num_negative_samples += 1;
                 } else {
@@ -502,6 +556,31 @@ impl TimingDistributionMetric {
         glean: &Glean,
         ping_name: S,
     ) -> Option<DistributionData> {
+        {
+            let batch = self.batch.lock().unwrap();
+            let last_idx = self.batch_idx.swap(0, Ordering::Release);
+
+            if last_idx > 0 {
+                if let Some(storage) = glean.storage_opt() {
+                    storage.record_with(glean, &self.meta, |old_value| match old_value {
+                        Some(Metric::TimingDistribution(mut hist)) => {
+                            for &duration in batch[..last_idx].iter() {
+                                hist.accumulate(duration);
+                            }
+                            Metric::TimingDistribution(hist)
+                        }
+                        _ => {
+                            let mut hist = Histogram::functional(LOG_BASE, BUCKETS_PER_MAGNITUDE);
+                            for &duration in batch[..last_idx].iter() {
+                                hist.accumulate(duration);
+                            }
+                            Metric::TimingDistribution(hist)
+                        }
+                    });
+                }
+            }
+        }
+
         let queried_ping_name = ping_name
             .into()
             .unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);

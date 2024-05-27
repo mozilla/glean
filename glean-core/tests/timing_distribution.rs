@@ -105,6 +105,9 @@ fn set_value_properly_sets_the_value_in_all_stores() {
             "2": 0,
         }
     });
+
+    // Force write
+    metric.get_value(&glean, None);
     for store_name in store_names {
         let snapshot = StorageManager
             .snapshot_as_json(glean.storage(), &store_name, true)
@@ -142,7 +145,8 @@ fn timing_distributions_must_not_accumulate_negative_values() {
     metric.set_start(id, duration);
     metric.set_stop_and_accumulate(&glean, id, 0);
 
-    assert!(metric.get_value(&glean, "store1").is_none());
+    let val = metric.get_value(&glean, "store1");
+    assert!(val.is_none(), "val: {:?}", val);
 
     // Make sure that the errors have been recorded
     assert_eq!(
