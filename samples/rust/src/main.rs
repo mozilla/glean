@@ -100,6 +100,22 @@ fn main() {
     ]);
     glean_metrics::party::balloons.set(balloons);
 
+    fn rand() -> usize {
+        use std::collections::hash_map::RandomState;
+        use std::hash::{BuildHasher, Hasher};
+
+        let random_value = RandomState::new().build_hasher().finish() as usize;
+        random_value % u32::max_value() as usize
+    }
+
+    _ = glean_metrics::test_metrics::sample_boolean.test_get_value(None);
+
+    for _ in 0..1000 {
+        glean_metrics::test::time.accumulate_single_sample(rand() as i64);
+    }
+
+    _ = glean_metrics::test_metrics::sample_boolean.test_get_value(None);
+
     glean_metrics::prototype.submit(None);
     // Need to wait a short time for Glean to actually act.
     thread::sleep(Duration::from_millis(100));

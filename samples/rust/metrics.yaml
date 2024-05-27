@@ -48,3 +48,18 @@ party:
             type: string
           diameter:
             type: number
+
+test:
+  time:
+    type: timing_distribution
+    description: |
+      Just testing objects
+    bugs:
+      - https://bugzilla.mozilla.org/1839640
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
