@@ -9,6 +9,8 @@ use std::io;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::sync::RwLock;
 
 use crate::ErrorKind;
@@ -167,6 +169,12 @@ use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
 
+/// The number of writes we accept writes to the ping-lifetime in-memory map
+/// before data is flushed to disk.
+///
+/// Only considered if `delay_ping_lifetime_io` is set to `true`.
+const PING_LIFETIME_THRESHOLD: usize = 1000;
+
 pub struct Database {
     /// Handle to the database environment.
     rkv: Rkv,
@@ -183,6 +191,13 @@ pub struct Database {
     /// we will save metrics with 'ping' lifetime data in a map temporarily
     /// so as to persist them to disk using rkv in bulk on demand.
     ping_lifetime_data: Option<RwLock<BTreeMap<String, Metric>>>,
+
+    /// A count of how many database writes have been done since the last ping-lifetime flush.
+    ///
+    /// A ping-lifetime flush is automatically done after `PING_LIFETIME_THRESHOLD` writes.
+    ///
+    /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
+    ping_lifetime_count: AtomicUsize,
 
     /// Initial file size when opening the database.
     file_size: Option<NonZeroU64>,
@@ -263,6 +278,7 @@ impl Database {
             ping_store,
             application_store,
             ping_lifetime_data,
+            ping_lifetime_count: AtomicUsize::new(0),
             file_size,
             rkv_load_state,
         };
@@ -528,6 +544,10 @@ impl Database {
                     .write()
                     .expect("Can't read ping lifetime data");
                 data.insert(final_key, metric.clone());
+                self.ping_lifetime_count.fetch_add(1, Ordering::Release);
+
+                // flush ping lifetime
+                self.persist_ping_lifetime_data_if_full(&data)?;
                 return Ok(());
             }
         }
@@ -609,6 +629,10 @@ impl Database {
                         entry.insert(transform(Some(old_value)));
                     }
                 }
+                self.ping_lifetime_count.fetch_add(1, Ordering::Release);
+
+                // flush ping lifetime
+                self.persist_ping_lifetime_data_if_full(&data)?;
                 return Ok(());
             }
         }
@@ -802,6 +826,8 @@ impl Database {
                 .read()
                 .expect("Can't read ping lifetime data");
 
+            // We can reset the write-counter. Current data has been persisted.
+            self.ping_lifetime_count.store(0, Ordering::Release);
             self.write_with_store(Lifetime::Ping, |mut writer, store| {
                 for (key, value) in data.iter() {
                     let encoded =
@@ -816,6 +842,30 @@ impl Database {
             })?;
         }
         Ok(())
+    }
+
+    pub fn persist_ping_lifetime_data_if_full(
+        &self,
+        data: &BTreeMap<String, Metric>,
+    ) -> Result<()> {
+        let write_count = self.ping_lifetime_count.load(Ordering::Relaxed);
+        if write_count >= PING_LIFETIME_THRESHOLD {
+            self.ping_lifetime_count.store(0, Ordering::Release);
+            self.write_with_store(Lifetime::Ping, |mut writer, store| {
+                for (key, value) in data.iter() {
+                    let encoded =
+                        bincode::serialize(&value).expect("IMPOSSIBLE: Serializing metric failed");
+                    // There is no need for `get_storage_key` here because
+                    // the key is already formatted from when it was saved
+                    // to ping_lifetime_data.
+                    store.put(&mut writer, key, &rkv::Value::Blob(&encoded))?;
+                }
+                writer.commit()?;
+                Ok(())
+            })
+        } else {
+            Ok(())
+        }
     }
 }
 
