@@ -445,6 +445,9 @@ open class GleanInternalAPI internal constructor() {
      * Handle the background event and send the appropriate pings.
      */
     internal fun handleBackgroundEvent() {
+        // Persist data on backgrounding the app
+        persistPingLifetimeData()
+
         gleanHandleClientInactive()
     }
 
