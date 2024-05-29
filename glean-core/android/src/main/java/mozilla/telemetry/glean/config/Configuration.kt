@@ -24,6 +24,7 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property experimentationId An experimentation identifier derived by the application
  *           to be sent with all pings.
  * @property enableInternalPings Whether to enable internal pings.
+ * @property delayPingLifetimeIo Whether Glean should delay persistence of data from metrics with ping lifetime.
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -38,6 +39,7 @@ data class Configuration @JvmOverloads constructor(
     val enableEventTimestamps: Boolean = true,
     val experimentationId: String? = null,
     val enableInternalPings: Boolean = true,
+    val delayPingLifetimeIo: Boolean = false,
 ) {
     companion object {
         /**
