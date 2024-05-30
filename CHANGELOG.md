@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...main)
 
+* Android
+  * Allow configuring `delayPingLifetimeIo` in Kotlin and auto-flush this data after 1000 writes.
+    It is also auto-flushed on background. ([#2851](https://github.com/mozilla/glean/pull/2851))
+    (Backported changes)
+
 # v60.0.0 (2024-04-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v59.0.0...v60.0.0)
