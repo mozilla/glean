@@ -9,8 +9,8 @@ use std::io;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
-use std::sync::atomic::AtomicUsize;
-use std::sync::atomic::Ordering;
+#[cfg(target_os = "android")]
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::RwLock;
 
 use crate::ErrorKind;
@@ -173,6 +173,7 @@ use crate::Result;
 /// before data is flushed to disk.
 ///
 /// Only considered if `delay_ping_lifetime_io` is set to `true`.
+#[cfg(target_os = "android")]
 const PING_LIFETIME_THRESHOLD: usize = 1000;
 
 pub struct Database {
@@ -197,6 +198,7 @@ pub struct Database {
     /// A ping-lifetime flush is automatically done after `PING_LIFETIME_THRESHOLD` writes.
     ///
     /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
+    #[cfg(target_os = "android")]
     ping_lifetime_count: AtomicUsize,
 
     /// Initial file size when opening the database.
@@ -278,6 +280,7 @@ impl Database {
             ping_store,
             application_store,
             ping_lifetime_data,
+            #[cfg(target_os = "android")]
             ping_lifetime_count: AtomicUsize::new(0),
             file_size,
             rkv_load_state,
@@ -544,7 +547,6 @@ impl Database {
                     .write()
                     .expect("Can't read ping lifetime data");
                 data.insert(final_key, metric.clone());
-                self.ping_lifetime_count.fetch_add(1, Ordering::Release);
 
                 // flush ping lifetime
                 self.persist_ping_lifetime_data_if_full(&data)?;
@@ -629,7 +631,6 @@ impl Database {
                         entry.insert(transform(Some(old_value)));
                     }
                 }
-                self.ping_lifetime_count.fetch_add(1, Ordering::Release);
 
                 // flush ping lifetime
                 self.persist_ping_lifetime_data_if_full(&data)?;
@@ -827,7 +828,9 @@ impl Database {
                 .expect("Can't read ping lifetime data");
 
             // We can reset the write-counter. Current data has been persisted.
+            #[cfg(target_os = "android")]
             self.ping_lifetime_count.store(0, Ordering::Release);
+
             self.write_with_store(Lifetime::Ping, |mut writer, store| {
                 for (key, value) in data.iter() {
                     let encoded =
@@ -848,10 +851,17 @@ impl Database {
         &self,
         data: &BTreeMap<String, Metric>,
     ) -> Result<()> {
-        let write_count = self.ping_lifetime_count.load(Ordering::Relaxed);
-        if write_count >= PING_LIFETIME_THRESHOLD {
+        #[cfg(target_os = "android")]
+        {
+            self.ping_lifetime_count.fetch_add(1, Ordering::Release);
+
+            let write_count = self.ping_lifetime_count.load(Ordering::Relaxed);
+            if write_count < PING_LIFETIME_THRESHOLD {
+                return Ok(());
+            }
+
             self.ping_lifetime_count.store(0, Ordering::Release);
-            self.write_with_store(Lifetime::Ping, |mut writer, store| {
+            let write_result = self.write_with_store(Lifetime::Ping, |mut writer, store| {
                 for (key, value) in data.iter() {
                     let encoded =
                         bincode::serialize(&value).expect("IMPOSSIBLE: Serializing metric failed");
@@ -862,8 +872,13 @@ impl Database {
                 }
                 writer.commit()?;
                 Ok(())
-            })
-        } else {
+            });
+
+            return write_result;
+        }
+        #[cfg(not(target_os = "android"))]
+        {
+            _ = data; // suppress unused_variables warning.
             Ok(())
         }
     }
