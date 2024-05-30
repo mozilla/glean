@@ -7,6 +7,7 @@ package org.mozilla.samples.gleancore
 import android.app.Application
 import android.util.Log
 import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 import org.mozilla.samples.gleancore.GleanMetrics.Basic
 import org.mozilla.samples.gleancore.GleanMetrics.Custom
 import org.mozilla.samples.gleancore.GleanMetrics.GleanBuildInfo
@@ -35,6 +36,7 @@ class GleanApplication : Application() {
             applicationContext = applicationContext,
             uploadEnabled = true,
             buildInfo = GleanBuildInfo.buildInfo,
+            configuration = Configuration(delayPingLifetimeIo = true),
         )
 
         Test.timespan.start()
