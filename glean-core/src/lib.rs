@@ -310,7 +310,7 @@ pub trait OnGleanEvents: Send {
 }
 
 /// A callback handler that receives the base identifier of recorded events
-/// The identifier is in the format: <category>.<name>
+/// The identifier is in the format: `<category>.<name>`
 pub trait GleanEventListener: Send {
     /// Called when an event is recorded, indicating the id of the event
     fn on_event_recorded(&self, id: String);
