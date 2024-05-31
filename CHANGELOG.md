@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...main)
+
+# v60.3.0 (2024-05-31)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.2.0...v60.3.0)
 
 * Android
   * Allow configuring `delayPingLifetimeIo` in Kotlin and auto-flush this data after 1000 writes.
