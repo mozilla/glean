@@ -877,4 +877,111 @@ class MetricsPingSchedulerTest {
             server.shutdown()
         }
     }
+
+    fun `smoke-test for delayPingLifetimeIo=true`() {
+        // Essentially a copy of the
+        // "Data recorded before Glean inits must not get into overdue pings" test.
+        //
+        // Setting `delayPingLifetimeIo = true` on init to ensure data is flushed.
+        // This should then all work as expected.
+
+        // Reset Glean and do not start it right away.
+        Glean.testDestroyGleanHandle()
+
+        // Let's create a fake time the metrics ping was sent: this is required for
+        // us to not send a 'metrics' ping the first time we init glean.
+        val fakeNowDoNotSend = Calendar.getInstance()
+        fakeNowDoNotSend.clear()
+        fakeNowDoNotSend.set(2015, 6, 11, 4, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNowDoNotSend.timeInMillis)
+
+        // Create a fake instance of the metrics ping scheduler just to set the last
+        // collection time.
+        val fakeMpsSetter = spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
+        fakeMpsSetter.updateSentDate(getISOTimeString(fakeNowDoNotSend, truncateTo = TimeUnit.DAY))
+
+        // Create a metric and set its value. We expect this to be sent in the ping that gets
+        // generated the SECOND time we start glean.
+        val expectedStringMetric = StringMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "expected_metric",
+                sendInPings = listOf("metrics"),
+            ),
+        )
+        val expectedValue = "must-exist-in-the-first-ping"
+
+        // Start the web-server that will receive the metrics ping.
+        val server = getMockWebServer()
+        val config = Configuration(
+            serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            delayPingLifetimeIo = true,
+        )
+
+        // Reset Glean and start it for the FIRST time, then record a value.
+        resetGlean(
+            context = context,
+            config = config,
+        )
+        expectedStringMetric.set(expectedValue)
+
+        // Destroy glean: it will retain the previously stored metric.
+        Glean.testDestroyGleanHandle()
+
+        // Create a metric and attempt to record data before Glean is initialized. This
+        // will be queued in the dispatcher.
+        val stringMetric = StringMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "canary_metric",
+                sendInPings = listOf("metrics"),
+            ),
+        )
+        val canaryValue = "must-not-be-in-the-first-ping"
+        stringMetric.set(canaryValue)
+
+        // Set the current system time to a known datetime: this should make the metrics ping
+        // overdue and trigger it at startup.
+        val fakeNowTriggerPing = Calendar.getInstance()
+        fakeNowTriggerPing.clear()
+        fakeNowTriggerPing.set(2015, 6, 12, 7, 0, 0)
+        SystemClock.setCurrentTimeMillis(fakeNowTriggerPing.timeInMillis)
+
+        try {
+            // Initialize Glean the SECOND time: it will send the expected string metric (stored
+            // from the previous run) but must not send the canary string, which would be sent
+            // next time the 'metrics' ping is collected after this one.
+            resetGlean(
+                context = context,
+                clearStores = false,
+                uploadEnabled = true,
+                config = config,
+            )
+
+            // Trigger worker task to upload the pings in the background.
+            triggerWorkManager(context)
+
+            // Wait for the metrics ping to be received.
+            val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
+            val docType = request.path!!.split("/")[3]
+            assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
+
+            val metricsJsonData = request.getPlainBody()
+
+            assertFalse(
+                "The canary metric must not be present in this ping",
+                metricsJsonData.contains("must-not-be-in-the-first-ping"),
+            )
+            assertTrue(
+                "The expected metric must be in this ping",
+                metricsJsonData.contains(expectedValue),
+            )
+        } finally {
+            server.shutdown()
+        }
+    }
 }
