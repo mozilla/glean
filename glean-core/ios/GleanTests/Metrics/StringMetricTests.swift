@@ -88,7 +88,7 @@ class StringMetricTests: XCTestCase {
             disabled: false
         ))
 
-        stringMetric.set(String(repeating: "0123456789", count: 11))
+        stringMetric.set(String(repeating: "0123456789", count: 26))
 
         XCTAssertEqual(1, stringMetric.testGetNumRecordedErrors(.invalidOverflow))
     }

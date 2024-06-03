@@ -124,7 +124,7 @@ class StringMetricTypeTest {
             ),
         )
 
-        stringMetric.set("0123456789".repeat(11))
+        stringMetric.set("0123456789".repeat(26))
 
         assertEquals(1, stringMetric.testGetNumRecordedErrors(ErrorType.INVALID_OVERFLOW))
     }
