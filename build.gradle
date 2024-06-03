@@ -38,6 +38,7 @@ buildscript {
 }
 
 plugins {
+    alias libs.plugins.dependency.analysis
     alias libs.plugins.detekt
 }
 
@@ -147,6 +148,22 @@ subprojects {
             maven {
                 name = "projectBuildDir"
                 url = "file://${project.buildDir}/maven"
+            }
+        }
+    }
+}
+
+dependencyAnalysis {
+    structure {
+        ignoreKtx(true) // Ignore Android KTX dependencies
+    }
+    issues {
+        all {
+            onAny {
+                // Fail the run if any issues are found (default = 'warn')
+                //severity('fail')
+                // Ignore warnings about kotlin-stdlib since we don't directly control its usage
+                exclude('org.jetbrains.kotlin:kotlin-stdlib')
             }
         }
     }
