@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...main)
 
 * Android
+  * Delay log init until Glean is getting initialized ([#2858](https://github.com/mozilla/glean/pull/2858))
   * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
   * Updated Kotlin to version 1.9.24 ([#2861](https://github.com/mozilla/glean/pull/2861))
 
