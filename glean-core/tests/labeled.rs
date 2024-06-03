@@ -162,7 +162,7 @@ fn can_record_error_for_submetric() {
     );
 
     let metric = labeled.get("label1");
-    metric.set_sync(&glean, "01234567890".repeat(20));
+    metric.set_sync(&glean, "01234567890".repeat(26));
 
     // Make sure that the errors have been recorded
     assert_eq!(

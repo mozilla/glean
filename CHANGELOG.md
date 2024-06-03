@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...main)
 
+* General
+  * Bump the string length limit to 255 characters ([#2857](https://github.com/mozilla/glean/pull/2857))
 * Android
   * Delay log init until Glean is getting initialized ([#2858](https://github.com/mozilla/glean/pull/2858))
   * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
