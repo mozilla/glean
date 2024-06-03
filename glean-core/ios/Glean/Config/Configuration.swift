@@ -28,7 +28,7 @@ public struct Configuration {
     ///   * dataPath an optional String that specifies where to store data locally on the device.
     ///   This should ONLY be used when setting up Glean on a non-main process.
     ///   * logLevel an optional log level that controls how verbose the internal logging is.
-    ///   * enableEventTimestamps (Experimental) whether to add a wallclock timestamp to all events
+    ///   * enableEventTimestamps whether to add a wallclock timestamp to all events
     ///   * experimentationId An experimentation identifier derived by the application
     ///   to be sent with all pings.
     ///   * enableInternalPings Whether to enable internal pings.
