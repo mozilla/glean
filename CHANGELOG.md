@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...main)
 
+Android
+  * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
+
 # v60.3.0 (2024-05-31)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.2.0...v60.3.0)
