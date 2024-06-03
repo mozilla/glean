@@ -129,7 +129,7 @@ pub struct InternalConfiguration {
     pub log_level: Option<LevelFilter>,
     /// The rate at which pings may be uploaded before they are throttled.
     pub rate_limit: Option<PingRateLimit>,
-    /// (Experimental) Whether to add a wallclock timestamp to all events.
+    /// Whether to add a wallclock timestamp to all events.
     pub enable_event_timestamps: bool,
     /// An experimentation identifier derived by the application to be sent with all pings, it should
     /// be noted that this has an underlying StringMetric and so should conform to the limitations that

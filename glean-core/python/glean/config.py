@@ -48,8 +48,8 @@ class Configuration:
                 implementation. Defaults to `glean.net.HttpClientUploader`.
             allow_multiprocessing (bool): When True (default), use a subprocess
                 to offload some work (such as ping uploading).
-            enable_event_timestamps (bool): (Experimental) Whether to add a
-                wallclock timestamp to all events. Default: `True`.
+            enable_event_timestamps (bool): Whether to add a wallclock timestamp
+                to all events. Default: `True`.
             experimentation_id (string): An experimentation identifier derived
                 by the application to be sent with all pings. Default: None.
             enable_internal_pings (bool): Whether to enable internal pings. Default: `True`.
@@ -98,7 +98,7 @@ class Configuration:
 
     @property
     def enable_event_timestamps(self) -> bool:
-        """(Experimental) Whether to add a wallclock timestamp to all events."""
+        """Whether to add a wallclock timestamp to all events."""
         return self._enable_event_timestamps
 
     @property
