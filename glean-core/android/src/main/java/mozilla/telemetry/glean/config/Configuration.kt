@@ -39,7 +39,7 @@ data class Configuration @JvmOverloads constructor(
     val enableEventTimestamps: Boolean = true,
     val experimentationId: String? = null,
     val enableInternalPings: Boolean = true,
-    val delayPingLifetimeIo: Boolean = false,
+    val delayPingLifetimeIo: Boolean = true,
 ) {
     companion object {
         /**

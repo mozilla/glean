@@ -8,6 +8,7 @@
   * Delay log init until Glean is getting initialized ([#2858](https://github.com/mozilla/glean/pull/2858))
   * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
   * Updated Kotlin to version 1.9.24 ([#2861](https://github.com/mozilla/glean/pull/2861))
+  * Default-enable `delayPingLifetimeIo` ([#2863](https://github.com/mozilla/glean/issues/2863))
 
 # v60.3.0 (2024-05-31)
 
