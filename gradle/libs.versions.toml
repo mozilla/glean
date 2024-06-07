@@ -8,9 +8,9 @@
 android-plugin = "8.0.2"
 
 # Kotlin
-kotlin-compiler = "1.9.24"
+kotlin-compiler = "2.0.0"
 kotlinx-coroutines = "1.8.0"
-kotlinx-serialization = "1.6.3"
+kotlinx-serialization = "1.7.0"
 
 # Mozilla
 rust-android-gradle = "0.9.4"
