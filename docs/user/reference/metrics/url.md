@@ -355,7 +355,3 @@ N/A
 ## Data questions
 
 * What is the base URL used to build the search query for the search engine?
-
-## Reference
-
-* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_url.default.html)

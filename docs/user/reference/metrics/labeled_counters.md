@@ -334,4 +334,3 @@ accessibility:
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetricType`](../../../swift/Classes/CounterMetricType.html)
 * Python API docs: [`LabeledCounterMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledCounterMetricType), [`CounterMetricType`](../../../python/glean/metrics/index.html#glean.metrics.CounterMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CounterMetricType`](../../../docs/glean/private/struct.CounterMetric.html)
-* JavaScript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`CounterMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_counter.default.html)

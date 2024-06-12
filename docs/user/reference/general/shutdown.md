@@ -74,4 +74,3 @@ is explicitly using the `webext` target.
 ## Reference
 
 * [Rust API docs](../../../docs/glean/fn.shutdown.html)
-* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_glean.default.html#shutdown)
