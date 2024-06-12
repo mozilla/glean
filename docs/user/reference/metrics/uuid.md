@@ -422,4 +422,3 @@ N/A
 * [Swift API docs](../../../swift/Classes/UuidMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.UuidMetricType)
 * [Rust API docs](../../../docs/glean/private/uuid/struct.UuidMetric.html)
-* [JavaScript API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_uuid.default.html#set)

@@ -307,4 +307,3 @@ login:
 * Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetricType`](../../../swift/Classes/StringMetricType.html)
 * Python API docs: [`LabeledStringMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledStringMetricType), [`StringMetricType`](../../../python/glean/metrics/index.html#glean.metrics.StringMetricType)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`StringMetricType`](../../../docs/glean/private/struct.StringMetric.html)
-* JavaScript API docs: [`LabeledMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_labeled.default.html), [`StringMetricType`](https://mozilla.github.io/glean.js/classes/core_metrics_types_string.default.html)
