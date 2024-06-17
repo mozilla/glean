@@ -7,9 +7,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: miniz_oxide</name>
     <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
   </license>  <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -87,9 +84,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: askama_escape</name>
     <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: bitflags</name>
-    <url>https://github.com/bitflags/bitflags</url>
   </license>  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
@@ -222,9 +216,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
-  </license>  <license>
-    <name>Apache License 2.0: lmdb-rkv-sys</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
   </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>

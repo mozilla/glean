@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.2.0...main)
 
+* General
+  * **BREAKING**: Remove LMDB-to-safe-mode migration.
+    Safe-mode became the default in Glean v51. ([#TODO]())
+
 # v61.2.0 (2024-10-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.1.0...v61.2.0)
