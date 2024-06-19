@@ -10,7 +10,7 @@ use std::io;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::RwLock;
 
@@ -187,7 +187,7 @@ use crate::Result;
 /// before data is flushed to disk.
 ///
 /// Only considered if `delay_ping_lifetime_io` is set to `true`.
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
 const PING_LIFETIME_THRESHOLD: usize = 1000;
 
 pub struct Database {
@@ -212,7 +212,7 @@ pub struct Database {
     /// A ping-lifetime flush is automatically done after `PING_LIFETIME_THRESHOLD` writes.
     ///
     /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
-    #[cfg(target_os = "android")]
+    #[cfg(any(target_os = "android", feature = "auto_flush"))]
     ping_lifetime_count: AtomicUsize,
 
     /// Initial file size when opening the database.
@@ -302,7 +302,7 @@ impl Database {
             ping_store,
             application_store,
             ping_lifetime_data,
-            #[cfg(target_os = "android")]
+            #[cfg(any(target_os = "android", feature = "auto_flush"))]
             ping_lifetime_count: AtomicUsize::new(0),
             file_size,
             rkv_load_state,
@@ -851,7 +851,7 @@ impl Database {
                 .expect("Can't read ping lifetime data");
 
             // We can reset the write-counter. Current data has been persisted.
-            #[cfg(target_os = "android")]
+            #[cfg(any(target_os = "android", feature = "auto_flush"))]
             self.ping_lifetime_count.store(0, Ordering::Release);
 
             self.write_with_store(Lifetime::Ping, |mut writer, store| {
@@ -874,7 +874,7 @@ impl Database {
         &self,
         data: &BTreeMap<String, Metric>,
     ) -> Result<()> {
-        #[cfg(target_os = "android")]
+        #[cfg(any(target_os = "android", feature = "auto_flush"))]
         {
             self.ping_lifetime_count.fetch_add(1, Ordering::Release);
 
@@ -884,7 +884,7 @@ impl Database {
             }
 
             self.ping_lifetime_count.store(0, Ordering::Release);
-            let write_result = self.write_with_store(Lifetime::Ping, |mut writer, store| {
+            self.write_with_store(Lifetime::Ping, |mut writer, store| {
                 for (key, value) in data.iter() {
                     let encoded =
                         bincode::serialize(&value).expect("IMPOSSIBLE: Serializing metric failed");
@@ -895,11 +895,9 @@ impl Database {
                 }
                 writer.commit()?;
                 Ok(())
-            });
-
-            return write_result;
+            })
         }
-        #[cfg(not(target_os = "android"))]
+        #[cfg(not(any(target_os = "android", feature = "auto_flush")))]
         {
             _ = data; // suppress unused_variables warning.
             Ok(())
