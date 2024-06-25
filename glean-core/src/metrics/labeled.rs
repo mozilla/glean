@@ -8,11 +8,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
-use crate::histogram::HistogramType;
-use crate::metrics::{
-    BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
-    Metric, MetricType, StringMetric, TimeUnit, TimingDistributionMetric,
-};
+use crate::metrics::{BooleanMetric, CounterMetric, Metric, MetricType, StringMetric};
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
@@ -27,46 +23,6 @@ pub type LabeledBoolean = LabeledMetric<BooleanMetric>;
 
 /// A labeled string.
 pub type LabeledString = LabeledMetric<StringMetric>;
-
-/// A labeled custom_distribution.
-pub type LabeledCustomDistribution = LabeledMetric<CustomDistributionMetric>;
-
-/// A labeled memory_distribution.
-pub type LabeledMemoryDistribution = LabeledMetric<MemoryDistributionMetric>;
-
-/// A labeled timing_distribution.
-pub type LabeledTimingDistribution = LabeledMetric<TimingDistributionMetric>;
-
-/// The metric data needed to construct inner submetrics.
-///
-/// Different Labeled metrics require different amounts and kinds of information to
-/// be constructed.
-pub enum LabeledMetricData {
-    /// The common case: just a CMD.
-    #[allow(missing_docs)]
-    Common { cmd: CommonMetricData },
-    /// The custom_distribution-specific case.
-    #[allow(missing_docs)]
-    CustomDistribution {
-        cmd: CommonMetricData,
-        range_min: i64,
-        range_max: i64,
-        bucket_count: i64,
-        histogram_type: HistogramType,
-    },
-    /// The memory_distribution-specific case.
-    #[allow(missing_docs)]
-    MemoryDistribution {
-        cmd: CommonMetricData,
-        unit: MemoryUnit,
-    },
-    /// The timing_distribution-specific case.
-    #[allow(missing_docs)]
-    TimingDistribution {
-        cmd: CommonMetricData,
-        unit: TimeUnit,
-    },
-}
 
 /// A labeled metric.
 ///
@@ -87,10 +43,8 @@ pub struct LabeledMetric<T> {
 ///
 /// We wrap it in a private module that is inaccessible outside of this module.
 mod private {
-    use super::LabeledMetricData;
-    use crate::metrics::{
-        BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric,
-        StringMetric, TimingDistributionMetric,
+    use crate::{
+        metrics::BooleanMetric, metrics::CounterMetric, metrics::StringMetric, CommonMetricData,
     };
 
     /// The sealed labeled trait.
@@ -100,66 +54,24 @@ mod private {
     /// `Labeled<T>` trait.
     pub trait Sealed {
         /// Create a new `glean_core` metric from the metadata.
-        fn new_inner(meta: LabeledMetricData) -> Self;
+        fn new_inner(meta: crate::CommonMetricData) -> Self;
     }
 
     impl Sealed for CounterMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::Common { cmd } => Self::new(cmd),
-                _ => panic!("Incorrect construction of Labeled<CounterMetric>"),
-            }
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
         }
     }
 
     impl Sealed for BooleanMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::Common { cmd } => Self::new(cmd),
-                _ => panic!("Incorrect construction of Labeled<BooleanMetric>"),
-            }
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
         }
     }
 
     impl Sealed for StringMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::Common { cmd } => Self::new(cmd),
-                _ => panic!("Incorrect construction of Labeled<StringMetric>"),
-            }
-        }
-    }
-
-    impl Sealed for CustomDistributionMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::CustomDistribution {
-                    cmd,
-                    range_min,
-                    range_max,
-                    bucket_count,
-                    histogram_type,
-                } => Self::new(cmd, range_min, range_max, bucket_count, histogram_type),
-                _ => panic!("Incorrect construction of Labeled<CustomDistributionMetric>"),
-            }
-        }
-    }
-
-    impl Sealed for MemoryDistributionMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::MemoryDistribution { cmd, unit } => Self::new(cmd, unit),
-                _ => panic!("Incorrect construction of Labeled<MemoryDistributionMetric>"),
-            }
-        }
-    }
-
-    impl Sealed for TimingDistributionMetric {
-        fn new_inner(meta: LabeledMetricData) -> Self {
-            match meta {
-                LabeledMetricData::TimingDistribution { cmd, unit } => Self::new(cmd, unit),
-                _ => panic!("Incorrect construction of Labeled<TimingDistributionMetric>"),
-            }
+        fn new_inner(meta: CommonMetricData) -> Self {
+            Self::new(meta)
         }
     }
 }
@@ -167,7 +79,7 @@ mod private {
 /// Trait for metrics that can be nested inside a labeled metric.
 pub trait AllowLabeled: MetricType {
     /// Create a new labeled metric.
-    fn new_labeled(meta: LabeledMetricData) -> Self;
+    fn new_labeled(meta: CommonMetricData) -> Self;
 }
 
 // Implement the trait for everything we marked as allowed.
@@ -176,7 +88,7 @@ where
     T: MetricType,
     T: private::Sealed,
 {
-    fn new_labeled(meta: LabeledMetricData) -> Self {
+    fn new_labeled(meta: CommonMetricData) -> Self {
         T::new_inner(meta)
     }
 }
@@ -188,10 +100,7 @@ where
     /// Creates a new labeled metric from the given metric instance and optional list of labels.
     ///
     /// See [`get`](LabeledMetric::get) for information on how static or dynamic labels are handled.
-    pub fn new(
-        meta: LabeledMetricData,
-        labels: Option<Vec<Cow<'static, str>>>,
-    ) -> LabeledMetric<T> {
+    pub fn new(meta: CommonMetricData, labels: Option<Vec<Cow<'static, str>>>) -> LabeledMetric<T> {
         let submetric = T::new_labeled(meta);
         LabeledMetric::new_inner(submetric, labels)
     }

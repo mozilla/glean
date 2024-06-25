@@ -4,7 +4,7 @@
 
 use std::borrow::Cow;
 
-use super::{metrics::*, CommonMetricData, LabeledMetricData, Lifetime};
+use super::{metrics::*, CommonMetricData, Lifetime};
 
 #[derive(Debug)]
 pub struct CoreMetrics {
@@ -82,15 +82,13 @@ impl AdditionalMetrics {
             }),
 
             pings_submitted: LabeledMetric::<CounterMetric>::new(
-                LabeledMetricData::Common {
-                    cmd: CommonMetricData {
-                        name: "pings_submitted".into(),
-                        category: "glean.validation".into(),
-                        send_in_pings: vec!["metrics".into(), "baseline".into()],
-                        lifetime: Lifetime::Ping,
-                        disabled: false,
-                        dynamic_label: None,
-                    },
+                CommonMetricData {
+                    name: "pings_submitted".into(),
+                    category: "glean.validation".into(),
+                    send_in_pings: vec!["metrics".into(), "baseline".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
                 },
                 None,
             ),
@@ -156,15 +154,13 @@ impl UploadMetrics {
     pub fn new() -> UploadMetrics {
         UploadMetrics {
             ping_upload_failure: LabeledMetric::<CounterMetric>::new(
-                LabeledMetricData::Common {
-                    cmd: CommonMetricData {
-                        name: "ping_upload_failure".into(),
-                        category: "glean.upload".into(),
-                        send_in_pings: vec!["metrics".into()],
-                        lifetime: Lifetime::Ping,
-                        disabled: false,
-                        dynamic_label: None,
-                    },
+                CommonMetricData {
+                    name: "ping_upload_failure".into(),
+                    category: "glean.upload".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
                 },
                 Some(vec![
                     Cow::from("status_code_4xx"),
