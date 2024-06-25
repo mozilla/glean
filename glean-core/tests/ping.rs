@@ -9,6 +9,7 @@ use std::collections::HashMap;
 
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
+use glean_core::LabeledMetricData;
 use glean_core::Lifetime;
 
 #[test]
@@ -137,13 +138,15 @@ fn test_pings_submitted_metric() {
     // Reconstructed here so we can test it without reaching into the library
     // internals.
     let pings_submitted = LabeledCounter::new(
-        CommonMetricData {
-            name: "pings_submitted".into(),
-            category: "glean.validation".into(),
-            send_in_pings: vec!["metrics".into(), "baseline".into()],
-            lifetime: Lifetime::Ping,
-            disabled: false,
-            dynamic_label: None,
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "pings_submitted".into(),
+                category: "glean.validation".into(),
+                send_in_pings: vec!["metrics".into(), "baseline".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            },
         },
         None,
     );
