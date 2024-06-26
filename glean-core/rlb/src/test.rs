@@ -1457,8 +1457,9 @@ fn pings_ride_along_builtin_pings() {
 
     let _t = new_glean(Some(cfg), true);
 
+    let reasons = vec!["active".to_string()];
     let _ride_along_ping =
-        private::PingType::new("ride-along", true, true, true, true, true, vec![], vec!["active".to_string()]);
+        private::PingType::new("ride-along", true, true, true, true, true, vec![], reasons);
 
     // Simulate becoming active.
     handle_client_active();
