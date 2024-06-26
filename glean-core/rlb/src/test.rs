@@ -1444,7 +1444,7 @@ fn pings_ride_along_builtin_pings() {
     }
 
     let _ride_along_ping =
-        private::PingType::new("ride-along", true, true, true, true, true, vec![], vec![]);
+        private::PingType::new("ride-along", true, true, true, true, true, vec![], vec!["active".to_string()]);
 
     // Create a custom configuration to use a fake uploader.
     let dir = tempfile::tempdir().unwrap();
