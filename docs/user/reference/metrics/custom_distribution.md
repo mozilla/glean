@@ -145,7 +145,7 @@ This API is not currently exposed in Firefox Desktop, see [Bug 1884183](https://
 
 ### `testGetValue`
 
-Gets the recorded value for a given counter metric.  
+Gets the recorded value for a given custom distribution metric.  
 Returns a struct with counts per buckets and total sum if data is stored.  
 Returns a language-specific empty/null value if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
