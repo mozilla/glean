@@ -87,6 +87,10 @@ commands:
           command: |
             glean-core/rlb/tests/test-thread-crashing.sh
       - run:
+          name: Run Rust RLB delayed ping data test
+          command: |
+            glean-core/rlb/tests/test-delayed-ping-data.sh
+      - run:
           name: Upload coverage report
           command: |
             pip3 install $(grep glean_parser pyproject.toml | tr -d ',"')
