@@ -66,7 +66,7 @@ commands:
           name: Test
           command: |
             export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
-            cargo test --verbose --jobs 6 -- --nocapture
+            cargo test --workspace --verbose --jobs 6 -- --nocapture
       - run:
           name: Install required Python dependencies
           command: |
