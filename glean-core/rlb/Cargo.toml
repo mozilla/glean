@@ -43,3 +43,7 @@ tempfile = "3.1.0"
 [features]
 preinit_million_queue = ["glean-core/preinit_million_queue"]
 auto_flush = ["glean-core/auto_flush"]
+
+[[example]]
+name = "ping-lifetime-flush"
+required-features = ["auto_flush"]
