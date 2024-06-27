@@ -112,6 +112,7 @@ class SampleApplication : Application() {
             // Here, `settings()` is a method to get user preferences, specific to
             // your application and not part of the Glean API.
             uploadEnabled = settings().isTelemetryEnabled,
+            configuration = Configuration(),
             buildInfo = GleanBuildInfo.buildInfo
         )
     }
@@ -179,6 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // Here, `Settings` is a method to get user preferences specific to
             // your application, and not part of the Glean API.
             uploadEnabled = Settings.isTelemetryEnabled,
+            configuration = Configuration(),
             buildInfo = GleanMetrics.GleanBuild.info
         )
     }
@@ -202,7 +204,7 @@ The main control for the Glean Python SDK is on the `glean.Glean` singleton.
 
 
 ```python
-from glean import Glean
+from glean import Glean, Configuration
 
 Glean.initialize(
     application_id="my-app-id",
@@ -210,6 +212,7 @@ Glean.initialize(
     # Here, `is_telemetry_enabled` is a method to get user preferences specific to
     # your application, and not part of the Glean API.
     upload_enabled=is_telemetry_enabled(),
+    configuration=Configuration(),
 )
 ```
 
