@@ -70,8 +70,11 @@ Check the respective SDK documentation for details.
 | `maxEvents` | Glean.js: 1. <br> Other SDKs: 500. | The maximum number of events the Glean storage will hold on to before submitting the 'events' ping. Refer to the [`events` ping documentation](../../user/pings/events.md) for more information on its scheduling. |
 | `httpUploader` | - | A custom HTTP uploader instance, that will overwrite Glean's provided uploader. Useful for users that wish to use specific uploader implementations. See [Custom Uploaders](#custom-uploaders) for more information on how and when the use this feature. |
 | `logLevel` | - | The level for how verbose the internal logging is. The level filter options in order from least to most verbose are: `Off`, `Error`, `Warn`, `Info`, `Debug`, `Trace`. See the [`log` crate docs](https://docs.rs/log/latest/log/) for more information. |
+| `enableEventTimestamps` | `true` | Whether to add a wall clock timestamp to all events. |
 | `rateLimit` | 15 pings per 60s interval | Specifies the maximum number of pings that can be uploaded per interval of a specified number of seconds. |
 | `experimentationId` | - | Optional. An identifier derived by the application to be sent in all pings for the purpose of experimentation. See the experiments API documentation for more information. |
+| `enableInternalPings` | `true` | Whether to enable the internal "baseline", "events", and "metrics" pings. |
+| `delayPingLifetimeIo` | `false` | Whether Glean should delay persistence of data from metrics with `ping` lifetime. On Android data is automatically persisted every 1000 writes and on backgrounding when enabled. |
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 
