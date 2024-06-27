@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
+use std::cell::Cell;
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::fs;
@@ -12,6 +14,10 @@ use std::str;
 #[cfg(any(target_os = "android", feature = "auto_flush"))]
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::RwLock;
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
+use std::time::Duration;
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
+use std::time::Instant;
 
 use crate::ErrorKind;
 
@@ -176,6 +182,10 @@ use crate::Result;
 #[cfg(any(target_os = "android", feature = "auto_flush"))]
 const PING_LIFETIME_THRESHOLD: usize = 1000;
 
+// Save atleast every 2 seconds.
+#[cfg(any(target_os = "android", feature = "auto_flush"))]
+const PING_LIFETIME_MAX_TIME: Duration = Duration::from_millis(2000);
+
 pub struct Database {
     /// Handle to the database environment.
     rkv: Rkv,
@@ -200,6 +210,15 @@ pub struct Database {
     /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
     #[cfg(any(target_os = "android", feature = "auto_flush"))]
     ping_lifetime_count: AtomicUsize,
+
+    /// The last time the `lifetime=ping` data was flushed to disk.
+    ///
+    /// Data is flushed to disk automatically when the last flush was more than
+    /// `PING_LIFETIME_MAX_TIME` ago.
+    ///
+    /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
+    #[cfg(any(target_os = "android", feature = "auto_flush"))]
+    ping_lifetime_store_ts: Cell<Instant>,
 
     /// Initial file size when opening the database.
     file_size: Option<NonZeroU64>,
@@ -274,6 +293,9 @@ impl Database {
             None
         };
 
+        #[cfg(any(target_os = "android", feature = "auto_flush"))]
+        let now = Instant::now();
+
         let db = Self {
             rkv,
             user_store,
@@ -282,6 +304,8 @@ impl Database {
             ping_lifetime_data,
             #[cfg(any(target_os = "android", feature = "auto_flush"))]
             ping_lifetime_count: AtomicUsize::new(0),
+            #[cfg(any(target_os = "android", feature = "auto_flush"))]
+            ping_lifetime_store_ts: Cell::new(now),
             file_size,
             rkv_load_state,
         };
@@ -856,11 +880,26 @@ impl Database {
             self.ping_lifetime_count.fetch_add(1, Ordering::Release);
 
             let write_count = self.ping_lifetime_count.load(Ordering::Relaxed);
-            if write_count < PING_LIFETIME_THRESHOLD {
+            let last_write = self.ping_lifetime_store_ts.get();
+            let elapsed = last_write.elapsed();
+
+            if write_count < PING_LIFETIME_THRESHOLD && elapsed < PING_LIFETIME_MAX_TIME {
+                log::trace!("Not flushing. write_count={write_count}, elapsed={elapsed:?}");
                 return Ok(());
             }
 
+            if write_count >= PING_LIFETIME_THRESHOLD {
+                log::debug!(
+                    "Flushing database due to threshold of {PING_LIFETIME_THRESHOLD} reached."
+                )
+            } else if elapsed >= PING_LIFETIME_MAX_TIME {
+                log::debug!(
+                    "Flushing database due to last write more than {PING_LIFETIME_MAX_TIME:?} ago"
+                );
+            }
+
             self.ping_lifetime_count.store(0, Ordering::Release);
+            self.ping_lifetime_store_ts.replace(Instant::now());
             self.write_with_store(Lifetime::Ping, |mut writer, store| {
                 for (key, value) in data.iter() {
                     let encoded =
