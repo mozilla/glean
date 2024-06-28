@@ -182,7 +182,7 @@ use crate::Result;
 #[cfg(any(target_os = "android", feature = "auto_flush"))]
 const PING_LIFETIME_THRESHOLD: usize = 1000;
 
-// Save atleast every 2 seconds.
+// Save at least every 2 seconds.
 #[cfg(any(target_os = "android", feature = "auto_flush"))]
 const PING_LIFETIME_MAX_TIME: Duration = Duration::from_millis(2000);
 

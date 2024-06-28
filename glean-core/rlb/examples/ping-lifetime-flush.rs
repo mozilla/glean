@@ -104,7 +104,7 @@ fn main() {
     glean::initialize(cfg, client_info);
 
     // Wait for init to finish,
-    // otherwise we might be to quick with calling `shutdown`.
+    // otherwise we might be too quick with calling `shutdown`.
     let _ = glean_metrics::sample_counter.test_get_value(None);
 
     match &*state {
