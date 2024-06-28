@@ -8,7 +8,12 @@
 import groovy.json.JsonOutput
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
+
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
+}
 
 android {
     namespace "mozilla.telemetry.glean_native"

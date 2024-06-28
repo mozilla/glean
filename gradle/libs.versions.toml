@@ -5,7 +5,7 @@
 
 [versions]
 # AGP
-android-plugin = "8.0.2"
+android-plugin = "8.5.0-alpha08"
 
 # Kotlin
 kotlin-compiler = "1.9.24"
