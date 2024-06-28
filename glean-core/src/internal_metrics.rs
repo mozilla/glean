@@ -264,6 +264,9 @@ pub struct DatabaseMetrics {
 
     /// RKV's load result, indicating success or relaying the detected error.
     pub rkv_load_error: StringMetric,
+
+    /// The time it takes for a write-commit for the Glean database.
+    pub write_time: TimingDistributionMetric,
 }
 
 impl DatabaseMetrics {
@@ -289,6 +292,18 @@ impl DatabaseMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+
+            write_time: TimingDistributionMetric::new(
+                CommonMetricData {
+                    name: "write_time".into(),
+                    category: "glean.database".into(),
+                    send_in_pings: vec!["metrics".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    dynamic_label: None,
+                },
+                TimeUnit::Microsecond,
+            ),
         }
     }
 }

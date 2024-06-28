@@ -279,3 +279,32 @@ fn test_scheduled_pings_are_sent() {
     assert!(trigger_ping.submit_sync(&glean, None));
     assert_eq!(2, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
+
+#[test]
+fn database_write_timings_get_recorded() {
+    let (mut glean, _t) = new_glean(None);
+
+    let metrics_ping = PingType::new("metrics", true, false, true, true, true, vec![], vec![]);
+    glean.register_ping_type(&metrics_ping);
+
+    // We need to store a metric to record something.
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec!["metrics".into()],
+        ..Default::default()
+    });
+    counter.add_sync(&glean, 1);
+
+    assert!(metrics_ping.submit_sync(&glean, None));
+
+    let mut queued_pings = get_queued_pings(glean.get_data_path()).unwrap();
+    assert_eq!(1, queued_pings.len(), "missing metrics ping");
+
+    let json = queued_pings.pop().unwrap().1;
+    let write_time = &json["metrics"]["timing_distribution"]["glean.database.write_time"];
+    assert!(
+        0 < write_time["sum"].as_i64().unwrap(),
+        "writing should take some time"
+    );
+}
