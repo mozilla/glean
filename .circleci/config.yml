@@ -91,6 +91,10 @@ commands:
           command: |
             glean-core/rlb/tests/test-delayed-ping-data.sh
       - run:
+          name: Run Rust RLB flush test
+          command: |
+            glean-core/rlb/tests/test-ping-lifetime-flush.sh
+      - run:
           name: Upload coverage report
           command: |
             pip3 install $(grep glean_parser pyproject.toml | tr -d ',"')
