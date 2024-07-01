@@ -63,3 +63,5 @@ uniffi = { version = "0.29.3", default-features = false, features = ["build"] }
 [features]
 # Enable `env_logger`. Only works on non-Android non-iOS targets.
 enable_env_logger = ["env_logger"]
+# Enable gecko-specific APIs
+gecko = []

@@ -40,3 +40,6 @@ jsonschema-valid = "0.5.0"
 libc = "0.2"
 serde_json = "1.0.44"
 tempfile = "3.1.0"
+
+[features]
+gecko = ["glean-core/gecko"]
