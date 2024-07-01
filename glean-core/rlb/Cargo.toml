@@ -42,3 +42,6 @@ tempfile = "3.1.0"
 
 [[example]]
 name = "ping-lifetime-flush"
+
+[features]
+gecko = ["glean-core/gecko"]

@@ -197,6 +197,7 @@ fn start_scheduler(
     std::thread::Builder::new()
         .name("glean.mps".into())
         .spawn(move || {
+            crate::profiler::register_thread("glean.mps");
             let (cancelled_lock, condvar) = &*pair;
             let mut when = when;
             let mut now = now;
@@ -240,6 +241,7 @@ fn start_scheduler(
                 }
                 now = local_now_with_offset();
             }
+            crate::profiler::unregister_thread();
         }).expect("Unable to spawn Metrics Ping Scheduler thread.")
 }
 

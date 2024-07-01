@@ -108,6 +108,7 @@ impl UploadManager {
         let thread = thread::Builder::new()
             .name("glean.upload".into())
             .spawn(move || {
+                glean_core::profiler::register_thread("glean.upload");
                 log::trace!("Started glean.upload thread");
                 loop {
                     let incoming_task = glean_core::glean_get_upload_task();
@@ -159,6 +160,7 @@ impl UploadManager {
                     Ordering::SeqCst,
                     Ordering::SeqCst,
                 );
+                glean_core::profiler::unregister_thread();
             });
 
         match thread {

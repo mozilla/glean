@@ -258,6 +258,7 @@ impl PingUploadManager {
         thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
             .spawn(move || {
+                crate::profiler::register_thread("glean.ping_directory_manager.process_dir");
                 {
                     // Be sure to drop local_cached_pings lock before triggering upload.
                     let mut local_cached_pings = local_cached_pings
@@ -279,6 +280,8 @@ impl PingUploadManager {
                         }
                     });
                 }
+
+                crate::profiler::unregister_thread();
             })
             .expect("Unable to spawn thread to process pings directories.")
     }

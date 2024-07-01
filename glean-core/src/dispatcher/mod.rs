@@ -268,6 +268,7 @@ impl Dispatcher {
         let worker = thread::Builder::new()
             .name("glean.dispatcher".into())
             .spawn(move || {
+                crate::profiler::register_thread("glean.dispatcher");
                 match block_receiver.recv() {
                     Err(_) => {
                         // The other side was disconnected.
@@ -323,6 +324,7 @@ impl Dispatcher {
                         }
                     }
                 }
+                crate::profiler::unregister_thread();
             })
             .expect("Failed to spawn Glean's dispatcher thread");
 

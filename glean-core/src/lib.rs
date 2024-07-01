@@ -52,6 +52,8 @@ mod system;
 pub mod traits;
 pub mod upload;
 mod util;
+#[doc(hidden)]
+pub mod profiler;
 
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 mod fd_logger;
@@ -376,6 +378,7 @@ fn initialize_inner(
     let init_handle = std::thread::Builder::new()
         .name("glean.init".into())
         .spawn(move || {
+            profiler::register_thread("glean.init");
             let upload_enabled = cfg.upload_enabled;
             let trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
 
@@ -537,6 +540,7 @@ fn initialize_inner(
 
             let state = global_state().lock().unwrap();
             state.callbacks.initialize_finished();
+            profiler::unregister_thread();
         })
         .expect("Failed to spawn Glean's init thread");
 
@@ -577,6 +581,7 @@ fn uploader_shutdown() {
     let handle = thread::Builder::new()
         .name("glean.shutdown".to_string())
         .spawn(move || {
+            profiler::register_thread("glean.shtudown");
             let state = global_state().lock().unwrap();
             if let Err(e) = state.callbacks.shutdown() {
                 log::error!("Shutdown callback failed: {e:?}");
@@ -584,6 +589,7 @@ fn uploader_shutdown() {
 
             // Best-effort sending. The other side might have timed out already.
             let _ = tx.send(()).ok();
+            profiler::unregister_thread();
         })
         .expect("Unable to spawn thread to wait on shutdown");
 
