@@ -28,7 +28,7 @@ use std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
     },
-    thread::{self, JoinHandle},
+    thread::JoinHandle,
     time::Duration,
 };
 
@@ -265,66 +265,62 @@ impl Dispatcher {
         let queue_preinit = Arc::new(AtomicBool::new(true));
         let overflow_count = Arc::new(AtomicUsize::new(0));
 
-        let worker = thread::Builder::new()
-            .name("glean.dispatcher".into())
-            .spawn(move || {
-                match block_receiver.recv() {
+        let worker = crate::thread::spawn("glean.dispatcher", move || {
+            match block_receiver.recv() {
+                Err(_) => {
+                    // The other side was disconnected.
+                    // There's nothing the worker thread can do.
+                    log::error!("The task producer was disconnected. Worker thread will exit.");
+                    return;
+                }
+                Ok(Blocked::Shutdown) => {
+                    // The other side wants us to stop immediately
+                    return;
+                }
+                Ok(Blocked::Continue) => {
+                    // Queue is unblocked, processing continues as normal.
+                }
+            }
+
+            let mut receiver = preinit_receiver;
+            loop {
+                use Command::*;
+
+                match receiver.recv() {
+                    Ok(Shutdown) => {
+                        break;
+                    }
+
+                    Ok(Task(f)) => {
+                        (f)();
+                    }
+
+                    Ok(Swap(swap_done)) => {
+                        // A swap should only occur exactly once.
+                        // This is upheld by `flush_init`, which errors out if the preinit buffer
+                        // was already flushed.
+
+                        // We swap the channels we listen on for new tasks.
+                        // The next iteration will continue with the unbounded queue.
+                        mem::swap(&mut receiver, &mut unbounded_receiver);
+
+                        // The swap command MUST be the last one received on the preinit buffer,
+                        // so by the time we run this we know all preinit tasks were processed.
+                        // We can notify the other side.
+                        swap_done
+                            .send(())
+                            .expect("The caller of `flush_init` has gone missing");
+                    }
+
+                    // Other side was disconnected.
                     Err(_) => {
-                        // The other side was disconnected.
-                        // There's nothing the worker thread can do.
                         log::error!("The task producer was disconnected. Worker thread will exit.");
                         return;
                     }
-                    Ok(Blocked::Shutdown) => {
-                        // The other side wants us to stop immediately
-                        return;
-                    }
-                    Ok(Blocked::Continue) => {
-                        // Queue is unblocked, processing continues as normal.
-                    }
                 }
-
-                let mut receiver = preinit_receiver;
-                loop {
-                    use Command::*;
-
-                    match receiver.recv() {
-                        Ok(Shutdown) => {
-                            break;
-                        }
-
-                        Ok(Task(f)) => {
-                            (f)();
-                        }
-
-                        Ok(Swap(swap_done)) => {
-                            // A swap should only occur exactly once.
-                            // This is upheld by `flush_init`, which errors out if the preinit buffer
-                            // was already flushed.
-
-                            // We swap the channels we listen on for new tasks.
-                            // The next iteration will continue with the unbounded queue.
-                            mem::swap(&mut receiver, &mut unbounded_receiver);
-
-                            // The swap command MUST be the last one received on the preinit buffer,
-                            // so by the time we run this we know all preinit tasks were processed.
-                            // We can notify the other side.
-                            swap_done
-                                .send(())
-                                .expect("The caller of `flush_init` has gone missing");
-                        }
-
-                        // Other side was disconnected.
-                        Err(_) => {
-                            log::error!(
-                                "The task producer was disconnected. Worker thread will exit."
-                            );
-                            return;
-                        }
-                    }
-                }
-            })
-            .expect("Failed to spawn Glean's dispatcher thread");
+            }
+        })
+        .expect("Failed to spawn Glean's dispatcher thread");
 
         let guard = DispatchGuard {
             queue_preinit,
@@ -362,6 +358,7 @@ mod test {
     use super::*;
     use std::sync::atomic::AtomicU8;
     use std::sync::Mutex;
+    use std::thread;
 
     fn enable_test_logging() {
         // When testing we want all logs to go to stdout/stderr by default,
