@@ -756,6 +756,12 @@ fn was_initialize_called() -> bool {
     INITIALIZE_CALLED.load(Ordering::SeqCst)
 }
 
+#[ctor::ctor]
+fn enable_glean_logging_at_load() {
+    glean_enable_logging();
+    log::info!("Logging enabled.");
+}
+
 /// Initialize the logging system based on the target platform. This ensures
 /// that logging is shown when executing the Glean SDK unit tests.
 #[no_mangle]
