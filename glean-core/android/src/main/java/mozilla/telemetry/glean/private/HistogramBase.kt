@@ -22,3 +22,9 @@ interface HistogramBase {
      */
     fun accumulateSamples(samples: List<Long>)
 }
+
+// glean_parser template currently expects `HistogramMetricBase` as the name
+// and since this alias was defined in `service-glean` in android-components,
+// we need to keep the alias until the parser template is updated also.
+// See Bug 1906941 for more information.
+typealias HistogramMetricBase = mozilla.telemetry.glean.private.HistogramBase
