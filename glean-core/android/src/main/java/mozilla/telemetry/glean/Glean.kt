@@ -540,7 +540,7 @@ open class GleanInternalAPI internal constructor() {
      * API synchronously.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun enableTestingMode() {
+    fun enableTestingMode() {
         this.setTestingMode(true)
     }
 
@@ -549,7 +549,7 @@ open class GleanInternalAPI internal constructor() {
      * This can be called by tests to change test mode on-the-fly.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun setTestingMode(enabled: Boolean) {
+    fun setTestingMode(enabled: Boolean) {
         this.testingMode = enabled
         gleanSetTestMode(enabled)
         Dispatchers.API.setTestingMode(enabled)
@@ -570,7 +570,7 @@ open class GleanInternalAPI internal constructor() {
      * @param uploadEnabled whether upload is enabled
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun resetGlean(
+    fun resetGlean(
         context: Context,
         config: Configuration,
         clearStores: Boolean,
@@ -626,7 +626,7 @@ open class GleanInternalAPI internal constructor() {
      * @param port the local address to send pings to
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testSetLocalEndpoint(port: Int) {
+    fun testSetLocalEndpoint(port: Int) {
         Glean.enableTestingMode()
 
         isSendingToTestEndpoint = true
@@ -644,7 +644,7 @@ open class GleanInternalAPI internal constructor() {
      * @param dataPath The path to the data folder. Must be set if `clearStores` is `true`.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    internal fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
+    fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
         // If it was initialized this also clears the directory
         gleanTestDestroyGlean(clearStores, dataPath)
 
