@@ -10,7 +10,7 @@ To build a Glean-using application in offline mode, you can either:
 
 ### Provide an externally-managed virtualenv
 
-Set `ext.gleanPythonEnvDir` to your existing virtualenv before applying the plugin, see [`gleanPythonEnvDir`](./android-build-configuration-options.md#gleanPythonEnvDir).
+Set `ext.gleanPythonEnvDir` to your existing virtualenv before applying the plugin, see [`gleanPythonEnvDir`](./android-build-configuration-options.md#gleanpythonenvdir).
 
 ### Provide a Python interpreter and the required wheels
 
