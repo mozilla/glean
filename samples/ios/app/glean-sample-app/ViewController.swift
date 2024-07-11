@@ -63,6 +63,11 @@ class ViewController: UIViewController {
         balloons.append(Party.BalloonsObjectItem(colour: "green"))
         Party.balloons.set(balloons)
 
+        var animals: Party.AnimalsObject = []
+        animals.append("Dog")
+        animals.append("Cat")
+        Party.animals.set(animals)
+
         // This is referencing the event ping named 'click' from the metrics.yaml file. In
         // order to illustrate adding extra information to the event, it is also adding to the
         // 'extras' field a dictionary of values.  Note that the dictionary keys must be
