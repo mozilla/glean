@@ -10,6 +10,7 @@
   * Updated Kotlin to version 1.9.24 ([#2861](https://github.com/mozilla/glean/pull/2861))
   * Default-enable `delayPingLifetimeIo` ([#2863](https://github.com/mozilla/glean/issues/2863))
   * Preparing Glean to be able to remove `service-glean` from Android Components ([#2891](https://github.com/mozilla/glean/pull/2891))
+  * Gradle Plugin: Support for using an external Python environment ([#2889](https://github.com/mozilla/glean/pull/2889))
 
 # v60.3.0 (2024-05-31)
 
