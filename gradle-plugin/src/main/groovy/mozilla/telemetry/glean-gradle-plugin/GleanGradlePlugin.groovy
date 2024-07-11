@@ -560,8 +560,11 @@ except:
         // builds.
         println("Requires glean_parser ${parserVersion}")
 
-        if (!project.ext.has("gleanPythonEnvDir")) {
-            File envDir = setupPythonEnvironmentTasks(project, parserVersion)
+        File envDir
+        if (project.ext.has("gleanPythonEnvDir")) {
+            envDir = new File(project.ext.gleanPythonEnvDir)
+        } else {
+            envDir = setupPythonEnvironmentTasks(project, parserVersion)
             project.ext.set("gleanPythonEnvDir", envDir)
         }
         // Also store in gleanCondaDir for backward compatibility reasons
@@ -580,9 +583,9 @@ except:
         }
 
         if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.all(setupTasks(project, project.ext.gleanPythonEnvDir, true, parserVersion))
+            project.android.applicationVariants.all(setupTasks(project, envDir, true, parserVersion))
         } else {
-            project.android.libraryVariants.all(setupTasks(project, project.ext.gleanPythonEnvDir, false, parserVersion))
+            project.android.libraryVariants.all(setupTasks(project, envDir, false, parserVersion))
         }
     }
 }
