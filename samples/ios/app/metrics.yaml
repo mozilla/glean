@@ -187,3 +187,21 @@ party:
             type: string
           diameter:
             type: number
+
+  animals:
+    type: object
+    description: >
+      Contains a list of party animals
+    notification_emails:
+      - CHANGE-ME@example.com
+    bugs:
+      - https://bugzilla.mozilla.org/TODO
+    data_reviews:
+      - http://example.com/reviews
+    data_sensitivity:
+      - technical
+    expires: never
+    structure:
+      type: array
+      items:
+        type: string
