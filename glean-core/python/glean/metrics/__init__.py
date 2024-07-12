@@ -9,6 +9,7 @@ This module contains all of the metric types.
 
 # Re-export utilities
 from .._uniffi import CommonMetricData
+from .._uniffi import LabeledMetricData
 from .._uniffi import Lifetime
 from .._uniffi import MemoryUnit
 from .._uniffi import TimerId
@@ -48,6 +49,7 @@ __all__ = [
     "EventMetricType",
     "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
+    "LabeledMetricData",
     "LabeledStringMetricType",
     "Lifetime",
     "MemoryDistributionMetricType",
