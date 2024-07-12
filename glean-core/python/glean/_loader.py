@@ -280,7 +280,12 @@ def _get_metric_objects(
         if "dynamic_label" not in args:
             args["dynamic_label"] = None
         meta_args, rest = _split_ctor_args(args)
-        glean_metric = metric_type(metrics.CommonMetricData(**meta_args), **rest)
+        if getattr(metric, "labeled", False):
+            glean_metric = metric_type(
+                metrics.LabeledMetricData.COMMON(metrics.CommonMetricData(**meta_args)), **rest
+            )
+        else:
+            glean_metric = metric_type(metrics.CommonMetricData(**meta_args), **rest)
 
     glean_metric.__doc__ = metric.description
 
