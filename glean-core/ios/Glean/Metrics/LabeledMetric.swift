@@ -46,11 +46,11 @@ public class LabeledMetricType<T> {
 
         switch subMetric {
         case is CounterMetricType:
-            self.inner = LabeledCounter(meta, labels)
+            self.inner = LabeledCounter(.common(cmd: meta), labels)
         case is BooleanMetricType:
-            self.inner = LabeledBoolean(meta, labels)
+            self.inner = LabeledBoolean(.common(cmd: meta), labels)
         case is StringMetricType:
-            self.inner = LabeledString(meta, labels)
+            self.inner = LabeledString(.common(cmd: meta), labels)
         default:
             throw "Can not create a labeled version of this metric type"
         }
