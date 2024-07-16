@@ -563,6 +563,7 @@ except:
         File envDir
         if (project.ext.has("gleanPythonEnvDir")) {
             envDir = new File(project.ext.gleanPythonEnvDir)
+            isOffline = true
         } else {
             envDir = setupPythonEnvironmentTasks(project, parserVersion)
             project.ext.set("gleanPythonEnvDir", envDir)
