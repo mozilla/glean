@@ -198,6 +198,10 @@ party:
             type: string
           diameter:
             type: number
+          labels:
+            type: array
+            items:
+              type: string
   animals:
     type: object
     description: >
