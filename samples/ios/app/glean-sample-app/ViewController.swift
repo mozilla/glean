@@ -59,7 +59,9 @@ class ViewController: UIViewController {
 
         // Record an object
         var balloons: Party.BalloonsObject = []
-        balloons.append(Party.BalloonsObjectItem(colour: "red", diameter: 5))
+        var labels: Party.BalloonsObjectItemLabels = []
+        labels.append("round")
+        balloons.append(Party.BalloonsObjectItem(colour: "red", diameter: 5, labels: labels))
         balloons.append(Party.BalloonsObjectItem(colour: "green"))
         Party.balloons.set(balloons)
 
