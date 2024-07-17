@@ -178,6 +178,8 @@ party:
     notification_emails:
       - CHANGE-ME@example.com
     expires: never
+    send_in_pings:
+      - sample
     structure:
       type: array
       items:
@@ -187,7 +189,10 @@ party:
             type: string
           diameter:
             type: number
-
+          labels:
+            type: array
+            items:
+              type: string
   animals:
     type: object
     description: >
@@ -201,6 +206,8 @@ party:
     data_sensitivity:
       - technical
     expires: never
+    send_in_pings:
+      - sample
     structure:
       type: array
       items:
