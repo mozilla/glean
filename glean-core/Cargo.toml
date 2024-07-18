@@ -64,5 +64,3 @@ uniffi = { version = "0.27.0", default-features = false, features = ["build"] }
 preinit_million_queue = []
 # Enable `env_logger`. Only works on non-Android non-iOS targets.
 enable_env_logger = ["env_logger"]
-# Automatic count/time-based flushing when delayPingLifetimeIo=true
-auto_flush = []
