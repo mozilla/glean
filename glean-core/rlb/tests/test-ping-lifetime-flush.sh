@@ -17,7 +17,7 @@ trap cleanup INT ABRT TERM EXIT
 tmp="${TMPDIR:-/tmp}"
 datapath=$(mktemp -d "${tmp}/glean_ping_lifetime_flush.XXXX")
 
-cmd="cargo run -p glean --example ping-lifetime-flush --features auto_flush -- $datapath"
+cmd="cargo run -p glean --example ping-lifetime-flush -- $datapath"
 
 # First run "crashes" -> no increment stored
 $cmd accumulate_one_and_pretend_crash
