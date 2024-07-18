@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.4.0...main)
 
+* General
+  * Make auto-flush behavior configurable and time-based ([#2871](https://github.com/mozilla/glean/pull/2871))
 * Android
   * Update to Gradle v8.9 ([#2909](https://github.com/mozilla/glean/pull/2909))
 

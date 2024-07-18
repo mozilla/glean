@@ -235,6 +235,8 @@ class Glean:
             experimentation_id=configuration.experimentation_id,
             enable_internal_pings=configuration.enable_internal_pings,
             ping_schedule={},
+            ping_lifetime_threshold=0,
+            ping_lifetime_max_time=0,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
