@@ -25,6 +25,8 @@ import mozilla.telemetry.glean.net.PingUploader
  *           to be sent with all pings.
  * @property enableInternalPings Whether to enable internal pings.
  * @property delayPingLifetimeIo Whether Glean should delay persistence of data from metrics with ping lifetime.
+ * @property pingLifetimeThreshold Write count threshold when to auto-flush. `0` disables it.
+ * @property pingLifetimeMaxTime After what time to auto-flush (in milliseconds). 0 disables it.
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -40,6 +42,8 @@ data class Configuration @JvmOverloads constructor(
     val experimentationId: String? = null,
     val enableInternalPings: Boolean = true,
     val delayPingLifetimeIo: Boolean = true,
+    val pingLifetimeThreshold: Int = 1000,
+    val pingLifetimeMaxTime: Int = 0,
 ) {
     companion object {
         /**

@@ -92,6 +92,8 @@ fn main() {
         .with_use_core_mps(false)
         .with_uploader(uploader)
         .with_delay_ping_lifetime_io(true)
+        .with_ping_lifetime_threshold(1000)
+        .with_ping_lifetime_max_time(Duration::from_millis(2000))
         .build();
 
     let client_info = ClientInfoMetrics {

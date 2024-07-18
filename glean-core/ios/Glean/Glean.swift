@@ -196,7 +196,9 @@ public class Glean {
             enableEventTimestamps: configuration.enableEventTimestamps,
             experimentationId: configuration.experimentationId,
             enableInternalPings: configuration.enableInternalPings,
-            pingSchedule: [:]
+            pingSchedule: [:],
+            pingLifetimeThreshold: UInt64(configuration.pingLifetimeThreshold),
+            pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime)
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
