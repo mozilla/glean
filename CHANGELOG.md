@@ -12,6 +12,7 @@
   * Default-enable `delayPingLifetimeIo` ([#2863](https://github.com/mozilla/glean/issues/2863))
   * Preparing Glean to be able to remove `service-glean` from Android Components ([#2891](https://github.com/mozilla/glean/pull/2891))
   * Gradle Plugin: Support for using an external Python environment ([#2889](https://github.com/mozilla/glean/pull/2889))
+  * Upgrade Android NDK to r27 ([#2903](https://github.com/mozilla/glean/pull/2903))
 * Rust
   * New Metric Types: `labeled_custom_distribution`, `labeled_memory_distribution`, and `labeled_timing_distribution` ([bug 1657947](https://bugzilla.mozilla.org/show_bug.cgi?id=1657947))
 

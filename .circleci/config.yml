@@ -114,7 +114,7 @@ commands:
           command: |
             sdkmanager \
               "build-tools;34.0.0" \
-              "ndk;26.2.11394342"
+              "ndk;27.0.12077973"
 
   android-setup:
     steps:
