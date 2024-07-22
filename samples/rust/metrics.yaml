@@ -25,6 +25,49 @@ test.metrics:
     send_in_pings:
       - prototype
 
+  sample_labeled_counter: &defaults
+    type: labeled_counter
+    description: |
+      Just testing labeled_counter.
+    bugs:
+      - https://bugzilla.mozilla.org/1907991
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    no_lint:
+      - COMMON_PREFIX
+
+  sample_labeled_custom_distribution:
+    <<: *defaults
+    type: labeled_custom_distribution
+    range_min: 0
+    range_max: 100
+    bucket_count: 10
+    histogram_type: linear
+    labels:
+      - aLabel
+      - 2label
+
+  sample_labeled_memory_distribution:
+    <<: *defaults
+    type: labeled_memory_distribution
+    memory_unit: kilobyte
+    labels:
+      - aLabel
+      - 2label
+
+  sample_labeled_timing_distribution:
+    <<: *defaults
+    type: labeled_timing_distribution
+    time_unit: millisecond
+    labels:
+      - aLabel
+      - 2label
+
 party:
   balloons:
     type: object
