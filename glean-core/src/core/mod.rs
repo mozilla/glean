@@ -606,7 +606,13 @@ impl Glean {
 
     /// Gets the maximum number of events to store before sending a ping.
     pub fn get_max_events(&self) -> usize {
-        self.max_events as usize
+        let remote_settings_config = self.remote_settings_config.lock().unwrap();
+
+        if let Some(max_events) = remote_settings_config.event_threshold {
+            max_events as usize
+        } else {
+            self.max_events as usize
+        }
     }
 
     /// Gets the next task for an uploader.
@@ -794,6 +800,8 @@ impl Glean {
         remote_settings_config
             .pings_enabled
             .extend(cfg.pings_enabled);
+
+        remote_settings_config.event_threshold = cfg.event_threshold;
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
