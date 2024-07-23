@@ -50,7 +50,7 @@ abstract class GleanMetricsYamlTransform implements TransformAction<TransformPar
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "14.0"
+    private String GLEAN_PARSER_VERSION = "14.3"
     // The version of Miniconda is explicitly specified.
     // Miniconda3-4.5.12 is known to not work on Windows.
     private String MINICONDA_VERSION = "24.3.0-0"
@@ -552,7 +552,7 @@ except:
     void apply(Project project) {
         isOffline = project.gradle.startParameter.offline
 
-        project.ext.glean_version = "60.3.0"
+        project.ext.glean_version = "60.4.0"
         def parserVersion = gleanParserVersion(project)
 
         // Print the required glean_parser version to the console. This is
@@ -560,11 +560,16 @@ except:
         // builds.
         println("Requires glean_parser ${parserVersion}")
 
-        File envDir = setupPythonEnvironmentTasks(project, parserVersion)
-        // Store in both gleanCondaDir (for backward compatibility reasons) and
-        // the more accurate gleanPythonEnvDir variables.
-        project.ext.set("gleanCondaDir", envDir)
-        project.ext.set("gleanPythonEnvDir", envDir)
+        File envDir
+        if (project.ext.has("gleanPythonEnvDir")) {
+            envDir = new File(project.ext.gleanPythonEnvDir)
+            isOffline = true
+        } else {
+            envDir = setupPythonEnvironmentTasks(project, parserVersion)
+            project.ext.set("gleanPythonEnvDir", envDir)
+        }
+        // Also store in gleanCondaDir for backward compatibility reasons
+        project.ext.set("gleanCondaDir", project.ext.gleanPythonEnvDir)
 
         setupExtractMetricsFromAARTasks(project)
 

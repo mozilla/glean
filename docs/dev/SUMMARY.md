@@ -10,6 +10,7 @@
 - [Android bindings](android/index.md)
     - [Setup Build Environment](android/setup-android-build-environment.md)
     - [Android SDK/NDK versions](android/sdk-ndk-versions.md)
+    - [Logging](android/logging.md)
     - [Development with android-components](android/development-with-android-components.md)
     - [Locally-published components in Fenix](android/locally-published-components-in-fenix.md)
     - [Substituting glean_parser](android/glean-parser-substitution.md)

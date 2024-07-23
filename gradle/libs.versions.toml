@@ -8,7 +8,7 @@
 android-plugin = "8.0.2"
 
 # Kotlin
-kotlin-compiler = "1.9.23"
+kotlin-compiler = "1.9.24"
 kotlinx-coroutines = "1.8.0"
 kotlinx-serialization = "1.6.3"
 
@@ -16,9 +16,9 @@ kotlinx-serialization = "1.6.3"
 rust-android-gradle = "0.9.4"
 
 # AndroidX
-androidx-annotation = "1.7.1"
+androidx-annotation = "1.8.0"
 androidx-appcompat = "1.6.1"
-androidx-browser = "1.7.0"
+androidx-browser = "1.8.0"
 androidx-lifecycle = "2.7.0"
 androidx-work = "2.9.0"
 
@@ -26,19 +26,19 @@ androidx-work = "2.9.0"
 jna = "5.14.0"
 
 # Linting and Static Analysis
-detekt = "1.23.5"
+detekt = "1.23.6"
 ktlint = "0.50.0"
 
 # AndroidX Testing
-androidx-test-espresso = "3.5.1"
-androidx-test-core = "1.5.0"
-androidx-test-junit = "1.1.5"
-androidx-test-runner = "1.5.2"
+androidx-test-core = "1.6.1"
+androidx-test-espresso = "3.6.1"
+androidx-test-junit = "1.2.1"
+androidx-test-runner = "1.6.1"
 androidx-test-uiautomator = "2.3.0"
 
 # Third Party Testing
 junit = "4.13.2"
-mockito = "5.11.0"
+mockito = "5.12.0"
 mockwebserver = "4.12.0"
 robolectric = "4.12.1"
 

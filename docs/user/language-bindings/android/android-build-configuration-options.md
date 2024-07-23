@@ -80,3 +80,13 @@ ext.gleanExpireByVersion = 25
 Different products have different ways to compute the product version at build-time.
 For this reason the Glean Gradle plugin cannot provide an automated way to detect the product major version at build time.
 When using the expiration by version feature in Android, products must provide the major version by themselves.
+
+## `gleanPythonEnvDir`
+
+By default, the Glean Gradle plugin will manage its own Python virtualenv in `$gradleUserHomeDir/glean` to install `glean_parser`. By specifying a path in `ext.gleanPythonEnvDir` you can reuse an existing Python virtualenv.
+
+```groovy
+ext.gleanPythonEnvDir = "$buildDir/externallyManagedVenv"
+```
+
+`glean_parser` must be available in that virtualenv, the Gradle plugin will make no attempt at installing it.

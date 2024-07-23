@@ -6,9 +6,9 @@
 from typing import Any, Optional, Set, Type
 
 
-from .._uniffi import CommonMetricData
 from .._uniffi import LabeledBoolean
 from .._uniffi import LabeledCounter
+from .._uniffi import LabeledMetricData
 from .._uniffi import LabeledString
 from ..testing import ErrorType
 
@@ -37,10 +37,10 @@ class LabeledMetricBase:
 
     def __init__(
         self,
-        common_metric_data: CommonMetricData,
+        labeled_metric_data: LabeledMetricData,
         labels: Optional[Set[str]] = None,
     ):
-        self._inner = self._ctor(common_metric_data, labels)
+        self._inner = self._ctor(labeled_metric_data, labels)
 
     def __getitem__(self, item: str) -> Any:
         """

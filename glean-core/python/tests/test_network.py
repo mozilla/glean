@@ -13,7 +13,7 @@ import uuid
 from glean import Glean
 from glean import _builtins
 from glean import metrics
-from glean.metrics import CounterMetricType, Lifetime, CommonMetricData
+from glean.metrics import CounterMetricType, Lifetime, CommonMetricData, LabeledMetricData
 from glean._process_dispatcher import ProcessDispatcher
 from glean.net import PingUploadWorker
 from glean.net.http_client import HttpClientUploader
@@ -26,13 +26,15 @@ GLEAN_APP_ID = "glean-python-test"
 
 def get_upload_failure_metric():
     return metrics.LabeledCounterMetricType(
-        CommonMetricData(
-            disabled=False,
-            send_in_pings=["metrics"],
-            name="ping_upload_failure",
-            category="glean.upload",
-            lifetime=metrics.Lifetime.PING,
-            dynamic_label=None,
+        LabeledMetricData.COMMON(
+            CommonMetricData(
+                disabled=False,
+                send_in_pings=["metrics"],
+                name="ping_upload_failure",
+                category="glean.upload",
+                lifetime=metrics.Lifetime.PING,
+                dynamic_label=None,
+            )
         ),
         labels=[
             "status_code_4xx",

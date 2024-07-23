@@ -52,6 +52,11 @@ open class MainActivity : AppCompatActivity() {
             balloons.add(Party.BalloonsObjectItem(colour = "green"))
             Party.balloons.set(balloons)
 
+            val animals = Party.AnimalsObject()
+            animals.add("Dog")
+            animals.add("Cat")
+            Party.animals.set(animals)
+
             // This is referencing the event ping named 'click' from the metrics.yaml file. In
             // order to illustrate adding extra information to the event, it is also adding to the
             // 'extras' field a dictionary of values.  Note that the dictionary keys must be

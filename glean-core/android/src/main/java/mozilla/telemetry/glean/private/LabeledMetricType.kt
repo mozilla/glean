@@ -36,12 +36,14 @@ class LabeledMetricType<T>(
     private val inner: Any
 
     init {
-        val meta = CommonMetricData(
-            category = category,
-            name = name,
-            sendInPings = sendInPings,
-            disabled = disabled,
-            lifetime = lifetime,
+        val meta = CommonLabeledMetricData(
+            cmd = CommonMetricData(
+                category = category,
+                name = name,
+                sendInPings = sendInPings,
+                disabled = disabled,
+                lifetime = lifetime,
+            ),
         )
 
         this.inner = when (subMetric) {

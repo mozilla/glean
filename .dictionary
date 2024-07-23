@@ -1,4 +1,4 @@
-personal_ws-1.1 en 282 utf-8
+personal_ws-1.1 en 289 utf-8
 AAR
 AARs
 ABI
@@ -108,6 +108,7 @@ XCFramework
 Xcode
 YAML
 aarch
+addon
 alphanumerics
 analytics
 anonymized
@@ -115,6 +116,7 @@ aspell
 async
 autodetected
 backend
+backgrounding
 backoff
 backport
 barcode
@@ -127,6 +129,7 @@ booleans
 brizental
 bugfixes
 camelCase
+cancelled
 carthage
 changelog
 chutten
@@ -147,6 +150,7 @@ datetime
 destructor
 deterministically
 dev
+devtools
 dexter
 distributable
 docstrings
@@ -175,6 +179,7 @@ html
 iMacs
 illumos
 init
+initializer
 inlined
 instrumentations
 integrations
@@ -223,6 +228,7 @@ preinit
 py
 pytest
 rethrow
+retransmission
 rfloor
 rkv
 rkv's
@@ -270,6 +276,7 @@ urlbar
 validator
 vendored
 vendoring
+virtualenv
 walkthrough
 walkthroughs
 webextension

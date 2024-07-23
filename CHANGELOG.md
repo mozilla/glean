@@ -1,6 +1,24 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.4.0...main)
+
+# v60.4.0 (2024-07-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.3.0...v60.4.0)
+
+* General
+  * Bump the string length limit to 255 characters ([#2857](https://github.com/mozilla/glean/pull/2857))
+  * New metric `glean.database.write_time` to measure database writes ([#2845](https://github.com/mozilla/glean/pull/2845))
+  * Require glean_parser v14.3.0 ([bug 1909244](https://bugzilla.mozilla.org/show_bug.cgi?id=1909244))
+* Android
+  * Delay log init until Glean is getting initialized ([#2858](https://github.com/mozilla/glean/pull/2858))
+  * Update to Gradle v8.8 ([#2860](https://github.com/mozilla/glean/pull/2860))
+  * Updated Kotlin to version 1.9.24 ([#2861](https://github.com/mozilla/glean/pull/2861))
+  * Default-enable `delayPingLifetimeIo` ([#2863](https://github.com/mozilla/glean/issues/2863))
+  * Preparing Glean to be able to remove `service-glean` from Android Components ([#2891](https://github.com/mozilla/glean/pull/2891))
+  * Gradle Plugin: Support for using an external Python environment ([#2889](https://github.com/mozilla/glean/pull/2889))
+* Rust
+  * New Metric Types: `labeled_custom_distribution`, `labeled_memory_distribution`, and `labeled_timing_distribution` ([bug 1657947](https://bugzilla.mozilla.org/show_bug.cgi?id=1657947))
 
 # v60.3.0 (2024-05-31)
 
@@ -34,6 +52,15 @@
   * New `TimingDistribution` API for no-allocation single-duration accumulation. ([bug 1892097](https://bugzilla.mozilla.org/show_bug.cgi?id=1892097))
 * Python
   * Replace use of deprecated functionality (and make installs work on Python 3.12) ([#2820](https://github.com/mozilla/glean/pull/2820))
+
+# v60.0.1 (2024-05-31)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.0.0...v60.0.1)
+
+* Android
+  * Allow configuring `delayPingLifetimeIo` in Kotlin and auto-flush this data after 1000 writes.
+    It is also auto-flushed on background. ([#2851](https://github.com/mozilla/glean/pull/2851))
+    (Backported changes)
 
 # v60.0.0 (2024-04-22)
 

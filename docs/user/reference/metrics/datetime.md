@@ -417,4 +417,3 @@ Carefully consider the required resolution for recording your metric, and choose
 * [Swift API docs](../../../swift/Classes/DatetimeMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.DatetimeMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.DatetimeMetric.html)
-* [Datetime API docs](https://mozilla.github.io/glean.js/classes/core_metrics_types_datetime.default.html)

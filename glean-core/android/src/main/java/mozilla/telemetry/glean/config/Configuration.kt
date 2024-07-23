@@ -20,7 +20,7 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property dataPath An optional [String] that specifies where to store data locally on the device.
  *           This should ONLY be used when setting up Glean on a non-main process.
  * @property logLevel An optional [LevelFilter] that controls how verbose the internal logging is.
- * @property enableEventTimestamps (Experimental) Whether to add a wallclock timestamp to all events.
+ * @property enableEventTimestamps Whether to add a wallclock timestamp to all events.
  * @property experimentationId An experimentation identifier derived by the application
  *           to be sent with all pings.
  * @property enableInternalPings Whether to enable internal pings.
@@ -39,7 +39,7 @@ data class Configuration @JvmOverloads constructor(
     val enableEventTimestamps: Boolean = true,
     val experimentationId: String? = null,
     val enableInternalPings: Boolean = true,
-    val delayPingLifetimeIo: Boolean = false,
+    val delayPingLifetimeIo: Boolean = true,
 ) {
     companion object {
         /**

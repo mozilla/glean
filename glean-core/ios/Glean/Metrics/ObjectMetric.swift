@@ -13,7 +13,7 @@ extension Array: ObjectSerialize where Element: Codable {
     public func intoSerializedObject() -> String {
         let jsonEncoder = JSONEncoder()
         let jsonData = try! jsonEncoder.encode(self)
-        let json = String(data: jsonData, encoding: String.Encoding.utf8)!
+        let json = String(decoding: jsonData, as: UTF8.self)
         return json
     }
 }

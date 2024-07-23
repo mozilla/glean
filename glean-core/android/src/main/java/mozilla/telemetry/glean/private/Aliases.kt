@@ -55,3 +55,13 @@ typealias RecordedExperiment = mozilla.telemetry.glean.internal.RecordedExperime
  * A rate value as given by its numerator and denominator.
  */
 typealias Rate = mozilla.telemetry.glean.internal.Rate
+
+/**
+ * The set of data needed to construct labeled metric types.
+ */
+typealias LabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData
+
+/**
+ * The set of data specifically needed to construct simple labeled metric types.
+ */
+typealias CommonLabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData.Common

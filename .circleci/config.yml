@@ -63,17 +63,17 @@ commands:
       - setup-rust-toolchain:
           rust-version: <<parameters.rust-version>>
       - run:
-          name: Test
-          command: |
-            export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
-            cargo test --verbose --jobs 6 -- --nocapture
-      - run:
           name: Install required Python dependencies
           command: |
             sudo apt update
             sudo apt install --yes --no-install-recommends \
               python3-pip \
               python3.10-venv
+      - run:
+          name: Test
+          command: |
+            export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
+            cargo test --workspace --verbose --jobs 6 -- --nocapture
       - run:
           name: Run Rust sample
           command: |
@@ -86,6 +86,10 @@ commands:
           name: Run Rust RLB crash test
           command: |
             glean-core/rlb/tests/test-thread-crashing.sh
+      - run:
+          name: Run Rust RLB delayed ping data test
+          command: |
+            glean-core/rlb/tests/test-delayed-ping-data.sh
       - run:
           name: Upload coverage report
           command: |
