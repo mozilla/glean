@@ -6,7 +6,7 @@ use std::env;
 use std::path::PathBuf;
 use std::{thread, time};
 
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 
 use glean::net;
 use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder};
@@ -15,8 +15,8 @@ pub mod glean_metrics {
     use glean::{private::BooleanMetric, CommonMetricData, Lifetime};
 
     #[allow(non_upper_case_globals)]
-    pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static sample_boolean: std::sync::LazyLock<BooleanMetric> =
+        std::sync::LazyLock::new(|| {
             BooleanMetric::new(CommonMetricData {
                 name: "sample_boolean".into(),
                 category: "test.metrics".into(),

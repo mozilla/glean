@@ -6,7 +6,7 @@ use crate::ClientInfoMetrics;
 use crate::{Configuration, ConfigurationBuilder};
 use std::sync::{Mutex, MutexGuard};
 
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 
 pub(crate) const GLOBAL_APPLICATION_ID: &str = "org.mozilla.rlb.test";
 

@@ -10,7 +10,7 @@
 pub mod error {
     use crate::metrics::CounterMetric;
     use crate::{CommonMetricData, Lifetime};
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock as Lazy;
 
     #[allow(non_upper_case_globals)]
     pub static preinit_tasks_overflow: Lazy<CounterMetric> = Lazy::new(|| {

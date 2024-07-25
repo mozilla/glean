@@ -25,7 +25,8 @@ use std::time::Duration;
 
 use crossbeam_channel::unbounded;
 use log::LevelFilter;
-use once_cell::sync::{Lazy, OnceCell};
+use std::sync::LazyLock as Lazy;
+use std::sync::OnceLock;
 use uuid::Uuid;
 
 use metrics::RemoteSettingsConfig;
@@ -192,7 +193,7 @@ struct State {
 /// A global singleton storing additional state for Glean.
 ///
 /// Requires a Mutex, because in tests we can actual reset this.
-static STATE: OnceCell<Mutex<State>> = OnceCell::new();
+static STATE: OnceLock<Mutex<State>> = OnceLock::new();
 
 /// Get a reference to the global state object.
 ///
@@ -238,8 +239,8 @@ fn setup_state(state: State) {
 
 /// A global singleton that stores listener callbacks registered with Glean
 /// to receive event recording notifications.
-static EVENT_LISTENERS: OnceCell<Mutex<HashMap<String, Box<dyn GleanEventListener>>>> =
-    OnceCell::new();
+static EVENT_LISTENERS: OnceLock<Mutex<HashMap<String, Box<dyn GleanEventListener>>>> =
+    OnceLock::new();
 
 fn event_listeners() -> &'static Mutex<HashMap<String, Box<dyn GleanEventListener>>> {
     EVENT_LISTENERS.get_or_init(|| Mutex::new(HashMap::new()))
@@ -1181,7 +1182,7 @@ pub fn glean_set_dirty_flag(new_value: bool) {
 }
 
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
-static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
+static FD_LOGGER: OnceLock<fd_logger::FdLogger> = OnceLock::new();
 
 /// Initialize the logging system to send JSON messages to a file descriptor
 /// (Unix) or file handle (Windows).

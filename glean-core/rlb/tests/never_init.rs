@@ -15,7 +15,7 @@ mod metrics {
     use glean::private::*;
     use glean::{Lifetime, TimeUnit};
     use glean_core::CommonMetricData;
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock as Lazy;
 
     #[allow(non_upper_case_globals)]
     pub static initialization: Lazy<TimespanMetric> = Lazy::new(|| {
@@ -35,7 +35,7 @@ mod metrics {
 
 mod pings {
     use glean::private::PingType;
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock as Lazy;
 
     #[allow(non_upper_case_globals)]
     pub static validation: Lazy<PingType> = Lazy::new(|| {

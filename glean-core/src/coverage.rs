@@ -22,7 +22,7 @@ use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::sync::Mutex;
 
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 
 static COVERAGE_FILE: Lazy<Option<Mutex<File>>> = Lazy::new(|| {
     if let Some(filename) = env::var_os("GLEAN_TEST_COVERAGE") {

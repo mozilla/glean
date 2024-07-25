@@ -14,7 +14,7 @@ use crate::util::local_now_with_offset;
 use crate::{CommonMetricData, Glean, Lifetime};
 use chrono::prelude::*;
 use chrono::Duration;
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::JoinHandle;
 

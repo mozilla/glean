@@ -30,8 +30,8 @@ pub mod metrics {
         TimeUnit,
     };
 
-    pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static sample_boolean: std::sync::LazyLock<BooleanMetric> =
+        std::sync::LazyLock::new(|| {
             BooleanMetric::new(CommonMetricData {
                 name: "sample_boolean".into(),
                 category: "test.metrics".into(),
@@ -45,8 +45,8 @@ pub mod metrics {
     // The following are duplicated from `glean-core/src/internal_metrics.rs`
     // so we can use the test APIs to query them.
 
-    pub static send_success: once_cell::sync::Lazy<TimingDistributionMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static send_success: std::sync::LazyLock<TimingDistributionMetric> =
+        std::sync::LazyLock::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
                     name: "send_success".into(),
@@ -60,8 +60,8 @@ pub mod metrics {
             )
         });
 
-    pub static send_failure: once_cell::sync::Lazy<TimingDistributionMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static send_failure: std::sync::LazyLock<TimingDistributionMetric> =
+        std::sync::LazyLock::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
                     name: "send_failure".into(),
@@ -75,8 +75,8 @@ pub mod metrics {
             )
         });
 
-    pub static shutdown_wait: once_cell::sync::Lazy<TimingDistributionMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static shutdown_wait: std::sync::LazyLock<TimingDistributionMetric> =
+        std::sync::LazyLock::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
                     name: "shutdown_wait".into(),
@@ -93,7 +93,7 @@ pub mod metrics {
 
 mod pings {
     use glean::private::PingType;
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock as Lazy;
 
     #[allow(non_upper_case_globals)]
     pub static validation: Lazy<PingType> = Lazy::new(|| {

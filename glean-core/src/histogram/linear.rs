@@ -5,7 +5,7 @@
 use std::cmp;
 use std::collections::HashMap;
 
-use once_cell::sync::OnceCell;
+use std::cell::OnceCell;
 use serde::{Deserialize, Serialize};
 
 use super::{Bucketing, Histogram};

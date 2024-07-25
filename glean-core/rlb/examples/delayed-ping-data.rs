@@ -7,7 +7,7 @@ use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::{env, process};
 
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 
 use flate2::read::GzDecoder;
 use glean::net;
@@ -17,8 +17,8 @@ pub mod glean_metrics {
     use glean::{private::CounterMetric, CommonMetricData, Lifetime};
 
     #[allow(non_upper_case_globals)]
-    pub static sample_counter: once_cell::sync::Lazy<CounterMetric> =
-        once_cell::sync::Lazy::new(|| {
+    pub static sample_counter: std::sync::LazyLock<CounterMetric> =
+        std::sync::LazyLock::new(|| {
             CounterMetric::new(CommonMetricData {
                 name: "sample_counter".into(),
                 category: "test.metrics".into(),

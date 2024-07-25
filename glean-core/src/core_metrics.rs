@@ -7,7 +7,7 @@ use crate::metrics::{
 };
 use crate::{CommonMetricData, Lifetime};
 
-use once_cell::sync::Lazy;
+use std::sync::LazyLock as Lazy;
 
 /// Metrics included in every ping as `client_info`.
 #[derive(Debug, Default)]

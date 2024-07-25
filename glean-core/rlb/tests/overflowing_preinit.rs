@@ -17,7 +17,7 @@ mod metrics {
     use glean::private::*;
     use glean::Lifetime;
     use glean_core::CommonMetricData;
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock as Lazy;
 
     #[allow(non_upper_case_globals)]
     pub static rapid_counting: Lazy<CounterMetric> = Lazy::new(|| {
