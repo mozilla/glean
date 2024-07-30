@@ -135,4 +135,33 @@ impl<B: Bucketing> Histogram<B> {
         }
         res
     }
+
+    /// Clear this histogram.
+    pub fn clear(&mut self) {
+        self.sum = 0;
+        self.count = 0;
+        self.values.clear();
+    }
+}
+
+impl<B> Histogram<B>
+where
+    B: Bucketing,
+    B: std::fmt::Debug,
+    B: PartialEq,
+{
+    /// Merges data from one histogram into the other.
+    ///
+    /// ## Panics
+    ///
+    /// Panics if the two histograms don't use the same bucketing.
+    pub fn merge(&mut self, other: &Self) {
+        assert_eq!(self.bucketing, other.bucketing);
+
+        self.sum += other.sum;
+        self.count += other.count;
+        for (&bucket, &count) in &other.values {
+            *self.values.entry(bucket).or_insert(0) += count;
+        }
+    }
 }
