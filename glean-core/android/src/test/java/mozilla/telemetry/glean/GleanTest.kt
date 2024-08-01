@@ -633,6 +633,7 @@ class GleanTest {
     }
 
     @Test
+    @Ignore("oops, long running test see Bug 1911350 for more info")
     fun `overflowing the task queue records telemetry`() {
         delayMetricsPing(context)
         val server = getMockWebServer()
@@ -651,7 +652,7 @@ class GleanTest {
             ),
         )
 
-        repeat(1010) {
+        repeat(1000010) {
             counterMetric.add()
         }
 
@@ -684,7 +685,7 @@ class GleanTest {
         )
         assertEquals(
             "Ping payload: $jsonContent",
-            1000,
+            1000000,
             counters.getInt("telemetry.repeatedly"),
         )
     }
