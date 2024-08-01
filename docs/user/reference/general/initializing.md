@@ -16,7 +16,7 @@ application start using Glean.
 ## Behavior when uninitialized
 
 Any API called before Glean is initialized is queued and applied at initialization.
-To avoid unbounded memory growth the queue is bounded (currently to a maximum of 100 tasks),
+To avoid unbounded memory growth the queue is bounded (currently to a maximum of 1 million tasks),
 and further calls are dropped.
 
 The number of calls dropped, if any,

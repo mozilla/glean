@@ -40,8 +40,5 @@ libc = "0.2"
 serde_json = "1.0.44"
 tempfile = "3.1.0"
 
-[features]
-preinit_million_queue = ["glean-core/preinit_million_queue"]
-
 [[example]]
 name = "ping-lifetime-flush"
