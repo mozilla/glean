@@ -13,7 +13,6 @@ import android.os.Process
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
@@ -468,9 +467,8 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param pingName Name of the ping to submit.
      * @param reason The reason the ping is being submitted.
-     * @return The async [Job] performing the work of assembling the ping
      */
-    internal fun submitPingByName(pingName: String, reason: String? = null) {
+    fun submitPingByName(pingName: String, reason: String? = null) {
         gleanSubmitPingByName(pingName, reason)
     }
 
@@ -479,8 +477,6 @@ open class GleanInternalAPI internal constructor() {
      *
      * If the tag is invalid it won't be set and this function will return `false`,
      * although if we are not initialized yet, there won't be any validation.
-     *
-     * This is only meant to be used internally by the `GleanDebugActivity`.
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
@@ -493,8 +489,6 @@ open class GleanInternalAPI internal constructor() {
      *
      * If any of the tags is invalid nothing will be set and this function will
      * return `false`, although if we are not initialized yet, there won't be any validation.
-     *
-     * This is only meant to be used internally by the `GleanDebugActivity`.
      *
      * @param tags A list of tags, which must be valid HTTP header values.
      */
@@ -516,7 +510,7 @@ open class GleanInternalAPI internal constructor() {
      * Set configuration to override metrics' enabled/disabled state, typically from a remote_settings
      * experiment or rollout.
      *
-     * @param json Stringified JSON map of metrics and their associated `disabled` property.
+     * @param json Stringified JSON Server Knobs configuration.
      */
     fun applyServerKnobsConfig(json: String) {
         gleanApplyServerKnobsConfig(json)
@@ -525,8 +519,6 @@ open class GleanInternalAPI internal constructor() {
     /**
      * Set the logPing debug option, when this is `true`
      * the payload of assembled ping requests get logged.
-     *
-     * This is only meant to be used internally by the `GleanDebugActivity`.
      *
      * @param value The value of the option.
      */
