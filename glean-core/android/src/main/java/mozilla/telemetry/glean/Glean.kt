@@ -13,6 +13,8 @@ import android.os.Process
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.sun.jna.Library
+import com.sun.jna.Native
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
@@ -29,6 +31,12 @@ import mozilla.telemetry.glean.utils.canWriteToDatabasePath
 import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import java.util.Calendar
+
+inline fun <reified Lib : Library> loadIndirect(
+    @Suppress("UNUSED_PARAMETER") componentName: String
+): Lib {
+    return Native.load<Lib>("xul", Lib::class.java)
+}
 
 /**
  * Public exported type identifying individual timers for
