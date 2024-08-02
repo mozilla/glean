@@ -68,6 +68,17 @@ test.metrics:
       - aLabel
       - 2label
 
+  sample_event:
+    <<: *defaults
+    type: event
+    extra_keys:
+      key_one:
+        type: quantity
+        description: "This is key one"
+      And1WithUnusualCASING:
+        type: boolean
+        description: "This is key two"
+
 party:
   balloons:
     type: object

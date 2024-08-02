@@ -28,6 +28,9 @@ browser.engagement:
       key2:
         type: string
         description: "This is key two"
+      And1WithUnusualCASING:
+        type: boolean
+        description: "This is key three"
     expires: 2100-01-01
     no_lint:
       - EXPIRATION_DATE_TOO_FAR
