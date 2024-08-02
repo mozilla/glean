@@ -32,9 +32,30 @@ import mozilla.telemetry.glean.utils.getLocaleTag
 import java.io.File
 import java.util.Calendar
 
+var initCalled: Boolean = false
+
+fun setGleanInitCalled() {
+    initCalled = true
+}
+
+fun getGleanInitCalled(): Boolean {
+    return initCalled
+}
+
 inline fun <reified Lib : Library> loadIndirect(
     @Suppress("UNUSED_PARAMETER") componentName: String
 ): Lib {
+    if (!getGleanInitCalled()) {
+        try {
+            val test = ("0")
+            test[1]
+        } catch (e: Exception) {
+            Log.e("gleanload", "exception", e);
+            val test = ("0")
+            test[1]
+        }
+    }
+
     return Native.load<Lib>("xul", Lib::class.java)
 }
 
@@ -189,6 +210,7 @@ open class GleanInternalAPI internal constructor() {
         buildInfo: BuildInfo,
     ) {
         gleanEnableLogging()
+        setGleanInitCalled()
 
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
@@ -521,6 +543,7 @@ open class GleanInternalAPI internal constructor() {
      * @param json Stringified JSON Server Knobs configuration.
      */
     fun applyServerKnobsConfig(json: String) {
+        setGleanInitCalled()
         gleanApplyServerKnobsConfig(json)
     }
 
@@ -579,6 +602,7 @@ open class GleanInternalAPI internal constructor() {
         uploadEnabled: Boolean = true,
     ) {
         isMainProcess = null
+        setGleanInitCalled()
 
         // Resetting MPS and uploader
         metricsPingScheduler?.cancel()
