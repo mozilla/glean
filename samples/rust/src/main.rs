@@ -12,7 +12,7 @@ use std::time::Duration;
 use tempfile::Builder;
 
 use flate2::read::GzDecoder;
-use glean::{net, ClientInfoMetrics, ConfigurationBuilder};
+use glean::{net, ClientInfoMetrics, ConfigurationBuilder, ErrorType};
 
 pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
@@ -99,6 +99,19 @@ fn main() {
         },
     ]);
     glean_metrics::party::balloons.set(balloons);
+
+    // Testing with empty and null values.
+    let drinks = serde_json::json!([
+        { "name": "lemonade", "ingredients": ["lemon", "water", "sugar"] },
+        { "name": "sparkling-water", "ingredients": [] },
+        { "name": "still-water", "ingredients": null },
+    ]);
+    glean_metrics::party::drinks.set_string(drinks.to_string());
+
+    assert_eq!(
+        0,
+        glean_metrics::party::drinks.test_get_num_recorded_errors(ErrorType::InvalidValue)
+    );
 
     glean_metrics::prototype.submit(None);
     // Need to wait a short time for Glean to actually act.

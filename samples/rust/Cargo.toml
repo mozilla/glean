@@ -9,6 +9,7 @@ license = "MIT"
 env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
 flate2 = "1.0.19"
 glean = { path = "../../glean-core/rlb" }
+serde_json = "1.0.44"
 tempfile = "3.3.0"
 
 [build-dependencies]

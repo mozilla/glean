@@ -776,6 +776,7 @@ dependencies = [
  "flate2",
  "glean",
  "glean-build",
+ "serde_json",
  "tempfile",
 ]
 
