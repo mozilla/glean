@@ -20,3 +20,7 @@ default-members = [
 opt-level = "s"
 debug = false
 lto = true
+
+[patch.crates-io]
+uniffi = { path = "../uniffi-rs/uniffi" }
+uniffi_bindgen = { path = "../uniffi-rs/uniffi_bindgen" }
