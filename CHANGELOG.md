@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...main)
 
+
+General
+  * Updated to UniFFI 0.28.0 ([#2920](https://github.com/mozilla/glean/pull/2920))
+
 # v60.5.0 (2024-08-06)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.4.0...v60.5.0)
