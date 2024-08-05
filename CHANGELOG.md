@@ -4,7 +4,7 @@
 
 * General
   * Make auto-flush behavior configurable and time-based ([#2871](https://github.com/mozilla/glean/pull/2871))
-  * Require glean_parser v14.5.0 ([]())
+  * Require `glean_parser` v14.5.0 ([#2916](https://github.com/mozilla/glean/pull/2916))
 * Android
   * Update to Gradle v8.9 ([#2909](https://github.com/mozilla/glean/pull/2909))
   * Fixed `GleanTestLocalServer` test rule to prevent leaking between tests([Bug 1787234](https://bugzilla.mozilla.org/show_bug.cgi?id=1787234))
