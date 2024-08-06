@@ -25,4 +25,7 @@ core:
       swapped:
         type: quantity
         description: "This is key three"
+      And1WithUnusualCASING:
+        type: boolean
+        description: "This is key four"
     expires: never

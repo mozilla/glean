@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "60.4.0"
+version = "60.5.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -21,7 +21,7 @@ include = [
 rust-version = "1.66"
 
 [package.metadata.glean]
-glean-parser = "14.3.0"
+glean-parser = "14.5.1"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }
@@ -60,7 +60,5 @@ ctor = "0.2.2"
 uniffi = { version = "0.27.0", default-features = false, features = ["build"] }
 
 [features]
-# Increases the preinit queue limit to 10^6
-preinit_million_queue = []
 # Enable `env_logger`. Only works on non-Android non-iOS targets.
 enable_env_logger = ["env_logger"]

@@ -4951,9 +4951,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 60.4.0]( https://github.com/mozilla/glean )
-* [glean-build 14.3.0]( https://github.com/mozilla/glean )
-* [glean 60.4.0]( https://github.com/mozilla/glean )
+* [glean-core 60.5.0]( https://github.com/mozilla/glean )
+* [glean-build 14.5.1]( https://github.com/mozilla/glean )
+* [glean 60.5.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```

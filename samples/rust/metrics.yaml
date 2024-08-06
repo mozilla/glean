@@ -68,6 +68,17 @@ test.metrics:
       - aLabel
       - 2label
 
+  sample_event:
+    <<: *defaults
+    type: event
+    extra_keys:
+      key_one:
+        type: quantity
+        description: "This is key one"
+      And1WithUnusualCASING:
+        type: boolean
+        description: "This is key two"
+
 party:
   balloons:
     type: object
@@ -91,3 +102,28 @@ party:
             type: string
           diameter:
             type: number
+
+  drinks:
+    type: object
+    description: |
+      Just testing objects
+    bugs:
+      - https://bugzilla.mozilla.org/1910809
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          ingredients:
+            type: array
+            items:
+              type: string

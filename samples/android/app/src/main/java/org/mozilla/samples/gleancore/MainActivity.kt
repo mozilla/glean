@@ -48,7 +48,9 @@ open class MainActivity : AppCompatActivity() {
 
             // Record an object
             val balloons = Party.BalloonsObject()
-            balloons.add(Party.BalloonsObjectItem(colour = "red", diameter = 5))
+            val labels = Party.BalloonsObjectItemLabels()
+            labels.add("round")
+            balloons.add(Party.BalloonsObjectItem(colour = "red", diameter = 5, labels = labels))
             balloons.add(Party.BalloonsObjectItem(colour = "green"))
             Party.balloons.set(balloons)
 

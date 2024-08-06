@@ -11,7 +11,9 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.Glean
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * This implements a JUnit rule for writing tests for Glean SDK metrics.
@@ -39,6 +41,8 @@ class GleanTestLocalServer(
     val context: Context,
     private val localPort: Int,
 ) : TestWatcher() {
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
+
     /**
      * Invoked when a test is about to start.
      */
@@ -50,10 +54,24 @@ class GleanTestLocalServer(
             // executor which runs on the main thread as we cannot make background
             // upload tasks run on that thread. Otherwise the application will crash
             // with a "networking on the main thread" exception.
-            .setExecutor(Executors.newSingleThreadExecutor())
+            .setExecutor(executor)
             .build()
 
         // Initialize WorkManager for instrumentation tests.
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
+
+    override fun finished(description: Description?) {
+        executor.awaitTermination(GleanTestRuleConstants.TERMINATION_TIMEOUT, TimeUnit.SECONDS)
+
+        // This closes the database to help prevent leaking it during tests.
+        // See Bug1719905 for more info.
+        WorkManagerTestInitHelper.closeWorkDatabase()
+
+        super.finished(description)
+    }
+}
+
+object GleanTestRuleConstants {
+    const val TERMINATION_TIMEOUT = 10L
 }

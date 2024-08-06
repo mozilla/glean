@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...main)
+
+# v60.5.0 (2024-08-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.4.0...v60.5.0)
+
+* General
+  * Make auto-flush behavior configurable and time-based ([#2871](https://github.com/mozilla/glean/pull/2871))
+  * Require `glean_parser` v14.5.0 ([#2916](https://github.com/mozilla/glean/pull/2916))
+* Android
+  * Update to Gradle v8.9 ([#2909](https://github.com/mozilla/glean/pull/2909))
+  * Fixed `GleanTestLocalServer` test rule to prevent leaking between tests([Bug 1787234](https://bugzilla.mozilla.org/show_bug.cgi?id=1787234))
+* Rust
+  * Remove cargo feature `preinit_million_queue` and set the default pre-init queue size to 10^6 for all consumers ([Bug 1909246](https://bugzilla.mozilla.org/show_bug.cgi?id=1909246))
 
 # v60.4.0 (2024-07-23)
 

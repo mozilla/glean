@@ -44,6 +44,13 @@ class ViewControllerTest: XCTestCase {
         XCTAssertEqual(value, expectedValue)
     }
 
+    func checkObjectData() {
+        let metrics = lastPingJson!["metrics"] as! [String: Any]
+        let objects = metrics["object"] as! [String: Any]
+        let balloons = objects["party.balloons"] as! [Any]
+        XCTAssertEqual(balloons.count, 2)
+    }
+
     func testViewControllerInteraction() {
         let server = setupServer(expectPingType: "sample")
 
@@ -77,6 +84,7 @@ class ViewControllerTest: XCTestCase {
         }
 
         checkCustomCounterData(expectedValue: 4)
+        checkObjectData()
 
         server.stop()
     }
