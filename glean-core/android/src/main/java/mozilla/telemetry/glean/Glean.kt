@@ -45,18 +45,9 @@ fun getGleanInitCalled(): Boolean {
 inline fun <reified Lib : Library> loadIndirect(
     @Suppress("UNUSED_PARAMETER") componentName: String
 ): Lib {
-    if (!getGleanInitCalled()) {
-        try {
-            val test = ("0")
-            test[1]
-        } catch (e: Exception) {
-            Log.e("gleanload", "exception", e);
-            val test = ("0")
-            test[1]
-        }
-    }
-
-    return Native.load<Lib>("xul", Lib::class.java)
+    val RTLD_NOLOAD = 0x4
+    val options = mapOf(Library.OPTION_OPEN_FLAGS to  RTLD_NOLOAD)
+    return Native.load<Lib>("xul", Lib::class.java, options)
 }
 
 /**
