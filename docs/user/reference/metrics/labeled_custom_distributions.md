@@ -35,7 +35,28 @@ network::http3_late_ack_ratio
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::network::http3_late_ack_ratio
+    .Get("ack")
+    .AccumulateSamples({(stats.late_ack * 10000) / stats.packets_tx});
+mozilla::glean::network::http3_late_ack_ratio
+    .Get("pto")
+    .AccumulateSamples({(stats.pto_ack * 10000) / stats.packets_tx});
+```
+
+**JavaScript**
+```js
+Glean.network.http3LateAckRatio["ack"]
+  .accumulateSamples([(stats.late_ack * 10000) / stats.packets_tx]);
+Glean.network.http3LateAckRatio["pto"]
+  .accumulateSamples([(stats.pto_ack * 10000) / stats.packets_tx]);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -69,7 +90,28 @@ network::http3_late_ack_ratio
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::network::http3_late_ack_ratio
+    .Get("ack")
+    .AccumulateSingleSample((stats.late_ack * 10000) / stats.packets_tx);
+mozilla::glean::network::http3_late_ack_ratio
+    .Get("pto")
+    .AccumulateSingleSample((stats.pto_ack * 10000) / stats.packets_tx);
+```
+
+**JavaScript**
+```js
+Glean.network.http3LateAckRatio["ack"]
+  .accumulateSingleSample((stats.late_ack * 10000) / stats.packets_tx);
+Glean.network.http3LateAckRatio["pto"]
+  .accumulateSingleSample((stats.pto_ack * 10000) / stats.packets_tx);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -106,12 +148,31 @@ assert_eq!(42, network::http3_late_ack_ratio.get("ack").test_get_value(None).unw
 assert_eq!(1, network::http3_late_ack_ratio.get("ack").test_get_value(None).unwrap().count);
 
 // Buckets are indexed by their lower bound.
-assert_eq!(1, etwork::http3_late_ack_ratio.get("ack").test_get_value(None).unwrap().values[41]);
+assert_eq!(1, network::http3_late_ack_ratio.get("ack").test_get_value(None).unwrap().values[41]);
 ```
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+auto data = mozilla::glean::network::http3_late_ack_ratio.Get("ack").TestGetValue().value();
+ASSERT_EQ(42UL, data.sum);
+ASSERT_EQ(1, data.count);
+ASSERT_EQ(1, data.values[41]);
+```
+
+**JavaScript**
+```js
+let data = Glean.network.http3LateAckRatio["ack"].testGetValue();
+Assert.equal(42, data.sum);
+Assert.equal(1, data.count);
+Assert.equal(1, data.values[41]);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
