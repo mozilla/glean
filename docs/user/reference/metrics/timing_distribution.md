@@ -406,7 +406,17 @@ function onPageLoaded() {
 </div>
 <div data-lang="Firefox Desktop" class="tab">
 
-This API is not currently exposed in Firefox Desktop, see [Bug 1884183](https://bugzilla.mozilla.org/show_bug.cgi?id=1884183).
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::pages::page_load.AccumulateRawDuration(aDuration);
+```
+
+**JavaScript**
+
+This operation is not currently supported in JavaScript.
 
 </div>
 
