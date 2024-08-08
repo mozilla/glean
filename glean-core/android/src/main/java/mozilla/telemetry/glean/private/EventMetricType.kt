@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.EventMetric
 import mozilla.telemetry.glean.testing.ErrorType
 
@@ -42,14 +43,11 @@ class NoExtras : EventExtras {
  * The Events API only exposes the [record] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class EventMetricType<ExtraObject> internal constructor(
-    private var inner: EventMetric,
+class EventMetricType<ExtraObject> constructor(
+    private var meta: CommonMetricData,
+    private var allowedExtraKeys: List<String>,
 ) where ExtraObject : EventExtras {
-    /**
-     * The public constructor used by automatically generated metrics.
-     */
-    constructor(meta: CommonMetricData, allowedExtraKeys: List<String>) :
-        this(inner = EventMetric(meta, allowedExtraKeys))
+    val inner: EventMetric by lazy { EventMetric(meta, allowedExtraKeys) }
 
     /**
      * Record an event by using the information provided by the instance of this class.
@@ -63,7 +61,9 @@ class EventMetricType<ExtraObject> internal constructor(
      *       If no `extra` data is passed the above function will be invoked correctly.
      */
     fun record(extra: ExtraObject? = null) {
-        inner.record(extra?.toExtraRecord() ?: emptyMap())
+        Dispatchers.Delayed.launch {
+            inner.record(extra?.toExtraRecord() ?: emptyMap())
+        }
     }
 
     /**
