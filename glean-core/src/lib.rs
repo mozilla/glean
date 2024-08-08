@@ -1231,6 +1231,7 @@ pub fn glean_enable_logging_to_fd(_fd: u64) {
 #[allow(missing_docs)]
 mod ffi {
     use super::*;
+    use crate::metrics::MetricType;
     uniffi::include_scaffolding!("glean");
 
     type CowString = Cow<'static, str>;
