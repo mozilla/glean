@@ -29,22 +29,20 @@ interface ObjectSerialize {
  * The object API only exposes the [set] method.
  * Only the associated object structure can be recorded.
  */
-class ObjectMetricType<K> internal constructor(
-    private var inner: ObjectMetric,
+class ObjectMetricType<K> constructor(
+    private var meta: CommonMetricData
 ) where K : ObjectSerialize {
-    /**
-     * The public constructor used by automatically generated metrics.
-     */
-    constructor(meta: CommonMetricData) :
-        this(inner = ObjectMetric(meta))
+    val inner: ObjectMetric by lazy { ObjectMetric(meta) }
 
     /**
      * Sets to the associated structure.
      *
      * @param obj The object to set.
      */
-    fun set(obj: K) = Dispatchers.Queue.launch {
-        inner.setString(obj.intoSerializedObject())
+    fun set(obj: K) {
+        Dispatchers.Queue.launch {
+            inner.setString(obj.intoSerializedObject())
+        }
     }
 
     /**

@@ -137,6 +137,10 @@ internal object Dispatchers {
         internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? {
             return coroutineScope.launch(block = block)
         }
+
+        internal fun executeBlocking(block: suspend CoroutineScope.() -> Unit): Unit {
+            return runBlocking { block() }
+        }
     }
 
     // This job is used to make sure the API `CoroutineContext` does not cancel

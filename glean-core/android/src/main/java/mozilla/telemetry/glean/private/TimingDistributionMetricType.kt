@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.GleanTimerId
 import mozilla.telemetry.glean.internal.TimingDistributionMetric
 import mozilla.telemetry.glean.testing.ErrorType
+import mozilla.telemetry.glean.Dispatchers
 
 /**
  * This implements the developer facing API for recording timing distribution metrics.
@@ -16,7 +17,7 @@ import mozilla.telemetry.glean.testing.ErrorType
  * allowing developers to record values that were previously registered in the metrics.yaml file.
  */
 class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) : HistogramBase {
-    val inner = TimingDistributionMetric(meta, timeUnit)
+    val inner: TimingDistributionMetric by lazy { TimingDistributionMetric(meta, timeUnit) }
 
     /**
      * Delegate common methods to the underlying type directly.
@@ -30,8 +31,17 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
      * Additional functionality
      */
 
-    fun accumulateSingleSample(sample: Long) = inner.accumulateSingleSample(sample)
-    override fun accumulateSamples(samples: List<Long>) = inner.accumulateSamples(samples)
+    fun accumulateSingleSample(sample: Long) {
+        Dispatchers.Queue.launch {
+            inner.accumulateSingleSample(sample)
+        }
+    }
+
+    override fun accumulateSamples(samples: List<Long>) {
+        Dispatchers.Queue.launch {
+            inner.accumulateSamples(samples)
+        }
+    }
 
     /**
      * Convenience method to simplify measuring a function or block of code.
