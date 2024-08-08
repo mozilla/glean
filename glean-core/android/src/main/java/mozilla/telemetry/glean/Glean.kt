@@ -265,6 +265,8 @@ open class GleanInternalAPI internal constructor() {
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
             gleanInitialize(cfg, clientInfo, callbacks)
         }
+
+        Dispatchers.Delayed.flushQueuedInitialTasks()
     }
 
     /**
