@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import mozilla.telemetry.glean.internal.ObjectMetric
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.testing.ErrorType
 
 /**
@@ -42,7 +43,7 @@ class ObjectMetricType<K> internal constructor(
      *
      * @param obj The object to set.
      */
-    fun set(obj: K) {
+    fun set(obj: K) = Dispatchers.Queue.launch {
         inner.setString(obj.intoSerializedObject())
     }
 
