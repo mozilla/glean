@@ -79,6 +79,10 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
 
         glean.initialized = true
 
+        Dispatchers.Queue.executeTask {
+            Dispatchers.Queue.flushQueuedInitialTasks()
+        }
+
         if (glean.testingMode) {
             glean.afterInitQueue.forEach { block ->
                 block()
