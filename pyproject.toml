@@ -22,7 +22,7 @@ maintainers = [
 
 dependencies = [
   "semver>=2.13.0",
-  "glean_parser~=14.5",
+  "glean_parser~=15.0",
 ]
 
 [project.urls]

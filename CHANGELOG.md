@@ -2,9 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...main)
 
-
-General
+* General
   * Updated to UniFFI 0.28.0 ([#2920](https://github.com/mozilla/glean/pull/2920))
+  * Update to `glean_parser` v15.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v15.0.0))
 
 # v60.5.0 (2024-08-06)
 
