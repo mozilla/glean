@@ -76,10 +76,6 @@ criteria = "safe-to-deploy"
 version = "0.10.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.flate2]]
-version = "1.0.25"
-criteria = "safe-to-deploy"
-
 [[exemptions.fs-err]]
 version = "2.9.0"
 criteria = "safe-to-deploy"
