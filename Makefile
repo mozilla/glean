@@ -164,7 +164,7 @@ linkcheck: docs linkcheck-raw  ## Run link-checker on the generated docs
 
 linkcheck-raw:
 	# Requires https://www.npmjs.com/package/link-checker
-	link-checker \
+	npx link-checker \
 		build/docs \
     --disable-external true \
     --allow-hash-href true \
