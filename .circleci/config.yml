@@ -984,7 +984,7 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: cimg/node:17.9
+      - image: cimg/node:22.6
     steps:
       - checkout
       - run:
@@ -1015,7 +1015,7 @@ jobs:
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   docs-deploy:
     docker:
-      - image: node:8.10.0
+      - image: cimg/node:22.6
     steps:
       - checkout
       - attach_workspace:
