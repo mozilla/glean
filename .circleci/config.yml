@@ -1038,8 +1038,8 @@ jobs:
           command: |
             git config user.email "jrediger@mozilla.com"
             git config user.name "CircleCI docs-deploy job"
-            npm install -g --silent gh-pages@2.0.1
-            gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
+            npm install gh-pages@6.1.1
+            npx gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
 
 ###########################################################################
 # Workflows
