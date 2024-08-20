@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...main)
 
+* Kotlin
+  * Change Metrics Ping Scheduler to use daemon threads ([#2930](https://github.com/mozilla/glean/pull/2930))
+
 # v61.0.0 (2024-08-21)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...v61.0.0)

@@ -103,11 +103,17 @@ internal class MetricsPingScheduler(
         val millisUntilNextDueTime = getMillisecondsUntilDueTime(sendTheNextCalendarDay, now)
         Log.d(LOG_TAG, "Scheduling the 'metrics' ping in ${millisUntilNextDueTime}ms")
 
-        // Cancel any existing scheduled work. Does not actually ancel a
-        // currently-running task.
+        // Cancel the MPS scheduler, discarding any currently scheduled tasks. This does not
+        // interfere with a currently executing task (if one exists).
         cancel()
 
-        timer = Timer("glean.MetricsPingScheduler")
+        // After cancelling the MPS timer, it will no longer be able to schedule new tasks for
+        // execution, so we will need to create a new one in order to schedule more work. This is
+        // done using`isDaemon: true`. We configure the timer to use a daemon-thread because it will
+        // not prevent the application from terminating gracefully, unlike the default user-thread.
+        // See: (https://developer.android.com/reference/java/util/Timer#Timer(boolean))
+        timer = Timer("glean.MetricsPingScheduler", true)
+
         timer?.schedule(MetricsPingTimer(this, reason), millisUntilNextDueTime)
     }
 
@@ -311,8 +317,13 @@ internal class MetricsPingScheduler(
         // Update the collection date: we don't really care if we have data or not, let's
         // always update the sent date.
         updateSentDate(getISOTimeString(now, truncateTo = TimeUnit.DAY))
-        // Reschedule the collection.
-        schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.reschedule)
+
+        // Schedule the next metrics ping collection
+        schedulePingCollection(
+            now,
+            sendTheNextCalendarDay = true,
+            reason = Pings.metricsReasonCodes.reschedule,
+        )
     }
 
     /**
@@ -340,6 +351,10 @@ internal class MetricsPingScheduler(
      * Function to cancel any pending metrics ping timers
      */
     fun cancel() {
+        // Terminate the MPS timer object, discarding any currently scheduled tasks. Does not
+        // interfere with a currently executing task (if it exists). Once a timer has been
+        // terminated, its execution thread terminates gracefully, and no more tasks may be
+        // scheduled on it.
         timer?.cancel()
         timer = null
     }

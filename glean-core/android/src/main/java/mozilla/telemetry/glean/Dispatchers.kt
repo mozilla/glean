@@ -6,7 +6,6 @@ package mozilla.telemetry.glean
 
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
