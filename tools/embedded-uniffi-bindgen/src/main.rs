@@ -6,16 +6,67 @@ use std::env;
 
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
-use uniffi::{generate_bindings, TargetLanguage};
-use uniffi_bindgen::BindingGeneratorDefault;
 
-fn parse_language(lang: &str) -> anyhow::Result<uniffi::TargetLanguage> {
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+enum TargetLanguage {
+    Kotlin,
+    Swift,
+    Python,
+}
+
+fn parse_language(lang: &str) -> anyhow::Result<TargetLanguage> {
     match lang {
         "kotlin" => Ok(TargetLanguage::Kotlin),
         "python" => Ok(TargetLanguage::Python),
         "swift" => Ok(TargetLanguage::Swift),
         _ => bail!("Unknown language"),
     }
+}
+
+fn gen_bindings(
+    udl_file: &camino::Utf8Path,
+    cfo: Option<&camino::Utf8Path>,
+    languages: Vec<TargetLanguage>,
+    odo: Option<&camino::Utf8Path>,
+    library_file: Option<&camino::Utf8Path>,
+    crate_name: Option<&str>,
+    fmt: bool,
+) -> anyhow::Result<()> {
+    use uniffi::generate_bindings;
+    use uniffi::{KotlinBindingGenerator, PythonBindingGenerator, SwiftBindingGenerator};
+
+    for language in languages {
+        match language {
+            TargetLanguage::Kotlin => generate_bindings(
+                udl_file,
+                cfo,
+                KotlinBindingGenerator,
+                odo,
+                library_file,
+                crate_name,
+                fmt,
+            )?,
+            TargetLanguage::Python => generate_bindings(
+                udl_file,
+                cfo,
+                PythonBindingGenerator,
+                odo,
+                library_file,
+                crate_name,
+                fmt,
+            )?,
+            TargetLanguage::Swift => generate_bindings(
+                udl_file,
+                cfo,
+                SwiftBindingGenerator,
+                odo,
+                library_file,
+                crate_name,
+                fmt,
+            )?,
+        };
+    }
+    Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
@@ -69,15 +120,10 @@ fn main() -> anyhow::Result<()> {
         bail!("Need output directory.")
     }
 
-    let generator = BindingGeneratorDefault {
-        target_languages,
-        try_format_code: false,
-    };
-
-    generate_bindings(
+    gen_bindings(
         &udl_file.unwrap(),
         config.as_deref(),
-        generator,
+        target_languages,
         out_dir.as_deref(),
         None,
         Some("glean_core"),

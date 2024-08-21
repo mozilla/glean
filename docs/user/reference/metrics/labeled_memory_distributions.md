@@ -29,7 +29,26 @@ network::http_upload_bandwidth
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::network::http_upload_bandwidth
+    .Get(httpVersion)
+    .Accumulate(this.mRequestSize * 8.0 / 1048576.0 / sendTime.AsSeconds());
+```
+
+**JavaScript**
+
+```js
+Glean.network.httpUploadBandwidth[httpVersion]
+  .accumulate(requestSize * 8.0 / 1048576.0 / sendTime.asSeconds())
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -71,7 +90,27 @@ assert_eq!(1, network::http_upload_bandwidth.get("h2").test_get_value(None).unwr
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+const data = mozilla::glean::network::http_upload_bandwidth
+    .Get("h2")
+    .TestGetValue().value().unwrap()
+ASSERT_EQ(42UL, data.sum);
+```
+
+**JavaScript**
+
+```js
+const data = Glean.network.httpUploadBandwidth["h2"].testGetValue();
+Assert.equal(42, data.sum);
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 

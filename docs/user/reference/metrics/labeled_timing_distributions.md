@@ -32,7 +32,25 @@ self.start = devtools::cold_toolbox_open_delay
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get(toolbox_id)
+    .Start();
+```
+
+**JavaScript**
+
+```js
+const timerId = Glean.devtools.coldToolboxOpenDelay[toolbox_id].start();
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -66,7 +84,25 @@ devtools::cold_toolbox_open_delay
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get(toolbox_id)
+    .StopAndAccumulate(std::move(timerId));
+```
+
+**JavaScript**
+
+```js
+Glean.devtools.coldToolboxOpenDelay[toolbox_id].stopAndAccumulate(timerId);
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -97,7 +133,25 @@ devtools::cold_toolbox_open_delay
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get(toolbox_id)
+    .Cancel(std::move(timerId));
+```
+
+**JavaScript**
+
+```js
+Glean.devtools.coldToolboxOpenDelay[toolbox_id].cancel(timerId);
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -140,7 +194,23 @@ devtools::cold_toolbox_open_delay
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get(toolbox_id)
+    .AccumulateRawSamples(samples);
+```
+
+**JavaScript**
+
+This operation is not currently supported in JavaScript.
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -185,7 +255,23 @@ devtools::cold_toolbox_open_delay
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get(toolboxId)
+    .AccumulateRawDuration(aDuration);
+```
+
+**JavaScript**
+
+This operation is not currently supported in JavaScript.
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -229,7 +315,26 @@ assert_ge!(400, snapshot.sum);
 
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/GleanMetrics.h"
+
+const data = mozilla::glean::devtools::cold_toolbox_open_delay
+    .Get("webconsole"_ns)
+    .TestGetValue().value().unwrap();
+ASSERT_TRUE(data.sum > 0);
+```
+
+**JavaScript**
+
+```js
+Assert.ok(Glean.devtools.coldToolboxOpenDelay["webconsole"].testGetValue().sum > 0);
+```
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 

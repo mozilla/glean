@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...main)
+
+# v61.0.0 (2024-08-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...v61.0.0)
+
+* General
+  * BREAKING CHANGE: Updated to UniFFI 0.28.0 ([#2920](https://github.com/mozilla/glean/pull/2920))
+  * BREAKING CHANGE: Update to `glean_parser` v15.0.0 ([release notes](https://github.com/mozilla/glean_parser/releases/tag/v15.0.0))
+* Kotlin
+  * BREAKING CHANGE: Remove now obsolete type alias ([#2935](https://github.com/mozilla/glean/issues/2935))
 
 # v60.5.0 (2024-08-06)
 

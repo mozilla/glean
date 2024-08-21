@@ -70,7 +70,7 @@ mozilla::glean::graphics::checkerboard_peak.AccumulateSamples({ 23 });
 **JavaScript**
 
 ```js
-Glean.graphics.checkerboardPeak.accumulateSamples([23])
+Glean.graphics.checkerboardPeak.accumulateSamples([23]);
 ```
 
 </div>
@@ -125,7 +125,19 @@ graphics.checkerboardPeak.accumulateSingleSample(23);
 </div>
 <div data-lang="Firefox Desktop" class="tab">
 
-This API is not currently exposed in Firefox Desktop, see [Bug 1884183](https://bugzilla.mozilla.org/show_bug.cgi?id=1884183).
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::graphics::checkerboard_peak.AccumulateSingleSample(23);
+```
+
+**JavaScript**
+
+```js
+Glean.graphics.checkerboardPeak.accumulateSingleSample(23);
+```
 
 </div>
 

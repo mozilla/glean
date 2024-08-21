@@ -253,7 +253,7 @@ jobs:
 
   License check:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run:
@@ -276,7 +276,7 @@ jobs:
 
   Check vendored schema:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run:
@@ -306,7 +306,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -315,7 +315,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run: rustup component add clippy
@@ -332,7 +332,7 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     resource_class: "medium+"
     steps:
       - test-rust
@@ -349,22 +349,22 @@ jobs:
 
   Rust tests - beta:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - test-rust:
           rust-version: "beta"
 
   Rust tests - minimum version:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.66.1"
+          rust-version: "1.76.0"
 
   Generate Rust documentation:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - run:
@@ -660,7 +660,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: cimg/rust:1.67
+      - image: cimg/rust:1.76
     steps:
       - checkout
       - attach_workspace:
@@ -984,12 +984,12 @@ jobs:
 
   docs-linkcheck:
     docker:
-      - image: cimg/node:17.9
+      - image: cimg/node:22.6
     steps:
       - checkout
       - run:
           name: Install linkchecker
-          command: npm install -g link-checker
+          command: npm install link-checker
       - attach_workspace:
           at: build/
       - run:
@@ -1015,7 +1015,7 @@ jobs:
   # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
   docs-deploy:
     docker:
-      - image: node:8.10.0
+      - image: cimg/node:22.6
     steps:
       - checkout
       - attach_workspace:
@@ -1038,8 +1038,8 @@ jobs:
           command: |
             git config user.email "jrediger@mozilla.com"
             git config user.name "CircleCI docs-deploy job"
-            npm install -g --silent gh-pages@2.0.1
-            gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
+            npm install gh-pages@6.1.1
+            npx gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
 
 ###########################################################################
 # Workflows
