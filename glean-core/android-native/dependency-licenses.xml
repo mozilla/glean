@@ -31,9 +31,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: ryu</name>
     <url>https://github.com/dtolnay/ryu</url>
   </license>  <license>
-    <name>Apache License 2.0: unicode-linebreak</name>
-    <url>https://github.com/axelf4/unicode-linebreak</url>
-  </license>  <license>
     <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
@@ -196,9 +193,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: unicode-normalization</name>
     <url>https://github.com/unicode-rs/unicode-normalization</url>
   </license>  <license>
-    <name>Apache License 2.0: unicode-width</name>
-    <url>https://github.com/unicode-rs/unicode-width</url>
-  </license>  <license>
     <name>Apache License 2.0: url</name>
     <url>https://github.com/servo/rust-url</url>
   </license>  <license>
@@ -231,9 +225,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: lmdb-rkv-sys</name>
     <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>  <license>
-    <name>Apache License 2.0: oneshot-uniffi</name>
-    <url>https://github.com/faern/oneshot</url>
   </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>
