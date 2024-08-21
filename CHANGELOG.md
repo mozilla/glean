@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...main)
+
+# v61.0.0 (2024-08-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v60.5.0...v61.0.0)
 
 * General
   * BREAKING CHANGE: Updated to UniFFI 0.28.0 ([#2920](https://github.com/mozilla/glean/pull/2920))
