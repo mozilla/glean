@@ -396,7 +396,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.75
+      - image: cimg/rust:1.80
     steps:
       - checkout
       - run:
