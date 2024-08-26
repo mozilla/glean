@@ -13,8 +13,6 @@ use crate::CommonMetricData;
 use crate::Glean;
 
 /// A custom distribution metric.
-///
-/// Memory distributions are used to accumulate and store memory sizes.
 #[derive(Clone, Debug)]
 pub struct CustomDistributionMetric {
     meta: Arc<CommonMetricDataInternal>,
