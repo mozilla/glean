@@ -269,4 +269,29 @@ impl CustomDistributionMetric {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
     }
+
+    /// Returns a thread-local handle to this [`CustomDistribution`]. See
+    /// [`LocalCustomDistribution`] docs.
+    pub fn local(&self) -> LocalCustomDistribution {
+        todo!()
+    }
+}
+
+/// A thread-local handle to a [`CustomDistribution`] syncing all accumulated
+/// samples to its global [`CustomDistribution`] on [`Drop::drop`].
+pub struct LocalCustomDistribution {}
+
+impl LocalCustomDistribution {
+    /// Accumulate a single sample to this [`LocalCustomDistribution`]. Note
+    /// that the value is only synced to the global instance on [`Drop::drop`]
+    /// of [`LocalCustomDistribution`].
+    pub fn accumulate_single_sample(&mut self, value: i64) {
+        todo!();
+    }
+}
+
+impl Drop for LocalCustomDistribution {
+    fn drop(&mut self) {
+        todo!("sync accumulated samples to global instance.")
+    }
 }

@@ -214,6 +214,41 @@ mod linear {
         let snapshot = metric.get_value(&glean, "store1");
         assert!(snapshot.is_some());
     }
+
+    #[test]
+    fn local() {
+        // Create a standard Glean custom distribution metric.
+        let (glean, _t) = new_glean(None);
+        let metric = CustomDistributionMetric::new(
+            CommonMetricData {
+                name: "distribution".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+            1,
+            100,
+            100,
+            HistogramType::Linear,
+        );
+        assert!(metric.get_value(&glean, "store1").is_none());
+
+        // Create a thread-local handle to the above custom distribution metric.
+        let mut local = metric.local();
+
+        // Accumulate a lot of samples on local without (synchronization)
+        // overhead, e.g. in the HTTP/3 QUIC UDP IO hotpath.
+        local.accumulate_single_sample(42);
+        // The global instance stays untouched.
+        assert!(metric.get_value(&glean, "store1").is_none());
+
+        // Once local is dropped, e.g. as part of an HTTP/3 QUIC connection
+        // closing, updates are synced to the global instance.
+        drop(local);
+        assert!(metric.get_value(&glean, "store1").is_some());
+    }
 }
 
 mod exponential {
