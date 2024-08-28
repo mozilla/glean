@@ -68,6 +68,7 @@ pub use self::string_list::StringListMetric;
 pub use self::text::TextMetric;
 pub use self::time_unit::TimeUnit;
 pub use self::timespan::TimespanMetric;
+pub use self::timing_distribution::LocalTimingDistribution;
 pub use self::timing_distribution::TimerId;
 pub use self::timing_distribution::TimingDistributionMetric;
 pub use self::url::UrlMetric;
@@ -82,7 +83,7 @@ pub use self::remote_settings_config::RemoteSettingsConfig;
 // Note: Be careful when changing this structure.
 // The serialized form ends up in the ping payload.
 // New fields might require to be skipped on serialization.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq)]
 pub struct DistributionData {
     /// A map containig the bucket index mapped to the accumulated count.
     ///
