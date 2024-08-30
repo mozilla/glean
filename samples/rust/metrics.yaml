@@ -68,6 +68,10 @@ test.metrics:
       - aLabel
       - 2label
 
+  sample_event_no_keys:
+    <<: *defaults
+    type: event
+
   sample_event:
     <<: *defaults
     type: event
