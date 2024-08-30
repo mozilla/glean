@@ -6,7 +6,7 @@
   * Change Metrics Ping Scheduler to use daemon threads ([#2930](https://github.com/mozilla/glean/pull/2930))
   * Dispatch metric recording for event, object and timing distribution on the task queue ([#2942](https://github.com/mozilla/glean/pull/2942))
 * Rust
-  * **Experimental**: Buffered API for timing distribution ([#2948](https://github.com/mozilla/glean/pull/2948))
+  * **Experimental**: Buffered API for timing & memory distribution ([#2948](https://github.com/mozilla/glean/pull/2948))
 
 # v61.0.0 (2024-08-21)
 

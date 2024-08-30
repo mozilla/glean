@@ -56,7 +56,7 @@ pub use self::labeled::{
     LabeledBoolean, LabeledCounter, LabeledCustomDistribution, LabeledMemoryDistribution,
     LabeledMetric, LabeledString, LabeledTimingDistribution,
 };
-pub use self::memory_distribution::MemoryDistributionMetric;
+pub use self::memory_distribution::{LocalMemoryDistribution, MemoryDistributionMetric};
 pub use self::memory_unit::MemoryUnit;
 pub use self::numerator::NumeratorMetric;
 pub use self::object::ObjectMetric;
