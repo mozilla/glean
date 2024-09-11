@@ -46,6 +46,8 @@
     - [JavaScript](user/debugging/javascript.md)
 - [Walkthroughs and How-tos](user/howto/index.md)
     - [Server Knobs Walkthrough](user/howto/server-knobs-walkthrough/server-knobs-walkthrough.md)
+    - ["Real-Time" Events](user/howto/real-time-events/real-time-events.md)
+
 # API Reference
 
 - [YAML Registry Format](reference/yaml/index.md)
@@ -101,6 +103,7 @@
     - [Command Line Interface](language-bindings/javascript/cli.md)
     - [Plugins](language-bindings/javascript/plugins/index.md)
         - [Ping Encryption Plugin](language-bindings/javascript/plugins/encryption.md)
+
 # Appendix
 
 - [Glossary](appendix/glossary.md)
