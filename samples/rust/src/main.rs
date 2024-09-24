@@ -113,6 +113,15 @@ fn main() {
         glean_metrics::party::drinks.test_get_num_recorded_errors(ErrorType::InvalidValue)
     );
 
+    {
+        let mut buffer = glean_metrics::test_metrics::timings.start_buffer();
+
+        let mock_duration = Duration::from_millis(10);
+        for _ in 0..100 {
+            buffer.accumulate(mock_duration.as_millis() as u64);
+        }
+    }
+
     glean_metrics::prototype.submit(None);
     // Need to wait a short time for Glean to actually act.
     thread::sleep(Duration::from_millis(100));

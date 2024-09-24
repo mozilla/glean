@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.private
 import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.ObjectMetric
 import mozilla.telemetry.glean.testing.ErrorType
 
@@ -28,14 +29,10 @@ interface ObjectSerialize {
  * The object API only exposes the [set] method.
  * Only the associated object structure can be recorded.
  */
-class ObjectMetricType<K> internal constructor(
-    private var inner: ObjectMetric,
+class ObjectMetricType<K> constructor(
+    private var meta: CommonMetricData,
 ) where K : ObjectSerialize {
-    /**
-     * The public constructor used by automatically generated metrics.
-     */
-    constructor(meta: CommonMetricData) :
-        this(inner = ObjectMetric(meta))
+    val inner: ObjectMetric by lazy { ObjectMetric(meta) }
 
     /**
      * Sets to the associated structure.
@@ -43,7 +40,9 @@ class ObjectMetricType<K> internal constructor(
      * @param obj The object to set.
      */
     fun set(obj: K) {
-        inner.setString(obj.intoSerializedObject())
+        Dispatchers.Delayed.launch {
+            inner.setString(obj.intoSerializedObject())
+        }
     }
 
     /**

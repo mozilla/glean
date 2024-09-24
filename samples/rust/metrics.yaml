@@ -41,6 +41,11 @@ test.metrics:
     no_lint:
       - COMMON_PREFIX
 
+  timings:
+    <<: *defaults
+    type: timing_distribution
+    time_unit: millisecond
+
   sample_labeled_custom_distribution:
     <<: *defaults
     type: labeled_custom_distribution
@@ -67,6 +72,10 @@ test.metrics:
     labels:
       - aLabel
       - 2label
+
+  sample_event_no_keys:
+    <<: *defaults
+    type: event
 
   sample_event:
     <<: *defaults

@@ -19,7 +19,7 @@ The `events` ping is automatically submitted under the following circumstances:
 1. If there are any recorded events to send when the application becomes inactive (on mobile, this means going to [background](sent-by-glean.md#defining-foreground-and-background-state)).
 
 2. When the queue of events exceeds `Glean.configuration.maxEvents` (default 1 for Glean.js, 500 for all other SDKs). This configuration
-option can be changed at [initialization](../../reference/general/initializing.md).
+option can be changed at [initialization](../../reference/general/initializing.md) or through [Server Knobs](../../user/server-knobs/other/max-events.md).
 
 3. If there are any unsent events found on disk when starting the application. _(This results in this ping never containing the [`glean.restarted`](./custom.md#the-gleanrestarted-event) event.)_
 

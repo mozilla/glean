@@ -8,7 +8,7 @@ Each event contains the following data:
 - A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
   - If sending events in custom pings, see [note](../../user/pings/custom.md#the-gleanrestarted-event) on event timestamp calculation throughout restarts.
 - The name of the event.
-- A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter, and the values are strings.
+- A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter. Values are one of `string`, `boolean`, `quantity`, and are converted to `string` for transmission.
 
 {{#include ../../../shared/blockquote-info.html}}
 
@@ -382,8 +382,15 @@ A maximum of 50 extra keys is allowed.
 Each extra key contains additional metadata:
 
 - `description`: **Required.** A description of the key.
-* `type`: The type of value this extra key can hold. One of `string`, `boolean`, `quantity`. Defaults to `string`.
+* `type`: The type of value this extra key can hold. One of `string`, `boolean`, `quantity`. Defaults to `string`. Recorded value is converted to string for transmission.
   **Note**: If not specified only the legacy API on `record` is available.
+
+{{#include ../../../shared/blockquote-info.html}}
+
+#### Extras or string metrics?
+
+> When designing your metrics, define properties that are slow-changing and common across all events in a given ping as string metrics.
+> Properties specific to a single event or a subset of events should be defined as event extras.
 
 ## Data questions
 

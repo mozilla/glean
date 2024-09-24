@@ -83,8 +83,7 @@ internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
     }
 
     override fun cancelUploads() {
-        // Cancel any pending workers here so that we don't accidentally upload or
-        // collect data after the upload has been disabled.
+        // Cancel any pending metrics ping scheduler tasks
         glean.metricsPingScheduler?.cancel()
         // Cancel any pending workers here so that we don't accidentally upload
         // data after the upload has been disabled.
@@ -266,6 +265,8 @@ open class GleanInternalAPI internal constructor() {
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
             gleanInitialize(cfg, clientInfo, callbacks)
         }
+
+        Dispatchers.Delayed.flushQueuedInitialTasks()
     }
 
     /**

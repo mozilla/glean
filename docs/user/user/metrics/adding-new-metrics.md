@@ -39,7 +39,7 @@ For all of the metric types in this section that measure single values, it is es
 
 For tracking user behavior, it is usually meaningful to know the over of events that lead to the use of a feature.  Therefore, for user behavior, an [event metric](../../reference/metrics/event.html) is usually the best choice.
 
-Be aware, however, that events can be particularly expensive to transmit, store and analyze, so should not be used for higher-frequency measurements.
+Be aware, however, that events can be particularly expensive to transmit, store and analyze, so should not be used for higher-frequency measurements - though this is less of a concern in [server environments](../adding-glean-to-your-project/server.md).
 
 ### Are you counting things?
 

@@ -318,7 +318,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "61.0.0"
+version = "61.1.0"
 dependencies = [
  "crossbeam-channel",
  "env_logger",
@@ -336,7 +336,7 @@ dependencies = [
 
 [[package]]
 name = "glean-build"
-version = "15.0.0"
+version = "15.0.1"
 dependencies = [
  "tempfile",
  "xshell-venv",
@@ -359,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "61.0.0"
+version = "61.1.0"
 dependencies = [
  "android_logger",
  "bincode",
