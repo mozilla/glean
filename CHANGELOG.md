@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v61.1.0...main)
+
+# v61.1.0 (2024-09-24)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...v61.1.0)
 
 * Kotlin
   * Change Metrics Ping Scheduler to use daemon threads ([#2930](https://github.com/mozilla/glean/pull/2930))
