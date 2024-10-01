@@ -62,6 +62,7 @@
 		CD0CADA427E216810015A997 /* glean.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD08C8527E21104007C8400 /* glean.swift */; };
 		CD0F7CC026F0F27900EDA6A4 /* UrlMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */; };
 		CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */; };
+		CD3682F32CAC110300B02F04 /* RidealongPingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3682F22CAC10FE00B02F04 /* RidealongPingTests.swift */; };
 		CD38786D271DCCC700C097D8 /* libglean_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD38786C271DCCC700C097D8 /* libglean_ffi.a */; };
 		CD70CF932850D69500FC2014 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF922850D69500FC2014 /* Gzip */; };
 		CD70CF982850D77200FC2014 /* OHHTTPStubs in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF972850D77200FC2014 /* OHHTTPStubs */; };
@@ -144,6 +145,7 @@
 		CD07A4DD2BC808AE007A0F1C /* ObjectMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectMetric.swift; sourceTree = "<group>"; };
 		CD0F7CBF26F0F27900EDA6A4 /* UrlMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetric.swift; sourceTree = "<group>"; };
 		CD0F7CC126F0F28900EDA6A4 /* UrlMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMetricTests.swift; sourceTree = "<group>"; };
+		CD3682F22CAC10FE00B02F04 /* RidealongPingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidealongPingTests.swift; sourceTree = "<group>"; };
 		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
 		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
 		CD81DCF9282A8F9A00347965 /* RateMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateMetric.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 			isa = PBXGroup;
 			children = (
 				60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */,
+				CD3682F22CAC10FE00B02F04 /* RidealongPingTests.swift */,
 				BF80AA5E2399305200A8B172 /* DeletionRequestPingTests.swift */,
 				BF80AA5A2399301200A8B172 /* HttpPingUploaderTests.swift */,
 			);
@@ -637,6 +640,7 @@
 				CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */,
 				BFCBD6AB246D55CC0032096D /* TestUtils.swift in Sources */,
 				AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */,
+				CD3682F32CAC110300B02F04 /* RidealongPingTests.swift in Sources */,
 				1F58921223C923C4007D2D80 /* MetricsPingSchedulerTests.swift in Sources */,
 				CD9DA7852BC809BE00E18F31 /* ObjectMetricTests.swift in Sources */,
 				1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */,

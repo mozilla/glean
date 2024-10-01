@@ -15,6 +15,7 @@ public struct Configuration {
     let enableInternalPings: Bool
     let pingLifetimeThreshold: Int
     let pingLifetimeMaxTime: Int
+    let pingSchedule: [String: [String]]
 
     struct Constants {
         static let defaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org"
@@ -36,6 +37,9 @@ public struct Configuration {
     ///   * enableInternalPings Whether to enable internal pings.
     ///   * pingLifetimeThreshold Write count threshold when to auto-flush. `0` disables it.
     ///   * pingLifetimeMaxTime After what time to auto-flush (in milliseconds). 0 disables it.
+    ///   * pingSchedule A ping schedule map.
+    ///   Maps a ping name to a list of pings to schedule along with it.
+    ///   Only used if the ping's own ping schedule list is empty.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -46,7 +50,8 @@ public struct Configuration {
         experimentationId: String? = nil,
         enableInternalPings: Bool = true,
         pingLifetimeThreshold: Int = 0,
-        pingLifetimeMaxTime: Int = 0
+        pingLifetimeMaxTime: Int = 0,
+        pingSchedule: [String: [String]] = [:]
     ) {
         self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.maxEvents = maxEvents
@@ -58,5 +63,6 @@ public struct Configuration {
         self.enableInternalPings = enableInternalPings
         self.pingLifetimeThreshold = pingLifetimeThreshold
         self.pingLifetimeMaxTime = pingLifetimeMaxTime
+        self.pingSchedule = pingSchedule
     }
 }

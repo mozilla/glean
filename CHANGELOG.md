@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.1.0...main)
 
+* Kotlin
+  * Accept a ping schedule map on initialize ([#2967](https://github.com/mozilla/glean/pull/2967))
+* Swift
+  * Accept a ping schedule map on initialize ([#2967](https://github.com/mozilla/glean/pull/2967))
+
 # v61.1.0 (2024-09-24)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.0.0...v61.1.0)
