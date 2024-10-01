@@ -104,7 +104,9 @@ func tearDownStubs() {
 func JSONStringify(_ json: Any) -> String {
     do {
         let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
-        return String(decoding: data, as: UTF8.self)
+        if let string = String(data: data, encoding: String.Encoding.utf8) {
+            return string
+        }
     } catch {
         print(error)
     }
