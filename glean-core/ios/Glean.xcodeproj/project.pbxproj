@@ -301,7 +301,6 @@
 			isa = PBXGroup;
 			children = (
 				C27E756429D4B56500C6AADD /* Utils */,
-				60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */,
 				1F39E7B1239F0741009B13B3 /* Debug */,
 				1FB8F8392326EBA500618E47 /* Config */,
 				BF43A8CB232A613100545310 /* Metrics */,
@@ -372,6 +371,7 @@
 		BF80AA5923992FFB00A8B172 /* Net */ = {
 			isa = PBXGroup;
 			children = (
+				60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */,
 				BF80AA5E2399305200A8B172 /* DeletionRequestPingTests.swift */,
 				BF80AA5A2399301200A8B172 /* HttpPingUploaderTests.swift */,
 			);
