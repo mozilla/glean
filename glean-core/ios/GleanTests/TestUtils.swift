@@ -49,7 +49,10 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 ///
 /// This also prevents outgoing network requests during unit tests while
 /// still allowing us to use the default telemetry endpoint.
-func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearStores: Bool = true) {
+func resetGleanDiscardingInitialPings(testCase: XCTestCase,
+                                      tag: String,
+                                      clearStores: Bool = true,
+                                      configuration: Configuration = Configuration()) {
     let expectation = testCase.expectation(description: "\(tag): Ping Received")
 
     // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture
@@ -85,7 +88,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase, tag: String, clearSt
     let mps = MetricsPingScheduler(true)
     mps.updateSentDate(Date())
 
-    Glean.shared.resetGlean(clearStores: clearStores)
+    Glean.shared.resetGlean(configuration: configuration, clearStores: clearStores)
 
     testCase.waitForExpectations(timeout: 5.0) { error in
         XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

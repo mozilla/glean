@@ -257,7 +257,7 @@ open class GleanInternalAPI internal constructor() {
                 enableEventTimestamps = configuration.enableEventTimestamps,
                 experimentationId = configuration.experimentationId,
                 enableInternalPings = configuration.enableInternalPings,
-                pingSchedule = emptyMap(),
+                pingSchedule = configuration.pingSchedule,
                 pingLifetimeThreshold = configuration.pingLifetimeThreshold.toULong(),
                 pingLifetimeMaxTime = configuration.pingLifetimeMaxTime.toULong(),
             )
