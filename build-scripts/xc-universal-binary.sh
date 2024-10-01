@@ -21,7 +21,6 @@ if [[ -n "${DEVELOPER_SDK_DIR:-}" ]]; then
 #  # In this case, we need to add an extra library search path for build scripts and proc-macros,
 #  # which run on the host instead of the target.
 #  # (macOS Big Sur does not have linkable libraries in /usr/lib/.)
-  local libpath
   libpath="${DEVELOPER_SDK_DIR}/MacOSX.sdk/usr/lib"
   export LIBRARY_PATH="${libpath}:${LIBRARY_PATH:-}"
 fi
