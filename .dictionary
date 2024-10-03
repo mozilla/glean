@@ -1,291 +1,296 @@
-personal_ws-1.1 en 290 utf-8
-AAR
-AARs
-ABI
-API's
-APIs
-APK
-AndroidX
-AppServices
-BEHAVIOUR
-BUGFIX
-Backported
-Bool
-Booleans
-CLI
-CMake
-CODEOWNERS
-Cartfile
-CircleCI
-Ciufo
-DNS
-DOM
-Datetime
-Datetimes
-Dependabot
-Droettboom
-FOG
-FTE
-FeatureManifest
-Fenix
-Fournier
-Frictionless
-Fritzsche
-Funday
-GeckoView
-Georg
-GitFlow
-GitHub
-Glean's
-Gradle
-Grapheme
-Hotfix
-Howtos
-JDK
-JNA
-JNI
-JSON
-JUnit
-JWE
-JWK
-JetBrains
-Karlton
-Kotlin
-LLDB
-LMDB
-Lockwise
-MPL
-MacBooks
-Makefile
-Mingw
-Miniconda
-Mockito
-Mutex
-NDK
-POSIX
-PRs
-PingEncryptionPlugin
-PowerShell
-ProGuard
-Protobufs
-PyPI
-QML
-RLB
-Redash
-Rkv's
-Robolectric
-SDK
-SDK's
-SDKs
-SRE
-Solaris
-Sourcegraph
-StringList
-TLDs
-TODO
-TSan
-TWiG
-TaskCluster
-Taskcluster
-UA
-UI
-URIs
-UTF
-UUID
-UUIDs
-Unbreak
-Underflowing
-UniFFI
-Uploaders
-VPN
-Walkthrough
-Walkthroughs
-Wasm
-WebRender
-Webpack
-WorkManager
-XCFramework
-Xcode
-YAML
-aarch
-addon
-alphanumerics
-analytics
-anonymized
-aspell
-async
-autodetected
-backend
-backgrounding
-backoff
-backport
-barcode
-bincode
-bindgen
-biometric
-bool
-boolean
-booleans
-brizental
-bugfixes
-camelCase
-cancelled
-carthage
-changelog
-chutten
-ci
-circleci
-clippy
-cmd
-codecov
-codepoints
-commandline
-conda
-config
-configs
-coroutine
-csh
-dataset
-datetime
-destructor
-deterministically
-dev
-devtools
-dexter
-distributable
-docstrings
-dokka
-dropdown
-enqueue
-enqueued
-enum
-envs
-etl
-exe
-experimentId
-ffi
-fi
-frontend
-func
-gfritzsche
-glibc
-glinter
-gradle
-grcov
-gzip
-gzipped
-homescreen
-hotfix
-html
-iMacs
-illumos
-init
-initializer
-inlined
-instrumentations
-integrations
-io
-ios
-janerik
-js
-kibibyte
-ktlint
-lang
-latencies
-lfloor
-libstd's
-lifecycle
-linter
-linux
-logPings
-logcat
-macOS
-manylinux
-maturin
-md
-mdbook
-mdroettboom
-megazord
-metric's
-minified
-mozilla
-mozregression
-musl
-mypy
-namespace
-npm
-ns
-ol
-ons
-outputter
-pdoc
-perrymcmanis
-pidcat
-pipenv
-polyfill
-pre
-prebuilt
-preinit
-py
-pytest
-rethrow
-retransmission
-rfloor
-rkv
-rkv's
-rollout
-rollouts
-runtime
-runtimes
-rustc
-rustup
-schemas
-sdk
-semver
-serializable
-serializer
-setuptools
-stateful
-struct
-subcommand
-subpath
-subprocess
-subprocesses
-substring
-swiftlint
-tcsh
-templating
-timespan
-timespan's
-timespans
-timezones
-toolchain
-toolchains
-tooltip
-tooltips
-tos
-transpiler
-travis
-und
-unencoded
-unhandled
-uniffi
-unminified
-uploader
-uploaders
-urlbar
-validator
-vendored
-vendoring
-virtualenv
-walkthrough
-walkthroughs
-webextension
-webpages
-whatsys
-wi
-xcframework
-xcode
-xcpretty
-yaml
-zsh
+# Terminology List
+
+## Abbreviations and Acronyms
+- **AAR**: Android Archive
+- **AARs**: Android Archives
+- **ABI**: Application Binary Interface
+- **API**: Application Programming Interface
+- **API's**: Possessive form of API
+- **APIs**: Multiple Application Programming Interfaces
+- **APK**: Android Package
+- **AndroidX**: Jetpack's libraries for Android
+- **AppServices**: Services for app functionalities
+- **BEHAVIOUR**: Behavior
+- **BUGFIX**: Correction of bugs
+- **Backported**: Ported back to an earlier version
+- **Bool**: Boolean
+- **Booleans**: Multiple boolean values
+- **CLI**: Command Line Interface
+- **CMake**: Cross-platform build system
+- **CODEOWNERS**: GitHub file for specifying code ownership
+- **Cartfile**: File used for dependency management in Carthage
+- **CircleCI**: Continuous integration and delivery platform
+- **Ciufo**: Reference to a contributor
+- **DNS**: Domain Name System
+- **DOM**: Document Object Model
+- **Datetime**: Date and time representation
+- **Datetimes**: Multiple date and time representations
+- **Dependabot**: Dependency management tool for GitHub
+- **Droettboom**: Reference to a contributor
+- **FOG**: Fear of Guilt
+- **FTE**: Full-Time Equivalent
+- **FeatureManifest**: Configuration for features
+- **Fenix**: Mozilla's mobile browser project
+- **Fournier**: Reference to a contributor
+- **Frictionless**: Seamless experience
+- **Fritzsche**: Reference to a contributor
+- **Funday**: Reference to an event or activity
+- **GeckoView**: Mozilla's browser engine for Android
+- **Georg**: Reference to a contributor
+- **GitFlow**: Branching model for Git
+- **GitHub**: Git repository hosting service
+- **Glean's**: Possessive form of Glean
+- **Gradle**: Build automation tool
+- **Grapheme**: A unit of writing
+- **Hotfix**: Immediate bug fix
+- **Howtos**: Guides or tutorials
+- **JDK**: Java Development Kit
+- **JNA**: Java Native Access
+- **JNI**: Java Native Interface
+- **JSON**: JavaScript Object Notation
+- **JUnit**: Unit testing framework for Java
+- **JWE**: JSON Web Encryption
+- **JWK**: JSON Web Key
+- **JetBrains**: Software development company
+- **Karlton**: Reference to a contributor
+- **Kotlin**: Programming language for Android development
+- **LLDB**: Debugger that is part of the LLVM project
+- **LMDB**: Lightning Memory-Mapped Database
+- **Lockwise**: Mozilla's password manager
+- **MPL**: Mozilla Public License
+- **MacBooks**: Apple's line of laptops
+- **Makefile**: File for defining build tasks
+- **Mingw**: Minimalist GNU for Windows
+- **Miniconda**: Minimal version of Anaconda
+- **Mockito**: Mocking framework for Java
+- **Mutex**: Mutual exclusion
+- **NDK**: Native Development Kit
+- **POSIX**: Portable Operating System Interface
+- **PRs**: Pull Requests
+- **PingEncryptionPlugin**: Plugin for encryption
+- **PowerShell**: Task automation framework from Microsoft
+- **ProGuard**: Code shrinker and obfuscator
+- **Protobufs**: Protocol Buffers
+- **PyPI**: Python Package Index
+- **QML**: Qt Modeling Language
+- **RLB**: Reference to a contributor
+- **Redash**: Data visualization tool
+- **Rkv's**: Possessive form of Rkv
+- **Robolectric**: Unit testing framework for Android
+- **SDK**: Software Development Kit
+- **SDK's**: Possessive form of SDK
+- **SDKs**: Multiple Software Development Kits
+- **SRE**: Site Reliability Engineering
+- **Solaris**: Operating system
+- **Sourcegraph**: Code search and navigation tool
+- **StringList**: List of strings
+- **TLDs**: Top-Level Domains
+- **TODO**: Tasks to be done
+- **TSan**: ThreadSanitizer
+- **TWiG**: Title with Intent to Generate
+- **TaskCluster**: Mozilla's task automation platform
+- **Taskcluster**: Alternative spelling
+- **UA**: User Agent
+- **UI**: User Interface
+- **URIs**: Uniform Resource Identifiers
+- **UTF**: Unicode Transformation Format
+- **UUID**: Universally Unique Identifier
+- **UUIDs**: Multiple Universally Unique Identifiers
+- **Unbreak**: To restore functionality
+- **Underflowing**: Situation where a value goes below the minimum
+- **UniFFI**: Universal Foreign Function Interface
+- **Uploaders**: Individuals who upload content
+- **VPN**: Virtual Private Network
+- **Walkthrough**: Step-by-step guide
+- **Walkthroughs**: Multiple step-by-step guides
+- **Wasm**: WebAssembly
+- **WebRender**: Mozilla's rendering engine
+- **Webpack**: Module bundler for JavaScript
+- **WorkManager**: Android library for background work
+- **XCFramework**: Xcode framework that supports multiple platforms
+- **Xcode**: Integrated development environment for macOS
+- **YAML**: Data serialization language
+
+## Common Terms
+- **aarch**: Architecture reference
+- **addon**: Additional functionality
+- **alphanumerics**: Combination of letters and numbers
+- **analytics**: Data analysis
+- **anonymized**: Data that cannot be traced back to an individual
+- **aspell**: Spell checker
+- **async**: Asynchronous programming
+- **autodetected**: Automatically identified
+- **backend**: Server-side application logic
+- **backgrounding**: Running processes in the background
+- **backoff**: Gradually reducing efforts or responses
+- **backport**: Integrating features into an older version
+- **barcode**: Machine-readable representation of data
+- **bincode**: Binary code
+- **bindgen**: Tool for generating bindings
+- **biometric**: Related to biological data
+- **bool**: Boolean value
+- **boolean**: Data type with two possible values
+- **booleans**: Multiple boolean values
+- **brizental**: Reference to a contributor
+- **bugfixes**: Corrections of bugs
+- **camelCase**: Text format where words are concatenated with each word capitalized
+- **cancelled**: Something that has been called off
+- **carthage**: Dependency manager for iOS
+- **changelog**: List of changes made
+- **chutten**: Reference to a contributor
+- **ci**: Continuous Integration
+- **circleci**: Continuous integration and delivery platform
+- **clippy**: Rust linter
+- **cmd**: Command
+- **codecov**: Code coverage tool
+- **codepoints**: Specific points in a character encoding
+- **commandline**: Interface for entering commands
+- **conda**: Package and environment management system
+- **config**: Configuration settings
+- **configs**: Multiple configuration settings
+- **coroutine**: General control structure for concurrent programming
+- **csh**: C shell programming language
+- **dataset**: Collection of data
+- **datetime**: Representation of date and time
+- **destructor**: Method that cleans up when an object is deleted
+- **deterministically**: Always producing the same result
+- **dev**: Development
+- **devtools**: Development tools
+- **dexter**: Reference to a contributor
+- **distributable**: Capable of being distributed
+- **docstrings**: Documentation strings in code
+- **dokka**: Documentation engine for Kotlin
+- **dropdown**: UI element that displays a list of options
+- **enqueue**: To add to a queue
+- **enqueued**: Added to a queue
+- **enum**: Enumeration type
+- **envs**: Environments
+- **etl**: Extract, Transform, Load
+- **exe**: Executable file
+- **experimentId**: Identifier for an experiment
+- **ffi**: Foreign Function Interface
+- **fi**: Finnish (context-specific)
+- **frontend**: Client-side application logic
+- **func**: Function
+- **gfritzsche**: Reference to a contributor
+- **glibc**: GNU C Library
+- **glinter**: Code quality tool for Go
+- **gradle**: Build automation tool
+- **grcov**: Code coverage tool for Rust
+- **gzip**: File format and software application
+- **gzipped**: Compressed using gzip
+- **homescreen**: Main screen on a device
+- **hotfix**: Quick fix for a bug
+- **html**: HyperText Markup Language
+- **iMacs**: Apple's line of desktop computers
+- **illumos**: Open-source Unix operating system
+- **init**: Initialization
+- **initializer**: Method for setting up an object
+- **inlined**: Function defined inline
+- **instrumentations**: Methods for monitoring application performance
+- **integrations**: Combined functionalities
+- **io**: Input/Output
+- **ios**: Apple's mobile operating system
+- **janerik**: Reference to a contributor
+- **js**: JavaScript
+- **kibibyte**: 1024 bytes
+- **ktlint**: Kotlin linter
+- **lang**: Language
+- **latencies**: Delays
+- **lfloor**: Floor function
+- **libstd's**: Possessive form of libstd
+- **lifecycle**: Series of stages in an object's life
+- **linter**: Tool for analyzing code
+- **linux**: Open-source operating system
+- **logPings**: Logging ping events
+- **logcat**: Android logging system
+- **macOS**: Apple's operating system
+- **manylinux**: Compatibility for Linux wheels
+- **maturin**: Tool for building Python packages
+- **md**: Markdown
+- **mdbook**: Tool for creating books from Markdown files
+- **mdroettboom**: Reference to a contributor
+- **megazord**: Reference to a combined entity
+- **metric's**: Possessive form of metric
+- **minified**: Reduced in size
+- **mozilla**: Mozilla Foundation
+- **mozregression**: Tool for regression testing in Mozilla
+- **musl**: Lightweight implementation of the standard library
+- **mypy**: Static type checker for Python
+- **namespace**: Container for identifiers
+- **npm**: Node Package Manager
+- **ns**: Namespace
+- **ol**: Ordered list
+- **ons**: On
+- **outputter**: Component that produces output
+- **pdoc**: Documentation generator for Python
+- **perrymcmanis**: Reference to a contributor
+- **pidcat**: Tool for displaying Android logs
+- **pipenv**: Python dependency manager
+- **polyfill**: Code that provides functionality that is not natively supported
+- **pre**: Before
+- **prebuilt**: Built beforehand
+- **preinit**: Initialization before the main process
+- **py**: Python
+- **pytest**: Testing framework for Python
+- **rethrow**: To throw an exception again
+- **retransmission**: Sending data again
+- **rfloor**: Ceiling function
+- **rkv**: Reference to a contributor
+- **rkv's**: Possessive form of Rkv
+- **rollout**: Gradual release of a feature
+- **rollouts**: Multiple gradual releases
+- **runtime**: Time during which a program is running
+- **runtimes**: Multiple periods of program execution
+- **rustc**: Rust compiler
+- **rustup**: Toolchain installer for Rust
+- **schemas**: Structures for organizing data
+- **sdk**: Software Development Kit
+- **semver**: Semantic versioning
+- **serializable**: Capable of being serialized
+- **serializer**: Converts objects to a format that can be easily stored
+- **setuptools**: Python package development library
+- **stateful**: Retaining state information
+- **struct**: Composite data type
+- **subcommand**: Command under another command
+- **subpath**: A path under a parent path
+- **subprocess**: Process created by another process
+- **subprocesses**: Multiple subprocesses
+- **substring**: A portion of a string
+- **swiftlint**: Linter for Swift
+- **tcsh**: An enhanced version of the C shell
+- **templating**: Creating templates
+- **timespan**: Duration of time
+- **timespan's**: Possessive form of timespan
+- **timespans**: Multiple durations of time
+- **timezones**: Regions with specific time settings
+- **toolchain**: Collection of tools for software development
+- **toolchains**: Multiple collections of development tools
+- **tooltip**: Small informational box
+- **tooltips**: Multiple small informational boxes
+- **tos**: Terms of Service
+- **transpiler**: Tool for converting source code from one language to another
+- **travis**: Continuous integration service
+- **und**: Reference to a contributor
+- **unencoded**: Not encoded
+- **unhandled**: Not managed or dealt with
+- **uniffi**: Universal Foreign Function Interface for Rust
+- **unminified**: Not compressed
+- **uploader**: Individual who uploads content
+- **uploaders**: Multiple individuals who upload content
+- **urlbar**: URL input field
+- **validator**: Tool for checking data validity
+- **vendored**: Included with the application
+- **vendoring**: The practice of including third-party dependencies
+- **virtualenv**: Python tool for creating isolated environments
+- **walkthrough**: Step-by-step guide
+- **walkthroughs**: Multiple step-by-step guides
+- **webextension**: Browser extension that uses web technologies
+- **webpages**: Pages on the World Wide Web
+- **whatsys**: Reference to system information
+- **wi**: Reference to a contributor
+- **xcframework**: Framework that supports multiple platforms in Xcode
+- **xcode**: Integrated development environment for macOS
+- **xcpretty**: Pretty-printing tool for Xcode builds
+- **yaml**: Data serialization language
+- **zsh**: Z Shell
