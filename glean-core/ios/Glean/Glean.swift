@@ -196,7 +196,7 @@ public class Glean {
             enableEventTimestamps: configuration.enableEventTimestamps,
             experimentationId: configuration.experimentationId,
             enableInternalPings: configuration.enableInternalPings,
-            pingSchedule: [:],
+            pingSchedule: configuration.pingSchedule,
             pingLifetimeThreshold: UInt64(configuration.pingLifetimeThreshold),
             pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime)
         )
