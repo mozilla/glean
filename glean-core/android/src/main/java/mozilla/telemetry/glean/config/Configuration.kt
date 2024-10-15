@@ -30,6 +30,7 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property pingSchedule A ping schedule map.
  *           Maps a ping name to a list of pings to schedule along with it.
  *           Only used if the ping's own ping schedule list is empty.
+ * @property enabledPings TODO
  */
 data class Configuration @JvmOverloads constructor(
     val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
@@ -48,6 +49,7 @@ data class Configuration @JvmOverloads constructor(
     val pingLifetimeThreshold: Int = 1000,
     val pingLifetimeMaxTime: Int = 0,
     val pingSchedule: Map<String, List<String>> = emptyMap(),
+    val enabledPings: List<String> = emptyList(),
 ) {
     companion object {
         /**

@@ -564,6 +564,7 @@ fn with_event_timestamps() {
         enable_event_timestamps: true,
         experimentation_id: None, // Enabling event timestamps
         enable_internal_pings: true,
+        enabled_pings: vec![],
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,

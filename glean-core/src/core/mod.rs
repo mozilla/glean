@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -122,6 +122,7 @@ where
 ///     enable_event_timestamps: true,
 ///     experimentation_id: None,
 ///     enable_internal_pings: true,
+///     enabled_pings: vec![],
 ///     ping_schedule: Default::default(),
 ///     ping_lifetime_threshold: 1000,
 ///     ping_lifetime_max_time: 2000,
@@ -169,6 +170,7 @@ pub struct Glean {
     pub(crate) remote_settings_config: Arc<Mutex<RemoteSettingsConfig>>,
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
+    pub(crate) enabled_pings: HashSet<String>,
 }
 
 impl Glean {
@@ -204,6 +206,12 @@ impl Glean {
             let _scanning_thread = upload_manager.scan_pending_pings_directories(false);
         }
 
+        let mut enabled_pings: HashSet<_> = cfg.enabled_pings.iter().cloned().collect();
+        // Always enable the deletion-request ping.
+        if !enabled_pings.is_empty() {
+            enabled_pings.insert("deletion-request".to_string());
+        }
+
         let start_time = local_now_with_offset();
         let mut this = Self {
             upload_enabled: cfg.upload_enabled,
@@ -230,6 +238,7 @@ impl Glean {
             remote_settings_config: Arc::new(Mutex::new(RemoteSettingsConfig::new())),
             with_timestamps: cfg.enable_event_timestamps,
             ping_schedule: cfg.ping_schedule.clone(),
+            enabled_pings,
         };
 
         // Ensuring these pings are registered.
@@ -338,6 +347,7 @@ impl Glean {
             enable_event_timestamps: true,
             experimentation_id: None,
             enable_internal_pings,
+            enabled_pings: vec![],
             ping_schedule: Default::default(),
             ping_lifetime_threshold: 0,
             ping_lifetime_max_time: 0,
@@ -465,6 +475,20 @@ impl Glean {
         } else {
             false
         }
+    }
+
+    /// Set the list of pings that are explicitly enabled.
+    ///
+    /// Pings not listed are disabled.
+    /// When empty all pings are enabled.
+    pub fn set_enabled_pings(&mut self, pings: Vec<String>) {
+        let mut enabled_pings: HashSet<_> = pings.into_iter().collect();
+        // Always enable the deletion-request ping.
+        if !enabled_pings.is_empty() {
+            enabled_pings.insert("deletion-request".to_string());
+        }
+
+        self.enabled_pings = enabled_pings;
     }
 
     /// Determines whether upload is enabled.

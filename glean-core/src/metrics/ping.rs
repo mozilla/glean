@@ -143,6 +143,13 @@ impl PingType {
     }
 
     pub(crate) fn enabled(&self, glean: &Glean) -> bool {
+        // If `enabled_pings` is empty: All pings allowed, check other config.
+        // If `enabled_pings` is non-empty & ping is listed: check other config.
+
+        if !glean.enabled_pings.is_empty() && !glean.enabled_pings.contains(self.name()) {
+            return false;
+        }
+
         let remote_settings_config = &glean.remote_settings_config.lock().unwrap();
 
         if !remote_settings_config.pings_enabled.is_empty() {
