@@ -172,6 +172,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
             true,
             vec![],
             vec!["max_capacity".to_string()],
+            vec![],
         ));
     }
 
@@ -239,6 +240,7 @@ fn test_server_knobs_config_changing_max_events() {
             true,
             vec![],
             vec!["max_capacity".to_string()],
+            vec![],
         ));
     }
 
@@ -533,6 +535,7 @@ fn event_storage_trimming() {
             true,
             true,
             true,
+            vec![],
             vec![],
             vec![],
         ));

@@ -35,6 +35,9 @@ struct InnerPing {
     pub schedules_pings: Vec<String>,
     /// The "reason" codes that this ping can send
     pub reason_codes: Vec<String>,
+    /// The list of client info fields that will be included.
+    /// When empty all fields are included.
+    pub included_info_sections: Vec<String>,
 }
 
 impl fmt::Debug for PingType {
@@ -48,6 +51,7 @@ impl fmt::Debug for PingType {
             .field("enabled", &self.0.enabled)
             .field("schedules_pings", &self.0.schedules_pings)
             .field("reason_codes", &self.0.reason_codes)
+            .field("included_info_sections", &self.0.included_info_sections)
             .finish()
     }
 }
@@ -80,6 +84,7 @@ impl PingType {
         enabled: bool,
         schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
+        included_info_sections: Vec<String>,
     ) -> Self {
         Self::new_internal(
             name,
@@ -90,6 +95,7 @@ impl PingType {
             enabled,
             schedules_pings,
             reason_codes,
+            included_info_sections,
         )
     }
 
@@ -103,6 +109,7 @@ impl PingType {
         enabled: bool,
         schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
+        included_info_sections: Vec<String>,
     ) -> Self {
         let this = Self(Arc::new(InnerPing {
             name: name.into(),
@@ -113,6 +120,7 @@ impl PingType {
             enabled,
             schedules_pings,
             reason_codes,
+            included_info_sections,
         }));
 
         // Register this ping.
@@ -128,6 +136,10 @@ impl PingType {
 
     pub(crate) fn include_client_id(&self) -> bool {
         self.0.include_client_id
+    }
+
+    pub(crate) fn included_info_sections(&self) -> &[String] {
+        &self.0.included_info_sections
     }
 
     pub(crate) fn send_if_empty(&self) -> bool {

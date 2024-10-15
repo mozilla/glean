@@ -158,7 +158,12 @@ impl PingMaker {
         map
     }
 
-    fn get_client_info(&self, glean: &Glean, include_client_id: bool) -> JsonValue {
+    fn get_client_info(
+        &self,
+        glean: &Glean,
+        include_client_id: bool,
+        included_info_sections: &[String],
+    ) -> JsonValue {
         // Add the "telemetry_sdk_build", which is the glean-core version.
         let mut map = json!({
             "telemetry_sdk_build": crate::GLEAN_VERSION,
@@ -179,6 +184,11 @@ impl PingMaker {
         if !include_client_id {
             // safe unwrap, we created the object above
             map.as_object_mut().unwrap().remove("client_id");
+        }
+
+        if !included_info_sections.is_empty() {
+            let obj = map.as_object_mut().unwrap();
+            obj.retain(|key, _| included_info_sections.contains(key));
         }
 
         json!(map)
@@ -303,7 +313,11 @@ impl PingMaker {
 
         let mut json = if ping.include_info_sections() {
             let ping_info = self.get_ping_info(glean, ping.name(), reason, precision);
-            let client_info = self.get_client_info(glean, ping.include_client_id());
+            let client_info = self.get_client_info(
+                glean,
+                ping.include_client_id(),
+                ping.included_info_sections(),
+            );
 
             json!({
                 "ping_info": ping_info,
