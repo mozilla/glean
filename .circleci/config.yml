@@ -93,6 +93,10 @@ commands:
           name: Run Rust RLB flush test
           command: |
             glean-core/rlb/tests/test-ping-lifetime-flush.sh
+      - run:
+          name: Run Rust RLB enabled-pings test
+          command: |
+            glean-core/rlb/tests/test-enabled-pings.sh
 
   install-rustup:
     steps:
