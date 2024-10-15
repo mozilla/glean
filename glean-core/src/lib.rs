@@ -140,6 +140,8 @@ pub struct InternalConfiguration {
     pub experimentation_id: Option<String>,
     /// Whether to enable internal pings. Default: true
     pub enable_internal_pings: bool,
+    /// TODO
+    pub enabled_pings: Vec<String>,
     /// A ping schedule map.
     /// Maps a ping name to a list of pings to schedule along with it.
     /// Only used if the ping's own ping schedule list is empty.

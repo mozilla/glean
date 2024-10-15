@@ -151,6 +151,10 @@ impl PingType {
             }
         }
 
+        if !glean.enabled_pings.is_empty() {
+            return glean.enabled_pings.contains(self.name());
+        }
+
         self.0.enabled
     }
 
