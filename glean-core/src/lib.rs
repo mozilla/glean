@@ -65,7 +65,7 @@ pub use crate::histogram::HistogramType;
 pub use crate::metrics::labeled::{
     AllowLabeled, LabeledBoolean, LabeledCounter, LabeledCustomDistribution,
     LabeledMemoryDistribution, LabeledMetric, LabeledMetricData, LabeledString,
-    LabeledTimingDistribution,
+    LabeledTimingDistribution, LabeledQuantity
 };
 pub use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
