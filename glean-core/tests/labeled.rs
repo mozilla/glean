@@ -223,6 +223,40 @@ fn can_create_labeled_timing_distribution_metric() {
 }
 
 #[test]
+fn can_create_labeled_quantity_metric() {
+    let (glean, _t) = new_glean(None);
+    let labeled = LabeledQuantity::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_metric".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        Some(vec!["label1".into()]),
+    );
+
+    let metric = labeled.get("label1");
+    metric.set_sync(&glean, 42);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_quantity": {
+                "telemetry.labeled_metric": { "label1": 42, },
+            }
+        }),
+        snapshot
+    );
+}
+
+#[test]
 fn can_use_multiple_labels() {
     let (glean, _t) = new_glean(None);
     let labeled = LabeledCounter::new(

@@ -64,7 +64,7 @@ pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 pub use crate::histogram::HistogramType;
 pub use crate::metrics::labeled::{
     AllowLabeled, LabeledBoolean, LabeledCounter, LabeledCustomDistribution,
-    LabeledMemoryDistribution, LabeledMetric, LabeledMetricData, LabeledString,
+    LabeledMemoryDistribution, LabeledMetric, LabeledMetricData, LabeledQuantity, LabeledString,
     LabeledTimingDistribution,
 };
 pub use crate::metrics::{
