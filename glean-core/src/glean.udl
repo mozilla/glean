@@ -452,6 +452,8 @@ interface UuidMetric {
 
     string generate_and_set();
 
+    void generate_once();
+
     string? test_get_value(optional string? ping_name = null);
 
     i32 test_get_num_recorded_errors(ErrorType error);

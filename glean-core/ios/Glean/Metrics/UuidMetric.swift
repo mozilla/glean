@@ -27,6 +27,11 @@ public class UuidMetricType {
         return UUID(uuidString: uuid)!
     }
 
+    /// Generate a new random UUID if none is set yet.
+    public func generateOnce() {
+        inner.generateOnce()
+    }
+
     /// Explicitly set an existing UUID value.
     ///
     /// - parameters:
