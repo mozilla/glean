@@ -336,7 +336,7 @@ dependencies = [
 
 [[package]]
 name = "glean-build"
-version = "15.0.1"
+version = "15.2.0"
 dependencies = [
  "tempfile",
  "xshell-venv",
