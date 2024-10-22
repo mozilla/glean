@@ -4,7 +4,7 @@
 
 * General
   * **BREAKING**: Remove LMDB-to-safe-mode migration.
-    Safe-mode became the default in Glean v51. ([#TODO]())
+    Safe-mode became the default in Glean v51. ([bug 1780370](https://bugzilla.mozilla.org/show_bug.cgi?id=1780370))
   * **BREAKING**: Stop sending buckets with 0 counts in memory_distribution and timing_distribution metric payloads ([bug 1898336](https://bugzilla.mozilla.org/show_bug.cgi?id=1898336))
 
 # v61.2.0 (2024-10-07)
