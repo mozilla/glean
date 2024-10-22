@@ -1,6 +1,6 @@
 [package]
 name = "glean-build"
-version = "15.0.1"
+version = "15.2.0"
 edition = "2021"
 description = "Glean SDK Rust build helper"
 repository = "https://github.com/mozilla/glean"
