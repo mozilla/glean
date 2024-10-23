@@ -38,6 +38,8 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.
 
+* [Labeled Quantity](labeled_quantity.md): Used to record multiple non-negative integer values. For example, the dimensions of the display in pixels.
+
 * [Rate](rate.md): Used to record the rate something happens relative to some other thing.
   For example, the number of HTTP connections that experienced an error relative to the number of total HTTP connections made.
 
