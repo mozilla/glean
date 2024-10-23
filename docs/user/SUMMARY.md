@@ -86,6 +86,7 @@
     - [Custom Distribution](reference/metrics/custom_distribution.md)
     - [Labeled Custom Distributions](reference/metrics/labeled_custom_distributions.md)
     - [Quantity](reference/metrics/quantity.md)
+    - [Labeled Quantities](reference/metrics/labeled_quantity.md)
     - [Rate](reference/metrics/rate.md)
     - [Text](reference/metrics/text.md)
     - [Object](reference/metrics/object.md)
