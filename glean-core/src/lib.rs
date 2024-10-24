@@ -1232,6 +1232,8 @@ pub fn glean_enable_logging_to_fd(_fd: u64) {
 }
 
 #[allow(missing_docs)]
+// uniffi-generated code should not be checked.
+#[allow(clippy::all)]
 mod ffi {
     use super::*;
     uniffi::include_scaffolding!("glean");
