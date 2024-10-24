@@ -198,6 +198,7 @@ fn experimentation_id_is_set_correctly() {
         enable_event_timestamps: true,
         experimentation_id: Some(experimentation_id.to_string()),
         enable_internal_pings: true,
+        enabled_pings: vec![],
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,

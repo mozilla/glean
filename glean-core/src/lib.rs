@@ -140,6 +140,11 @@ pub struct InternalConfiguration {
     pub experimentation_id: Option<String>,
     /// Whether to enable internal pings. Default: true
     pub enable_internal_pings: bool,
+    /// A list of pings that are explicitly enabled.
+    ///
+    /// Pings not listed are disabled.
+    /// When empty all pings are enabled.
+    pub enabled_pings: Vec<String>,
     /// A ping schedule map.
     /// Maps a ping name to a list of pings to schedule along with it.
     /// Only used if the ping's own ping schedule list is empty.
@@ -850,6 +855,18 @@ pub fn glean_set_upload_enabled(enabled: bool) {
             }
         }
     })
+}
+
+/// Set the list of pings that are explicitly enabled.
+///
+/// Pings not listed are disabled.
+/// When empty all pings are enabled.
+pub fn glean_set_enabled_pings(pings: Vec<String>) {
+    if !was_initialize_called() {
+        return;
+    }
+
+    crate::launch_with_glean_mut(move |glean| glean.set_enabled_pings(pings));
 }
 
 /// Register a new [`PingType`](PingType).

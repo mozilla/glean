@@ -123,6 +123,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         enable_event_timestamps: cfg.enable_event_timestamps,
         experimentation_id: cfg.experimentation_id,
         enable_internal_pings: cfg.enable_internal_pings,
+        enabled_pings: cfg.enabled_pings,
         ping_schedule: cfg.ping_schedule,
         ping_lifetime_threshold: cfg.ping_lifetime_threshold as u64,
         ping_lifetime_max_time: cfg.ping_lifetime_max_time.as_millis() as u64,
@@ -142,6 +143,14 @@ pub fn shutdown() {
 /// See [`glean_core::Glean::set_upload_enabled`].
 pub fn set_upload_enabled(enabled: bool) {
     glean_core::glean_set_upload_enabled(enabled)
+}
+
+/// Set the list of pings that are explicitly enabled.
+///
+/// Pings not listed are disabled.
+/// When empty all pings are enabled.
+pub fn set_enabled_pings(pings: Vec<String>) {
+    glean_core::glean_set_enabled_pings(pings)
 }
 
 /// Collects and submits a ping for eventual uploading by name.

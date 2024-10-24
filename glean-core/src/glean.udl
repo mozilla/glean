@@ -93,6 +93,7 @@ dictionary InternalConfiguration {
     boolean enable_event_timestamps;
     string? experimentation_id;
     boolean enable_internal_pings;
+    sequence<string> enabled_pings;
     record<string, sequence<string>> ping_schedule;
     u64 ping_lifetime_threshold;
     u64 ping_lifetime_max_time; // in millis

@@ -50,6 +50,11 @@ pub struct Configuration {
     pub experimentation_id: Option<String>,
     /// Whether to enable internal pings. Default: true
     pub enable_internal_pings: bool,
+    /// A list of pings that are explicitly enabled.
+    ///
+    /// Pings not listed are disabled.
+    /// When empty all pings are enabled.
+    pub enabled_pings: Vec<String>,
     /// A ping schedule map.
     /// Maps a ping name to a list of pings to schedule along with it.
     /// Only used if the ping's own ping schedule list is empty.
@@ -106,6 +111,11 @@ pub struct Builder {
     pub experimentation_id: Option<String>,
     /// Whether to enable internal pings. Default: true
     pub enable_internal_pings: bool,
+    /// A list of pings that are explicitly enabled.
+    ///
+    /// Pings not listed are disabled.
+    /// When empty all pings are enabled.
+    pub enabled_pings: Vec<String>,
     /// A ping schedule map.
     /// Maps a ping name to a list of pings to schedule along with it.
     /// Only used if the ping's own ping schedule list is empty.
@@ -138,6 +148,7 @@ impl Builder {
             enable_event_timestamps: true,
             experimentation_id: None,
             enable_internal_pings: true,
+            enabled_pings: vec![],
             ping_schedule: HashMap::new(),
             ping_lifetime_threshold: 0,
             ping_lifetime_max_time: Duration::ZERO,
@@ -161,6 +172,7 @@ impl Builder {
             enable_event_timestamps: self.enable_event_timestamps,
             experimentation_id: self.experimentation_id,
             enable_internal_pings: self.enable_internal_pings,
+            enabled_pings: self.enabled_pings,
             ping_schedule: self.ping_schedule,
             ping_lifetime_threshold: self.ping_lifetime_threshold,
             ping_lifetime_max_time: self.ping_lifetime_max_time,
@@ -218,6 +230,15 @@ impl Builder {
     /// Set whether to enable internal pings.
     pub fn with_internal_pings(mut self, value: bool) -> Self {
         self.enable_internal_pings = value;
+        self
+    }
+
+    /// Set the list of pings that are explicitly enabled.
+    ///
+    /// Pings not listed are disabled.
+    /// When empty all pings are enabled.
+    pub fn with_enabled_pings(mut self, value: Vec<String>) -> Self {
+        self.enabled_pings = value;
         self
     }
 
