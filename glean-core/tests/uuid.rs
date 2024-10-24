@@ -112,3 +112,45 @@ fn set_properly_sets_the_value_in_all_stores() {
         );
     }
 }
+
+#[test]
+fn generates_a_new_uuid_once() {
+    let (glean, _t) = new_glean(None);
+    let store_name = "store1";
+    let store_names: Vec<String> = vec![store_name.into()];
+
+    let metric = UuidMetric::new(CommonMetricData {
+        name: "uuid_metric".into(),
+        category: "telemetry".into(),
+        send_in_pings: store_names.clone(),
+        disabled: false,
+        // Keep that metric around
+        lifetime: Lifetime::Application,
+        ..Default::default()
+    });
+
+    metric.generate_once_sync(&glean);
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), store_name, true)
+        .unwrap();
+    let uuid1 = snapshot["uuid"]["telemetry.uuid_metric"].as_str().unwrap();
+
+    metric.generate_once_sync(&glean);
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), store_name, true)
+        .unwrap();
+    let uuid2 = snapshot["uuid"]["telemetry.uuid_metric"].as_str().unwrap();
+
+    assert_eq!(uuid1, uuid2);
+
+    let fresh_uuid = uuid::Uuid::new_v4();
+    metric.set_from_uuid_sync(&glean, fresh_uuid);
+    assert_ne!(fresh_uuid.as_hyphenated().to_string(), uuid1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), store_name, true)
+        .unwrap();
+    let uuid3 = snapshot["uuid"]["telemetry.uuid_metric"].as_str().unwrap();
+
+    assert_eq!(fresh_uuid.as_hyphenated().to_string(), uuid3);
+}

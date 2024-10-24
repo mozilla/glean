@@ -16,8 +16,11 @@ pub trait Uuid {
     /// * `value` - The [`Uuid`](uuid::Uuid) to set the metric to.
     fn set(&self, value: uuid::Uuid);
 
-    /// Generates a new random [`Uuid`](uuid::Uuid) and set the metric to it.
+    /// Generate a new random [`Uuid`](uuid::Uuid) and set the metric to it.
     fn generate_and_set(&self) -> uuid::Uuid;
+
+    /// Generate a new random [`Uuid`](uuid::Uuid) if none is set yet.
+    fn generate_once(&self);
 
     /// **Exported for test purposes.**
     ///

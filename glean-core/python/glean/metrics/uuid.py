@@ -34,6 +34,12 @@ class UuidMetricType:
         id = self._inner.generate_and_set()
         return uuid.UUID("urn:uuid:" + id)
 
+    def generate_once(self):
+        """
+        Generate a new random UUID if none is set yet.
+        """
+        self._inner.generate_once()
+
     def set(self, value: Union[uuid.UUID, str]) -> None:
         """
         Explicitly set an existing UUID value.

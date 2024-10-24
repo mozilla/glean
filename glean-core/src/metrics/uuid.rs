@@ -82,7 +82,7 @@ impl UuidMetric {
         self.set_sync(glean, value.to_string())
     }
 
-    /// Generates a new random [`Uuid`'] and sets the metric to it.
+    /// Generate a new random [`Uuid`] and set the metric to it.
     pub fn generate_and_set(&self) -> String {
         let uuid = Uuid::new_v4();
 
@@ -91,6 +91,30 @@ impl UuidMetric {
         crate::launch_with_glean(move |glean| metric.set_sync(glean, value));
 
         uuid.to_string()
+    }
+
+    /// Generate a new random [`Uuid`] if none is set yet.
+    pub fn generate_once(&self) {
+        let metric = self.clone();
+        crate::launch_with_glean(move |glean| metric.generate_once_sync(glean));
+    }
+
+    #[doc(hidden)]
+    pub fn generate_once_sync(&self, glean: &Glean) {
+        if !self.should_record(glean) {
+            return;
+        }
+
+        glean
+            .storage()
+            .record_with(glean, &self.meta, |old_value| match old_value {
+                Some(Metric::Uuid(uuid)) => Metric::Uuid(uuid),
+                _ => {
+                    let uuid = Uuid::new_v4();
+                    let uuid = uuid.as_hyphenated().to_string();
+                    Metric::Uuid(uuid)
+                }
+            })
     }
 
     /// Generates a new random [`Uuid`'] and sets the metric to it synchronously.
