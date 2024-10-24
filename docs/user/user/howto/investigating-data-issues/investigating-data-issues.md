@@ -39,12 +39,13 @@ This document outlines several diagnostic categories and the insights they may o
 * Considerations:  
   * Review updates to Application Services, Gecko, and other dependencies (e.g., Viaduct, rkv) that could affect telemetry collection.
 
-### 6\. OS SDK Version (Android, iOS)
+### 6\. OS/Platform SDK Version
 
-* Purpose: Check if platform SDK changes are impacting data collection.
+* Purpose: Check if Operating System or platform SDK changes are impacting data collection.
 * Column Names: `client_info.os_version` (Android only: `client_info.android_sdk_version`)
 * Considerations:  
   * Have there been changes to platform lifecycle events or background task behaviors (e.g., 0-duration pings, or ping submission issues)?
+  * Has the OS changed the behaviour of system APIs?
 
 ### 7\. Time Differences: start/end\_time vs. submission\_timestamp
 
@@ -59,7 +60,7 @@ This document outlines several diagnostic categories and the insights they may o
 * Considerations:  
   * Are there networking errors, ingestion issues, or other telemetry failures that could be related to the anomaly?
 
-### 9\. Hardware Details (Manufacturer/Version)
+### 9\. Hardware Details (Manufacturer/Version) (Mobile platforms only)
 
 * Purpose: Determine if the issue is hardware-specific.  
 * Column Names: `client_info.device_manufacturer`, `client_info.device_model`
