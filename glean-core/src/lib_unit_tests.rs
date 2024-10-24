@@ -1187,6 +1187,7 @@ fn disabled_pings_are_not_submitted() {
         false,
         vec![],
         vec![],
+        vec![],
     );
     glean.register_ping_type(&ping);
 
@@ -1239,6 +1240,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         false,
         vec![],
         vec![],
+        vec![],
     );
     glean.register_ping_type(&disabled_ping);
     let enabled_ping = PingType::new(
@@ -1248,6 +1250,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         true,
         true,
         true,
+        vec![],
         vec![],
         vec![],
     );

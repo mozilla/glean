@@ -44,6 +44,7 @@ impl PingType {
         enabled: bool,
         schedules_pings: Vec<String>,
         reason_codes: Vec<String>,
+        included_info_sections: Vec<String>,
     ) -> Self {
         let inner = glean_core::metrics::PingType::new(
             name.into(),
@@ -54,6 +55,7 @@ impl PingType {
             enabled,
             schedules_pings,
             reason_codes,
+            included_info_sections,
         );
 
         Self {
