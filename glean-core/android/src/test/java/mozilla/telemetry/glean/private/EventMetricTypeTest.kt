@@ -455,10 +455,10 @@ class EventMetricTypeTest {
     }
 
     @Test
-    fun `overdue events are discarded if ping is not registered`() {
+    fun `events are discarded if ping is not registered`() {
         // This is similar to the above test,
         // except that we register the custom ping AFTER initialize.
-        // Overdue events are thus discarded because the ping is unknown at initialization time.
+        // Events are thus discarded upon `record` because the ping is unknown.
 
         val server = getMockWebServer()
         val context = getContext()
