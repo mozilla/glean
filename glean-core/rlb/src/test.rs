@@ -629,7 +629,7 @@ fn basic_metrics_should_be_cleared_when_disabling_uploading() {
     let metric = private::StringMetric::new(CommonMetricData {
         name: "string_metric".into(),
         category: "telemetry".into(),
-        send_in_pings: vec!["default".into()],
+        send_in_pings: vec!["store1".into()],
         lifetime: Lifetime::Ping,
         disabled: false,
         ..Default::default()

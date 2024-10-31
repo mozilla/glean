@@ -331,7 +331,7 @@ fn time_cannot_go_backwards() {
         CommonMetricData {
             name: "raw_timespan".into(),
             category: "test".into(),
-            send_in_pings: vec!["test1".into()],
+            send_in_pings: vec!["store1".into()],
             ..Default::default()
         },
         TimeUnit::Millisecond,
@@ -340,7 +340,7 @@ fn time_cannot_go_backwards() {
     // Time cannot go backwards.
     metric.set_start(&glean, 10);
     metric.set_stop(&glean, 0);
-    assert!(metric.get_value(&glean, "test1").is_none());
+    assert!(metric.get_value(&glean, "store1").is_none());
     assert_eq!(
         Ok(1),
         test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidValue),
