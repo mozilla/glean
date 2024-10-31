@@ -15,6 +15,7 @@ import pytest_localserver.http
 from glean import config
 from glean import testing
 from glean import __version__ as glean_version
+from glean.metrics import PingType
 
 # This defines the location of the JSON schema used to validate the pings
 # created during unit testing. This uses the vendored schema.
@@ -30,6 +31,33 @@ logging.getLogger(None).setLevel(logging.INFO)
 
 # This will be run before every test in the entire test suite
 def pytest_runtest_setup(item):
+    PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
+    PingType(
+        name="store2",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
+    PingType(
+        name="store3",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
     testing.reset_glean(application_id="glean-python-test", application_version=glean_version)
 
 

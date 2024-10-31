@@ -568,7 +568,9 @@ fn with_event_timestamps() {
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
     };
-    let glean = Glean::new(cfg).unwrap();
+    let mut glean = Glean::new(cfg).unwrap();
+    let ping = PingType::new("store1", true, false, true, true, true, vec![], vec![]);
+    glean.register_ping_type(&ping);
 
     let store_name = "store1";
     let event = EventMetric::new(

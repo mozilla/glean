@@ -11,6 +11,8 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.private.NoReasonCodes
+import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.utils.getISOTimeString
@@ -67,6 +69,37 @@ class GleanTestRule(
         val mps = MetricsPingScheduler(context, buildInfo)
 
         mps.updateSentDate(getISOTimeString(fakeNow, truncateTo = TimeUnit.DAY))
+
+        PingType<NoReasonCodes>(
+            name = "store1",
+            includeClientId = true,
+            sendIfEmpty = false,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = emptyList(),
+        )
+        PingType<NoReasonCodes>(
+            name = "store2",
+            includeClientId = true,
+            sendIfEmpty = false,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = emptyList(),
+        )
+        PingType<NoReasonCodes>(
+            name = "store3",
+            includeClientId = true,
+            sendIfEmpty = false,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = emptyList(),
+        )
 
         Glean.resetGlean(
             context = context,

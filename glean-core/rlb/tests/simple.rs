@@ -60,6 +60,7 @@ fn simple_lifecycle() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().to_path_buf();
 
+    _ = &*pings::validation;
     let cfg = ConfigurationBuilder::new(true, tmpname, "firefox-desktop")
         .with_server_endpoint("invalid-test-host")
         .build();
