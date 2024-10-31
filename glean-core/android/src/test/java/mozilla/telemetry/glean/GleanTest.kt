@@ -535,7 +535,7 @@ class GleanTest {
                 category = "telemetry",
                 lifetime = Lifetime.PING,
                 name = "string_metric",
-                sendInPings = listOf("default"),
+                sendInPings = listOf("store1"),
             ),
         )
 

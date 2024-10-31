@@ -396,7 +396,7 @@ fn snapshot_sorts_the_timestamps() {
 fn ensure_custom_ping_events_dont_overflow() {
     let (glean, _dir) = new_glean(None);
 
-    let store_name = "store-name";
+    let store_name = "store1";
     let event_meta = CommonMetricData {
         name: "name".into(),
         category: "category".into(),
@@ -441,7 +441,7 @@ fn ensure_custom_ping_events_dont_overflow() {
 fn ensure_custom_ping_events_from_multiple_runs_work() {
     let (mut tempdir, _) = tempdir();
 
-    let store_name = "store-name";
+    let store_name = "store1";
     let event = EventMetric::new(
         CommonMetricData {
             name: "name".into(),
@@ -570,7 +570,7 @@ fn with_event_timestamps() {
     };
     let glean = Glean::new(cfg).unwrap();
 
-    let store_name = "store-name";
+    let store_name = "store1";
     let event = EventMetric::new(
         CommonMetricData {
             name: "name".into(),

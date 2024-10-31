@@ -426,15 +426,15 @@ mod test {
         let (mut glean, _t) = new_glean(None);
         let ping_maker = PingMaker::new();
 
-        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
-        assert_eq!(1, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "store1"));
+        assert_eq!(1, ping_maker.get_ping_seq(&glean, "store1"));
 
         glean.set_upload_enabled(false);
-        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
-        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "store1"));
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "store1"));
 
         glean.set_upload_enabled(true);
-        assert_eq!(0, ping_maker.get_ping_seq(&glean, "custom"));
-        assert_eq!(1, ping_maker.get_ping_seq(&glean, "custom"));
+        assert_eq!(0, ping_maker.get_ping_seq(&glean, "store1"));
+        assert_eq!(1, ping_maker.get_ping_seq(&glean, "store1"));
     }
 }

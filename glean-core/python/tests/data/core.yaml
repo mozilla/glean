@@ -20,7 +20,7 @@ telemetry:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
 core_ping:
@@ -37,7 +37,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   created:
@@ -52,7 +52,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   sessions:
@@ -66,7 +66,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   durations:
@@ -82,7 +82,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   searches:
@@ -105,7 +105,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   flash_usage:
@@ -120,7 +120,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   default_browser:
@@ -134,7 +134,7 @@ core_ping:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
 environment:
@@ -149,7 +149,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   os:
@@ -163,7 +163,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   os_version:
@@ -177,7 +177,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   device:
@@ -194,7 +194,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   arch:
@@ -221,7 +221,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   default_search:
@@ -236,7 +236,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   display_version:
@@ -251,7 +251,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   distribution_id:
@@ -266,7 +266,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   campaign_id:
@@ -281,7 +281,7 @@ environment:
     notification_emails:
       - CHANGE-ME@example.com
     send_in_pings:
-      - core
+      - store1
     expires: 2100-01-01
 
   event_example:

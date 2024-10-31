@@ -758,7 +758,7 @@ mod test {
         let (mut glean, dir) = new_glean(None);
         let db = EventDatabase::new(dir.path()).unwrap();
 
-        let test_storage = "test-storage";
+        let test_storage = "store1";
         let test_category = "category";
         let test_name = "name";
         let test_timestamp = 2;
