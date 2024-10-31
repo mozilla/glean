@@ -626,6 +626,7 @@ fn test_first_run() {
 
 #[test]
 fn test_dirty_bit() {
+    let _ = env_logger::builder().try_init();
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
     {

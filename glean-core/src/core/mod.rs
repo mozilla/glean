@@ -474,6 +474,36 @@ impl Glean {
         self.upload_enabled
     }
 
+    /// Check if a ping is enabled.
+    ///
+    /// Note that some internal "ping" names are considered to be always enabled.
+    ///
+    /// If a ping is not known to Glean ("unregistered") it is always considered disabled.
+    /// If a ping is known, it can be enabled/disabled at any point.
+    /// Only data for enabled pings is recorded.
+    /// Disabled pings are never submitted.
+    pub fn is_ping_enabled(&self, ping: &str) -> bool {
+        // We "abuse" pings/storage names for internal data.
+        const DEFAULT_ENABLED: &[&str] = &[
+            "glean_client_info",
+            "glean_internal_info",
+            // for `experimentation_id`.
+            // That should probably have gone into `glean_internal_info` instead.
+            "all-pings",
+        ];
+
+        // `client_info`-like stuff is always enabled.
+        if DEFAULT_ENABLED.contains(&ping) {
+            return true;
+        }
+
+        let Some(ping) = self.ping_registry.get(ping) else {
+            return false;
+        };
+
+        ping.enabled(self)
+    }
+
     /// Handles the changing of state from upload disabled to enabled.
     ///
     /// Should only be called when the state actually changes.

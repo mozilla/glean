@@ -284,6 +284,10 @@ impl EventDatabase {
         {
             let mut db = self.event_stores.write().unwrap(); // safe unwrap, only error case is poisoning
             for store_name in meta.inner.send_in_pings.iter() {
+                if !glean.is_ping_enabled(store_name) {
+                    continue;
+                }
+
                 let store = db.entry(store_name.to_string()).or_default();
                 let execution_counter = CounterMetric::new(CommonMetricData {
                     name: "execution_counter".into(),
