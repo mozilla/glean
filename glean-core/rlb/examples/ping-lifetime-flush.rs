@@ -86,6 +86,7 @@ fn main() {
     let data_path = PathBuf::from(args.next().expect("need data path"));
     let state = args.next().unwrap_or_default();
 
+    _ = &*PrototypePing;
     let uploader = MovingUploader::new(data_path.clone());
     let cfg = ConfigurationBuilder::new(true, data_path, "glean.pingflush")
         .with_server_endpoint("invalid-test-host")

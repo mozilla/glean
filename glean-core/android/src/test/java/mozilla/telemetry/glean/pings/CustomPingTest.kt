@@ -161,6 +161,21 @@ class CustomPingTest {
 
         val pingName = "custom-events-1"
 
+        // Define a new custom ping inline.
+        // This will register the ping as well.
+        // Ususally this happens in user code by calling `Glean.registerPings(Pings)`
+        @Suppress("UNUSED_VARIABLE")
+        val customPing = PingType<NoReasonCodes>(
+            name = pingName,
+            includeClientId = true,
+            sendIfEmpty = true,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = emptyList(),
+        )
+
         // Define a 'click' event
         val click = EventMetricType<NoExtras>(
             CommonMetricData(
@@ -177,21 +192,6 @@ class CustomPingTest {
 
         // We need to simulate that the app is shutdown and all resources are freed.
         Glean.testDestroyGleanHandle()
-
-        // Define a new custom ping inline.
-        // This will register the ping as well.
-        // Ususally this happens in user code by calling `Glean.registerPings(Pings)`
-        @Suppress("UNUSED_VARIABLE")
-        val customPing = PingType<NoReasonCodes>(
-            name = pingName,
-            includeClientId = true,
-            sendIfEmpty = true,
-            preciseTimestamps = true,
-            includeInfoSections = true,
-            enabled = true,
-            schedulesPings = emptyList(),
-            reasonCodes = emptyList(),
-        )
 
         // The PingUploadWorker might be queued for at-init reasons, so to ensure
         // init didn't submit this custom ping we submit it deliberately only once,

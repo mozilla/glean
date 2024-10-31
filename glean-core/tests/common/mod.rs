@@ -5,7 +5,7 @@
 // #[allow(dead_code)] is required on this module as a workaround for
 // https://github.com/rust-lang/rust/issues/46379
 #![allow(dead_code)]
-use glean_core::{Glean, Result};
+use glean_core::{Glean, PingType, Result};
 
 use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader};
@@ -68,7 +68,13 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
     };
-    let glean = Glean::new(cfg).unwrap();
+    let mut glean = Glean::new(cfg).unwrap();
+
+    // store{1,2} is used throughout tests
+    let ping = PingType::new("store1", true, false, true, true, true, vec![], vec![]);
+    glean.register_ping_type(&ping);
+    let ping = PingType::new("store2", true, false, true, true, true, vec![], vec![]);
+    glean.register_ping_type(&ping);
 
     (glean, dir)
 }
