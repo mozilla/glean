@@ -312,6 +312,8 @@ interface PingType {
         boolean follows_collection_enabled
     );
     void submit(optional string? reason = null);
+
+    void set_enabled(boolean enabled);
 };
 
 // The common set of data shared across all different metric types.

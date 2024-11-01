@@ -467,6 +467,17 @@ impl Glean {
         }
     }
 
+    /// Enable or disable a ping.
+    ///
+    /// Disabling a ping causes all data for that ping to be removed from storage
+    /// and all pending pings of that type to be deleted.
+    ///
+    /// **Note**: Do not use directly. Call `PingType::set_enabled` instead.
+    #[doc(hidden)]
+    pub fn set_ping_enabled(&mut self, ping: &PingType, enabled: bool) {
+        ping.store_enabled(enabled);
+    }
+
     /// Determines whether upload is enabled.
     ///
     /// When upload is disabled, no data will be recorded.
