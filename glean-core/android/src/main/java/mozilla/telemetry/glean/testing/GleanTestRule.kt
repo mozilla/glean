@@ -79,6 +79,7 @@ class GleanTestRule(
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
         PingType<NoReasonCodes>(
             name = "store2",
@@ -89,6 +90,7 @@ class GleanTestRule(
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
         PingType<NoReasonCodes>(
             name = "store3",
@@ -99,6 +101,7 @@ class GleanTestRule(
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
 
         Glean.resetGlean(

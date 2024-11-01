@@ -483,6 +483,7 @@ class GleanTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
         val stringMetric = StringMetricType(
             CommonMetricData(
@@ -853,6 +854,7 @@ class GleanTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
         val stringMetric = StringMetricType(
             CommonMetricData(

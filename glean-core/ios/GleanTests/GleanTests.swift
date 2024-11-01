@@ -261,7 +261,8 @@ class GleanTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         let counter = CounterMetricType(CommonMetricData(
@@ -401,7 +402,8 @@ class GleanTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         let counter = CounterMetricType(CommonMetricData(

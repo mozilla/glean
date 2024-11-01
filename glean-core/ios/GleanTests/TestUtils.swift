@@ -96,7 +96,8 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase,
         includeInfoSections: true,
         enabled: true,
         schedulesPings: [],
-        reasonCodes: []
+        reasonCodes: [],
+        followsCollectionEnabled: true
     )
     _ = Ping<NoReasonCodes>(
         name: "store2",
@@ -106,7 +107,8 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase,
         includeInfoSections: true,
         enabled: true,
         schedulesPings: [],
-        reasonCodes: []
+        reasonCodes: [],
+        followsCollectionEnabled: true
     )
     _ = Ping<NoReasonCodes>(
         name: "store3",
@@ -116,7 +118,8 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase,
         includeInfoSections: true,
         enabled: true,
         schedulesPings: [],
-        reasonCodes: []
+        reasonCodes: [],
+        followsCollectionEnabled: true
     )
 
     Glean.shared.resetGlean(configuration: configuration, clearStores: clearStores)
