@@ -17,9 +17,10 @@ class PingType:
         send_if_empty: bool,
         precise_timestamps: bool,
         include_info_sections: bool,
-        # enabled: bool,  -- Not currently enabled for python bindings
         schedules_pings: List[str],
         reason_codes: List[str],
+        enabled: bool = True,
+        follows_collection_enabled: bool = True,
     ):
         """
         This implements the developer facing API for custom pings.
@@ -34,9 +35,10 @@ class PingType:
             send_if_empty,
             precise_timestamps,
             include_info_sections,
-            True,
+            enabled,
             schedules_pings,
             reason_codes,
+            follows_collection_enabled,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]
 
