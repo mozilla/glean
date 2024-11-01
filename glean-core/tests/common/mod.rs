@@ -71,12 +71,16 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
     let mut glean = Glean::new(cfg).unwrap();
 
     // store{1,2} is used throughout tests
-    let ping = PingType::new("store1", true, false, true, true, true, vec![], vec![]);
-    glean.register_ping_type(&ping);
-    let ping = PingType::new("store2", true, false, true, true, true, vec![], vec![]);
-    glean.register_ping_type(&ping);
+    _ = new_test_ping(&mut glean, "store1");
+    _ = new_test_ping(&mut glean, "store2");
 
     (glean, dir)
+}
+
+pub fn new_test_ping(glean: &mut Glean, name: &str) -> PingType {
+    let ping = PingType::new(name, true, false, true, true, true, vec![], vec![], true);
+    glean.register_ping_type(&ping);
+    ping
 }
 
 /// Converts an iso8601::DateTime to a chrono::DateTime<FixedOffset>

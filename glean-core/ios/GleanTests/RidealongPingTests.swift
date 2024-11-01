@@ -30,7 +30,8 @@ final class RidealongPingTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         // We receive a baseline ping, and a ridealong ping.
