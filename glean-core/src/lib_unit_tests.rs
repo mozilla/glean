@@ -25,9 +25,29 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
     _ = InternalPings::new(true);
 
     // store{1, 2} is used throughout tests
-    let ping = PingType::new_internal("store1", true, false, true, true, true, vec![], vec![]);
+    let ping = PingType::new_internal(
+        "store1",
+        true,
+        false,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+    );
     glean.register_ping_type(&ping);
-    let ping = PingType::new_internal("store2", true, false, true, true, true, vec![], vec![]);
+    let ping = PingType::new_internal(
+        "store2",
+        true,
+        false,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+    );
     glean.register_ping_type(&ping);
     (glean, dir)
 }
@@ -1197,6 +1217,7 @@ fn disabled_pings_are_not_submitted() {
         false,
         vec![],
         vec![],
+        true,
     );
     glean.register_ping_type(&ping);
 
@@ -1249,6 +1270,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         false,
         vec![],
         vec![],
+        true,
     );
     glean.register_ping_type(&disabled_ping);
     let enabled_ping = PingType::new(
@@ -1260,6 +1282,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         true,
         vec![],
         vec![],
+        true,
     );
     glean.register_ping_type(&enabled_ping);
 

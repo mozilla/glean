@@ -75,8 +75,19 @@ impl net::PingUploader for MovingUploader {
 }
 
 #[allow(non_upper_case_globals)]
-pub static PrototypePing: Lazy<PingType> =
-    Lazy::new(|| PingType::new("prototype", true, true, false, true, true, vec![], vec![]));
+pub static PrototypePing: Lazy<PingType> = Lazy::new(|| {
+    PingType::new(
+        "prototype",
+        true,
+        true,
+        false,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+    )
+});
 
 fn main() {
     env_logger::init();

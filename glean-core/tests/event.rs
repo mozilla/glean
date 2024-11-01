@@ -172,6 +172,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
             true,
             vec![],
             vec!["max_capacity".to_string()],
+            true,
         ));
     }
 
@@ -239,6 +240,7 @@ fn test_server_knobs_config_changing_max_events() {
             true,
             vec![],
             vec!["max_capacity".to_string()],
+            true,
         ));
     }
 
@@ -520,6 +522,7 @@ fn event_storage_trimming() {
             true,
             vec![],
             vec![],
+            true,
         ));
     };
 
@@ -575,7 +578,17 @@ fn with_event_timestamps() {
         ping_lifetime_max_time: 0,
     };
     let mut glean = Glean::new(cfg).unwrap();
-    let ping = PingType::new("store1", true, false, true, true, true, vec![], vec![]);
+    let ping = PingType::new(
+        "store1",
+        true,
+        false,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+    );
     glean.register_ping_type(&ping);
 
     let store_name = "store1";

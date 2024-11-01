@@ -127,7 +127,7 @@ where
 ///     ping_lifetime_max_time: 2000,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
-/// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![]);
+/// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true);
 /// glean.register_ping_type(&ping);
 ///
 /// let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {

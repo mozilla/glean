@@ -253,6 +253,7 @@ class GleanDebugActivityTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         // Set the extra values and start the intent.

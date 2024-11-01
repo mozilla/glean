@@ -83,6 +83,7 @@ class CustomPingTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
 
         customPing.submit()
@@ -115,6 +116,7 @@ class CustomPingTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
 
         // Trigger the ping twice.
@@ -174,6 +176,7 @@ class CustomPingTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
 
         // Define a 'click' event
@@ -252,6 +255,7 @@ class CustomPingTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
+            followsCollectionEnabled = true,
         )
 
         customPing.submit()
