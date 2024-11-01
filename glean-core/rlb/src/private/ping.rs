@@ -64,6 +64,14 @@ impl PingType {
         }
     }
 
+    /// Enable or disable a ping.
+    ///
+    /// Disabling a ping causes all data for that ping to be removed from storage
+    /// and all pending pings of that type to be deleted.
+    pub fn set_enabled(&self, enabled: bool) {
+        self.inner.set_enabled(enabled)
+    }
+
     /// Submits the ping for eventual uploading.
     ///
     /// The ping content is assembled as soon as possible, but upload is not

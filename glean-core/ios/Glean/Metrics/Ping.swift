@@ -99,4 +99,12 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
         }
         innerPing.submit(reasonString)
     }
+
+    /// Enable or disable a ping.
+    ///
+    /// Disabling a ping causes all data for that ping to be removed from storage
+    /// and all pending pings of that type to be deleted.
+    public func setEnabled(enabled: Bool) {
+        innerPing.setEnabled(enabled)
+    }
 }

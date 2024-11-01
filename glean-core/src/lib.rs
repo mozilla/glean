@@ -99,6 +99,7 @@ static PRE_INIT_SOURCE_TAGS: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
 /// Keep track of pings registered before Glean is initialized.
 static PRE_INIT_PING_REGISTRATION: Mutex<Vec<metrics::PingType>> = Mutex::new(Vec::new());
+static PRE_INIT_PING_ENABLED: Mutex<Vec<(metrics::PingType, bool)>> = Mutex::new(Vec::new());
 
 /// Global singleton of the handles of the glean.init threads.
 /// For joining. For tests.
@@ -440,6 +441,10 @@ fn initialize_inner(
                 let pings = PRE_INIT_PING_REGISTRATION.lock().unwrap();
                 for ping in pings.iter() {
                     glean.register_ping_type(ping);
+                }
+                let pings = PRE_INIT_PING_ENABLED.lock().unwrap();
+                for (ping, enabled) in pings.iter() {
+                    glean.set_ping_enabled(ping, *enabled);
                 }
 
                 // If this is the first time ever the Glean SDK runs, make sure to set
@@ -860,6 +865,21 @@ pub fn glean_set_upload_enabled(enabled: bool) {
 /// This replaces `set_upload_enabled`.
 pub fn glean_set_collection_enabled(enabled: bool) {
     glean_set_upload_enabled(enabled)
+}
+
+/// Enable or disable a ping.
+///
+/// Disabling a ping causes all data for that ping to be removed from storage
+/// and all pending pings of that type to be deleted.
+pub fn set_ping_enabled(ping: &PingType, enabled: bool) {
+    let ping = ping.clone();
+    if was_initialize_called() {
+        crate::launch_with_glean_mut(move |glean| glean.set_ping_enabled(&ping, enabled));
+    } else {
+        let m = &PRE_INIT_PING_ENABLED;
+        let mut lock = m.lock().unwrap();
+        lock.push((ping, enabled));
+    }
 }
 
 /// Register a new [`PingType`](PingType).
