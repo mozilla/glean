@@ -75,3 +75,12 @@ class PingType:
             self._test_callback = None
 
         self._inner.submit(reason_string)
+
+    def set_enabled(self, enabled: bool) -> None:
+        """
+        Enable or disable a ping.
+
+        Disabling a ping causes all data for that ping to be removed from storage
+        and all pending pings of that type to be deleted.
+        """
+        self._inner.set_enabled(enabled)

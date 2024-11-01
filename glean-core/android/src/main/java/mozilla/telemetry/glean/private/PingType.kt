@@ -110,4 +110,14 @@ class PingType<ReasonCodesEnum> (
         val reasonString = reason?.let { this.reasonCodes[it.code()] }
         this.innerPing.submit(reasonString)
     }
+
+    /**
+     * Enable or disable a ping.
+     *
+     * Disabling a ping causes all data for that ping to be removed from storage
+     * and all pending pings of that type to be deleted.
+     */
+    fun setEnabled(enabled: Boolean) {
+        this.innerPing.setEnabled(enabled)
+    }
 }
