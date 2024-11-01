@@ -95,7 +95,7 @@ class DeletionPingTest {
         val pendingDeletionRequestDir = File(Glean.getDataDir(), DELETION_PING_DIR)
 
         // Disabling upload generates a deletion ping
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
@@ -107,7 +107,7 @@ class DeletionPingTest {
 
         // Re-setting upload to `false` should not generate an additional ping
         // and no worker should be scheduled.
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
 
         assertFalse(getWorkerStatus(context, PingUploadWorker.PING_WORKER_TAG).isEnqueued)
         // No new file should have been written
@@ -182,7 +182,7 @@ class DeletionPingTest {
         )
 
         // Disabling upload generates a deletion ping
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!

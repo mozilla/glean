@@ -137,11 +137,21 @@ pub fn shutdown() {
     glean_core::shutdown()
 }
 
-/// Sets whether upload is enabled or not.
+/// **DEPRECATED** Sets whether upload is enabled or not.
+///
+/// **DEPRECATION NOTICE**:
+/// This API is deprecated. Use `set_collection_enabled` instead.
 ///
 /// See [`glean_core::Glean::set_upload_enabled`].
 pub fn set_upload_enabled(enabled: bool) {
     glean_core::glean_set_upload_enabled(enabled)
+}
+
+/// Sets whether upload is enabled or not.
+///
+/// See [`glean_core::Glean::set_upload_enabled`].
+pub fn set_collection_enabled(enabled: bool) {
+    glean_core::glean_set_collection_enabled(enabled)
 }
 
 /// Collects and submits a ping for eventual uploading by name.

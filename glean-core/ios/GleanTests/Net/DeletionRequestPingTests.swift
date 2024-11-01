@@ -94,7 +94,7 @@ class DeletionRequestPingTests: XCTestCase {
         setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")
 
-        Glean.shared.setUploadEnabled(false)
+        Glean.shared.setCollectionEnabled(false)
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
@@ -156,7 +156,7 @@ class DeletionRequestPingTests: XCTestCase {
         setupHttpResponseStub("deletion-request")
         expectation = expectation(description: "Completed upload")
 
-        Glean.shared.setUploadEnabled(false)
+        Glean.shared.setCollectionEnabled(false)
 
         waitForExpectations(timeout: 5.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")

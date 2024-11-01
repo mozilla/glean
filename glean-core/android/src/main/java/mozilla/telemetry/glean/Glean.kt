@@ -289,7 +289,7 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
-     * Enable or disable Glean collection and upload.
+     * **DEPRECATED** Enable or disable Glean collection and upload.
      *
      * Metric collection is enabled by default.
      *
@@ -300,9 +300,33 @@ open class GleanInternalAPI internal constructor() {
      *
      * When enabling, the core Glean metrics are recreated.
      *
+     * **DEPRECATION NOTICE**:
+     * This API is deprecated. Use `setCollectionEnabled` instead.
+     *
      * @param enabled When true, enable metric collection.
      */
+    @Deprecated("Use `setCollectionEnabled` instead.")
     fun setUploadEnabled(enabled: Boolean) {
+        gleanSetUploadEnabled(enabled)
+    }
+
+    /**
+     * Enable or disable Glean collection and upload.
+     *
+     * Metric collection is enabled by default.
+     *
+     * When collection is disabled, metrics aren't recorded at all and no data
+     * is uploaded.
+     * **Note**: Individual pings can be enabled if they don't follow this setting.
+     * See `PingType.setEnabled`.
+     *
+     * When disabling, all pending metrics, events and queued pings are cleared.
+     *
+     * When enabling, the core Glean metrics are recreated.
+     *
+     * @param enabled When true, enable metric collection.
+     */
+    fun setCollectionEnabled(enabled: Boolean) {
         gleanSetUploadEnabled(enabled)
     }
 

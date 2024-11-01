@@ -163,7 +163,7 @@ class ObjectMetricTypeTest {
             ),
         )
 
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
 
         var balloons = BalloonsObject()
         balloons.add(BalloonsObjectItem(colour = "yellow", diameter = 10))
@@ -177,7 +177,7 @@ class ObjectMetricTypeTest {
         var expected: JsonElement = Json.decodeFromString(expectedJson)
         assertEquals(expected, metric.testGetValue()!!)
 
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         balloons = BalloonsObject()
         balloons.add(BalloonsObjectItem(colour = "blue", diameter = 1))
         metric.set(balloons)

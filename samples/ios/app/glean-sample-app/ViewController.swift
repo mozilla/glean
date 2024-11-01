@@ -87,7 +87,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func enableToggled(_: Any) {
-        Glean.shared.setUploadEnabled(enableSwitch.isOn)
+        Glean.shared.setCollectionEnabled(enableSwitch.isOn)
         UserDefaults.standard.set(enableSwitch.isOn, forKey: telemetryPrefKey)
         enabledLabel.text = "Glean is \(enableSwitch.isOn ? "enabled" : "disabled")"
     }

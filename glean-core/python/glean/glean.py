@@ -325,7 +325,7 @@ class Glean:
     @classmethod
     def set_upload_enabled(cls, enabled: bool) -> None:
         """
-        Enable or disable Glean collection and upload.
+        **DEPRECATED** Enable or disable Glean collection and upload.
 
         Metric collection is enabled by default.
 
@@ -335,6 +335,9 @@ class Glean:
         When disabling, all pending metrics, events and queued pings are cleared.
 
         When enabling, the core Glean metrics are recreated.
+
+        **DEPRECATION NOTICE**:
+        This API is deprecated. Use `set_collection_enabled` instead.
 
         Args:
             enabled (bool): When True, enable metric collection.
@@ -346,6 +349,27 @@ class Glean:
         # Because the dispatch queue is halted until Glean is fully initialized
         # we can safely enqueue here and it will execute after initialization.
         _uniffi.glean_set_upload_enabled(enabled)
+
+    @classmethod
+    def set_collection_enabled(cls, enabled: bool) -> None:
+        """
+        Enable or disable Glean collection and upload.
+
+        Metric collection is enabled by default.
+
+        When collection is disabled, metrics aren't recorded at all and no data
+        is uploaded.
+        **Note**: Individual pings can be enabled if they don't follow this setting.
+        See `PingType.set_enabled`.
+
+        When disabling, all pending metrics, events and queued pings are cleared.
+
+        When enabling, the core Glean metrics are recreated.
+
+        Args:
+            enabled (bool): When True, enable metric collection.
+        """
+        cls.set_upload_enabled(enabled)
 
     @classmethod
     def set_experiment_active(

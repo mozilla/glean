@@ -220,6 +220,27 @@ public class Glean {
         )
     }
 
+    /// **DEPRECATED** Enable or disable Glean collection and upload.
+    ///
+    /// Metric collection is enabled by default.
+    ///
+    /// When uploading is disabled, metrics aren't recorded at all and no data
+    /// is uploaded.
+    ///
+    /// When disabling, all pending metrics, events and queued pings are cleared.
+    ///
+    /// When enabling, the core Glean metrics are recreated.
+    ///
+    /// **DEPRECATION NOTICE**:
+    /// This API is deprecated. Use `setCollectionEnabled` instead.
+    ///
+    /// - parameters:
+    ///     * enabled: When true, enable metric collection.
+    @available(*, deprecated, message: "Use `setCollectionEnabled` instead.")
+    public func setUploadEnabled(_ enabled: Bool) {
+        gleanSetUploadEnabled(enabled)
+    }
+
     /// Enable or disable Glean collection and upload.
     ///
     /// Metric collection is enabled by default.
@@ -233,7 +254,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
-    public func setUploadEnabled(_ enabled: Bool) {
+    public func setCollectionEnabled(_ enabled: Bool) {
         gleanSetUploadEnabled(enabled)
     }
 
