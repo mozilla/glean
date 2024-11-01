@@ -240,16 +240,16 @@ class EventMetricTypeTests: XCTestCase {
             disabled: false
         ), ["test_name"])
 
-        Glean.shared.setUploadEnabled(true)
+        Glean.shared.setCollectionEnabled(true)
         metric.record(TestExtras(testName: "event1"))
         let snapshot1 = metric.testGetValue()!
         XCTAssertEqual(1, snapshot1.count)
 
-        Glean.shared.setUploadEnabled(false)
+        Glean.shared.setCollectionEnabled(false)
         metric.record(TestExtras(testName: "event2"))
         XCTAssertNil(metric.testGetValue())
 
-        Glean.shared.setUploadEnabled(true)
+        Glean.shared.setCollectionEnabled(true)
         metric.record(TestExtras(testName: "event3"))
         let snapshot3 = metric.testGetValue()!
         XCTAssertEqual(1, snapshot3.count)

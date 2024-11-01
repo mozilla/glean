@@ -819,7 +819,10 @@ pub extern "C" fn glean_enable_logging() {
     }
 }
 
-/// Sets whether upload is enabled or not.
+/// **DEPRECATED** Sets whether upload is enabled or not.
+///
+/// **DEPRECATION NOTICE**:
+/// This API is deprecated. Use `set_collection_enabled` instead.
 pub fn glean_set_upload_enabled(enabled: bool) {
     if !was_initialize_called() {
         return;
@@ -850,6 +853,13 @@ pub fn glean_set_upload_enabled(enabled: bool) {
             }
         }
     })
+}
+
+/// Sets whether collection is enabled or not.
+///
+/// This replaces `set_upload_enabled`.
+pub fn glean_set_collection_enabled(enabled: bool) {
+    glean_set_upload_enabled(enabled)
 }
 
 /// Register a new [`PingType`](PingType).

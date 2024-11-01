@@ -62,7 +62,7 @@ class GleanTest {
 
     @After
     fun resetGlobalState() {
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
     }
 
     @Test
@@ -121,7 +121,7 @@ class GleanTest {
                 sendInPings = listOf("store1"),
             ),
         )
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
 
         stringMetric.set("foo")
         assertNull(stringMetric.testGetValue())
@@ -542,12 +542,12 @@ class GleanTest {
         stringMetric.set("TEST VALUE")
         assertEquals("TEST VALUE", stringMetric.testGetValue()!!)
 
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         assertNull(stringMetric.testGetValue())
         stringMetric.set("TEST VALUE")
         assertNull(stringMetric.testGetValue())
 
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         assertNull(stringMetric.testGetValue())
         stringMetric.set("TEST VALUE")
         assertEquals("TEST VALUE", stringMetric.testGetValue()!!)
@@ -557,10 +557,10 @@ class GleanTest {
     fun `Core metrics should be cleared and restored when disabling and enabling uploading`() {
         assertNotNull(GleanInternalMetrics.os.testGetValue())
 
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         assertNull(GleanInternalMetrics.os.testGetValue())
 
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         assertNotNull(GleanInternalMetrics.os.testGetValue())
     }
 
@@ -585,7 +585,7 @@ class GleanTest {
             Glean.metricsPingScheduler!!.timer != null,
         )
 
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
 
         // Verify that the workers are still enqueued to show that setting upload enabled to true
         // doesn't affect any already queued workers, since we ask consumers to set upload enabled
@@ -600,7 +600,7 @@ class GleanTest {
         )
 
         // Toggle upload enabled to false
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
 
         // Verify workers have been cancelled
         assertTrue(
@@ -871,7 +871,7 @@ class GleanTest {
         Glean.initialize(context, true, config, GleanBuildInfo.buildInfo)
 
         // Glean might still be initializing. Disable upload.
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
 
         // Set data and try to submit a custom ping.
         val testValue = "SomeTestValue"
