@@ -258,14 +258,14 @@ class EventMetricTypeTest {
             ),
             allowedExtraKeys = listOf("test_name"),
         )
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         eventMetric.record(EventMetricExtras(testName = "event1"))
         val snapshot1 = eventMetric.testGetValue()!!
         assertEquals(1, snapshot1.size)
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         eventMetric.record(EventMetricExtras(testName = "event2"))
         assertNull(eventMetric.testGetValue())
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         eventMetric.record(EventMetricExtras(testName = "event3"))
         val snapshot3 = eventMetric.testGetValue()!!
         assertEquals(1, snapshot3.size)

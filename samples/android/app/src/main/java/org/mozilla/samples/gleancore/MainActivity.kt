@@ -85,10 +85,10 @@ open class MainActivity : AppCompatActivity() {
         binding.uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 binding.gleanEnabledText.setText("Glean is enabled")
-                Glean.setUploadEnabled(true)
+                Glean.setCollectionEnabled(true)
             } else {
                 binding.gleanEnabledText.setText("Glean is disabled")
-                Glean.setUploadEnabled(false)
+                Glean.setCollectionEnabled(false)
             }
         }
 

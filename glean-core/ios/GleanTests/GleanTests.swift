@@ -283,7 +283,7 @@ class GleanTests: XCTestCase {
         Glean.shared.resetGlean(clearStores: false)
 
         // Glean might still be initializing. Disable upload.
-        Glean.shared.setUploadEnabled(false)
+        Glean.shared.setCollectionEnabled(false)
 
         // Set data and try to submit a custom ping.
         counter.add(1)
