@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v61.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...main)
+
+# v62.0.0 (2024-11-05)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v61.2.0...v62.0.0)
 
 * General
   * **BREAKING**: Remove LMDB-to-safe-mode migration.
