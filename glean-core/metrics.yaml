@@ -735,6 +735,7 @@ glean.database:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     expires: never
+    disabled: true
 
 glean.validation:
   foreground_count:

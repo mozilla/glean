@@ -73,6 +73,14 @@ test.metrics:
       - aLabel
       - 2label
 
+  sample_labeled_quantity:
+    <<: *defaults
+    type: labeled_quantity
+    unit: prtime
+    labels:
+      - aLabel
+      - 2label
+
   sample_event_no_keys:
     <<: *defaults
     type: event

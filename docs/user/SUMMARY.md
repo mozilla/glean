@@ -47,6 +47,7 @@
 - [Walkthroughs and How-tos](user/howto/index.md)
     - [Server Knobs Walkthrough](user/howto/server-knobs-walkthrough/server-knobs-walkthrough.md)
     - ["Real-Time" Events](user/howto/real-time-events/real-time-events.md)
+    - [Telemetry/Data Bug Investigation Recommendations](user/howto/investigating-data-issues/investigating-data-issues.md)
 
 # API Reference
 

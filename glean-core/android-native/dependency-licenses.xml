@@ -7,9 +7,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: miniz_oxide</name>
     <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
   </license>  <license>
-    <name>Apache License 2.0: lmdb-rkv</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -91,9 +88,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>  <license>
-    <name>Apache License 2.0: bitflags</name>
-    <url>https://github.com/bitflags/bitflags</url>
-  </license>  <license>
     <name>Apache License 2.0: camino</name>
     <url>https://github.com/camino-rs/camino</url>
   </license>  <license>
@@ -108,6 +102,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/rust-cli/env_logger/</url>
+  </license>  <license>
+    <name>Apache License 2.0: errno</name>
+    <url>https://github.com/lambda-fairy/rust-errno</url>
   </license>  <license>
     <name>Apache License 2.0: fastrand</name>
     <url>https://github.com/smol-rs/fastrand</url>
@@ -223,9 +220,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
   </license>  <license>
-    <name>Apache License 2.0: lmdb-rkv-sys</name>
-    <url>https://github.com/mozilla/lmdb-rs.git</url>
-  </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>
   </license>  <license>
@@ -301,9 +295,6 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -312,6 +303,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
