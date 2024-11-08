@@ -6,6 +6,7 @@ use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 use std::time::Duration;
 
@@ -19,10 +20,31 @@ pub mod glean_metrics {
 }
 
 #[derive(Debug)]
-struct MovingUploader(String);
+struct MovingUploader {
+    out_path: String,
+    recv_cnt: AtomicUsize,
+}
+
+impl MovingUploader {
+    fn new(out_path: String) -> Self {
+        let mut cnt = 0;
+
+        let mut dir = PathBuf::from(&out_path);
+        dir.push("sent_pings");
+        if let Ok(entries) = dir.read_dir() {
+            cnt = entries.filter_map(|entry| entry.ok()).count();
+        }
+
+        Self {
+            out_path,
+            recv_cnt: AtomicUsize::new(cnt),
+        }
+    }
+}
 
 impl net::PingUploader for MovingUploader {
     fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+        let cnt = self.recv_cnt.fetch_add(1, Ordering::Relaxed) + 1;
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;
@@ -36,22 +58,28 @@ impl net::PingUploader for MovingUploader {
             .or_else(|| std::str::from_utf8(&body).ok())
             .unwrap();
 
-        let mut out_path = PathBuf::from(&self.0);
+        let mut out_path = PathBuf::from(&self.out_path);
         out_path.push("sent_pings");
         std::fs::create_dir_all(&out_path).unwrap();
 
-        let docid = url.rsplit('/').next().unwrap();
-        out_path.push(format!("{docid}.json"));
+        let mut components = url.rsplit('/');
+        let docid = components.next().unwrap();
+        let _doc_version = components.next().unwrap();
+        let doctype = components.next().unwrap();
+        out_path.push(format!("{cnt:0>3}-{doctype}-{docid}.json"));
         let mut fp = File::create(out_path).unwrap();
 
         // pseudo-JSON, let's hope this works.
         writeln!(fp, "{{").unwrap();
-        writeln!(fp, "  \"url\": {url},").unwrap();
+        writeln!(fp, "  \"url\": {url:?},").unwrap();
         for (key, val) in headers {
             writeln!(fp, "  \"{key}\": \"{val}\",").unwrap();
         }
         writeln!(fp, "}}").unwrap();
-        writeln!(fp, "{data}").unwrap();
+
+        let data: serde_json::Value = serde_json::from_str(data).unwrap();
+        let json = serde_json::to_string_pretty(&data).unwrap();
+        writeln!(fp, "{json}").unwrap();
 
         net::UploadResult::http_status(200)
     }
@@ -69,7 +97,7 @@ fn main() {
         root.path().to_path_buf()
     };
 
-    let uploader = MovingUploader(data_path.display().to_string());
+    let uploader = MovingUploader::new(data_path.display().to_string());
     let cfg = ConfigurationBuilder::new(true, data_path, "org.mozilla.glean_core.example")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)
