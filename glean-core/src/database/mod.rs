@@ -656,6 +656,34 @@ impl Database {
         })
     }
 
+    pub fn clear_lifetime_storage(&self, lifetime: Lifetime, storage_name: &str) -> Result<()> {
+        self.write_with_store(lifetime, |mut writer, store| {
+            let mut metrics = Vec::new();
+            {
+                let mut iter = store.iter_from(&writer, storage_name)?;
+                while let Some(Ok((metric_id, _))) = iter.next() {
+                    if let Ok(metric_id) = std::str::from_utf8(metric_id) {
+                        if !metric_id.starts_with(storage_name) {
+                            break;
+                        }
+                        metrics.push(metric_id.to_owned());
+                    }
+                }
+            }
+
+            let mut res = Ok(());
+            for to_delete in metrics {
+                if let Err(e) = store.delete(&mut writer, to_delete) {
+                    log::warn!("Can't delete from store: {:?}", e);
+                    res = Err(e);
+                }
+            }
+
+            measure_commit!(self, writer.commit())?;
+            Ok(res?)
+        })
+    }
+
     /// Removes a single metric from the storage.
     ///
     /// # Arguments

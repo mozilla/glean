@@ -194,6 +194,10 @@ impl PingType {
         self.0.enabled.load(Ordering::Relaxed)
     }
 
+    pub(crate) fn follows_collection_enabled(&self) -> bool {
+        self.0.follows_collection_enabled.load(Ordering::Relaxed)
+    }
+
     pub(crate) fn schedules_pings(&self) -> &[String] {
         &self.0.schedules_pings
     }
