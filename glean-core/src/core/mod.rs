@@ -577,7 +577,16 @@ impl Glean {
         // Note that this also includes the ping sequence numbers, so it has
         // the effect of resetting those to their initial values.
         if let Some(data) = self.data_store.as_ref() {
-            data.clear_all()
+            _ = data.clear_lifetime_storage(Lifetime::User, "glean_internal_info");
+            _ = data.clear_lifetime_storage(Lifetime::User, "glean_client_info");
+            _ = data.clear_lifetime_storage(Lifetime::Application, "glean_client_info");
+            for (ping_name, ping) in &self.ping_registry {
+                if ping.follows_collection_enabled() {
+                    _ = data.clear_ping_lifetime_storage(ping_name);
+                    _ = data.clear_lifetime_storage(Lifetime::User, ping_name);
+                    _ = data.clear_lifetime_storage(Lifetime::Application, ping_name);
+                }
+            }
         }
         if let Err(err) = self.event_data_store.clear_all() {
             log::warn!("Error clearing pending events: {}", err);
