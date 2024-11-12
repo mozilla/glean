@@ -35,7 +35,7 @@
 //! You can then access your metrics and pings directly by name within the `metrics` module.
 //!
 //! [`glean-parser`]: https://github.com/mozilla/glean_parser/
-use std::env;
+use std::{env, path::PathBuf};
 
 use xshell_venv::{Result, Shell, VirtualEnv};
 
@@ -107,12 +107,19 @@ impl Builder {
         }
 
         let sh = Shell::new()?;
-        let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
+        let venv = if let Ok(env_dir) = env::var("GLEAN_PYTHON_VENV_DIR") {
+            eprintln!("got env dir: {env_dir}");
+            let env_path = PathBuf::from(env_dir);
+            VirtualEnv::with_path(&sh, &env_path)?
+        } else {
+            let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
-        let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
-        // TODO: Remove after we switched glean_parser away from legacy setup.py
-        venv.pip_install("setuptools")?;
-        venv.pip_install(&glean_parser)?;
+            let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
+            // TODO: Remove after we switched glean_parser away from legacy setup.py
+            venv.pip_install("setuptools")?;
+            venv.pip_install(&glean_parser)?;
+            venv
+        };
 
         for file in &self.files {
             println!("cargo:rerun-if-changed={file}");
