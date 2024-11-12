@@ -188,7 +188,10 @@ class PingTests: XCTestCase {
         ))
 
         counter.add()
-        XCTAssertNotNil(counter.testGetValue())
+        // Nothing stored for unknown ping
+        XCTAssertNil(counter.testGetValue())
+        // Data recorded for baseline
+        XCTAssertNotNil(counter.testGetValue("baseline"))
 
         setupHttpResponseStub("INVALID")
         // Fail if the server receives data
