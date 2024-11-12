@@ -476,6 +476,13 @@ impl Glean {
     #[doc(hidden)]
     pub fn set_ping_enabled(&mut self, ping: &PingType, enabled: bool) {
         ping.store_enabled(enabled);
+        if !enabled {
+            if let Some(data) = self.data_store.as_ref() {
+                _ = data.clear_ping_lifetime_storage(ping.name());
+                _ = data.clear_lifetime_storage(Lifetime::User, ping.name());
+                _ = data.clear_lifetime_storage(Lifetime::Application, ping.name());
+            }
+        }
     }
 
     /// Determines whether upload is enabled.
