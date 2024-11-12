@@ -484,9 +484,9 @@ class EventMetricTypeTest {
             allowedExtraKeys = listOf("some_extra"),
         )
 
-        // Let's record a single event. This will be queued up but not be sent.
+        // Let's record a single event. This will NOT be queued up because the ping is not registered.
         event.record(TestEventExtras(someExtra = "alternative"))
-        assertEquals(1, event.testGetValue()!!.size)
+        assertNull(event.testGetValue())
 
         // Let's act as if the app was stopped
         Glean.testDestroyGleanHandle()
