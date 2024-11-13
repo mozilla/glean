@@ -66,6 +66,11 @@ impl PingMaker {
 
     /// Gets, and then increments, the sequence number for a given ping.
     fn get_ping_seq(&self, glean: &Glean, storage_name: &str) -> usize {
+        // Don't attempt to increase sequence number for disabled ping
+        if !glean.is_ping_enabled(storage_name) {
+            return 0;
+        }
+
         // Sequence numbers are stored as a counter under a name that includes the storage name
         let seq = CounterMetric::new(CommonMetricData {
             name: format!("{}#sequence", storage_name),
