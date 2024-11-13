@@ -482,6 +482,11 @@ impl Glean {
                 _ = data.clear_lifetime_storage(Lifetime::User, ping.name());
                 _ = data.clear_lifetime_storage(Lifetime::Application, ping.name());
             }
+            let ping_maker = PingMaker::new();
+            let disabled_pings = &[ping.name()][..];
+            if let Err(err) = ping_maker.clear_pending_pings(self.get_data_path(), disabled_pings) {
+                log::warn!("Error clearing pending pings: {}", err);
+            }
         }
     }
 

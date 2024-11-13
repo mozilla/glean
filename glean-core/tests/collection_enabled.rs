@@ -83,7 +83,8 @@ fn pings_with_follows_false_are_exempt() {
     assert!(ping.submit_sync(&glean, None));
 
     let queued_pings = get_queued_pings(glean.get_data_path()).unwrap();
-    assert_eq!(1, queued_pings.len());
+    // both `nofollows` pings remain in the queue
+    assert_eq!(2, queued_pings.len());
 
     let mut values = vec![2, 10];
     for ping in queued_pings {
@@ -135,18 +136,8 @@ fn nofollows_ping_can_ride_along() {
     counter.add_sync(&glean, 2);
     assert!(manual_ping.submit_sync(&glean, None));
     // The previous one, plus 2 new ones
-    assert_eq!(3, get_queued_pings(glean.get_data_path()).unwrap().len());
-
-    // Disable it again
-    glean.set_ping_enabled("nofollows".to_string(), false);
-    counter.add_sync(&glean, 5);
-    assert!(manual_ping.submit_sync(&glean, None));
     let queued_pings = get_queued_pings(glean.get_data_path()).unwrap();
-    // The 3 previous ones plus only one new one
-    assert_eq!(4, queued_pings.len());
-
-    // Check that all follows are as expected.
-    // We cannot guarantee order, so we need to look at some values
+    assert_eq!(3, queued_pings.len());
     for (_url, json, info) in queued_pings {
         let Some(obj) = info else {
             panic!("no ping info")
@@ -168,11 +159,40 @@ fn nofollows_ping_can_ride_along() {
             }
         }
     }
+
+    // Disable it again
+    glean.set_ping_enabled(&nofollows_ping, false);
+    counter.add_sync(&glean, 5);
+    assert!(manual_ping.submit_sync(&glean, None));
+    let queued_pings = get_queued_pings(glean.get_data_path()).unwrap();
+    // The 2 previous `manual` pings, the `nofollows` was removed, plus the new `manual` one
+    assert_eq!(3, queued_pings.len());
+
+    // Check that all follows are as expected.
+    // We cannot guarantee order, so we need to look at some values
+    for (_url, json, info) in queued_pings {
+        let Some(obj) = info else {
+            panic!("no ping info")
+        };
+        let counter_val = json["metrics"]["counter"]["local.counter"]
+            .as_i64()
+            .unwrap();
+
+        assert_ne!("nofollows", obj["ping_name"].as_str().unwrap());
+        let seq = json["ping_info"]["seq"].as_i64().unwrap();
+
+        match seq {
+            0 => assert_eq!(1, counter_val),
+            1 => assert_eq!(3, counter_val),
+            2 => assert_eq!(8, counter_val),
+            _ => panic!("unexpected sequence number: {}", seq),
+        }
+    }
 }
 
 #[test]
 fn queued_nofollows_pings_are_not_removed() {
-    let (mut glean, _t) = new_glean(None);
+    let (mut glean, t) = new_glean(None);
 
     let nofollows_ping = nofollows_ping(&mut glean);
     let manual_ping = manual_ping(&mut glean);
@@ -195,5 +215,9 @@ fn queued_nofollows_pings_are_not_removed() {
     assert_eq!(2, get_queued_pings(glean.get_data_path()).unwrap().len());
 
     glean.set_upload_enabled(false);
+    assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+
+    // Ping is still there after a Glean restart
+    let (glean, _t) = new_glean(Some(t));
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
