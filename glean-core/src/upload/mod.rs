@@ -25,6 +25,7 @@ use chrono::Utc;
 use crate::error::ErrorKind;
 use crate::TimerId;
 use crate::{internal_metrics::UploadMetrics, Glean};
+pub use directory::process_metadata;
 use directory::{PingDirectoryManager, PingPayloadsByDirectory};
 use policy::Policy;
 use request::create_date_header_value;

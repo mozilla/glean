@@ -94,7 +94,7 @@ pub struct PingMetadata {
 /// currently it contains only additonal headers to be added to each ping request.
 /// Therefore, we will process the contents of this line
 /// and return a HeaderMap of the persisted headers.
-fn process_metadata(path: &str, metadata: &str) -> Option<PingMetadata> {
+pub fn process_metadata(path: &str, metadata: &str) -> Option<PingMetadata> {
     if let Ok(metadata) = serde_json::from_str::<PingMetadata>(metadata) {
         return Some(metadata);
     } else {
