@@ -1,0 +1,54 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK. They are
+# automatically converted to Rust code at build time using the `glean_parser`
+# PyPI package.
+
+---
+
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+metrics:
+  counter: &defaults
+    type: counter
+    description: |
+      Just testing counters
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+      - usage
+    no_lint:
+      - CATEGORY_GENERIC
+
+  boolean:
+    <<: *defaults
+    type: boolean
+
+  event_no_keys:
+    <<: *defaults
+    type: event
+
+  event:
+    <<: *defaults
+    type: event
+    extra_keys:
+      key_one:
+        type: quantity
+        description: "This is key one"
+      And1WithUnusualCASING:
+        type: boolean
+        description: "This is key two"
+
+  event_default:
+    <<: *defaults
+    type: event
+    send_in_pings:
+      - events

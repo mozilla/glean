@@ -8,6 +8,7 @@ members = [
   "glean-core/bundle-android",
   "glean-core/build",
   "samples/rust",
+  "samples/interactive",
   "tools/embedded-uniffi-bindgen",
 ]
 

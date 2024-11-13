@@ -6,6 +6,7 @@ allow = [
     "BSD-2-Clause",
     "Zlib",
     "Unicode-DFS-2016",
+    "BSL-1.0"
 ]
 
 [bans]
