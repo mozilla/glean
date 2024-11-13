@@ -307,8 +307,9 @@ fn clear_pending_pings() {
     assert!(ping_type.submit_sync(&glean, None));
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
 
+    let disabled_pings = &["store1"][..];
     assert!(ping_maker
-        .clear_pending_pings(glean.get_data_path())
+        .clear_pending_pings(glean.get_data_path(), disabled_pings)
         .is_ok());
     assert_eq!(0, get_queued_pings(glean.get_data_path()).unwrap().len());
 }
