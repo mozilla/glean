@@ -14,15 +14,22 @@ Glean ["events" ping](../../pings/events.md) submission can be configured either
 Setting the maximum event threshold to a value of `1` will configure the Glean SDK to submit an "events" ping for each and every [event](../../../reference/metrics/event.md) as they
 are recorded. By default, the Glean SDK will batch 500 events per "events" ping.
 
-As of November 2024, Desktop Release:
-Median user per day: 67 events / 3 pings
-The impact of turning on one event per ping based on the median user would result in an increase of approximately 21 times more event ping volume.
+#### As of November 2024, Desktop Release:
 
-85th percentile user per day: 305 events / 11 pings
-The impact of turning on one event per ping based on the 85th percentile user would result in an increase of approximately 26 times more event ping volume.
+##### Median user per day:
 
-95th percentile user per day: 706 events / 19 pings
-The impact of turning on one event per ping based on the 95th percentile user would result in an increase of approximately 36 times more event ping volume.
+- 67 events / 3 pings
+- The impact of turning on one event per ping based on the median user would result in an increase of approximately 21 times more event ping volume.
+
+##### 85th percentile user per day:
+
+- 305 events / 11 pings
+- The impact of turning on one event per ping based on the 85th percentile user would result in an increase of approximately 26 times more event ping volume.
+
+##### 95th percentile user per day:
+
+- 706 events / 19 pings
+- The impact of turning on one event per ping based on the 95th percentile user would result in an increase of approximately 36 times more event ping volume.
 
 The current release population of Desktop as a whole sends us over 10 billion events per day in over 340 million event pings. Sending each of those events as a ping would increase the ping volume by 32 times the current rate.
 
