@@ -52,3 +52,18 @@ metrics:
     type: event
     send_in_pings:
       - events
+
+  profile_id:
+    type: uuid
+    lifetime: application
+    description: ""
+    bugs:
+      - https://bugzilla.mozilla.org/12345678
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - usage
+      - usage-deletion-request

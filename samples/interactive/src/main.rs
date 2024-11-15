@@ -6,9 +6,10 @@ use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+use client_id::get_profile_id;
 use tempfile::Builder;
 
 use flate2::read::GzDecoder;
@@ -23,6 +24,41 @@ pub mod glean_metrics {
 
 pub mod metric_info {
     include!(concat!(env!("OUT_DIR"), "/metric_info.rs"));
+}
+pub mod client_id {
+    use std::{fs, path::Path};
+    use uuid::Uuid;
+
+    const CANARY_USAGE_PROFILE_ID: &str = "beefbeef-beef-beef-beef-beeefbeefbee";
+
+    pub fn get_profile_id(path: &Path) -> Uuid {
+        let uuid = if let Ok(s) = fs::read_to_string(path.join("profile_id.txt")) {
+            Uuid::parse_str(&s).unwrap()
+        } else {
+            let uuid = Uuid::new_v4();
+            write_profile_id(path, uuid);
+            uuid
+        };
+        super::glean_metrics::metrics::profile_id.set(uuid.to_string());
+        uuid
+    }
+
+    pub fn reset_profile_id(path: &Path) -> Uuid {
+        let uuid = Uuid::new_v4();
+        write_profile_id(path, uuid);
+        super::glean_metrics::metrics::profile_id.set(uuid.to_string());
+        uuid
+    }
+
+    pub fn set_canary_id(path: &Path) {
+        let uuid = Uuid::parse_str(&CANARY_USAGE_PROFILE_ID).unwrap();
+        write_profile_id(path, uuid);
+    }
+
+    pub fn write_profile_id(path: &Path, uuid: Uuid) {
+        fs::create_dir_all(path).unwrap();
+        fs::write(path.join("profile_id.txt"), uuid.to_string()).unwrap();
+    }
 }
 
 #[derive(Debug)]
@@ -93,7 +129,7 @@ impl net::PingUploader for MovingUploader {
     }
 }
 
-fn handle_command(cmd: &str) -> std::result::Result<(), &'static str> {
+fn handle_command(cmd: &str, data_path: &Path) -> std::result::Result<(), &'static str> {
     let mut args = cmd.split(" ");
 
     match args.next().unwrap() {
@@ -145,7 +181,7 @@ fn handle_command(cmd: &str) -> std::result::Result<(), &'static str> {
             let state_b = match state {
                 "on" | "true" => true,
                 "off" | "false" => false,
-                _ => return Err("unknown state")
+                _ => return Err("unknown state"),
             };
             glean::set_upload_enabled(state_b);
             println!("state changed to: {}", state);
@@ -153,10 +189,18 @@ fn handle_command(cmd: &str) -> std::result::Result<(), &'static str> {
         "enable" => {
             let ping = args.next().ok_or("need ping")?;
             glean::set_ping_enabled(ping, true);
+            if ping == "usage" {
+                glean::set_ping_enabled("usage-deletion-request", true);
+                client_id::reset_profile_id(data_path);
+            }
             println!("{} enabled", ping);
         }
         "disable" => {
             let ping = args.next().ok_or("need ping")?;
+            if ping == "usage" {
+                glean_metrics::usage_deletion_request.submit(None);
+                client_id::set_canary_id(data_path);
+            }
             glean::set_ping_enabled(ping, false);
             println!("{} disabled", ping);
         }
@@ -165,7 +209,7 @@ fn handle_command(cmd: &str) -> std::result::Result<(), &'static str> {
             let state_b = match state {
                 "on" | "true" => true,
                 "off" | "false" => false,
-                _ => return Err("unknown state")
+                _ => return Err("unknown state"),
             };
             glean::set_log_pings(state_b);
             println!("log state changed to: {}", state);
@@ -200,12 +244,11 @@ fn main() -> Result<()> {
         root.path().to_path_buf()
     };
     let history_path = data_path.join("history.txt");
+    get_profile_id(&data_path);
 
-    let ping_schedule = HashMap::from([
-        ("baseline".to_string(), vec!["usage".to_string()])
-    ]);
+    let ping_schedule = HashMap::from([("baseline".to_string(), vec!["usage".to_string()])]);
     let uploader = MovingUploader::new(data_path.display().to_string());
-    let cfg = ConfigurationBuilder::new(true, data_path, "org.mozilla.glean_core.example")
+    let cfg = ConfigurationBuilder::new(true, data_path.clone(), "org.mozilla.glean_core.example")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)
         .with_uploader(uploader)
@@ -230,7 +273,7 @@ fn main() -> Result<()> {
         match readline {
             Ok(line) => {
                 rl.add_history_entry(line.as_str())?;
-                if let Err(err) = handle_command(&line) {
+                if let Err(err) = handle_command(&line, &data_path) {
                     println!("E: {}", err);
                 }
             }

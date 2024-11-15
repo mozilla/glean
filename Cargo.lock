@@ -490,6 +490,7 @@ dependencies = [
  "rustyline",
  "serde_json",
  "tempfile",
+ "uuid",
 ]
 
 [[package]]
