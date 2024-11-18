@@ -10,7 +10,7 @@ env_logger = { version = "0.10.0", default-features = false, features = ["humant
 flate2 = "1.0.19"
 glean = { path = "../../glean-core/rlb" }
 log = "0.4.22"
-rustyline = "13.0.0"
+rustyline = { version = "13.0.0", features = ["derive"] }
 serde_json = "1.0.44"
 tempfile = "3.3.0"
 uuid = "1.4.1"

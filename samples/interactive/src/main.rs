@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
@@ -16,7 +16,10 @@ use flate2::read::GzDecoder;
 use glean::{net, ClientInfoMetrics, ConfigurationBuilder};
 use log::LevelFilter;
 use rustyline::error::ReadlineError;
-use rustyline::{DefaultEditor, Result};
+use rustyline::Result;
+use rustyline::completion::{extract_word, Completer, Pair};
+use rustyline::{CompletionType, Config, Context, Editor};
+use rustyline::{Helper, Highlighter, Hinter, Validator};
 
 pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
@@ -59,6 +62,124 @@ pub mod client_id {
         fs::create_dir_all(path).unwrap();
         fs::write(path.join("profile_id.txt"), uuid.to_string()).unwrap();
     }
+}
+
+#[derive(Helper, Hinter, Validator, Highlighter)]
+struct CommandHelper {
+    cmd_completer: CommandCompleter,
+}
+
+const DEFAULT_BREAK_CHARS: [char; 3] = [' ', '\t', '\n'];
+
+#[derive(Hash, Debug, PartialEq, Eq)]
+struct Command {
+    cmd: String,
+    pre_cmd: String,
+}
+
+impl Command {
+    fn new(cmd: &str, pre_cmd: &str) -> Self {
+        Self {
+            cmd: cmd.into(),
+            pre_cmd: pre_cmd.into(),
+        }
+    }
+}
+struct CommandCompleter {
+    cmds: HashSet<Command>,
+}
+
+impl CommandCompleter {
+    pub fn find_matches(&self, line: &str, pos: usize) -> rustyline::Result<(usize, Vec<Pair>)> {
+        let (start, word) = extract_word(line, pos, None, |c| DEFAULT_BREAK_CHARS.contains(&c));
+        let pre_cmd = line[..start].trim();
+
+        let matches = self
+            .cmds
+            .iter()
+            .filter_map(|hint| {
+                if hint.cmd.starts_with(word) && pre_cmd == &hint.pre_cmd {
+                    let mut replacement = hint.cmd.clone();
+                    replacement += " ";
+                    Some(Pair {
+                        display: hint.cmd.to_string(),
+                        replacement: replacement.to_string(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect();
+        Ok((start, matches))
+    }
+}
+
+impl Completer for CommandHelper {
+    type Candidate = Pair;
+
+    fn complete(
+        &self,
+        line: &str,
+        pos: usize,
+        _ctx: &Context<'_>,
+    ) -> Result<(usize, Vec<Pair>)> {
+        match self.cmd_completer.find_matches(line, pos) {
+            Ok((start, matches)) => {
+                if matches.is_empty() {
+                    Ok((0, vec![]))
+                } else {
+                    Ok((start, matches))
+                }
+            }
+            Err(e) => Err(e),
+        }
+    }
+}
+
+fn cmd_sets() -> HashSet<Command> {
+    let mut set = HashSet::new();
+    let toplevel_commands = &[
+        "metrics",
+        "pings",
+        "add",
+        "set",
+        "get",
+        "record",
+        "submit",
+        "upload",
+        "enable",
+        "disable",
+        "log",
+        "active",
+        "inactive",
+    ];
+    for cmd in  toplevel_commands {
+        set.insert(Command::new(cmd, ""));
+    }
+
+    for ping in metric_info::PINGS {
+        set.insert(Command::new(ping, "enable"));
+        set.insert(Command::new(ping, "disable"));
+        set.insert(Command::new(ping, "submit"));
+    }
+
+    for metric in metric_info::METRICS {
+        set.insert(Command::new(metric, "add"));
+        set.insert(Command::new(metric, "set"));
+        set.insert(Command::new(metric, "get"));
+        set.insert(Command::new(metric, "record"));
+
+        for ping in metric_info::PINGS {
+            let precmd = format!("get {}", metric);
+            set.insert(Command::new(ping, &precmd));
+        }
+    }
+
+    set.insert(Command::new("off", "upload"));
+    set.insert(Command::new("on", "upload"));
+    set.insert(Command::new("off", "log"));
+    set.insert(Command::new("on", "log"));
+    set
 }
 
 #[derive(Debug)]
@@ -262,7 +383,15 @@ fn main() -> Result<()> {
         locale: None,
     };
 
-    let mut rl = DefaultEditor::new()?;
+    let config = Config::builder()
+        .history_ignore_space(true)
+        .completion_type(CompletionType::List)
+        .build();
+    let h = CommandHelper {
+        cmd_completer: CommandCompleter { cmds: cmd_sets() },
+    };
+    let mut rl = Editor::with_config(config)?;
+    rl.set_helper(Some(h));
     _ = rl.load_history(&history_path);
 
     metric_info::register_pings();
