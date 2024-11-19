@@ -23,6 +23,7 @@ maintainers = [
 dependencies = [
   "semver>=2.13.0",
   "glean_parser~=15.2",
+  "importlib_resources>=1.3; python_version=='3.8'"
 ]
 
 [project.urls]
