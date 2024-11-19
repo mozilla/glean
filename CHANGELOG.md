@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...main)
 
+* Rust
+  * Permit Glean shutdown to interrupt UploadManager Wait tasks ([bug 1928288](https://bugzilla.mozilla.org/show_bug.cgi?id=1928288))
+
 # v62.0.0 (2024-11-05)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.2.0...v62.0.0)

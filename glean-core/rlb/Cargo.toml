@@ -26,13 +26,13 @@ path = ".."
 version = "62.0.0"
 
 [dependencies]
+crossbeam-channel = "0.5"
 inherent = "1"
 log = "0.4.8"
 once_cell = "1.18.0"
 whatsys = "0.3.0"
 
 [dev-dependencies]
-crossbeam-channel = "0.5"
 env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
 flate2 = "1.0.19"
 jsonschema-valid = "0.5.0"
