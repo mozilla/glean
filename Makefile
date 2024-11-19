@@ -81,7 +81,7 @@ test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
 	done
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
-	RUST_LOG=glean_core=debug cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+	RUST_LOG=glean,glean_core cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
 test-kotlin: ## Run all Kotlin tests
 	./gradlew :glean:testDebugUnitTest
