@@ -97,6 +97,10 @@ commands:
           name: Run Rust RLB enabled-pings test
           command: |
             glean-core/rlb/tests/test-enabled-pings.sh
+      - run:
+          name: Run Rust RLB pending-gets-removed test
+          command: |
+            glean-core/rlb/tests/test-pending-gets-removed.sh
 
   install-rustup:
     steps:
