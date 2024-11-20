@@ -428,7 +428,16 @@ impl Glean {
     /// # Returns
     ///
     /// Whether the "events" ping was submitted.
-    pub fn on_ready_to_submit_pings(&self, trim_data_to_registered_pings: bool) -> bool {
+    pub fn on_ready_to_submit_pings(&mut self, trim_data_to_registered_pings: bool) -> bool {
+        // When upload is disabled on init we already clear out metrics.
+        // However at that point not all pings are registered and so we keep that data around.
+        // By the time we would be ready to submit we try again cleaning out metrics from
+        // now-known pings.
+        if !self.upload_enabled {
+            log::debug!("on_ready_to_submit_pings. let's clear pings once again.");
+            self.clear_metrics();
+        }
+
         self.event_data_store
             .flush_pending_events_on_startup(self, trim_data_to_registered_pings)
     }
