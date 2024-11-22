@@ -50,8 +50,11 @@ namespace glean {
     void glean_apply_server_knobs_config(string json);
 
     boolean glean_set_debug_view_tag(string tag);
+    string? glean_get_debug_view_tag();
     boolean glean_set_source_tags(sequence<string> tags);
     void glean_set_log_pings(boolean value);
+    boolean glean_get_log_pings();
+    sequence<string> glean_get_registered_ping_names();
 
     void glean_persist_ping_lifetime_data();
 

@@ -724,6 +724,15 @@ impl Glean {
             .insert(ping.name().to_string(), ping.clone());
     }
 
+    /// Gets a list of currently registered ping names.
+    ///
+    /// # Returns
+    ///
+    /// The list of ping names that are currently registered.
+    pub fn get_registered_ping_names(&self) -> Vec<&str> {
+        self.ping_registry.keys().map(String::as_str).collect()
+    }
+
     /// Get create time of the Glean object.
     pub(crate) fn start_time(&self) -> DateTime<FixedOffset> {
         self.start_time
@@ -860,8 +869,8 @@ impl Glean {
     /// Return the value for the debug view tag or [`None`] if it hasn't been set.
     ///
     /// The `debug_view_tag` may be set from an environment variable
-    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the [`set_debug_view_tag`] function.
-    pub(crate) fn debug_view_tag(&self) -> Option<&String> {
+    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the `set_debug_view_tag` function.
+    pub fn debug_view_tag(&self) -> Option<&String> {
         self.debug.debug_view_tag.get()
     }
 
@@ -902,11 +911,11 @@ impl Glean {
         self.debug.log_pings.set(value)
     }
 
-    /// Return the value for the log pings debug option or [`None`] if it hasn't been set.
+    /// Return the value for the log pings debug option or `false` if it hasn't been set.
     ///
     /// The `log_pings` option may be set from an environment variable (`GLEAN_LOG_PINGS`)
-    /// or through the [`set_log_pings`] function.
-    pub(crate) fn log_pings(&self) -> bool {
+    /// or through the `set_log_pings` function.
+    pub fn log_pings(&self) -> bool {
         self.debug.log_pings.get().copied().unwrap_or(false)
     }
 

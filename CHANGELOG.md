@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...main)
 
+* General
+  * Add methods to access current Glean debugging settings and the list of currently registered pings([Bug 1921976](https://bugzilla.mozilla.org/show_bug.cgi?id=1921976)).
 * Rust
   * Permit Glean shutdown to interrupt UploadManager Wait tasks ([bug 1928288](https://bugzilla.mozilla.org/show_bug.cgi?id=1928288))
 

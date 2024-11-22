@@ -23,8 +23,15 @@ This API can safely be called before `Glean.initialize`.
 The tag will be applied upon initialization in this case.
 
 {{#include ../../../shared/tab_header.md}}
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```kotlin
+Glean.setDebugViewTag("my-tag")
+```
+</div>
+
 <div data-lang="Java" class="tab"></div>
+
 <div data-lang="Swift" class="tab">
 
 ```Swift
@@ -51,6 +58,44 @@ import Glean from "@mozilla/glean/<platform>";
 Glean.setDebugViewTag("my-tag");
 ```
 </div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+{{#include ../../../shared/tab_footer.md}}
+
+### `getDebugViewTag`
+
+Gets the Debug View Tag if set, otherwise returns a language-specific empty/null value.
+
+{{#include ../../../shared/tab_header.md}}
+<div data-lang="Kotlin" class="tab">
+
+```kotlin
+val tag = Glean.getDebugViewTag() ?: "none"
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+if let tag = Glean.shared.getDebugViewTag() { ... }
+```
+
+</div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean;
+
+if let Some(tag) = glean.get_debug_view_tag() { ... };
+```
+</div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
 <div data-lang="Firefox Desktop" class="tab"></div>
 {{#include ../../../shared/tab_footer.md}}
 
