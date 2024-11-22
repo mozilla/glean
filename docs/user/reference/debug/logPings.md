@@ -49,6 +49,38 @@ Glean.setLogPings(true);
 <div data-lang="Firefox Desktop" class="tab"></div>
 {{#include ../../../shared/tab_footer.md}}
 
+### `getLogPings`
+
+Gets the current state of ping logging.
+
+{{#include ../../../shared/tab_header.md}}
+<div data-lang="Kotlin" class="tab">
+
+```kotlin
+val loggingEnabled = Glean.getLogPings()
+```
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+let loggingEnabled = Glean.shared.getLogPings()
+```
+</div>
+
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean;
+
+let logging_enabled = glean.get_log_pings();
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab"></div>
+{{#include ../../../shared/tab_footer.md}}
+
 ## Environment variable
 
 ### `GLEAN_LOG_PINGS`

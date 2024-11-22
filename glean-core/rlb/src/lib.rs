@@ -259,6 +259,21 @@ pub fn set_debug_view_tag(tag: &str) -> bool {
     glean_core::glean_set_debug_view_tag(tag.to_string())
 }
 
+/// Gets the currently set debug view tag.
+///
+/// The `debug_view_tag` may be set from an environment variable
+/// (`GLEAN_DEBUG_VIEW_TAG`) or through the [`set_debug_view_tag`] function.
+///
+/// **WARNING** This function will block if Glean hasn't been initialized and
+/// should only be used for debug purposes.
+///
+/// # Returns
+///
+/// Return the value for the debug view tag or [`None`] if it hasn't been set.
+pub fn glean_get_debug_view_tag() -> Option<String> {
+    glean_core::glean_get_debug_view_tag()
+}
+
 /// Sets the log pings debug option.
 ///
 /// When the log pings debug option is `true`,
@@ -269,6 +284,21 @@ pub fn set_debug_view_tag(tag: &str) -> bool {
 /// * `value` - The value of the log pings option
 pub fn set_log_pings(value: bool) {
     glean_core::glean_set_log_pings(value)
+}
+
+/// Gets the current log pings value.
+///
+/// The `log_pings` option may be set from an environment variable (`GLEAN_LOG_PINGS`)
+/// or through the [`set_log_pings`] function.
+///
+/// **WARNING** This function will block if Glean hasn't been initialized and
+/// should only be used for debug purposes.
+///
+/// # Returns
+///
+/// Return the value for the log pings debug option.
+pub fn glean_get_log_pings() -> bool {
+    glean_core::glean_get_log_pings()
 }
 
 /// Sets source tags.
@@ -299,6 +329,18 @@ pub fn get_timestamp_ms() -> u64 {
 /// otherwise it will block until the persist is done and return its Result.
 pub fn persist_ping_lifetime_data() {
     glean_core::glean_persist_ping_lifetime_data();
+}
+
+/// Gets a list of currently registered ping names.
+///
+/// **WARNING** This function will block if Glean hasn't been initialized and
+/// should only be used for debug purposes.
+///
+/// # Returns
+///
+/// The list of ping names that are currently registered.
+pub fn get_registered_ping_names() -> Vec<String> {
+    glean_core::glean_get_registered_ping_names()
 }
 
 #[cfg(test)]
