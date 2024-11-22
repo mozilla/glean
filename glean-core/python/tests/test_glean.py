@@ -4,7 +4,6 @@
 
 
 import io
-import os
 import json
 from pathlib import Path
 import re
@@ -52,30 +51,6 @@ def wait_for_requests(server, n=1, timeout=2):
             raise TimeoutError(
                 f"Expected {n} requests within {timeout} seconds. Got {len(server.requests)}"
             )
-
-
-def wait_for_ping(path, timeout=2) -> (str, str):
-    """
-    Wait for a ping to appear in `path` for at most `timeout` seconds.
-
-    Raises a `TimeoutError` if the file doesn't exist within the timeout.
-
-    Returns a tuple of (url path, payload).
-    """
-
-    start_time = time.time()
-    while not path.exists():
-        time.sleep(0.1)
-        if time.time() - start_time > timeout:
-            raise TimeoutError(f"No ping appeared in {path} within {timeout} seconds")
-
-    with path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
-        payload = json.loads(serialized_ping)
-
-    os.remove(path)
-    return (url_path, payload)
 
 
 def test_setting_upload_enabled_before_initialization_should_not_crash():
@@ -817,7 +792,7 @@ def test_app_display_version_unknown():
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
-def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
+def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch, helpers):
     # This test relies on testing mode to be disabled, since we need to prove the
     # real-world async behaviour of this.
     Glean._reset()
@@ -849,7 +824,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch):
     # Submit a custom ping.
     ping.submit()
 
-    url_path, payload = wait_for_ping(info_path)
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     # Validate we got the deletion-request ping
     assert "deletion-request" == url_path.split("/")[3]
@@ -868,7 +843,7 @@ def test_data_dir_is_required():
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
-def test_client_activity_api(tmpdir, monkeypatch):
+def test_client_activity_api(tmpdir, monkeypatch, helpers):
     Glean._reset()
 
     info_path = Path(str(tmpdir)) / "info.txt"
@@ -891,7 +866,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Making it active
     Glean.handle_client_active()
 
-    url_path, payload = wait_for_ping(info_path)
+    url_path, payload = helpers.wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
     # It's an empty ping.
@@ -903,7 +878,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Making it inactive
     Glean.handle_client_inactive()
 
-    url_path, payload = wait_for_ping(info_path)
+    url_path, payload = helpers.wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "inactive"
     assert "glean.baseline.duration" in payload["metrics"]["timespan"]
@@ -914,7 +889,7 @@ def test_client_activity_api(tmpdir, monkeypatch):
     # Once more active
     Glean.handle_client_active()
 
-    url_path, payload = wait_for_ping(info_path)
+    url_path, payload = helpers.wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
     assert "timespan" not in payload["metrics"]
@@ -964,7 +939,7 @@ def test_sending_of_custom_pings(safe_httpserver):
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="uploader isn't started fast enough")
-def test_max_events_overflow(tmpdir):
+def test_max_events_overflow(tmpdir, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
 
@@ -995,7 +970,7 @@ def test_max_events_overflow(tmpdir):
     # Records the event and triggers the ping due to max_events=1
     event.record()
 
-    url_path, payload = wait_for_ping(info_path)
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert "events" == url_path.split("/")[3]
     events = payload["events"]
