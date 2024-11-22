@@ -23,4 +23,4 @@ Follow the standard Glean SDK guide for adding metrics to `metrics.yaml` file.
 
 ## Technical details - ingestion
 
-For more technical details on how ingestion works, see the [Confluence page](https://mozilla-hub.atlassian.net/wiki/spaces/DATA/pages/741998604/Backend+telemetry+collection+with+Glean).
+For more technical details on how ingestion works, see the [Confluence page](https://mozilla-hub.atlassian.net/wiki/spaces/IP/pages/1139181778/Backend+telemetry+collection+with+Glean).
