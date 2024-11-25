@@ -5,6 +5,9 @@
 * General
   * Add methods to access current Glean debugging settings and the list of currently registered pings([Bug 1921976](https://bugzilla.mozilla.org/show_bug.cgi?id=1921976)).
   * Require `glean_parser` v16.1.0 ([#3006](https://github.com/mozilla/glean/pull/3006))
+  * BREAKING CHANGE: Add new `collection-enabled` mode (and `follows_collection_enabled` setting for pings).
+    This allows to control a subset of pings independently from the Glean-wide `upload-enabled` flag.
+    This deprecates the `setUploadEnabled` API in favor of `setCollectionEnabled`. ([#3006](https://github.com/mozilla/glean/pull/3006))
 * Rust
   * Permit Glean shutdown to interrupt UploadManager Wait tasks ([bug 1928288](https://bugzilla.mozilla.org/show_bug.cgi?id=1928288))
 
