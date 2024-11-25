@@ -26,7 +26,7 @@ Additionally, applications (but not libraries) **must**:
 
 6. [Initialize Glean](../../reference/general/initializing.md) as early as possible at application startup.
 
-7. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setUploadEnabled()`). The exact method used is application-specific.
+7. Provide a way for users to turn data collection off (e.g. providing settings to control `Glean.setCollectionEnabled()`). The exact method used is application-specific.
 
 {{#include ../../../shared/blockquote-info.html}}
 
