@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...main)
 
+* General
+  * The `glean.validation.pings_submitted` metric will now only record counts for built-in pings ([#3010](https://github.com/mozilla/glean/pull/3010))
+
 # v62.0.0 (2024-11-05)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v61.2.0...v62.0.0)
