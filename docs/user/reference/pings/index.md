@@ -108,6 +108,84 @@ GleanPings.search.submit("performed");
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `setEnabled`
+
+TODO
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```kotlin
+import org.mozilla.yourApplication.GleanMetrics.Pings
+
+Pings.search.setEnabled(false)
+```
+
+</div>
+
+<div data-lang="Java" class="tab">
+
+```java
+import org.mozilla.yourApplication.GleanMetrics.Pings
+
+Pings.INSTANCE.search.setEnabled(false);
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```swift
+import Glean
+
+GleanMetrics.Pings.shared.search.setEnabled(false)
+```
+
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_pings
+
+pings = load_pings("pings.yaml")
+
+pings.search.set_enabled(False)
+```
+
+</div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean::Pings;
+
+pings::search.set_enabled(false);
+```
+
+</div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+mozilla::glean_pings::Search.SetEnabled(false);
+```
+
+**JavaScript**
+
+```js
+GleanPings.search.setEnabled(false);
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ## Testing API
 
 ### `getRegisteredPingNames`

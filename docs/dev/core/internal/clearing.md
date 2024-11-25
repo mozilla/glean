@@ -1,12 +1,10 @@
 # Clearing metrics when disabling/enabling Glean
 
-When disabling upload (`Glean.setUploadEnabled(false)`), metrics are also cleared to prevent their storage on the local device, and lessen the likelihood
+When disabling upload (`Glean.setCollectionEnabled(false)`), metrics are also cleared to prevent their storage on the local device, and lessen the likelihood
 of accidentally sending them.
-There are a couple of exceptions to this:
+There is an exceptions to this:
 
 - `first_run_date` is retained so it isn't reset if metrics are later re-enabled.
-
-- `client_id` is set to the special value `"c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0"`. This should make it possible to detect the error case when metrics are sent from a client that has been disabled.
 
 When re-enabling metrics:
 
