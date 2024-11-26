@@ -49,6 +49,7 @@ echo '<meta http-equiv=refresh content=0;url=./adding-glean-to-your-project/inde
 # General API
 echo '<meta http-equiv=refresh content=0;url=../reference/general/index.html>' > build/docs/book/user/general-api.html
 echo '<meta http-equiv=refresh content=0;url=../reference/general/experiments-api.html>' > build/docs/book/user/experiments-api.html
+echo '<meta http-equiv=refresh content=0;url=toggling-collection-status.html>' > build/docs/book/user/reference/general/toggling-upload-status.html
 # Metrics API
 mkdir -p build/docs/book/user/metrics/
 echo '<meta http-equiv=refresh content=0;url=../../reference/metrics/boolean.html>' > build/docs/book/user/metrics/boolean.html
