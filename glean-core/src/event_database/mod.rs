@@ -455,7 +455,7 @@ impl EventDatabase {
                     .event
                     .extra
                     .as_ref()
-                    .map_or(false, |extra| extra.is_empty())
+                    .is_some_and(|extra| extra.is_empty())
                 {
                     // Small optimization to save us sending empty dicts.
                     event.event.extra = None;
