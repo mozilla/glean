@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...main)
+
+# v63.0.0 (2024-11-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...v63.0.0)
 
 * General
   * Add methods to access current Glean debugging settings and the list of currently registered pings([Bug 1921976](https://bugzilla.mozilla.org/show_bug.cgi?id=1921976)).
