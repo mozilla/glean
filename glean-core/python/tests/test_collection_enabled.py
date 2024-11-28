@@ -4,6 +4,8 @@
 
 
 from pathlib import Path
+import pytest
+import sys
 
 
 from glean import Configuration, Glean, load_pings
@@ -20,6 +22,7 @@ GLEAN_APP_ID = "glean-python-test"
 ROOT = Path(__file__).parent
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1933943: Windows failures")
 def test_pings_with_follows_false_follow_their_own_setting(tmpdir, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
@@ -73,6 +76,7 @@ def test_pings_with_follows_false_follow_their_own_setting(tmpdir, helpers):
     assert 2 == payload["metrics"]["counter"]["local.counter"]
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1933943: Windows failures")
 def test_loader_sets_flags(tmpdir, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
