@@ -449,6 +449,10 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
 delta = "1.0.30 -> 1.0.31"
 notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
+more details.
+
 Only benign changes:
 
 * Comment-only changes in `.rs` files

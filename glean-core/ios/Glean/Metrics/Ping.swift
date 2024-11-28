@@ -43,7 +43,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
         includeInfoSections: Bool,
         enabled: Bool,
         schedulesPings: [String],
-        reasonCodes: [String]
+        reasonCodes: [String],
+        followsCollectionEnabled: Bool
     ) {
         self.name = name
         self.reasonCodes = reasonCodes
@@ -55,7 +56,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
             includeInfoSections,
             enabled,
             schedulesPings,
-            reasonCodes
+            reasonCodes,
+            followsCollectionEnabled
         )
     }
 
@@ -96,5 +98,13 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
             reasonString = self.reasonCodes[reason!.index()]
         }
         innerPing.submit(reasonString)
+    }
+
+    /// Enable or disable a ping.
+    ///
+    /// Disabling a ping causes all data for that ping to be removed from storage
+    /// and all pending pings of that type to be deleted.
+    public func setEnabled(enabled: Bool) {
+        innerPing.setEnabled(enabled)
     }
 }

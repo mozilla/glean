@@ -72,7 +72,6 @@ commands:
       - run:
           name: Test
           command: |
-            export GLEAN_TEST_COVERAGE=$(realpath glean_coverage.txt)
             cargo test --workspace --verbose --jobs 6 -- --nocapture
       - run:
           name: Run Rust sample
@@ -95,11 +94,13 @@ commands:
           command: |
             glean-core/rlb/tests/test-ping-lifetime-flush.sh
       - run:
-          name: Upload coverage report
+          name: Run Rust RLB enabled-pings test
           command: |
-            pip3 install $(grep glean_parser pyproject.toml | tr -d ',"')
-            glean_parser coverage --allow-reserved -c glean_coverage.txt -f codecovio -o codecov.json glean-core/metrics.yaml
-            bin/codecov.sh -X yaml -f codecov.json
+            glean-core/rlb/tests/test-enabled-pings.sh
+      - run:
+          name: Run Rust RLB pending-gets-removed test
+          command: |
+            glean-core/rlb/tests/test-pending-gets-removed.sh
 
   install-rustup:
     steps:

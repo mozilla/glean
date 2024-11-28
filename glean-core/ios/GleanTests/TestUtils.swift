@@ -88,6 +88,40 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase,
     let mps = MetricsPingScheduler(true)
     mps.updateSentDate(Date())
 
+    _ = Ping<NoReasonCodes>(
+        name: "store1",
+        includeClientId: true,
+        sendIfEmpty: false,
+        preciseTimestamps: true,
+        includeInfoSections: true,
+        enabled: true,
+        schedulesPings: [],
+        reasonCodes: [],
+        followsCollectionEnabled: true
+    )
+    _ = Ping<NoReasonCodes>(
+        name: "store2",
+        includeClientId: true,
+        sendIfEmpty: false,
+        preciseTimestamps: true,
+        includeInfoSections: true,
+        enabled: true,
+        schedulesPings: [],
+        reasonCodes: [],
+        followsCollectionEnabled: true
+    )
+    _ = Ping<NoReasonCodes>(
+        name: "store3",
+        includeClientId: true,
+        sendIfEmpty: false,
+        preciseTimestamps: true,
+        includeInfoSections: true,
+        enabled: true,
+        schedulesPings: [],
+        reasonCodes: [],
+        followsCollectionEnabled: true
+    )
+
     Glean.shared.resetGlean(configuration: configuration, clearStores: clearStores)
 
     testCase.waitForExpectations(timeout: 5.0) { error in

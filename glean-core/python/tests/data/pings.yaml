@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ---
-$schema: moz://mozilla.org/schemas/glean/pings/1-0-0
+$schema: moz://mozilla.org/schemas/glean/pings/2-0-0
 
 kebab-case:
   description: |
@@ -16,3 +16,18 @@ kebab-case:
     - https://example.comd
   notification_emails:
     - glean-team@mozilla.com
+
+nofollows-defined:
+  description: |
+    A sample custom ping with follows_collection_enabled=False.
+  include_client_id: false
+  send_if_empty: true
+  bugs:
+    - https://bugzilla.mozilla.org/123456789
+  data_reviews:
+    - N/A
+  notification_emails:
+    - CHANGE-ME@example.com
+  metadata:
+    follows_collection_enabled: false
+    include_info_sections: false

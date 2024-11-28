@@ -3,7 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import json
 import logging
+import os
 import socket
 import time
 from pathlib import Path
@@ -15,6 +17,7 @@ import pytest_localserver.http
 from glean import config
 from glean import testing
 from glean import __version__ as glean_version
+from glean.metrics import PingType
 
 # This defines the location of the JSON schema used to validate the pings
 # created during unit testing. This uses the vendored schema.
@@ -30,6 +33,33 @@ logging.getLogger(None).setLevel(logging.INFO)
 
 # This will be run before every test in the entire test suite
 def pytest_runtest_setup(item):
+    PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
+    PingType(
+        name="store2",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
+    PingType(
+        name="store3",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+    )
     testing.reset_glean(application_id="glean-python-test", application_version=glean_version)
 
 
@@ -80,6 +110,37 @@ def wait_for_server(httpserver, timeout=30):
         except socket.error:
             if time.time() - start_time > timeout:
                 raise TimeoutError()
+
+
+class Helpers:
+    @staticmethod
+    def wait_for_ping(path, timeout=2) -> (str, str):
+        """
+        Wait for a ping to appear in `path` for at most `timeout` seconds.
+
+        Raises a `TimeoutError` if the file doesn't exist within the timeout.
+
+        Returns a tuple of (url path, payload).
+        """
+
+        start_time = time.time()
+        while not path.exists():
+            time.sleep(0.1)
+            if time.time() - start_time > timeout:
+                raise TimeoutError(f"No ping appeared in {path} within {timeout} seconds")
+
+        with path.open("r") as fd:
+            url_path = fd.readline()
+            serialized_ping = fd.readline()
+            payload = json.loads(serialized_ping)
+
+        os.remove(path)
+        return (url_path, payload)
+
+
+@pytest.fixture
+def helpers():
+    return Helpers
 
 
 # Setup a default webserver that pings will go to by default, so we don't hit

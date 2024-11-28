@@ -58,6 +58,7 @@ class PingTypeTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         val counter = CounterMetricType(
@@ -127,6 +128,7 @@ class PingTypeTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         val counter = CounterMetricType(
@@ -177,6 +179,7 @@ class PingTypeTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         val counter = CounterMetricType(
@@ -227,6 +230,7 @@ class PingTypeTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         val counter = CounterMetricType(
@@ -278,6 +282,7 @@ class PingTypeTest {
             includeInfoSections = true,
             enabled = true,
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         val counter = CounterMetricType(
@@ -332,8 +337,9 @@ class PingTypeTest {
             ),
         )
 
+        // Recording to an unknown ping won't record anything.
         counter.add()
-        assertEquals(1, counter.testGetValue())
+        assertNull(counter.testGetValue())
 
         // We might have some work queued by init that we'll need to clear.
         triggerWorkManager(context)

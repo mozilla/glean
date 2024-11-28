@@ -289,7 +289,7 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
-     * Enable or disable Glean collection and upload.
+     * **DEPRECATED** Enable or disable Glean collection and upload.
      *
      * Metric collection is enabled by default.
      *
@@ -300,9 +300,33 @@ open class GleanInternalAPI internal constructor() {
      *
      * When enabling, the core Glean metrics are recreated.
      *
+     * **DEPRECATION NOTICE**:
+     * This API is deprecated. Use `setCollectionEnabled` instead.
+     *
      * @param enabled When true, enable metric collection.
      */
+    @Deprecated("Use `setCollectionEnabled` instead.")
     fun setUploadEnabled(enabled: Boolean) {
+        gleanSetUploadEnabled(enabled)
+    }
+
+    /**
+     * Enable or disable Glean collection and upload.
+     *
+     * Metric collection is enabled by default.
+     *
+     * When collection is disabled, metrics aren't recorded at all and no data
+     * is uploaded.
+     * **Note**: Individual pings can be enabled if they don't follow this setting.
+     * See `PingType.setEnabled`.
+     *
+     * When disabling, all pending metrics, events and queued pings are cleared.
+     *
+     * When enabling, the core Glean metrics are recreated.
+     *
+     * @param enabled When true, enable metric collection.
+     */
+    fun setCollectionEnabled(enabled: Boolean) {
         gleanSetUploadEnabled(enabled)
     }
 
@@ -473,6 +497,17 @@ open class GleanInternalAPI internal constructor() {
         gleanSubmitPingByName(pingName, reason)
     }
 
+    /** Gets a `Set` of the currently registered ping names.
+     *
+     * **WARNING** This function will block if Glean hasn't been initialized and
+     * should only be used for debug purposes.
+     *
+     * @return The set of ping names that have been registered.
+     */
+    fun getRegisteredPingNames(): Set<String> {
+        return gleanGetRegisteredPingNames().toSet()
+    }
+
     /**
      * Set a tag to be applied to headers when uploading pings for debug view.
      *
@@ -483,6 +518,18 @@ open class GleanInternalAPI internal constructor() {
      */
     fun setDebugViewTag(value: String): Boolean {
         return gleanSetDebugViewTag(value)
+    }
+
+    /**
+     * Get the current Debug View tag
+     *
+     * **WARNING** This function will block if Glean hasn't been initialized and
+     * should only be used for debug purposes.
+     *
+     * @return The [String] value of the current debug tag or `null` if not set.
+     */
+    fun getDebugViewTag(): String? {
+        return gleanGetDebugViewTag()
     }
 
     /**
@@ -525,6 +572,18 @@ open class GleanInternalAPI internal constructor() {
      */
     fun setLogPings(value: Boolean) {
         gleanSetLogPings(value)
+    }
+
+    /**
+     * Get the current value for the debug ping logging
+     *
+     * **WARNING** This function will block if Glean hasn't been initialized and
+     * should only be used for debug purposes.
+     *
+     * @return Returns a [Boolean] value indicating the state of debug ping logging.
+     */
+    fun getLogPings(): Boolean {
+        return gleanGetLogPings()
     }
 
     /**

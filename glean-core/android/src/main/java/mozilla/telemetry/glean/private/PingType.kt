@@ -54,6 +54,7 @@ class PingType<ReasonCodesEnum> (
     enabled: Boolean,
     val schedulesPings: List<String>,
     val reasonCodes: List<String>,
+    followsCollectionEnabled: Boolean,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
     private val innerPing: GleanPingType
@@ -68,6 +69,7 @@ class PingType<ReasonCodesEnum> (
             schedulesPings = schedulesPings,
             reasonCodes = reasonCodes,
             enabled = enabled,
+            followsCollectionEnabled = followsCollectionEnabled,
         )
     }
 
@@ -107,5 +109,15 @@ class PingType<ReasonCodesEnum> (
 
         val reasonString = reason?.let { this.reasonCodes[it.code()] }
         this.innerPing.submit(reasonString)
+    }
+
+    /**
+     * Enable or disable a ping.
+     *
+     * Disabling a ping causes all data for that ping to be removed from storage
+     * and all pending pings of that type to be deleted.
+     */
+    fun setEnabled(enabled: Boolean) {
+        this.innerPing.setEnabled(enabled)
     }
 }

@@ -220,6 +220,27 @@ public class Glean {
         )
     }
 
+    /// **DEPRECATED** Enable or disable Glean collection and upload.
+    ///
+    /// Metric collection is enabled by default.
+    ///
+    /// When uploading is disabled, metrics aren't recorded at all and no data
+    /// is uploaded.
+    ///
+    /// When disabling, all pending metrics, events and queued pings are cleared.
+    ///
+    /// When enabling, the core Glean metrics are recreated.
+    ///
+    /// **DEPRECATION NOTICE**:
+    /// This API is deprecated. Use `setCollectionEnabled` instead.
+    ///
+    /// - parameters:
+    ///     * enabled: When true, enable metric collection.
+    @available(*, deprecated, message: "Use `setCollectionEnabled` instead.")
+    public func setUploadEnabled(_ enabled: Bool) {
+        gleanSetUploadEnabled(enabled)
+    }
+
     /// Enable or disable Glean collection and upload.
     ///
     /// Metric collection is enabled by default.
@@ -233,7 +254,7 @@ public class Glean {
     ///
     /// - parameters:
     ///     * enabled: When true, enable metric collection.
-    public func setUploadEnabled(_ enabled: Bool) {
+    public func setCollectionEnabled(_ enabled: Bool) {
         gleanSetUploadEnabled(enabled)
     }
 
@@ -339,6 +360,16 @@ public class Glean {
         gleanSubmitPingByName(pingName, reason)
     }
 
+    /// Gets a `Set` of the currently registered ping names.
+    ///
+    /// **WARNING** This function will block if Glean hasn't been initialized and
+    /// should only be used for debug purposes.
+    ///
+    /// - returns: The set of ping names that have been registered.
+    func getRegisteredPingNames() -> Set<String> {
+        return Set(gleanGetRegisteredPingNames())
+    }
+
     /// Register the pings generated from `pings.yaml` with the Glean SDK.
     ///
     /// - parameters:
@@ -357,6 +388,16 @@ public class Glean {
         return gleanSetDebugViewTag(tag)
     }
 
+    /// Get the current Debug View tag
+    ///
+    /// **WARNING** This function will block if Glean hasn't been initialized and
+    /// should only be used for debug purposes.
+    ///
+    /// - returns: [String] value of the current debug tag, or `nil` if not set.
+     func getDebugViewTag() -> String? {
+        return gleanGetDebugViewTag()
+     }
+
     /// Set the log_pings debug option,
     /// when this option is `true` the pings that are successfully submitted get logged.
     ///
@@ -364,6 +405,16 @@ public class Glean {
     ///     * value: The value of the option.
     public func setLogPings(_ value: Bool) {
         gleanSetLogPings(value)
+    }
+
+    /// Get the current value for the debug ping logging
+    ///
+    /// **WARNING** This function will block if Glean hasn't been initialized and
+    /// should only be used for debug purposes.
+    ///
+    /// - returns: `Bool` value indicating the state of debug ping logging.
+    func getLogPings() -> Bool {
+        return gleanGetLogPings()
     }
 
     /// Set the source tags to be applied as headers when uploading pings.

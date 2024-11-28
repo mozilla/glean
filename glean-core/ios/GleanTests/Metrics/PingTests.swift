@@ -43,7 +43,8 @@ class PingTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         let counter = CounterMetricType(CommonMetricData(
@@ -92,7 +93,8 @@ class PingTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         let counter = CounterMetricType(CommonMetricData(
@@ -131,7 +133,8 @@ class PingTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: []
+            reasonCodes: [],
+            followsCollectionEnabled: true
         )
 
         // This is simply a duplicate of the experimentationId metric that is defined in
@@ -185,7 +188,10 @@ class PingTests: XCTestCase {
         ))
 
         counter.add()
-        XCTAssertNotNil(counter.testGetValue())
+        // Nothing stored for unknown ping
+        XCTAssertNil(counter.testGetValue())
+        // Data recorded for baseline
+        XCTAssertNotNil(counter.testGetValue("baseline"))
 
         setupHttpResponseStub("INVALID")
         // Fail if the server receives data
@@ -225,7 +231,8 @@ class PingTests: XCTestCase {
             includeInfoSections: true,
             enabled: true,
             schedulesPings: [],
-            reasonCodes: ["was_tested"]
+            reasonCodes: ["was_tested"],
+            followsCollectionEnabled: true
         )
 
         setupHttpResponseStub("custom2")

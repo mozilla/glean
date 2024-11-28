@@ -9,3 +9,8 @@ publish = false
 anyhow = "1"
 camino = "1.1.1"
 uniffi = { version = "0.28.0", default-features = false, features = ["bindgen"] }
+
+[lib]
+test = false
+doctest = false
+doc = false

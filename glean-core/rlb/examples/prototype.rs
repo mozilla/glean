@@ -28,8 +28,19 @@ pub mod glean_metrics {
 }
 
 #[allow(non_upper_case_globals)]
-pub static PrototypePing: Lazy<PingType> =
-    Lazy::new(|| PingType::new("prototype", true, true, true, true, true, vec![], vec![]));
+pub static PrototypePing: Lazy<PingType> = Lazy::new(|| {
+    PingType::new(
+        "prototype",
+        true,
+        true,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+    )
+});
 
 fn main() {
     env_logger::init();
@@ -43,6 +54,7 @@ fn main() {
         root.path().to_path_buf()
     };
 
+    _ = &*PrototypePing;
     let cfg = ConfigurationBuilder::new(true, data_path, "org.mozilla.glean_core.example")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)

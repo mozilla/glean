@@ -64,6 +64,8 @@ _ARGS = [
     "precise_timestamps",
     "include_info_sections",
     "schedules_pings",
+    "enabled",
+    "follows_collection_enabled",
     "time_unit",
 ]
 

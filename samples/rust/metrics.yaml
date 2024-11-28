@@ -24,6 +24,7 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
+      - usage-reporting
 
   sample_labeled_counter: &defaults
     type: labeled_counter

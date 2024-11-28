@@ -110,6 +110,42 @@ GleanPings.search.submit("performed");
 
 ## Testing API
 
+### `getRegisteredPingNames`
+
+Gets a set of the currently registered ping names.
+
+Useful when debugging to know which pings are able to be sent.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```kotlin
+val knownPings = Glean.getRegisteredPingNames()
+```
+
+</div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+let knownPings = Glean.shared.getRegisteredPingNames()
+```
+
+</div>
+
+<div data-lang="Python" class="tab"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+let known_pings = glean.get_registered_ping_names();
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ### `testBeforeNextSubmit`
 
 Runs a validation function before the ping is collected.

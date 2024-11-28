@@ -258,14 +258,14 @@ class EventMetricTypeTest {
             ),
             allowedExtraKeys = listOf("test_name"),
         )
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         eventMetric.record(EventMetricExtras(testName = "event1"))
         val snapshot1 = eventMetric.testGetValue()!!
         assertEquals(1, snapshot1.size)
-        Glean.setUploadEnabled(false)
+        Glean.setCollectionEnabled(false)
         eventMetric.record(EventMetricExtras(testName = "event2"))
         assertNull(eventMetric.testGetValue())
-        Glean.setUploadEnabled(true)
+        Glean.setCollectionEnabled(true)
         eventMetric.record(EventMetricExtras(testName = "event3"))
         val snapshot3 = eventMetric.testGetValue()!!
         assertEquals(1, snapshot3.size)
@@ -455,10 +455,10 @@ class EventMetricTypeTest {
     }
 
     @Test
-    fun `overdue events are discarded if ping is not registered`() {
+    fun `events are discarded if ping is not registered`() {
         // This is similar to the above test,
         // except that we register the custom ping AFTER initialize.
-        // Overdue events are thus discarded because the ping is unknown at initialization time.
+        // Events are thus discarded upon `record` because the ping is unknown.
 
         val server = getMockWebServer()
         val context = getContext()
@@ -484,9 +484,9 @@ class EventMetricTypeTest {
             allowedExtraKeys = listOf("some_extra"),
         )
 
-        // Let's record a single event. This will be queued up but not be sent.
+        // Let's record a single event. This will NOT be queued up because the ping is not registered.
         event.record(TestEventExtras(someExtra = "alternative"))
-        assertEquals(1, event.testGetValue()!!.size)
+        assertNull(event.testGetValue())
 
         // Let's act as if the app was stopped
         Glean.testDestroyGleanHandle()
@@ -511,6 +511,7 @@ class EventMetricTypeTest {
             enabled = true,
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
+            followsCollectionEnabled = true,
         )
 
         // Trigger worker task to upload the pings in the background.

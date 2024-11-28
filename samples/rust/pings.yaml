@@ -20,3 +20,18 @@ prototype:
     - N/A
   notification_emails:
     - CHANGE-ME@example.com
+
+usage-reporting:
+  description: |
+    A sample custom ping.
+  include_client_id: false
+  send_if_empty: true
+  bugs:
+    - https://bugzilla.mozilla.org/123456789
+  data_reviews:
+    - N/A
+  notification_emails:
+    - CHANGE-ME@example.com
+  metadata:
+    follows_collection_enabled: false
+    include_info_sections: false
