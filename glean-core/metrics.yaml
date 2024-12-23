@@ -756,7 +756,7 @@ glean.validation:
   pings_submitted:
     type: labeled_counter
     description: |
-      A count of the pings submitted, by ping type.
+      A count of the built-in pings submitted, by ping type.
 
       This metric appears in both the metrics and baseline pings.
 
@@ -764,6 +764,9 @@ glean.validation:
         the last metrics ping (including the last metrics ping)
       - On the baseline ping, the counts include the number of pings send since
         the last baseline ping (including the last baseline ping)
+
+      Note: Previously this also recorded the number of submitted custom pings.
+      Now it only records counts for the Glean built-in pings.
     send_in_pings:
       - metrics
       - baseline
