@@ -260,6 +260,11 @@ criteria = "safe-to-deploy"
 delta = "0.5.11 -> 0.5.12"
 notes = "Minimal change fixing a memory leak."
 
+[[audits.crossbeam-channel]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.5.13 -> 0.5.14"
+
 [[audits.crossbeam-utils]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
