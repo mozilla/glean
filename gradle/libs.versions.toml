@@ -16,11 +16,11 @@ kotlinx-serialization = "1.6.3"
 rust-android-gradle = "0.9.4"
 
 # AndroidX
-androidx-annotation = "1.8.1"
-androidx-appcompat = "1.6.1"
+androidx-annotation = "1.9.1"
+androidx-appcompat = "1.7.0"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.4"
-androidx-work = "2.9.0"
+androidx-lifecycle = "2.8.7"
+androidx-work = "2.9.1"
 
 # JNA
 jna = "5.14.0"
