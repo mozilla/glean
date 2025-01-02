@@ -345,8 +345,10 @@ open class GleanInternalAPI internal constructor() {
         branch: String,
         extra: Map<String, String>? = null,
     ) {
-        var map = extra ?: mapOf()
-        gleanSetExperimentActive(experimentId, branch, map)
+        Dispatchers.Delayed.launch {
+            var map = extra ?: mapOf()
+            gleanSetExperimentActive(experimentId, branch, map)
+        }
     }
 
     /**
@@ -355,7 +357,9 @@ open class GleanInternalAPI internal constructor() {
      * @param experimentId The id of the experiment to deactivate.
      */
     fun setExperimentInactive(experimentId: String) {
-        gleanSetExperimentInactive(experimentId)
+        Dispatchers.Delayed.launch {
+            gleanSetExperimentInactive(experimentId)
+        }
     }
 
     /**
