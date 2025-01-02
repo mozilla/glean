@@ -169,6 +169,11 @@ except:
      */
     def setupTasks(Project project, File envDir, boolean isApplication, String parserVersion) {
         return { variant ->
+            // Get the name of the package as if it were to be used in the R or BuildConfig
+            // files. This is required since applications can define different application ids
+            // depending on the variant type: the generated API definitions don't need to be
+            // different due to that.
+            def namespaceProvider = variant.getGenerateBuildConfigProvider().map({ p -> "namespace=${p.namespace.get()}.GleanMetrics" })
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
 
             def generateKotlinAPI = project.task("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", type: Exec) {
@@ -243,31 +248,22 @@ except:
                 }
 
                 doFirst {
-                    // Get the name of the package as if it were to be used in the R or BuildConfig
-                    // files. This is required since applications can define different application ids
-                    // depending on the variant type: the generated API definitions don't need to be
-                    // different due to that.
-                    // Note that this needs to be done at evaluation time rather than configuration
-                    // time, otherwise the `namespace` property won't be available.
-                    TaskProvider buildConfigProvider = variant.getGenerateBuildConfigProvider()
-                    def configProvider = buildConfigProvider.get()
-                    def originalPackageName = configProvider.namespace.get()
 
                     args "-s"
-                    args "namespace=${originalPackageName}.GleanMetrics"
+                    args namespaceProvider.get().toString()
 
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
                     inputs.files.forEach { file ->
-                        project.logger.lifecycle("Glean SDK - generating API from ${file.path}")
+                        logger.lifecycle("Glean SDK - generating API from ${file.path}")
                         args file.path
                     }
                 }
 
                 // Only show the output if something went wrong.
                 ignoreExitValue = true
-                standardOutput = new ByteArrayOutputStream()
-                errorOutput = standardOutput
+                standardOutput = System.out
+                errorOutput = System.err
                 doLast {
                     if (executionResult.get().exitValue != 0) {
                         throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
