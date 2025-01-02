@@ -13,7 +13,7 @@ kotlinx-coroutines = "1.8.0"
 kotlinx-serialization = "1.6.3"
 
 # Mozilla
-rust-android-gradle = "0.9.4"
+rust-android-gradle = "0.9.5"
 
 # AndroidX
 androidx-annotation = "1.9.1"
