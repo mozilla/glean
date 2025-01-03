@@ -207,3 +207,81 @@ If you need to release a hotfix for a previously released version (that is: not 
 
 On Android, Mozilla products consume the Glean SDK through its wrapper in [`android-components`](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/).
 The process of vendoring a new version of Glean in to Mozilla Central now handles the upgrade process for android-components and no manual updating is needed here.
+
+## Recovering from a failed automated release
+
+In rare circumstances the automated release on CI can fail to publish updated packages.
+This usually can be fixed with some manual steps.
+
+### CI re-run
+
+In some circumstances it's possible to re-run the CI tasks.
+This should be done if any of the tasks fail with an intermittent issues (e.g. broken network connectivity, package repository APIs unreachable, ...).
+
+Find the release task on <https://app.circleci.com/pipelines/github/mozilla/glean/> and select "Rerun workflow from failed" from the "Rerun" drop-down.
+Monitor the tasks for successful completion.
+
+### Manual release
+
+If any of the package releases fail for some other reason it might be possible to manually publish the package, using the same commands being run on CI.
+
+#### Manual release: Rust crates
+
+Make sure you're logged in to `crates.io`:
+
+```
+cargo login
+```
+
+Check out the newly created git tag in your Glean repository:
+
+```
+git checkout v63.0.0
+```
+
+Then execute the following commands:
+
+```
+pushd glean-core
+cargo publish --verbose
+
+pushd rlb
+cargo publish --verbose
+```
+
+#### Manual release: Python package
+
+The release process for Python packages is more involved and requires publishing pre-compiled packages for every platform.
+
+CI already generates those packages, so if only the upload step fails try re-running the particular task or rerun the job with SSH enabled.
+Grab the generated files from `target/wheels/` in the project directory.
+
+Use `twine` locally to publish the file:
+
+```
+.venv/bin/python3 -m twine upload target/wheels/*
+```
+
+#### Manual release: Swift package
+
+The Swift XCFramework is attached as an artifact to the [GitHub release](https://github.com/mozilla/glean/releases).
+The Swift package is in an external repository: <https://github.com/mozilla/glean-swift>
+
+If the step to create a new release tag on `glean-swift` fails, the step can be done manually:
+
+1. Clone the `glean-swift` repository:
+
+   ```
+   git clone https://github.com/mozilla/glean-swift
+   cd glean-swift
+   ```
+
+1. Run the publish step:
+
+   ```
+   ./bin/update.sh v63.0.0
+   git push origin main
+   git push origin v63.0.0
+   ```
+
+1. Verify the new tag is listed on <https://github.com/mozilla/glean-swift/tags>.
