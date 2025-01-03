@@ -33,8 +33,10 @@ implementation "org.mozilla.components:service-glean:{latest-version}"
 
 > The `{latest-version}` placeholder in the above link should be replaced with the version of Android Components used by the project.
 
-The Glean Kotlin SDK is released as part of [android-components](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/). Therefore, it follows android-components' versions.
-The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
+The Glean Kotlin SDK is released as part of [android-components][ac]. Therefore, it follows android-components' versions.
+The [service-glean Maven repository](https://maven.mozilla.org/?prefix=maven2/org/mozilla/components/service-glean/) can be used to determine the latest version.
+
+[ac]: https://searchfox.org/mozilla-central/source/mobile/android/android-components
 
 For example, if version *33.0.0* is used, then the include directive becomes:
 

@@ -205,5 +205,7 @@ If you need to release a hotfix for a previously released version (that is: not 
 
 ## Upgrading android-components to a new version of Glean
 
-On Android, Mozilla products consume the Glean SDK through its wrapper in [`android-components`](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/).
+On Android, Mozilla products consume the Glean SDK through its wrapper in [`android-components`][ac].
 The process of vendoring a new version of Glean in to Mozilla Central now handles the upgrade process for android-components and no manual updating is needed here.
+
+[ac]: https://searchfox.org/mozilla-central/source/mobile/android/android-components
