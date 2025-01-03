@@ -17,7 +17,8 @@ The development & release process roughly follows the [GitFlow model](https://nv
 * [Standard release](#standard-release)
 * [Hotfix release for latest version](#hotfix-release-for-latest-version)
 * [Hotfix release for previous version](#hotfix-release-for-previous-version)
-* [Upgrading android-components to a new version of Glean](#upgrading-android-components-to-a-new-version-of-glean)
+* [Upgrading mozilla-central to a new version of Glean](#upgrading-mozilla-central-to-a-new-version-of-glean)
+* [Recovering from a failed automated release](#recovering-from-a-failed-automated-release)
 
 ## Published artifacts
 
@@ -203,10 +204,10 @@ If you need to release a hotfix for a previously released version (that is: not 
     * This might have merge conflicts with the `main` branch, which you need to fix before it is merged.
 7. Once the above pull request lands, delete the support branch.
 
-## Upgrading android-components to a new version of Glean
+## Upgrading mozilla-central to a new version of Glean
 
-On Android, Mozilla products consume the Glean SDK through its wrapper in [`android-components`](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/).
-The process of vendoring a new version of Glean in to Mozilla Central now handles the upgrade process for android-components and no manual updating is needed here.
+Glean is integrated into Mozilla products in mozilla-central (Firefox Desktop, Firefox for Android, Focus for Android).
+See [Updating the Glean SDK](https://firefox-source-docs.mozilla.org/toolkit/components/glean/dev/updating_sdk.html) on how to update the Glean SDK in mozilla-central.
 
 ## Recovering from a failed automated release
 
