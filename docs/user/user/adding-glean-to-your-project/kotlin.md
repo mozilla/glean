@@ -24,23 +24,20 @@ Each module that uses the Glean Kotlin SDK needs to specify it in its build file
 Add this to your Gradle configuration:
 
 ```Groovy
-implementation "org.mozilla.components:service-glean:{latest-version}"
+implementation "org.mozilla.telemetry:glean:{latest-version}"
 ```
 
 {{#include ../../../shared/blockquote-warning.html}}
 
 ##### Pick the correct version
 
-> The `{latest-version}` placeholder in the above link should be replaced with the version of Android Components used by the project.
-
-The Glean Kotlin SDK is released as part of [android-components](https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/). Therefore, it follows android-components' versions.
-The [android-components release page](https://github.com/mozilla-mobile/android-components/releases/) can be used to determine the latest version.
-
-For example, if version *33.0.0* is used, then the include directive becomes:
-
-```Groovy
-implementation "org.mozilla.components:service-glean:33.0.0"
-```
+> The `{latest-version}` placeholder in the above link should be replaced with the [latest version of the Glean SDK](https://github.com/mozilla/glean/releases).
+>
+> For example, if version *63.0.0* is the latest version, then the include directive becomes:
+>
+> ```Groovy
+> implementation "org.mozilla.telemetry:glean:63.0.0"
+> ```
 
 {{#include ../../../shared/blockquote-info.html}}
 
@@ -80,19 +77,15 @@ In order for the Glean Kotlin SDK to generate an API for your metrics, two Gradl
 
 The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
 
-```
+```Groovy
 buildscript {
     repositories {
-        // Include the next clause if you are tracking snapshots of android components
-        maven {
-            url "https://snapshots.maven.mozilla.org/maven2"
-        }
         maven {
             url "https://maven.mozilla.org/maven2"
         }
 
         dependencies {
-            classpath "org.mozilla.components:tooling-glean-gradle:{android-components-version}"
+            classpath "org.mozilla.telemetry:glean-gradle-plugin:{latest-version}"
         }
     }
 }
@@ -102,7 +95,7 @@ buildscript {
 
 ##### Important
 
-> As above, the `{android-components-version}` placeholder in the above link should be replaced with the version number of android components used in your project.
+> As above, the `{latest-components-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used in your project.
 
 The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
 

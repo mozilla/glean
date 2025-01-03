@@ -43,13 +43,10 @@ The Glean Kotlin SDK is primarily used for integration with Android applications
 It assumes a common interaction model for mobile applications.
 It sends builtin pings at startup of the integrating application.
 
-It is available standalone as `org.mozilla.telemetry:glean`
-or via [Android Components][ac] as `org.mozilla.components:service-glean`
-from the [Mozilla Maven instance][maven].
+It is available standalone as `org.mozilla.telemetry:glean` from the [Mozilla Maven instance][maven].
 
 The Kotlin SDK can also be used from Java.
 
-[ac]: https://github.com/mozilla-mobile/firefox-android/tree/main/android-components/
 [maven]: https://maven.mozilla.org/?prefix=maven2
 
 See [Android](android/) for more on integrating Glean on Android.
