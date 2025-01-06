@@ -6,7 +6,7 @@
 
 ## Preparation
 
-This guide assumes you already have are setup to build the mozilla-central repository for Android.
+This guide assumes you are already setup to build the mozilla-central repository for Android.
 Refer to [Getting Set Up To Work On The Firefox Codebase](https://firefox-source-docs.mozilla.org/setup/index.html) for more.
 
 Clone the Glean SDK repositories:
