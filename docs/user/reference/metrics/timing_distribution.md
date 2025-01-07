@@ -318,12 +318,14 @@ function onPageLoaded() {
 ```c++
 #include "mozilla/glean/GleanMetrics.h"
 
-mozilla::glean::pages::page_load.AccumulateRawSamples(sample);
+mozilla::glean::pages::page_load.AccumulateRawSamples(samples);
 ```
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.pages.pageLoad.accumulateSamples(samples);
+```
 
 </div>
 
@@ -335,8 +337,8 @@ Accumulates a single signed sample and appends it to the metric. Prefer this
 for the common use case of having a single value to avoid having to pass
 a collection over a foreign language interface.
 
-A signed value is required so that the platform-specific code can provide 
-us with a 64 bit signed integer if no `u64` comparable type is available. 
+A signed value is required so that the platform-specific code can provide
+us with a 64 bit signed integer if no `u64` comparable type is available.
 This will take care of filtering and reporting errors for a negative
 sample.
 
@@ -416,7 +418,9 @@ mozilla::glean::pages::page_load.AccumulateRawDuration(aDuration);
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.pages.pageLoad.accumulateSingleSample(sample);
+```
 
 </div>
 

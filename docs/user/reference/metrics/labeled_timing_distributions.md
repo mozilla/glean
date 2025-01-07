@@ -208,7 +208,9 @@ mozilla::glean::devtools::cold_toolbox_open_delay
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(samples);
+```
 
 </div>
 
@@ -269,7 +271,9 @@ mozilla::glean::devtools::cold_toolbox_open_delay
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(sample);
+```
 
 </div>
 
