@@ -146,7 +146,6 @@ Glean.graphics.checkerboardPeak.accumulateSingleSample(23);
 
 #### Limits
 
-* The maximum value of `bucket_count` is 100.
 * Only non-negative values may be recorded (`>= 0`).
 
 #### Recorded errors
