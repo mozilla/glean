@@ -89,11 +89,11 @@ user-id = 48
 user-login = "badboy"
 user-name = "Jan-Erik Rediger"
 
-[[audits.bytecode-alliance.audits.adler]]
+[[audits.bytecode-alliance.audits.adler2]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
-version = "1.0.2"
-notes = "This is a small crate which forbids unsafe code and is a straightforward implementation of the adler hashing algorithm."
+version = "2.0.0"
+notes = "Fork of the original `adler` crate, zero unsfae code, works in `no_std`, does what it says on th tin."
 
 [[audits.bytecode-alliance.audits.anyhow]]
 who = "Pat Hickey <phickey@fastly.com>"
@@ -250,6 +250,12 @@ resources. It's originally a port of the `miniz.c` library as well, and given
 its own longevity should be relatively hardened against some of the more common
 compression-related issues.
 """
+
+[[audits.bytecode-alliance.audits.miniz_oxide]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "0.7.1 -> 0.8.0"
+notes = "Minor updates, using new Rust features like `const`, no major changes."
 
 [[audits.bytecode-alliance.audits.percent-encoding]]
 who = "Alex Crichton <alex@alexcrichton.com>"
@@ -462,6 +468,47 @@ Only benign changes:
 """
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
+[[audits.google.audits.flate2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "safe-to-deploy"
+delta = "1.0.31 -> 1.0.33"
+notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
+more details.
+
+This delta audit has been reviewed in https://crrev.com/c/5811890
+The delta can be seen at https://diff.rs/flate2/1.0.31/1.0.33
+The delta bumps up `miniz_oxide` dependency to `0.8.0`
+The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Chromium
+and therefore hasn't been covered by this partial audit.
+"""
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
+[[audits.google.audits.flate2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "safe-to-deploy"
+delta = "1.0.33 -> 1.0.34"
+notes = """
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
+more details.
+
+The delta can be seen at https://diff.rs/flate2/1.0.33/1.0.34
+The delta bumps up `libz-rs-sys` dependency from `0.2.1` to `0.3.0`
+The delta in `lib.rs` only tweaks comments and has no code changes.
+The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Chromium
+and therefore hasn't been covered by this partial audit.
+"""
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
+[[audits.google.audits.flate2]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "safe-to-deploy"
+delta = "1.0.34 -> 1.0.35"
+notes = "There are no significant code changes in this delta (just one string constant change). Note that prior audits may have been partial."
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
 [[audits.google.audits.glob]]
 who = "George Burgess IV <gbiv@google.com>"
 criteria = "safe-to-deploy"
@@ -479,6 +526,18 @@ and there were no hits.
 `heck` (version `0.3.3`) has been added to Chromium in
 https://source.chromium.org/chromium/chromium/src/+/28841c33c77833cc30b286f9ae24c97e7a8f4057
 """
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
+[[audits.google.audits.iso8601]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-run"
+version = "0.4.2"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.miniz_oxide]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "safe-to-deploy"
+delta = "0.8.0 -> 0.8.2"
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
 [[audits.google.audits.version_check]]
