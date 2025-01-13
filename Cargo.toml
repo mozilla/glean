@@ -20,3 +20,9 @@ default-members = [
 opt-level = "s"
 debug = false
 lto = true
+
+[profile.dev.package.miniz_oxide]
+opt-level = 3
+
+[profile.dev.package.flate2]
+opt-level = 3
