@@ -69,10 +69,38 @@ commands:
             sudo apt install --yes --no-install-recommends \
               python3-pip \
               python3.10-venv
+
+      - run:
+          name: Install nextest
+          command: |
+            NEXTEST_SHA256=bde8d231e435099b068e654c591224defe686c784b4920682ee12784b6bfcf9e
+            NEXTEST=cargo-nextest
+            curl -sfSL --retry 5 -o "${NEXTEST}.tar.gz" "https://get.nexte.st/0.9.87/linux"
+            echo "${NEXTEST_SHA256} *${NEXTEST}.tar.gz" | shasum -a 256 -c -
+            tar -xf "${NEXTEST}.tar.gz"
+            cp ./${NEXTEST} ~/.cargo/bin/
+      - run:
+          name: Install circleci-junit-fix
+          command: |
+            JUNIT_FIX_SHA256=e8dd9012c841d9c03037783db676aa43a2ac1900346ccf4a61bf9956acfc6032
+            JUNIT_FIX=circleci-junit-fix
+            JUNIT_FIX_VERSION=v0.2.0
+            curl -sfSL --retry 5 -o "${JUNIT_FIX}.tar.gz" "https://github.com/conradludgate/circleci-junit-fix/releases/download/${JUNIT_FIX_VERSION}/${JUNIT_FIX}-${JUNIT_FIX_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+            echo "${JUNIT_FIX_SHA256} *${JUNIT_FIX}.tar.gz" | shasum -a 256 -c -
+            tar -xf "${JUNIT_FIX}.tar.gz"
+            cp ./${JUNIT_FIX} ~/.cargo/bin/
       - run:
           name: Test
           command: |
-            cargo test --workspace --verbose --jobs 6 -- --nocapture
+            cargo nextest run --profile ci
+      - run:
+          name: Fix junit output
+          command: |
+            mkdir -p ~/test-results/
+            cat target/nextest/ci/junit.xml | circleci-junit-fix > ~/test-results/junit.xml
+          when: always
+      - store_test_results:
+          path: ~/test-results
       - run:
           name: Run Rust sample
           command: |
