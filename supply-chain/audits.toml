@@ -6,7 +6,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-run"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2020-02-26"
-end = "2024-11-10"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -21,14 +21,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2021-11-22"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -43,14 +43,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2021-11-22"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -65,14 +65,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2021-11-22"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -87,14 +87,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2023-11-20"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -109,14 +109,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2023-11-20"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -131,14 +131,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2021-11-22"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -153,14 +153,14 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2023-11-20"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2022-09-13"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -175,28 +175,28 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2023-11-20"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_udl]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 111105
 start = "2023-11-20"
-end = "2024-11-28"
+end = "2026-01-13"
 
 [[wildcard-audits.uniffi_udl]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-10-18"
-end = "2024-12-12"
+end = "2026-01-13"
 
 [[wildcard-audits.weedle2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
