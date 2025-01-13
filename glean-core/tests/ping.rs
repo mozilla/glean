@@ -163,7 +163,7 @@ fn test_pings_submitted_metric() {
     let metrics_ping = new_test_ping(&mut glean, "metrics");
     let baseline_ping = new_test_ping(&mut glean, "baseline");
 
-    let custom_ping = PingType::new("custom", true, true, true, true, true, vec![], vec![]);
+    let custom_ping = PingType::new("custom", true, true, true, true, true, vec![], vec![], true);
     glean.register_ping_type(&custom_ping);
 
     // We need to store a metric as an empty ping is not stored.
