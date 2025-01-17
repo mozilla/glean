@@ -24,7 +24,7 @@ def build_upstream_artifacts(config, tasks):
             "taskId": {"task-reference": f"<{dep.kind}>"},
             "taskType": "build",
             "paths": publications_to_artifact_paths(name, version, module_info["publications"]),
-            "formats": ["autograph_gpg"],
+            "formats": ["gcp_prod_autograph_gpg"],
         }]}
 
         task.setdefault("worker", {})
