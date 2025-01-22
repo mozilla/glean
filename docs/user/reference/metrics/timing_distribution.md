@@ -482,7 +482,24 @@ with metrics.pages.page_load.measure():
 </div>
 <div data-lang="Rust" class="tab"></div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/DomMetrics.h"
+
+{ // Scope for RAII
+  auto timer = mozilla::glean::pages::page_load.Measure();
+  // load the page
+}
+```
+
+**JavaScript**
+
+*Not currently implemented.*
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
