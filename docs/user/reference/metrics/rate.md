@@ -184,7 +184,7 @@ network.httpConnectionError.addToDenominator(1);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkProtocolHttpMetrics.h"
 
 if (aHadError) {
 mozilla::glean::network::http_connection_error.AddToNumerator(1);
@@ -290,7 +290,7 @@ assert.strictEqual(denominator, 1);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkProtocolHttpMetrics.h"
 
 auto pair = mozilla::glean::network::http_connection_error.TestGetValue().unwrap();
 ASSERT_EQ(1, pair.first);

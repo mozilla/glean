@@ -37,7 +37,7 @@ self.start = devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -89,7 +89,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -138,7 +138,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -199,7 +199,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -262,7 +262,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolboxId)
@@ -324,7 +324,7 @@ assert_ge!(400, snapshot.sum);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 const data = mozilla::glean::devtools::cold_toolbox_open_delay
     .Get("webconsole"_ns)

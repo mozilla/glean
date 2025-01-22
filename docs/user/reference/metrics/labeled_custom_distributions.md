@@ -39,7 +39,7 @@ network::http3_late_ack_ratio
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 
 mozilla::glean::network::http3_late_ack_ratio
     .Get("ack")
@@ -94,7 +94,7 @@ network::http3_late_ack_ratio
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 
 mozilla::glean::network::http3_late_ack_ratio
     .Get("ack")
@@ -157,7 +157,7 @@ assert_eq!(1, network::http3_late_ack_ratio.get("ack").test_get_value(None).unwr
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 
 auto data = mozilla::glean::network::http3_late_ack_ratio.Get("ack").TestGetValue().value();
 ASSERT_EQ(42UL, data.sum);

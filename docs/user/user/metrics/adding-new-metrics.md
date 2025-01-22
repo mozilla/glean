@@ -317,7 +317,7 @@ an identifier that looks like:
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SomeMetrics.h"
 
 mozilla::glean::compound_category::metric_name...
 ```

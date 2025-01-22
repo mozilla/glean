@@ -128,7 +128,7 @@ function onPageStart() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 auto timerId = mozilla::glean::pages::page_load.Start();
 ```
@@ -224,7 +224,7 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.StopAndAccumulate(std::move(timerId));
 ```
@@ -316,7 +316,7 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.AccumulateRawSamples(samples);
 ```
@@ -411,7 +411,7 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.AccumulateRawDuration(aDuration);
 ```
@@ -565,7 +565,7 @@ function onPageError() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.Cancel(std::move(timerId));
 ```
@@ -696,7 +696,7 @@ assert.equal(1, snapshot.count);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 // Does it have an expected values?
 const data = mozilla::glean::pages::page_load.TestGetValue().value().unwrap();

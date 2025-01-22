@@ -73,7 +73,7 @@ acessibility.features["high_contrast"].set(this.isHighContrastEnabled());
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/AccessibleMetrics.h"
 
 mozilla::glean::accessibility::features.Get("screen_reader"_ns).Set(true);
 mozilla::glean::accessibility::features.Get("high_contrast"_ns).Set(false);
@@ -177,7 +177,7 @@ assert(!(await accessibility.features["high_contrast"].testGetValue()));
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/AccessibleMetrics.h"
 
 ASSERT_EQ(
     true,
