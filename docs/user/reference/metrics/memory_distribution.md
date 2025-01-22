@@ -96,7 +96,7 @@ function allocateMemory() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/JsXpconnectMetrics.h"
 
 mozilla::glean::memory::heap_allocated.Accumulate(bytes / 1024);
 ```
@@ -236,7 +236,7 @@ assert.equal(2, snapshot.count);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/JsXpconnectMetrics.h"
 
 // Does it have an expected values?
 const data = mozilla::glean::memory::heap_allocated.TestGetValue().value().unwrap()

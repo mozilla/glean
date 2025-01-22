@@ -87,7 +87,7 @@ search.template.set("https://mysearchengine.com/");
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 mozilla::glean::search::template.Set("https://mysearchengine.com/"_ns);
 ```

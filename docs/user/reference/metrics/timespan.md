@@ -85,7 +85,7 @@ function onShowLogin() {
 
 **C++**
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordmgrMetrics.h"
 void OnShowLogin() {
   mozilla::glean::auth::login_time.Start();
   // ...
@@ -199,7 +199,7 @@ function onLogin() {
 
 **C++**
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordmgrMetrics.h"
 void OnLogin() {
   mozilla::glean::auth::login_time.Stop();
   // ...
@@ -295,7 +295,7 @@ function onLoginCancel() {
 
 **C++**
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordmgrMetrics.h"
 void OnLoginCancel() {
   mozilla::glean::auth::login_time.Cancel();
   // ...
@@ -455,7 +455,7 @@ function onAfterLogin(loginElapsedNs) {
 
 **C++**
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordmgrMetrics.h"
 
 void AfterLogin(uint32_t aDuration) {
   mozilla::glean::auth::login_time.SetRaw(aDuration);
@@ -540,7 +540,7 @@ assert(await auth.loginTime.testGetValue() > 0);
 
 **C++**
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordmgrMetrics.h"
 
 ASSERT_TRUE(mozilla::glean::auth::login_time.TestGetValue().isOk());
 ASSERT_GE(mozilla::glean::auth::login_time.TestGetValue().unwrap().value(), 0);

@@ -82,7 +82,7 @@ stability.crashCount["native_code_crash"].add(3);
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/CrashesMetrics.h"
 
 mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).Add(1);
 mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).Add(3);
@@ -191,7 +191,7 @@ assert.strictEqual(3, await stability.crashCount["native_code_crash"].testGetVal
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/CrashesMetrics.h"
 
 ASSERT_EQ(
     1,

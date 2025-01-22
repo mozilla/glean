@@ -99,7 +99,7 @@ searchDefault.name.set("wikipedia");
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 mozilla::glean::search_default::name.Set("wikipedia"_ns);
 ```
@@ -206,7 +206,7 @@ assert.strictEqual("wikipedia", await searchDefault.name.testGetValue());
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 // Is it clear of errors?
 ASSERT_TRUE(mozilla::glean::search_default::name.TestGetValue().isOk());
