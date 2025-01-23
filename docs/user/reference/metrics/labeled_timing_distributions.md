@@ -286,6 +286,41 @@ Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(sample);
 {{#include ../../_includes/label-errors.md}}
 
 
+### `measure`
+
+For convenience one can measure the time of a function or block of code.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
+
+{ // Scope for RAII
+  auto timer = mozilla::glean::devtools::cold_toolbox_open_delay
+      .Get(toolboxId)
+      .Measure();
+  // Open the toolbox. Cold.
+}
+```
+
+**JavaScript**
+
+*Not currently implemented.*
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ## Testing API
 
 ### `testGetValue`
