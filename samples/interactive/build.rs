@@ -221,4 +221,24 @@ fn main() {
         }
     };
     writeln!(&info_file, "{}", tokens).unwrap();
+
+    let matcher = pings.iter().map(|ping| {
+        let name = &ping.name;
+        let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+        quote! {
+            #name => {
+                super::glean_metrics::#varname.set_enabled(value);
+                println!("{} {}.", #name, if value { "enabled" } else { "disabled" });
+            }
+        }
+    });
+    let tokens = quote! {
+        pub fn ping_set_enabled(name: &str, value: bool) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown ping: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 }

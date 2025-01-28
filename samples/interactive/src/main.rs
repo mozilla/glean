@@ -309,12 +309,11 @@ fn handle_command(cmd: &str, data_path: &Path) -> std::result::Result<(), &'stat
         }
         "enable" => {
             let ping = args.next().ok_or("need ping")?;
-            glean::set_ping_enabled(ping, true);
+            metric_info::ping_set_enabled(ping, true);
             if ping == "usage" {
-                glean::set_ping_enabled("usage-deletion-request", true);
+                glean_metrics::usage_deletion_request.set_enabled(true);
                 client_id::reset_profile_id(data_path);
             }
-            println!("{} enabled", ping);
         }
         "disable" => {
             let ping = args.next().ok_or("need ping")?;
@@ -322,8 +321,7 @@ fn handle_command(cmd: &str, data_path: &Path) -> std::result::Result<(), &'stat
                 glean_metrics::usage_deletion_request.submit(None);
                 client_id::set_canary_id(data_path);
             }
-            glean::set_ping_enabled(ping, false);
-            println!("{} disabled", ping);
+            metric_info::ping_set_enabled(ping, false);
         }
         "log" => {
             let state = args.next().ok_or("need state: off or on")?;
