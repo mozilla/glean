@@ -17,3 +17,5 @@ uuid = "1.4.1"
 
 [build-dependencies]
 glean-build = { path = "../../glean-core/build" }
+quote = "1.0.38"
+proc-macro2 = "1.0.93"

@@ -7,6 +7,8 @@ use std::{
     path::PathBuf,
 };
 
+use quote::quote;
+
 use glean_build::Builder;
 
 struct Metric {
@@ -70,111 +72,153 @@ fn main() {
         }
     }
 
-    writeln!(&info_file, "pub static METRICS: &[&str] = &[").unwrap();
-    for metric in &metrics {
-        writeln!(&info_file, "{:?}, // {:?}", metric.name, metric.typ).unwrap();
-    }
-    writeln!(&info_file, "];").unwrap();
+    let metric_names = metrics.iter().map(|metric| &metric.name);
+    let tokens = quote! {
+        pub static METRICS: &[&str] = &[
+            #(#metric_names),*
+        ];
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
-    writeln!(&info_file, "pub fn metric_get(name: &str, ping: Option<String>) {{").unwrap();
-    writeln!(&info_file, "match name {{").unwrap();
-    for metric in &metrics {
-        writeln!(&info_file, "{:?} => {{", metric.name).unwrap();
+    let matcher = metrics.iter().map(|metric| {
+        let name = &metric.name;
         if metric.typ.contains("Event") {
+            quote! {}
         } else {
-            writeln!(&info_file, "println!(\"Value: {{:?}}\", super::glean_metrics::metrics::{}.test_get_value(ping.into()));", metric.name).unwrap();
+            let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+            quote! {
+                #name => {
+                    println!("Value: {:?}", super::glean_metrics::metrics::#varname.test_get_value(ping.into()));
+                }
+            }
         }
-        writeln!(&info_file, "}}").unwrap();
-    }
-    writeln!(&info_file, "other => {{").unwrap();
-    writeln!(&info_file, "eprintln!(\"unknown metric: {{}}\", other);").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
+    });
+    let tokens = quote! {
+        pub fn metric_get(name: &str, ping: Option<String>) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown metric: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
     // COUNTER
-    writeln!(&info_file, "pub fn counter_add(name: &str, amount: i32) {{").unwrap();
-    writeln!(&info_file, "match name {{").unwrap();
-    for metric in &metrics {
+    let matcher = metrics.iter().map(|metric| {
+        let name = &metric.name;
         if !metric.typ.contains("Counter") || metric.typ.contains("LabeledMetric") {
-            continue;
+            quote! {}
+        } else {
+            let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+            quote! {
+                #name => {
+                    super::glean_metrics::metrics::#varname.add(amount);
+                    println!("Value: {:?}", super::glean_metrics::metrics::#varname.test_get_value(None));
+                }
+            }
         }
-
-        writeln!(&info_file, "{:?} => {{", metric.name).unwrap();
-        writeln!(&info_file, "super::glean_metrics::metrics::{}.add(amount);", metric.name).unwrap();
-        writeln!(&info_file, "println!(\"Value: {{:?}}\", super::glean_metrics::metrics::{}.test_get_value(None));", metric.name).unwrap();
-        writeln!(&info_file, "}}").unwrap();
-    }
-    writeln!(&info_file, "other => {{").unwrap();
-    writeln!(&info_file, "eprintln!(\"unknown metric: {{}}\", other);").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
+    });
+    let tokens = quote! {
+        pub fn counter_add(name: &str, amount: i32) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown metric: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
     // BOOLEAN
-    writeln!(&info_file, "pub fn boolean_set(name: &str, val: bool) {{").unwrap();
-    writeln!(&info_file, "match name {{").unwrap();
-    for metric in &metrics {
+    let matcher = metrics.iter().map(|metric| {
+        let name = &metric.name;
         if !metric.typ.contains("Boolean") || metric.typ.contains("LabeledMetric") {
-            continue;
+            quote! {}
+        } else {
+            let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+            quote! {
+                #name => {
+                    super::glean_metrics::metrics::#varname.set(val);
+                    println!("Value: {:?}", super::glean_metrics::metrics::#varname.test_get_value(None));
+                }
+            }
         }
-
-        writeln!(&info_file, "{:?} => {{", metric.name).unwrap();
-        writeln!(&info_file, "super::glean_metrics::metrics::{}.set(val);", metric.name).unwrap();
-        writeln!(&info_file, "println!(\"Value: {{:?}}\", super::glean_metrics::metrics::{}.test_get_value(None));", metric.name).unwrap();
-        writeln!(&info_file, "}}").unwrap();
-    }
-    writeln!(&info_file, "other => {{").unwrap();
-    writeln!(&info_file, "eprintln!(\"unknown metric: {{}}\", other);").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
+    });
+    let tokens = quote! {
+        pub fn boolean_set(name: &str, val: bool) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown metric: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
     // EVENTS
-    writeln!(&info_file, "pub fn event_record(name: &str) {{").unwrap();
-    writeln!(&info_file, "match name {{").unwrap();
-    for metric in &metrics {
+    let matcher = metrics.iter().map(|metric| {
+        let name = &metric.name;
         if !metric.typ.contains("EventMetric") {
-            continue;
+            quote! {}
+        } else {
+            let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+            quote! {
+                #name => {
+                    super::glean_metrics::metrics::#varname.record(None);
+                    println!("Value: {:?}", super::glean_metrics::metrics::#varname.test_get_value(None));
+                }
+            }
         }
-
-        writeln!(&info_file, "{:?} => {{", metric.name).unwrap();
-        writeln!(&info_file, "super::glean_metrics::metrics::{}.record(None);", metric.name).unwrap();
-        writeln!(&info_file, "println!(\"Value: {{:?}}\", super::glean_metrics::metrics::{}.test_get_value(None));", metric.name).unwrap();
-        writeln!(&info_file, "}}").unwrap();
-    }
-    writeln!(&info_file, "other => {{").unwrap();
-    writeln!(&info_file, "eprintln!(\"unknown metric: {{}}\", other);").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
+    });
+    let tokens = quote! {
+        pub fn event_record(name: &str) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown metric: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
 
     // PINGS
+    let ping_names = pings.iter().map(|ping| &ping.name);
+    let tokens = quote! {
+        pub static PINGS: &[&str] = &[
+            #(#ping_names),*
+        ];
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
-    writeln!(&info_file, "pub static PINGS: &[&str] = &[").unwrap();
-    for ping in &pings {
-        writeln!(&info_file, "{:?},", ping.name).unwrap();
-    }
-    writeln!(&info_file, "];").unwrap();
+    let register = pings.iter().map(|ping| {
+        let name = &ping.name;
+        let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+        quote! {
+            _ = &*super::glean_metrics::#varname;
+        }
+    });
+    let tokens = quote! {
+        pub fn register_pings() {
+            #(#register)*
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 
-    writeln!(&info_file, "pub fn register_pings() {{").unwrap();
-    for ping in &pings {
-        writeln!(&info_file, "_ = &*super::glean_metrics::{};", ping.name).unwrap();
-    }
-    writeln!(&info_file, "}}").unwrap();
-
-    writeln!(&info_file, "pub fn ping_submit(name: &str) {{").unwrap();
-    writeln!(&info_file, "match name {{").unwrap();
-    for ping in &pings {
-        writeln!(&info_file, "{:?} => {{", ping.name).unwrap();
-        writeln!(&info_file, "super::glean_metrics::{}.submit(None);", ping.name).unwrap();
-        writeln!(&info_file, "println!(\"{} submitted.\");", ping.name).unwrap();
-        writeln!(&info_file, "}}").unwrap();
-    }
-    writeln!(&info_file, "other => {{").unwrap();
-    writeln!(&info_file, "eprintln!(\"unknown ping: {{}}\", other);").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
-    writeln!(&info_file, "}}").unwrap();
+    let matcher = pings.iter().map(|ping| {
+        let name = &ping.name;
+        let varname = proc_macro2::Ident::new(name, proc_macro2::Span::call_site());
+        quote! {
+            #name => {
+                super::glean_metrics::#varname.submit(None);
+                println!("{} submitted.", #name);
+            }
+        }
+    });
+    let tokens = quote! {
+        pub fn ping_submit(name: &str) {
+            match name {
+                #(#matcher)*
+                other => eprintln!("unknown ping: {}", other),
+            }
+        }
+    };
+    writeln!(&info_file, "{}", tokens).unwrap();
 }
