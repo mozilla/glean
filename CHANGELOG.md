@@ -2,6 +2,13 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...main)
 
+* General
+  * The `glean.validation.pings_submitted` metric will now only record counts for built-in pings ([#3010](https://github.com/mozilla/glean/pull/3010))
+* Kotlin
+  * Updated `rust-android-gradle` to avoid problems with Python 3.13+ ([#3031](https://github.com/mozilla/glean/pull/3031))
+  * Update Glean plugin to be configuration-cache friendly ([#3041](https://github.com/mozilla/glean/pull/3041))
+  * Dispatch experiment API on the task queue ([#3032](https://github.com/mozilla/glean/pull/3032))
+
 # v63.0.0 (2024-11-28)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v62.0.0...v63.0.0)
@@ -14,9 +21,6 @@
     This deprecates the `setUploadEnabled` API in favor of `setCollectionEnabled`. ([#3006](https://github.com/mozilla/glean/pull/3006))
 * Rust
   * Permit Glean shutdown to interrupt UploadManager Wait tasks ([bug 1928288](https://bugzilla.mozilla.org/show_bug.cgi?id=1928288))
-
-* General
-  * The `glean.validation.pings_submitted` metric will now only record counts for built-in pings ([#3010](https://github.com/mozilla/glean/pull/3010))
 
 # v62.0.0 (2024-11-05)
 
