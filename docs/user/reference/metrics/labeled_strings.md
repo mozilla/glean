@@ -67,7 +67,7 @@ login.errorsByStage["server_auth"].set("Invalid password");
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomWebauthnMetrics.h"
 
 mozilla::glean::login::errors_by_stage.Get("server_auth"_ns).Set("Invalid password"_ns);
 ```
@@ -167,7 +167,7 @@ assert.strictEqual("Invalid password", await metrics.login.errorsByStage["server
 
 **C++**
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomWebauthnMetrics.h"
 
 ASSERT_STREQ("Invalid password",
              mozilla::glean::login::errors_by_stage.Get("server_auth"_ns)

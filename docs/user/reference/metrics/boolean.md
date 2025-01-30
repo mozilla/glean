@@ -74,7 +74,7 @@ flags.a11yEnabled.set(this.isAccessibilityEnabled());
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/AccessibleMetrics.h"
 
 mozilla::glean::flags::a11y_enabled.Set(false);
 ```
@@ -169,7 +169,7 @@ assert(await flags.a11yEnabled.testGetValue());
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/AccessibleMetrics.h"
 
 ASSERT_EQ(false, mozilla::glean::flags::a11y_enabled.TestGetValue().value());
 ```

@@ -1,6 +1,19 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
+
+# v63.1.0 (2025-01-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...v63.1.0)
+
+* General
+  * The `glean.validation.pings_submitted` metric will now only record counts for built-in pings ([#3010](https://github.com/mozilla/glean/pull/3010))
+* Rust
+  * Provide a public interface so that consumers of RLB can access metric identifiers ([#3054](https://github.com/mozilla/glean/pull/3054))
+* Kotlin
+  * Updated `rust-android-gradle` to avoid problems with Python 3.13+ ([#3031](https://github.com/mozilla/glean/pull/3031))
+  * Update Glean plugin to be configuration-cache friendly ([#3041](https://github.com/mozilla/glean/pull/3041))
+  * Dispatch experiment API on the task queue ([#3032](https://github.com/mozilla/glean/pull/3032))
 
 # v63.0.0 (2024-11-28)
 

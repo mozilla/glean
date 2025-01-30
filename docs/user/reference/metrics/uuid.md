@@ -79,7 +79,7 @@ user.clientId.generateAndSet();
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/TelemetryMetrics.h"
 
 // Generate a new UUID and record it.
 mozilla::glean::user::client_id.GenerateAndSet();
@@ -172,7 +172,7 @@ user.clientId.set(uuid);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/TelemetryMetrics.h"
 
 // Set a specific value.
 nsCString kUuid("decafdec-afde-cafd-ecaf-decafdecafde");
@@ -278,7 +278,7 @@ assert(uuid, await user.clientId.testGetValue());
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/TelemetryMetrics.h"
 
 // Is it clear of errors?
 ASSERT_TRUE(mozilla::glean::user::client_id.TestGetValue().isOk());

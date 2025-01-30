@@ -93,7 +93,7 @@ controls.refreshPressed.add(5); // Adds 5 to the counter.
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/UrlbarMetrics.h"
 
 mozilla::glean::controls::refresh_pressed.Add(1);
 mozilla::glean::controls::refresh_pressed.Add(5);
@@ -197,7 +197,7 @@ assert.strictEqual(6, await controls.refreshPressed.testGetValue());
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/UrlbarMetrics.h"
 
 ASSERT_TRUE(mozilla::glean::controls::refresh_pressed.TestGetValue().isOk());
 ASSERT_EQ(6, mozilla::glean::controls::refresh_pressed.TestGetValue().unwrap().value());

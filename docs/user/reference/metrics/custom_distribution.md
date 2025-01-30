@@ -62,7 +62,7 @@ graphics.checkerboardPeak.accumulateSamples([23]);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/GfxMetrics.h"
 
 mozilla::glean::graphics::checkerboard_peak.AccumulateSamples({ 23 });
 ```
@@ -128,7 +128,7 @@ graphics.checkerboardPeak.accumulateSingleSample(23);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/GfxMetrics.h"
 
 mozilla::glean::graphics::checkerboard_peak.AccumulateSingleSample(23);
 ```
@@ -146,7 +146,6 @@ Glean.graphics.checkerboardPeak.accumulateSingleSample(23);
 
 #### Limits
 
-* The maximum value of `bucket_count` is 100.
 * Only non-negative values may be recorded (`>= 0`).
 
 #### Recorded errors
@@ -240,7 +239,7 @@ assert.equal(1, snapshot.values[19]);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/GfxMetrics.h"
 
 auto data = mozilla::glean::graphics::checkerboard_peak.TestGetValue().value();
 ASSERT_EQ(23UL, data.sum);

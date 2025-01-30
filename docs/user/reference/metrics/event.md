@@ -91,7 +91,7 @@ views.loginOpened.record({ sourceOfLogin: "toolbar" });
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordMgrMetrics.h"
 
 using mozilla::glean::views::LoginOpenedExtra;
 LoginOpenedExtra extra = { .source_of_login = Some("value"_ns) };
@@ -216,7 +216,7 @@ assert.strictEqual("toolbar", first.extra.source_of_login);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/PasswordMgrMetrics.h"
 
 auto optEvents = mozilla::glean::views::login_opened.TestGetValue();
 auto events = optEvents.extract();

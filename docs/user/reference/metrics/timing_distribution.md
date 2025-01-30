@@ -128,7 +128,7 @@ function onPageStart() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 auto timerId = mozilla::glean::pages::page_load.Start();
 ```
@@ -224,7 +224,7 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.StopAndAccumulate(std::move(timerId));
 ```
@@ -316,14 +316,16 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
-mozilla::glean::pages::page_load.AccumulateRawSamples(sample);
+mozilla::glean::pages::page_load.AccumulateRawSamples(samples);
 ```
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.pages.pageLoad.accumulateSamples(samples);
+```
 
 </div>
 
@@ -335,8 +337,8 @@ Accumulates a single signed sample and appends it to the metric. Prefer this
 for the common use case of having a single value to avoid having to pass
 a collection over a foreign language interface.
 
-A signed value is required so that the platform-specific code can provide 
-us with a 64 bit signed integer if no `u64` comparable type is available. 
+A signed value is required so that the platform-specific code can provide
+us with a 64 bit signed integer if no `u64` comparable type is available.
 This will take care of filtering and reporting errors for a negative
 sample.
 
@@ -409,14 +411,16 @@ function onPageLoaded() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.AccumulateRawDuration(aDuration);
 ```
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.pages.pageLoad.accumulateSingleSample(sample);
+```
 
 </div>
 
@@ -478,7 +482,24 @@ with metrics.pages.page_load.measure():
 </div>
 <div data-lang="Rust" class="tab"></div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/DomMetrics.h"
+
+{ // Scope for RAII
+  auto timer = mozilla::glean::pages::page_load.Measure();
+  // load the page
+}
+```
+
+**JavaScript**
+
+*Not currently implemented.*
+
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -561,7 +582,7 @@ function onPageError() {
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 mozilla::glean::pages::page_load.Cancel(std::move(timerId));
 ```
@@ -692,7 +713,7 @@ assert.equal(1, snapshot.count);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DomMetrics.h"
 
 // Does it have an expected values?
 const data = mozilla::glean::pages::page_load.TestGetValue().value().unwrap();

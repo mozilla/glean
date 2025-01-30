@@ -34,7 +34,7 @@ network::http_upload_bandwidth
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 
 mozilla::network::http_upload_bandwidth
     .Get(httpVersion)
@@ -95,7 +95,7 @@ assert_eq!(1, network::http_upload_bandwidth.get("h2").test_get_value(None).unwr
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/NetwerkMetrics.h"
 
 const data = mozilla::glean::network::http_upload_bandwidth
     .Get("h2")

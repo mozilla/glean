@@ -37,7 +37,7 @@ self.start = devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -89,7 +89,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -138,7 +138,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -199,7 +199,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
@@ -208,7 +208,9 @@ mozilla::glean::devtools::cold_toolbox_open_delay
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(samples);
+```
 
 </div>
 
@@ -260,7 +262,7 @@ devtools::cold_toolbox_open_delay
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolboxId)
@@ -269,7 +271,9 @@ mozilla::glean::devtools::cold_toolbox_open_delay
 
 **JavaScript**
 
-This operation is not currently supported in JavaScript.
+```js
+Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(sample);
+```
 
 </div>
 
@@ -281,6 +285,41 @@ This operation is not currently supported in JavaScript.
 * [`invalid_overflow`](../../user/metrics/error-reporting.md): If recording a sample longer than the maximum for the given `time_unit`.
 {{#include ../../_includes/label-errors.md}}
 
+
+### `measure`
+
+For convenience one can measure the time of a function or block of code.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab"></div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
+
+{ // Scope for RAII
+  auto timer = mozilla::glean::devtools::cold_toolbox_open_delay
+      .Get(toolboxId)
+      .Measure();
+  // Open the toolbox. Cold.
+}
+```
+
+**JavaScript**
+
+*Not currently implemented.*
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
 
 ## Testing API
 
@@ -320,7 +359,7 @@ assert_ge!(400, snapshot.sum);
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/DevtoolsClientFrameworkMetrics.h"
 
 const data = mozilla::glean::devtools::cold_toolbox_open_delay
     .Get("webconsole"_ns)

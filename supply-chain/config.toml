@@ -104,10 +104,6 @@ criteria = "safe-to-deploy"
 version = "0.5.6"
 criteria = "safe-to-run"
 
-[[exemptions.iso8601]]
-version = "0.4.2"
-criteria = "safe-to-run"
-
 [[exemptions.itertools]]
 version = "0.10.3"
 criteria = "safe-to-run"

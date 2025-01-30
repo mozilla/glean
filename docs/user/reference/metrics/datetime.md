@@ -93,7 +93,7 @@ install.firstRun.set(new Date("March 25, 2019 00:00:00")); // Records a custom d
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/ToolkitProfileMetrics.h"
 
 PRExplodedTime date = {0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
 mozilla::glean::install::first_run.Set(&date);
@@ -196,7 +196,7 @@ assert.deepStrictEqual(expectedDate, await install.firstRun.testGetValue());
 **C++**
 
 ```c++
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/ToolkitProfileMetrics.h"
 
 PRExplodedTime date{0, 35, 10, 12, 6, 10, 2020, 0, 0, {5 * 60 * 60, 0}};
 ASSERT_TRUE(mozilla::glean::install::first_run.TestGetValue().isOk());

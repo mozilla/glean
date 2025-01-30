@@ -77,7 +77,7 @@ Glean.search.engines.add("duck duck go");
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 mozilla::glean::search::engines.Add("wikipedia"_ns);
 mozilla::glean::search::engines.Add("duck duck go"_ns);
@@ -166,7 +166,7 @@ Glean.search.engines.set(["wikipedia", "duck duck go"]);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 mozilla::glean::search::engines.Set({"wikipedia"_ns, "duck duck go"_ns});
 ```
@@ -267,7 +267,7 @@ Assert.ok(engines.includes("duck duck go"));
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/SearchMetrics.h"
 
 ASSERT_EQUAL(mozilla::glean::search::engines.TestGetValue().isOk());
 nsTArray<nsCString> list = mozilla::glean::search::engines.TestGetValue().unwrap();

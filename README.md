@@ -36,7 +36,6 @@ To contact us you can:
 * Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
 * To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
 * Send an email to *glean-team@mozilla.com*.
-* The Glean Core team is: *:dexter*, *:janerik*, *:travis_*, *:chutten*, *:brizental*.
 
 ## Credits
 

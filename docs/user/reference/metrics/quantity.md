@@ -76,7 +76,7 @@ display.width.set(window.innerWidth);
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/GfxMetrics.h"
 
 mozilla::glean::display::width.Set(innerWidth);
 ```
@@ -176,7 +176,7 @@ assert.strictEqual(433, await display.width.testGetValue());
 **C++**
 
 ```cpp
-#include "mozilla/glean/GleanMetrics.h"
+#include "mozilla/glean/GfxMetrics.h"
 
 ASSERT_TRUE(mozilla::glean::display::width.TestGetValue().isOk());
 ASSERT_EQ(433, mozilla::glean::display::width.TestGetValue().unwrap().value());
