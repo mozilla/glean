@@ -16,7 +16,7 @@ the details of which are reproduced below.
 
 The following text applies to code linked from these dependencies:
 
-* [miniz_oxide 0.7.1]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
+* [miniz_oxide 0.8.2]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 
 ```
 
@@ -2089,11 +2089,11 @@ The following text applies to code linked from these dependencies:
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.4]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.12]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.14]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [fastrand 2.0.0]( https://github.com/smol-rs/fastrand )
-* [flate2 1.0.31]( https://github.com/rust-lang/flate2-rs )
+* [flate2 1.0.35]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
 * [glob 0.3.0]( https://github.com/rust-lang/glob )
 * [heck 0.5.0]( https://github.com/withoutboats/heck )
@@ -2965,7 +2965,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [adler 1.0.2]( https://github.com/jonas-schievink/adler.git )
+* [adler2 2.0.0]( https://github.com/oyvindln/adler2 )
 * [cargo-platform 0.1.2]( https://github.com/rust-lang/cargo )
 
 ```
@@ -4734,9 +4734,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 63.0.0]( https://github.com/mozilla/glean )
+* [glean-core 63.1.0]( https://github.com/mozilla/glean )
 * [glean-build 16.1.0]( https://github.com/mozilla/glean )
-* [glean 63.0.0]( https://github.com/mozilla/glean )
+* [glean 63.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
