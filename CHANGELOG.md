@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
+
+# v63.1.0 (2025-01-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...v63.1.0)
 
 * General
   * The `glean.validation.pings_submitted` metric will now only record counts for built-in pings ([#3010](https://github.com/mozilla/glean/pull/3010))

@@ -202,8 +202,8 @@ the details of which are reproduced below.
     <name>Apache License 2.0: getrandom</name>
     <url>https://github.com/rust-random/getrandom</url>
   </license>  <license>
-    <name>Apache License 2.0: adler</name>
-    <url>https://github.com/jonas-schievink/adler.git</url>
+    <name>Apache License 2.0: adler2</name>
+    <url>https://github.com/oyvindln/adler2</url>
   </license>  <license>
     <name>Apache License 2.0: cargo-platform</name>
     <url>https://github.com/rust-lang/cargo</url>
