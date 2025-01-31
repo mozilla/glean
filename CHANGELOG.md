@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
 
+* Rust
+  * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
+
 # v63.1.0 (2025-01-30)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v63.0.0...v63.1.0)
