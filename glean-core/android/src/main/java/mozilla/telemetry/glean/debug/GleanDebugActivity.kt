@@ -84,7 +84,6 @@ class GleanDebugActivity : Activity() {
             return
         }
 
-        // Make sure that at least one of the supported commands was used.
         val supportedCommands = listOf(
             SEND_PING_EXTRA_KEY,
             LOG_PINGS_EXTRA_KEY,
@@ -95,7 +94,6 @@ class GleanDebugActivity : Activity() {
 
         var nextActivityName: String? = null
 
-        // Enable debugging options and start the application.
         intent.extras?.let {
             it.keySet().forEach { cmd ->
                 if (!supportedCommands.contains(cmd)) {
@@ -103,49 +101,25 @@ class GleanDebugActivity : Activity() {
                 }
             }
 
-            // Check for ping debug view tag to apply to the X-Debug-ID header when uploading the
-            // ping to the endpoint
-            val debugViewTag: String? = intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)
-
-            // Set the debug view tag, if the tag is invalid it won't be set
-            debugViewTag?.let {
-                Glean.setDebugViewTag(debugViewTag)
-            }
-
-            val logPings: Boolean? = intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false)
-            logPings?.let {
-                Glean.setLogPings(logPings)
-            }
-
-            intent.getStringArrayExtra(SOURCE_TAGS_KEY)?.let { tags ->
-                Glean.setSourceTags(tags.toSet())
-            }
-
-            intent.getStringExtra(NEXT_ACTIVITY_TO_RUN)?.let { nextActivity ->
-                nextActivityName = nextActivity
-            }
-
+            intent.getStringExtra(TAG_DEBUG_VIEW_EXTRA_KEY)?.let { Glean.setDebugViewTag(it) }
+            intent.getBooleanExtra(LOG_PINGS_EXTRA_KEY, false).let { Glean.setLogPings(it) }
+            intent.getStringArrayExtra(SOURCE_TAGS_KEY)?.let { tags -> Glean.setSourceTags(tags.toSet()) }
+            intent.getStringExtra(NEXT_ACTIVITY_TO_RUN)?.let { nextActivityName = it }
             // Important: this should be applied as the last one, so that
             // any other option will affect the ping submission as well.
-            intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let { name ->
-                Glean.submitPingByName(name)
-            }
+            intent.getStringExtra(SEND_PING_EXTRA_KEY)?.let { Glean.submitPingByName(it) }
         }
 
         // This Activity can be used to tag tests on CI or start products with specific
         // options. We need to make sure to retain and propagate all the options that
         // we were passed to the next intent. Our 3 steps strategy:
-        // 1. use the `Intent` copy constructor to copy all the intent options from the
-        //   intent which started this activity;
-        val nextIntent = Intent(intent)
+        // 1. Copy intent and make extras immutable
+        val safeExtras = Bundle(intent.extras).apply { setClassLoader(javaClass.classLoader) }
+        val nextIntent = Intent().apply { replaceExtras(safeExtras) }
 
-        // 2. get the main launch intent for the product using the Glean SDK or lookup
-        //    the one passed as a command line argument to this activity.
+        // 2. Determine the next component
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)!!
-        nextIntent.`package` = launchIntent.`package`
-
         val nextComponent = nextActivityName?.let { name ->
-            // Try to lookup the Activity that was asked by the caller.
             val component = ComponentName(packageName, name)
             if (!isActivityExported(component)) {
                 Log.e(LOG_TAG, "Cannot run $packageName/$name: Activity not exported")
@@ -153,14 +127,17 @@ class GleanDebugActivity : Activity() {
                 return
             }
             component
-        } ?: launchIntent.component
+        } ?: launchIntent.component!!
 
-        Log.i(LOG_TAG, "Running next: ${nextComponent!!.packageName}/${nextComponent.className}")
+        Log.i(LOG_TAG, "Running next: ${nextComponent.packageName}/${nextComponent.className}")
 
-        // 3. change the starting "component" to the one from the previous step.
-        nextIntent.component = nextComponent
+        // 3. Configure and launch intent safely
+        nextIntent.apply {
+            setClassName(packageName, nextComponent.className)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+
         startActivity(nextIntent)
-
         finish()
     }
 }
