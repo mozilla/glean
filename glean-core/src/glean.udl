@@ -108,6 +108,7 @@ dictionary PingRateLimit {
 };
 
 // An enum representing the different logging levels for the `log` crate.
+[Remote]
 enum LevelFilter {
     "Off",
     "Error",
