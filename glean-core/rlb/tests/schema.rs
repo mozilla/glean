@@ -2,6 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+mod common;
+use crate::common::*;
+
 use std::collections::HashMap;
 use std::io::Read;
 
@@ -170,17 +173,7 @@ fn validate_against_schema() {
     text_metric.set("loooooong text".repeat(100));
 
     // Define a new ping and submit it.
-    let custom_ping = glean::private::PingType::new(
-        PING_NAME,
-        true,
-        true,
-        true,
-        true,
-        true,
-        vec![],
-        vec![],
-        true,
-    );
+    let custom_ping = PingBuilder::new(PING_NAME).with_send_if_empty(true).build();
     custom_ping.submit(None);
 
     // Wait for the ping to arrive.

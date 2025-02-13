@@ -935,6 +935,20 @@ def test_sending_of_custom_pings(safe_httpserver):
 
     assert callback_was_called[0]
 
+    # Ensure a ping requiring an unsupported capability is not uploaded.
+    unsupported_ping = PingType(
+      name="unsupported"
+      include_client_id=True,
+      send_if_empty=True,
+      precise_timestamps=True,
+      include_info_sections=False,
+      schedules_pings=[],
+      reason_codes=[],
+      uploader_cfg=["ohttp"],
+    )
+
+    unsupported_ping.submit()
+
     assert 1 == len(safe_httpserver.requests)
 
 

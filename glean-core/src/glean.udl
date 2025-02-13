@@ -214,7 +214,16 @@ dictionary PingRequest {
     boolean body_has_info_sections;
     // The ping's name. Likely also somewhere in `path`.
     string ping_name;
+    // The capabilities required during this ping's upload.
+    sequence<string> uploader_cfg;
 };
+
+//interface PingRequestCapable {
+    // Determine whether we're capable of processing the ping upload request.
+    // If the supplied list of capabilities supports the combination needed
+    // by the PingRequest, it is returned.
+    //PingRequest? capable(sequence<string> capabilities);
+//};
 
 // An enum representing the possible upload tasks to be performed by an uploader.
 [Enum]
@@ -222,6 +231,7 @@ interface PingUploadTask {
     // An upload task.
     //
     // * request: the ping request for upload
+    //Upload(PingRequestCapable request);
     Upload(PingRequest request);
     // A flag signaling that the pending pings directories are not done being processed,
     // thus the requester should wait and come back later.
@@ -309,7 +319,8 @@ interface PingType {
         boolean enabled,
         sequence<string> schedules_pings,
         sequence<string> reason_codes,
-        boolean follows_collection_enabled
+        boolean follows_collection_enabled,
+        sequence<string> uploader_cfg
     );
     void submit(optional string? reason = null);
 

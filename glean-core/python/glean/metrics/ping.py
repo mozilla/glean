@@ -21,6 +21,7 @@ class PingType:
         reason_codes: List[str],
         enabled: bool = True,
         follows_collection_enabled: bool = True,
+        uploader_cfg: Optional[List[str]] = None,
     ):
         """
         This implements the developer facing API for custom pings.
@@ -39,6 +40,7 @@ class PingType:
             schedules_pings,
             reason_codes,
             follows_collection_enabled,
+            uploader_cfg,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]
 

@@ -67,6 +67,7 @@ _ARGS = [
     "enabled",
     "follows_collection_enabled",
     "time_unit",
+    "uploader_cfg",
 ]
 
 _ARG_CONVERSION = {

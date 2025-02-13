@@ -85,6 +85,7 @@ pub static PrototypePing: Lazy<PingType> = Lazy::new(|| {
         vec![],
         vec![],
         true,
+        vec![],
     )
 });
 

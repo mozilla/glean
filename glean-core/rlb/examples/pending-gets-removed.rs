@@ -49,6 +49,7 @@ mod pings {
             vec![],
             vec![],
             true,
+            vec![],
         )
     });
 
@@ -64,6 +65,7 @@ mod pings {
             vec![],
             vec![],
             false,
+            vec![],
         )
     });
 }

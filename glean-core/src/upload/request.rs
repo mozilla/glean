@@ -64,6 +64,7 @@ pub struct Builder {
     body_max_size: usize,
     body_has_info_sections: Option<bool>,
     ping_name: Option<String>,
+    uploader_cfg: Option<Vec<String>>,
 }
 
 impl Builder {
@@ -91,6 +92,7 @@ impl Builder {
             body_max_size,
             body_has_info_sections: None,
             ping_name: None,
+            uploader_cfg: None,
         }
     }
 
@@ -166,6 +168,12 @@ impl Builder {
         self
     }
 
+    /// Sets the required uploader capabilities.
+    pub fn uploader_cfg(mut self, uploader_cfg: Vec<String>) -> Self {
+        self.uploader_cfg = Some(uploader_cfg);
+        self
+    }
+
     /// Consumes the builder and create a PingRequest.
     ///
     /// # Panics
@@ -196,6 +204,9 @@ impl Builder {
             ping_name: self
                 .ping_name
                 .expect("ping_name must be set before attempting to build PingRequest"),
+            uploader_cfg: self
+                .uploader_cfg
+                .expect("uploader_cfg must be set before attempting to build PingRequest"),
         })
     }
 }
@@ -218,6 +229,8 @@ pub struct PingRequest {
     pub body_has_info_sections: bool,
     /// The ping's name. Likely also somewhere in `path`.
     pub ping_name: String,
+    /// The capabilities required during this ping's upload.
+    pub uploader_cfg: Vec<String>,
 }
 
 impl PingRequest {
@@ -280,6 +293,7 @@ mod test {
             .body("{}")
             .body_has_info_sections(false)
             .ping_name("whatevs")
+            .uploader_cfg(vec![])
             .build()
             .unwrap();
 

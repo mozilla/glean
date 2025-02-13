@@ -19,7 +19,18 @@ use super::*;
 use crate::common_test::{lock_test, new_glean, GLOBAL_APPLICATION_ID};
 
 fn new_test_ping(name: &str) -> PingType {
-    PingType::new(name, true, true, true, true, true, vec![], vec![], true)
+    PingType::new(
+        name,
+        true,
+        true,
+        true,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+        vec![],
+    )
 }
 
 #[test]
@@ -104,6 +115,7 @@ fn send_a_ping_without_info_sections() {
         vec![],
         vec![],
         true,
+        vec![],
     );
     custom_ping.submit(None);
 
