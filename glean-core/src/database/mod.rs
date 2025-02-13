@@ -450,7 +450,11 @@ impl Database {
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
-            if glean.is_ping_enabled(ping_name) {
+            let enabled = glean.is_ping_enabled(ping_name);
+            if name.starts_with("usage") {
+                log::error!("record. Storing metric {name:?}, lifetime: {:?}, ping: {ping_name:?}, enabled: {enabled:?}", data.inner.lifetime);
+            }
+            if enabled {
                 if let Err(e) =
                     self.record_per_lifetime(data.inner.lifetime, ping_name, &name, value)
                 {
@@ -484,6 +488,9 @@ impl Database {
         metric: &Metric,
     ) -> Result<()> {
         let final_key = Self::get_storage_key(storage_name, Some(key));
+        if final_key.starts_with("usage") {
+            log::error!("record_per_lifetime. Storing metric '{final_key:?}, lifetime: {lifetime:?}");
+        }
 
         // Lifetime::Ping data is not immediately persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
@@ -518,7 +525,11 @@ impl Database {
     {
         let name = data.identifier(glean);
         for ping_name in data.storage_names() {
-            if glean.is_ping_enabled(ping_name) {
+            let enabled = glean.is_ping_enabled(ping_name);
+            if name.starts_with("usage") {
+                log::error!("record_with. Storing metric {name:?}, lifetime: {:?}, ping: {ping_name:?}, enabled: {enabled:?}", data.inner.lifetime);
+            }
+            if enabled {
                 if let Err(e) = self.record_per_lifetime_with(
                     data.inner.lifetime,
                     ping_name,
@@ -559,6 +570,9 @@ impl Database {
         F: FnMut(Option<Metric>) -> Metric,
     {
         let final_key = Self::get_storage_key(storage_name, Some(key));
+        if final_key.starts_with("usage") {
+            log::error!("record_per_lifetime_with. Storing metric '{final_key:?}, lifetime: {lifetime:?}");
+        }
 
         // Lifetime::Ping data is not persisted to disk if
         // Glean has `delay_ping_lifetime_io` set to true
