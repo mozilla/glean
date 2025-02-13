@@ -59,7 +59,8 @@ struct ReportingUploader {
 }
 
 impl net::PingUploader for ReportingUploader {
-    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+    fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+        let upload_request = upload_request.capable(|_| true).unwrap();
         let calls = self.calls.fetch_add(1, Ordering::SeqCst);
         let body = upload_request.body;
         let decode = |body: Vec<u8>| {

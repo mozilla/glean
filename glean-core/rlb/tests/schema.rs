@@ -12,7 +12,7 @@ use flate2::read::GzDecoder;
 use jsonschema_valid::schemas::Draft;
 use serde_json::Value;
 
-use glean::net::{PingUploadRequest, UploadResult};
+use glean::net::{CapablePingUploadRequest, UploadResult};
 use glean::private::*;
 use glean::{
     traits, ClientInfoMetrics, CommonMetricData, ConfigurationBuilder, HistogramType, MemoryUnit,
@@ -62,7 +62,8 @@ fn validate_against_schema() {
         sender: crossbeam_channel::Sender<Vec<u8>>,
     }
     impl glean::net::PingUploader for ValidatingUploader {
-        fn upload(&self, ping_request: PingUploadRequest) -> UploadResult {
+        fn upload(&self, ping_request: CapablePingUploadRequest) -> UploadResult {
+            let ping_request = ping_request.capable(|_| true).unwrap();
             self.sender.send(ping_request.body).unwrap();
             UploadResult::http_status(200)
         }

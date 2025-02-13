@@ -218,21 +218,14 @@ dictionary PingRequest {
     sequence<string> uploader_cfg;
 };
 
-//interface PingRequestCapable {
-    // Determine whether we're capable of processing the ping upload request.
-    // If the supplied list of capabilities supports the combination needed
-    // by the PingRequest, it is returned.
-    //PingRequest? capable(sequence<string> capabilities);
-//};
-
 // An enum representing the possible upload tasks to be performed by an uploader.
 [Enum]
 interface PingUploadTask {
     // An upload task.
     //
     // * request: the ping request for upload
-    //Upload(PingRequestCapable request);
     Upload(PingRequest request);
+
     // A flag signaling that the pending pings directories are not done being processed,
     // thus the requester should wait and come back later.
     //

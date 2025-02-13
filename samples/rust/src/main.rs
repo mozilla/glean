@@ -43,7 +43,8 @@ impl MovingUploader {
 }
 
 impl net::PingUploader for MovingUploader {
-    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+    fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+        let upload_request = upload_request.capable(|_| true).unwrap();
         let cnt = self.recv_cnt.fetch_add(1, Ordering::Relaxed) + 1;
         let net::PingUploadRequest {
             body, url, headers, ..
