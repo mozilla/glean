@@ -5,6 +5,7 @@
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::ping::PingMaker;
 use crate::upload::PingPayload;
@@ -37,6 +38,8 @@ struct InnerPing {
     /// The "reason" codes that this ping can send
     pub reason_codes: Vec<String>,
 
+    creation_ts: u64,
+
     /// True when it follows the `collection_enabled` flag (aka `upload_enabled`) flag.
     /// Otherwise it needs to be enabled through `enabled_pings`.
     follows_collection_enabled: AtomicBool,
@@ -53,6 +56,7 @@ impl fmt::Debug for PingType {
             .field("enabled", &self.0.enabled.load(Ordering::Relaxed))
             .field("schedules_pings", &self.0.schedules_pings)
             .field("reason_codes", &self.0.reason_codes)
+            .field("creation_ts", &self.0.creation_ts)
             .field(
                 "follows_collection_enabled",
                 &self.0.follows_collection_enabled.load(Ordering::Relaxed),
@@ -116,8 +120,11 @@ impl PingType {
         reason_codes: Vec<String>,
         follows_collection_enabled: bool,
     ) -> Self {
+        let name = name.into();
+        let creation_ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        log::error!("Ping.new. creating {name:?}. ts: {creation_ts:?}");
         let this = Self(Arc::new(InnerPing {
-            name: name.into(),
+            name: name,
             include_client_id,
             send_if_empty,
             precise_timestamps,
@@ -125,6 +132,7 @@ impl PingType {
             enabled: AtomicBool::new(enabled),
             schedules_pings,
             reason_codes,
+            creation_ts,
             follows_collection_enabled: AtomicBool::new(follows_collection_enabled),
         }));
 
@@ -177,6 +185,9 @@ impl PingType {
     }
 
     pub(crate) fn enabled(&self, glean: &Glean) -> bool {
+        let name = self.name();
+        let creation_ts = self.0.creation_ts;
+        log::error!("ping.enabled. name={name:?} creation_ts={creation_ts:?}");
         if self.0.follows_collection_enabled.load(Ordering::Relaxed) {
             // if this follows collection_enabled:
             // 1. check that first. if disabled, we're done
@@ -258,7 +269,11 @@ impl PingType {
     /// Whether the ping was succesfully assembled and queued.
     #[doc(hidden)]
     pub fn submit_sync(&self, glean: &Glean, reason: Option<&str>) -> bool {
-        if !self.enabled(glean) {
+        let enabled = self.enabled(glean);
+        let ident = &self.0.name;
+        let creation_ts = self.0.creation_ts;
+        log::error!("ping.submit_sync name={ident:?}, reason: {reason:?}, enabled: {enabled:?}, creation_ts={creation_ts:?}");
+        if !enabled {
             log::info!(
                 "The ping '{}' is disabled and will be discarded and not submitted",
                 self.0.name
