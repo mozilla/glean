@@ -49,6 +49,7 @@ mod pings {
             vec![],
             vec![],
             true,
+            vec![],
         )
     });
 
@@ -64,6 +65,7 @@ mod pings {
             vec![],
             vec![],
             false,
+            vec![],
         )
     });
 }
@@ -73,7 +75,7 @@ mod pings {
 struct FakeUploader;
 
 impl net::PingUploader for FakeUploader {
-    fn upload(&self, _upload_request: net::PingUploadRequest) -> net::UploadResult {
+    fn upload(&self, _upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
         // Recoverable upload failure, will be retried 3 times,
         // but then keeps the pending ping around.
         net::UploadResult::http_status(500)

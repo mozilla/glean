@@ -35,6 +35,7 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
         vec![],
         vec![],
         true,
+        vec![],
     );
     glean.register_ping_type(&ping);
     let ping = PingType::new_internal(
@@ -47,6 +48,7 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
         vec![],
         vec![],
         true,
+        vec![],
     );
     glean.register_ping_type(&ping);
     (glean, dir)
@@ -1218,6 +1220,7 @@ fn disabled_pings_are_not_submitted() {
         vec![],
         vec![],
         true,
+        vec![],
     );
     glean.register_ping_type(&ping);
 
@@ -1271,6 +1274,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         vec![],
         vec![],
         true,
+        vec![],
     );
     glean.register_ping_type(&disabled_ping);
     let enabled_ping = PingType::new(
@@ -1283,6 +1287,7 @@ fn pings_are_controllable_from_remote_settings_config() {
         vec![],
         vec![],
         true,
+        vec![],
     );
     glean.register_ping_type(&enabled_ping);
 
