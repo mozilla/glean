@@ -257,6 +257,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     counter_metric.add(10)
@@ -279,6 +280,7 @@ def test_dont_schedule_pings_if_there_is_no_ping_content(safe_httpserver):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     custom_ping.submit()
@@ -344,6 +346,7 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
     string_metric = StringMetricType(
         CommonMetricData(
@@ -673,6 +676,7 @@ def test_dont_allow_multiprocessing(monkeypatch, safe_httpserver):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     custom_ping.submit()
@@ -747,6 +751,7 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     # Submit a ping prior to calling initialize
@@ -808,6 +813,7 @@ def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch, h
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     configuration = Glean._configuration
@@ -918,6 +924,7 @@ def test_sending_of_custom_pings(safe_httpserver):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     counter_metric.add()
@@ -934,6 +941,20 @@ def test_sending_of_custom_pings(safe_httpserver):
     custom_ping.submit()
 
     assert callback_was_called[0]
+
+    # Ensure a ping requiring an unsupported capability is not uploaded.
+    unsupported_ping = PingType(
+        name="unsupported",
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        include_info_sections=False,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=["ohttp"],
+    )
+
+    unsupported_ping.submit()
 
     assert 1 == len(safe_httpserver.requests)
 
@@ -1001,6 +1022,7 @@ def test_glean_shutdown(safe_httpserver):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
 
     counter = CounterMetricType(

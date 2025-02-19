@@ -19,6 +19,7 @@ class PingType:
         include_info_sections: bool,
         schedules_pings: List[str],
         reason_codes: List[str],
+        uploader_capabilities: List[str],
         enabled: bool = True,
         follows_collection_enabled: bool = True,
     ):
@@ -39,6 +40,7 @@ class PingType:
             schedules_pings,
             reason_codes,
             follows_collection_enabled,
+            uploader_capabilities,
         )
         self._test_callback = None  # type: Optional[Callable[[Optional[str]], None]]
 
