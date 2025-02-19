@@ -39,12 +39,34 @@ mod pings {
 
     #[allow(non_upper_case_globals)]
     pub static one: Lazy<PingType> = Lazy::new(|| {
-        glean::private::PingType::new("one", true, true, true, true, false, vec![], vec![], false)
+        glean::private::PingType::new(
+            "one",
+            true,
+            true,
+            true,
+            true,
+            false,
+            vec![],
+            vec![],
+            false,
+            vec![],
+        )
     });
 
     #[allow(non_upper_case_globals)]
     pub static two: Lazy<PingType> = Lazy::new(|| {
-        glean::private::PingType::new("two", true, true, true, true, false, vec![], vec![], false)
+        glean::private::PingType::new(
+            "two",
+            true,
+            true,
+            true,
+            true,
+            false,
+            vec![],
+            vec![],
+            false,
+            vec![],
+        )
     });
 }
 
@@ -60,7 +82,8 @@ impl MovingUploader {
 }
 
 impl net::PingUploader for MovingUploader {
-    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+    fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+        let upload_request = upload_request.capable(|_| true).unwrap();
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;

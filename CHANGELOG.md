@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
 
+* General
+  * BREAKING CHANGE: Pings now pass required uploader capabilities during upload ([bug 1920732](https://bugzilla.mozilla.org/show_bug.cgi?id=1920732))
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
