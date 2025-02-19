@@ -9,13 +9,13 @@ Utilities for writing unit tests involving Glean.
 
 import gzip
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from .._uniffi import glean_set_test_mode, glean_set_log_pings
 from .._uniffi import ErrorType
 from glean import Configuration
 from ..net import base_uploader
-from ..net.ping_uploader import UploadResult
+from ..net.ping_uploader import CapablePingUploadRequest, UploadResult
 
 
 def reset_glean(
@@ -77,17 +77,19 @@ class _RecordingUploader(base_uploader.BaseUploader):
         self.file_path = file_path
 
     def do_upload(
-        self,
-        path: str,
-        data: bytes,
-        headers: Dict[str, str],
-        config: "Configuration",
+        self, capable_request: "CapablePingUploadRequest"
     ) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
         UploadResult.HTTP_STATUS,
+        UploadResult.INCAPABLE,
     ]:
+        request = capable_request.capable(lambda _capabilities: True)
+        assert request is not None
+        data = request.body
+        headers = request.headers
+        path = "/" + request.url.split("/", 3)[3]
         is_gzipped = headers.get("Content-Encoding", None) == "gzip"
 
         uncompressed_data = gzip.decompress(data) if is_gzipped else data

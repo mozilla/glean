@@ -46,6 +46,7 @@ def test_pings_with_follows_false_follow_their_own_setting(tmpdir, helpers):
         schedules_pings=[],
         reason_codes=[],
         follows_collection_enabled=False,
+        uploader_capabilities=[],
     )
 
     counter_metric = CounterMetricType(

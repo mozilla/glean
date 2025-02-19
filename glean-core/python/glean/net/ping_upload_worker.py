@@ -9,14 +9,14 @@ from pathlib import Path
 import re
 import sys
 import time
-from typing import List, Tuple
+from typing import Callable, List, Optional, Tuple
 
 from .._uniffi import (
     glean_get_upload_task,
     glean_initialize_for_subprocess,
     glean_process_ping_upload_response,
 )
-from .._uniffi import InternalConfiguration, UploadTaskAction, PingUploadTask
+from .._uniffi import InternalConfiguration, UploadTaskAction, PingUploadTask, PingRequest
 from .._process_dispatcher import ProcessDispatcher
 
 
@@ -136,18 +136,16 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             # Ping data is available for upload: parse the structure but make
             # sure to let Rust free the memory.
             request = task.request
-            doc_id = request.document_id
-            url_path = request.path
-            body = bytes(request.body)
-            headers = request.headers
 
-            # Delegate the upload to the uploader.
-            upload_result = configuration.ping_uploader.do_upload(
-                url_path, body, headers, configuration
+            capable_request = CapablePingUploadRequest(
+                PingUploadRequest(request, configuration.server_endpoint)
             )
 
+            # Delegate the upload to the uploader.
+            upload_result = configuration.ping_uploader.do_upload(capable_request)
+
             # Process the response.
-            action = glean_process_ping_upload_response(doc_id, upload_result)
+            action = glean_process_ping_upload_response(request.document_id, upload_result)
             if action == UploadTaskAction.NEXT:
                 continue
             else:  # action == UploadTaskAction.END
@@ -159,4 +157,24 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             return True
 
 
-__all__ = ["PingUploadWorker"]
+class PingUploadRequest:
+    def __init__(self, request: PingRequest, server_endpoint: str) -> None:
+        self.doc_id = (request.document_id,)
+        self.url = server_endpoint + request.path
+        self.body = bytes(request.body)
+        self.headers = request.headers
+        self.uploader_capabilities = request.uploader_capabilities
+
+
+class CapablePingUploadRequest:
+    def __init__(self, request: PingUploadRequest) -> None:
+        self.request = request
+
+    def capable(self, func: Callable[[List[str]], bool]) -> Optional[PingUploadRequest]:
+        if func(self.request.uploader_capabilities):
+            return self.request
+
+        return None
+
+
+__all__ = ["PingUploadWorker", "CapablePingUploadRequest"]
