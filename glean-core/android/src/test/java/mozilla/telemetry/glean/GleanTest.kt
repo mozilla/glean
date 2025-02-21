@@ -484,6 +484,7 @@ class GleanTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
         val stringMetric = StringMetricType(
             CommonMetricData(
@@ -855,6 +856,7 @@ class GleanTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
         val stringMetric = StringMetricType(
             CommonMetricData(

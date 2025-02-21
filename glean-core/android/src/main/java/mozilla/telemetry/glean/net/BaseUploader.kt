@@ -4,8 +4,6 @@
 
 package mozilla.telemetry.glean.net
 
-import mozilla.telemetry.glean.config.Configuration
-
 /**
  * The logic for uploading pings: this leaves the actual upload implementation
  * to the user-provided delegate.
@@ -15,18 +13,11 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
      * This function triggers the actual upload: logs the ping and calls the implementation
      * specific upload function.
      *
-     * @param path the URL path to append to the server address
-     * @param data the serialized text data to send
-     * @param headers the headers list for this request
-     * @param config the Glean configuration object
+     * @param request the ping upload request, locked within a capability check
      *
-     * @return return the status code of the upload response or null in case unable to upload.
+     * @return return the status code of the upload response
      */
-    internal fun doUpload(path: String, data: ByteArray, headers: HeadersList, config: Configuration): UploadResult {
-        return upload(
-            url = config.serverEndpoint + path,
-            data = data,
-            headers = headers,
-        )
+    internal fun doUpload(request: CapablePingUploadRequest): UploadResult {
+        return upload(request)
     }
 }

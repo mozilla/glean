@@ -45,7 +45,8 @@ class HttpURLConnectionUploaderTest {
         doReturn(connection).`when`(client).openConnection(anyString())
         doReturn(200).`when`(client).doUpload(connection, testPing.toByteArray(Charsets.UTF_8))
 
-        client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap())
+        val request = CapablePingUploadRequest(PingUploadRequest(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap(), emptyList()))
+        client.upload(request)
 
         verify<HttpURLConnection>(connection).readTimeout = HttpURLConnectionUploader.DEFAULT_READ_TIMEOUT
         verify<HttpURLConnection>(connection).connectTimeout = HttpURLConnectionUploader.DEFAULT_CONNECTION_TIMEOUT
@@ -64,7 +65,8 @@ class HttpURLConnectionUploaderTest {
             "Test-header" to "SomeValue",
             "OtherHeader" to "Glean/Test 25.0.2",
         )
-        uploader.upload(testPath, testPing.toByteArray(Charsets.UTF_8), expectedHeaders)
+        val request = CapablePingUploadRequest(PingUploadRequest(testPath, testPing.toByteArray(Charsets.UTF_8), expectedHeaders, emptyList()))
+        uploader.upload(request)
 
         val headerNameCaptor = argumentCaptor<String>()
         val headerValueCaptor = argumentCaptor<String>()
@@ -98,8 +100,9 @@ class HttpURLConnectionUploaderTest {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doReturn(connection).`when`(client).openConnection(anyString())
 
+        val request = CapablePingUploadRequest(PingUploadRequest(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap(), emptyList()))
         assertEquals(
-            client.upload(testPath, testPing.toByteArray(Charsets.UTF_8), emptyMap()),
+            client.upload(request),
             HttpStatus(200),
         )
         verify<HttpURLConnection>(connection, times(1)).disconnect()
@@ -116,7 +119,8 @@ class HttpURLConnectionUploaderTest {
 
         val client = HttpURLConnectionUploader()
         val url = testConfig.serverEndpoint + testPath
-        assertNotNull(client.upload(url, testPing.toByteArray(Charsets.UTF_8), emptyMap()))
+        val capableRequest = CapablePingUploadRequest(PingUploadRequest(url, testPing.toByteArray(Charsets.UTF_8), emptyMap(), emptyList()))
+        assertNotNull(client.upload(capableRequest))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
@@ -171,7 +175,8 @@ class HttpURLConnectionUploaderTest {
         // Trigger the connection.
         val url = testConfig.serverEndpoint + testPath
         val client = HttpURLConnectionUploader()
-        assertNotNull(client.upload(url, testPing.toByteArray(Charsets.UTF_8), emptyMap()))
+        val capableRequest = CapablePingUploadRequest(PingUploadRequest(url, testPing.toByteArray(Charsets.UTF_8), emptyMap(), emptyList()))
+        assertNotNull(client.upload(capableRequest))
 
         val request = server.takeRequest()
         assertEquals(testPath, request.path)
@@ -190,6 +195,15 @@ class HttpURLConnectionUploaderTest {
     fun `upload() discards pings on malformed URLs`() {
         val client = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
         doThrow(MalformedURLException()).`when`(client).openConnection(anyString())
-        assertEquals(UnrecoverableFailure(0), client.upload("path", "ping".toByteArray(Charsets.UTF_8), emptyMap()))
+        val request = CapablePingUploadRequest(PingUploadRequest("path", "ping".toByteArray(Charsets.UTF_8), emptyMap(), emptyList()))
+        assertEquals(UnrecoverableFailure(0), client.upload(request))
+    }
+
+    @Test
+    fun `http uploader refuses to upload when incapable`() {
+        val uploader = spy<HttpURLConnectionUploader>(HttpURLConnectionUploader())
+        val request = CapablePingUploadRequest(PingUploadRequest("path", "ping".toByteArray(Charsets.UTF_8), emptyMap(), listOf("unsupported_capability")))
+
+        assertEquals(Incapable(0), uploader.upload(request))
     }
 }
