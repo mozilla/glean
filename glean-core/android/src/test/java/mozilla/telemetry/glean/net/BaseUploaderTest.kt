@@ -4,7 +4,6 @@
 
 package mozilla.telemetry.glean.net
 
-import mozilla.telemetry.glean.any
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.eq
 import org.junit.Test
@@ -24,7 +23,7 @@ class BaseUploaderTest {
      * A stub uploader class that does not upload anything.
      */
     private class TestUploader : PingUploader {
-        override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
+        override fun upload(request: CapablePingUploadRequest): UploadResult {
             return UnrecoverableFailure(0)
         }
     }
@@ -34,7 +33,8 @@ class BaseUploaderTest {
         val uploader = spy<BaseUploader>(BaseUploader(TestUploader()))
 
         val expectedUrl = testDefaultConfig.serverEndpoint + testPath
-        uploader.doUpload(testPath, testPing.toByteArray(Charsets.UTF_8), testHeaders, testDefaultConfig)
-        verify(uploader).upload(eq(expectedUrl), any(), any())
+        val request = CapablePingUploadRequest(PingUploadRequest(expectedUrl, testPing.toByteArray(Charsets.UTF_8), testHeaders, emptyList()))
+        uploader.doUpload(request)
+        verify(uploader).upload(eq(request))
     }
 }
