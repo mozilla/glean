@@ -92,7 +92,7 @@ commands:
       - run:
           name: Test
           command: |
-            cargo nextest run --profile ci
+            cargo nextest run --workspace --profile ci
       - run:
           name: Fix junit output
           command: |
