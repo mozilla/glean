@@ -556,11 +556,11 @@ class GleanTest {
     }
 
     @Test
-    fun `Core metrics should be cleared and restored when disabling and enabling uploading`() {
+    fun `Core metrics are not cleared when disabling and enabling uploading`() {
         assertNotNull(GleanInternalMetrics.os.testGetValue())
 
         Glean.setCollectionEnabled(false)
-        assertNull(GleanInternalMetrics.os.testGetValue())
+        assertNotNull(GleanInternalMetrics.os.testGetValue())
 
         Glean.setCollectionEnabled(true)
         assertNotNull(GleanInternalMetrics.os.testGetValue())
