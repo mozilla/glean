@@ -44,7 +44,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
         enabled: Bool,
         schedulesPings: [String],
         reasonCodes: [String],
-        followsCollectionEnabled: Bool
+        followsCollectionEnabled: Bool,
+        uploaderCapabilities: [String]
     ) {
         self.name = name
         self.reasonCodes = reasonCodes
@@ -57,7 +58,8 @@ public class Ping<ReasonCodesEnum: ReasonCodes> {
             enabled,
             schedulesPings,
             reasonCodes,
-            followsCollectionEnabled
+            followsCollectionEnabled,
+            uploaderCapabilities
         )
     }
 

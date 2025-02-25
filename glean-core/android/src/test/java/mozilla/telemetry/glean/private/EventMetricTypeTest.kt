@@ -512,6 +512,7 @@ class EventMetricTypeTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         // Trigger worker task to upload the pings in the background.

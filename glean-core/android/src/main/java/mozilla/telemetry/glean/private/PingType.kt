@@ -55,6 +55,7 @@ class PingType<ReasonCodesEnum> (
     val schedulesPings: List<String>,
     val reasonCodes: List<String>,
     followsCollectionEnabled: Boolean,
+    val uploaderCapabilities: List<String>,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
     private val innerPing: GleanPingType
@@ -70,6 +71,7 @@ class PingType<ReasonCodesEnum> (
             reasonCodes = reasonCodes,
             enabled = enabled,
             followsCollectionEnabled = followsCollectionEnabled,
+            uploaderCapabilities = uploaderCapabilities,
         )
     }
 

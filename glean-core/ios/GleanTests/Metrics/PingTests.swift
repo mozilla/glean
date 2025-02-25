@@ -44,7 +44,8 @@ class PingTests: XCTestCase {
             enabled: true,
             schedulesPings: [],
             reasonCodes: [],
-            followsCollectionEnabled: true
+            followsCollectionEnabled: true,
+            uploaderCapabilities: []
         )
 
         let counter = CounterMetricType(CommonMetricData(
@@ -94,7 +95,8 @@ class PingTests: XCTestCase {
             enabled: true,
             schedulesPings: [],
             reasonCodes: [],
-            followsCollectionEnabled: true
+            followsCollectionEnabled: true,
+            uploaderCapabilities: []
         )
 
         let counter = CounterMetricType(CommonMetricData(
@@ -134,7 +136,8 @@ class PingTests: XCTestCase {
             enabled: true,
             schedulesPings: [],
             reasonCodes: [],
-            followsCollectionEnabled: true
+            followsCollectionEnabled: true,
+            uploaderCapabilities: []
         )
 
         // This is simply a duplicate of the experimentationId metric that is defined in
@@ -232,7 +235,8 @@ class PingTests: XCTestCase {
             enabled: true,
             schedulesPings: [],
             reasonCodes: ["was_tested"],
-            followsCollectionEnabled: true
+            followsCollectionEnabled: true,
+            uploaderCapabilities: []
         )
 
         setupHttpResponseStub("custom2")

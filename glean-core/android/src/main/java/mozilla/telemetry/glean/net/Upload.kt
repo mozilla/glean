@@ -10,3 +10,4 @@ typealias UploadResult = mozilla.telemetry.glean.internal.UploadResult
 typealias HttpStatus = mozilla.telemetry.glean.internal.UploadResult.HttpStatus
 typealias UnrecoverableFailure = mozilla.telemetry.glean.internal.UploadResult.UnrecoverableFailure
 typealias RecoverableFailure = mozilla.telemetry.glean.internal.UploadResult.RecoverableFailure
+typealias Incapable = mozilla.telemetry.glean.internal.UploadResult.Incapable

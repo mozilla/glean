@@ -73,6 +73,7 @@ class RidealongPingTest {
             schedulesPings = emptyList(),
             reasonCodes = emptyList(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         Glean.handleBackgroundEvent()

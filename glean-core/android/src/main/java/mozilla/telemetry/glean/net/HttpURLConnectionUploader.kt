@@ -36,36 +36,35 @@ class HttpURLConnectionUploader : PingUploader {
     /**
      * Synchronously upload a ping to a server.
      *
-     * @param url the URL path to upload the data to
-     * @param data the serialized text data to send
-     * @param headers a [HeadersList] containing String to String [Pair] with
-     *        the first entry being the header name and the second its value.
-     * @param isGzipped whether or not the payload is gzipped
+     * @param request the ping upload request, locked within a capability check
      *
      * @return return the status code of the upload response,
-     *         or null in case unable to upload.
      */
     @Suppress("ReturnCount", "MagicNumber")
-    override fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult {
+    override fun upload(request: CapablePingUploadRequest): UploadResult {
+        val req: PingUploadRequest? = request.capable({ capabilities: List<String> -> capabilities.size == 0 })
+        if (req == null) {
+            return Incapable(0)
+        }
         var connection: HttpURLConnection? = null
         try {
-            connection = openConnection(url)
+            connection = openConnection(req.url)
             connection.requestMethod = "POST"
             connection.connectTimeout = DEFAULT_CONNECTION_TIMEOUT
             connection.readTimeout = DEFAULT_READ_TIMEOUT
             connection.doOutput = true
 
-            headers.forEach { (headerName, headerValue) ->
+            req.headers.forEach { (headerName, headerValue) ->
                 connection.setRequestProperty(headerName, headerValue)
             }
 
             // Make sure we are not sending cookies. Unfortunately, HttpURLConnection doesn't
             // offer a better API to do that, so we nuke all cookies going to our telemetry
             // endpoint.
-            removeCookies(url)
+            removeCookies(req.url)
 
             // Finally upload.
-            val statusCode = doUpload(connection, data)
+            val statusCode = doUpload(connection, req.data)
             return HttpStatus(statusCode)
         } catch (e: MalformedURLException) {
             // There's nothing we can do to recover from this here. So let's just log an error and

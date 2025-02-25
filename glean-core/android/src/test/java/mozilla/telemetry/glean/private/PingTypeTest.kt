@@ -59,6 +59,7 @@ class PingTypeTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         val counter = CounterMetricType(
@@ -129,6 +130,7 @@ class PingTypeTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         val counter = CounterMetricType(
@@ -180,6 +182,7 @@ class PingTypeTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         val counter = CounterMetricType(
@@ -231,6 +234,7 @@ class PingTypeTest {
             schedulesPings = emptyList(),
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         val counter = CounterMetricType(
@@ -283,6 +287,7 @@ class PingTypeTest {
             enabled = true,
             reasonCodes = listOf(),
             followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
         )
 
         val counter = CounterMetricType(

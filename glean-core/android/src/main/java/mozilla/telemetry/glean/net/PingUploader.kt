@@ -17,12 +17,25 @@ interface PingUploader {
     /**
      * Synchronously upload a ping to a server.
      *
-     * @param url the URL path to upload the data to
-     * @param data the serialized text data to send
-     * @param headers a [HeadersList] containing the headers to add.
+     * @param request the ping upload request, locked within a uploader capability check
      *
      * @return return the status code of the upload response,
-     *         or null in case upload could not be attempted at all.
      */
-    fun upload(url: String, data: ByteArray, headers: HeadersList): UploadResult
+    fun upload(request: CapablePingUploadRequest): UploadResult
+}
+
+data class PingUploadRequest(
+    val url: String,
+    val data: ByteArray,
+    val headers: HeadersList,
+    val uploaderCapabilities: List<String>,
+)
+
+class CapablePingUploadRequest(val request: PingUploadRequest) {
+    fun capable(f: (uploaderCapabilities: List<String>) -> Boolean): PingUploadRequest? {
+        if (f(request.uploaderCapabilities)) {
+            return request
+        }
+        return null
+    }
 }

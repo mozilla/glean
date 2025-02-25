@@ -31,7 +31,8 @@ final class RidealongPingTests: XCTestCase {
             enabled: true,
             schedulesPings: [],
             reasonCodes: [],
-            followsCollectionEnabled: true
+            followsCollectionEnabled: true,
+            uploaderCapabilities: []
         )
 
         // We receive a baseline ping, and a ridealong ping.

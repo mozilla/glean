@@ -541,6 +541,7 @@ glean.upload:
       - "status_code_unknown"
       - "unrecoverable"
       - "recoverable"
+      - "incapable"
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124
     data_reviews:

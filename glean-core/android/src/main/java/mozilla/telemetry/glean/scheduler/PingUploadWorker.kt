@@ -20,6 +20,8 @@ import mozilla.telemetry.glean.internal.PingUploadTask
 import mozilla.telemetry.glean.internal.UploadTaskAction
 import mozilla.telemetry.glean.internal.gleanGetUploadTask
 import mozilla.telemetry.glean.internal.gleanProcessPingUploadResponse
+import mozilla.telemetry.glean.net.CapablePingUploadRequest
+import mozilla.telemetry.glean.net.PingUploadRequest
 import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
 
 /**
@@ -93,12 +95,15 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         // so we return a known unrecoverable error status code
                         // which will ensure this gets treated as such.
                         val body = action.request.body.toUByteArray().asByteArray()
-                        val result = Glean.httpClient.doUpload(
-                            action.request.path,
-                            body,
-                            action.request.headers,
-                            Glean.configuration,
+                        val request = CapablePingUploadRequest(
+                            PingUploadRequest(
+                                Glean.configuration.serverEndpoint + action.request.path,
+                                body,
+                                action.request.headers,
+                                action.request.uploaderCapabilities,
+                            ),
                         )
+                        val result = Glean.httpClient.doUpload(request)
 
                         // Process the upload response
                         when (gleanProcessPingUploadResponse(action.request.documentId, result)) {
