@@ -277,26 +277,22 @@ impl Glean {
             // instantiate the core metrics.
             glean.on_upload_enabled();
         } else {
-            // If upload is disabled, and we've never run before, only set the
-            // client_id to KNOWN_CLIENT_ID, but do not send a deletion request
-            // ping.
-            // If we have run before, and if the client_id is not equal to
-            // the KNOWN_CLIENT_ID, do the full upload disabled operations to
-            // clear metrics, set the client_id to KNOWN_CLIENT_ID, and send a
-            // deletion request ping.
+            // If upload is disabled clear metrics,
+            // but do not send a deletion request ping.
+            // If we have run before, and we have an old client_id,
+            // do the full upload disabled operations to clear metrics
+            // and send a deletion request ping.
             match glean
                 .core_metrics
                 .client_id
                 .get_value(&glean, Some("glean_client_info"))
             {
                 None => glean.clear_metrics(),
-                Some(uuid) => {
-                    if uuid != *KNOWN_CLIENT_ID {
-                        // Temporarily enable uploading so we can submit a
-                        // deletion request ping.
-                        glean.upload_enabled = true;
-                        glean.on_upload_disabled(true);
-                    }
+                Some(_uuid) => {
+                    // Temporarily enable uploading so we can submit a
+                    // deletion request ping.
+                    glean.upload_enabled = true;
+                    glean.on_upload_disabled(true);
                 }
             }
         }
@@ -580,14 +576,6 @@ impl Glean {
         // so that it can't be accessed until this function is done.
         let _lock = self.upload_manager.clear_ping_queue();
 
-        // There is only one metric that we want to survive after clearing all
-        // metrics: first_run_date. Here, we store its value so we can restore
-        // it after clearing the metrics.
-        let existing_first_run_date = self
-            .core_metrics
-            .first_run_date
-            .get_value(self, "glean_client_info");
-
         // Clear any pending pings that follow `collection_enabled`.
         let ping_maker = PingMaker::new();
         let disabled_pings = self
@@ -605,6 +593,7 @@ impl Glean {
         // the effect of resetting those to their initial values.
         if let Some(data) = self.data_store.as_ref() {
             _ = data.clear_lifetime_storage(Lifetime::User, "glean_internal_info");
+            _ = data.remove_single_metric(Lifetime::User, "glean_client_info", "client_id");
             for (ping_name, ping) in &self.ping_registry {
                 if ping.follows_collection_enabled() {
                     _ = data.clear_ping_lifetime_storage(ping_name);
@@ -621,32 +610,6 @@ impl Glean {
         // StorageEngineManager), since doing so would mean we would have to have the
         // application tell us again which experiments are active if telemetry is
         // re-enabled.
-
-        {
-            // We need to briefly set upload_enabled to true here so that `set`
-            // is not a no-op. This is safe, since nothing on the Rust side can
-            // run concurrently to this since we hold a mutable reference to the
-            // Glean object. Additionally, the pending pings have been cleared
-            // from disk, so the PingUploader can't wake up and start sending
-            // pings.
-            self.upload_enabled = true;
-
-            // Store a "dummy" KNOWN_CLIENT_ID in the client_id metric. This will
-            // make it easier to detect if pings were unintentionally sent after
-            // uploading is disabled.
-            self.core_metrics
-                .client_id
-                .set_from_uuid_sync(self, *KNOWN_CLIENT_ID);
-
-            // Restore the first_run_date.
-            if let Some(existing_first_run_date) = existing_first_run_date {
-                self.core_metrics
-                    .first_run_date
-                    .set_sync_chrono(self, existing_first_run_date);
-            }
-
-            self.upload_enabled = false;
-        }
     }
 
     /// Gets the application ID as specified on instantiation.

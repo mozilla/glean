@@ -681,9 +681,8 @@ fn basic_metrics_should_be_cleared_when_disabling_uploading() {
     assert_eq!("TEST VALUE", metric.test_get_value(None).unwrap());
 }
 
-// TODO: Should probably move into glean-core.
 #[test]
-fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploading() {
+fn core_metrics_arenot_cleared_when_disabling_and_enabling_uploading() {
     let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();
@@ -709,12 +708,13 @@ fn core_metrics_should_be_cleared_and_restored_when_disabling_and_enabling_uploa
     });
 
     assert!(os_version.test_get_value(None).is_some());
+    let initial_value = os_version.test_get_value(None).unwrap();
 
     set_upload_enabled(false);
-    assert!(os_version.test_get_value(None).is_none());
+    assert_eq!(initial_value, os_version.test_get_value(None).unwrap());
 
     set_upload_enabled(true);
-    assert!(os_version.test_get_value(None).is_some());
+    assert_eq!(initial_value, os_version.test_get_value(None).unwrap());
 }
 
 #[test]

@@ -417,10 +417,10 @@ def test_basic_metrics_should_be_cleared_when_disabling_uploading():
     assert 10 == counter_metric.test_get_value()
 
 
-def test_core_metrics_should_be_cleared_with_disabling_and_enabling_uploading():
+def test_core_metrics_are_not_cleared_with_disabling_and_enabling_uploading():
     assert _builtins.metrics.glean.internal.metrics.os.test_get_value()
     Glean.set_upload_enabled(False)
-    assert not _builtins.metrics.glean.internal.metrics.os.test_get_value()
+    assert _builtins.metrics.glean.internal.metrics.os.test_get_value()
     Glean.set_upload_enabled(True)
     assert _builtins.metrics.glean.internal.metrics.os.test_get_value()
 
