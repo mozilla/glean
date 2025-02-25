@@ -605,8 +605,6 @@ impl Glean {
         // the effect of resetting those to their initial values.
         if let Some(data) = self.data_store.as_ref() {
             _ = data.clear_lifetime_storage(Lifetime::User, "glean_internal_info");
-            _ = data.clear_lifetime_storage(Lifetime::User, "glean_client_info");
-            _ = data.clear_lifetime_storage(Lifetime::Application, "glean_client_info");
             for (ping_name, ping) in &self.ping_registry {
                 if ping.follows_collection_enabled() {
                     _ = data.clear_ping_lifetime_storage(ping_name);
