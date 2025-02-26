@@ -288,11 +288,23 @@ impl Glean {
                 .get_value(&glean, Some("glean_client_info"))
             {
                 None => glean.clear_metrics(),
-                Some(_uuid) => {
-                    // Temporarily enable uploading so we can submit a
-                    // deletion request ping.
-                    glean.upload_enabled = true;
-                    glean.on_upload_disabled(true);
+                Some(uuid) => {
+                    if uuid == *KNOWN_CLIENT_ID {
+                        // Previously Glean kept the KNOWN_CLIENT_ID stored.
+                        // Let's ensure we erase it now.
+                        if let Some(data) = glean.data_store.as_ref() {
+                            _ = data.remove_single_metric(
+                                Lifetime::User,
+                                "glean_client_info",
+                                "client_id",
+                            );
+                        }
+                    } else {
+                        // Temporarily enable uploading so we can submit a
+                        // deletion request ping.
+                        glean.upload_enabled = true;
+                        glean.on_upload_disabled(true);
+                    }
                 }
             }
         }
