@@ -75,7 +75,13 @@ impl StringMetric {
     /// Sets to the specified value synchronously.
     #[doc(hidden)]
     pub fn set_sync<S: Into<String>>(&self, glean: &Glean, value: S) {
-        if !self.should_record(glean) {
+        let value = value.into();
+        let should_record = self.should_record(glean);
+        let ident = self.meta.base_identifier();
+        if ident.starts_with("usage") {
+            log::error!("string.set_sync. name={ident:?}, value: {:?}, should_record: {:?}", value, should_record);
+        }
+        if !should_record {
             return;
         }
 
