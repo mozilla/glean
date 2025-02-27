@@ -28,6 +28,7 @@ func startUploader() {
 public class HttpPingUploader {
     var config: Configuration
     var session: URLSession
+    var capabilities: [String] = []
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -43,18 +44,15 @@ public class HttpPingUploader {
 
     private let logger = Logger(tag: Constants.logTag)
 
-    var capabilities: [String]
-
     /// Initialize the HTTP Ping uploader from a Glean configuration object
     /// and a URLSession
     ///
     /// - parameters:
     ///     * configuration: The Glean `Configuration` to use.
     ///     * session: A `URLSession` that will be reused to upload pings
-    public init(configuration: Configuration, session: URLSession, capabilities: [String] = []) {
+    public init(configuration: Configuration, session: URLSession) {
         self.config = configuration
         self.session = session
-        self.capabilities = capabilities
     }
 
     /// Launch a new instance of a HttpPingUploader that requests additional time to run in the background
@@ -95,13 +93,13 @@ public class HttpPingUploader {
     /// Synchronously upload a ping to Mozilla servers.
     ///
     /// - parameters:
-    ///     * path: The URL path to append to the server address
-    ///     * data: The serialized text data to send
-    ///     * headers: Map of headers from Glean to annotate ping with
+    ///     * request: A `PingRequest` containing the information needed to perform the upload
     ///     * callback: A callback to return the success/failure of the upload
     func upload(request: PingRequest, callback: @escaping (UploadResult) -> Void) {
-        // First check the uploader capabilities against the capabilites required by the ping
-        guard self.capabilities.allSatisfy(request.uploaderCapabilities.contains) else {
+        // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
+        guard request.uploaderCapabilities.isEmpty else {
+            logger.info("Glean rejected ping \(request.pingName) upload due to unsupported capabilities")
             callback(.incapable(unused: 0))
             return
         }
