@@ -49,19 +49,9 @@ implementation "org.mozilla.telemetry:glean:{latest-version}"
 
 Due to its use of a native library you will need additional setup to allow local testing.
 
-First add a new configuration to your `build.gradle`, just before your `dependencies`:
+Add the following lines to your `dependencies` block:
 
 ```Groovy
-configurations {
-    jnaForTest
-}
-```
-
-Then add the following lines to your `dependencies` block:
-
-```Groovy
-jnaForTest "net.java.dev.jna:jna:5.6.0@jar"
-testImplementation files(configurations.jnaForTest.copyRecursive().files)
 testImplementation "org.mozilla.telemetry:glean-forUnitTests:${project.ext.glean_version}"
 ```
 
