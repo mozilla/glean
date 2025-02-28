@@ -28,6 +28,10 @@ File GLEAN_PING_SCHEMA_PATH = file("$rootDir/glean.1.schema.json")
 ext.allowGleanInternal = true
 ext.gleanNamespace = "mozilla.telemetry.glean"
 
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
+}
+
 android {
     compileSdkVersion rootProject.ext.build.compileSdkVersion
     namespace "mozilla.telemetry.glean"
@@ -94,6 +98,10 @@ android {
             includeAndroidResources = true
         }
     }
+}
+
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
 }
 
 afterEvaluate {
