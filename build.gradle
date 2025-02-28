@@ -120,6 +120,19 @@ subprojects {
 
     // Kotlin settings applicable to all modules.
     afterEvaluate {
+        if (it.hasProperty('android')) {
+            android {
+                buildFeatures {
+                    buildConfig true
+                }
+
+                publishing {
+                    singleVariant('release') {
+                        withSourcesJar()
+                    }
+                }
+            }
+        }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
         }
