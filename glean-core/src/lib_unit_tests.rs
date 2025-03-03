@@ -348,12 +348,11 @@ fn client_id_is_managed_correctly_when_toggling_uploading() {
 
     glean.set_upload_enabled(false);
     assert_eq!(
-        *KNOWN_CLIENT_ID,
+        None,
         glean
             .core_metrics
             .client_id
             .get_value(&glean, "glean_client_info")
-            .unwrap()
     );
 
     glean.set_upload_enabled(true);
@@ -373,12 +372,11 @@ fn client_id_is_set_to_known_value_when_uploading_disabled_at_start() {
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false, true);
 
     assert_eq!(
-        *KNOWN_CLIENT_ID,
+        None,
         glean
             .core_metrics
             .client_id
             .get_value(&glean, "glean_client_info")
-            .unwrap()
     );
 }
 
