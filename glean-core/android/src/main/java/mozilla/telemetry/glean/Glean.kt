@@ -147,6 +147,10 @@ open class GleanInternalAPI internal constructor() {
 
     internal var isCustomDataPath: Boolean = false
 
+    init {
+        gleanEnableLogging()
+    }
+
     /**
      * Initialize the Glean SDK.
      *
@@ -179,8 +183,6 @@ open class GleanInternalAPI internal constructor() {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo,
     ) {
-        gleanEnableLogging()
-
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
             //   1. The database path provided is not `glean_data`.
