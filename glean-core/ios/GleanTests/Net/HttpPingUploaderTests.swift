@@ -113,4 +113,28 @@ class HttpPingUploaderTests: XCTestCase {
             "Request header set correctly"
         )
     }
+
+    // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
+    // Once we do support capabilities, this test will need to be removed or changed to test
+    // what is supported.
+    func testUploaderReturnsIncapableWhenRequestHasCapabilities() {
+        let testOhttpRequest = PingRequest(
+            documentId: "12345",
+            path: "/some/random/path/not/important",
+            body: [UInt8]("{ \"ping\": \"test\" }".utf8),
+            headers: [:],
+            bodyHasInfoSections: true,
+            pingName: "testPing",
+            uploaderCapabilities: ["ohttp", "os2/warp", "sega-genesis"]
+        )
+        let httpPingUploader = self.getUploader()
+        httpPingUploader.upload(request: testOhttpRequest) { result in
+            XCTAssertEqual(
+                .incapable(unused: 0),
+                result,
+                "upload should return .incapable when capabilities don't match"
+            )
+        }
+    }
 }
