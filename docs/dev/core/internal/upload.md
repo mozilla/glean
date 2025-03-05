@@ -4,10 +4,19 @@ The `glean-core` Rust crate does not handle the ping upload directly.
 Network stacks vastly differ between platforms, applications and operating systems.
 The Glean SDK leverages the available platform capabilities to implement any network communication.
 
-Glean core controls all upload and coordinates the platform side with its own internals.
+`glean-core` controls all upload and coordinates the platform side with its own internals.
 All language bindings implement ping uploading around a common API and protocol.
 
 ## The upload module in the language bindings
+
+{{#include ../../../shared/blockquote-info.html}}
+
+## Note
+
+> This section is outdated.
+> Most of the languages have now diverged, due to the many iterations, from this design.
+> For example, in Kotlin, the [`BaseUploader` is mostly empty](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/net/BaseUploader.kt) and its functionalities are spread in the [`PingUploadWorker`](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/scheduler/PingUploadWorker.kt).
+
 
 ```mermaid
 classDiagram
@@ -24,6 +33,17 @@ classDiagram
     class RecoverableFailure {
     }
 
+    class Incapable {
+    }
+
+    UploadResult <|-- HttpResponse
+    UploadResult <|-- UnrecoverableFailure
+    UploadResult <|-- RecoverableFailure
+    UploadResult <|-- Incapable
+```
+
+```mermaid
+classDiagram
     class PingUploader {
         <<interface>>
         +Upload() UploadResult
@@ -39,9 +59,6 @@ classDiagram
         +Upload() UploadResult
     }
 
-    UploadResult <|-- HttpResponse
-    UploadResult <|-- UnrecoverableFailure
-    UploadResult <|-- RecoverableFailure
     PingUploader <|-- HttpUploader
     PingUploader o-- BaseUploader
 
@@ -62,12 +79,10 @@ The `BaseUploader` component is responsible for interfacing with the lower level
 ### `HttpClientUploader`
 The `HttpClientUploader` is the default SDK-provided HTTP uploader. It acts as an adapter between the platform-specific upload library and the Glean upload APIs.
 
-> Note that most of the languages have now diverged, due to the many iterations, from this design. For example, in Kotlin, the [`BaseUploader` is mostly empty](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/net/BaseUploader.kt) and its functionalities are spread in the [`PingUploadWorker`](https://searchfox.org/glean/source/glean-core/android/src/main/java/mozilla/telemetry/glean/scheduler/PingUploadWorker.kt).
-
 ## Upload task API
 
 The following diagram visualizes the communication between Glean core (the Rust crate),
-a Glean language binding (e.g. the Kotlin or Swift implementation) and a Glean end point server.
+a Glean language binding (e.g. the Kotlin or Swift implementation) and a Glean endpoint server.
 
 ```mermaid
 sequenceDiagram
@@ -85,6 +100,26 @@ sequenceDiagram
 ```
 
 Glean core will take care of file management, cleanup, rescheduling and rate limiting[^1].
+
+A `PingRequest` encapsulates everything to construct a request to be send to the Glean endpoint server.
+
+```mermaid
+classDiagram
+class PingRequest {
+    string document_id
+    string path
+    sequence<u8> body
+    record<string> headers
+    boolean body_has_info_sections
+    string ping_name
+    sequence<string> uploader_capabilities
+}
+```
+
+* The final URL **SHOULD** be constructed by concatenating the configured server endpoint with the `path`.
+* `headers` is a map from header key to header value. An uploader **MUST** send those as HTTP headers.
+* `uploader_capabilities` is a list of requested capabilities for the given ping. An uploader **MUST** be able to fulfill all requested capabilities. Otherwise the request **MUST** be rejected with `Incapable`
+* The other fields **MAY** be used by an uploader to determine how to handle the request.
 
 [^1]: Rate limiting is achieved by limiting the amount of times a language binding is allowed to get a `Task::Upload(PingRequest)` from `get_upload_task` in a given time interval. Currently, the default limit is for a maximum of 15 upload tasks every 60 seconds and there are no exposed methods that allow changing this default (follow [Bug 1647630](https://bugzilla.mozilla.org/show_bug.cgi?id=1647630) for updates). If the caller has reached the maximum tasks for the current interval, they will get a `Task::Wait` regardless if there are other `Task::Upload(PingRequest)`s queued.
 
