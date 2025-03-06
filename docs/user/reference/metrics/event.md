@@ -8,7 +8,9 @@ Each event contains the following data:
 - A timestamp, in milliseconds. The first event in any ping always has a value of `0`, and subsequent event timestamps are relative to it.
   - If sending events in custom pings, see [note](../../user/pings/custom.md#the-gleanrestarted-event) on event timestamp calculation throughout restarts.
 - The name of the event.
-- A set of key-value pairs, where the keys are predefined in the `extra_keys` metric parameter. Values are one of `string`, `boolean`, `quantity`, and are converted to `string` for transmission.
+- Optionally, event metrics may also define and include a set of key-value pairs to record additional important context data.
+  - The keys are predefined in the `extra_keys` metric parameter. Values are one of `string`, `boolean`, or `quantity` type and are converted to `string` for transmission.
+  - Both the extras as a whole as well as individual keys are treated as optional by Glean and are not required for every event recording.
 
 {{#include ../../../shared/blockquote-info.html}}
 
@@ -21,7 +23,7 @@ Each event contains the following data:
 
 ### `record(object)`
 
-Record a new event, with optional typed extra values.
+Record a new event, and *optionally* supply any typed event extra values.
 See [Extra metrics parameters](#extra-metric-parameters).
 
 {{#include ../../../shared/tab_header.md}}
@@ -376,21 +378,15 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 #### `extra_keys`
 
-The acceptable keys on the "extra" object sent with events.
-A maximum of 50 extra keys is allowed.
+Use this parameter to define the optional event extra keys which are allowed to be recorded with the event.
 
-Each extra key contains additional metadata:
+Each extra key contains additional metadata along with it:
 
 - `description`: **Required.** A description of the key.
 * `type`: The type of value this extra key can hold. One of `string`, `boolean`, `quantity`. Defaults to `string`. Recorded value is converted to string for transmission.
   **Note**: If not specified only the legacy API on `record` is available.
 
 {{#include ../../../shared/blockquote-info.html}}
-
-#### Extras or string metrics?
-
-> When designing your metrics, define properties that are slow-changing and common across all events in a given ping as string metrics.
-> Properties specific to a single event or a subset of events should be defined as event extras.
 
 ## Data questions
 
@@ -399,7 +395,7 @@ Each extra key contains additional metadata:
 ## Limits
 
 * In Glean.js the default value for `maxEvents` is 1. In all other SDKs it is 500.
-* Once the `maxEvents` threshold is reached on the client an "events" ping is immediately sent.
+* Once the `maxEvents` threshold is reached on the client an "events" ping is immediately sent. 
 * The `extra_keys` allows for a maximum of 50 keys.
 * The keys in the `extra_keys` list must be written using printable ASCII characters,
   with a maximum length of 40 bytes, when encoded as UTF-8.
