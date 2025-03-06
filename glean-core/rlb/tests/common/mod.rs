@@ -105,4 +105,24 @@ impl PingBuilder {
         self.uploader_capabilities = value;
         self
     }
+
+    pub fn with_include_info_sections(mut self, value: bool) -> Self {
+        self.include_info_sections = value;
+        self
+    }
+
+    pub fn with_enabled(mut self, value: bool) -> Self {
+        self.enabled = value;
+        self
+    }
+
+    pub fn with_follows_collection_enabled(mut self, value: bool) -> Self {
+        self.follows_collection_enabled = value;
+        self
+    }
+
+    pub fn with_include_client_id(mut self, value: bool) -> Self {
+        self.include_client_id = value;
+        self
+    }
 }
