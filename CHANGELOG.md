@@ -8,6 +8,7 @@
 * Android
    * Updated Gradle to 8.13 ([#3074](https://github.com/mozilla/glean/pull/3080))
    * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated Kotlin to version 2.1.10 ([#3074](https://github.com/mozilla/glean/pull/3080))
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
