@@ -682,7 +682,7 @@ fn basic_metrics_should_be_cleared_when_disabling_uploading() {
 }
 
 #[test]
-fn core_metrics_arenot_cleared_when_disabling_and_enabling_uploading() {
+fn core_metrics_are_not_cleared_when_disabling_and_enabling_uploading() {
     let _lock = lock_test();
 
     let dir = tempfile::tempdir().unwrap();

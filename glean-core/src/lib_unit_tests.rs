@@ -368,7 +368,7 @@ fn client_id_is_managed_correctly_when_toggling_uploading() {
 }
 
 #[test]
-fn client_id_is_not_when_uploading_disabled_at_start() {
+fn client_id_is_not_set_when_uploading_disabled_at_start() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, false, true);
