@@ -277,7 +277,7 @@ impl Glean {
             // instantiate the core metrics.
             glean.on_upload_enabled();
         } else {
-            // If upload is disabled clear metrics,
+            // If upload is disabled, then clear the metrics
             // but do not send a deletion request ping.
             // If we have run before, and we have an old client_id,
             // do the full upload disabled operations to clear metrics
