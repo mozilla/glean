@@ -16,10 +16,10 @@ kotlin {
 }
 
 android {
-    namespace "mozilla.telemetry.glean_native"
+    namespace = "mozilla.telemetry.glean_native"
 
-    ndkVersion rootProject.ext.build.ndkVersion
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
+    ndkVersion = rootProject.ext.build.ndkVersion
+    compileSdkVersion = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.build['minSdkVersion']
@@ -160,7 +160,7 @@ afterEvaluate {
             forUnitTests(MavenPublication) {
                 artifact tasks['packageLibsForTest']
                 artifact file("${rootProject.projectDir}/DEPENDENCIES.md"), {
-                    extension "LICENSES.md"
+                    extension = "LICENSES.md"
                 }
                 pom {
                     groupId = rootProject.ext.library.groupId
