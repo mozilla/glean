@@ -8,9 +8,9 @@
 
 buildscript {
     ext.build = [
-        ndkVersion: "26.2.11394342", // Keep it in sync in TC Dockerfile.
-        compileSdkVersion: 34,
-        targetSdkVersion: 34,
+        ndkVersion: "28.0.13004108", // Keep it in sync in TC Dockerfile.
+        compileSdkVersion: 35,
+        targetSdkVersion: 35,
         minSdkVersion: 21,
         jvmTargetCompatibility: 17,
     ]
