@@ -7,6 +7,7 @@
   * BREAKING CHANGE: Glean won't clear `client_info` fields when collection gets disabled. The `client_id` will still be cleared. ([#3068](https://github.com/mozilla/glean/pull/3068))
 * Android
    * Updated Gradle to 8.13 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
