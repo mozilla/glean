@@ -1307,31 +1307,19 @@ mod ffi {
 
     type CowString = Cow<'static, str>;
 
-    impl UniffiCustomTypeConverter for CowString {
-        type Builtin = String;
-
-        fn into_custom(val: Self::Builtin) -> uniffi::Result<Self> {
-            Ok(Cow::from(val))
-        }
-
-        fn from_custom(obj: Self) -> Self::Builtin {
-            obj.into_owned()
-        }
-    }
+    uniffi::custom_type!(CowString, String, {
+        remote,
+        lower: |s| s.into_owned(),
+        try_lift: |s| Ok(Cow::from(s))
+    });
 
     type JsonValue = serde_json::Value;
 
-    impl UniffiCustomTypeConverter for JsonValue {
-        type Builtin = String;
-
-        fn into_custom(val: Self::Builtin) -> uniffi::Result<Self> {
-            Ok(serde_json::from_str(&val)?)
-        }
-
-        fn from_custom(obj: Self) -> Self::Builtin {
-            serde_json::to_string(&obj).unwrap()
-        }
-    }
+    uniffi::custom_type!(JsonValue, String, {
+        remote,
+        lower: |s| serde_json::to_string(&s).unwrap(),
+        try_lift: |s| Ok(serde_json::from_str(&s)?)
+    });
 }
 pub use ffi::*;
 
