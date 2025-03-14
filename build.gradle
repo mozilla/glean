@@ -131,6 +131,10 @@ subprojects {
                         withSourcesJar()
                     }
                 }
+
+                lint {
+                    baseline = file("lint-baseline.xml")
+                }
             }
         }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
