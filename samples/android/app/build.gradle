@@ -15,7 +15,7 @@ kotlin {
 }
 
 android {
-    namespace "org.mozilla.samples.gleancore"
+    namespace = "org.mozilla.samples.gleancore"
     compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
@@ -38,8 +38,8 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
 }
 

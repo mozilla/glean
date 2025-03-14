@@ -19,7 +19,7 @@ buildscript {
         google()
         mavenCentral()
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url = "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
@@ -46,7 +46,7 @@ allprojects {
         google()
         mavenCentral()
         maven {
-            url "https://maven.mozilla.org/maven2"
+            url = "https://maven.mozilla.org/maven2"
         }
     }
 }
@@ -123,7 +123,7 @@ subprojects {
         if (it.hasProperty('android')) {
             android {
                 buildFeatures {
-                    buildConfig true
+                    buildConfig = true
                 }
 
                 publishing {
