@@ -10,6 +10,7 @@
    * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
    * Updated Kotlin to version 2.1.10 ([#3074](https://github.com/mozilla/glean/pull/3080))
    * Updated Android Gradle Plugin to 8.8.2 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated JNA to version 5.17.0 ([#3081](https://github.com/mozilla/glean/pull/3081))
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
