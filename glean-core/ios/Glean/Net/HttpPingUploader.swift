@@ -28,6 +28,7 @@ func startUploader() {
 public class HttpPingUploader {
     var config: Configuration
     var session: URLSession
+    var capabilities: [String] = []
 
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
@@ -92,16 +93,23 @@ public class HttpPingUploader {
     /// Synchronously upload a ping to Mozilla servers.
     ///
     /// - parameters:
-    ///     * path: The URL path to append to the server address
-    ///     * data: The serialized text data to send
-    ///     * headers: Map of headers from Glean to annotate ping with
+    ///     * request: A `PingRequest` containing the information needed to perform the upload
     ///     * callback: A callback to return the success/failure of the upload
-    func upload(path: String, data: Data, headers: [String: String], callback: @escaping (UploadResult) -> Void) {
+    func upload(request: PingRequest, callback: @escaping (UploadResult) -> Void) {
+        // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
+        guard request.uploaderCapabilities.isEmpty else {
+            logger.info("Glean rejected ping \(request.pingName) upload due to unsupported capabilities")
+            callback(.incapable(unused: 0))
+            return
+        }
         // Build the request and create upload operation using a URLSession
-        if let request = self.buildRequest(path: path, data: data, headers: headers) {
+        var body = Data(capacity: request.body.count)
+        body.append(contentsOf: request.body)
+        if let request = self.buildRequest(path: request.path, data: body, headers: request.headers) {
             // Create an URLSessionUploadTask to upload our ping and handle the
             // server responses.
-            let uploadTask = session.uploadTask(with: request, from: data) { _, response, error in
+            let uploadTask = session.uploadTask(with: request, from: body) { _, response, error in
 
                 if let httpResponse = response as? HTTPURLResponse {
                     let statusCode = Int32(httpResponse.statusCode)
@@ -177,7 +185,7 @@ public class HttpPingUploader {
             case let .upload(request):
                 var body = Data(capacity: request.body.count)
                 body.append(contentsOf: request.body)
-                self.upload(path: request.path, data: body, headers: request.headers) { result in
+                self.upload(request: request) { result in
                     if gleanProcessPingUploadResponse(request.documentId, result) == .end {
                         return
                     }

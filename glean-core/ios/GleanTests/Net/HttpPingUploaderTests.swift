@@ -10,9 +10,18 @@ class HttpPingUploaderTests: XCTestCase {
     var expectation: XCTestExpectation?
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
+    private let testRequest = PingRequest(
+        documentId: "12345",
+        path: "/some/random/path/not/important",
+        body: [UInt8]("{ \"ping\": \"test\" }".utf8),
+        headers: [:],
+        bodyHasInfoSections: true,
+        pingName: "testPing",
+        uploaderCapabilities: []
+    )
 
     override func setUp() {
-        resetGleanDiscardingInitialPings(testCase: self, tag: "EventMetricTypeTests", clearStores: true)
+        resetGleanDiscardingInitialPings(testCase: self, tag: "HttpPingUploaderTests", clearStores: true)
     }
 
     override func tearDown() {
@@ -31,7 +40,7 @@ class HttpPingUploaderTests: XCTestCase {
         config.urlCache = nil
         let session = URLSession(configuration: config)
         return HttpPingUploader.init(configuration: Configuration(), session: session)
-}
+    }
 
     func testHTTPStatusCode() {
         // We are explicitly setting the test mode to true here to force the uploader to not
@@ -47,7 +56,7 @@ class HttpPingUploaderTests: XCTestCase {
         // Build a URLSession with no-caching suitable for uploading our pings
 
         let httpPingUploader = self.getUploader()
-        httpPingUploader.upload(path: self.testPath, data: Data(self.testPing.utf8), headers: [:]) { result in
+        httpPingUploader.upload(request: testRequest) { result in
             testValue = result
             self.expectation?.fulfill()
         }
@@ -103,5 +112,29 @@ class HttpPingUploaderTests: XCTestCase {
             "Glean",
             "Request header set correctly"
         )
+    }
+
+    // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
+    // Once we do support capabilities, this test will need to be removed or changed to test
+    // what is supported.
+    func testUploaderReturnsIncapableWhenRequestHasCapabilities() {
+        let testOhttpRequest = PingRequest(
+            documentId: "12345",
+            path: "/some/random/path/not/important",
+            body: [UInt8]("{ \"ping\": \"test\" }".utf8),
+            headers: [:],
+            bodyHasInfoSections: true,
+            pingName: "testPing",
+            uploaderCapabilities: ["ohttp", "os2/warp", "sega-genesis"]
+        )
+        let httpPingUploader = self.getUploader()
+        httpPingUploader.upload(request: testOhttpRequest) { result in
+            XCTAssertEqual(
+                .incapable(unused: 0),
+                result,
+                "upload should return .incapable when capabilities don't match"
+            )
+        }
     }
 }

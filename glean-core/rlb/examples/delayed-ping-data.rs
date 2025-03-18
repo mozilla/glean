@@ -42,7 +42,8 @@ impl MovingUploader {
 }
 
 impl net::PingUploader for MovingUploader {
-    fn upload(&self, upload_request: net::PingUploadRequest) -> net::UploadResult {
+    fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+        let upload_request = upload_request.capable(|_| true).unwrap();
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;
@@ -85,6 +86,7 @@ pub static PrototypePing: Lazy<PingType> = Lazy::new(|| {
         vec![],
         vec![],
         true,
+        vec![],
     )
 });
 

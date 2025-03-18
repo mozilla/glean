@@ -1,6 +1,22 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.0...main)
+
+# v64.0.0 (2025-03-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...v64.0.0)
+
+* General
+  * BREAKING CHANGE: Pings now pass required uploader capabilities during upload ([bug 1920732](https://bugzilla.mozilla.org/show_bug.cgi?id=1920732))
+  * BREAKING CHANGE: Glean won't clear `client_info` fields when collection gets disabled. The `client_id` will still be cleared. ([#3068](https://github.com/mozilla/glean/pull/3068))
+* Android
+   * Updated Gradle to 8.13 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated Kotlin to version 2.1.10 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated Android Gradle Plugin to 8.8.2 ([#3074](https://github.com/mozilla/glean/pull/3080))
+   * Updated JNA to version 5.17.0 ([#3081](https://github.com/mozilla/glean/pull/3081))
+* Rust
+  * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
 # v63.1.0 (2025-01-30)
 

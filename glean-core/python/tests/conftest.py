@@ -41,6 +41,7 @@ def pytest_runtest_setup(item):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
     PingType(
         name="store2",
@@ -50,6 +51,7 @@ def pytest_runtest_setup(item):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
     PingType(
         name="store3",
@@ -59,6 +61,7 @@ def pytest_runtest_setup(item):
         include_info_sections=True,
         schedules_pings=[],
         reason_codes=[],
+        uploader_capabilities=[],
     )
     testing.reset_glean(application_id="glean-python-test", application_version=glean_version)
 

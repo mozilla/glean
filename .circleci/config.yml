@@ -92,7 +92,7 @@ commands:
       - run:
           name: Test
           command: |
-            cargo nextest run --profile ci
+            cargo nextest run --workspace --profile ci
       - run:
           name: Fix junit output
           command: |
@@ -146,8 +146,8 @@ commands:
           name: Install missing Android SDK & NDK
           command: |
             sdkmanager \
-              "build-tools;34.0.0" \
-              "ndk;26.2.11394342"
+              "build-tools;35.0.0" \
+              "ndk;28.0.13004108"
 
   android-setup:
     steps:
@@ -449,7 +449,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2024.01.1-browsers
+      - image: cimg/android:2025.03.1-browsers
     steps:
       - checkout
       - android-setup
@@ -459,7 +459,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2024.01.1-browsers
+      - image: cimg/android:2025.03.1-browsers
     steps:
       - checkout
       - skip-if-doc-only

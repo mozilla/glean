@@ -6,14 +6,14 @@
 A base class for ping uploaders.
 """
 
-from typing import Union, Dict, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING
 
 
 from .ping_uploader import PingUploader, UploadResult
 
 
 if TYPE_CHECKING:
-    from glean.config import Configuration
+    from .ping_upload_worker import CapablePingUploadRequest
 
 
 class BaseUploader(PingUploader):
@@ -24,15 +24,13 @@ class BaseUploader(PingUploader):
 
     def do_upload(
         self,
-        path: str,
-        data: bytes,
-        headers: Dict[str, str],
-        config: "Configuration",
+        capable_request: "CapablePingUploadRequest",
     ) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
         UploadResult.HTTP_STATUS,
+        UploadResult.INCAPABLE,
     ]:
         """
         This function triggers the actual upload.
@@ -40,20 +38,13 @@ class BaseUploader(PingUploader):
         It logs the ping and calls the implementation-specific upload function.
 
         Args:
-            url (str): The URL path to upload the data to.
-            data (bytes): The serialized data to send.
-            headers (dict of (str, str)): Dictionary of header entries.
-            config (glean.Configuration): The Glean Configuration object.
+            capable_request (CapablePingUploadRequest): The ping upload request, locked behind a capability check.
 
         Returns:
             result (UploadResult): the status code of the upload response.
         """
 
-        return self.upload(
-            url=config.server_endpoint + path,
-            data=data,
-            headers=headers,
-        )
+        return self.upload(capable_request)
 
 
 __all__ = ["BaseUploader"]

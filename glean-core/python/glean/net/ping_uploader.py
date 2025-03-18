@@ -4,10 +4,10 @@
 
 
 import sys
-from typing import Dict, Union
+from typing import Union
 
 from .._uniffi import UploadResult
-
+from .ping_upload_worker import CapablePingUploadRequest
 
 if sys.version_info >= (3, 8):
     from typing import Protocol
@@ -17,20 +17,19 @@ else:
 
 class PingUploader(Protocol):
     def upload(
-        self, url: str, data: bytes, headers: Dict[str, str]
+        self, capable_request: CapablePingUploadRequest
     ) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
         UploadResult.HTTP_STATUS,
+        UploadResult.INCAPABLE,
     ]:
         """
         Upload a ping to a server.
 
         Args:
-            url (str): The URL path to upload the data to.
-            data (bytes): The serialized data to send.
-            headers (dict of (str, str)): Dictionary of header entries.
+            capable_request (CapablePingUploadRequest): The ping upload request, locked behind a capability check.
 
         Returns:
             result (UploadResult): the status code of the upload response.
@@ -39,6 +38,7 @@ class PingUploader(Protocol):
 
 
 __all__ = [
+    "CapablePingUploadRequest",
     "PingUploader",
     "UploadResult",
 ]

@@ -8,13 +8,18 @@
 import groovy.json.JsonOutput
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
-android {
-    namespace "mozilla.telemetry.glean_native"
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
+}
 
-    ndkVersion rootProject.ext.build.ndkVersion
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
+android {
+    namespace = "mozilla.telemetry.glean_native"
+
+    ndkVersion = rootProject.ext.build.ndkVersion
+    compileSdkVersion = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.build['minSdkVersion']
@@ -35,20 +40,6 @@ android {
 
         withoutLib {
             initWith release
-        }
-    }
-
-    buildFeatures {
-        buildConfig true
-    }
-
-    sourceSets {
-        test.jniLibs.srcDirs += "$buildDir/rustJniLibs/desktop"
-    }
-
-    publishing {
-        singleVariant('release') {
-            withSourcesJar()
         }
     }
 
@@ -82,33 +73,37 @@ cargo {
 }
 
 configurations {
-    // There's an interaction between Gradle's resolution of dependencies with different types
-    // (@jar, @aar) for `implementation` and `testImplementation` and with Android Studio's built-in
-    // JUnit test runner.  The runtime classpath in the built-in JUnit test runner gets the
-    // dependency from the `implementation`, which is type @aar, and therefore the JNA dependency
-    // doesn't provide the JNI dispatch libraries in the correct Java resource directories.  I think
-    // what's happening is that @aar type in `implementation` resolves to the @jar type in
-    // `testImplementation`, and that it wins the dependency resolution battle.
+    // Libraries for unit tests
     //
-    // A workaround is to add a new configuration which depends on the @jar type and to reference
-    // the underlying JAR file directly in `testImplementation`.  This JAR file doesn't resolve to
-    // the @aar type in `implementation`.  This works when invoked via `gradle`, but also sets the
-    // correct runtime classpath when invoked with Android Studio's built-in JUnit test runner.
-    // Success!
-    jnaForTest
+    // This is a JAR file that contains libxul (our renamed libglean_ffi)
+    // and libjnidispatch built for desktop platforms -- i.e. non-Android.
+    // These include linux-x86-64, darwin-x86-64, and darwin-aarch64.
+    // These libraries are needed to run unit tests,
+    // since the AAR packages only contain libraries for Android.
+    //
+    // For libxul, we copy the desktop libs from the
+    // [rust-android-gradle plugin](https://github.com/mozilla/rust-android-gradle), which is
+    // configurable via `local.properties`. The official packages are built in taskcluster include
+    // `linux-x86-64` and `darwin-x86-64` and the list is controlled by
+    // taskcluster/kinds/module-build/kind.yml
+    //
+    // For libjnidispatch, we include all libraries included in the official JAR file.
+    consumable("forUnitTests")
+    // Stores the JNA jar file
+    jna {
+        canBeConsumed = false
+        canBeResolved = true
+        canBeDeclared = true
+    }
+    // Native Glean library, this is the one compatible with the user's local machine.  We use it
+    // to run uniffi-bindgen against.
+    consumable("gleanNative")
 }
 
 dependencies {
-    jnaForTest(libs.jna) {
+    jna(libs.jna) {
         artifact {
-            extension ="jar"
             type = "jar"
-        }
-    }
-    implementation(libs.jna) {
-        artifact {
-            extension ="aar"
-            type = "aar"
         }
     }
 }
@@ -125,10 +120,81 @@ afterEvaluate {
     }
 }
 
-apply from: "$projectDir/publish.gradle"
-// If using jnaForTestConfiguration
-// please also update the corresponding .buildconfig-android.yml
-// `publishedArtifacts` property.
-ext.configurePublish(
-        /* jnaForTestConfiguration= */ configurations.jnaForTest
-)
+// Extract JNI dispatch libraries from the JAR into a directory, so that we can then package them
+// into our own glean-native-desktopLibraries JAR.
+def extractLibJniDispatch = tasks.register("extractLibJniDispatch", Copy) {
+    from zipTree(configurations.jna.singleFile).matching {
+        include "**/libjnidispatch.*"
+    }
+    into layout.buildDirectory.dir("libjnidispatch").get()
+}
+
+def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
+    archiveBaseName = "glean-native-forUnitTests"
+
+    from extractLibJniDispatch
+    from layout.buildDirectory.dir("rustJniLibs/desktop")
+    dependsOn tasks["cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}"]
+}
+
+def copyGleanNative = tasks.register("copyGleanNative", Copy) {
+    from layout.buildDirectory.dir("rustJniLibs/desktop")
+    into layout.buildDirectory.dir("gleanNative")
+}
+
+artifacts {
+    // Connect task output to configurations
+    forUnitTests(packageLibsForTest)
+    gleanNative(copyGleanNative)
+}
+
+apply from: "$rootDir/publish.gradle"
+ext.configurePublish()
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Publish a second package named `glean-native-forUnitTests` to Maven with the
+            // `forUnitTests` output.  This contains the same content as our `forUnitTests`
+            // configuration. Publishing it allows the android-components code to depend on it.
+            forUnitTests(MavenPublication) {
+                artifact tasks['packageLibsForTest']
+                artifact file("${rootProject.projectDir}/DEPENDENCIES.md"), {
+                    extension = "LICENSES.md"
+                }
+                pom {
+                    groupId = rootProject.ext.library.groupId
+                    artifactId = "${project.ext.artifactId}-forUnitTests"
+                    description = project.ext.description
+                    // For mavenLocal publishing workflow, increment the version number every publish.
+                    version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
+                    packaging = "jar"
+
+                    licenses {
+                        license {
+                            name = libLicense
+                            url = libLicenseUrl
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Sync Team'
+                            email = 'sync-team@mozilla.com'
+                        }
+                    }
+
+                    scm {
+                        connection = libVcsUrl
+                        developerConnection = libVcsUrl
+                        url = libUrl
+                    }
+                }
+
+                // This is never the publication we want to use when publishing a
+                // parent project with us as a child `project()` dependency.
+                alias = true
+            }
+        }
+    }
+}

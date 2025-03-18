@@ -9,15 +9,13 @@ def libProjectName = properties.libProjectName
 def libUrl = properties.libUrl
 def libVcsUrl = properties.libVcsUrl
 
-// The note to be added at the end of the description for 'forUnitTests'
-// artifacts.
-def forUnitTestDescriptionSuffix =
-        "This artifact is to be used for running unit tests on developer's systems."
-
 ext.configurePublish = {
     def theGroupId = rootProject.ext.library.groupId
     def theArtifactId = project.ext.artifactId
     def theDescription = project.ext.description
+
+    // This is a little cludgey, but it seems unlikely to cause a problem
+    def isNative = theArtifactId.endsWith("-native")
 
     publishing {
         publications {
@@ -38,11 +36,9 @@ ext.configurePublish = {
                     version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
                     packaging = "aar"
 
-                    licenses {
-                        license {
-                            name = libLicense
-                            url = libLicenseUrl
-                        }
+                    license {
+                        name = libLicense
+                        url = libLicenseUrl
                     }
 
                     def depLicenses = new XmlSlurper().parse(new File("${projectDir}/dependency-licenses.xml"))
@@ -72,4 +68,13 @@ ext.configurePublish = {
     }
 
     task checkMavenArtifacts
+
+        if (isNative) {
+        publishing.publications.withType(MavenPublication).each {publication ->
+            def checkFileTask = task "checkFilesForMavenArtifact-${publication.artifactId}"(type: Exec) {
+                commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.buildDir, publication.artifactId
+            }
+            checkMavenArtifacts.dependsOn(checkFileTask)
+        }
+    }
 }

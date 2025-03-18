@@ -10,12 +10,12 @@ module.
 import http.client
 import logging
 import socket
-from typing import Dict, Union
+from typing import Union
 import urllib.parse
 
 
 from . import base_uploader
-from .ping_uploader import UploadResult
+from .ping_uploader import CapablePingUploadRequest, UploadResult
 
 
 log = logging.getLogger("glean")
@@ -27,21 +27,29 @@ class HttpClientUploader(base_uploader.BaseUploader):
 
     @classmethod
     def upload(
-        cls, url: str, data: bytes, headers: Dict[str, str]
+        cls, capable_request: CapablePingUploadRequest
     ) -> Union[
         UploadResult,
         UploadResult.UNRECOVERABLE_FAILURE,
         UploadResult.RECOVERABLE_FAILURE,
         UploadResult.HTTP_STATUS,
+        UploadResult.INCAPABLE,
     ]:
         """
         Synchronously upload a ping to a server.
 
         Args:
-            url (str): The URL path to upload the data to.
-            data (str): The serialized text data to send.
-            headers (dict of (str, str)): HTTP headers to send.
+            capable_request (CapablePingUploadRequest): The ping upload request, locked behind a capability check.
         """
+        # This uploader has no special capabilities.
+        request = capable_request.capable(lambda capabilities: len(capabilities) == 0)
+        if request is None:
+            return UploadResult.INCAPABLE(0)
+
+        url = request.url
+        data = request.body
+        headers = request.headers
+
         parsed_url = urllib.parse.urlparse(url)
         if parsed_url.scheme == "http":
             conn = http.client.HTTPConnection(

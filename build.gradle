@@ -8,9 +8,9 @@
 
 buildscript {
     ext.build = [
-        ndkVersion: "26.2.11394342", // Keep it in sync in TC Dockerfile.
-        compileSdkVersion: 34,
-        targetSdkVersion: 34,
+        ndkVersion: "28.0.13004108", // Keep it in sync in TC Dockerfile.
+        compileSdkVersion: 35,
+        targetSdkVersion: 35,
         minSdkVersion: 21,
         jvmTargetCompatibility: 17,
     ]
@@ -19,7 +19,7 @@ buildscript {
         google()
         mavenCentral()
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url = "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
@@ -46,7 +46,7 @@ allprojects {
         google()
         mavenCentral()
         maven {
-            url "https://maven.mozilla.org/maven2"
+            url = "https://maven.mozilla.org/maven2"
         }
     }
 }
@@ -122,17 +122,23 @@ subprojects {
     afterEvaluate {
         if (it.hasProperty('android')) {
             android {
-                // This shouldn't be needed anymore with AGP 8.1.0+
-                // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-                compileOptions {
-                    sourceCompatibility rootProject.ext.build.jvmTargetCompatibility
-                    targetCompatibility rootProject.ext.build.jvmTargetCompatibility
+                buildFeatures {
+                    buildConfig = true
+                }
+
+                publishing {
+                    singleVariant('release') {
+                        withSourcesJar()
+                    }
+                }
+
+                lint {
+                    baseline = file("lint-baseline.xml")
                 }
             }
         }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
-            kotlin.jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
         }
     }
 
