@@ -425,7 +425,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.80
+      - image: cimg/rust:1.81
     steps:
       - checkout
       - run:
@@ -436,7 +436,6 @@ jobs:
 
             # Publish all crates from CI.
             # The token is set in CircleCI settings.
-            # Need some sleep inbetween to ensure crates.io is updated.
 
             pushd glean-core
             cargo publish --verbose
