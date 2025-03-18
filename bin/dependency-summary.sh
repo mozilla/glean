@@ -11,7 +11,7 @@
 
 set -eo pipefail
 
-CARGO_ABOUT_MIN_VERSION="0.6.0"
+CARGO_ABOUT_MIN_VERSION="0.7.0"
 
 WORKSPACE_ROOT="$( cd "$(dirname "$0")/.." ; pwd -P )"
 
