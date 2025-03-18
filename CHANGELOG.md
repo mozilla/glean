@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.0...main)
+
+# v64.0.0 (2025-03-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...v64.0.0)
 
 * General
   * BREAKING CHANGE: Pings now pass required uploader capabilities during upload ([bug 1920732](https://bugzilla.mozilla.org/show_bug.cgi?id=1920732))
