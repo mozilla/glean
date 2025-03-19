@@ -4,7 +4,7 @@ This is a brief overview of how GeckoView content processes record data in Glean
 
 ### GeckoView Content Processes
 
-These are processes in which web page's content is rendered and collect data such as [use counters](https://firefox-source-docs.mozilla.org/dom/use-counters.html).
+These are processes in which web page's content is rendered and data is collected such as [use counters](https://firefox-source-docs.mozilla.org/dom/use-counters.html).
 
 Content processes are [launched as a "child" of the main GeckoView UI process](https://firefox-source-docs.mozilla.org/dom/ipc/process_model.html).
 
