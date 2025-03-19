@@ -99,6 +99,7 @@
     - [Android build configuration options](language-bindings/android/android-build-configuration-options.md)
     - [Android offline builds](language-bindings/android/android-offline-builds.md)
     - [Instrumenting Android crashes with Glean](language-bindings/android/instrument-android-crashes-example.md)
+    - [GeckoView Content Processes and Glean](language-bindings/android/gecko-content-processes-and-glean.md)
 - [iOS](language-bindings/ios/index.md)
     - [iOS build configuration options](language-bindings/ios/ios-build-configuration-options.md)
 - [JavaScript](language-bindings/javascript/index.md)
