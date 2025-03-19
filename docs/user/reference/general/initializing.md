@@ -132,6 +132,8 @@ Requirements for a non-main process:
 
 **Note**: When initializing from a non-main process with a specified `dataPath`, the lifecycle observers will not be set up. This means you will not receive otherwise scheduled [baseline](../../user/pings/baseline.md) or [metrics](../../user/pings/metrics.md) pings.
 
+**Note**: GeckoView content processes on Android work a little differently and use [IPC to ensure the Glean API is only called from the main process](../../language-bindings/android/gecko-content-processes-and-glean.md).
+
 ### Consuming Glean through Android Components
 
 When the Glean Kotlin SDK is consumed through Android Components,

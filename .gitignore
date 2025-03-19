@@ -55,3 +55,5 @@ __pycache__
 # UniFFI generated code
 glean-core/uniffi/src/glean_core.uniffi.rs
 glean-core/uniffi/src/uniffi
+
+*.swp
