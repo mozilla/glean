@@ -86,7 +86,7 @@ To learn about SDK specific configuration options available, refer to the [Refer
 >
 > Always pass the user preference, e.g. `Glean.initialize(uploadEnabled=userSettings.telemetryEnabled)` or the equivalent for your application.
 >
-> Calling `Glean.setUploadEnabled(false)` at a later point will trigger [`deletion-request` pings](../../user/pings/deletion-request.md) and regenerate client IDs.
+> Calling `Glean.setCollectionEnabled(false)` at a later point will trigger [`deletion-request` pings](../../user/pings/deletion-request.md) and regenerate client IDs.
 > This should only be done if the user preference actually changes.
 
 {{#include ../../../shared/tab_header.md}}
