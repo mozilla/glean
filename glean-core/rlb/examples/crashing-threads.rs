@@ -45,7 +45,7 @@ mod unix {
         f: extern "C" fn(*mut c_void) -> *mut c_void,
         value: *mut c_void,
     ) -> c_int {
-        let name = b"pthread_create\0".as_ptr() as *const i8;
+        let name = c"pthread_create".as_ptr();
         let symbol = libc::dlsym(libc::RTLD_NEXT, name);
         if symbol.is_null() {
             panic!("dlsym failed to load `pthread_create` name. Nothing we can do, we abort.");
