@@ -14,6 +14,9 @@
 * Android
   * Revert changes that tried to fix `StrictMode` violations in Fenix ([bug 1946133](https://bugzilla.mozilla.org/show_bug.cgi?id=1946133))
 
+* General
+  * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
+
 # v64.0.0 (2025-03-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...v64.0.0)
