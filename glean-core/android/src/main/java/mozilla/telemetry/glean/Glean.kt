@@ -737,6 +737,38 @@ open class GleanInternalAPI internal constructor() {
 
         return isMainProcess as Boolean
     }
+
+    /**
+     * Updates attribution fields with new values.
+     * AttributionMetrics fields with `null` values will not overwrite older values.
+     */
+    fun updateAttribution(attribution: AttributionMetrics) {
+        gleanUpdateAttribution(attribution)
+    }
+
+    /**
+     * Test-only method for getting the current attribution metrics.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun testGetAttribution(): AttributionMetrics {
+        return gleanTestGetAttribution()
+    }
+
+    /**
+     * Updates distribution fields with new values.
+     * DistributionMetrics fields with `null` values will not overwrite older values.
+     */
+    fun updateDistribution(distribution: DistributionMetrics) {
+        gleanUpdateDistribution(distribution)
+    }
+
+    /**
+     * Test-only method for getting the current distribution metrics.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun testGetDistribution(): DistributionMetrics {
+        return gleanTestGetDistribution()
+    }
 }
 
 /**
