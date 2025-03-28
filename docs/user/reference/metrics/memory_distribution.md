@@ -116,6 +116,62 @@ Glean.memory.heapAllocated.accumulate(bytes / 1024);
 * [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative memory size.
 * [`invalid_value`](../../user/metrics/error-reporting.md): If recording a size larger than 1 TB.
 
+### `startBuffer`
+
+**Experimental:**
+Start a new histogram buffer associated with this custom distribution metric.
+
+A histogram buffer accumulates in-memory.
+Data is recorded into the metric when committed.
+No data is collected if the buffer is abandoned.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+Data is automatically committed on drop.
+
+```Rust
+use glean_metrics::memory;
+
+let buffer = memory::heap_allocated.start_buffer();
+
+for sample in used_memory.iter() {
+  buffer.accumulate(sample);
+}
+
+// Explicit or implicit drop of `buffer` commits the data.
+drop(buffer);
+```
+
+No data is recorded when the buffer is abandoned.
+
+```Rust
+use glean_metrics::memory;
+
+let buffer = memory::heap_allocated.start_buffer();
+
+for sample in used_memory.iter() {
+  buffer.accumulate(sample);
+}
+
+buffer.abandon(); // No data is recorded.
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Recorded errors
+
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a size larger than 1 TB.
+
 ## Testing API
 
 ### `testGetValue`
