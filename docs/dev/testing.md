@@ -12,6 +12,15 @@ make test
 
 ## Running the Rust tests
 
+For slightly faster Rust test runs and improved output use [`cargo nextest`](https://nexte.st/).  
+The full Rust test suite can be run with the following command:
+
+```
+cargo nextest run --workspace
+```
+
+Alternatively the builtin test runner continues to work.
+
 The Rust tests may be run with the following command:
 
 ```
