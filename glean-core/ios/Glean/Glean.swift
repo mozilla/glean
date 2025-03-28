@@ -583,4 +583,30 @@ public class Glean {
         )
         initialize(uploadEnabled: uploadEnabled, configuration: configuration, buildInfo: buildInfo)
     }
+
+    /// Updates attribution fields with new values.
+    /// AttributionMetrics fields with `null` values will not overwrite older values.
+    public func updateAttribution(attribution: AttributionMetrics) {
+        gleanUpdateAttribution(attribution)
+    }
+
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Returns the current attribution metrics.
+    public func testGetAttribution() -> AttributionMetrics {
+        gleanTestGetAttribution()
+    }
+
+    /// Updates distribution fields with new values.
+    /// DistributionMetrics fields with `null` values will not overwrite older values.
+    public func updateDistribution(distribution: DistributionMetrics) {
+        gleanUpdateDistribution(distribution)
+    }
+
+    /// PUBLIC TEST ONLY FUNCTION.
+    ///
+    /// Returns the current distribution metrics.
+    public func testGetAttribution() -> DistributionMetrics {
+        gleanTestGetDistribution()
+    }
 }

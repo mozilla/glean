@@ -234,7 +234,56 @@ Lifetime: [Application](../../reference/yaml/metrics.md#application)_
 The locale of the application during initialization (e.g. "es-ES").
 If the locale can't be determined on the system, the value is "und", to indicate "undetermined".
 
+#### `attribution.source` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's attribution source (e.g. "google-play").
+Set via the [product attribution API][attribution-api].
+
+#### `attribution.medium` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's attribution medium (e.g. "organic" for a search engine).
+Set via the [product attribution API][attribution-api].
+
+#### `attribution.campaign` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's attribution campaign (e.g. "mozilla-org").
+Set via the [product attribution API][attribution-api].
+
+#### `attribution.term` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's attribution term (e.g. "browser with developer tools for android").
+Set via the [product attribution API][attribution-api].
+
+#### `attribution.content` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's attribution content (e.g. "firefoxview").
+Set via the [product attribution API][attribution-api].
+
+#### `distribution.name` _(optional)_
+
+_Type: [String](../../reference/metrics/string.md),
+Lifetime: [User](../../reference/yaml/metrics.md#user)_
+
+The product's distribution name (e.g. "MozillaOnline").
+Set via the [product distribution API][attribution-api].
+
 [`Build.MODEL`]: https://developer.android.com/reference/android/os/Build.html#MODEL
+[attribution-api]: ../../reference/general/attribution-api.md
 
 ## Ping submission
 

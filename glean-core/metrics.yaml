@@ -396,6 +396,119 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+
+glean.internal.metrics.attribution:
+  source:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional attribution source.
+      Similar to or the same as UTM `source`.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  medium:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional attribution medium.
+      Similar to or the same as UTM `medium`.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  campaign:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional attribution campaign.
+      Similar to or the same as UTM `campaign`.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  term:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional attribution term.
+      Similar to or the same as UTM `term`.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+  content:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional attribution `content`.
+      Similar to or the same as UTM `content`.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+
+glean.internal.metrics.distribution:
+  name:
+    type: string
+    lifetime: user
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The optional distribution name.
+      Can be a partner name, or a distribution configuration preset.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1955428
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
+
 glean.client.annotation:
   experimentation_id:
     type: string

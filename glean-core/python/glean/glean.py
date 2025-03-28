@@ -26,7 +26,7 @@ from . import _util
 # To avoid cyclical imports, but still make mypy type-checking work.
 # See https://mypy.readthedocs.io/en/latest/common_issues.html#import-cycles
 if TYPE_CHECKING:
-    from .metrics import PingType, RecordedExperiment
+    from .metrics import AttributionMetrics, DistributionMetrics, PingType, RecordedExperiment
 
 
 log = logging.getLogger("glean")
@@ -491,6 +491,36 @@ class Glean:
         # On top of the Glean shutdown
         # we also wait for the process dispatcher to finish.
         ProcessDispatcher._wait_for_last_process()
+
+    @classmethod
+    def update_attribution(cls, attribution: "AttributionMetrics") -> None:
+        """
+        Updates attribution fields with new values.
+        AttributionMetrics fields with `None` values will not overwrite older values.
+        """
+        _uniffi.glean_update_attribution(attribution)
+
+    @classmethod
+    def test_get_attribution(cls) -> "AttributionMetrics":
+        """
+        Test-only method for getting the current attribution metrics.
+        """
+        return _uniffi.glean_test_get_attribution()
+
+    @classmethod
+    def update_distribution(cls, distribution: "DistributionMetrics") -> None:
+        """
+        Updates distribution fields with new values.
+        DistributionMetrics fields with `None` values will not overwrite older values.
+        """
+        _uniffi.glean_update_distribution(distribution)
+
+    @classmethod
+    def test_get_distribution(cls) -> "DistributionMetrics":
+        """
+        Test-only method for getting the current distribution metrics.
+        """
+        return _uniffi.glean_test_get_distribution()
 
 
 __all__ = ["Glean"]
