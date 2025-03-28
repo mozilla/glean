@@ -26,6 +26,7 @@ use std::time::Duration;
 
 use crossbeam_channel::unbounded;
 use log::LevelFilter;
+use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
@@ -109,7 +110,7 @@ static INIT_HANDLES: Lazy<Arc<Mutex<Vec<std::thread::JoinHandle<()>>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
 /// Configuration for Glean
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, MallocSizeOf)]
 pub struct InternalConfiguration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
@@ -131,6 +132,8 @@ pub struct InternalConfiguration {
     /// Whether Glean should, on init, trim its event storage to only the registered pings.
     pub trim_data_to_registered_pings: bool,
     /// The internal logging level.
+    /// ignore
+    #[ignore_malloc_size_of = "external non-allocating type"]
     pub log_level: Option<LevelFilter>,
     /// The rate at which pings may be uploaded before they are throttled.
     pub rate_limit: Option<PingRateLimit>,
@@ -154,7 +157,7 @@ pub struct InternalConfiguration {
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, MallocSizeOf)]
 pub struct PingRateLimit {
     /// Length of time in seconds of a ping uploading interval.
     pub seconds_per_interval: u64,

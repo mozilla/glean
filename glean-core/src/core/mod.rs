@@ -9,6 +9,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use chrono::{DateTime, FixedOffset};
+use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 
 use crate::database::Database;
@@ -146,7 +147,7 @@ where
 ///
 /// In specific language bindings, this is usually wrapped in a singleton and all metric recording goes to a single instance of this object.
 /// In the Rust core, it is possible to create multiple instances, which is used in testing.
-#[derive(Debug)]
+#[derive(Debug, MallocSizeOf)]
 pub struct Glean {
     upload_enabled: bool,
     pub(crate) data_store: Option<Database>,
@@ -158,6 +159,7 @@ pub struct Glean {
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap<String, PingType>,
+    #[ignore_malloc_size_of = "external non-allocating type"]
     start_time: DateTime<FixedOffset>,
     max_events: u32,
     is_first_run: bool,
@@ -165,7 +167,9 @@ pub struct Glean {
     debug: DebugOptions,
     pub(crate) app_build: String,
     pub(crate) schedule_metrics_pings: bool,
+    #[ignore_malloc_size_of = "atomic integers never allocate"]
     pub(crate) remote_settings_epoch: AtomicU8,
+    #[ignore_malloc_size_of = "TODO"]
     pub(crate) remote_settings_config: Arc<Mutex<RemoteSettingsConfig>>,
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
