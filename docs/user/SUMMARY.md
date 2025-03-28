@@ -62,6 +62,7 @@
     - [Registering custom pings](reference/general/register-custom-pings.md)
     - [Shut down](reference/general/shutdown.md)
     - [EXPERIMENTAL: Glean Event Listener](reference/general/glean-event-listener.md)
+    - [Reporting Product Attribution and Distribution](reference/general/attribution-api.md)
 - [Debugging](reference/debug/index.md)
     - [Log pings](reference/debug/logPings.md)
     - [Debug View Tag](reference/debug/debugViewTag.md)
