@@ -16,6 +16,7 @@
 
 * General
   * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
+  * Update to `glean_parser` v17.1.0
 
 # v64.0.0 (2025-03-18)
 
