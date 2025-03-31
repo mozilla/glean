@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.PingType as GleanPingType
 
 /**
@@ -58,21 +59,23 @@ class PingType<ReasonCodesEnum> (
     val uploaderCapabilities: List<String>,
 ) where ReasonCodesEnum : Enum<ReasonCodesEnum>, ReasonCodesEnum : ReasonCode {
     private var testCallback: ((ReasonCodesEnum?) -> Unit)? = null
-    private val innerPing: GleanPingType
+    private lateinit var innerPing: GleanPingType
 
     init {
-        this.innerPing = GleanPingType(
-            name = name,
-            includeClientId = includeClientId,
-            sendIfEmpty = sendIfEmpty,
-            preciseTimestamps = preciseTimestamps,
-            includeInfoSections = includeInfoSections,
-            schedulesPings = schedulesPings,
-            reasonCodes = reasonCodes,
-            enabled = enabled,
-            followsCollectionEnabled = followsCollectionEnabled,
-            uploaderCapabilities = uploaderCapabilities,
-        )
+        Dispatchers.Delayed.launch {
+            this.innerPing = GleanPingType(
+                name = name,
+                includeClientId = includeClientId,
+                sendIfEmpty = sendIfEmpty,
+                preciseTimestamps = preciseTimestamps,
+                includeInfoSections = includeInfoSections,
+                schedulesPings = schedulesPings,
+                reasonCodes = reasonCodes,
+                enabled = enabled,
+                followsCollectionEnabled = followsCollectionEnabled,
+                uploaderCapabilities = uploaderCapabilities,
+            )
+        }
     }
 
     /**
@@ -109,8 +112,10 @@ class PingType<ReasonCodesEnum> (
         }
         this.testCallback = null
 
-        val reasonString = reason?.let { this.reasonCodes[it.code()] }
-        this.innerPing.submit(reasonString)
+        Dispatchers.Delayed.launch {
+            val reasonString = reason?.let { this.reasonCodes[it.code()] }
+            this.innerPing.submit(reasonString)
+        }
     }
 
     /**

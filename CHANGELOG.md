@@ -2,9 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...main)
 
-* Android
+* Kotlin
    * Updated Android Gradle Plugin to 8.9.1 ([#3098](https://github.com/mozilla/glean/pull/3098))
    * Updated Kotlin to version 2.1.20 ([#3098](https://github.com/mozilla/glean/pull/3098))
+   * Dispatch ping API on the task queue ([#3101](https://github.com/mozilla/glean/pull/3101))
 
 # v64.0.1 (2025-04-01)
 
