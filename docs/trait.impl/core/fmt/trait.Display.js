@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"glean_core":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.76.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"glean_core/traits/struct.ObjectError.html\" title=\"struct glean_core::traits::ObjectError\">ObjectError</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.76.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"glean_core/struct.Error.html\" title=\"struct glean_core::Error\">Error</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.76.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"enum\" href=\"glean_core/enum.CallbackError.html\" title=\"enum glean_core::CallbackError\">CallbackError</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["glean_core",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.82.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"enum\" href=\"glean_core/enum.CallbackError.html\" title=\"enum glean_core::CallbackError\">CallbackError</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.82.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"glean_core/struct.Error.html\" title=\"struct glean_core::Error\">Error</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.82.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"glean_core/traits/struct.ObjectError.html\" title=\"struct glean_core::traits::ObjectError\">ObjectError</a>"]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[823]}
