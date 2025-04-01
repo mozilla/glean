@@ -4,6 +4,7 @@
 
 * Android
    * Updated Android Gradle Plugin to 8.9.1 ([#3098](https://github.com/mozilla/glean/pull/3098))
+   * Updated Kotlin to version 2.1.20 ([#3098](https://github.com/mozilla/glean/pull/3098))
 
 # v64.0.1 (2025-04-01)
 
