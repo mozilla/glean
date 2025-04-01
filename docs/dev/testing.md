@@ -12,6 +12,15 @@ make test
 
 ## Running the Rust tests
 
+For slightly faster Rust test runs and improved output use [`cargo nextest`](https://nexte.st/).  
+The full Rust test suite can be run with the following command:
+
+```
+cargo nextest run --workspace
+```
+
+Alternatively the builtin test runner continues to work.
+
 The Rust tests may be run with the following command:
 
 ```
@@ -37,6 +46,17 @@ For debugging you can force single-threaded tests:
 ```
 cargo test -- --nocapture --test-threads=1
 ```
+
+You can filter further which tests to run by substring matches.
+
+```
+cargo test -p glean-core --lib -- metrics
+```
+
+This runs all unit tests in the glean-core crate with `metrics` in the name.
+For RLB use `-p glean`.
+For integration tests use `--tests` instead of `--lib`.
+
 
 ## Running the Kotlin/Android tests
 

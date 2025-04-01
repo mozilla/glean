@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...main)
+
+# v64.0.1 (2025-04-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.0...v64.0.1)
+
+* Android
+  * Revert changes that tried to fix `StrictMode` violations in Fenix ([bug 1946133](https://bugzilla.mozilla.org/show_bug.cgi?id=1946133))
 
 # v64.0.0 (2025-03-18)
 
