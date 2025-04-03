@@ -1085,6 +1085,79 @@
 <a href="#1085" id="1085">1085</a>
 <a href="#1086" id="1086">1086</a>
 <a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
+<a href="#1154" id="1154">1154</a>
+<a href="#1155" id="1155">1155</a>
+<a href="#1156" id="1156">1156</a>
+<a href="#1157" id="1157">1157</a>
+<a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
+<a href="#1160" id="1160">1160</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1111,8 +1184,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::upload::{PingUploadManager, PingUploadTask, UploadResult, UploadTaskAction};
 <span class="kw">use </span><span class="kw">crate</span>::util::{local_now_with_offset, sanitize_application_id};
 <span class="kw">use crate</span>::{
-    scheduler, system, CommonMetricData, ErrorKind, InternalConfiguration, Lifetime, PingRateLimit,
-    <span class="prelude-ty">Result</span>, DEFAULT_MAX_EVENTS, GLEAN_SCHEMA_VERSION, GLEAN_VERSION, KNOWN_CLIENT_ID,
+    scheduler, system, AttributionMetrics, CommonMetricData, DistributionMetrics, ErrorKind,
+    InternalConfiguration, Lifetime, PingRateLimit, <span class="prelude-ty">Result</span>, DEFAULT_MAX_EVENTS,
+    GLEAN_SCHEMA_VERSION, GLEAN_VERSION, KNOWN_CLIENT_ID,
 };
 
 <span class="kw">static </span>GLEAN: OnceCell&lt;Mutex&lt;Glean&gt;&gt; = OnceCell::new();
@@ -2169,6 +2243,78 @@
     </span><span class="kw">pub fn </span>start_metrics_ping_scheduler(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.schedule_metrics_pings {
             scheduler::schedule(<span class="self">self</span>);
+        }
+    }
+
+    <span class="doccomment">/// Updates attribution fields with new values.
+    /// AttributionMetrics fields with `None` values will not overwrite older values.
+    </span><span class="kw">pub fn </span>update_attribution(<span class="kw-2">&amp;</span><span class="self">self</span>, attribution: AttributionMetrics) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = attribution.source {
+            <span class="self">self</span>.core_metrics.attribution_source.set_sync(<span class="self">self</span>, source);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(medium) = attribution.medium {
+            <span class="self">self</span>.core_metrics.attribution_medium.set_sync(<span class="self">self</span>, medium);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(campaign) = attribution.campaign {
+            <span class="self">self</span>.core_metrics
+                .attribution_campaign
+                .set_sync(<span class="self">self</span>, campaign);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(term) = attribution.term {
+            <span class="self">self</span>.core_metrics.attribution_term.set_sync(<span class="self">self</span>, term);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(content) = attribution.content {
+            <span class="self">self</span>.core_metrics
+                .attribution_content
+                .set_sync(<span class="self">self</span>, content);
+        }
+    }
+
+    <span class="doccomment">/// **TEST-ONLY Method**
+    ///
+    /// Returns the current attribution metrics.
+    </span><span class="kw">pub fn </span>test_get_attribution(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AttributionMetrics {
+        AttributionMetrics {
+            source: <span class="self">self
+                </span>.core_metrics
+                .attribution_source
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
+            medium: <span class="self">self
+                </span>.core_metrics
+                .attribution_medium
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
+            campaign: <span class="self">self
+                </span>.core_metrics
+                .attribution_campaign
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
+            term: <span class="self">self
+                </span>.core_metrics
+                .attribution_term
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
+            content: <span class="self">self
+                </span>.core_metrics
+                .attribution_content
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
+        }
+    }
+
+    <span class="doccomment">/// Updates distribution fields with new values.
+    /// DistributionMetrics fields with `None` values will not overwrite older values.
+    </span><span class="kw">pub fn </span>update_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>, distribution: DistributionMetrics) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(name) = distribution.name {
+            <span class="self">self</span>.core_metrics.distribution_name.set_sync(<span class="self">self</span>, name);
+        }
+    }
+
+    <span class="doccomment">/// **TEST-ONLY Method**
+    ///
+    /// Returns the current distribution metrics.
+    </span><span class="kw">pub fn </span>test_get_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DistributionMetrics {
+        DistributionMetrics {
+            name: <span class="self">self
+                </span>.core_metrics
+                .distribution_name
+                .get_value(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="string">"glean_client_info"</span>)),
         }
     }
 }

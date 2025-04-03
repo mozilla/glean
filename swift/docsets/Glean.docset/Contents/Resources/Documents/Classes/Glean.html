@@ -190,6 +190,9 @@
                 <a href="../Extensions/Array.html">Array</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Extensions.html#/AttributionMetrics">AttributionMetrics</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Extensions.html#/ClientInfoMetrics">ClientInfoMetrics</a>
               </li>
               <li class="nav-group-task">
@@ -200,6 +203,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/DistributionData">DistributionData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/DistributionMetrics">DistributionMetrics</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/ErrorType">ErrorType</a>
@@ -348,6 +354,12 @@
                 <a href="../Functions.html#/s:5Glean016gleanTestDestroyA0yySb_SSSgtF">gleanTestDestroyGlean(_:_:)</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean23gleanTestGetAttributionAA0E7MetricsVyF">gleanTestGetAttribution()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean24gleanTestGetDistributionAA0E7MetricsVyF">gleanTestGetDistribution()</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Functions.html#/s:5Glean26gleanTestGetExperimentDatayAA08RecordedE0VSgSSF">gleanTestGetExperimentData(_:)</a>
               </li>
               <li class="nav-group-task">
@@ -355,6 +367,12 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Functions.html#/s:5Glean28gleanUnregisterEventListeneryySSF">gleanUnregisterEventListener(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean22gleanUpdateAttributionyyAA0D7MetricsVF">gleanUpdateAttribution(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean23gleanUpdateDistributionyyAA0D7MetricsVF">gleanUpdateDistribution(_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Functions.html#/s:5Glean012uniffiEnsureA15CoreInitializedyyF">uniffiEnsureGleanCoreInitialized()</a>
@@ -451,6 +469,9 @@
             <a href="../Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Structs/AttributionMetrics.html">AttributionMetrics</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/BuildInfo.html">BuildInfo</a>
               </li>
               <li class="nav-group-task">
@@ -467,6 +488,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/DistributionData.html">DistributionData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DistributionMetrics.html">DistributionMetrics</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/InternalConfiguration.html">InternalConfiguration</a>
@@ -1635,6 +1659,120 @@ API synchronously.</p>
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5GleanAAC17updateAttribution11attributionyAA0C7MetricsV_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateAttribution(attribution:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5GleanAAC17updateAttribution11attributionyAA0C7MetricsV_tF">updateAttribution(attribution:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Updates attribution fields with new values.
+AttributionMetrics fields with <code>null</code> values will not overwrite older values.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateAttribution</span><span class="p">(</span><span class="nv">attribution</span><span class="p">:</span> <span class="kt"><a href="../Structs/AttributionMetrics.html">AttributionMetrics</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5GleanAAC18testGetAttributionAA0D7MetricsVyF"></a>
+                    <a name="//apple_ref/swift/Method/testGetAttribution()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5GleanAAC18testGetAttributionAA0D7MetricsVyF">testGetAttribution()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>PUBLIC TEST ONLY FUNCTION.</p>
+
+<p>Returns the current attribution metrics.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">testGetAttribution</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/AttributionMetrics.html">AttributionMetrics</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5GleanAAC18updateDistribution12distributionyAA0C7MetricsV_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateDistribution(distribution:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5GleanAAC18updateDistribution12distributionyAA0C7MetricsV_tF">updateDistribution(distribution:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Updates distribution fields with new values.
+DistributionMetrics fields with <code>null</code> values will not overwrite older values.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateDistribution</span><span class="p">(</span><span class="nv">distribution</span><span class="p">:</span> <span class="kt"><a href="../Structs/DistributionMetrics.html">DistributionMetrics</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5GleanAAC18testGetAttributionAA19DistributionMetricsVyF"></a>
+                    <a name="//apple_ref/swift/Method/testGetAttribution()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5GleanAAC18testGetAttributionAA19DistributionMetricsVyF">testGetAttribution()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>PUBLIC TEST ONLY FUNCTION.</p>
+
+<p>Returns the current distribution metrics.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">testGetAttribution</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/DistributionMetrics.html">DistributionMetrics</a></span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>

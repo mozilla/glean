@@ -90,6 +90,84 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="glean.metrics.AttributionMetrics"><code class="flex name class">
+<span>class <span class="ident">AttributionMetrics</span></span>
+<span>(</span><span>*,<br>source: "'typing.Optional[str]'" = &lt;object object&gt;,<br>medium: "'typing.Optional[str]'" = &lt;object object&gt;,<br>campaign: "'typing.Optional[str]'" = &lt;object object&gt;,<br>term: "'typing.Optional[str]'" = &lt;object object&gt;,<br>content: "'typing.Optional[str]'" = &lt;object object&gt;)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AttributionMetrics:
+    source: &#34;typing.Optional[str]&#34;
+    medium: &#34;typing.Optional[str]&#34;
+    campaign: &#34;typing.Optional[str]&#34;
+    term: &#34;typing.Optional[str]&#34;
+    content: &#34;typing.Optional[str]&#34;
+    def __init__(self, *, source: &#34;typing.Optional[str]&#34; = _DEFAULT, medium: &#34;typing.Optional[str]&#34; = _DEFAULT, campaign: &#34;typing.Optional[str]&#34; = _DEFAULT, term: &#34;typing.Optional[str]&#34; = _DEFAULT, content: &#34;typing.Optional[str]&#34; = _DEFAULT):
+        if source is _DEFAULT:
+            self.source = None
+        else:
+            self.source = source
+        if medium is _DEFAULT:
+            self.medium = None
+        else:
+            self.medium = medium
+        if campaign is _DEFAULT:
+            self.campaign = None
+        else:
+            self.campaign = campaign
+        if term is _DEFAULT:
+            self.term = None
+        else:
+            self.term = term
+        if content is _DEFAULT:
+            self.content = None
+        else:
+            self.content = content
+
+    def __str__(self):
+        return &#34;AttributionMetrics(source={}, medium={}, campaign={}, term={}, content={})&#34;.format(self.source, self.medium, self.campaign, self.term, self.content)
+
+    def __eq__(self, other):
+        if self.source != other.source:
+            return False
+        if self.medium != other.medium:
+            return False
+        if self.campaign != other.campaign:
+            return False
+        if self.term != other.term:
+            return False
+        if self.content != other.content:
+            return False
+        return True</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="glean.metrics.AttributionMetrics.campaign"><code class="name">var <span class="ident">campaign</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.AttributionMetrics.content"><code class="name">var <span class="ident">content</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.AttributionMetrics.medium"><code class="name">var <span class="ident">medium</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.AttributionMetrics.source"><code class="name">var <span class="ident">source</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.AttributionMetrics.term"><code class="name">var <span class="ident">term</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="glean.metrics.BooleanMetric"><code class="flex name class">
 <span>class <span class="ident">BooleanMetricType</span></span>
 <span>(</span><span>meta: "'<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>'")</span>
@@ -681,6 +759,40 @@ of the ping to retrieve the metric for.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>value (str): value of the stored metric.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="glean.metrics.DistributionMetrics"><code class="flex name class">
+<span>class <span class="ident">DistributionMetrics</span></span>
+<span>(</span><span>*, name: "'typing.Optional[str]'" = &lt;object object&gt;)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DistributionMetrics:
+    name: &#34;typing.Optional[str]&#34;
+    def __init__(self, *, name: &#34;typing.Optional[str]&#34; = _DEFAULT):
+        if name is _DEFAULT:
+            self.name = None
+        else:
+            self.name = name
+
+    def __str__(self):
+        return &#34;DistributionMetrics(name={})&#34;.format(self.name)
+
+    def __eq__(self, other):
+        if self.name != other.name:
+            return False
+        return True</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="glean.metrics.DistributionMetrics.name"><code class="name">var <span class="ident">name</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
 </dd>
@@ -3478,6 +3590,16 @@ previously registered in the metrics.yaml file.</p>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="glean.metrics.AttributionMetrics" href="#glean.metrics.AttributionMetrics">AttributionMetrics</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.AttributionMetrics.campaign" href="#glean.metrics.AttributionMetrics.campaign">campaign</a></code></li>
+<li><code><a title="glean.metrics.AttributionMetrics.content" href="#glean.metrics.AttributionMetrics.content">content</a></code></li>
+<li><code><a title="glean.metrics.AttributionMetrics.medium" href="#glean.metrics.AttributionMetrics.medium">medium</a></code></li>
+<li><code><a title="glean.metrics.AttributionMetrics.source" href="#glean.metrics.AttributionMetrics.source">source</a></code></li>
+<li><code><a title="glean.metrics.AttributionMetrics.term" href="#glean.metrics.AttributionMetrics.term">term</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="glean.metrics.BooleanMetric" href="#glean.metrics.BooleanMetric">BooleanMetric</a></code></h4>
 <ul class="">
 <li><code><a title="glean.metrics.BooleanMetric.set" href="#glean.metrics.BooleanMetric.set">set</a></code></li>
@@ -3511,6 +3633,12 @@ previously registered in the metrics.yaml file.</p>
 <li><code><a title="glean.metrics.DatetimeMetricType.test_get_num_recorded_errors" href="#glean.metrics.DatetimeMetricType.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
 <li><code><a title="glean.metrics.DatetimeMetricType.test_get_value" href="#glean.metrics.DatetimeMetricType.test_get_value">test_get_value</a></code></li>
 <li><code><a title="glean.metrics.DatetimeMetricType.test_get_value_as_str" href="#glean.metrics.DatetimeMetricType.test_get_value_as_str">test_get_value_as_str</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glean.metrics.DistributionMetrics" href="#glean.metrics.DistributionMetrics">DistributionMetrics</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.DistributionMetrics.name" href="#glean.metrics.DistributionMetrics.name">name</a></code></li>
 </ul>
 </li>
 <li>

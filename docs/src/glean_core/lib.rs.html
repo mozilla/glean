@@ -1327,6 +1327,63 @@
 <a href="#1327" id="1327">1327</a>
 <a href="#1328" id="1328">1328</a>
 <a href="#1329" id="1329">1329</a>
+<a href="#1330" id="1330">1330</a>
+<a href="#1331" id="1331">1331</a>
+<a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
+<a href="#1362" id="1362">1362</a>
+<a href="#1363" id="1363">1363</a>
+<a href="#1364" id="1364">1364</a>
+<a href="#1365" id="1365">1365</a>
+<a href="#1366" id="1366">1366</a>
+<a href="#1367" id="1367">1367</a>
+<a href="#1368" id="1368">1368</a>
+<a href="#1369" id="1369">1369</a>
+<a href="#1370" id="1370">1370</a>
+<a href="#1371" id="1371">1371</a>
+<a href="#1372" id="1372">1372</a>
+<a href="#1373" id="1373">1373</a>
+<a href="#1374" id="1374">1374</a>
+<a href="#1375" id="1375">1375</a>
+<a href="#1376" id="1376">1376</a>
+<a href="#1377" id="1377">1377</a>
+<a href="#1378" id="1378">1378</a>
+<a href="#1379" id="1379">1379</a>
+<a href="#1380" id="1380">1380</a>
+<a href="#1381" id="1381">1381</a>
+<a href="#1382" id="1382">1382</a>
+<a href="#1383" id="1383">1383</a>
+<a href="#1384" id="1384">1384</a>
+<a href="#1385" id="1385">1385</a>
+<a href="#1386" id="1386">1386</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1388,7 +1445,7 @@
 
 <span class="kw">pub use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, Lifetime};
 <span class="kw">pub use </span><span class="kw">crate</span>::core::Glean;
-<span class="kw">pub use </span><span class="kw">crate</span>::core_metrics::ClientInfoMetrics;
+<span class="kw">pub use </span><span class="kw">crate</span>::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 <span class="kw">pub use </span><span class="kw">crate</span>::error::{Error, ErrorKind, <span class="prelude-ty">Result</span>};
 <span class="kw">pub use </span><span class="kw">crate</span>::error_recording::{test_get_num_recorded_errors, ErrorType};
 <span class="kw">pub use </span><span class="kw">crate</span>::histogram::HistogramType;
@@ -1430,6 +1487,10 @@
 <span class="doccomment">/// Keep track of pings registered before Glean is initialized.
 </span><span class="kw">static </span>PRE_INIT_PING_REGISTRATION: Mutex&lt;Vec&lt;metrics::PingType&gt;&gt; = Mutex::new(Vec::new());
 <span class="kw">static </span>PRE_INIT_PING_ENABLED: Mutex&lt;Vec&lt;(metrics::PingType, bool)&gt;&gt; = Mutex::new(Vec::new());
+
+<span class="doccomment">/// Keep track of attribution and distribution supplied before Glean is initialized.
+</span><span class="kw">static </span>PRE_INIT_ATTRIBUTION: Mutex&lt;<span class="prelude-ty">Option</span>&lt;AttributionMetrics&gt;&gt; = Mutex::new(<span class="prelude-val">None</span>);
+<span class="kw">static </span>PRE_INIT_DISTRIBUTION: Mutex&lt;<span class="prelude-ty">Option</span>&lt;DistributionMetrics&gt;&gt; = Mutex::new(<span class="prelude-val">None</span>);
 
 <span class="doccomment">/// Global singleton of the handles of the glean.init threads.
 /// For joining. For tests.
@@ -1775,6 +1836,15 @@
                 <span class="kw">let </span>pings = PRE_INIT_PING_ENABLED.lock().unwrap();
                 <span class="kw">for </span>(ping, enabled) <span class="kw">in </span>pings.iter() {
                     glean.set_ping_enabled(ping, <span class="kw-2">*</span>enabled);
+                }
+
+                <span class="comment">// The attribution and distribution might have been set before initialize,
+                // take the cached values and set them.
+                </span><span class="kw">if let </span><span class="prelude-val">Some</span>(attribution) = PRE_INIT_ATTRIBUTION.lock().unwrap().take() {
+                    glean.update_attribution(attribution);
+                }
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(distribution) = PRE_INIT_DISTRIBUTION.lock().unwrap().take() {
+                    glean.update_distribution(distribution);
                 }
 
                 <span class="comment">// If this is the first time ever the Glean SDK runs, make sure to set
@@ -2582,6 +2652,50 @@
 /// Set the dirty flag
 </span><span class="kw">pub fn </span>glean_set_dirty_flag(new_value: bool) {
     core::with_glean(|glean| glean.set_dirty_flag(new_value))
+}
+
+<span class="doccomment">/// Updates attribution fields with new values.
+/// AttributionMetrics fields with `None` values will not overwrite older values.
+</span><span class="kw">pub fn </span>glean_update_attribution(attribution: AttributionMetrics) {
+    <span class="kw">if </span>was_initialize_called() {
+        core::with_glean(|glean| glean.update_attribution(attribution));
+    } <span class="kw">else </span>{
+        PRE_INIT_ATTRIBUTION
+            .lock()
+            .unwrap()
+            .get_or_insert(Default::default())
+            .update(attribution);
+    }
+}
+
+<span class="doccomment">/// **TEST-ONLY Method**
+///
+/// Returns the current attribution metrics.
+/// Panics if called before init.
+</span><span class="kw">pub fn </span>glean_test_get_attribution() -&gt; AttributionMetrics {
+    core::with_glean(|glean| glean.test_get_attribution())
+}
+
+<span class="doccomment">/// Updates distribution fields with new values.
+/// DistributionMetrics fields with `None` values will not overwrite older values.
+</span><span class="kw">pub fn </span>glean_update_distribution(distribution: DistributionMetrics) {
+    <span class="kw">if </span>was_initialize_called() {
+        core::with_glean(|glean| glean.update_distribution(distribution));
+    } <span class="kw">else </span>{
+        PRE_INIT_DISTRIBUTION
+            .lock()
+            .unwrap()
+            .get_or_insert(Default::default())
+            .update(distribution);
+    }
+}
+
+<span class="doccomment">/// **TEST-ONLY Method**
+///
+/// Returns the current distribution metrics.
+/// Panics if called before init.
+</span><span class="kw">pub fn </span>glean_test_get_distribution() -&gt; DistributionMetrics {
+    core::with_glean(|glean| glean.test_get_distribution())
 }
 
 <span class="attr">#[cfg(all(not(target_os = <span class="string">"android"</span>), not(target_os = <span class="string">"ios"</span>)))]

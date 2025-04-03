@@ -864,7 +864,37 @@ def server_endpoint(self) -&gt; str:
 
         # On top of the Glean shutdown
         # we also wait for the process dispatcher to finish.
-        ProcessDispatcher._wait_for_last_process()</code></pre>
+        ProcessDispatcher._wait_for_last_process()
+
+    @classmethod
+    def update_attribution(cls, attribution: &#34;AttributionMetrics&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Updates attribution fields with new values.
+        AttributionMetrics fields with `None` values will not overwrite older values.
+        &#34;&#34;&#34;
+        _uniffi.glean_update_attribution(attribution)
+
+    @classmethod
+    def test_get_attribution(cls) -&gt; &#34;AttributionMetrics&#34;:
+        &#34;&#34;&#34;
+        Test-only method for getting the current attribution metrics.
+        &#34;&#34;&#34;
+        return _uniffi.glean_test_get_attribution()
+
+    @classmethod
+    def update_distribution(cls, distribution: &#34;DistributionMetrics&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Updates distribution fields with new values.
+        DistributionMetrics fields with `None` values will not overwrite older values.
+        &#34;&#34;&#34;
+        _uniffi.glean_update_distribution(distribution)
+
+    @classmethod
+    def test_get_distribution(cls) -&gt; &#34;DistributionMetrics&#34;:
+        &#34;&#34;&#34;
+        Test-only method for getting the current distribution metrics.
+        &#34;&#34;&#34;
+        return _uniffi.glean_test_get_distribution()</code></pre>
 </details>
 <div class="desc"><p>The main Glean API.</p>
 <p>Before any data collection can take place, the Glean SDK <strong>must</strong> be
@@ -1029,6 +1059,18 @@ This API is deprecated. Use <code>set_collection_enabled</code> instead.</p>
 <dd>
 <div class="desc"><p>Shuts down Glean in an orderly fashion.</p></div>
 </dd>
+<dt id="glean.Glean.test_get_attribution"><code class="name flex">
+<span>def <span class="ident">test_get_attribution</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Test-only method for getting the current attribution metrics.</p></div>
+</dd>
+<dt id="glean.Glean.test_get_distribution"><code class="name flex">
+<span>def <span class="ident">test_get_distribution</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Test-only method for getting the current distribution metrics.</p></div>
+</dd>
 <dt id="glean.Glean.test_get_experiment_data"><code class="name flex">
 <span>def <span class="ident">test_get_experiment_data</span></span>(<span>experiment_id: str)</span>
 </code></dt>
@@ -1064,6 +1106,20 @@ the experiment.</p></div>
 <h2 id="returns">Returns</h2>
 <p>is_active (bool): If the experiement is active and reported in
 pings.</p></div>
+</dd>
+<dt id="glean.Glean.update_attribution"><code class="name flex">
+<span>def <span class="ident">update_attribution</span></span>(<span>attribution: AttributionMetrics)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates attribution fields with new values.
+AttributionMetrics fields with <code>None</code> values will not overwrite older values.</p></div>
+</dd>
+<dt id="glean.Glean.update_distribution"><code class="name flex">
+<span>def <span class="ident">update_distribution</span></span>(<span>distribution: DistributionMetrics)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates distribution fields with new values.
+DistributionMetrics fields with <code>None</code> values will not overwrite older values.</p></div>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -1132,9 +1188,13 @@ pings.</p></div>
 <li><code><a title="glean.Glean.set_experimentation_id" href="#glean.Glean.set_experimentation_id">set_experimentation_id</a></code></li>
 <li><code><a title="glean.Glean.set_upload_enabled" href="#glean.Glean.set_upload_enabled">set_upload_enabled</a></code></li>
 <li><code><a title="glean.Glean.shutdown" href="#glean.Glean.shutdown">shutdown</a></code></li>
+<li><code><a title="glean.Glean.test_get_attribution" href="#glean.Glean.test_get_attribution">test_get_attribution</a></code></li>
+<li><code><a title="glean.Glean.test_get_distribution" href="#glean.Glean.test_get_distribution">test_get_distribution</a></code></li>
 <li><code><a title="glean.Glean.test_get_experiment_data" href="#glean.Glean.test_get_experiment_data">test_get_experiment_data</a></code></li>
 <li><code><a title="glean.Glean.test_get_experimentation_id" href="#glean.Glean.test_get_experimentation_id">test_get_experimentation_id</a></code></li>
 <li><code><a title="glean.Glean.test_is_experiment_active" href="#glean.Glean.test_is_experiment_active">test_is_experiment_active</a></code></li>
+<li><code><a title="glean.Glean.update_attribution" href="#glean.Glean.update_attribution">update_attribution</a></code></li>
+<li><code><a title="glean.Glean.update_distribution" href="#glean.Glean.update_distribution">update_distribution</a></code></li>
 </ul>
 </li>
 </ul>
