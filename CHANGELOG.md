@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...main)
 
+* General
+  * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
+  * Update to `glean_parser` v17.1.0
 * Kotlin
    * Updated Android Gradle Plugin to 8.9.1 ([#3098](https://github.com/mozilla/glean/pull/3098))
    * Updated Kotlin to version 2.1.20 ([#3098](https://github.com/mozilla/glean/pull/3098))
@@ -13,10 +16,6 @@
 
 * Android
   * Revert changes that tried to fix `StrictMode` violations in Fenix ([bug 1946133](https://bugzilla.mozilla.org/show_bug.cgi?id=1946133))
-
-* General
-  * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
-  * Update to `glean_parser` v17.1.0
 
 # v64.0.0 (2025-03-18)
 
