@@ -8,7 +8,9 @@ This module contains all of the metric types.
 """
 
 # Re-export utilities
+from .._uniffi import AttributionMetrics
 from .._uniffi import CommonMetricData
+from .._uniffi import DistributionMetrics
 from .._uniffi import LabeledMetricData
 from .._uniffi import Lifetime
 from .._uniffi import MemoryUnit
@@ -41,10 +43,12 @@ from .uuid import UuidMetricType
 
 
 __all__ = [
+    "AttributionMetrics",
     "BooleanMetricType",
     "CommonMetricData",
     "CounterMetricType",
     "DatetimeMetricType",
+    "DistributionMetrics",
     "EventExtras",
     "EventMetricType",
     "LabeledBooleanMetricType",

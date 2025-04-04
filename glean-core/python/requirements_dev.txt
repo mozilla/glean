@@ -1,7 +1,7 @@
 coverage[toml]==7.2.2
 jsonschema==3.2.0
 mypy==1.4.1
-pdoc3==0.11.5; python_version > '3.8'
+pdoc3==0.11.6; python_version > '3.8'
 pip
 pytest-localserver==0.8.0
 MarkupSafe==2.0.1
@@ -12,5 +12,5 @@ semver==2.13.0
 setuptools-git==1.2
 twine==6.0.1
 wheel==0.45.1
-maturin==1.8.1
+maturin==1.8.3
 patchelf>=0.17; sys_platform == "linux"

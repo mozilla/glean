@@ -7,7 +7,7 @@ accepted = [
     "BSD-3-Clause",
     "ISC",
     "Zlib",
-    "Unicode-DFS-2016",
+    "Unicode-3.0",
 ]
 
 # Subset of targets we build for

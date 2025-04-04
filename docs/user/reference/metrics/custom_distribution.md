@@ -77,6 +77,14 @@ Glean.graphics.checkerboardPeak.accumulateSamples([23]);
 
 {{#include ../../../shared/tab_footer.md}}
 
+#### Limits
+
+* Only non-negative values may be recorded (`>= 0`).
+
+#### Recorded errors
+
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative value.
+
 ### `accumulateSingleSample`
 
 Accumulates one sample and appends it to the metric.
@@ -143,14 +151,65 @@ Glean.graphics.checkerboardPeak.accumulateSingleSample(23);
 
 {{#include ../../../shared/tab_footer.md}}
 
-
 #### Limits
 
 * Only non-negative values may be recorded (`>= 0`).
 
 #### Recorded errors
 
-* `invalid_value`: If recording a negative value.
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative value.
+
+### `startBuffer`
+
+**Experimental:**
+Start a new histogram buffer associated with this custom distribution metric.
+
+A histogram buffer accumulates in-memory.
+Data is recorded into the metric when committed.
+No data is collected if the buffer is abandoned.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+Data is automatically committed on drop.
+
+```Rust
+use glean_metrics::graphics;
+
+let buffer = graphics::checkerboard_peak.start_buffer();
+
+for sample in all_frames.iter() {
+  buffer.accumulate(sample);
+}
+
+// Explicit or implicit drop of `buffer` commits the data.
+drop(buffer);
+```
+
+No data is recorded when the buffer is abandoned.
+
+```Rust
+use glean_metrics::graphics;
+
+let buffer = graphics::checkerboard_peak.start_buffer();
+
+for sample in all_frames.iter() {
+  buffer.accumulate(sample);
+}
+
+buffer.abandon(); // No data is recorded.
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
 
 ## Testing API
 

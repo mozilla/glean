@@ -4,9 +4,6 @@ Binary distributions of this software incorporate code from a number of third-pa
 These dependencies are available under a variety of free and open source licenses,
 the details of which are reproduced below.
 -->  <license>
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -25,9 +22,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: windows_x86_64_gnu</name>
     <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>  <license>
     <name>Apache License 2.0: winapi</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
@@ -40,50 +34,14 @@ the details of which are reproduced below.
     <name>Apache License 2.0: fd-lock</name>
     <url>https://github.com/yoshuawuyts/fd-lock</url>
   </license>  <license>
-    <name>Apache License 2.0: anyhow</name>
-    <url>https://github.com/dtolnay/anyhow</url>
+    <name>Apache License 2.0: rinja</name>
+    <url>https://github.com/rinja-rs/rinja</url>
   </license>  <license>
-    <name>Apache License 2.0: basic-toml</name>
-    <url>https://github.com/dtolnay/basic-toml</url>
+    <name>Apache License 2.0: rinja_derive</name>
+    <url>https://github.com/rinja-rs/rinja</url>
   </license>  <license>
-    <name>Apache License 2.0: inherent</name>
-    <url>https://github.com/dtolnay/inherent</url>
-  </license>  <license>
-    <name>Apache License 2.0: libc</name>
-    <url>https://github.com/rust-lang/libc</url>
-  </license>  <license>
-    <name>Apache License 2.0: proc-macro2</name>
-    <url>https://github.com/dtolnay/proc-macro2</url>
-  </license>  <license>
-    <name>Apache License 2.0: quote</name>
-    <url>https://github.com/dtolnay/quote</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde_derive</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
-    <name>Apache License 2.0: syn</name>
-    <url>https://github.com/dtolnay/syn</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror-impl</name>
-    <url>https://github.com/dtolnay/thiserror</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror</name>
-    <url>https://github.com/dtolnay/thiserror</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicode-ident</name>
-    <url>https://github.com/dtolnay/unicode-ident</url>
-  </license>  <license>
-    <name>Apache License 2.0: askama</name>
-    <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: askama_derive</name>
-    <url>https://github.com/djc/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: askama_escape</name>
-    <url>https://github.com/djc/askama</url>
+    <name>Apache License 2.0: rinja_parser</name>
+    <url>https://github.com/rinja-rs/rinja</url>
   </license>  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
@@ -102,6 +60,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/rust-cli/env_logger/</url>
+  </license>  <license>
+    <name>Apache License 2.0: errno</name>
+    <url>https://github.com/lambda-fairy/rust-errno</url>
   </license>  <license>
     <name>Apache License 2.0: fastrand</name>
     <url>https://github.com/smol-rs/fastrand</url>
@@ -123,9 +84,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
-  </license>  <license>
-    <name>Apache License 2.0: itoa</name>
-    <url>https://github.com/dtolnay/itoa</url>
   </license>  <license>
     <name>Apache License 2.0: lazy_static</name>
     <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
@@ -151,9 +109,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: once_cell</name>
     <url>https://github.com/matklad/once_cell</url>
   </license>  <license>
-    <name>Apache License 2.0: paste</name>
-    <url>https://github.com/dtolnay/paste</url>
-  </license>  <license>
     <name>Apache License 2.0: percent-encoding</name>
     <url>https://github.com/servo/rust-url/</url>
   </license>  <license>
@@ -162,12 +117,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: rustix</name>
     <url>https://github.com/bytecodealliance/rustix</url>
-  </license>  <license>
-    <name>Apache License 2.0: semver</name>
-    <url>https://github.com/dtolnay/semver</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde_json</name>
-    <url>https://github.com/serde-rs/json</url>
   </license>  <license>
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
@@ -217,11 +166,68 @@ the details of which are reproduced below.
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
   </license>  <license>
+    <name>Apache License 2.0: anyhow</name>
+    <url>https://github.com/dtolnay/anyhow</url>
+  </license>  <license>
+    <name>Apache License 2.0: basic-toml</name>
+    <url>https://github.com/dtolnay/basic-toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: inherent</name>
+    <url>https://github.com/dtolnay/inherent</url>
+  </license>  <license>
+    <name>Apache License 2.0: itoa</name>
+    <url>https://github.com/dtolnay/itoa</url>
+  </license>  <license>
+    <name>Apache License 2.0: libc</name>
+    <url>https://github.com/rust-lang/libc</url>
+  </license>  <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>  <license>
+    <name>Apache License 2.0: paste</name>
+    <url>https://github.com/dtolnay/paste</url>
+  </license>  <license>
+    <name>Apache License 2.0: proc-macro2</name>
+    <url>https://github.com/dtolnay/proc-macro2</url>
+  </license>  <license>
+    <name>Apache License 2.0: quote</name>
+    <url>https://github.com/dtolnay/quote</url>
+  </license>  <license>
+    <name>Apache License 2.0: rustc-hash</name>
+    <url>https://github.com/rust-lang/rustc-hash</url>
+  </license>  <license>
+    <name>Apache License 2.0: ryu</name>
+    <url>https://github.com/dtolnay/ryu</url>
+  </license>  <license>
+    <name>Apache License 2.0: semver</name>
+    <url>https://github.com/dtolnay/semver</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_derive</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_json</name>
+    <url>https://github.com/serde-rs/json</url>
+  </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>
   </license>  <license>
+    <name>Apache License 2.0: syn</name>
+    <url>https://github.com/dtolnay/syn</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror-impl</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
     <name>Apache License 2.0: tinyvec_macros</name>
     <url>https://github.com/Soveu/tinyvec_macros</url>
+  </license>  <license>
+    <name>Apache License 2.0: unicode-ident</name>
+    <url>https://github.com/dtolnay/unicode-ident</url>
   </license>  <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
@@ -274,9 +280,6 @@ the details of which are reproduced below.
     <name>MIT License: memchr</name>
     <url>https://github.com/BurntSushi/memchr</url>
   </license>  <license>
-    <name>MIT License: mime_guess</name>
-    <url>https://github.com/abonander/mime_guess</url>
-  </license>  <license>
     <name>MIT License: whatsys</name>
     <url>https://github.com/badboy/whatsys</url>
   </license>  <license>
@@ -291,6 +294,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
+  </license>  <license>
+    <name>MIT License: mime_guess</name>
+    <url>https://github.com/abonander/mime_guess</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
@@ -319,10 +325,10 @@ the details of which are reproduced below.
     <name>Mozilla Public License 2.0: uniffi_bindgen</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: uniffi_checksum_derive</name>
+    <name>Mozilla Public License 2.0: uniffi_core</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: uniffi_core</name>
+    <name>Mozilla Public License 2.0: uniffi_internal_macros</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_macros</name>
@@ -331,13 +337,10 @@ the details of which are reproduced below.
     <name>Mozilla Public License 2.0: uniffi_meta</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: uniffi_testing</name>
-    <url>https://github.com/mozilla/uniffi-rs</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_udl</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
-    <name>Unicode License Agreement - Data Files and Software (2016): unicode-ident</name>
+    <name>Unicode License v3: unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
   </license></licenses>
 

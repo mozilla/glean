@@ -331,6 +331,19 @@ Glean.pages.pageLoad.accumulateSamples(samples);
 
 {{#include ../../../shared/tab_footer.md}}
 
+#### Limits
+
+- Samples are limited to the maximum value for the given time unit.
+- Only non-negative values may be recorded (`>= 0`).
+- Negative values are discarded and an `ErrorType::InvalidValue` is generated for each instance.
+- Samples that are longer than maximum sample time for the given unit generate an `ErrorType::InvalidOverflow` error for each instance.
+
+#### Recorded errors
+
+* [`invalid_value`](../../user/metrics/error-reporting.md): If recording a negative timespan.
+* [`invalid_state`](../../user/metrics/error-reporting.md): If a non-existing/stopped timer is stopped again.
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): If recording a time longer than the maximum for the given unit.
+
 ### `accumulateSingleSample`
 
 Accumulates a single signed sample and appends it to the metric. Prefer this
@@ -425,7 +438,6 @@ Glean.pages.pageLoad.accumulateSingleSample(sample);
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
-
 
 #### Limits
 
@@ -596,6 +608,67 @@ Glean.pages.pageLoad.cancel(timerId);
 </div>
 
 {{#include ../../../shared/tab_footer.md}}
+
+### `startBuffer`
+
+**Experimental:**
+Start a new histogram buffer associated with this custom distribution metric.
+
+A histogram buffer accumulates in-memory.
+Data is recorded into the metric when committed.
+No data is collected if the buffer is abandoned.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
+<div data-lang="Rust" class="tab">
+
+Data is automatically committed on drop.
+
+```Rust
+use glean_metrics::pages;
+
+let buffer = pages::page_load.start_buffer();
+
+for sample in load_times.iter() {
+  buffer.accumulate(sample);
+}
+
+// Explicit or implicit drop of `buffer` commits the data.
+drop(buffer);
+```
+
+No data is recorded when the buffer is abandoned.
+
+```Rust
+use glean_metrics::pages;
+
+let buffer = pages::page_load.start_buffer();
+
+for sample in all_frames.iter() {
+  buffer.accumulate(sample);
+}
+
+buffer.abandon(); // No data is recorded.
+```
+
+</div>
+<div data-lang="JavaScript" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab"></div>
+
+{{#include ../../../shared/tab_footer.md}}
+
+#### Limits
+
+- Samples are limited to the maximum value for the given time unit.
+- Samples that are longer than maximum sample time for the given unit generate an `ErrorType::InvalidOverflow` error for each instance.
+
+#### Recorded errors
+
+* [`invalid_overflow`](../../user/metrics/error-reporting.md): If recording a time longer than the maximum for the given unit.
 
 ## Testing API
 

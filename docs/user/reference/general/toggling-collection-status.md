@@ -1,39 +1,49 @@
-# Toggling upload status
+# Toggling collection status
 
-The Glean SDKs provide an API for toggling Glean's upload status after initialization.
+The Glean SDKs provide an API for toggling Glean's collection status after initialization.
 
 Applications instrumented with Glean
 [are expected to](../../user/adding-glean-to-your-project/index.md#glean-integration-checklist)
-provide some form of user interface to allow for toggling the upload status.
+provide some form of user interface to allow for toggling the collection status.
 
-## Disabling upload
+{{#include ../../../shared/blockquote-info.html}}
 
-When upload is disabled, the Glean SDK will perform the following tasks:
+## `setUploadEnabled` is deprecated since Glean v63.0.0
+
+> Prior to Glean v63.0.0 this API was called `setUploadEnabled`.
+> `setUploadEnabled` is now deprecated and replaced by `setCollectionEnabled`.
+> It behaves the same way with respect to built-in pings and custom pings,
+> unless those are marked with `follows_collection_enabled: false`.
+> See [TODO: the collection-enabled documentation for details]().
+
+## Disabling collection
+
+When collection is disabled, the Glean SDK will perform the following tasks:
 
 1. Submit a [`deletion-request`](../../user/pings/deletion-request.md) ping.
 2. Cancel scheduled ping uploads.
 3. Clear metrics and pings data from the client, except for the
   [`first_run_date`](../../user/pings/index.html#the-client_info-section) metric.
 
-While upload is disabled, metrics aren't recorded and no data is uploaded.
+While collection is disabled, metrics aren't recorded and no data is uploaded.
 
-## Enabling upload
+## Enabling collection
 
-When upload is enabled, the Glean SDK will re-initialize its [core metrics](../../user/collected-metrics/metrics.md).
+When collection is enabled, the Glean SDK will re-initialize its [core metrics](../../user/collected-metrics/metrics.md).
 The only core metric that is not re-initialized is the [`first_run_date`](../../user/pings/index.html#the-client_info-section) metric.
 
-While upload is enabled all metrics are recorded as expected
+While collection is enabled all metrics are recorded as expected
 and pings are sent to the telemetry servers.
 
 ## API
 
-### `Glean.setUploadEnabled(boolean)`
+### `Glean.setCollectionEnabled(boolean)`
 
-Enables or disables upload.
+Enables or disables collection.
 
 If called prior to initialize this function is a no-op.
 
-If the upload state is not actually changed in between calls to this function, it is also a no-op.
+If the collection state is not actually changed in between calls to this function, it is also a no-op.
 
 {{#include ../../../shared/tab_header.md}}
 
@@ -48,9 +58,9 @@ open class MainActivity : AppCompatActivity() {
 
         uploadSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                Glean.setUploadEnabled(true)
+                Glean.setCollectionEnabled(true)
             } else {
-                Glean.setUploadEnabled(false)
+                Glean.setCollectionEnabled(false)
             }
         }
     }
@@ -63,7 +73,7 @@ open class MainActivity : AppCompatActivity() {
 ```Java
 import mozilla.telemetry.glean.Glean
 
-Glean.INSTANCE.setUploadEnabled(false);
+Glean.INSTANCE.setCollectionEnabled(false);
 ```
 
 </div>
@@ -80,7 +90,7 @@ class ViewController: UIViewController {
     // ...
 
     @IBAction func enableToggled(_: Any) {
-        Glean.shared.setUploadEnabled(enableSwitch.isOn)
+        Glean.shared.setCollectionEnabled(enableSwitch.isOn)
     }
 }
 ```
@@ -92,7 +102,7 @@ class ViewController: UIViewController {
 ```python
 from glean import Glean
 
-Glean.set_upload_enabled(false)
+Glean.set_collection_enabled(false)
 ```
 
 </div>
@@ -101,12 +111,11 @@ Glean.set_upload_enabled(false)
 ```Rust
 use glean;
 
-glean::set_upload_enabled(false);
+glean::set_collection_enabled(false);
 ```
 
 </div>
 <div data-lang="JavaScript" class="tab">
-
 
 ```js
 import Glean from "@mozilla/glean/web";
@@ -121,6 +130,13 @@ uploadSwitch.addEventListener("change", event => {
 });
 ```
 
+{{#include ../../../shared/blockquote-info.html}}
+
+## Glean.js still uses `setUploadEnabled`
+
+> Glean.js did not yet switch to the new naming and continues to use `setUploadEnabled` unchanged.
+> See [Bug 1956280](https://bugzilla.mozilla.org/show_bug.cgi?id=1956280) for more information.
+
 </div>
 <div data-lang="Firefox Desktop" class="tab" data-info="On Firefox Desktop data collection is toggled internally."></div>
 
@@ -128,7 +144,7 @@ uploadSwitch.addEventListener("change", event => {
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC16setUploadEnabledyySbF)
-* [Python API docs](../../../python/glean/index.html#glean.Glean.set_upload_enabled)
-* [Rust API docs](../../../docs/glean/fn.set_upload_enabled.html)
+* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC16setCollectionEnabledyySbF)
+* [Python API docs](../../../python/glean/index.html#glean.Glean.set_collection_enabled)
+* [Rust API docs](../../../docs/glean/fn.set_collection_enabled.html)
 * [JavaScript API docs](https://mozilla.github.io/glean.js/reference/uploaders/#uploadenabled)

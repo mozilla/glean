@@ -116,13 +116,11 @@ Glean.searchDefault.name.set("wikipedia");
 
 #### Recorded errors
 
-* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long. (Prior to Glean 31.5.0, this recorded an `invalid_value`).
-* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
+{{#include ../../_includes/string-errors.md}}
 
 #### Limits
 
-* Fixed maximum string length: 255. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
-  * Prior to Glean v60.4.0 the limit was 100 bytes.
+{{#include ../../_includes/string-limits.md}}
 
 ## Testing API
 

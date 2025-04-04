@@ -15,6 +15,7 @@ use tempfile::Builder;
 use flate2::read::GzDecoder;
 use glean::{net, ClientInfoMetrics, ConfigurationBuilder, ErrorType};
 
+#[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
 }

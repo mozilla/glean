@@ -10,8 +10,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
+kotlin {
+    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
+}
+
 android {
-    namespace "org.mozilla.samples.gleancore"
+    namespace = "org.mozilla.samples.gleancore"
     compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
@@ -34,8 +38,8 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
 }
 
