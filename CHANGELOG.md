@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.1.0...main)
+
+# v64.1.0 (2025-04-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...v64.1.0)
 
 * General
   * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
