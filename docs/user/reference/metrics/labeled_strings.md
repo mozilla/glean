@@ -82,13 +82,12 @@ Glean.login.errorsByStage["server_auth"].set("Invalid password");
 
 #### Recorded Errors
 
-* [`invalid_overflow`](../../user/metrics/error-reporting.md): if the string is too long, see [limits below](#limits).
-* [`invalid_type`](../../user/metrics/error-reporting.md): if a non-string value is given.
+{{#include ../../_includes/string-errors.md}}
 {{#include ../../_includes/label-errors.md}}
 
 #### Limits
 
-* Fixed maximum string length: 100. Longer strings are truncated. This is measured in the number of bytes when the string is encoded in UTF-8.
+{{#include ../../_includes/string-limits.md}}
 {{#include ../../_includes/label-limits.md}}
 
 ## Testing API

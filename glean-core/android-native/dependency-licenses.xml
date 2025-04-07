@@ -4,6 +4,9 @@ Binary distributions of this software incorporate code from a number of third-pa
 These dependencies are available under a variety of free and open source licenses,
 the details of which are reproduced below.
 -->  <license>
+    <name>Apache License 2.0: miniz_oxide</name>
+    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
+  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -33,6 +36,60 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: fd-lock</name>
     <url>https://github.com/yoshuawuyts/fd-lock</url>
+  </license>  <license>
+    <name>Apache License 2.0: rustc-hash</name>
+    <url>https://github.com/rust-lang/rustc-hash</url>
+  </license>  <license>
+    <name>Apache License 2.0: anyhow</name>
+    <url>https://github.com/dtolnay/anyhow</url>
+  </license>  <license>
+    <name>Apache License 2.0: basic-toml</name>
+    <url>https://github.com/dtolnay/basic-toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: inherent</name>
+    <url>https://github.com/dtolnay/inherent</url>
+  </license>  <license>
+    <name>Apache License 2.0: itoa</name>
+    <url>https://github.com/dtolnay/itoa</url>
+  </license>  <license>
+    <name>Apache License 2.0: libc</name>
+    <url>https://github.com/rust-lang/libc</url>
+  </license>  <license>
+    <name>Apache License 2.0: paste</name>
+    <url>https://github.com/dtolnay/paste</url>
+  </license>  <license>
+    <name>Apache License 2.0: proc-macro2</name>
+    <url>https://github.com/dtolnay/proc-macro2</url>
+  </license>  <license>
+    <name>Apache License 2.0: quote</name>
+    <url>https://github.com/dtolnay/quote</url>
+  </license>  <license>
+    <name>Apache License 2.0: ryu</name>
+    <url>https://github.com/dtolnay/ryu</url>
+  </license>  <license>
+    <name>Apache License 2.0: semver</name>
+    <url>https://github.com/dtolnay/semver</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_derive</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_json</name>
+    <url>https://github.com/serde-rs/json</url>
+  </license>  <license>
+    <name>Apache License 2.0: syn</name>
+    <url>https://github.com/dtolnay/syn</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror-impl</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
+    <name>Apache License 2.0: thiserror</name>
+    <url>https://github.com/dtolnay/thiserror</url>
+  </license>  <license>
+    <name>Apache License 2.0: unicode-ident</name>
+    <url>https://github.com/dtolnay/unicode-ident</url>
   </license>  <license>
     <name>Apache License 2.0: rinja</name>
     <url>https://github.com/rinja-rs/rinja</url>
@@ -166,68 +223,11 @@ the details of which are reproduced below.
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
   </license>  <license>
-    <name>Apache License 2.0: anyhow</name>
-    <url>https://github.com/dtolnay/anyhow</url>
-  </license>  <license>
-    <name>Apache License 2.0: basic-toml</name>
-    <url>https://github.com/dtolnay/basic-toml</url>
-  </license>  <license>
-    <name>Apache License 2.0: inherent</name>
-    <url>https://github.com/dtolnay/inherent</url>
-  </license>  <license>
-    <name>Apache License 2.0: itoa</name>
-    <url>https://github.com/dtolnay/itoa</url>
-  </license>  <license>
-    <name>Apache License 2.0: libc</name>
-    <url>https://github.com/rust-lang/libc</url>
-  </license>  <license>
-    <name>Apache License 2.0: miniz_oxide</name>
-    <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>  <license>
-    <name>Apache License 2.0: paste</name>
-    <url>https://github.com/dtolnay/paste</url>
-  </license>  <license>
-    <name>Apache License 2.0: proc-macro2</name>
-    <url>https://github.com/dtolnay/proc-macro2</url>
-  </license>  <license>
-    <name>Apache License 2.0: quote</name>
-    <url>https://github.com/dtolnay/quote</url>
-  </license>  <license>
-    <name>Apache License 2.0: rustc-hash</name>
-    <url>https://github.com/rust-lang/rustc-hash</url>
-  </license>  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>  <license>
-    <name>Apache License 2.0: semver</name>
-    <url>https://github.com/dtolnay/semver</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde_derive</name>
-    <url>https://github.com/serde-rs/serde</url>
-  </license>  <license>
-    <name>Apache License 2.0: serde_json</name>
-    <url>https://github.com/serde-rs/json</url>
-  </license>  <license>
     <name>Apache License 2.0: siphasher</name>
     <url>https://github.com/jedisct1/rust-siphash</url>
   </license>  <license>
-    <name>Apache License 2.0: syn</name>
-    <url>https://github.com/dtolnay/syn</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror-impl</name>
-    <url>https://github.com/dtolnay/thiserror</url>
-  </license>  <license>
-    <name>Apache License 2.0: thiserror</name>
-    <url>https://github.com/dtolnay/thiserror</url>
-  </license>  <license>
     <name>Apache License 2.0: tinyvec_macros</name>
     <url>https://github.com/Soveu/tinyvec_macros</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicode-ident</name>
-    <url>https://github.com/dtolnay/unicode-ident</url>
   </license>  <license>
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
@@ -298,9 +298,6 @@ the details of which are reproduced below.
     <name>MIT License: mime_guess</name>
     <url>https://github.com/abonander/mime_guess</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -309,6 +306,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>

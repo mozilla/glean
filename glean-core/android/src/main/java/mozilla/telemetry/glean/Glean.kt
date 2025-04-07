@@ -240,6 +240,10 @@ open class GleanInternalAPI internal constructor() {
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
 
+        // First flush the Kotlin-side queue.
+        // This will put things on the Rust-side queue, and thus keep them in the right order.
+        Dispatchers.Delayed.flushQueuedInitialTasks()
+
         // Execute startup off the main thread.
         Dispatchers.API.executeTask {
             val cfg = InternalConfiguration(
@@ -265,8 +269,6 @@ open class GleanInternalAPI internal constructor() {
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
             gleanInitialize(cfg, clientInfo, callbacks)
         }
-
-        Dispatchers.Delayed.flushQueuedInitialTasks()
     }
 
     /**
@@ -734,6 +736,38 @@ open class GleanInternalAPI internal constructor() {
             ) ?: false
 
         return isMainProcess as Boolean
+    }
+
+    /**
+     * Updates attribution fields with new values.
+     * AttributionMetrics fields with `null` values will not overwrite older values.
+     */
+    fun updateAttribution(attribution: AttributionMetrics) {
+        gleanUpdateAttribution(attribution)
+    }
+
+    /**
+     * Test-only method for getting the current attribution metrics.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun testGetAttribution(): AttributionMetrics {
+        return gleanTestGetAttribution()
+    }
+
+    /**
+     * Updates distribution fields with new values.
+     * DistributionMetrics fields with `null` values will not overwrite older values.
+     */
+    fun updateDistribution(distribution: DistributionMetrics) {
+        gleanUpdateDistribution(distribution)
+    }
+
+    /**
+     * Test-only method for getting the current distribution metrics.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun testGetDistribution(): DistributionMetrics {
+        return gleanTestGetDistribution()
     }
 }
 
