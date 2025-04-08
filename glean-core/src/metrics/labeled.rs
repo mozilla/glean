@@ -265,7 +265,7 @@ where
     /// only the first 16 unique labels will be used.
     /// After that, any additional labels will be recorded under the special `OTHER_LABEL` label.
     ///
-    /// Labels must be `snake_case` and less than 30 characters.
+    /// Labels must have a maximum of 71 characters, and may comprise any printable ASCII characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
     pub fn get<S: AsRef<str>>(&self, label: S) -> Arc<T> {
         let label = label.as_ref();
