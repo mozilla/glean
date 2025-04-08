@@ -54,9 +54,10 @@ class LabeledMetricBase:
         file, only the first 16 unique labels will be used. After that, any
         additional labels will be recorded under the special `__other__` label.
 
-        Labels must be snake_case and less than 30 characters. If an invalid
-        label is used, the metric will be recorded in the special `__other__`
-        label.
+        Labels must have a maximum of 71 characters,
+        and may comprise any printable ASCII characters.
+        If an invalid label is used,
+        the metric will be recorded in the special `__other__` label.
         """
         return self._inner.get(item)
 
