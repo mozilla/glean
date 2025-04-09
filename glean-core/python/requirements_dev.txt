@@ -11,6 +11,6 @@ ruff==0.7.2
 semver==2.13.0
 setuptools-git==1.2
 twine==6.0.1
-wheel==0.45.1
+wheel==0.46.1
 maturin==1.8.3
 patchelf>=0.17; sys_platform == "linux"
