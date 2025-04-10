@@ -4,6 +4,7 @@
 
 * General
   * Increase the maximum label length to 111 ([#3108](https://github.com/mozilla/glean/pull/3108))
+  * Allow `test_get_{attribution|distribution}` to wait on init if in progress ([bug 1959515](https://bugzilla.mozilla.org/show_bug.cgi?id=1959515))
 
 # v64.1.0 (2025-04-07)
 
