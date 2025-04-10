@@ -81,7 +81,7 @@ note to understand how the category is formatted in generated code.
 Metric names are the second-level keys on metrics definition files.
 
 Names may contain alphanumeric lower case characters as well as the `_` character. Metric name
-lengths may not exceed 30 characters.
+lengths may not exceed 70 characters.
 
 ["Capitalization"](../../user/metrics/adding-new-metrics.md#capitalization) rules also apply to
 metric names on generated code.

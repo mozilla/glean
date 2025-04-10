@@ -423,21 +423,6 @@ jobs:
             - docs/shared
             - docs/index.html
 
-  Package Rust crates dry-run:
-    docker:
-      # Should always be the same version as the publish step below
-      - image: cimg/rust:1.82
-    steps:
-      - checkout
-      - run:
-          name: Package Cargo Package
-          command: |
-            pushd glean-core
-            cargo package --verbose
-
-            pushd rlb
-            cargo package --verbose
-
   Publish Rust crates:
     docker:
       - image: cimg/rust:1.82
@@ -1120,10 +1105,6 @@ workflows:
           filters: *ci-filters
       # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
-          filters:
-            branches:
-              only: main
-      - Package Rust crates dry-run:
           filters:
             branches:
               only: main
