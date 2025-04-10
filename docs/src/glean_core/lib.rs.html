@@ -1384,6 +1384,8 @@
 <a href="#1384" id="1384">1384</a>
 <a href="#1385" id="1385">1385</a>
 <a href="#1386" id="1386">1386</a>
+<a href="#1387" id="1387">1387</a>
+<a href="#1388" id="1388">1388</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -2673,6 +2675,7 @@
 /// Returns the current attribution metrics.
 /// Panics if called before init.
 </span><span class="kw">pub fn </span>glean_test_get_attribution() -&gt; AttributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_attribution())
 }
 
@@ -2695,6 +2698,7 @@
 /// Returns the current distribution metrics.
 /// Panics if called before init.
 </span><span class="kw">pub fn </span>glean_test_get_distribution() -&gt; DistributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_distribution())
 }
 
