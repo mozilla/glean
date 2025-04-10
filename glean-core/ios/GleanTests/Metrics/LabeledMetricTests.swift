@@ -141,8 +141,8 @@ class LabeledMetricTypeTests: XCTestCase {
 
         XCTAssertEqual(nil, labeledCounterMetric["__other__"].testGetValue())
 
-        // More than 71 characters? Not okay.
-        labeledCounterMetric[String(repeating: "1", count: 72)].add(1)
+        // More than 111 characters? Not okay.
+        labeledCounterMetric[String(repeating: "1", count: 112)].add(1)
         // Not ASCII? Not okay.
         labeledCounterMetric["Spøøn"].add(1)
         XCTAssertEqual(

@@ -54,7 +54,7 @@ class LabeledMetricBase:
         file, only the first 16 unique labels will be used. After that, any
         additional labels will be recorded under the special `__other__` label.
 
-        Labels must have a maximum of 71 characters,
+        Labels must have a maximum of 111 characters,
         and may comprise any printable ASCII characters.
         If an invalid label is used,
         the metric will be recorded in the special `__other__` label.

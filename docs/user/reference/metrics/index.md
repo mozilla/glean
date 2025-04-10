@@ -70,7 +70,7 @@ Labeled metrics come in two forms:
 
 ### Label format
 
-Labels must have a maximum of 71 characters, and may comprise any printable ASCII characters.
+Labels must have a maximum of 111 characters, and may comprise any printable ASCII characters.
 
 ## Adding or changing metric types
 Glean has a [well-defined process](https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types) for requesting changes to existing metric types or suggesting the implementation of new metric types:

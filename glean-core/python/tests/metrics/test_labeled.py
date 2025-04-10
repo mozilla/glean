@@ -182,8 +182,8 @@ def test_invalid_labels_go_to_other():
 
     assert 0 == labeled_counter_metric.test_get_num_recorded_errors(ErrorType.INVALID_LABEL)
 
-    # Longer than 71? Nope.
-    labeled_counter_metric["1" * 72].add(1)
+    # Longer than 111? Nope.
+    labeled_counter_metric["1" * 112].add(1)
     # Non-ASCII? Nope.
     labeled_counter_metric["Â møøse"].add(1)
 
