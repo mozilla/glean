@@ -13969,6 +13969,7 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <ul>
 <li>Increase the maximum label length to 111 (<a href="https://github.com/mozilla/glean/pull/3108">#3108</a>)</li>
 <li>Allow <code>test_get_{attribution|distribution}</code> to wait on init if in progress (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1959515">bug 1959515</a>)</li>
+<li>Fix race where setting ping enabled, ping registered, server knobs, debug tag, source tag, logging, ping submission, attribution, or distribution could crash if it comes in between init being called and the Global Glean being setup. (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1959771">bug 1959771</a>)</li>
 </ul>
 </li>
 </ul>

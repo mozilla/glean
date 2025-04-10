@@ -1386,6 +1386,7 @@
 <a href="#1386" id="1386">1386</a>
 <a href="#1387" id="1387">1387</a>
 <a href="#1388" id="1388">1388</a>
+<a href="#1389" id="1389">1389</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -2275,7 +2276,7 @@
 /// and all pending pings of that type to be deleted.
 </span><span class="kw">pub fn </span>set_ping_enabled(ping: <span class="kw-2">&amp;</span>PingType, enabled: bool) {
     <span class="kw">let </span>ping = ping.clone();
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         <span class="kw">crate</span>::launch_with_glean_mut(<span class="kw">move </span>|glean| glean.set_ping_enabled(<span class="kw-2">&amp;</span>ping, enabled));
     } <span class="kw">else </span>{
         <span class="kw">let </span>m = <span class="kw-2">&amp;</span>PRE_INIT_PING_ENABLED;
@@ -2290,7 +2291,7 @@
     // we dispatch ping registration on the thread pool.
     // Registering a ping should not block the application.
     // Submission itself is also dispatched, so it will always come after the registration.
-    </span><span class="kw">if </span>was_initialize_called() {
+    </span><span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         <span class="kw">let </span>ping = ping.clone();
         <span class="kw">crate</span>::launch_with_glean_mut(<span class="kw">move </span>|glean| {
             glean.register_ping_type(<span class="kw-2">&amp;</span>ping);
@@ -2404,7 +2405,7 @@
 /// This will return `false` in case `tag` is not a valid tag and `true` otherwise.
 /// If called before Glean is initialized it will always return `true`.
 </span><span class="kw">pub fn </span>glean_set_debug_view_tag(tag: String) -&gt; bool {
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         <span class="kw">crate</span>::launch_with_glean_mut(<span class="kw">move </span>|glean| {
             glean.set_debug_view_tag(<span class="kw-2">&amp;</span>tag);
         });
@@ -2442,7 +2443,7 @@
 /// * `tags` - A vector of at most 5 valid HTTP header values. Individual
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
 </span><span class="kw">pub fn </span>glean_set_source_tags(tags: Vec&lt;String&gt;) -&gt; bool {
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         <span class="kw">crate</span>::launch_with_glean_mut(|glean| {
             glean.set_source_tags(tags);
         });
@@ -2467,7 +2468,7 @@
 ///
 /// * `value` - The value of the log pings option
 </span><span class="kw">pub fn </span>glean_set_log_pings(value: bool) {
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         <span class="kw">crate</span>::launch_with_glean_mut(<span class="kw">move </span>|glean| {
             glean.set_log_pings(value);
         });
@@ -2564,7 +2565,8 @@
         <span class="kw">return </span><span class="bool-val">false</span>;
     }
 
-    core::with_glean(|glean| glean.submit_ping_by_name(<span class="kw-2">&amp;</span>ping_name, reason.as_deref()))
+    core::with_opt_glean(|glean| glean.submit_ping_by_name(<span class="kw-2">&amp;</span>ping_name, reason.as_deref()))
+        .unwrap_or(<span class="bool-val">false</span>)
 }
 
 <span class="doccomment">/// EXPERIMENTAL: Register a listener object to recieve notifications of event recordings.
@@ -2659,7 +2661,7 @@
 <span class="doccomment">/// Updates attribution fields with new values.
 /// AttributionMetrics fields with `None` values will not overwrite older values.
 </span><span class="kw">pub fn </span>glean_update_attribution(attribution: AttributionMetrics) {
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         core::with_glean(|glean| glean.update_attribution(attribution));
     } <span class="kw">else </span>{
         PRE_INIT_ATTRIBUTION
@@ -2682,7 +2684,7 @@
 <span class="doccomment">/// Updates distribution fields with new values.
 /// DistributionMetrics fields with `None` values will not overwrite older values.
 </span><span class="kw">pub fn </span>glean_update_distribution(distribution: DistributionMetrics) {
-    <span class="kw">if </span>was_initialize_called() {
+    <span class="kw">if </span>was_initialize_called() &amp;&amp; core::global_glean().is_some() {
         core::with_glean(|glean| glean.update_distribution(distribution));
     } <span class="kw">else </span>{
         PRE_INIT_DISTRIBUTION
