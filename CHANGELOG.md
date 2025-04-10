@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.1.0...main)
 
+* General
+  * Increase the maximum label length to 111 ([#3108](https://github.com/mozilla/glean/pull/3108))
+
 # v64.1.0 (2025-04-07)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...v64.1.0)

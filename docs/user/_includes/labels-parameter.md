@@ -4,7 +4,7 @@ Labeled metrics may have an optional `labels` parameter, containing a list of kn
 The labels in this list must match the following requirements:
 
 * Conform to the [label format](index.md#label-format).
-* Each label must have a maximum of 71 characters.
+* Each label must have a maximum of 111 characters.
 * Each label must only contain printable ASCII characters.
 * This list itself is limited to 4096 labels.
 
