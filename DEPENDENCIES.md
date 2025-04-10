@@ -2068,7 +2068,7 @@ The following text applies to code linked from these dependencies:
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.9]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.14]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.15]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [errno 0.3.3]( https://github.com/lambda-fairy/rust-errno )
@@ -4711,7 +4711,7 @@ SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [glean-build 17.1.0]( https://github.com/mozilla/glean )
-* [glean 64.1.0]( https://github.com/mozilla/glean )
+* [glean 64.1.1]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -5095,7 +5095,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 64.1.0]( https://github.com/mozilla/glean )
+* [glean-core 64.1.1]( https://github.com/mozilla/glean )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )
