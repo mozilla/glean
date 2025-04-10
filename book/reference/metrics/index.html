@@ -279,7 +279,7 @@ Only the first 16 labels seen by Glean will be tracked. After that, any addition
 <p><strong>Note</strong>: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).</p>
 </blockquote>
 <h3 id="label-format"><a class="header" href="#label-format">Label format</a></h3>
-<p>Labels must not exceed 71 characters in length, and may comprise any printable ASCII characters.</p>
+<p>Labels must have a maximum of 71 characters, and may comprise any printable ASCII characters.</p>
 <h2 id="adding-or-changing-metric-types"><a class="header" href="#adding-or-changing-metric-types">Adding or changing metric types</a></h2>
 <p>Glean has a <a href="https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types">well-defined process</a> for requesting changes to existing metric types or suggesting the implementation of new metric types:</p>
 <ol>
