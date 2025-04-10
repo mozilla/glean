@@ -412,7 +412,7 @@
 
 <span class="kw">const </span>MAX_LABELS: usize = <span class="number">16</span>;
 <span class="kw">const </span>OTHER_LABEL: <span class="kw-2">&amp;</span>str = <span class="string">"__other__"</span>;
-<span class="kw">const </span>MAX_LABEL_LENGTH: usize = <span class="number">71</span>;
+<span class="kw">const </span>MAX_LABEL_LENGTH: usize = <span class="number">111</span>;
 
 <span class="doccomment">/// A labeled counter.
 </span><span class="kw">pub type </span>LabeledCounter = LabeledMetric&lt;CounterMetric&gt;;
@@ -660,7 +660,7 @@
     /// only the first 16 unique labels will be used.
     /// After that, any additional labels will be recorded under the special `OTHER_LABEL` label.
     ///
-    /// Labels must have a maximum of 71 characters, and may comprise any printable ASCII characters.
+    /// Labels must have a maximum of 111 characters, and may comprise any printable ASCII characters.
     /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
     </span><span class="kw">pub fn </span>get&lt;S: AsRef&lt;str&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, label: S) -&gt; Arc&lt;T&gt; {
         <span class="kw">let </span>label = label.as_ref();

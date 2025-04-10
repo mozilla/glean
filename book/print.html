@@ -5790,7 +5790,7 @@ Only the first 16 labels seen by Glean will be tracked. After that, any addition
 <p><strong>Note</strong>: Be careful with using arbitrary strings as labels and make sure they can't accidentally contain identifying data (like directory paths or user input).</p>
 </blockquote>
 <h3 id="label-format"><a class="header" href="#label-format">Label format</a></h3>
-<p>Labels must have a maximum of 71 characters, and may comprise any printable ASCII characters.</p>
+<p>Labels must have a maximum of 111 characters, and may comprise any printable ASCII characters.</p>
 <h2 id="adding-or-changing-metric-types"><a class="header" href="#adding-or-changing-metric-types">Adding or changing metric types</a></h2>
 <p>Glean has a <a href="https://wiki.mozilla.org/Glean/Adding_or_changing_Glean_metric_types">well-defined process</a> for requesting changes to existing metric types or suggesting the implementation of new metric types:</p>
 <ol>
@@ -6071,7 +6071,7 @@ Glean.accessibility.features[&quot;high_contrast&quot;].set(false);
 <h4 id="limits-7"><a class="header" href="#limits-7">Limits</a></h4>
 <ul>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -6247,7 +6247,7 @@ assert(
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -6601,7 +6601,7 @@ Glean.stability.crashCount[&quot;native_code_crash&quot;].add(3);
 <li>Only increments</li>
 <li>Saturates at the largest value that can be represented as a 32-bit signed integer.</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -6780,7 +6780,7 @@ assert(
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -7164,7 +7164,7 @@ mozilla::glean::login::errors_by_stage.Get(&quot;server_auth&quot;_ns).Set(&quot
 </ul>
 </li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -7334,7 +7334,7 @@ assert(
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -9404,7 +9404,7 @@ The allowed values for <code>time_unit</code> are:</p>
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -9447,7 +9447,7 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <p>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</p>
 </li>
 <li>
-<p>Each label must have a maximum of 71 characters.</p>
+<p>Each label must have a maximum of 111 characters.</p>
 </li>
 <li>
 <p>Each label must only contain printable ASCII characters.</p>
@@ -10035,7 +10035,7 @@ which specifies the unit the incoming memory size values are recorded in.</p>
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -10062,7 +10062,7 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <li>The maximum memory size that can be recorded is 1 Terabyte (2<sup>40</sup> bytes).
 Larger sizes will be truncated to 1 Terabyte.</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -11876,7 +11876,7 @@ assert_eq!(
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -11903,7 +11903,7 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <li>The maximum value of <code>bucket_count</code> is 100.</li>
 <li>Only non-negative integer values may be recorded (<code>&gt;=0</code>).</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -12285,7 +12285,7 @@ refer to the <a href="reference/metrics/../yaml/metrics.html">metrics YAML regis
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
@@ -12309,7 +12309,7 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <h2 id="limits-29"><a class="header" href="#limits-29">Limits</a></h2>
 <ul>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each label must have a maximum of 71 characters.</li>
+<li>Each label must have a maximum of 111 characters.</li>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
@@ -13964,6 +13964,13 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.1.0...main">Full changelog</a></p>
+<ul>
+<li>General
+<ul>
+<li>Increase the maximum label length to 111 (<a href="https://github.com/mozilla/glean/pull/3108">#3108</a>)</li>
+</ul>
+</li>
+</ul>
 <h1 id="v6410-2025-04-07"><a class="header" href="#v6410-2025-04-07">v64.1.0 (2025-04-07)</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.0.1...v64.1.0">Full changelog</a></p>
 <ul>
