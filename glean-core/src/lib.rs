@@ -1287,6 +1287,7 @@ pub fn glean_update_attribution(attribution: AttributionMetrics) {
 /// Returns the current attribution metrics.
 /// Panics if called before init.
 pub fn glean_test_get_attribution() -> AttributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_attribution())
 }
 
@@ -1309,6 +1310,7 @@ pub fn glean_update_distribution(distribution: DistributionMetrics) {
 /// Returns the current distribution metrics.
 /// Panics if called before init.
 pub fn glean_test_get_distribution() -> DistributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_distribution())
 }
 
