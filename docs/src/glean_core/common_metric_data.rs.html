@@ -147,11 +147,16 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::sync::atomic::{AtomicU8, Ordering};
+
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{Error, ErrorKind};
 <span class="kw">use </span><span class="kw">crate</span>::metrics::labeled::validate_dynamic_label;
@@ -161,7 +166,7 @@
 <span class="doccomment">/// The supported metrics' lifetimes.
 ///
 /// A metric's lifetime determines when its stored data gets reset.
-</span><span class="attr">#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
+</span><span class="attr">#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default, MallocSizeOf)]
 #[repr(i32)] </span><span class="comment">// Use i32 to be compatible with our JNA definition
 </span><span class="attr">#[serde(rename_all = <span class="string">"lowercase"</span>)]
 </span><span class="kw">pub enum </span>Lifetime {
@@ -199,7 +204,7 @@
 }
 
 <span class="doccomment">/// The common set of data shared across all different metric types.
-</span><span class="attr">#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+</span><span class="attr">#[derive(Default, Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
 </span><span class="kw">pub struct </span>CommonMetricData {
     <span class="doccomment">/// The metric's name.
     </span><span class="kw">pub </span>name: String,
@@ -222,10 +227,11 @@
     </span><span class="kw">pub </span>dynamic_label: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
-<span class="attr">#[derive(Default, Debug)]
+<span class="attr">#[derive(Default, Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>CommonMetricDataInternal {
     <span class="kw">pub </span>inner: CommonMetricData,
-    <span class="kw">pub </span>disabled: AtomicU8,
+    <span class="attr">#[ignore_malloc_size_of = <span class="string">"atomic integers never allocate (bug 1960589)"</span>]
+    </span><span class="kw">pub </span>disabled: AtomicU8,
 }
 
 <span class="kw">impl </span>Clone <span class="kw">for </span>CommonMetricDataInternal {

@@ -1306,6 +1306,16 @@
 <a href="#1306" id="1306">1306</a>
 <a href="#1307" id="1307">1307</a>
 <a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
+<a href="#1318" id="1318">1318</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1322,6 +1332,8 @@
 
 <span class="kw">use </span>chrono::{DateTime, FixedOffset, Utc};
 
+<span class="kw">use </span>malloc_size_of::MallocSizeOf;
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::{json, Value <span class="kw">as </span>JsonValue};
 
@@ -1336,7 +1348,7 @@
 <span class="kw">use crate</span>::{CommonMetricData, CounterMetric, Lifetime};
 
 <span class="doccomment">/// Represents the recorded data for a single event.
-</span><span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, MallocSizeOf)]
 #[cfg_attr(test, derive(Default))]
 </span><span class="kw">pub struct </span>RecordedEvent {
     <span class="doccomment">/// The timestamp of when the event was recorded.
@@ -1362,7 +1374,9 @@
 }
 
 <span class="doccomment">/// Represents the stored data for a single event.
-</span><span class="attr">#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(
+    Debug, Clone, Deserialize, Serialize, PartialEq, Eq, malloc_size_of_derive::MallocSizeOf,
+)]
 </span><span class="kw">struct </span>StoredEvent {
     <span class="attr">#[serde(flatten)]
     </span>event: RecordedEvent,
@@ -1405,6 +1419,12 @@
     </span>event_stores: RwLock&lt;HashMap&lt;String, Vec&lt;StoredEvent&gt;&gt;&gt;,
     <span class="doccomment">/// A lock to be held when doing operations on the filesystem
     </span>file_lock: Mutex&lt;()&gt;,
+}
+
+<span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>EventDatabase {
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="self">self</span>.event_stores.read().unwrap().size_of(ops)
+    }
 }
 
 <span class="kw">impl </span>EventDatabase {

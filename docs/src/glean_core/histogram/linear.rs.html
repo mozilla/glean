@@ -176,6 +176,7 @@
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -183,6 +184,7 @@
 </span><span class="kw">use </span>std::cmp;
 <span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -214,7 +216,7 @@
 ///
 /// Buckets are pre-computed at instantiation with a linear  distribution from `min` to `max`
 /// and `bucket_count` buckets.
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>PrecomputedLinear {
     <span class="comment">// Don't serialize the (potentially large) array of ranges, instead compute them on first
     // access.

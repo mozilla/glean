@@ -267,6 +267,7 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -276,6 +277,7 @@
 </span><span class="kw">use </span>std::any::TypeId;
 <span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -290,7 +292,7 @@
 <span class="kw">mod </span>linear;
 
 <span class="doccomment">/// Different kinds of histograms.
-</span><span class="attr">#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Clone, Copy, Serialize, Deserialize, MallocSizeOf)]
 #[serde(rename_all = <span class="string">"lowercase"</span>)]
 </span><span class="kw">pub enum </span>HistogramType {
     <span class="doccomment">/// A histogram with linear distributed buckets.
@@ -328,7 +330,7 @@
 /// assert_eq!(10, hist.count());
 /// assert_eq!(55, hist.sum());
 /// ```
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>Histogram&lt;B&gt; {
     <span class="doccomment">/// Mapping bucket's minimum to sample count.
     </span>values: HashMap&lt;u64, u64&gt;,

@@ -204,12 +204,14 @@
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -262,7 +264,7 @@
 ///
 /// Buckets are pre-computed at instantiation with an exponential distribution from `min` to `max`
 /// and `bucket_count` buckets.
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>PrecomputedExponential {
     <span class="comment">// Don't serialize the (potentially large) array of ranges, instead compute them on first
     // access.

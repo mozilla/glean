@@ -372,15 +372,19 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::borrow::Cow;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
+
 <span class="kw">use super</span>::{metrics::<span class="kw-2">*</span>, CommonMetricData, LabeledMetricData, Lifetime};
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>CoreMetrics {
     <span class="kw">pub </span>client_id: UuidMetric,
     <span class="kw">pub </span>first_run_date: DatetimeMetric,
@@ -393,7 +397,7 @@
     <span class="kw">pub </span>distribution_name: StringMetric,
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>AdditionalMetrics {
     <span class="doccomment">/// The number of times we encountered an IO error
     /// when writing a pending ping to disk.
@@ -573,7 +577,7 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>UploadMetrics {
     <span class="kw">pub </span>ping_upload_failure: LabeledMetric&lt;CounterMetric&gt;,
     <span class="kw">pub </span>discarded_exceeding_pings_size: MemoryDistributionMetric,
@@ -697,7 +701,7 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>DatabaseMetrics {
     <span class="kw">pub </span>size: MemoryDistributionMetric,
 

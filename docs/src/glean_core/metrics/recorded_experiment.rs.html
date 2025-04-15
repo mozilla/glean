@@ -33,17 +33,19 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::{json, Map <span class="kw">as </span>JsonMap, Value <span class="kw">as </span>JsonValue};
 
 <span class="doccomment">/// Deserialized experiment data.
-</span><span class="attr">#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+</span><span class="attr">#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>RecordedExperiment {
     <span class="doccomment">/// The experiment's branch as set through [`set_experiment_active`](crate::glean_set_experiment_active).
     </span><span class="kw">pub </span>branch: String,

@@ -182,12 +182,14 @@
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use super</span>::{Bucketing, Histogram};
@@ -202,7 +204,7 @@
 /// i = ⌊n log&lt;sub&gt;base&lt;/sub&gt;(𝑥)⌋
 ///
 /// In other words, there are n buckets for each power of `base` magnitude.
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>Functional {
     exponent: f64,
 }

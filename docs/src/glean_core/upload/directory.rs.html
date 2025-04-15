@@ -495,6 +495,30 @@
 <a href="#495" id="495">495</a>
 <a href="#496" id="496">496</a>
 <a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -506,6 +530,8 @@
 <span class="kw">use </span>std::io::{BufRead, BufReader};
 <span class="kw">use </span>std::path::{Path, PathBuf};
 
+<span class="kw">use </span>malloc_size_of::MallocSizeOf;
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>uuid::Uuid;
 
@@ -513,7 +539,7 @@
 <span class="kw">use crate</span>::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
 <span class="doccomment">/// A representation of the data extracted from a ping file,
-</span><span class="attr">#[derive(Clone, Debug, Default)]
+</span><span class="attr">#[derive(Clone, Debug, Default, MallocSizeOf)]
 </span><span class="kw">pub struct </span>PingPayload {
     <span class="doccomment">/// The ping's doc_id.
     </span><span class="kw">pub </span>document_id: String,
@@ -536,6 +562,28 @@
 </span><span class="kw">pub struct </span>PingPayloadsByDirectory {
     <span class="kw">pub </span>pending_pings: Vec&lt;(u64, PingPayload)&gt;,
     <span class="kw">pub </span>deletion_request_pings: Vec&lt;(u64, PingPayload)&gt;,
+}
+
+<span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>PingPayloadsByDirectory {
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="comment">// SAFETY: We own the referenced `Vec`s and can hand out pointers to them
+        // to an external function.
+        </span><span class="kw">let </span>shallow_size = <span class="kw">unsafe </span>{
+            ops.malloc_size_of(<span class="self">self</span>.pending_pings.as_ptr())
+                + ops.malloc_size_of(<span class="self">self</span>.deletion_request_pings.as_ptr())
+        };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>n = shallow_size;
+        <span class="kw">for </span>elem <span class="kw">in </span><span class="self">self</span>.pending_pings.iter() {
+            n += elem.<span class="number">0</span>.size_of(ops);
+            n += elem.<span class="number">1</span>.size_of(ops);
+        }
+        <span class="kw">for </span>elem <span class="kw">in </span><span class="self">self</span>.deletion_request_pings.iter() {
+            n += elem.<span class="number">0</span>.size_of(ops);
+            n += elem.<span class="number">1</span>.size_of(ops);
+        }
+        n
+    }
 }
 
 <span class="kw">impl </span>PingPayloadsByDirectory {
@@ -605,7 +653,7 @@
 </span>}
 
 <span class="doccomment">/// Manages the pings directories.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, MallocSizeOf)]
 </span><span class="kw">pub struct </span>PingDirectoryManager {
     <span class="doccomment">/// Path to the pending pings directory.
     </span>pending_pings_dir: PathBuf,

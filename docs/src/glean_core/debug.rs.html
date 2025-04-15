@@ -316,6 +316,19 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -345,12 +358,16 @@
 
 </span><span class="kw">use </span>std::env;
 
+<span class="kw">use </span>malloc_size_of::MallocSizeOf;
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
+
 <span class="kw">const </span>GLEAN_LOG_PINGS: <span class="kw-2">&amp;</span>str = <span class="string">"GLEAN_LOG_PINGS"</span>;
 <span class="kw">const </span>GLEAN_DEBUG_VIEW_TAG: <span class="kw-2">&amp;</span>str = <span class="string">"GLEAN_DEBUG_VIEW_TAG"</span>;
 <span class="kw">const </span>GLEAN_SOURCE_TAGS: <span class="kw-2">&amp;</span>str = <span class="string">"GLEAN_SOURCE_TAGS"</span>;
 <span class="kw">const </span>GLEAN_MAX_SOURCE_TAGS: usize = <span class="number">5</span>;
 
 <span class="doccomment">/// A representation of all of Glean's debug options.
+</span><span class="attr">#[derive(MallocSizeOf)]
 </span><span class="kw">pub struct </span>DebugOptions {
     <span class="doccomment">/// Option to log the payload of pings that are successfully assembled into a ping request.
     </span><span class="kw">pub </span>log_pings: DebugOption&lt;bool&gt;,
@@ -399,6 +416,15 @@
     <span class="doccomment">/// Optional function to validate the value parsed from the environment
     /// or passed to the `set` function.
     </span>validation: <span class="prelude-ty">Option</span>&lt;V&gt;,
+}
+
+<span class="kw">impl</span>&lt;T, E, V&gt; MallocSizeOf <span class="kw">for </span>DebugOption&lt;T, E, V&gt;
+<span class="kw">where
+    </span>T: MallocSizeOf,
+{
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="self">self</span>.env.size_of(ops) + <span class="self">self</span>.value.size_of(ops)
+    }
 }
 
 <span class="kw">impl</span>&lt;T, E, V&gt; DebugOption&lt;T, E, V&gt;

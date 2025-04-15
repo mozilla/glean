@@ -1158,6 +1158,10 @@
 <a href="#1158" id="1158">1158</a>
 <a href="#1159" id="1159">1159</a>
 <a href="#1160" id="1160">1160</a>
+<a href="#1161" id="1161">1161</a>
+<a href="#1162" id="1162">1162</a>
+<a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1169,6 +1173,7 @@
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>chrono::{DateTime, FixedOffset};
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 
 <span class="kw">use </span><span class="kw">crate</span>::database::Database;
@@ -1307,7 +1312,7 @@
 ///
 /// In specific language bindings, this is usually wrapped in a singleton and all metric recording goes to a single instance of this object.
 /// In the Rust core, it is possible to create multiple instances, which is used in testing.
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>Glean {
     upload_enabled: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) data_store: <span class="prelude-ty">Option</span>&lt;Database&gt;,
@@ -1319,15 +1324,18 @@
     data_path: PathBuf,
     application_id: String,
     ping_registry: HashMap&lt;String, PingType&gt;,
-    start_time: DateTime&lt;FixedOffset&gt;,
+    <span class="attr">#[ignore_malloc_size_of = <span class="string">"external non-allocating type"</span>]
+    </span>start_time: DateTime&lt;FixedOffset&gt;,
     max_events: u32,
     is_first_run: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) upload_manager: PingUploadManager,
     debug: DebugOptions,
     <span class="kw">pub</span>(<span class="kw">crate</span>) app_build: String,
     <span class="kw">pub</span>(<span class="kw">crate</span>) schedule_metrics_pings: bool,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) remote_settings_epoch: AtomicU8,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) remote_settings_config: Arc&lt;Mutex&lt;RemoteSettingsConfig&gt;&gt;,
+    <span class="attr">#[ignore_malloc_size_of = <span class="string">"atomic integers never allocate (bug 1960589)"</span>]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) remote_settings_epoch: AtomicU8,
+    <span class="attr">#[ignore_malloc_size_of = <span class="string">"TODO: Expose Glean's inner memory allocations (bug 1960592)"</span>]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) remote_settings_config: Arc&lt;Mutex&lt;RemoteSettingsConfig&gt;&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) with_timestamps: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) ping_schedule: HashMap&lt;String, Vec&lt;String&gt;&gt;,
 }

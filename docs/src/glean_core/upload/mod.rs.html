@@ -1973,6 +1973,50 @@
 <a href="#1973" id="1973">1973</a>
 <a href="#1974" id="1974">1974</a>
 <a href="#1975" id="1975">1975</a>
+<a href="#1976" id="1976">1976</a>
+<a href="#1977" id="1977">1977</a>
+<a href="#1978" id="1978">1978</a>
+<a href="#1979" id="1979">1979</a>
+<a href="#1980" id="1980">1980</a>
+<a href="#1981" id="1981">1981</a>
+<a href="#1982" id="1982">1982</a>
+<a href="#1983" id="1983">1983</a>
+<a href="#1984" id="1984">1984</a>
+<a href="#1985" id="1985">1985</a>
+<a href="#1986" id="1986">1986</a>
+<a href="#1987" id="1987">1987</a>
+<a href="#1988" id="1988">1988</a>
+<a href="#1989" id="1989">1989</a>
+<a href="#1990" id="1990">1990</a>
+<a href="#1991" id="1991">1991</a>
+<a href="#1992" id="1992">1992</a>
+<a href="#1993" id="1993">1993</a>
+<a href="#1994" id="1994">1994</a>
+<a href="#1995" id="1995">1995</a>
+<a href="#1996" id="1996">1996</a>
+<a href="#1997" id="1997">1997</a>
+<a href="#1998" id="1998">1998</a>
+<a href="#1999" id="1999">1999</a>
+<a href="#2000" id="2000">2000</a>
+<a href="#2001" id="2001">2001</a>
+<a href="#2002" id="2002">2002</a>
+<a href="#2003" id="2003">2003</a>
+<a href="#2004" id="2004">2004</a>
+<a href="#2005" id="2005">2005</a>
+<a href="#2006" id="2006">2006</a>
+<a href="#2007" id="2007">2007</a>
+<a href="#2008" id="2008">2008</a>
+<a href="#2009" id="2009">2009</a>
+<a href="#2010" id="2010">2010</a>
+<a href="#2011" id="2011">2011</a>
+<a href="#2012" id="2012">2012</a>
+<a href="#2013" id="2013">2013</a>
+<a href="#2014" id="2014">2014</a>
+<a href="#2015" id="2015">2015</a>
+<a href="#2016" id="2016">2016</a>
+<a href="#2017" id="2017">2017</a>
+<a href="#2018" id="2018">2018</a>
+<a href="#2019" id="2019">2019</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1989,6 +2033,7 @@
 
 </span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::collections::VecDeque;
+<span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 <span class="kw">use </span>std::sync::{Arc, RwLock, RwLockWriteGuard};
@@ -1996,6 +2041,8 @@
 <span class="kw">use </span>std::time::{Duration, Instant};
 
 <span class="kw">use </span>chrono::Utc;
+<span class="kw">use </span>malloc_size_of::MallocSizeOf;
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::ErrorKind;
 <span class="kw">use </span><span class="kw">crate</span>::TimerId;
@@ -2016,7 +2063,7 @@
 
 <span class="kw">const </span>WAIT_TIME_FOR_PING_PROCESSING: u64 = <span class="number">1000</span>; <span class="comment">// in milliseconds
 
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">struct </span>RateLimiter {
     <span class="doccomment">/// The instant the current interval has started.
     </span>started: <span class="prelude-ty">Option</span>&lt;Instant&gt;,
@@ -2189,6 +2236,47 @@
     </span>policy: Policy,
 
     in_flight: RwLock&lt;HashMap&lt;String, (TimerId, TimerId)&gt;&gt;,
+}
+
+<span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>PingUploadManager {
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="kw">let </span>shallow_size = {
+            <span class="kw">let </span>queue = <span class="self">self</span>.queue.read().unwrap();
+            <span class="kw">if </span>ops.has_malloc_enclosing_size_of() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(front) = queue.front() {
+                    <span class="comment">// SAFETY: The front element is a valid interior pointer and thus valid to pass
+                    // to an external function.
+                    </span><span class="kw">unsafe </span>{ ops.malloc_enclosing_size_of(front) }
+                } <span class="kw">else </span>{
+                    <span class="comment">// This assumes that no memory is allocated when the VecDeque is empty.
+                    </span><span class="number">0
+                </span>}
+            } <span class="kw">else </span>{
+                <span class="comment">// If `ops` can't estimate the size of a pointer,
+                // we can estimate the allocation size by the size of each element and the
+                // allocated capacity.
+                </span>queue.capacity() * mem::size_of::&lt;PingRequest&gt;()
+            }
+        };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>n = shallow_size
+            + <span class="self">self</span>.directory_manager.size_of(ops)
+            <span class="comment">// SAFETY: We own this arc and can pass a pointer to it to an external function.
+            </span>+ <span class="kw">unsafe </span>{ ops.malloc_size_of(<span class="self">self</span>.processed_pending_pings.as_ptr()) }
+            + <span class="self">self</span>.cached_pings.read().unwrap().size_of(ops)
+            + <span class="self">self</span>.rate_limiter.as_ref().map(|rl| {
+                <span class="kw">let </span>lock = rl.read().unwrap();
+                (<span class="kw-2">*</span>lock).size_of(ops)
+            }).unwrap_or(<span class="number">0</span>)
+            + <span class="self">self</span>.language_binding_name.size_of(ops)
+            + <span class="self">self</span>.upload_metrics.size_of(ops)
+            + <span class="self">self</span>.policy.size_of(ops);
+
+        <span class="kw">let </span>in_flight = <span class="self">self</span>.in_flight.read().unwrap();
+        n += in_flight.size_of(ops);
+
+        n
+    }
 }
 
 <span class="kw">impl </span>PingUploadManager {

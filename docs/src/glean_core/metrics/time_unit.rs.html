@@ -114,19 +114,21 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::time::Duration;
 
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{Error, ErrorKind};
 
 <span class="doccomment">/// Different resolutions supported by the time related
 /// metric types (e.g. DatetimeMetric).
-</span><span class="attr">#[derive(Copy, Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+</span><span class="attr">#[derive(Copy, Clone, Debug, Deserialize, Serialize, PartialEq, Eq, MallocSizeOf)]
 #[serde(rename_all = <span class="string">"lowercase"</span>)]
 #[repr(i32)] </span><span class="comment">// use i32 to be compatible with our JNA definition
 </span><span class="kw">pub enum </span>TimeUnit {

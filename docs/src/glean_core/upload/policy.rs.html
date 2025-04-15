@@ -110,13 +110,17 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="doccomment">//! Policies for ping storage, uploading and requests.
 
-</span><span class="kw">const </span>MAX_RECOVERABLE_FAILURES: u32 = <span class="number">3</span>;
+</span><span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
+
+<span class="kw">const </span>MAX_RECOVERABLE_FAILURES: u32 = <span class="number">3</span>;
 <span class="kw">const </span>MAX_WAIT_ATTEMPTS: u32 = <span class="number">3</span>;
 <span class="kw">const </span>MAX_PING_BODY_SIZE: usize = <span class="number">1024 </span>* <span class="number">1024</span>; <span class="comment">// 1 MB
 </span><span class="kw">const </span>MAX_PENDING_PINGS_DIRECTORY_SIZE: u64 = <span class="number">10 </span>* <span class="number">1024 </span>* <span class="number">1024</span>; <span class="comment">// 10MB
@@ -130,7 +134,7 @@
 </span><span class="kw">const </span>MAX_PENDING_PINGS_COUNT: u64 = <span class="number">250</span>;
 
 <span class="doccomment">/// A struct holding the values for all the policies related to ping storage, uploading and requests.
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>Policy {
     <span class="doccomment">/// The maximum recoverable failures allowed per uploading window.
     ///

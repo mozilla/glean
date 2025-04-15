@@ -744,6 +744,19 @@
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
 <a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -753,6 +766,8 @@
 <span class="kw">use </span>std::sync::atomic::{AtomicUsize, Ordering};
 <span class="kw">use </span>std::sync::{Arc, Mutex};
 <span class="kw">use </span>std::time::Duration;
+
+<span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 
 <span class="kw">use </span><span class="kw">crate</span>::common_metric_data::CommonMetricDataInternal;
 <span class="kw">use </span><span class="kw">crate</span>::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -782,7 +797,7 @@
 ///
 /// Its internals are considered private,
 /// but due to UniFFI's behavior we expose its field for now.
-</span><span class="attr">#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+</span><span class="attr">#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, MallocSizeOf)]
 </span><span class="kw">pub struct </span>TimerId {
     <span class="doccomment">/// This timer's id.
     </span><span class="kw">pub </span>id: u64,
@@ -809,6 +824,17 @@
     time_unit: TimeUnit,
     next_id: Arc&lt;AtomicUsize&gt;,
     start_times: Arc&lt;Mutex&lt;HashMap&lt;TimerId, u64&gt;&gt;&gt;,
+}
+
+<span class="kw">impl </span>::malloc_size_of::MallocSizeOf <span class="kw">for </span>TimingDistributionMetric {
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="comment">// Note: This is behind an `Arc`.
+        // `size_of` should only be called on the main thread to avoid double-counting.
+        </span><span class="self">self</span>.meta.size_of(ops)
+            + <span class="self">self</span>.time_unit.size_of(ops)
+            + <span class="self">self</span>.next_id.size_of(ops)
+            + <span class="self">self</span>.start_times.lock().unwrap().size_of(ops)
+    }
 }
 
 <span class="doccomment">/// Create a snapshot of the histogram with a time unit.
