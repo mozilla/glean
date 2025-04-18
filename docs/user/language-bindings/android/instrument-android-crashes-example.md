@@ -98,7 +98,7 @@ to execute and generate the API files that represent the metric and ping that we
 building any time one of the Glean YAML files has been modified.  
 
 It is recommended that Glean be initialized as early in the application startup as possible, which is why it's good to use a
-custom `Application`, like the Glean Sample App [`GleanApplication.kt`](https://github.com/mozilla/glean/blob/main/samples/android/app/src/main/java/org/mozilla/samples/glean/GleanApplication.kt).
+custom `Application`, like the Glean Sample App [`GleanApplication.kt`](https://github.com/mozilla/glean/blob/main/samples/android/app/src/main/java/org/mozilla/samples/gleancore/GleanApplication.kt).
 
 Initializing Glean in the `Application.onCreate()` is ideal for this purpose.  Start by adding the import statement to allow
 the usage of the custom ping that was created, adding the following to the top of the file:
