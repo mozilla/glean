@@ -33,7 +33,22 @@ gfx::display.get("height").set(height);
 </div>
 
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GfxMetrics.h"
+
+mozilla::glean::gfx::display.Get("width"_ns").Set(aWidth);
+mozilla::glean::gfx::display.Get("height"_ns").Set(aHeight);
+```
+
+**JavaScript**
+```js
+Glean.gfx.display.width.set(aWidth);
+Glean.gfx.display["height"].set(aHeight);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -75,7 +90,25 @@ assert_eq!(42, gfx::display.get("height").test_get_value(None).unwrap());
 </div>
 
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+```cpp
+#include "mozilla/glean/GfxMetrics.h"
+
+ASSERT_EQ(
+    433,
+    mozilla::glean::gfx::display.Get("width"_ns).TestGetValue().unwrap().ref));
+ASSERT_EQ(
+    42,
+    mozilla::glean::gfx::display.Get("height"_ns).TestGetValue().unwrap().ref));
+```
+
+**JavaScript**
+```js
+Assert.equal(433, Glean.gfx.display.width.testGetValue());
+Assert.equal(42, Glean.gfx.display["height"].testGetValue());
+```
 
 {{#include ../../../shared/tab_footer.md}}
 
