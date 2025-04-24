@@ -12175,7 +12175,18 @@ gfx::display.get(&quot;height&quot;).set(height);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+<p><strong>C++</strong></p>
+<pre><code class="language-cpp">#include &quot;mozilla/glean/GfxMetrics.h&quot;
+
+mozilla::glean::gfx::display.Get(&quot;width&quot;_ns&quot;).Set(aWidth);
+mozilla::glean::gfx::display.Get(&quot;height&quot;_ns&quot;).Set(aHeight);
+</code></pre>
+<p><strong>JavaScript</strong></p>
+<pre><code class="language-js">Glean.gfx.display.width.set(aWidth);
+Glean.gfx.display[&quot;height&quot;].set(aHeight);
+</code></pre>
+</div>
 </div>
 </div>
 <h4 id="limits-28"><a class="header" href="#limits-28">Limits</a></h4>
@@ -12216,7 +12227,21 @@ assert_eq!(42, gfx::display.get(&quot;height&quot;).test_get_value(None).unwrap(
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+<p><strong>C++</strong></p>
+<pre><code class="language-cpp">#include &quot;mozilla/glean/GfxMetrics.h&quot;
+
+ASSERT_EQ(
+    433,
+    mozilla::glean::gfx::display.Get(&quot;width&quot;_ns).TestGetValue().unwrap().ref));
+ASSERT_EQ(
+    42,
+    mozilla::glean::gfx::display.Get(&quot;height&quot;_ns).TestGetValue().unwrap().ref));
+</code></pre>
+<p><strong>JavaScript</strong></p>
+<pre><code class="language-js">Assert.equal(433, Glean.gfx.display.width.testGetValue());
+Assert.equal(42, Glean.gfx.display[&quot;height&quot;].testGetValue());
+</code></pre>
 </div>
 </div>
 <h3 id="testgetnumrecordederrors-19"><a class="header" href="#testgetnumrecordederrors-19"><code>testGetNumRecordedErrors</code></a></h3>
@@ -13670,7 +13695,7 @@ to execute and generate the API files that represent the metric and ping that we
 <p><strong>Note:</strong> If changes to the YAML files aren't showing up in the project, try running the clean task on the project before
 building any time one of the Glean YAML files has been modified.</p>
 <p>It is recommended that Glean be initialized as early in the application startup as possible, which is why it's good to use a
-custom <code>Application</code>, like the Glean Sample App <a href="https://github.com/mozilla/glean/blob/main/samples/android/app/src/main/java/org/mozilla/samples/glean/GleanApplication.kt"><code>GleanApplication.kt</code></a>.</p>
+custom <code>Application</code>, like the Glean Sample App <a href="https://github.com/mozilla/glean/blob/main/samples/android/app/src/main/java/org/mozilla/samples/gleancore/GleanApplication.kt"><code>GleanApplication.kt</code></a>.</p>
 <p>Initializing Glean in the <code>Application.onCreate()</code> is ideal for this purpose.  Start by adding the import statement to allow
 the usage of the custom ping that was created, adding the following to the top of the file:</p>
 <pre><code class="language-Kotlin">import org.mozilla.gleancrashexample.GleanMetrics.Pings
