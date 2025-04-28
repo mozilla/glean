@@ -76,6 +76,13 @@ when = "2024-01-24"
 user-id = 127697
 user-login = "bendk"
 
+[[publisher.wr_malloc_size_of]]
+version = "0.2.0"
+when = "2025-04-11"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
 [[publisher.zeitstempel]]
 version = "0.1.1"
 when = "2021-03-18"
@@ -945,6 +952,13 @@ delta = "1.0.216 -> 1.0.217"
 notes = "No changes"
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
+[[audits.google.audits.synstructure]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "safe-to-deploy"
+version = "0.13.1"
+notes = "Exposes unsafe codegen APIs but does not itself contain unsafe"
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
 [[audits.google.audits.unicode-ident]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
@@ -1189,6 +1203,17 @@ aggregated-from = "https://raw.githubusercontent.com/mozilla/cargo-vet/main/supp
 who = "Mike Hommey <mh+mozilla@glandium.org>"
 criteria = "safe-to-deploy"
 delta = "0.2.147 -> 0.2.148"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.malloc_size_of_derive]]
+who = "Bobby Holley <bobbyholley@gmail.com>"
+criteria = "safe-to-deploy"
+version = "0.1.2"
+notes = """
+This was originally servo code which I put on crates.io some years ago but didn't
+examine at the time, so I examined it now. I didn't perform a full logic review
+but convinced myself that any generated code will be entirely safe to deploy.
+"""
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.num-integer]]

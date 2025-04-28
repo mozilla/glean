@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "64.1.1"
+version = "64.2.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -43,6 +43,8 @@ thiserror = "1.0.4"
 uniffi = { version = "0.29.0", default-features = false }
 time = "0.1.40"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
+malloc_size_of_derive = "0.1.3"
+malloc_size_of = { version = "0.2.0", package = "wr_malloc_size_of", default-features = false, features = ["once_cell"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.12.0", default-features = false }
