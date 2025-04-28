@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...main)
+
+# v64.2.0 (2025-04-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.1.1...v64.2.0)
+
+* Rust
+  * Apply `malloc_size_of` to most types to gather heap-allocated memory ([#2794](https://github.com/mozilla/glean/pull/2794))
 
 # v64.1.1 (2025-04-10)
 
