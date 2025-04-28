@@ -6,8 +6,8 @@ if ! command -v wine64 >/dev/null; then
   exit 1
 fi
 
-if ! python3 --version | grep -q 3.8; then
-  echo "Python 3.8 required."
+if ! python3 --version | grep -q 3.9; then
+  echo "Python 3.9 required."
   echo "Use pyenv or your package manager to install it."
   exit 1
 fi
@@ -35,14 +35,14 @@ export WINEDEBUG=-all
 if [ ! -d "winpython" ]; then
   mkdir winpython
 
-  wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip -O winpython/python-3.8.2-embed-amd64.zip
-  unzip winpython/python-3.8.2-embed-amd64.zip -d winpython
+  wget https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip -O winpython/python-3.9.13-embed-amd64.zip
+  unzip winpython/python-3.9.13-embed-amd64.zip -d winpython
 fi
 
 if [ ! -f "winpython/Scripts/pip.exe" ]; then
   wget https://bootstrap.pypa.io/get-pip.py -O winpython/get-pip.py
   $WINPYTHON winpython/get-pip.py
-  echo "import site" >> winpython/python38._pth
+  echo "import site" >> winpython/python39._pth
   echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
 fi
 
