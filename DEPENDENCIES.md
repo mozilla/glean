@@ -1494,7 +1494,7 @@ The following text applies to code linked from these dependencies:
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.9]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
-* [crossbeam-channel 0.5.14]( https://github.com/crossbeam-rs/crossbeam )
+* [crossbeam-channel 0.5.15]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [errno 0.3.3]( https://github.com/lambda-fairy/rust-errno )
@@ -1508,6 +1508,7 @@ The following text applies to code linked from these dependencies:
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [linux-raw-sys 0.4.10]( https://github.com/sunfishcode/linux-raw-sys )
 * [log 0.4.25]( https://github.com/rust-lang/log )
+* [malloc_size_of_derive 0.1.3]( https://github.com/bholley/malloc_size_of_derive )
 * [mime 0.3.17]( https://github.com/hyperium/mime )
 * [num-integer 0.1.45]( https://github.com/rust-num/num-integer )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
@@ -1524,6 +1525,7 @@ The following text applies to code linked from these dependencies:
 * [unicode-normalization 0.1.22]( https://github.com/unicode-rs/unicode-normalization )
 * [url 2.3.1]( https://github.com/servo/rust-url )
 * [uuid 1.4.1]( https://github.com/uuid-rs/uuid )
+* [wr_malloc_size_of 0.2.0]( https://crates.io/crates/wr_malloc_size_of )
 
 ```
                               Apache License
@@ -3703,6 +3705,23 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
+* [synstructure 0.13.1]( https://github.com/mystor/synstructure )
+
+```
+Copyright 2016 Nika Layzell
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
 * [weedle2 5.0.0]( https://github.com/mozilla/uniffi-rs )
 
 ```
@@ -4164,9 +4183,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 64.0.1]( https://github.com/mozilla/glean )
-* [glean-build 17.0.1]( https://github.com/mozilla/glean )
-* [glean 64.0.1]( https://github.com/mozilla/glean )
+* [glean-core 64.2.0]( https://github.com/mozilla/glean )
+* [glean-build 17.1.0]( https://github.com/mozilla/glean )
+* [glean 64.2.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```

@@ -26,6 +26,7 @@ use std::time::Duration;
 
 use crossbeam_channel::unbounded;
 use log::LevelFilter;
+use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
@@ -113,7 +114,7 @@ static INIT_HANDLES: Lazy<Arc<Mutex<Vec<std::thread::JoinHandle<()>>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
 
 /// Configuration for Glean
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, MallocSizeOf)]
 pub struct InternalConfiguration {
     /// Whether upload should be enabled.
     pub upload_enabled: bool,
@@ -135,6 +136,8 @@ pub struct InternalConfiguration {
     /// Whether Glean should, on init, trim its event storage to only the registered pings.
     pub trim_data_to_registered_pings: bool,
     /// The internal logging level.
+    /// ignore
+    #[ignore_malloc_size_of = "external non-allocating type"]
     pub log_level: Option<LevelFilter>,
     /// The rate at which pings may be uploaded before they are throttled.
     pub rate_limit: Option<PingRateLimit>,
@@ -158,7 +161,7 @@ pub struct InternalConfiguration {
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, MallocSizeOf)]
 pub struct PingRateLimit {
     /// Length of time in seconds of a ping uploading interval.
     pub seconds_per_interval: u64,
@@ -887,7 +890,7 @@ pub fn glean_set_collection_enabled(enabled: bool) {
 /// and all pending pings of that type to be deleted.
 pub fn set_ping_enabled(ping: &PingType, enabled: bool) {
     let ping = ping.clone();
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         crate::launch_with_glean_mut(move |glean| glean.set_ping_enabled(&ping, enabled));
     } else {
         let m = &PRE_INIT_PING_ENABLED;
@@ -902,7 +905,7 @@ pub(crate) fn register_ping_type(ping: &PingType) {
     // we dispatch ping registration on the thread pool.
     // Registering a ping should not block the application.
     // Submission itself is also dispatched, so it will always come after the registration.
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         let ping = ping.clone();
         crate::launch_with_glean_mut(move |glean| {
             glean.register_ping_type(&ping);
@@ -1016,7 +1019,7 @@ pub fn glean_apply_server_knobs_config(json: String) {
 /// This will return `false` in case `tag` is not a valid tag and `true` otherwise.
 /// If called before Glean is initialized it will always return `true`.
 pub fn glean_set_debug_view_tag(tag: String) -> bool {
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         crate::launch_with_glean_mut(move |glean| {
             glean.set_debug_view_tag(&tag);
         });
@@ -1054,7 +1057,7 @@ pub fn glean_get_debug_view_tag() -> Option<String> {
 /// * `tags` - A vector of at most 5 valid HTTP header values. Individual
 ///   tags must match the regex: "[a-zA-Z0-9-]{1,20}".
 pub fn glean_set_source_tags(tags: Vec<String>) -> bool {
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         crate::launch_with_glean_mut(|glean| {
             glean.set_source_tags(tags);
         });
@@ -1079,7 +1082,7 @@ pub fn glean_set_source_tags(tags: Vec<String>) -> bool {
 ///
 /// * `value` - The value of the log pings option
 pub fn glean_set_log_pings(value: bool) {
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         crate::launch_with_glean_mut(move |glean| {
             glean.set_log_pings(value);
         });
@@ -1176,7 +1179,8 @@ pub fn glean_submit_ping_by_name_sync(ping_name: String, reason: Option<String>)
         return false;
     }
 
-    core::with_glean(|glean| glean.submit_ping_by_name(&ping_name, reason.as_deref()))
+    core::with_opt_glean(|glean| glean.submit_ping_by_name(&ping_name, reason.as_deref()))
+        .unwrap_or(false)
 }
 
 /// EXPERIMENTAL: Register a listener object to recieve notifications of event recordings.
@@ -1271,7 +1275,7 @@ pub fn glean_set_dirty_flag(new_value: bool) {
 /// Updates attribution fields with new values.
 /// AttributionMetrics fields with `None` values will not overwrite older values.
 pub fn glean_update_attribution(attribution: AttributionMetrics) {
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         core::with_glean(|glean| glean.update_attribution(attribution));
     } else {
         PRE_INIT_ATTRIBUTION
@@ -1287,13 +1291,14 @@ pub fn glean_update_attribution(attribution: AttributionMetrics) {
 /// Returns the current attribution metrics.
 /// Panics if called before init.
 pub fn glean_test_get_attribution() -> AttributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_attribution())
 }
 
 /// Updates distribution fields with new values.
 /// DistributionMetrics fields with `None` values will not overwrite older values.
 pub fn glean_update_distribution(distribution: DistributionMetrics) {
-    if was_initialize_called() {
+    if was_initialize_called() && core::global_glean().is_some() {
         core::with_glean(|glean| glean.update_distribution(distribution));
     } else {
         PRE_INIT_DISTRIBUTION
@@ -1309,6 +1314,7 @@ pub fn glean_update_distribution(distribution: DistributionMetrics) {
 /// Returns the current distribution metrics.
 /// Panics if called before init.
 pub fn glean_test_get_distribution() -> DistributionMetrics {
+    join_init();
     core::with_glean(|glean| glean.test_get_distribution())
 }
 

@@ -94,6 +94,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: log</name>
     <url>https://github.com/rust-lang/log</url>
   </license>  <license>
+    <name>Apache License 2.0: malloc_size_of_derive</name>
+    <url>https://github.com/bholley/malloc_size_of_derive</url>
+  </license>  <license>
     <name>Apache License 2.0: mime</name>
     <url>https://github.com/hyperium/mime</url>
   </license>  <license>
@@ -141,6 +144,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: uuid</name>
     <url>https://github.com/uuid-rs/uuid</url>
+  </license>  <license>
+    <name>Apache License 2.0: wr_malloc_size_of</name>
+    <url>https://crates.io/crates/wr_malloc_size_of</url>
   </license>  <license>
     <name>Apache License 2.0: minimal-lexical</name>
     <url>https://github.com/Alexhuszagh/minimal-lexical</url>
@@ -249,6 +255,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: bytes</name>
     <url>https://github.com/tokio-rs/bytes</url>
+  </license>  <license>
+    <name>MIT License: synstructure</name>
+    <url>https://github.com/mystor/synstructure</url>
   </license>  <license>
     <name>MIT License: weedle2</name>
     <url>https://github.com/mozilla/uniffi-rs</url>

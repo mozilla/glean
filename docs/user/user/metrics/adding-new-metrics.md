@@ -116,7 +116,7 @@ This is especially useful when metrics need to be tightly related to one another
 
 ## What should this new metric be called?
 
-Metric names have a maximum length of 30 characters.
+Metric names have a maximum length of 70 characters.
 
 ### Reuse names from other applications
 

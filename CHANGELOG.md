@@ -1,6 +1,26 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...main)
+
+# v64.2.0 (2025-04-28)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.1.1...v64.2.0)
+
+* Rust
+  * Apply `malloc_size_of` to most types to gather heap-allocated memory ([#2794](https://github.com/mozilla/glean/pull/2794))
+
+# v64.1.1 (2025-04-10)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.1.0...v64.1.1)
+
+* General
+  * Increase the maximum label length to 111 ([#3108](https://github.com/mozilla/glean/pull/3108))
+  * Allow `test_get_{attribution|distribution}` to wait on init if in progress ([bug 1959515](https://bugzilla.mozilla.org/show_bug.cgi?id=1959515))
+  * Fix race where setting ping enabled, ping registered, server knobs, debug tag, source tag, logging, ping submission, attribution, or distribution could crash if it comes in between init being called and the Global Glean being setup. ([bug 1959771](https://bugzilla.mozilla.org/show_bug.cgi?id=1959771))
+
+# v64.1.0 (2025-04-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.0.1...v64.1.0)
 
 * General
   * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))

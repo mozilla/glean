@@ -219,7 +219,7 @@ commands:
           name: Set up dependencies for Python for Windows
           command: |
             echo "export WINEDEBUG=-all" >> $BASH_ENV
-            wget https://bootstrap.pypa.io/get-pip.py
+            wget https://bootstrap.pypa.io/pip/3.8/get-pip.py
             $WINPYTHON get-pip.py
             echo "import site" >> winpython/python38._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
@@ -422,21 +422,6 @@ jobs:
             - docs/docs
             - docs/shared
             - docs/index.html
-
-  Package Rust crates dry-run:
-    docker:
-      # Should always be the same version as the publish step below
-      - image: cimg/rust:1.82
-    steps:
-      - checkout
-      - run:
-          name: Package Cargo Package
-          command: |
-            pushd glean-core
-            cargo package --verbose
-
-            pushd rlb
-            cargo package --verbose
 
   Publish Rust crates:
     docker:
@@ -1120,10 +1105,6 @@ workflows:
           filters: *ci-filters
       # iOS jobs run only on main by default, see below for manual-approved jobs
       - iOS build and test:
-          filters:
-            branches:
-              only: main
-      - Package Rust crates dry-run:
           filters:
             branches:
               only: main

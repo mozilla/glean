@@ -205,8 +205,8 @@ class LabeledMetricTypeTest {
             labeledCounterMetric["__other__"].testGetValue(),
         )
 
-        // More than 71 characters? Not okay.
-        labeledCounterMetric["1".repeat(72)].add(1)
+        // More than 111 characters? Not okay.
+        labeledCounterMetric["1".repeat(112)].add(1)
         // Not ASCII? Not okay.
         labeledCounterMetric["Møøse"].add(1)
         assertEquals(
@@ -259,8 +259,8 @@ class LabeledMetricTypeTest {
             labeledBooleanMetric["__other__"].testGetValue(),
         )
 
-        // More than 71 characters? Not okay.
-        labeledBooleanMetric["1".repeat(72)].set(true)
+        // More than 112 characters? Not okay.
+        labeledBooleanMetric["1".repeat(112)].set(true)
         // Not ASCII? Not okay.
         labeledBooleanMetric["Møøse"].set(true)
         assertEquals(
@@ -313,8 +313,8 @@ class LabeledMetricTypeTest {
             labeledStringMetric["__other__"].testGetValue(),
         )
 
-        // More than 71 characters? Not okay.
-        labeledStringMetric["1".repeat(72)].set("foo")
+        // More than 111 characters? Not okay.
+        labeledStringMetric["1".repeat(112)].set("foo")
         // Not ASCII? Not okay.
         labeledStringMetric["Møøse"].set("foo")
         assertEquals(

@@ -37,8 +37,8 @@ where:
 | ----- | ----------- | ------ | ----- | ----- |
 | `ping` | The ping name this data is stored for | `[a-z0-9-]` | 30 |
 | `category` | The metric's category | `[a-z0-9._]` | 40 | Empty string possible. |
-| `name` | The metric's name | `[a-z0-9._#]` | 30 |
-| `label` | The label (optional) | `[a-z0-9._-]` | 71 |
+| `name` | The metric's name | `[a-z0-9._#]` | 70 |
+| `label` | The label (optional) | `[a-z0-9._-]` | 111 |
 
 _\* The maximum length is not enforced for internal metrics, but is enforced for user metrics as per schema definition._
 
