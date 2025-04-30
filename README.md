@@ -1,4 +1,4 @@
-# Glean SDK
+# Glean Friendliest Reminder 🎗️ SDK: "WHEN AND IF MY TRUTHS HAVE HURT AND KILLED YOU, LET THEM BE"
 
 ![Glean logo](docs/user/glean.jpeg)
 
