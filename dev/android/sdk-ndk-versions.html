@@ -197,9 +197,9 @@
 <li>Download link: <a href="https://dl.google.com/android/repository/commandlinetools-linux-12700392_latest.zip">https://dl.google.com/android/repository/commandlinetools-linux-12700392_latest.zip</a></li>
 </ul>
 </li>
-<li>NDK r28
+<li>NDK r28b
 <ul>
-<li>Download link: <a href="https://dl.google.com/android/repository/android-ndk-r28-linux.zip">https://dl.google.com/android/repository/android-ndk-r28-linux.zip</a></li>
+<li>Download link: <a href="https://dl.google.com/android/repository/android-ndk-r28b-linux.zip">https://dl.google.com/android/repository/android-ndk-r28b-linux.zip</a></li>
 </ul>
 </li>
 </ul>
@@ -218,7 +218,7 @@ All locations need to be updated on upgrades:</p>
 <li><code>.circleci/config.yml</code>
 <ul>
 <li><code>sdkmanager 'build-tools;35.0.0'</code></li>
-<li><code>image: circleci/android:2024.01.1-browsers</code></li>
+<li><code>image: circleci/android:2025.04.1-browsers</code></li>
 </ul>
 </li>
 <li><code>taskcluster/docker/linux/Dockerfile</code>.
@@ -226,7 +226,7 @@ All locations need to be updated on upgrades:</p>
 <li><code>ENV ANDROID_BUILD_TOOLS &quot;35.0.0&quot;</code></li>
 <li><code>ENV ANDROID_SDK_VERSION &quot;12700392&quot;</code></li>
 <li><code>ENV ANDROID_PLATFORM_VERSION &quot;35&quot;</code></li>
-<li><code>ENV ANDROID_NDK_VERSION &quot;28.0.13004108&quot;</code></li>
+<li><code>ENV ANDROID_NDK_VERSION &quot;28.1.13356709&quot;</code></li>
 </ul>
 </li>
 </ul>
