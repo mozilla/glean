@@ -245,10 +245,10 @@ commands:
             rustup target add x86_64-pc-windows-gnu
             rustup target add i686-pc-windows-gnu
             # Set the linker to use for Rust/mingw
-            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
-            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
+            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config.toml
+            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config.toml
 
   install-ghr-darwin:
     steps:
@@ -560,8 +560,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -644,8 +644,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
