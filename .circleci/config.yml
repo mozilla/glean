@@ -147,7 +147,7 @@ commands:
           command: |
             sdkmanager \
               "build-tools;35.0.0" \
-              "ndk;28.0.13004108"
+              "ndk;28.1.13356709"
 
   android-setup:
     steps:
@@ -448,7 +448,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2025.03.1-browsers
+      - image: cimg/android:2025.04.1-browsers
     steps:
       - checkout
       - android-setup
@@ -458,7 +458,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2025.03.1-browsers
+      - image: cimg/android:2025.04.1-browsers
     steps:
       - checkout
       - skip-if-doc-only

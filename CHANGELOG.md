@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Android
+   * Updated to Android NDK r28b ([#3118](https://github.com/mozilla/glean/pull/3118))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...main)
 
 # v64.2.0 (2025-04-28)
