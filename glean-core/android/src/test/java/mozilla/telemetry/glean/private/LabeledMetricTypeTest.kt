@@ -364,7 +364,7 @@ class LabeledMetricTypeTest {
                 disabled = false,
                 category = "telemetry",
                 lifetime = Lifetime.APPLICATION,
-                name = "labeled_string_list_metric",
+                name = "labeled_boolean_metric",
                 sendInPings = listOf("metrics"),
             ),
         )
@@ -373,7 +373,7 @@ class LabeledMetricTypeTest {
             disabled = false,
             category = "telemetry",
             lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_list_metric",
+            name = "labeled_boolean_metric",
             sendInPings = listOf("metrics"),
             subMetric = booleanMetric,
         )
@@ -383,6 +383,34 @@ class LabeledMetricTypeTest {
 
         assertFalse(labeledBooleanMetric["label1"].testGetValue()!!)
         assertTrue(labeledBooleanMetric["label2"].testGetValue()!!)
+    }
+
+    @Test
+    fun `Test labeled quantity metric type`() {
+        val quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_quantity_metric",
+                sendInPings = listOf("metrics"),
+            ),
+        )
+
+        val labeledQuantityMetric = LabeledMetricType<QuantityMetricType>(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.APPLICATION,
+            name = "labeled_quantity_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = quantityMetric,
+        )
+
+        labeledQuantityMetric["label1"].set(42)
+        labeledQuantityMetric["label2"].set(43)
+
+        assertEquals(42, labeledQuantityMetric["label1"].testGetValue()!!)
+        assertEquals(43, labeledQuantityMetric["label2"].testGetValue()!!)
     }
 
     @Test(expected = IllegalStateException::class)

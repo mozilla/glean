@@ -9,7 +9,7 @@ from glean.metrics import Lifetime, CommonMetricData, LabeledMetricData
 from glean.testing import ErrorType
 
 
-def test_labeled_counter_type(ping_schema_url):
+def test_labeled_counter_type():
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
@@ -31,7 +31,7 @@ def test_labeled_counter_type(ping_schema_url):
     assert 2 == labeled_counter_metric["label2"].test_get_value()
 
 
-def test_labeled_boolean_type(ping_schema_url):
+def test_labeled_boolean_type():
     labeled_boolean_metric = metrics.LabeledBooleanMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
@@ -53,7 +53,7 @@ def test_labeled_boolean_type(ping_schema_url):
     assert not labeled_boolean_metric["label2"].test_get_value()
 
 
-def test_labeled_string_type(ping_schema_url):
+def test_labeled_string_type():
     labeled_string_metric = metrics.LabeledStringMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
@@ -75,7 +75,28 @@ def test_labeled_string_type(ping_schema_url):
     assert "bar" == labeled_string_metric["label2"].test_get_value()
 
 
-def test_other_label_with_predefined_labels(ping_schema_url):
+def test_labeled_quantity_type():
+    labeled_quantity_metric = metrics.LabeledQuantityMetricType(
+        LabeledMetricData.COMMON(
+            CommonMetricData(
+                disabled=False,
+                category="telemetry",
+                lifetime=Lifetime.APPLICATION,
+                name="labeled_quantity_metric",
+                send_in_pings=["metrics"],
+                dynamic_label=None,
+            )
+        )
+    )
+
+    labeled_quantity_metric["label1"].set(42)
+    labeled_quantity_metric["label2"].set(43)
+
+    assert 42 == labeled_quantity_metric["label1"].test_get_value()
+    assert 43 == labeled_quantity_metric["label2"].test_get_value()
+
+
+def test_other_label_with_predefined_labels():
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
@@ -103,7 +124,7 @@ def test_other_label_with_predefined_labels(ping_schema_url):
     assert 3 == labeled_counter_metric["not_there"].test_get_value()
 
 
-def test_other_label_without_predefined_labels(ping_schema_url):
+def test_other_label_without_predefined_labels():
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
