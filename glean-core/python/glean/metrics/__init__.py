@@ -32,6 +32,7 @@ from .object import ObjectMetricType, ObjectSerialize
 from .labeled import (
     LabeledBooleanMetricType,
     LabeledCounterMetricType,
+    LabeledQuantityMetricType,
     LabeledStringMetricType,
 )
 from .ping import PingType
@@ -54,6 +55,7 @@ __all__ = [
     "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
     "LabeledMetricData",
+    "LabeledQuantityMetricType",
     "LabeledStringMetricType",
     "Lifetime",
     "MemoryDistributionMetricType",

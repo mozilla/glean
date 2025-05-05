@@ -10,6 +10,7 @@ from .._uniffi import LabeledBoolean
 from .._uniffi import LabeledCounter
 from .._uniffi import LabeledMetricData
 from .._uniffi import LabeledString
+from .._uniffi import LabeledQuantity
 from ..testing import ErrorType
 
 
@@ -89,8 +90,13 @@ class LabeledStringMetricType(LabeledMetricBase):
     _ctor = LabeledString
 
 
+class LabeledQuantityMetricType(LabeledMetricBase):
+    _ctor = LabeledQuantity
+
+
 __all__ = [
     "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
+    "LabeledQuantityMetricType",
     "LabeledStringMetricType",
 ]
