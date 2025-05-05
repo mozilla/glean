@@ -797,12 +797,14 @@ dependencies = [
  "id-arena",
  "lazy_static",
  "log",
+ "malloc_size_of_derive",
  "ordered-float",
  "serde",
  "serde_derive",
  "thiserror",
  "url",
  "uuid",
+ "wr_malloc_size_of",
 ]
 
 [[package]]
@@ -1435,9 +1437,9 @@ dependencies = [
 
 [[package]]
 name = "wr_malloc_size_of"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afbb573017ba95ec7dcf91621ea30acc61f8c2599810c5f64b9b61b386528776"
+checksum = "482308b684f11723b200a32808094bb460b5ac4840903ccbcb78ad92a6354a1f"
 dependencies = [
  "once_cell",
 ]
