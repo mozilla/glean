@@ -577,6 +577,14 @@ fn initialize_inner(
     }
 }
 
+/// TODO
+pub fn alloc_size(ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
+    use malloc_size_of::MallocSizeOf;
+    core::with_glean(|glean| {
+        glean.size_of(ops)
+    })
+}
+
 /// TEST ONLY FUNCTION
 /// Waits on all the glean.init threads' join handles.
 pub fn join_init() {
