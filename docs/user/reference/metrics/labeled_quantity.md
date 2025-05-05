@@ -18,10 +18,45 @@ Sets a quantity metric to a specific value for the given label.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+ 
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+Gfx.display["width"].set(width)
+Gfx.display["heigth"].set(height)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+Gfx.INSTANCE.display()["width"].set(width)
+Gfx.INSTANCE.display()["heigth"].set(height)
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+Gfx.display["width"].set(width)
+Gfx.display["heigth"].set(heigth)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.gfx.display["width"].set(width)
+metrics.gfx.display["height"].set(heigth)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -66,18 +101,52 @@ Glean.gfx.display["height"].set(aHeight);
 
 ### `testGetValue`
 
-Gets the recorded value for a given label in a labeled quantity metric.
-Returns the quantity value if data is stored.
-Returns a language-specific empty/null value if no data is stored.
-Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+Gets the recorded value for a given label in a labeled quantity metric.  
+Returns the quantity value if data is stored.  
+Returns a language-specific empty/null value if no data is stored.  
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except  
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+assertEquals(433, Gfx.display["width"].testGetValue())
+assertEquals(42, Gfx.display["height"].testGetValue())
+```
+
+</div>
+<div data-lang="Java" class="tab">org
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+assertEquals(433, Gfx.INSTANCE.display()["width"].testGetValue());
+assertEquals(42, Gfx.INSTANCE.display()["height"].testGetValue());
+```
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+XCTAssertEqual(433, Gfx.display["width"].testGetValue())
+XCTAssertEqual(42, Gfx.display["heigth"].testGetValue())
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert 433 == metrics.gfx.display["width"].test_get_value()
+assert 42 == metrics.gfx.display["height"].test_get_value()
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -118,10 +187,60 @@ Gets the number of errors recorded for a given label in a labeled quantity metri
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+assertEquals(
+    0,
+    Gfx.display["width"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
+assertEquals(
+    42,
+    Gfx.display["height"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
+```
+
+</div>
+<div data-lang="Java" class="tab">org
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+assertEquals(
+    0,
+    Gfx.INSTANCE.display()["width"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
+assertEquals(
+    42,
+    Gfx.INSTANCE.display()["height"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
+```
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+XCTAssertEqual(0, Gfx.display["width"].testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Gfx.display["heigth"].testGetNumRecordedErrors(.invalidValue))
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+assert 0 == metrics.gfx.display["width"].test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+assert 0 == metrics.gfx.display["height"].test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -198,4 +317,7 @@ Labeled Quantities have the required `unit` parameter, which is a free-form stri
 
 ## Reference
 
+* Python API docs: [`LabeledQuantityMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledQuantityMetricType), [`QuantityMetricType`](../../../python/glean/metrics/index.html#glean.metrics.QuantityMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`QuantityMetric`](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`QuantityMetricType`](../../../docs/glean/private/struct.QuantityMetric.html)
+* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`QuantityMetric`](../../../swift/Classes/QuantityMetric.html)
