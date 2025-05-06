@@ -382,5 +382,10 @@ pub fn test_get_distribution() -> DistributionMetrics {
     glean_core::glean_test_get_distribution()
 }
 
+/// TODO
+pub fn alloc_size(ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
+    glean_core::alloc_size(ops)
+}
+
 #[cfg(test)]
 mod test;

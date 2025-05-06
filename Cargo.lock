@@ -718,8 +718,6 @@ dependencies = [
 [[package]]
 name = "rkv"
 version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c6d906922d99c677624d2042a93f89b2b7df0f6411032237d5d99a602c2487c"
 dependencies = [
  "arrayref",
  "bincode",
@@ -728,6 +726,7 @@ dependencies = [
  "id-arena",
  "lazy_static",
  "log",
+ "malloc_size_of_derive",
  "ordered-float",
  "paste",
  "serde",
@@ -735,6 +734,7 @@ dependencies = [
  "thiserror",
  "url",
  "uuid",
+ "wr_malloc_size_of",
 ]
 
 [[package]]
@@ -1241,8 +1241,6 @@ checksum = "ed94fce61571a4006852b7389a063ab983c02eb1bb37b47f8272ce92d06d9538"
 [[package]]
 name = "wr_malloc_size_of"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c7c9a8bd19d73e907d610b14b3545475c98ad9581e36f1b67044fd209b66c69"
 dependencies = [
  "once_cell",
 ]
