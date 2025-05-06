@@ -21,10 +21,9 @@ Sets a quantity metric to a specific value for the given label.
 <div data-lang="Kotlin" class="tab">
  
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Gfx
+{{#include labeled_quantity.rs:import}}
 
-Gfx.display["width"].set(width)
-Gfx.display["heigth"].set(height)
+{{#include labeled_quantity.rs:set}}
 ```
 
 </div>
@@ -112,10 +111,9 @@ in Rust where it's required. `None` or no argument will default to the first val
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Gfx
+{{#include labeled_quantity.rs:import}}
 
-assertEquals(433, Gfx.display["width"].testGetValue())
-assertEquals(42, Gfx.display["height"].testGetValue())
+{{#include labeled_quantity.rs:testGetValue}}
 ```
 
 </div>
@@ -190,16 +188,9 @@ Gets the number of errors recorded for a given label in a labeled quantity metri
 <div data-lang="Kotlin" class="tab">
 
 ```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Gfx
+{{#include labeled_quantity.rs:import}}
 
-assertEquals(
-    0,
-    Gfx.display["width"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
-)
-assertEquals(
-    42,
-    Gfx.display["height"].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
-)
+{{#include labeled_quantity.rs:testGetNumRecordedErrors}}
 ```
 
 </div>
