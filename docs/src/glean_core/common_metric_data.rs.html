@@ -149,7 +149,6 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -230,8 +229,7 @@
 <span class="attr">#[derive(Default, Debug, MallocSizeOf)]
 </span><span class="kw">pub struct </span>CommonMetricDataInternal {
     <span class="kw">pub </span>inner: CommonMetricData,
-    <span class="attr">#[ignore_malloc_size_of = <span class="string">"atomic integers never allocate (bug 1960589)"</span>]
-    </span><span class="kw">pub </span>disabled: AtomicU8,
+    <span class="kw">pub </span>disabled: AtomicU8,
 }
 
 <span class="kw">impl </span>Clone <span class="kw">for </span>CommonMetricDataInternal {
