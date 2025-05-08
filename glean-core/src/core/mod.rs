@@ -542,6 +542,7 @@ impl Glean {
         }
 
         let Some(ping) = self.ping_registry.get(ping) else {
+            log::trace!("Unknown ping {ping}. Assuming disabled.");
             return false;
         };
 
