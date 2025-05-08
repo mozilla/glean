@@ -203,6 +203,31 @@ class LabeledMetricTypeTests: XCTestCase {
         XCTAssertEqual(true, labeledBooleanMetric["label2"].testGetValue())
     }
 
+    func testLabeledQuantityType() {
+        let quantityMetric = QuantityMetricType(CommonMetricData(
+            category: "telemetry",
+            name: "labeled_quantity_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false
+        ))
+
+        let labeledQuantityMetric = try! LabeledMetricType<QuantityMetricType>(
+            category: "telemetry",
+            name: "labeled_quantity_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false,
+            subMetric: quantityMetric
+        )
+
+        labeledQuantityMetric["label1"].set(42)
+        labeledQuantityMetric["label2"].set(43)
+
+        XCTAssertEqual(42, labeledQuantityMetric["label1"].testGetValue())
+        XCTAssertEqual(43, labeledQuantityMetric["label2"].testGetValue())
+    }
+
     func testLabeledEventsThrowAnException() {
         let eventMetric = EventMetricType<NoExtras>(CommonMetricData(
             category: "telemetry",
