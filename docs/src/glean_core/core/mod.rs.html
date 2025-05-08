@@ -1161,6 +1161,7 @@
 <a href="#1161" id="1161">1161</a>
 <a href="#1162" id="1162">1162</a>
 <a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1705,6 +1706,7 @@
         }
 
         <span class="kw">let </span><span class="prelude-val">Some</span>(ping) = <span class="self">self</span>.ping_registry.get(ping) <span class="kw">else </span>{
+            <span class="macro">log::trace!</span>(<span class="string">"Unknown ping {ping}. Assuming disabled."</span>);
             <span class="kw">return </span><span class="bool-val">false</span>;
         };
 
