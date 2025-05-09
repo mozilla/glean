@@ -42,6 +42,33 @@ fn snapshot_labeled_metrics(
     obj.insert(label.into(), metric.as_json());
 }
 
+/// Labeled metrics are stored as `<metric id>/<label>`.
+/// They need to go into a nested object in the final snapshot.
+///
+/// We therefore extract the metric id and the label from the key and construct the new object or
+/// add to it.
+fn snapshot_dual_labeled_metrics(
+    snapshot: &mut HashMap<String, HashMap<String, JsonValue>>,
+    metric_id: &str,
+    metric: &Metric,
+) {
+    let ping_section = format!("dual_labeled_{}", metric.ping_section());
+    let map = snapshot.entry(ping_section).or_default();
+
+    // Safe unwrap, the function is only called when the id does contain a '/'
+    let parts = metric_id.split('\x1e').collect::<Vec<&str>>();
+
+    let obj = map
+        .entry(parts[0].into())
+        .or_insert_with(|| json!({}))
+        .as_object_mut()
+        .unwrap();
+    // safe unwrap, we constructed the object above
+    let key_obj = obj.entry(parts[1].to_string()).or_insert_with(|| json!({}));
+    let key_obj = key_obj.as_object_mut().unwrap();
+    key_obj.insert(parts[2].into(), metric.as_json());
+}
+
 impl StorageManager {
     /// Snapshots the given store and optionally clear it.
     ///
@@ -89,6 +116,8 @@ impl StorageManager {
             let metric_id = String::from_utf8_lossy(metric_id).into_owned();
             if metric_id.contains('/') {
                 snapshot_labeled_metrics(&mut snapshot, &metric_id, metric);
+            } else if metric_id.contains('\x1e') {
+                snapshot_dual_labeled_metrics(&mut snapshot, &metric_id, metric);
             } else {
                 let map = snapshot.entry(metric.ping_section().into()).or_default();
                 map.insert(metric_id, metric.as_json());

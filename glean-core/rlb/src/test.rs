@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
-use glean_core::glean_test_get_experimentation_id;
+use glean_core::{glean_test_get_experimentation_id, DynamicLabelType};
 use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
@@ -1273,7 +1273,7 @@ fn test_boolean_get_num_errors() {
         send_in_pings: vec!["custom1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: Some(str::to_string("asdf")),
+        dynamic_label: Some(DynamicLabelType::Label(str::to_string("asdf"))),
     });
 
     // Check specifically for an invalid label
@@ -1294,7 +1294,7 @@ fn test_text_can_hold_long_string() {
         send_in_pings: vec!["custom1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: Some(str::to_string("text")),
+        dynamic_label: Some(DynamicLabelType::Label(str::to_string("text"))),
     });
 
     // 216 characters, which would overflow StringMetric
