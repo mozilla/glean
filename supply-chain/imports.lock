@@ -77,8 +77,8 @@ user-id = 127697
 user-login = "bendk"
 
 [[publisher.wr_malloc_size_of]]
-version = "0.2.0"
-when = "2025-04-11"
+version = "0.2.1"
+when = "2025-05-07"
 user-id = 48
 user-login = "badboy"
 user-name = "Jan-Erik Rediger"
