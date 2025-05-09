@@ -4,6 +4,8 @@
 
 * Python
   * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
+* Rust
+  * Added new metric type (`DualLabeledCounter`) to support migration of legacy keyed-categorical histograms ([bug 1957085](https://bugzilla.mozilla.org/show_bug.cgi?id=1957085))
 * General
   * BUGFIX: Count distinct labels, not total labels, before spilling into `__other__` bucket ([#3157](https://github.com/mozilla/glean/pull/3157))
 

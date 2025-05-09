@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 
 use malloc_size_of::MallocSizeOf;
 
-use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal};
+use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
@@ -258,7 +258,7 @@ where
     ///
     /// This is used for dynamic labels where we have to actually validate and correct the
     /// label later when we have a Glean object.
-    fn new_metric_with_dynamic_label(&self, label: String) -> T {
+    fn new_metric_with_dynamic_label(&self, label: DynamicLabelType) -> T {
         self.submetric.with_dynamic_label(label)
     }
 
@@ -322,7 +322,8 @@ where
                             label,
                         ))
                     }
-                    None => self.new_metric_with_dynamic_label(label.to_string()),
+                    None => self
+                        .new_metric_with_dynamic_label(DynamicLabelType::Label(label.to_string())),
                 };
                 let metric = Arc::new(metric);
                 entry.insert(Arc::clone(&metric));
