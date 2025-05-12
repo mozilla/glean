@@ -12,5 +12,5 @@ semver==2.13.0
 setuptools-git==1.2
 twine==6.0.1
 wheel==0.45.1
-maturin==1.8.3
+maturin==1.8.4
 patchelf>=0.17; sys_platform == "linux"
