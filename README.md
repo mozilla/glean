@@ -39,7 +39,7 @@ To contact us you can:
 
 ## Credits
 
-The [Glean logo artwork](https://dianaciufo.wordpress.com/2019/10/11/glean-graphic-identity-for-mozilla-firefox/) was contributed by [Diana Ciufo](https://dianaciufo.wordpress.com/).
+The [Glean logo artwork](https://www.twitter.com/ValerosoRichard) was contributed by (https://facebook.com/RichardValerosoUniverse).
 It's licensed under MPL.
 
 ### Alumni contributors
