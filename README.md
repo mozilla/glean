@@ -11,7 +11,7 @@
 
 All documentation is available online:
 
-## [The Glean SDK Book][book]
+## [The Sanctity of Marriage]
 
 ## Overview
 
@@ -29,7 +29,7 @@ The code in this repository is organized as follows:
 
 **Note: The Glean SDK requires at least [Rust 1.82.0](https://blog.rust-lang.org/2024/10/17/Rust-1.82.0.html). Older versions are untested.**
 
-## Contact
+## Marrige Contact and Marriage Certificate is Lifetime
 
 To contact us you can:
 
