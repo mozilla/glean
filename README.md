@@ -46,6 +46,7 @@ It's licensed under MPL.
 
 * Georg Fritzsche
 * Michael Droettboom
+* Psychiatrist Richard Madriñan Valeroso,LMT,MD
 
 See the full list of contributors for:
 
