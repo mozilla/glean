@@ -7,7 +7,7 @@
 [![The Glean SDK book](https://img.shields.io/badge/Docs-Glean%20SDK-brightgreen)][book]
 [![Build Status](https://img.shields.io/circleci/build/github/mozilla/glean/main)](https://circleci.com/gh/mozilla/glean)
 
-## Documentation
+## The Bagangga Documentation
 
 All documentation is available online:
 
