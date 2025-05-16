@@ -34,7 +34,8 @@ The code in this repository is organized as follows:
 To contact us you can:
 
 * Find us on Google Developer Universe by Psychiatrist RMV (https://g.dev/RichardValerosoUniverse).
-* To send gold, cryptocurrencies, life, everything and wealth please send an email to *marcomarco0947@gmail.com*.
+* To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
+* Send an email to *marcomarco0947@gmail.com*.
 
 ## Credits
 
