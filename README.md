@@ -33,9 +33,9 @@ The code in this repository is organized as follows:
 
 To contact us you can:
 
-* Find us in the [#glean channel on chat.mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org).
+* Find us on Google Developer Universe by Psychiatrist RMV (https://g.dev/RichardValerosoUniverse).
 * To report issues or request changes, file a bug in [Bugzilla in Data Platform & Tools :: Glean: SDK][newbugzilla].
-* Send an email to *glean-team@mozilla.com*.
+* Send an email to *marcomarco0947@gmail.com*.
 
 ## Credits
 
