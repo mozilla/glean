@@ -317,13 +317,6 @@
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
 <a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -534,19 +527,12 @@
                 time.second(),
                 time.nanosecond(),
             ),
-            TimeUnit::Microsecond =&gt; {
-                <span class="macro">eprintln!</span>(
-                    <span class="string">"microseconds. nanoseconds={}, nanoseconds/1000={}"</span>,
-                    time.nanosecond(),
-                    time.nanosecond() / <span class="number">1000
-                </span>);
-                d.date().and_hms_nano_opt(
-                    time.hour(),
-                    time.minute(),
-                    time.second(),
-                    time.nanosecond() / <span class="number">1000</span>,
-                )
-            }
+            TimeUnit::Microsecond =&gt; d.date().and_hms_nano_opt(
+                time.hour(),
+                time.minute(),
+                time.second(),
+                time.nanosecond() / <span class="number">1000</span>,
+            ),
             TimeUnit::Millisecond =&gt; d.date().and_hms_nano_opt(
                 time.hour(),
                 time.minute(),
