@@ -39,7 +39,7 @@ once_cell = "1.18.0"
 flate2 = "1.0.19"
 zeitstempel = "0.1.0"
 crossbeam-channel = "0.5"
-thiserror = "1.0.4"
+thiserror = "2"
 uniffi = { version = "0.29.0", default-features = false }
 time = "0.3"
 env_logger = { version = "0.10.0", default-features = false, optional = true }
