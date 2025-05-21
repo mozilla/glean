@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UploadResult","UploadTaskAction"],"struct":["CapablePingUploadRequest","HttpUploader","PingRequest","PingUploadRequest"],"trait":["PingUploader"]};
