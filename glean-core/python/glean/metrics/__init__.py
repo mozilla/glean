@@ -27,6 +27,7 @@ from .._uniffi import NumeratorMetric as NumeratorMetricType
 from .._uniffi import QuantityMetric as QuantityMetricType
 from .._uniffi import RateMetric as RateMetricType
 from .._uniffi import StringListMetric as StringListMetricType
+from .._uniffi import TextMetric as TextMetricType
 
 # Export wrapper implementations for metric types
 from .datetime import DatetimeMetricType
@@ -74,6 +75,7 @@ __all__ = [
     "RecordedExperiment",
     "StringListMetricType",
     "StringMetricType",
+    "TextMetricType",
     "TimerId",
     "TimespanMetricType",
     "TimeUnit",
