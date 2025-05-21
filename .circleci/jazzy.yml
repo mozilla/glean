@@ -10,4 +10,4 @@ xcodebuild_arguments:
     - "-scheme"
     - "Glean"
     - "-destination"
-    - "platform=iOS Simulator,name=iPhone 14"
+    - "platform=iOS Simulator,name=iPhone 15"

@@ -144,7 +144,7 @@ uploadSwitch.addEventListener("change", event => {
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC16setCollectionEnabledyySbF)
+* [JavaScript API docs](https://mozilla.github.io/glean.js/reference/uploaders/#uploadenabled)
 * [Python API docs](../../../python/glean/index.html#glean.Glean.set_collection_enabled)
 * [Rust API docs](../../../docs/glean/fn.set_collection_enabled.html)
-* [JavaScript API docs](https://mozilla.github.io/glean.js/reference/uploaders/#uploadenabled)
+* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC20setCollectionEnabledyySbF)

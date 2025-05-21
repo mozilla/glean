@@ -333,6 +333,6 @@ N/A
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/CounterMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.CounterMetric)
-* [Rust API docs](../../../docs/glean/private/counter/struct.CounterMetric.html)
+* [Rust API docs](../../../docs/glean/private/struct.CounterMetric.html)
+* [Swift API docs](../../../swift/Classes/CounterMetric.html)

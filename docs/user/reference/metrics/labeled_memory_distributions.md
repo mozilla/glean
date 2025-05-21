@@ -201,4 +201,4 @@ The allowed values for `memory_unit` are:
 
 ## Reference
 
-* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`MemoryDistributionMetricType`](../../../docs/glean/private/struct.MemoryDistributionMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`MemoryDistributionMetric`](../../../docs/glean/private/struct.MemoryDistributionMetric.html)

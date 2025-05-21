@@ -30,7 +30,10 @@ if echo "$output" | grep -q "\[ERROR\]" ; then
     exit 1
 fi
 
-cargo doc --no-deps
+cargo doc --no-deps \
+  -p glean-core \
+  -p glean \
+  -p glean-build
 
 rm -rf build/docs
 mkdir -p build/docs

@@ -1,6 +1,22 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.3.0...main)
+
+# v64.3.0 (2025-05-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...v64.3.0)
+
+* Android
+   * Updated to Android NDK r28b ([#3118](https://github.com/mozilla/glean/pull/3118))
+* Kotlin
+   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+   * BUGFIX: Ensure the inner ping object is initialized before accessing it ([#3132](https://github.com/mozilla/glean/pull/3132))
+* Swift
+   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+* Python
+   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+   * Make rate metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
+   * Make text metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
 
 # v64.2.0 (2025-04-28)
 

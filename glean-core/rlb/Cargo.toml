@@ -1,6 +1,6 @@
 [package]
 name = "glean"
-version = "64.2.0"
+version = "64.3.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "Glean SDK Rust language bindings"
 repository = "https://github.com/mozilla/glean"
@@ -23,7 +23,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies.glean-core]
 path = ".."
-version = "64.2.0"
+version = "64.3.0"
 
 [dependencies]
 crossbeam-channel = "0.5"
@@ -31,7 +31,7 @@ inherent = "1"
 log = "0.4.8"
 once_cell = "1.18.0"
 whatsys = "0.3.0"
-malloc_size_of = { version = "0.2.0", package = "wr_malloc_size_of", default-features = false, features = ["once_cell"] }
+malloc_size_of = { version = "0.2.1", package = "wr_malloc_size_of", default-features = false, features = ["once_cell"] }
 
 [dev-dependencies]
 env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }

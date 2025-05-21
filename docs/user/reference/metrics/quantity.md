@@ -313,6 +313,6 @@ Quantities have the required `unit` parameter, which is a free-form string for d
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/QuantityMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.QuantityMetric)
-* [Rust API docs](../../../docs/glean/private/quantity/struct.QuantityMetric.html)
+* [Rust API docs](../../../docs/glean/private/struct.QuantityMetric.html)
+* [Swift API docs](../../../swift/Classes/QuantityMetric.html)

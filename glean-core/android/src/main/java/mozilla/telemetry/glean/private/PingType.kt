@@ -125,6 +125,8 @@ class PingType<ReasonCodesEnum> (
      * and all pending pings of that type to be deleted.
      */
     fun setEnabled(enabled: Boolean) {
-        this.innerPing.setEnabled(enabled)
+        Dispatchers.Delayed.launch {
+            this.innerPing.setEnabled(enabled)
+        }
     }
 }

@@ -460,4 +460,6 @@ network:
 
 ## Reference
 
-* [Rust API docs](../../../docs/glean/private/rate/struct.RateMetric.html)
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.RateMetric)
+* [Rust API docs](../../../docs/glean/private/struct.RateMetric.html)
+* [Swift API docs](../../../swift/Classes/RateMetric.html)

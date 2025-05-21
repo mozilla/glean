@@ -355,3 +355,9 @@ N/A
 ## Data questions
 
 * What is the base URL used to build the search query for the search engine?
+
+## Reference
+
+* [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.UrlMetricType)
+* [Rust API docs](../../../docs/glean/private/struct.UrlMetric.html)
+* [Swift API docs](../../../swift/Classes/UrlMetric.html)

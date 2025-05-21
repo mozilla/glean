@@ -147,7 +147,7 @@ commands:
           command: |
             sdkmanager \
               "build-tools;35.0.0" \
-              "ndk;28.0.13004108"
+              "ndk;28.1.13356709"
 
   android-setup:
     steps:
@@ -219,9 +219,9 @@ commands:
           name: Set up dependencies for Python for Windows
           command: |
             echo "export WINEDEBUG=-all" >> $BASH_ENV
-            wget https://bootstrap.pypa.io/pip/3.8/get-pip.py
+            wget https://bootstrap.pypa.io/get-pip.py
             $WINPYTHON get-pip.py
-            echo "import site" >> winpython/python38._pth
+            echo "import site" >> winpython/python39._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
             # The Windows-Python-installed-inside-Wine thing can't actually build wheels,
             # so just install all of the wheels that were created as part of creating the
@@ -245,10 +245,10 @@ commands:
             rustup target add x86_64-pc-windows-gnu
             rustup target add i686-pc-windows-gnu
             # Set the linker to use for Rust/mingw
-            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config
-            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config
+            echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config.toml
+            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config.toml
 
   install-ghr-darwin:
     steps:
@@ -448,7 +448,7 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2025.03.1-browsers
+      - image: cimg/android:2025.04.1-browsers
     steps:
       - checkout
       - android-setup
@@ -458,7 +458,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2025.03.1-browsers
+      - image: cimg/android:2025.04.1-browsers
     steps:
       - checkout
       - skip-if-doc-only
@@ -560,8 +560,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -644,8 +644,8 @@ jobs:
 
             # For some reason everything works fine if we use the host clang,
             # not the Xcode-bundled clang.
-            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config
-            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config
+            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
 
             # List available devices -- allows us to see what's there
             DEVICES=$(xcrun xctrace list devices 2>&1)
@@ -770,7 +770,7 @@ jobs:
 
   Python Windows x86_64 tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
     steps:
       - checkout
       - skip-if-doc-only
@@ -782,9 +782,10 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip
+            wget https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip
             mkdir winpython
-            unzip python-3.8.2-embed-amd64.zip -d winpython
+            unzip python-3.9.13-embed-amd64.zip -d winpython
+            rm python-3.9.13-embed-amd64.zip
             echo "export WINPYTHON=\"wine64-stable winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -792,7 +793,7 @@ jobs:
           command: |
             rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target x86_64-pc-windows-gnu
             # This preloads our bcryptprimitives shim.
-            shimpath='Z:\\\\home\\\\circleci\\\\project\\\\wine_shims\\\\bcryptprimitives.dll'
+            shimpath='Z:/home/circleci/project/wine_shims/bcryptprimitives.dll'
             echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
       - run:
           name: Run tests
@@ -801,7 +802,7 @@ jobs:
 
   Python Windows i686 tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
     steps:
       - checkout
       - skip-if-doc-only
@@ -815,9 +816,10 @@ jobs:
       - run:
           name: Install Python for Windows
           command: |
-            wget https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-win32.zip
+            wget https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-win32.zip
             mkdir winpython
-            unzip python-3.8.2-embed-win32.zip -d winpython
+            unzip python-3.9.13-embed-win32.zip -d winpython
+            rm python-3.9.13-embed-win32.zip
             echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
       - install-python-windows-deps
       - run:
@@ -825,7 +827,7 @@ jobs:
           command: |
             rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target i686-pc-windows-gnu
             # This preloads our bcryptprimitives shim.
-            shimpath='Z:\\\\home\\\\circleci\\\\project\\\\wine_shims\\\\bcryptprimitives.dll'
+            shimpath='Z:/home/circleci/project/wine_shims/bcryptprimitives.dll'
             echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
       - run:
           name: Run tests

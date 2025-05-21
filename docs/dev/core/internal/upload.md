@@ -141,10 +141,10 @@ fn process_ping_upload_response(&self, uuid: &str, status: UploadResult)
 
 See the documentation for further usage and explanation of the additional types:
 
-* [`get_upload_task`](../../../../docs/glean_core/struct.Glean.html#method.get_upload_task)
-* [`process_ping_upload_response`](../../../../docs/glean_core/struct.Glean.html#method.process_ping_upload_response)
-* [`PingUploadTask`](../../../../docs/glean_core/upload/enum.PingUploadTask.html)
-* [`UploadResult`](../../../../docs/glean_core/upload/enum.UploadResult.html)
+* [`get_upload_task`](../../../docs/glean_core/struct.Glean.html#method.get_upload_task)
+* [`process_ping_upload_response`](../../../docs/glean_core/struct.Glean.html#method.process_ping_upload_response)
+* [`PingUploadTask`](../../../docs/glean_core/upload/enum.PingUploadTask.html)
+* [`UploadResult`](../../../docs/glean_core/upload/enum.UploadResult.html)
 
 </div>
 

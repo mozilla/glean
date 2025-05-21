@@ -10,6 +10,12 @@ Glean requires Python 3.8 or later.
 
 Make sure it is installed on your system and accessible on the `PATH` as `python3`.
 
+{{#include ../../shared/blockquote-info.html}}
+
+## Development on Windows
+
+> Due to limitations of CI, we only test Windows on Python 3.9 or later.
+
 ### Setting up Rust
 
 If you've already set up Rust for building Glean for Android or iOS, you already have everything you need and can skip this section.

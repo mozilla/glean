@@ -51,6 +51,8 @@ public class LabeledMetricType<T> {
             self.inner = LabeledBoolean(.common(cmd: meta), labels)
         case is StringMetricType:
             self.inner = LabeledString(.common(cmd: meta), labels)
+        case is QuantityMetric:
+            self.inner = LabeledQuantity(.common(cmd: meta), labels)
         default:
             throw "Can not create a labeled version of this metric type"
         }
@@ -81,6 +83,8 @@ public class LabeledMetricType<T> {
             return (self.inner as! LabeledBoolean).get(label) as! T
         case is LabeledString:
             return (self.inner as! LabeledString).get(label) as! T
+        case is LabeledQuantity:
+            return (self.inner as! LabeledQuantity).get(label) as! T
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()
@@ -100,6 +104,8 @@ public class LabeledMetricType<T> {
             return (self.inner as! LabeledBoolean).testGetNumRecordedErrors(errorType)
         case is LabeledString:
             return (self.inner as! LabeledString).testGetNumRecordedErrors(errorType)
+        case is LabeledQuantity:
+            return (self.inner as! LabeledQuantity).testGetNumRecordedErrors(errorType)
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()
