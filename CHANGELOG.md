@@ -4,6 +4,7 @@
    * Updated to Android NDK r28b ([#3118](https://github.com/mozilla/glean/pull/3118))
 * Kotlin
    * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+   * BUGFIX: Ensure the inner ping object is initialized before accessing it ([#3132](https://github.com/mozilla/glean/pull/3132))
 * Swift
    * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
 * Python
