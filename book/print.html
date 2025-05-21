@@ -12163,10 +12163,33 @@ prefer using the <a href="reference/metrics/./labeled_counters.html">Labeled Cou
 <div class="tabs">
 <div class="tabbar"></div>
 <div class="tabcontents">
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+<pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+Gfx.display[&quot;width&quot;].set(width)
+Gfx.display[&quot;heigth&quot;].set(height)
+</code></pre>
+</div>
+<div data-lang="Java" class="tab">
+<pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+Gfx.INSTANCE.display()[&quot;width&quot;].set(width)
+Gfx.INSTANCE.display()[&quot;heigth&quot;].set(height)
+</code></pre>
+</div>
+<div data-lang="Swift" class="tab">
+<pre><code class="language-Swift">Gfx.display[&quot;width&quot;].set(width)
+Gfx.display[&quot;heigth&quot;].set(heigth)
+</code></pre>
+</div>
+<div data-lang="Python" class="tab">
+<pre><code class="language-Python">from glean import load_metrics
+metrics = load_metrics(&quot;metrics.yaml&quot;)
+
+metrics.gfx.display[&quot;width&quot;].set(width)
+metrics.gfx.display[&quot;height&quot;].set(heigth)
+</code></pre>
+</div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::gfx;
 
@@ -12206,18 +12229,41 @@ Glean.gfx.display[&quot;height&quot;].set(aHeight);
 </ul>
 <h2 id="testing-api-22"><a class="header" href="#testing-api-22">Testing API</a></h2>
 <h3 id="testgetvalue-19"><a class="header" href="#testgetvalue-19"><code>testGetValue</code></a></h3>
-<p>Gets the recorded value for a given label in a labeled quantity metric.
-Returns the quantity value if data is stored.
-Returns a language-specific empty/null value if no data is stored.
-Has an optional argument to specify the name of the ping you wish to retrieve data from, except
+<p>Gets the recorded value for a given label in a labeled quantity metric.<br />
+Returns the quantity value if data is stored.<br />
+Returns a language-specific empty/null value if no data is stored.<br />
+Has an optional argument to specify the name of the ping you wish to retrieve data from, except<br />
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
 <div class="tabbar"></div>
 <div class="tabcontents">
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+<pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+assertEquals(433, Gfx.display[&quot;width&quot;].testGetValue())
+assertEquals(42, Gfx.display[&quot;height&quot;].testGetValue())
+</code></pre>
+</div>
+<div data-lang="Java" class="tab">org
+<pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+assertEquals(433, Gfx.INSTANCE.display()[&quot;width&quot;].testGetValue());
+assertEquals(42, Gfx.INSTANCE.display()[&quot;height&quot;].testGetValue());
+</code></pre>
+</div>
+<div data-lang="Swift" class="tab">
+<pre><code class="language-Swift">XCTAssertEqual(433, Gfx.display[&quot;width&quot;].testGetValue())
+XCTAssertEqual(42, Gfx.display[&quot;heigth&quot;].testGetValue())
+</code></pre>
+</div>
+<div data-lang="Python" class="tab">
+<pre><code class="language-Python">from glean import load_metrics
+metrics = load_metrics(&quot;metrics.yaml&quot;)
+
+assert 433 == metrics.gfx.display[&quot;width&quot;].test_get_value()
+assert 42 == metrics.gfx.display[&quot;height&quot;].test_get_value()
+</code></pre>
+</div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::gfx;
 
@@ -12249,10 +12295,49 @@ Assert.equal(42, Glean.gfx.display[&quot;height&quot;].testGetValue());
 <div class="tabs">
 <div class="tabbar"></div>
 <div class="tabcontents">
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+<pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Gfx
+
+assertEquals(
+    0,
+    Gfx.display[&quot;width&quot;].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
+assertEquals(
+    42,
+    Gfx.display[&quot;height&quot;].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+)
+</code></pre>
+</div>
+<div data-lang="Java" class="tab">org
+<pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Gfx;
+
+assertEquals(
+    0,
+    Gfx.INSTANCE.display()[&quot;width&quot;].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
+assertEquals(
+    42,
+    Gfx.INSTANCE.display()[&quot;height&quot;].testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+);
+</code></pre>
+</div>
+<div data-lang="Swift" class="tab">
+<pre><code class="language-Swift">XCTAssertEqual(0, Gfx.display[&quot;width&quot;].testGetNumRecordedErrors(.invalidValue))
+XCTAssertEqual(0, Gfx.display[&quot;heigth&quot;].testGetNumRecordedErrors(.invalidValue))
+</code></pre>
+</div>
+<div data-lang="Python" class="tab">
+<pre><code class="language-Python">from glean import load_metrics
+metrics = load_metrics(&quot;metrics.yaml&quot;)
+
+assert 0 == metrics.gfx.display[&quot;width&quot;].test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+assert 0 == metrics.gfx.display[&quot;height&quot;].test_get_num_recorded_errors(
+    ErrorType.INVALID_VALUE
+)
+</code></pre>
+</div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean::ErrorType;
 use glean_metrics::gfx;
@@ -12347,7 +12432,10 @@ Unknown labels will be recorded under the special label <code>__other__</code>.<
 </ul>
 <h2 id="reference-23"><a class="header" href="#reference-23">Reference</a></h2>
 <ul>
+<li>Python API docs: <a href="reference/metrics/../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledQuantityMetricType"><code>LabeledQuantityMetricType</code></a>, <a href="reference/metrics/../../../python/glean/metrics/index.html#glean.metrics.QuantityMetric"><code>QuantityMetricType</code></a></li>
 <li>Rust API docs: <a href="reference/metrics/../../../docs/glean/private/struct.LabeledMetric.html"><code>LabeledMetric</code></a>, <a href="reference/metrics/../../../docs/glean/private/quantity/struct.QuantityMetric.html"><code>QuantityMetric</code></a></li>
+<li>Rust API docs: <a href="reference/metrics/../../../docs/glean/private/struct.LabeledMetric.html"><code>LabeledMetric</code></a>, <a href="reference/metrics/../../../docs/glean/private/struct.QuantityMetric.html"><code>QuantityMetricType</code></a></li>
+<li>Swift API docs: <a href="reference/metrics/../../../swift/Classes/LabeledMetricType.html"><code>LabeledMetricType</code></a>, <a href="reference/metrics/../../../swift/Classes/QuantityMetric.html"><code>QuantityMetric</code></a></li>
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/reference/metrics/labeled_quantity.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="rate"><a class="header" href="#rate">Rate</a></h1>
 <p>Used to count how often something happens relative to how often something else happens.
@@ -13992,6 +14080,21 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li>Android
 <ul>
 <li>Updated to Android NDK r28b (<a href="https://github.com/mozilla/glean/pull/3118">#3118</a>)</li>
+</ul>
+</li>
+<li>Kotlin
+<ul>
+<li>Added support for labeled quantity metric type (<a href="https://github.com/mozilla/glean/pull/3121">#3121</a>)</li>
+</ul>
+</li>
+<li>Swift
+<ul>
+<li>Added support for labeled quantity metric type (<a href="https://github.com/mozilla/glean/pull/3121">#3121</a>)</li>
+</ul>
+</li>
+<li>Python
+<ul>
+<li>Added support for labeled quantity metric type (<a href="https://github.com/mozilla/glean/pull/3121">#3121</a>)</li>
 </ul>
 </li>
 </ul>
