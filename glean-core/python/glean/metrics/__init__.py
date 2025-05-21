@@ -21,8 +21,11 @@ from .._uniffi import RecordedExperiment
 # Re-export some metrics directly
 from .._uniffi import BooleanMetric as BooleanMetricType
 from .._uniffi import CounterMetric as CounterMetricType
+from .._uniffi import DenominatorMetric as DenominatorMetricType
 from .._uniffi import MemoryDistributionMetric as MemoryDistributionMetricType
+from .._uniffi import NumeratorMetric as NumeratorMetricType
 from .._uniffi import QuantityMetric as QuantityMetricType
+from .._uniffi import RateMetric as RateMetricType
 from .._uniffi import StringListMetric as StringListMetricType
 
 # Export wrapper implementations for metric types
@@ -49,6 +52,7 @@ __all__ = [
     "CommonMetricData",
     "CounterMetricType",
     "DatetimeMetricType",
+    "DenominatorMetricType",
     "DistributionMetrics",
     "EventExtras",
     "EventMetricType",
@@ -60,17 +64,19 @@ __all__ = [
     "Lifetime",
     "MemoryDistributionMetricType",
     "MemoryUnit",
+    "NumeratorMetricType",
     "ObjectMetricType",
     "ObjectSerialize",
     "PingType",
     "QuantityMetricType",
+    "RateMetricType",
     "RecordedEvent",
     "RecordedExperiment",
     "StringListMetricType",
     "StringMetricType",
-    "TimeUnit",
     "TimerId",
     "TimespanMetricType",
+    "TimeUnit",
     "TimingDistributionMetricType",
     "UrlMetricType",
     "UuidMetricType",
