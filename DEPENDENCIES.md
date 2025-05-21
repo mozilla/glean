@@ -1525,7 +1525,7 @@ The following text applies to code linked from these dependencies:
 * [unicode-normalization 0.1.22]( https://github.com/unicode-rs/unicode-normalization )
 * [url 2.3.1]( https://github.com/servo/rust-url )
 * [uuid 1.4.1]( https://github.com/uuid-rs/uuid )
-* [wr_malloc_size_of 0.2.0]( https://crates.io/crates/wr_malloc_size_of )
+* [wr_malloc_size_of 0.2.1]( https://crates.io/crates/wr_malloc_size_of )
 
 ```
                               Apache License
@@ -4183,9 +4183,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 64.2.0]( https://github.com/mozilla/glean )
+* [glean-core 64.3.0]( https://github.com/mozilla/glean )
 * [glean-build 17.1.0]( https://github.com/mozilla/glean )
-* [glean 64.2.0]( https://github.com/mozilla/glean )
+* [glean 64.3.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.1.1]( https://github.com/badboy/zeitstempel )
 
 ```
