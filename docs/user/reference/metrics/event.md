@@ -395,7 +395,7 @@ Each extra key contains additional metadata along with it:
 ## Limits
 
 * In Glean.js the default value for `maxEvents` is 1. In all other SDKs it is 500.
-* Once the `maxEvents` threshold is reached on the client an "events" ping is immediately sent. 
+* Once the `maxEvents` threshold is reached on the client an "events" ping is immediately sent.
 * The `extra_keys` allows for a maximum of 50 keys.
 * The keys in the `extra_keys` list must be written using printable ASCII characters,
   with a maximum length of 40 bytes, when encoded as UTF-8.
@@ -404,6 +404,6 @@ Each extra key contains additional metadata along with it:
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/EventMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.EventMetricType)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)
+* [Swift API docs](../../../swift/Classes/EventMetric.html)

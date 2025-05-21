@@ -682,6 +682,6 @@ and use the largest possible value that will provide useful information so as to
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/TimespanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.TimespanMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.TimespanMetric.html)
+* [Swift API docs](../../../swift/Classes/TimespanMetric.html)
