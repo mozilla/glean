@@ -762,6 +762,137 @@ of the ping to retrieve the metric for.</dd>
 </dd>
 </dl>
 </dd>
+<dt id="glean.metrics.DenominatorMetric"><code class="flex name class">
+<span>class <span class="ident">DenominatorMetricType</span></span>
+<span>(</span><span>meta: "'<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>'",<br>numerators: "'typing.List[<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>]'")</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DenominatorMetric():
+    _pointer: ctypes.c_void_p
+    def __init__(self, meta: &#34;CommonMetricData&#34;,numerators: &#34;typing.List[CommonMetricData]&#34;):
+        _UniffiConverterTypeCommonMetricData.check_lower(meta)
+        
+        _UniffiConverterSequenceTypeCommonMetricData.check_lower(numerators)
+        
+        self._pointer = _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_constructor_denominatormetric_new,
+        _UniffiConverterTypeCommonMetricData.lower(meta),
+        _UniffiConverterSequenceTypeCommonMetricData.lower(numerators))
+
+    def __del__(self):
+        # In case of partial initialization of instances.
+        pointer = getattr(self, &#34;_pointer&#34;, None)
+        if pointer is not None:
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_free_denominatormetric, pointer)
+
+    def _uniffi_clone_pointer(self):
+        return _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_clone_denominatormetric, self._pointer)
+
+    # Used by alternative constructors or any methods which return this type.
+    @classmethod
+    def _make_instance_(cls, pointer):
+        # Lightly yucky way to bypass the usual __init__ logic
+        # and just create a new instance with the required pointer.
+        inst = cls.__new__(cls)
+        inst._pointer = pointer
+        return inst
+
+
+    def add(self, amount: &#34;int&#34;) -&gt; None:
+        _UniffiConverterInt32.check_lower(amount)
+        
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_add,self._uniffi_clone_pointer(),
+        _UniffiConverterInt32.lower(amount))
+
+
+
+
+
+
+    def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+        _UniffiConverterTypeErrorType.check_lower(error)
+        
+        return _UniffiConverterInt32.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+        _UniffiConverterTypeErrorType.lower(error))
+        )
+
+
+
+
+
+    def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[int]&#34;:
+        if ping_name is _DEFAULT:
+            ping_name = None
+        _UniffiConverterOptionalString.check_lower(ping_name)
+        
+        return _UniffiConverterOptionalInt32.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_test_get_value,self._uniffi_clone_pointer(),
+        _UniffiConverterOptionalString.lower(ping_name))
+        )</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="glean.metrics.DenominatorMetric.add"><code class="name flex">
+<span>def <span class="ident">add</span></span>(<span>self, amount: "'int'") ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add(self, amount: &#34;int&#34;) -&gt; None:
+    _UniffiConverterInt32.check_lower(amount)
+    
+    _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_add,self._uniffi_clone_pointer(),
+    _UniffiConverterInt32.lower(amount))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.DenominatorMetric.test_get_num_recorded_errors"><code class="name flex">
+<span>def <span class="ident">test_get_num_recorded_errors</span></span>(<span>self, error: "'ErrorType'") ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+    _UniffiConverterTypeErrorType.check_lower(error)
+    
+    return _UniffiConverterInt32.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+    _UniffiConverterTypeErrorType.lower(error))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.DenominatorMetric.test_get_value"><code class="name flex">
+<span>def <span class="ident">test_get_value</span></span>(<span>self,<br>ping_name: "'typing.Union[<a title="glean.metrics.object" href="object.html">glean.metrics.object</a>, typing.Optional[str]]'" = &lt;object object&gt;) ‑> int | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[int]&#34;:
+    if ping_name is _DEFAULT:
+        ping_name = None
+    _UniffiConverterOptionalString.check_lower(ping_name)
+    
+    return _UniffiConverterOptionalInt32.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_denominatormetric_test_get_value,self._uniffi_clone_pointer(),
+    _UniffiConverterOptionalString.lower(ping_name))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="glean.metrics.DistributionMetrics"><code class="flex name class">
 <span>class <span class="ident">DistributionMetrics</span></span>
 <span>(</span><span>*, name: "'typing.Optional[str]'" = &lt;object object&gt;)</span>
@@ -1643,6 +1774,134 @@ metric storage and rearrange them correctly in the ping.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="glean.metrics.NumeratorMetric"><code class="flex name class">
+<span>class <span class="ident">NumeratorMetricType</span></span>
+<span>(</span><span>meta: "'<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>'")</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NumeratorMetric():
+    _pointer: ctypes.c_void_p
+    def __init__(self, meta: &#34;CommonMetricData&#34;):
+        _UniffiConverterTypeCommonMetricData.check_lower(meta)
+        
+        self._pointer = _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_constructor_numeratormetric_new,
+        _UniffiConverterTypeCommonMetricData.lower(meta))
+
+    def __del__(self):
+        # In case of partial initialization of instances.
+        pointer = getattr(self, &#34;_pointer&#34;, None)
+        if pointer is not None:
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_free_numeratormetric, pointer)
+
+    def _uniffi_clone_pointer(self):
+        return _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_clone_numeratormetric, self._pointer)
+
+    # Used by alternative constructors or any methods which return this type.
+    @classmethod
+    def _make_instance_(cls, pointer):
+        # Lightly yucky way to bypass the usual __init__ logic
+        # and just create a new instance with the required pointer.
+        inst = cls.__new__(cls)
+        inst._pointer = pointer
+        return inst
+
+
+    def add_to_numerator(self, amount: &#34;int&#34;) -&gt; None:
+        _UniffiConverterInt32.check_lower(amount)
+        
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_add_to_numerator,self._uniffi_clone_pointer(),
+        _UniffiConverterInt32.lower(amount))
+
+
+
+
+
+
+    def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+        _UniffiConverterTypeErrorType.check_lower(error)
+        
+        return _UniffiConverterInt32.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+        _UniffiConverterTypeErrorType.lower(error))
+        )
+
+
+
+
+
+    def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[Rate]&#34;:
+        if ping_name is _DEFAULT:
+            ping_name = None
+        _UniffiConverterOptionalString.check_lower(ping_name)
+        
+        return _UniffiConverterOptionalTypeRate.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_test_get_value,self._uniffi_clone_pointer(),
+        _UniffiConverterOptionalString.lower(ping_name))
+        )</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="glean.metrics.NumeratorMetric.add_to_numerator"><code class="name flex">
+<span>def <span class="ident">add_to_numerator</span></span>(<span>self, amount: "'int'") ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_to_numerator(self, amount: &#34;int&#34;) -&gt; None:
+    _UniffiConverterInt32.check_lower(amount)
+    
+    _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_add_to_numerator,self._uniffi_clone_pointer(),
+    _UniffiConverterInt32.lower(amount))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.NumeratorMetric.test_get_num_recorded_errors"><code class="name flex">
+<span>def <span class="ident">test_get_num_recorded_errors</span></span>(<span>self, error: "'ErrorType'") ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+    _UniffiConverterTypeErrorType.check_lower(error)
+    
+    return _UniffiConverterInt32.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+    _UniffiConverterTypeErrorType.lower(error))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.NumeratorMetric.test_get_value"><code class="name flex">
+<span>def <span class="ident">test_get_value</span></span>(<span>self,<br>ping_name: "'typing.Union[<a title="glean.metrics.object" href="object.html">glean.metrics.object</a>, typing.Optional[str]]'" = &lt;object object&gt;) ‑> glean._uniffi.glean.Rate | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[Rate]&#34;:
+    if ping_name is _DEFAULT:
+        ping_name = None
+    _UniffiConverterOptionalString.check_lower(ping_name)
+    
+    return _UniffiConverterOptionalTypeRate.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_numeratormetric_test_get_value,self._uniffi_clone_pointer(),
+    _UniffiConverterOptionalString.lower(ping_name))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="glean.metrics.ObjectMetricType"><code class="flex name class">
 <span>class <span class="ident">ObjectMetricType</span></span>
 <span>(</span><span>common_metric_data: glean._uniffi.glean.CommonMetricData, ty: Any)</span>
@@ -2185,6 +2444,161 @@ A ping might not be sent afterwards, e.g. if the ping is otherwise empty (and
 </dd>
 </dl>
 </dd>
+<dt id="glean.metrics.RateMetric"><code class="flex name class">
+<span>class <span class="ident">RateMetricType</span></span>
+<span>(</span><span>meta: "'<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>'")</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RateMetric():
+    _pointer: ctypes.c_void_p
+    def __init__(self, meta: &#34;CommonMetricData&#34;):
+        _UniffiConverterTypeCommonMetricData.check_lower(meta)
+        
+        self._pointer = _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_constructor_ratemetric_new,
+        _UniffiConverterTypeCommonMetricData.lower(meta))
+
+    def __del__(self):
+        # In case of partial initialization of instances.
+        pointer = getattr(self, &#34;_pointer&#34;, None)
+        if pointer is not None:
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_free_ratemetric, pointer)
+
+    def _uniffi_clone_pointer(self):
+        return _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_clone_ratemetric, self._pointer)
+
+    # Used by alternative constructors or any methods which return this type.
+    @classmethod
+    def _make_instance_(cls, pointer):
+        # Lightly yucky way to bypass the usual __init__ logic
+        # and just create a new instance with the required pointer.
+        inst = cls.__new__(cls)
+        inst._pointer = pointer
+        return inst
+
+
+    def add_to_denominator(self, amount: &#34;int&#34;) -&gt; None:
+        _UniffiConverterInt32.check_lower(amount)
+        
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_add_to_denominator,self._uniffi_clone_pointer(),
+        _UniffiConverterInt32.lower(amount))
+
+
+
+
+
+
+    def add_to_numerator(self, amount: &#34;int&#34;) -&gt; None:
+        _UniffiConverterInt32.check_lower(amount)
+        
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_add_to_numerator,self._uniffi_clone_pointer(),
+        _UniffiConverterInt32.lower(amount))
+
+
+
+
+
+
+    def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+        _UniffiConverterTypeErrorType.check_lower(error)
+        
+        return _UniffiConverterInt32.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+        _UniffiConverterTypeErrorType.lower(error))
+        )
+
+
+
+
+
+    def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[Rate]&#34;:
+        if ping_name is _DEFAULT:
+            ping_name = None
+        _UniffiConverterOptionalString.check_lower(ping_name)
+        
+        return _UniffiConverterOptionalTypeRate.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_test_get_value,self._uniffi_clone_pointer(),
+        _UniffiConverterOptionalString.lower(ping_name))
+        )</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="glean.metrics.RateMetric.add_to_denominator"><code class="name flex">
+<span>def <span class="ident">add_to_denominator</span></span>(<span>self, amount: "'int'") ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_to_denominator(self, amount: &#34;int&#34;) -&gt; None:
+    _UniffiConverterInt32.check_lower(amount)
+    
+    _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_add_to_denominator,self._uniffi_clone_pointer(),
+    _UniffiConverterInt32.lower(amount))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.RateMetric.add_to_numerator"><code class="name flex">
+<span>def <span class="ident">add_to_numerator</span></span>(<span>self, amount: "'int'") ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_to_numerator(self, amount: &#34;int&#34;) -&gt; None:
+    _UniffiConverterInt32.check_lower(amount)
+    
+    _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_add_to_numerator,self._uniffi_clone_pointer(),
+    _UniffiConverterInt32.lower(amount))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.RateMetric.test_get_num_recorded_errors"><code class="name flex">
+<span>def <span class="ident">test_get_num_recorded_errors</span></span>(<span>self, error: "'ErrorType'") ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+    _UniffiConverterTypeErrorType.check_lower(error)
+    
+    return _UniffiConverterInt32.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+    _UniffiConverterTypeErrorType.lower(error))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.RateMetric.test_get_value"><code class="name flex">
+<span>def <span class="ident">test_get_value</span></span>(<span>self,<br>ping_name: "'typing.Union[<a title="glean.metrics.object" href="object.html">glean.metrics.object</a>, typing.Optional[str]]'" = &lt;object object&gt;) ‑> glean._uniffi.glean.Rate | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[Rate]&#34;:
+    if ping_name is _DEFAULT:
+        ping_name = None
+    _UniffiConverterOptionalString.check_lower(ping_name)
+    
+    return _UniffiConverterOptionalTypeRate.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_ratemetric_test_get_value,self._uniffi_clone_pointer(),
+    _UniffiConverterOptionalString.lower(ping_name))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="glean.metrics.RecordedEvent"><code class="flex name class">
 <span>class <span class="ident">RecordedEvent</span></span>
 <span>(</span><span>*,<br>timestamp: "'int'",<br>category: "'str'",<br>name: "'str'",<br>extra: "'typing.Optional[dict[str, str]]'")</span>
@@ -2539,6 +2953,134 @@ the string exceeds the maximum length, it will be truncated.</dd>
 </summary>
 <pre><code class="python">def test_get_value(self, ping_name: Optional[str] = None) -&gt; Optional[str]:
     return self._inner.test_get_value(ping_name)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="glean.metrics.TextMetric"><code class="flex name class">
+<span>class <span class="ident">TextMetricType</span></span>
+<span>(</span><span>meta: "'<a title="glean.metrics.CommonMetricData" href="#glean.metrics.CommonMetricData">CommonMetricData</a>'")</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TextMetric():
+    _pointer: ctypes.c_void_p
+    def __init__(self, meta: &#34;CommonMetricData&#34;):
+        _UniffiConverterTypeCommonMetricData.check_lower(meta)
+        
+        self._pointer = _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_constructor_textmetric_new,
+        _UniffiConverterTypeCommonMetricData.lower(meta))
+
+    def __del__(self):
+        # In case of partial initialization of instances.
+        pointer = getattr(self, &#34;_pointer&#34;, None)
+        if pointer is not None:
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_free_textmetric, pointer)
+
+    def _uniffi_clone_pointer(self):
+        return _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_clone_textmetric, self._pointer)
+
+    # Used by alternative constructors or any methods which return this type.
+    @classmethod
+    def _make_instance_(cls, pointer):
+        # Lightly yucky way to bypass the usual __init__ logic
+        # and just create a new instance with the required pointer.
+        inst = cls.__new__(cls)
+        inst._pointer = pointer
+        return inst
+
+
+    def set(self, value: &#34;str&#34;) -&gt; None:
+        _UniffiConverterString.check_lower(value)
+        
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_set,self._uniffi_clone_pointer(),
+        _UniffiConverterString.lower(value))
+
+
+
+
+
+
+    def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+        _UniffiConverterTypeErrorType.check_lower(error)
+        
+        return _UniffiConverterInt32.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+        _UniffiConverterTypeErrorType.lower(error))
+        )
+
+
+
+
+
+    def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[str]&#34;:
+        if ping_name is _DEFAULT:
+            ping_name = None
+        _UniffiConverterOptionalString.check_lower(ping_name)
+        
+        return _UniffiConverterOptionalString.lift(
+            _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_test_get_value,self._uniffi_clone_pointer(),
+        _UniffiConverterOptionalString.lower(ping_name))
+        )</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="glean.metrics.TextMetric.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self, value: "'str'") ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set(self, value: &#34;str&#34;) -&gt; None:
+    _UniffiConverterString.check_lower(value)
+    
+    _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_set,self._uniffi_clone_pointer(),
+    _UniffiConverterString.lower(value))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.TextMetric.test_get_num_recorded_errors"><code class="name flex">
+<span>def <span class="ident">test_get_num_recorded_errors</span></span>(<span>self, error: "'ErrorType'") ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_num_recorded_errors(self, error: &#34;ErrorType&#34;) -&gt; &#34;int&#34;:
+    _UniffiConverterTypeErrorType.check_lower(error)
+    
+    return _UniffiConverterInt32.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_test_get_num_recorded_errors,self._uniffi_clone_pointer(),
+    _UniffiConverterTypeErrorType.lower(error))
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="glean.metrics.TextMetric.test_get_value"><code class="name flex">
+<span>def <span class="ident">test_get_value</span></span>(<span>self,<br>ping_name: "'typing.Union[<a title="glean.metrics.object" href="object.html">glean.metrics.object</a>, typing.Optional[str]]'" = &lt;object object&gt;) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_value(self, ping_name: &#34;typing.Union[object, typing.Optional[str]]&#34; = _DEFAULT) -&gt; &#34;typing.Optional[str]&#34;:
+    if ping_name is _DEFAULT:
+        ping_name = None
+    _UniffiConverterOptionalString.check_lower(ping_name)
+    
+    return _UniffiConverterOptionalString.lift(
+        _uniffi_rust_call(_UniffiLib.uniffi_glean_core_fn_method_textmetric_test_get_value,self._uniffi_clone_pointer(),
+    _UniffiConverterOptionalString.lower(ping_name))
+    )</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -3663,6 +4205,14 @@ previously registered in the metrics.yaml file.</p>
 </ul>
 </li>
 <li>
+<h4><code><a title="glean.metrics.DenominatorMetric" href="#glean.metrics.DenominatorMetric">DenominatorMetric</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.DenominatorMetric.add" href="#glean.metrics.DenominatorMetric.add">add</a></code></li>
+<li><code><a title="glean.metrics.DenominatorMetric.test_get_num_recorded_errors" href="#glean.metrics.DenominatorMetric.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
+<li><code><a title="glean.metrics.DenominatorMetric.test_get_value" href="#glean.metrics.DenominatorMetric.test_get_value">test_get_value</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="glean.metrics.DistributionMetrics" href="#glean.metrics.DistributionMetrics">DistributionMetrics</a></code></h4>
 <ul class="">
 <li><code><a title="glean.metrics.DistributionMetrics.name" href="#glean.metrics.DistributionMetrics.name">name</a></code></li>
@@ -3738,6 +4288,14 @@ previously registered in the metrics.yaml file.</p>
 </ul>
 </li>
 <li>
+<h4><code><a title="glean.metrics.NumeratorMetric" href="#glean.metrics.NumeratorMetric">NumeratorMetric</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.NumeratorMetric.add_to_numerator" href="#glean.metrics.NumeratorMetric.add_to_numerator">add_to_numerator</a></code></li>
+<li><code><a title="glean.metrics.NumeratorMetric.test_get_num_recorded_errors" href="#glean.metrics.NumeratorMetric.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
+<li><code><a title="glean.metrics.NumeratorMetric.test_get_value" href="#glean.metrics.NumeratorMetric.test_get_value">test_get_value</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="glean.metrics.ObjectMetricType" href="#glean.metrics.ObjectMetricType">ObjectMetricType</a></code></h4>
 <ul class="">
 <li><code><a title="glean.metrics.ObjectMetricType.set" href="#glean.metrics.ObjectMetricType.set">set</a></code></li>
@@ -3765,6 +4323,15 @@ previously registered in the metrics.yaml file.</p>
 <li><code><a title="glean.metrics.QuantityMetric.set" href="#glean.metrics.QuantityMetric.set">set</a></code></li>
 <li><code><a title="glean.metrics.QuantityMetric.test_get_num_recorded_errors" href="#glean.metrics.QuantityMetric.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
 <li><code><a title="glean.metrics.QuantityMetric.test_get_value" href="#glean.metrics.QuantityMetric.test_get_value">test_get_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glean.metrics.RateMetric" href="#glean.metrics.RateMetric">RateMetric</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.RateMetric.add_to_denominator" href="#glean.metrics.RateMetric.add_to_denominator">add_to_denominator</a></code></li>
+<li><code><a title="glean.metrics.RateMetric.add_to_numerator" href="#glean.metrics.RateMetric.add_to_numerator">add_to_numerator</a></code></li>
+<li><code><a title="glean.metrics.RateMetric.test_get_num_recorded_errors" href="#glean.metrics.RateMetric.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
+<li><code><a title="glean.metrics.RateMetric.test_get_value" href="#glean.metrics.RateMetric.test_get_value">test_get_value</a></code></li>
 </ul>
 </li>
 <li>
@@ -3798,6 +4365,14 @@ previously registered in the metrics.yaml file.</p>
 <li><code><a title="glean.metrics.StringMetricType.set" href="#glean.metrics.StringMetricType.set">set</a></code></li>
 <li><code><a title="glean.metrics.StringMetricType.test_get_num_recorded_errors" href="#glean.metrics.StringMetricType.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
 <li><code><a title="glean.metrics.StringMetricType.test_get_value" href="#glean.metrics.StringMetricType.test_get_value">test_get_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glean.metrics.TextMetric" href="#glean.metrics.TextMetric">TextMetric</a></code></h4>
+<ul class="">
+<li><code><a title="glean.metrics.TextMetric.set" href="#glean.metrics.TextMetric.set">set</a></code></li>
+<li><code><a title="glean.metrics.TextMetric.test_get_num_recorded_errors" href="#glean.metrics.TextMetric.test_get_num_recorded_errors">test_get_num_recorded_errors</a></code></li>
+<li><code><a title="glean.metrics.TextMetric.test_get_value" href="#glean.metrics.TextMetric.test_get_value">test_get_value</a></code></li>
 </ul>
 </li>
 <li>
