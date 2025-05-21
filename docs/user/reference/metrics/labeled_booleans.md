@@ -315,6 +315,6 @@ accessibility:
 
 ## Reference
 
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`BooleanMetricType`](../../../swift/Classes/BooleanMetricType.html)
 * Python API docs: [`LabeledBooleanMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledBooleanMetricType), [`BooleanMetricType`](../../../python/glean/metrics/index.html#glean.metrics.BooleanMetric)
-* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`BooleanMetricType`](../../../docs/glean/private/struct.BooleanMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`BooleanMetric`](../../../docs/glean/private/struct.BooleanMetric.html)
+* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`BooleanMetric`](../../../swift/Classes/BooleanMetric.html)

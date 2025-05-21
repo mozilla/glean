@@ -286,6 +286,6 @@ N/A
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/BooleanMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.BooleanMetric)
-* [Rust API docs](../../../docs/glean/private/boolean/struct.BooleanMetric.html)
+* [Rust API docs](../../../docs/glean/private/struct.BooleanMetric.html)
+* [Swift API docs](../../../swift/Classes/BooleanMetric.html)

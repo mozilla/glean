@@ -264,4 +264,4 @@ Labeled custom distributions have the following required parameters:
 
 ## Reference
 
-* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CustomDistributionMetricType`](../../../docs/glean/private/struct.CustomDistributionMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CustomDistributionMetric`](../../../docs/glean/private/struct.CustomDistributionMetric.html)

@@ -419,6 +419,6 @@ N/A
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/UuidMetricType.html)
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.UuidMetricType)
-* [Rust API docs](../../../docs/glean/private/uuid/struct.UuidMetric.html)
+* [Rust API docs](../../../docs/glean/private/struct.UuidMetric.html)
+* [Swift API docs](../../../swift/Classes/UuidMetric.html)

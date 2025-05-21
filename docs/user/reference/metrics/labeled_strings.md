@@ -303,6 +303,6 @@ login:
 
 ## Reference
 
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetricType`](../../../swift/Classes/StringMetricType.html)
 * Python API docs: [`LabeledStringMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledStringMetricType), [`StringMetricType`](../../../python/glean/metrics/index.html#glean.metrics.StringMetricType)
-* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`StringMetricType`](../../../docs/glean/private/struct.StringMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`StringMetric`](../../../docs/glean/private/struct.StringMetric.html)
+* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetric`](../../../swift/Classes/StringMetric.html)

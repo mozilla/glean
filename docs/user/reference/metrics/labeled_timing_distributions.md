@@ -472,4 +472,4 @@ The allowed values for `time_unit` are:
 
 ## Reference
 
-* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`TimingDistributionMetricType`](../../../docs/glean/private/struct.TimingDistributionMetric.html)
+* Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`TimingDistributionMetric`](../../../docs/glean/private/struct.TimingDistributionMetric.html)
