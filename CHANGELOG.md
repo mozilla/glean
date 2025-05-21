@@ -10,6 +10,7 @@
 * Python
    * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
    * Make rate metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
+   * Make text metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...main)
 
