@@ -12,7 +12,7 @@
   - [Server](user/adding-glean-to-your-project/server.md)
   - [Enable data ingestion](user/adding-glean-to-your-project/enable-data-ingestion.md)
 - [Integrating Glean for project managers](user/integrating-glean-for-product-managers.md)
-- [Metrics](user/metrics/adding-new-metrics.md)
+- [Metrics](user/metrics/index.md)
     - [Adding new metrics](user/metrics/adding-new-metrics.md)
     - [Testing metrics](user/metrics/testing-metrics.md)
     - [Validating metrics](user/metrics/validation-checklist.md)
