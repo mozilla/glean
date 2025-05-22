@@ -272,7 +272,7 @@ mozilla::glean::devtools::cold_toolbox_open_delay
 **JavaScript**
 
 ```js
-Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSamples(sample);
+Glean.devtools.coldToolboxOpenDelay[toolboxId].accumulateSingleSample(sample);
 ```
 
 </div>
