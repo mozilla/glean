@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::metrics::DistributionData;
+use crate::metrics::MemoryUnit;
 use crate::ErrorType;
 
 /// A description for the
@@ -51,4 +52,29 @@ pub trait MemoryDistribution {
     ///
     /// The number of errors recorded.
     fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32;
+
+    /// Accumulates the provided signed samples in the metric.
+    ///
+    /// This is required so that the platform-specific code can provide us with
+    /// 64 bit signed integers if no `u64` comparable type is available. This
+    /// will take care of filtering and reporting errors for any provided negative
+    /// sample.
+    ///
+    /// Please note that this assumes that the provided samples are already in
+    /// the "unit" declared by the instance of the metric type (e.g. if the the
+    /// instance this method was called on is using [`MemoryUnit::Kilobyte`], then
+    /// `samples` are assumed to be in that unit).
+    ///
+    /// # Arguments
+    ///
+    /// * `samples` - The vector holding the samples to be recorded by the metric.
+    ///
+    /// ## Notes
+    ///
+    /// Discards any negative value in `samples` and report an [`ErrorType::InvalidValue`]
+    /// for each of them.
+    ///
+    /// Values bigger than 1 Terabyte (2<sup>40</sup> bytes) are truncated
+    /// and an [`ErrorType::InvalidValue`] error is recorded.
+    fn accumulate_samples(&self, samples: Vec<i64>);
 }
