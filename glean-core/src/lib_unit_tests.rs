@@ -536,6 +536,7 @@ fn correct_order() {
             Url(..)                           => assert_eq!(15, disc),
             Text(..)                          => assert_eq!(16, disc),
             Object(..)                        => assert_eq!(17, disc),
+            DualLabeledCounter(..)            => assert_eq!(18, disc),
         }
     }
 }

@@ -2,11 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::fmt::Display;
+use std::ops::Deref;
 use std::sync::atomic::{AtomicU8, Ordering};
 
 use malloc_size_of_derive::MallocSizeOf;
 
 use crate::error::{Error, ErrorKind};
+use crate::metrics::dual_labeled_counter::validate_dynamic_key_and_or_category;
 use crate::metrics::labeled::validate_dynamic_label;
 use crate::Glean;
 use serde::{Deserialize, Serialize};
@@ -72,7 +75,52 @@ pub struct CommonMetricData {
     /// metric to be recorded to, dynamic labels are stored in the specific
     /// label so that we can validate them when the Glean singleton is
     /// available.
-    pub dynamic_label: Option<String>,
+    pub dynamic_label: Option<DynamicLabelType>,
+}
+
+// TODO FIX ERRORS. Similar errors see for all variants, not sure how to specify this in UniFFI idl:
+/*
+error[E0769]: tuple variant `Self::Label` written as struct variant
+   --> <redacted>/glean/target/debug/build/glean-core-7b31c5607feb2bbe/out/glean.uniffi.rs:125:1
+    |
+125 | #[::uniffi::udl_derive(Enum)]
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this error originates in the attribute macro `::uniffi::udl_derive` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+*/
+
+#[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
+pub enum DynamicLabelType {
+    Label(String),
+    KeyOnly(String),
+    CategoryOnly(String),
+    KeyAndCategory(String),
+}
+
+impl Default for DynamicLabelType {
+    fn default() -> Self {
+        Self::Label(String::new())
+    }
+}
+
+impl Deref for DynamicLabelType {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        match self {
+            DynamicLabelType::Label(label) => label,
+            DynamicLabelType::KeyOnly(key) => key,
+            DynamicLabelType::CategoryOnly(category) => category,
+            DynamicLabelType::KeyAndCategory(key_and_category) => key_and_category,
+        }
+    }
+}
+
+impl Display for DynamicLabelType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
 }
 
 #[derive(Default, Debug, MallocSizeOf)]
@@ -138,7 +186,17 @@ impl CommonMetricDataInternal {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.inner.dynamic_label {
-            validate_dynamic_label(glean, self, &base_identifier, label)
+            match label {
+                DynamicLabelType::Label(label) => {
+                    validate_dynamic_label(glean, self, &base_identifier, label)
+                }
+                _ => validate_dynamic_key_and_or_category(
+                    glean,
+                    self,
+                    &base_identifier,
+                    label.clone(),
+                ),
+            }
         } else {
             base_identifier
         }
