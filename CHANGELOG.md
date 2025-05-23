@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.3.1...main)
+
+# v64.3.1 (2025-05-23)
+
+* Android
+   * Reverted JNA to version 5.14.0 due crashes on Android 5 & 6 ([#3136](https://github.com/mozilla/glean/pull/3136))
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.3.0...v64.3.1)
 
 # v64.3.0 (2025-05-21)
 
