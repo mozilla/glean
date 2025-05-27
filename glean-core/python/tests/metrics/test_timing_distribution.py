@@ -109,39 +109,6 @@ def test_stopping_a_non_existent_timer_records_an_error():
     assert 1 == metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_STATE)
 
 
-# Doesn't really test anything anymore
-@pytest.mark.skip
-def test_time_unit_controls_truncation():
-    max_sample_time = 1000 * 1000 * 1000 * 60 * 10
-
-    for unit in [TimeUnit.NANOSECOND, TimeUnit.MICROSECOND, TimeUnit.MILLISECOND]:
-        metric = metrics.TimingDistributionMetricType(
-            CommonMetricData(
-                disabled=False,
-                category="telemetry",
-                lifetime=Lifetime.APPLICATION,
-                name=f"timing_distribution_{unit.name}",
-                send_in_pings=["baseline"],
-                dynamic_label=None,
-            ),
-            time_unit=unit,
-        )
-
-        for _value in [
-            1,
-            100,
-            100000,
-            max_sample_time,
-            max_sample_time * 1000,
-            max_sample_time * 1000000,
-        ]:
-            timer_id = metric.start()
-            metric.stop_and_accumulate(timer_id)
-
-        snapshot = metric.test_get_value()
-        assert len(snapshot.values) < 318
-
-
 def test_measure():
     """
     Test the TimingDistributionMetricType.measure context manager.
