@@ -193,6 +193,7 @@ class LabeledMetricTypeTest {
         labeledCounterMetric[""].add(1)
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
+        labeledCounterMetric["Møøse"].add(1)
 
         assertEquals(
             0,
@@ -207,16 +208,14 @@ class LabeledMetricTypeTest {
 
         // More than 111 characters? Not okay.
         labeledCounterMetric["1".repeat(112)].add(1)
-        // Not ASCII? Not okay.
-        labeledCounterMetric["Møøse"].add(1)
         assertEquals(
-            2,
+            1,
             labeledCounterMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL,
             ),
         )
         assertEquals(
-            2,
+            1,
             labeledCounterMetric["__other__"].testGetValue(),
         )
     }
@@ -247,6 +246,7 @@ class LabeledMetricTypeTest {
         labeledBooleanMetric[""].set(true)
         labeledBooleanMetric["with/slash"].set(true)
         labeledBooleanMetric["this_string_has_more_than_thirty_characters"].set(true)
+        labeledBooleanMetric["Møøse"].set(true)
 
         assertEquals(
             0,
@@ -261,10 +261,8 @@ class LabeledMetricTypeTest {
 
         // More than 112 characters? Not okay.
         labeledBooleanMetric["1".repeat(112)].set(true)
-        // Not ASCII? Not okay.
-        labeledBooleanMetric["Møøse"].set(true)
         assertEquals(
-            2,
+            1,
             labeledBooleanMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL,
             ),
@@ -301,6 +299,7 @@ class LabeledMetricTypeTest {
         labeledStringMetric[""].set("foo")
         labeledStringMetric["with/slash"].set("foo")
         labeledStringMetric["this_string_has_more_than_thirty_characters"].set("foo")
+        labeledStringMetric["Møøse"].set("foo")
 
         assertEquals(
             0,
@@ -315,10 +314,8 @@ class LabeledMetricTypeTest {
 
         // More than 111 characters? Not okay.
         labeledStringMetric["1".repeat(112)].set("foo")
-        // Not ASCII? Not okay.
-        labeledStringMetric["Møøse"].set("foo")
         assertEquals(
-            2,
+            1,
             labeledStringMetric.testGetNumRecordedErrors(
                 ErrorType.INVALID_LABEL,
             ),
