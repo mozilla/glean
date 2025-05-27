@@ -199,20 +199,6 @@ commands:
           command: |
             make build-python-wheel GLEAN_BUILD_TARGET=x86_64-pc-windows-gnu
 
-  build-windows-i686-wheel:
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - install-mingw
-      - run:
-          name: Install Python development tools for host
-          command:
-            make setup-python
-      - run:
-          name: Build Windows wheel
-          command: |
-            make build-python-wheel GLEAN_BUILD_TARGET=i686-pc-windows-gnu
-
   install-python-windows-deps:
     steps:
       - run:
@@ -237,18 +223,14 @@ commands:
           name: Install mingw
           command: |
             sudo apt update
-            # This package contains tools for both i686 and x86_64 targets
             sudo apt install -y gcc-mingw-w64
       - run:
           name: Add mingw target
           command: |
             rustup target add x86_64-pc-windows-gnu
-            rustup target add i686-pc-windows-gnu
             # Set the linker to use for Rust/mingw
             echo '[target.x86_64-pc-windows-gnu]' >> ~/.cargo/config.toml
             echo 'linker = "/usr/bin/x86_64-w64-mingw32-gcc"' >> ~/.cargo/config.toml
-            echo '[target.i686-pc-windows-gnu]' >> ~/.cargo/config.toml
-            echo 'linker = "/usr/bin/i686-w64-mingw32-gcc"' >> ~/.cargo/config.toml
 
   install-ghr-darwin:
     steps:
@@ -371,10 +353,6 @@ jobs:
           name: Check RLB on Windows x86_64
           command: |
             cargo check -p glean --examples --tests --target x86_64-pc-windows-gnu
-      - run:
-          name: Check RLB on Windows i686
-          command: |
-            cargo check -p glean --examples --tests --target i686-pc-windows-gnu
 
   Rust tests - beta:
     docker:
@@ -800,39 +778,6 @@ jobs:
           command: |
             $WINPYTHON -m pytest -s glean-core/python/tests
 
-  Python Windows i686 tests:
-    docker:
-      - image: cimg/python:3.9
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - build-windows-i686-wheel
-      - run:
-          name: Install Wine
-          command: |
-            sudo dpkg --add-architecture i386
-            sudo apt update
-            sudo apt install wine32
-      - run:
-          name: Install Python for Windows
-          command: |
-            wget https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-win32.zip
-            mkdir winpython
-            unzip python-3.9.13-embed-win32.zip -d winpython
-            rm python-3.9.13-embed-win32.zip
-            echo "export WINPYTHON=\"wine winpython/python.exe\"" >> $BASH_ENV
-      - install-python-windows-deps
-      - run:
-          name: Build bcryptprimitives.dll shim
-          command: |
-            rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target i686-pc-windows-gnu
-            # This preloads our bcryptprimitives shim.
-            shimpath='Z:/home/circleci/project/wine_shims/bcryptprimitives.dll'
-            echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
-      - run:
-          name: Run tests
-          command: |
-            $WINPYTHON -m pytest -s glean-core/python/tests
 
   Generate Python documentation:
     docker:
@@ -958,25 +903,6 @@ jobs:
     steps:
       - checkout
       - build-windows-x86_64-wheel
-      - run:
-          name: Upload to PyPI
-          command: |
-            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
-            # variables are configured in CircleCI's environment variables.
-            .venv3.8/bin/python3 -m twine upload target/wheels/*
-      - install-ghr-linux
-      - run:
-          name: Publish to Github
-          command: |
-            # Upload to GitHub
-            ./ghr -replace ${CIRCLE_TAG} target/wheels
-
-  pypi-windows-i686-release:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - build-windows-i686-wheel
       - run:
           name: Upload to PyPI
           command: |
@@ -1128,8 +1054,6 @@ workflows:
           filters: *ci-filters
       - Python Windows x86_64 tests:
           filters: *ci-filters
-      - Python Windows i686 tests:
-          filters: *ci-filters
 
       - Generate Rust documentation:
           requires:
@@ -1194,10 +1118,6 @@ workflows:
             - Python 3_8 tests
           filters: *release-filters
       - pypi-macos-release:
-          requires:
-            - Python 3_8 tests
-          filters: *release-filters
-      - pypi-windows-i686-release:
           requires:
             - Python 3_8 tests
           filters: *release-filters

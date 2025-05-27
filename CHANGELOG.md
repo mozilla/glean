@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...main)
 
+* Python
+  * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
+
 # v64.4.0 (2025-05-30)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.3.1...v64.4.0)
