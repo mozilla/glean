@@ -163,11 +163,6 @@ def test_exeperimentation_id_recording():
     assert "alpha-beta-gamma-delta" == Glean.test_get_experimentation_id()
 
 
-@pytest.mark.skip
-def test_sending_of_background_pings():
-    pass
-
-
 def test_initialize_must_not_crash_if_data_dir_is_messed_up(tmpdir):
     filename = tmpdir / "dummy_file"
 
@@ -228,11 +223,6 @@ def test_initializing_twice_is_a_no_op():
     )
 
     assert before_config is Glean._configuration
-
-
-@pytest.mark.skip
-def test_dont_handle_events_when_uninitialized():
-    pass
 
 
 def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
@@ -304,22 +294,6 @@ def test_the_app_channel_must_be_correctly_set():
 def test_get_language_tag_reports_the_tag_for_the_default_locale():
     tag = _util.get_locale_tag()
     assert re.match("(und)|([a-z][a-z]-[A-Z][A-Z])", tag)
-
-
-@pytest.mark.skip
-def test_get_language_tag_reports_the_correct_tag_for_a_non_default_language():
-    """
-    Not relevant for non-Java platforms.
-    """
-    pass
-
-
-@pytest.mark.skip
-def test_get_language_reports_the_modern_translation_for_some_languages():
-    """
-    Not relevant for non-Java platforms.
-    """
-    pass
 
 
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
