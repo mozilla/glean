@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.3.1...main)
 
+* General
+  * Permit non-ASCII in dynamic labels ([bug 1968533](https://bugzilla.mozilla.org/show_bug.cgi?id=1968533))
+
 # v64.3.1 (2025-05-23)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.3.0...v64.3.1)
