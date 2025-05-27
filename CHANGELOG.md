@@ -7,23 +7,23 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v64.3.0...v64.3.1)
 
 * Android
-   * Reverted JNA to version 5.14.0 due crashes on Android 5 & 6 ([#3136](https://github.com/mozilla/glean/pull/3136))
+  * Reverted JNA to version 5.14.0 due crashes on Android 5 & 6 ([#3136](https://github.com/mozilla/glean/pull/3136))
 
 # v64.3.0 (2025-05-21)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.2.0...v64.3.0)
 
 * Android
-   * Updated to Android NDK r28b ([#3118](https://github.com/mozilla/glean/pull/3118))
+  * Updated to Android NDK r28b ([#3118](https://github.com/mozilla/glean/pull/3118))
 * Kotlin
-   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
-   * BUGFIX: Ensure the inner ping object is initialized before accessing it ([#3132](https://github.com/mozilla/glean/pull/3132))
+  * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+  * BUGFIX: Ensure the inner ping object is initialized before accessing it ([#3132](https://github.com/mozilla/glean/pull/3132))
 * Swift
-   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+  * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
 * Python
-   * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
-   * Make rate metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
-   * Make text metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
+  * Added support for labeled quantity metric type ([#3121](https://github.com/mozilla/glean/pull/3121))
+  * Make rate metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
+  * Make text metric actually usable ([#3131](https://github.com/mozilla/glean/pull/3131))
 
 # v64.2.0 (2025-04-28)
 
@@ -49,9 +49,9 @@
   * FEATURE: New client-wide attribution and distribution fields ([bug 1955428](https://bugzilla.mozilla.org/show_bug.cgi?id=1955428))
   * Update to `glean_parser` v17.1.0
 * Kotlin
-   * Updated Android Gradle Plugin to 8.9.1 ([#3098](https://github.com/mozilla/glean/pull/3098))
-   * Updated Kotlin to version 2.1.20 ([#3098](https://github.com/mozilla/glean/pull/3098))
-   * Dispatch ping API on the task queue ([#3101](https://github.com/mozilla/glean/pull/3101))
+  * Updated Android Gradle Plugin to 8.9.1 ([#3098](https://github.com/mozilla/glean/pull/3098))
+  * Updated Kotlin to version 2.1.20 ([#3098](https://github.com/mozilla/glean/pull/3098))
+  * Dispatch ping API on the task queue ([#3101](https://github.com/mozilla/glean/pull/3101))
 
 # v64.0.1 (2025-04-01)
 
@@ -68,11 +68,11 @@
   * BREAKING CHANGE: Pings now pass required uploader capabilities during upload ([bug 1920732](https://bugzilla.mozilla.org/show_bug.cgi?id=1920732))
   * BREAKING CHANGE: Glean won't clear `client_info` fields when collection gets disabled. The `client_id` will still be cleared. ([#3068](https://github.com/mozilla/glean/pull/3068))
 * Android
-   * Updated Gradle to 8.13 ([#3074](https://github.com/mozilla/glean/pull/3080))
-   * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
-   * Updated Kotlin to version 2.1.10 ([#3074](https://github.com/mozilla/glean/pull/3080))
-   * Updated Android Gradle Plugin to 8.8.2 ([#3074](https://github.com/mozilla/glean/pull/3080))
-   * Updated JNA to version 5.17.0 ([#3081](https://github.com/mozilla/glean/pull/3081))
+  * Updated Gradle to 8.13 ([#3074](https://github.com/mozilla/glean/pull/3080))
+  * Updated to Android NDK 28 and SDK 35 ([#3074](https://github.com/mozilla/glean/pull/3080))
+  * Updated Kotlin to version 2.1.10 ([#3074](https://github.com/mozilla/glean/pull/3080))
+  * Updated Android Gradle Plugin to 8.8.2 ([#3074](https://github.com/mozilla/glean/pull/3080))
+  * Updated JNA to version 5.17.0 ([#3081](https://github.com/mozilla/glean/pull/3081))
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
 
