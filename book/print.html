@@ -5798,13 +5798,14 @@ Glean.accessibility.features[&quot;high_contrast&quot;].set(false);
 <ul>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_booleans.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -6328,13 +6329,14 @@ Glean.stability.crashCount[&quot;native_code_crash&quot;].add(3);
 <li>Saturates at the largest value that can be represented as a 32-bit signed integer.</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_counters.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -6891,13 +6893,14 @@ mozilla::glean::login::errors_by_stage.Get(&quot;server_auth&quot;_ns).Set(&quot
 </li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_strings.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -9177,15 +9180,14 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <p>Each label must have a maximum of 111 characters.</p>
 </li>
 <li>
-<p>Each label must only contain printable ASCII characters.</p>
-</li>
-<li>
 <p>The list of labels is limited to:</p>
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_timing_distributions.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -9790,13 +9792,14 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 Larger sizes will be truncated to 1 Terabyte.</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_memory_distributions.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -11636,13 +11639,14 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <li>Only non-negative integer values may be recorded (<code>&gt;=0</code>).</li>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_custom_distributions.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -12152,13 +12156,14 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 <ul>
 <li>Labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/labeled_quantity.html#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
@@ -13822,6 +13827,13 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.3.1...main">Full changelog</a></p>
+<ul>
+<li>General
+<ul>
+<li>Permit non-ASCII in dynamic labels (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1968533">bug 1968533</a>)</li>
+</ul>
+</li>
+</ul>
 <h1 id="v6431-2025-05-23"><a class="header" href="#v6431-2025-05-23">v64.3.1 (2025-05-23)</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.3.0...v64.3.1">Full changelog</a></p>
 <ul>

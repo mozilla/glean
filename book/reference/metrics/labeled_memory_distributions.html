@@ -368,13 +368,14 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 Larger sizes will be truncated to 1 Terabyte.</li>
 <li>Labels must conform to the <a href="index.html#label-format">label format</a>.</li>
 <li>Each label must have a maximum of 111 characters.</li>
-<li>Each label must only contain printable ASCII characters.</li>
 <li>The list of labels is limited to:
 <ul>
 <li>16 different dynamic labels if no static labels are defined.
-Additional labels will all record to the special label <code>__other__</code>.</li>
+Additional labels will all record to the special label <code>__other__</code>.
+These labels may contain any UTF-8 characters.</li>
 <li>100 labels if specified as static labels in <code>metrics.yaml</code>, see <a href="#labels">Labels</a>.
-Unknown labels will be recorded under the special label <code>__other__</code>.</li>
+Unknown labels will be recorded under the special label <code>__other__</code>.
+These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
 </ul>
