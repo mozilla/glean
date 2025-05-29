@@ -36,8 +36,10 @@ kotlin {
 }
 
 android {
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
     namespace = "mozilla.telemetry.glean"
+
+    ndkVersion rootProject.ext.build.ndkVersion
+    compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.build['minSdkVersion']
