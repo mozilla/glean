@@ -195,9 +195,9 @@ PARSER_OUTPUT=$("${VENVDIR}"/bin/python -m glean_parser \
     -f "swift" \
     -o "${OUTPUT_DIR}" \
     -s "glean_namespace=${GLEAN_NAMESPACE}" \
-    $BUILD_DATE \
-    $EXPIRE_VERSION \
-    $ALLOW_RESERVED \
+    "$BUILD_DATE" \
+    "$EXPIRE_VERSION" \
+    "$ALLOW_RESERVED" \
     "${YAML_FILES[@]}" 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
 
 if [ -n "$DOCS_DIRECTORY" ]; then
