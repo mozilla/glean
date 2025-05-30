@@ -18,6 +18,7 @@ mod counter;
 mod custom_distribution;
 mod datetime;
 mod denominator;
+pub(crate) mod dual_labeled_counter;
 mod event;
 mod experiment;
 pub(crate) mod labeled;
@@ -40,6 +41,7 @@ mod url;
 mod uuid;
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::common_metric_data::DynamicLabelType;
 pub use crate::event_database::RecordedEvent;
 use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 pub use crate::metrics::datetime::Datetime;
@@ -51,11 +53,12 @@ pub use self::counter::CounterMetric;
 pub use self::custom_distribution::{CustomDistributionMetric, LocalCustomDistribution};
 pub use self::datetime::DatetimeMetric;
 pub use self::denominator::DenominatorMetric;
+pub use self::dual_labeled_counter::DualLabeledCounterMetric;
 pub use self::event::EventMetric;
 pub(crate) use self::experiment::ExperimentMetric;
 pub use self::labeled::{
     LabeledBoolean, LabeledCounter, LabeledCustomDistribution, LabeledMemoryDistribution,
-    LabeledMetric, LabeledQuantity, LabeledString, LabeledTimingDistribution,
+    LabeledMetric, LabeledMetricData, LabeledQuantity, LabeledString, LabeledTimingDistribution,
 };
 pub use self::memory_distribution::{LocalMemoryDistribution, MemoryDistributionMetric};
 pub use self::memory_unit::MemoryUnit;
@@ -151,6 +154,8 @@ pub enum Metric {
     Text(String),
     /// An Object metric. See [`ObjectMetric`] for more information.
     Object(String),
+    /// A DualLabeledCounter metric. See [`DualLabeledCounterMetric`] for more information.
+    DualLabeledCounter(HashMap<(String, String), i32>),
 }
 
 impl MallocSizeOf for Metric {
@@ -175,6 +180,7 @@ impl MallocSizeOf for Metric {
             Metric::Jwe(m) => m.size_of(ops),
             Metric::Text(m) => m.size_of(ops),
             Metric::Object(m) => m.size_of(ops),
+            Metric::DualLabeledCounter(m) => m.size_of(ops),
         }
     }
 }
@@ -193,7 +199,7 @@ pub trait MetricType {
     }
 
     /// Create a new metric from this with a specific label.
-    fn with_dynamic_label(&self, _label: String) -> Self
+    fn with_dynamic_label(&self, _label: DynamicLabelType) -> Self
     where
         Self: Sized,
     {
@@ -304,6 +310,7 @@ impl Metric {
             Metric::Jwe(_) => "jwe",
             Metric::Text(_) => "text",
             Metric::Object(_) => "object",
+            Metric::DualLabeledCounter(_) => "dual_labeled_counter",
         }
     }
 
@@ -335,6 +342,9 @@ impl Metric {
             Metric::Text(s) => json!(s),
             Metric::Object(s) => {
                 serde_json::from_str(s).expect("object storage should have been json")
+            }
+            Metric::DualLabeledCounter(s) => {
+                json!(s)
             }
         }
     }
