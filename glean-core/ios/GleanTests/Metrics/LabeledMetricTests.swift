@@ -133,6 +133,7 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledCounterMetric[""].add(1)
         labeledCounterMetric["with/slash"].add(1)
         labeledCounterMetric["this_string_has_more_than_thirty_characters"].add(1)
+        labeledCounterMetric["Spøøn"].add(1)
 
         XCTAssertEqual(
             0,
@@ -143,14 +144,12 @@ class LabeledMetricTypeTests: XCTestCase {
 
         // More than 111 characters? Not okay.
         labeledCounterMetric[String(repeating: "1", count: 112)].add(1)
-        // Not ASCII? Not okay.
-        labeledCounterMetric["Spøøn"].add(1)
         XCTAssertEqual(
-            2,
+            1,
             labeledCounterMetric.testGetNumRecordedErrors(.invalidLabel)
         )
 
-        XCTAssertEqual(2, labeledCounterMetric["__other__"].testGetValue())
+        XCTAssertEqual(1, labeledCounterMetric["__other__"].testGetValue())
     }
 
     func testLabeledStringType() {

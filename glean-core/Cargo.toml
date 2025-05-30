@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "64.3.1"
+version = "64.4.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"

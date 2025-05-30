@@ -16,6 +16,8 @@ kotlin {
 
 android {
     namespace = "org.mozilla.samples.gleancore"
+
+    ndkVersion rootProject.ext.build.ndkVersion
     compileSdkVersion rootProject.ext.build.compileSdkVersion
 
     defaultConfig {

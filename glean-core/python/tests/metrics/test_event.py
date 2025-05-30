@@ -247,58 +247,6 @@ def test_flush_queued_events_on_startup(safe_httpserver):
     assert "events" in request.url
 
 
-# Dispatcher usage
-@pytest.mark.skip
-def test_flush_queued_events_on_startup_and_correctly_handle_preinit_events(
-    safe_httpserver,
-):
-    safe_httpserver.serve_content(b"", code=200)
-
-    Glean._configuration.server_endpoint = safe_httpserver.url
-
-    class EventKeys(enum.Enum):
-        SOME_EXTRA = "some_extra"
-
-    event = metrics.EventMetricType(
-        CommonMetricData(
-            disabled=False,
-            category="telemetry",
-            lifetime=Lifetime.PING,
-            name="test_event",
-            send_in_pings=["events"],
-            dynamic_label=None,
-        ),
-        allowed_extra_keys=["some_extra"],
-    )
-
-    event.record(extra={EventKeys.SOME_EXTRA: "run1"})
-    assert 1 == len(event.test_get_value())
-
-    # Dispatcher.set_task_queueing(True)
-    event.record(extra={EventKeys.SOME_EXTRA: "pre-init"})
-
-    testing.reset_glean(
-        application_id="glean-python-test",
-        application_version=glean_version,
-        clear_stores=False,
-        configuration=Configuration(server_endpoint=safe_httpserver.url),
-    )
-
-    event.record(extra={EventKeys.SOME_EXTRA: "post-init"})
-
-    assert 1 == len(safe_httpserver.requests)
-    request = safe_httpserver.requests[0]
-    assert "events" in request.url
-
-    assert 1 == len(event.test_get_value())
-
-    Glean._submit_ping_by_name("events")
-
-    assert 2 == len(safe_httpserver.requests)
-    request = safe_httpserver.requests[1]
-    assert "events" in request.url
-
-
 def test_long_extra_values_record_an_error():
     click = metrics.EventMetricType(
         CommonMetricData(

@@ -386,8 +386,6 @@ Each extra key contains additional metadata along with it:
 * `type`: The type of value this extra key can hold. One of `string`, `boolean`, `quantity`. Defaults to `string`. Recorded value is converted to string for transmission.
   **Note**: If not specified only the legacy API on `record` is available.
 
-{{#include ../../../shared/blockquote-info.html}}
-
 ## Data questions
 
 * When and from where was the login view opened?
