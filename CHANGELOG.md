@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...main)
+
+# v64.4.0 (2025-05-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.3.1...v64.4.0)
 
 * General
   * Permit non-ASCII in dynamic labels ([bug 1968533](https://bugzilla.mozilla.org/show_bug.cgi?id=1968533))
