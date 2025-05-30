@@ -4,6 +4,8 @@
 
 * General
   * Permit non-ASCII in dynamic labels ([bug 1968533](https://bugzilla.mozilla.org/show_bug.cgi?id=1968533))
+* Android
+  * Build release artifacts on Rust 1.86.0 to avoid broken files ([#3149](https://github.com/mozilla/glean/pull/3149))
 
 # v64.3.1 (2025-05-23)
 
