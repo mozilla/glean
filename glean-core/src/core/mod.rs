@@ -15,7 +15,7 @@ use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 use uuid::Uuid;
 
-use crate::database::Database;
+use crate::database::sqlite::Database;
 use crate::debug::DebugOptions;
 use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
@@ -341,7 +341,7 @@ impl Glean {
 
         {
             let data_store = glean.data_store.as_ref().unwrap();
-            let file_size = data_store.file_size.map(|n| n.get()).unwrap_or(0);
+            let file_size = data_store.file_size().map(|n| n.get()).unwrap_or(0);
 
             // If we have a client ID on disk, we check the database
             if let Some(stored_client_id) = stored_client_id {
