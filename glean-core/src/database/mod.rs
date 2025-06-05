@@ -19,6 +19,8 @@ use crate::ErrorKind;
 use malloc_size_of::MallocSizeOf;
 use rkv::{StoreError, StoreOptions};
 
+pub mod sqlite;
+
 /// Unwrap a `Result`s `Ok` value or do the specified action.
 ///
 /// This is an alternative to the question-mark operator (`?`),
