@@ -270,16 +270,6 @@ impl PingMaker {
         info!("Collecting {}", ping.name());
         let database = glean.storage();
 
-        // HACK: Only for metrics pings we add the ping timings.
-        // But we want that to persist until the next metrics ping is actually sent.
-        let write_samples = database.write_timings.replace(Vec::with_capacity(64));
-        if !write_samples.is_empty() {
-            glean
-                .database_metrics
-                .write_time
-                .accumulate_samples_sync(glean, &write_samples);
-        }
-
         let mut metrics_data = StorageManager.snapshot_as_json(database, ping.name(), true);
 
         let events_data = glean

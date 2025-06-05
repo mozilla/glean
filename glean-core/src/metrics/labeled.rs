@@ -421,7 +421,7 @@ pub fn validate_dynamic_label(
     for store in &meta.inner.send_in_pings {
         glean
             .storage()
-            .iter_store_from(lifetime, store, Some(prefix), &mut snapshotter);
+            .iter_store_from(lifetime, store, prefix, &mut snapshotter);
     }
 
     let label_count = labels.len();

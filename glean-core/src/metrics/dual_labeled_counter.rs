@@ -424,7 +424,7 @@ fn get_seen_keys_and_categories(
     for store in &meta.inner.send_in_pings {
         glean
             .storage()
-            .iter_store_from(lifetime, store, Some(&prefix), &mut snapshotter);
+            .iter_store_from(lifetime, store, &prefix, &mut snapshotter);
     }
 
     (seen_keys, seen_categories)
