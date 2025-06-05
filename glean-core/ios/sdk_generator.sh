@@ -190,14 +190,16 @@ VENVDIR="${SOURCE_ROOT}/.venv"
     | sed 's/^\(.\)/warning: \1/'  \
     | sed '/Your metrics are Glean/s/^warning: //'
 
+# Any of the below variables might be empty, so by not quoting them we ensure they are just left out as arguments
+# shellcheck disable=SC2086
 PARSER_OUTPUT=$("${VENVDIR}"/bin/python -m glean_parser \
     translate \
     -f "swift" \
     -o "${OUTPUT_DIR}" \
     -s "glean_namespace=${GLEAN_NAMESPACE}" \
-    "$BUILD_DATE" \
-    "$EXPIRE_VERSION" \
-    "$ALLOW_RESERVED" \
+    $BUILD_DATE \
+    $EXPIRE_VERSION \
+    $ALLOW_RESERVED \
     "${YAML_FILES[@]}" 2>&1) || { echo "$PARSER_OUTPUT"; echo "error: glean_parser failed. See errors above."; exit 1; }
 
 if [ -n "$DOCS_DIRECTORY" ]; then
