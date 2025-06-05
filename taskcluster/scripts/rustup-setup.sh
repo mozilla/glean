@@ -30,8 +30,8 @@ TOOLCHAIN="${1:-stable}"
 # No argument -> default stable install
 if [ "${TOOLCHAIN}" = "stable" ]; then
     echo "Installing Rust stable & Android targets"
-    rustup toolchain install 1.86.0 --profile minimal --component llvm-tools
-    rustup default 1.86.0
+    rustup toolchain install stable --profile minimal --component llvm-tools
+    rustup default stable
     rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
 else
     echo "Installing Rust ${TOOLCHAIN}"
