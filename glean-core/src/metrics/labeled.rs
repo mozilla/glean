@@ -82,7 +82,8 @@ pub struct LabeledMetric<T> {
     labels: Option<Vec<Cow<'static, str>>>,
     /// Type of the underlying metric
     /// We hold on to an instance of it, which is cloned to create new modified instances.
-    submetric: T,
+    // TODO(test-only): pub
+    pub submetric: T,
 
     /// A map from a unique ID for the labeled submetric to a handle of an instantiated
     /// metric type.
