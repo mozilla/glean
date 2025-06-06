@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::borrow::Cow;
+use std::collections::HashSet;
 use std::collections::{hash_map::Entry, HashMap};
 use std::mem;
 use std::sync::{Arc, Mutex};
@@ -385,10 +386,10 @@ pub fn validate_dynamic_label(
         }
     }
 
-    let mut label_count = 0;
+    let mut labels = HashSet::new();
     let prefix = &key[..=base_identifier.len()];
-    let mut snapshotter = |_: &[u8], _: &Metric| {
-        label_count += 1;
+    let mut snapshotter = |metric_id: &[u8], _: &Metric| {
+        labels.insert(metric_id.to_vec());
     };
 
     let lifetime = meta.inner.lifetime;
@@ -398,6 +399,7 @@ pub fn validate_dynamic_label(
             .iter_store_from(lifetime, store, Some(prefix), &mut snapshotter);
     }
 
+    let label_count = labels.len();
     let error = if label_count >= MAX_LABELS {
         true
     } else if label.len() > MAX_LABEL_LENGTH {

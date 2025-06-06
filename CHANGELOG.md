@@ -4,6 +4,8 @@
 
 * Python
   * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
+* General
+  * BUGFIX: Count distinct labels, not total labels, before spilling into `__other__` bucket ([#3157](https://github.com/mozilla/glean/pull/3157))
 
 # v64.4.0 (2025-05-30)
 
