@@ -480,6 +480,12 @@ criteria = "safe-to-deploy"
 delta = "0.18.4 -> 0.19.0"
 notes = "Maintained by Mozilla, no addition of unsafe blocks"
 
+[[audits.rkv]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.19.0 -> 0.20.0"
+notes = "Removed all LMDB-specific code, added malloc_size_of integration"
+
 [[audits.rustversion]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
