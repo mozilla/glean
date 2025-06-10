@@ -108,14 +108,6 @@ criteria = "safe-to-deploy"
 version = "2.5.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.mime]]
-version = "0.3.16"
-criteria = "safe-to-deploy"
-
-[[exemptions.mime_guess]]
-version = "2.0.4"
-criteria = "safe-to-deploy"
-
 [[exemptions.minimal-lexical]]
 version = "0.2.1"
 criteria = "safe-to-deploy"
