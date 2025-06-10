@@ -72,7 +72,11 @@ glean-core/python/glean/_uniffi/__init__.py:
 test: test-rust
 
 test-rust: ## Run Rust tests for glean-core and glean-ffi
+ifeq (, $(shell command -v cargo-nextest))
 	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+else
+	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+endif
 
 test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
 	@for file in $^; do \
