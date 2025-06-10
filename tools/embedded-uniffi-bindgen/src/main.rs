@@ -6,6 +6,7 @@ use std::env;
 
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
+use glob::glob;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 enum TargetLanguage {
@@ -23,47 +24,93 @@ fn parse_language(lang: &str) -> anyhow::Result<TargetLanguage> {
     }
 }
 
+fn find_library_file(crate_root: &camino::Utf8Path, library_name: &str) -> Utf8PathBuf {
+    let path = if let Ok(target_dir) = env::var("CARGO_TARGET_DIR") {
+        Utf8PathBuf::from(target_dir)
+    } else {
+        crate_root.join("target")
+    };
+
+    // Search for all viable patterns and pick the first one we can find.
+    let glob_patterns = [
+        format!("{path}/**/lib{library_name}.a"),
+        format!("{path}/**/lib{library_name}.so"),
+        format!("{path}/**/lib{library_name}.dylib"),
+        format!("{path}/**/{library_name}.dll"),
+    ];
+
+    for pattern in &glob_patterns {
+        if let Some(Ok(path)) = glob(pattern).unwrap().next() {
+            return Utf8PathBuf::from_path_buf(path).unwrap();
+        }
+    }
+
+    panic!("lib{library_name} could not be found in {path}")
+}
+
 fn gen_bindings(
     udl_file: &camino::Utf8Path,
-    cfo: Option<&camino::Utf8Path>,
+    config_file: Option<&camino::Utf8Path>,
     languages: Vec<TargetLanguage>,
-    odo: Option<&camino::Utf8Path>,
-    library_file: Option<&camino::Utf8Path>,
+    out_dir: Option<&camino::Utf8Path>,
     crate_name: Option<&str>,
-    fmt: bool,
 ) -> anyhow::Result<()> {
     use uniffi::generate_bindings;
     use uniffi::{KotlinBindingGenerator, PythonBindingGenerator, SwiftBindingGenerator};
 
+    // 3 parents
+    // Should be `glean-core/src/glean.udl`,
+    // the one in `glean-core/bundle` is a symlink.
+    let canonical = udl_file.canonicalize().unwrap();
+    let crate_root = camino::Utf8Path::from_path(
+        canonical
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap(),
+    )
+    .unwrap();
+
     for language in languages {
         match language {
-            TargetLanguage::Kotlin => generate_bindings(
-                udl_file,
-                cfo,
-                KotlinBindingGenerator,
-                odo,
-                library_file,
-                crate_name,
-                fmt,
-            )?,
-            TargetLanguage::Python => generate_bindings(
-                udl_file,
-                cfo,
-                PythonBindingGenerator,
-                odo,
-                library_file,
-                crate_name,
-                fmt,
-            )?,
-            TargetLanguage::Swift => generate_bindings(
-                udl_file,
-                cfo,
-                SwiftBindingGenerator,
-                odo,
-                library_file,
-                crate_name,
-                fmt,
-            )?,
+            TargetLanguage::Kotlin => {
+                let library_file = find_library_file(crate_root, "xul");
+                generate_bindings(
+                    udl_file,
+                    config_file,
+                    KotlinBindingGenerator,
+                    out_dir,
+                    Some(&library_file),
+                    crate_name,
+                    false,
+                )?
+            }
+            TargetLanguage::Python => {
+                let library_file = find_library_file(crate_root, "glean_ffi");
+                generate_bindings(
+                    udl_file,
+                    config_file,
+                    PythonBindingGenerator,
+                    out_dir,
+                    Some(&library_file),
+                    crate_name,
+                    false,
+                )?
+            }
+            TargetLanguage::Swift => {
+                let library_file = find_library_file(crate_root, "glean_ffi");
+                generate_bindings(
+                    udl_file,
+                    config_file,
+                    SwiftBindingGenerator,
+                    out_dir,
+                    Some(&library_file),
+                    crate_name,
+                    false,
+                )?
+            }
         };
     }
     Ok(())
@@ -109,7 +156,7 @@ fn main() -> anyhow::Result<()> {
     let config = config.map(Utf8PathBuf::from);
 
     if udl_file.is_none() {
-        bail!("Need UDL file");
+        bail!("Need UDL file.");
     }
 
     if target_languages.is_empty() {
@@ -125,9 +172,7 @@ fn main() -> anyhow::Result<()> {
         config.as_deref(),
         target_languages,
         out_dir.as_deref(),
-        None,
         Some("glean_core"),
-        false,
     )?;
 
     Ok(())
