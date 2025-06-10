@@ -26,3 +26,6 @@ opt-level = 3
 
 [profile.dev.package.flate2]
 opt-level = 3
+
+[patch.crates-io]
+rkv = { git = "https://github.com/mozilla/rkv", branch = "dep-update" }
