@@ -60,6 +60,7 @@ build-xcframework:
 bindgen-python: glean-core/python/glean/_uniffi/glean.py glean-core/python/glean/_uniffi/__init__.py # Generate the uniffi wrapper code manually
 
 glean-core/python/glean/_uniffi/glean.py: glean-core/src/glean.udl
+	cargo build -p glean-bundle
 	cargo uniffi-bindgen generate $< --language python --out-dir $(@D)
 
 glean-core/python/glean/_uniffi/__init__.py:
