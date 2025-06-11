@@ -16,7 +16,7 @@ Set `ext.gleanPythonEnvDir` to your existing virtualenv before applying the plug
 
 In this mode Glean will setup its own virtualenv in `$gradleUserHomeDir/glean`, controlled by the `GLEAN_PYTHON` and `GLEAN_PYTHON_WHEELS_DIR` environment variables.
 
-- Install Python 3.8 or later and ensure it's on the `PATH`.
+- Install Python 3.9 or later and ensure it's on the `PATH`.
 
   - On Linux, installing Python from your Linux distribution's package manager is usually sufficient.
 
