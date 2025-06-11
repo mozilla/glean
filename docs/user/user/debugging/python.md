@@ -51,5 +51,5 @@ The flexible logging API is unable to display networking-related log messages or
 
 See the [Python logging documentation][python-logging] for more information.
 
-[python-logging]: https://docs.python.org/3.8/library/logging.html
+[python-logging]: https://docs.python.org/3.9/library/logging.html
 
