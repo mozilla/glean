@@ -1,7 +1,7 @@
 coverage[toml]==7.2.2
 jsonschema==3.2.0
 mypy==1.4.1
-pdoc3==0.11.6; python_version > '3.8'
+pdoc3==0.11.6
 pip
 pytest-localserver==0.8.0
 MarkupSafe==2.0.1
