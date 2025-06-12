@@ -13,7 +13,7 @@ The Glean JavaScript SDK allows integration with three distinct JavaScript envir
 * Node.js >= 12.20.0
 * npm >= 7.0.0
 * Webpack >= 5.34.0
-* Python >= 3.8
+* Python >= 3.9
   * The `glean` command requires Python to download [`glean_parser`](https://mozilla.github.io/glean_parser/) which is a Python library
 
 ### Browser extension specific requirements

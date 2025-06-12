@@ -4,6 +4,7 @@
 
 * Python
   * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
+  * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
 
 # v64.4.0 (2025-05-30)
 
