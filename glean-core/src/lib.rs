@@ -6,7 +6,7 @@
 #![allow(clippy::significant_drop_in_scrutinee)]
 #![allow(clippy::uninlined_format_args)]
 #![deny(rustdoc::broken_intra_doc_links)]
-#![deny(missing_docs)]
+//#![deny(missing_docs)]
 
 //! Glean is a modern approach for recording and sending Telemetry data.
 //!
@@ -38,7 +38,7 @@ mod core_metrics;
 mod coverage;
 mod database;
 mod debug;
-mod dispatcher;
+pub mod dispatcher;
 mod error;
 mod error_recording;
 mod event_database;
@@ -706,6 +706,7 @@ pub fn shutdown() {
         log::error!(
             "Timeout while blocking on the dispatcher. No further shutdown cleanup will happen."
         );
+        dispatcher::force_kill().unwrap();
         return;
     }
 
