@@ -418,11 +418,14 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::borrow::Cow;
+<span class="kw">use </span>std::collections::HashSet;
 <span class="kw">use </span>std::collections::{hash_map::Entry, HashMap};
 <span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::sync::{Arc, Mutex};
@@ -805,10 +808,10 @@
         }
     }
 
-    <span class="kw">let </span><span class="kw-2">mut </span>label_count = <span class="number">0</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>labels = HashSet::new();
     <span class="kw">let </span>prefix = <span class="kw-2">&amp;</span>key[..=base_identifier.len()];
-    <span class="kw">let </span><span class="kw-2">mut </span>snapshotter = |<span class="kw">_</span>: <span class="kw-2">&amp;</span>[u8], <span class="kw">_</span>: <span class="kw-2">&amp;</span>Metric| {
-        label_count += <span class="number">1</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>snapshotter = |metric_id: <span class="kw-2">&amp;</span>[u8], <span class="kw">_</span>: <span class="kw-2">&amp;</span>Metric| {
+        labels.insert(metric_id.to_vec());
     };
 
     <span class="kw">let </span>lifetime = meta.inner.lifetime;
@@ -818,6 +821,7 @@
             .iter_store_from(lifetime, store, <span class="prelude-val">Some</span>(prefix), <span class="kw-2">&amp;mut </span>snapshotter);
     }
 
+    <span class="kw">let </span>label_count = labels.len();
     <span class="kw">let </span>error = <span class="kw">if </span>label_count &gt;= MAX_LABELS {
         <span class="bool-val">true
     </span>} <span class="kw">else if </span>label.len() &gt; MAX_LABEL_LENGTH {
