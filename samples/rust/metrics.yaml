@@ -233,3 +233,93 @@ glean.distribution:
           type: array
           items:
             type: string
+
+test.dual_labeled:
+  static_static:
+    type: dual_labeled_counter
+    description: >
+      A dual labeled counter with static keys and categories
+    dual_labels:
+      key:
+        description: >
+          The key for the dual labeled counter
+        labels:
+          - key1
+          - key2
+      category:
+        description: >
+          The category for the dual labeled counter
+        labels:
+          - category1
+          - category2
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+  dynamic_static:
+    type: dual_labeled_counter
+    description: >
+      A dual labeled counter with static keys and dynamic categories
+    dual_labels:
+      key:
+        description: >
+          The key for the dual labeled counter
+        labels:
+          - key1
+          - key2
+      category:
+        description: >
+          The category for the dual labeled counter
+        labels: []
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+  static_dynamic:
+    type: dual_labeled_counter
+    description: >
+      A dual labeled counter with dynamic keys and static categories
+    dual_labels:
+      key:
+        description: >
+          The key for the dual labeled counter
+        labels: []
+      category:
+        description: >
+          The category for the dual labeled counter
+        labels:
+          - category1
+          - category2
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01
+  dynamic_dynamic:
+    type: dual_labeled_counter
+    description: >
+      A dual labeled counter with dynamic keys and dynamic categories
+    dual_labels:
+      key:
+        description: >
+          The key for the dual labeled counter
+        labels: []
+      category:
+        description: >
+          The category for the dual labeled counter
+        labels: []
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: 2100-01-01

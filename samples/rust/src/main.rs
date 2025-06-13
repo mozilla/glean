@@ -132,6 +132,74 @@ fn main() {
     ]);
     glean_metrics::party::balloons.set(balloons);
 
+    glean_metrics::test_dual_labeled::static_static
+        .get("key1", "category1")
+        .add(1);
+    glean_metrics::test_dual_labeled::dynamic_static
+        .get("party", "category1")
+        .add(1);
+    glean_metrics::test_dual_labeled::static_dynamic
+        .get("key1", "balloons")
+        .add(1);
+    glean_metrics::test_dual_labeled::dynamic_dynamic
+        .get("party", "balloons")
+        .add(1);
+    assert_eq!(
+        0,
+        glean_metrics::test_dual_labeled::static_static
+            .test_get_num_recorded_errors(ErrorType::InvalidLabel)
+    );
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_dual_labeled::static_static
+            .get("key1", "category1")
+            .test_get_value(None)
+    );
+    assert_eq!(
+        0,
+        glean_metrics::test_dual_labeled::dynamic_static
+            .test_get_num_recorded_errors(ErrorType::InvalidLabel)
+    );
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_dual_labeled::dynamic_static
+            .get("party", "category1")
+            .test_get_value(None)
+    );
+    assert_eq!(
+        0,
+        glean_metrics::test_dual_labeled::static_dynamic
+            .test_get_num_recorded_errors(ErrorType::InvalidLabel)
+    );
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_dual_labeled::static_dynamic
+            .get("key1", "balloons")
+            .test_get_value(None)
+    );
+    assert_eq!(
+        0,
+        glean_metrics::test_dual_labeled::dynamic_dynamic
+            .test_get_num_recorded_errors(ErrorType::InvalidLabel)
+    );
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_dual_labeled::dynamic_dynamic
+            .get("party", "balloons")
+            .test_get_value(None)
+    );
+
+    // Testing the `__other__` label.
+    glean_metrics::test_dual_labeled::static_static
+        .get("party", "balloons")
+        .add(1);
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_dual_labeled::static_static
+            .get("__other__", "__other__")
+            .test_get_value(None)
+    );
+
     // Testing with empty and null values.
     let drinks = serde_json::json!([
         { "name": "lemonade", "ingredients": ["lemon", "water", "sugar"] },
