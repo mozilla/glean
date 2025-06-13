@@ -39,9 +39,12 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
         );
 
         // `1983-04-13T12:09:14.274+00:00` will be truncated to Minute resolution.
-        let dt = FixedOffset::east(0)
-            .ymd(1983, 4, 13)
-            .and_hms_milli(12, 9, 14, 274);
+        let dt = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(1983, 4, 13, 12, 9, 14)
+            .unwrap()
+            .with_nanosecond(274 * 1_000_000)
+            .unwrap();
         metric.set_sync(&glean, Some(dt.into()));
 
         let snapshot = StorageManager
@@ -85,9 +88,12 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     );
 
     // `1983-04-13T12:09:14.274+00:00` will be truncated to Minute resolution.
-    let dt = FixedOffset::east(0)
-        .ymd(1983, 4, 13)
-        .and_hms_nano(12, 9, 14, 1_560_274);
+    let dt = FixedOffset::east_opt(0)
+        .unwrap()
+        .with_ymd_and_hms(1983, 4, 13, 12, 9, 14)
+        .unwrap()
+        .with_nanosecond(1_560_274)
+        .unwrap();
     metric.set_sync(&glean, Some(dt.into()));
 
     for store_name in store_names {
@@ -111,9 +117,12 @@ fn test_that_truncation_works() {
     let (glean, _t) = new_glean(None);
 
     // `1985-07-03T12:09:14.000560274+01:00`
-    let high_res_datetime = FixedOffset::east(3600)
-        .ymd(1985, 7, 3)
-        .and_hms_nano(12, 9, 14, 1_560_274);
+    let high_res_datetime = FixedOffset::east_opt(3600)
+        .unwrap()
+        .with_ymd_and_hms(1985, 7, 3, 12, 9, 14)
+        .unwrap()
+        .with_nanosecond(1_560_274)
+        .unwrap();
     let store_name = "store1";
 
     // Create an helper struct for defining the truncation cases.
@@ -184,4 +193,32 @@ fn test_that_truncation_works() {
                 .unwrap()
         );
     }
+}
+
+#[test]
+fn gotten_value_is_correct() {
+    let store_name = "store1";
+    let metric = DatetimeMetric::new(
+        CommonMetricData {
+            name: "like_an_arrow".into(),
+            category: "time.flies".into(),
+            send_in_pings: vec![store_name.into()],
+            ..Default::default()
+        },
+        TimeUnit::Second,
+    );
+
+    let (glean, _t) = new_glean(None);
+
+    // `1985-07-03T12:09:14.000560274+01:00`
+    let chrono_dt = FixedOffset::east_opt(3600)
+        .unwrap()
+        .with_ymd_and_hms(1985, 7, 3, 12, 9, 14)
+        .unwrap();
+
+    metric.set_sync(&glean, Some(chrono_dt.into()));
+    assert_eq!(
+        chrono_dt,
+        metric.get_value(&glean, Some(store_name)).unwrap()
+    );
 }
