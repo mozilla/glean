@@ -72,6 +72,7 @@
     - [Labeled Booleans](reference/metrics/labeled_booleans.md)
     - [Counter](reference/metrics/counter.md)
     - [Labeled Counters](reference/metrics/labeled_counters.md)
+    - [Dual Labeled Counters](reference/metrics/dual_labeled_counters.md)
     - [String](reference/metrics/string.md)
     - [Labeled Strings](reference/metrics/labeled_strings.md)
     - [String List](reference/metrics/string_list.md)

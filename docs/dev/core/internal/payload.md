@@ -284,6 +284,32 @@ See the individual metric types for details on the value payload:
 }
 ```
 
+### Dual Labeled metrics
+
+Currently only counters are supported:
+
+* [Dual Labeled Counters](../../../book/reference/metrics/dual_labeled_counters.md).
+
+All are on the nested represented in the same way, with "key" as the top level key and "category" as an
+object mapping the category to the metric's value.
+
+See the [Counter](#counter) metric type for details on the value payload.
+
+#### Example for Dual Labeled Counters
+
+```json
+{
+    "key1": {
+        "category1": 2,
+        "category2": 17
+    },
+    "key2": {
+        "category1": 2,
+        "category2": 17
+    }
+}
+```
+
 ### Rate
 
 A [Rate](../../../book/reference/metrics/rate.md) is represented by its `numerator` and `denominator`.
