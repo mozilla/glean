@@ -15,7 +15,7 @@ use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::CommonMetricData;
 use crate::Glean;
 
-use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
+use chrono::{DateTime, Datelike, FixedOffset, NaiveTime, TimeZone, Timelike};
 use malloc_size_of_derive::MallocSizeOf;
 
 /// A datetime type.
@@ -97,7 +97,7 @@ impl MetricType for DatetimeMetric {
 
 impl From<ChronoDatetime> for Datetime {
     fn from(dt: ChronoDatetime) -> Self {
-        let date = dt.date();
+        let date = dt.date_naive();
         let time = dt.time();
         let tz = dt.timezone();
         Self {
@@ -160,11 +160,13 @@ impl DatetimeMetric {
                     return;
                 };
 
-                let datetime_obj = FixedOffset::east(dt.offset_seconds)
-                    .ymd_opt(dt.year, dt.month, dt.day)
-                    .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
+                let datetime_obj = FixedOffset::east_opt(dt.offset_seconds)
+                    .unwrap()
+                    .with_ymd_and_hms(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+                    .unwrap()
+                    .with_nanosecond(dt.nanosecond);
 
-                if let Some(dt) = datetime_obj.single() {
+                if let Some(dt) = datetime_obj {
                     dt
                 } else {
                     record_error(
@@ -196,38 +198,17 @@ impl DatetimeMetric {
     ) -> Option<ChronoDatetime> {
         let (d, tu) = self.get_value_inner(glean, ping_name.into())?;
 
-        // The string version of the test function truncates using string
-        // parsing. Unfortunately `parse_from_str` errors with `NotEnough` if we
-        // try to truncate with `get_iso_time_string` and then parse it back
-        // in a `Datetime`. So we need to truncate manually.
         let time = d.time();
-        match tu {
-            TimeUnit::Nanosecond => d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond(),
-            ),
-            TimeUnit::Microsecond => d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / 1000,
-            ),
-            TimeUnit::Millisecond => d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / 1000000,
-            ),
-            TimeUnit::Second => {
-                d.date()
-                    .and_hms_nano_opt(time.hour(), time.minute(), time.second(), 0)
-            }
-            TimeUnit::Minute => d.date().and_hms_nano_opt(time.hour(), time.minute(), 0, 0),
-            TimeUnit::Hour => d.date().and_hms_nano_opt(time.hour(), 0, 0, 0),
-            TimeUnit::Day => d.date().and_hms_nano_opt(0, 0, 0, 0),
-        }
+        let time = match tu {
+            TimeUnit::Nanosecond => time,
+            TimeUnit::Microsecond => time.with_nanosecond(time.nanosecond() / 1000)?,
+            TimeUnit::Millisecond => time.with_nanosecond(time.nanosecond() / 1000000)?,
+            TimeUnit::Second => time.with_nanosecond(0)?,
+            TimeUnit::Minute => NaiveTime::from_hms_opt(time.hour(), time.minute(), 0)?,
+            TimeUnit::Hour => NaiveTime::from_hms_opt(time.hour(), 0, 0)?,
+            TimeUnit::Day => NaiveTime::MIN,
+        };
+        d.with_time(time).single()
     }
 
     fn get_value_inner(
