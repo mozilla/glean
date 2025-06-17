@@ -2069,6 +2069,26 @@ See the individual metric types for details on the value payload:</p>
     &quot;label2&quot;: 17
 }
 </code></pre>
+<h3 id="dual-labeled-metrics"><a class="header" href="#dual-labeled-metrics">Dual Labeled metrics</a></h3>
+<p>Currently only counters are supported:</p>
+<ul>
+<li><a href="core/internal/../../../book/reference/metrics/dual_labeled_counters.html">Dual Labeled Counters</a>.</li>
+</ul>
+<p>All are on the nested represented in the same way, with &quot;key&quot; as the top level key and &quot;category&quot; as an
+object mapping the category to the metric's value.</p>
+<p>See the <a href="core/internal/payload.html#counter">Counter</a> metric type for details on the value payload.</p>
+<h4 id="example-for-dual-labeled-counters"><a class="header" href="#example-for-dual-labeled-counters">Example for Dual Labeled Counters</a></h4>
+<pre><code class="language-json">{
+    &quot;key1&quot;: {
+        &quot;category1&quot;: 2,
+        &quot;category2&quot;: 17
+    },
+    &quot;key2&quot;: {
+        &quot;category1&quot;: 2,
+        &quot;category2&quot;: 17
+    }
+}
+</code></pre>
 <h3 id="rate"><a class="header" href="#rate">Rate</a></h3>
 <p>A <a href="core/internal/../../../book/reference/metrics/rate.html">Rate</a> is represented by its <code>numerator</code> and <code>denominator</code>.</p>
 <h4 id="example-13"><a class="header" href="#example-13">Example</a></h4>

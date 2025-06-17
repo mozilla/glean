@@ -182,7 +182,7 @@
 </span><span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::common_metric_data::CommonMetricDataInternal;
+<span class="kw">use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 <span class="kw">use </span><span class="kw">crate</span>::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 <span class="kw">use </span><span class="kw">crate</span>::metrics::Metric;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::MetricType;
@@ -212,7 +212,7 @@
         }
     }
 
-    <span class="kw">fn </span>with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, label: String) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, label: DynamicLabelType) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>meta = (<span class="kw-2">*</span><span class="self">self</span>.meta).clone();
         meta.inner.dynamic_label = <span class="prelude-val">Some</span>(label);
         <span class="self">Self </span>{

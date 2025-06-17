@@ -298,7 +298,7 @@ el.replaceWith(d);
 </dd>
 <dt id="glean.metrics.CommonMetricData"><code class="flex name class">
 <span>class <span class="ident">CommonMetricData</span></span>
-<span>(</span><span>*,<br>category: "'str'",<br>name: "'str'",<br>send_in_pings: "'typing.List[str]'",<br>lifetime: "'<a title="glean.metrics.Lifetime" href="#glean.metrics.Lifetime">Lifetime</a>'",<br>disabled: "'bool'",<br>dynamic_label: "'typing.Optional[str]'" = &lt;object object&gt;)</span>
+<span>(</span><span>*,<br>category: "'str'",<br>name: "'str'",<br>send_in_pings: "'typing.List[str]'",<br>lifetime: "'<a title="glean.metrics.Lifetime" href="#glean.metrics.Lifetime">Lifetime</a>'",<br>disabled: "'bool'",<br>dynamic_label: "'typing.Optional[DynamicLabelType]'" = &lt;object object&gt;)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -311,8 +311,8 @@ el.replaceWith(d);
     send_in_pings: &#34;typing.List[str]&#34;
     lifetime: &#34;Lifetime&#34;
     disabled: &#34;bool&#34;
-    dynamic_label: &#34;typing.Optional[str]&#34;
-    def __init__(self, *, category: &#34;str&#34;, name: &#34;str&#34;, send_in_pings: &#34;typing.List[str]&#34;, lifetime: &#34;Lifetime&#34;, disabled: &#34;bool&#34;, dynamic_label: &#34;typing.Optional[str]&#34; = _DEFAULT):
+    dynamic_label: &#34;typing.Optional[DynamicLabelType]&#34;
+    def __init__(self, *, category: &#34;str&#34;, name: &#34;str&#34;, send_in_pings: &#34;typing.List[str]&#34;, lifetime: &#34;Lifetime&#34;, disabled: &#34;bool&#34;, dynamic_label: &#34;typing.Optional[DynamicLabelType]&#34; = _DEFAULT):
         self.category = category
         self.name = name
         self.send_in_pings = send_in_pings
@@ -352,7 +352,7 @@ el.replaceWith(d);
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="glean.metrics.CommonMetricData.dynamic_label"><code class="name">var <span class="ident">dynamic_label</span> : str | None</code></dt>
+<dt id="glean.metrics.CommonMetricData.dynamic_label"><code class="name">var <span class="ident">dynamic_label</span> : glean._uniffi.glean.DynamicLabelType | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

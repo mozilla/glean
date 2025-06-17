@@ -420,6 +420,7 @@
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -432,7 +433,7 @@
 
 <span class="kw">use </span>malloc_size_of::MallocSizeOf;
 
-<span class="kw">use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, CommonMetricDataInternal};
+<span class="kw">use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 <span class="kw">use </span><span class="kw">crate</span>::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 <span class="kw">use </span><span class="kw">crate</span>::histogram::HistogramType;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{
@@ -680,7 +681,7 @@
     ///
     /// This is used for dynamic labels where we have to actually validate and correct the
     /// label later when we have a Glean object.
-    </span><span class="kw">fn </span>new_metric_with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, label: String) -&gt; T {
+    </span><span class="kw">fn </span>new_metric_with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, label: DynamicLabelType) -&gt; T {
         <span class="self">self</span>.submetric.with_dynamic_label(label)
     }
 
@@ -744,7 +745,8 @@
                             label,
                         ))
                     }
-                    <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.new_metric_with_dynamic_label(label.to_string()),
+                    <span class="prelude-val">None </span>=&gt; <span class="self">self
+                        </span>.new_metric_with_dynamic_label(DynamicLabelType::Label(label.to_string())),
                 };
                 <span class="kw">let </span>metric = Arc::new(metric);
                 entry.insert(Arc::clone(<span class="kw-2">&amp;</span>metric));

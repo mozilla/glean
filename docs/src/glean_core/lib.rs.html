@@ -1450,7 +1450,7 @@
 <span class="attr">#[cfg(all(not(target_os = <span class="string">"android"</span>), not(target_os = <span class="string">"ios"</span>)))]
 </span><span class="kw">mod </span>fd_logger;
 
-<span class="kw">pub use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, Lifetime};
+<span class="kw">pub use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, DynamicLabelType, Lifetime};
 <span class="kw">pub use </span><span class="kw">crate</span>::core::Glean;
 <span class="kw">pub use </span><span class="kw">crate</span>::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 <span class="kw">pub use </span><span class="kw">crate</span>::error::{Error, ErrorKind, <span class="prelude-ty">Result</span>};
@@ -1463,11 +1463,11 @@
 };
 <span class="kw">pub use </span><span class="kw">crate</span>::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, Datetime, DatetimeMetric,
-    DenominatorMetric, DistributionData, EventMetric, LocalCustomDistribution,
-    LocalMemoryDistribution, LocalTimingDistribution, MemoryDistributionMetric, MemoryUnit,
-    NumeratorMetric, ObjectMetric, PingType, QuantityMetric, Rate, RateMetric, RecordedEvent,
-    RecordedExperiment, StringListMetric, StringMetric, TextMetric, TimeUnit, TimerId,
-    TimespanMetric, TimingDistributionMetric, UrlMetric, UuidMetric,
+    DenominatorMetric, DistributionData, DualLabeledCounterMetric, EventMetric,
+    LocalCustomDistribution, LocalMemoryDistribution, LocalTimingDistribution,
+    MemoryDistributionMetric, MemoryUnit, NumeratorMetric, ObjectMetric, PingType, QuantityMetric,
+    Rate, RateMetric, RecordedEvent, RecordedExperiment, StringListMetric, StringMetric,
+    TextMetric, TimeUnit, TimerId, TimespanMetric, TimingDistributionMetric, UrlMetric, UuidMetric,
 };
 <span class="kw">pub use </span><span class="kw">crate</span>::upload::{PingRequest, PingUploadTask, UploadResult, UploadTaskAction};
 

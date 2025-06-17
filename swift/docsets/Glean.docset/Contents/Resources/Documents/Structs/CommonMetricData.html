@@ -60,6 +60,9 @@
                 <a href="../Classes/DenominatorMetric.html">DenominatorMetric</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/DualLabeledCounterMetric.html">DualLabeledCounterMetric</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/EventMetric.html">EventMetric</a>
               </li>
               <li class="nav-group-task">
@@ -149,6 +152,9 @@
                 <a href="../Enums/CallbackError.html">CallbackError</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Enums/DynamicLabelType.html">DynamicLabelType</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Enums/ErrorType.html">ErrorType</a>
               </li>
               <li class="nav-group-task">
@@ -209,6 +215,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/DistributionMetrics">DistributionMetrics</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/DynamicLabelType">DynamicLabelType</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Extensions.html#/ErrorType">ErrorType</a>
@@ -399,6 +408,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/DenominatorMetricProtocol.html">DenominatorMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/DualLabeledCounterMetricProtocol.html">DualLabeledCounterMetricProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/EventExtras.html">EventExtras</a>
@@ -729,9 +741,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean16CommonMetricDataV12dynamicLabelSSSgvp"></a>
+                    <a name="/s:5Glean16CommonMetricDataV12dynamicLabelAA07DynamicF4TypeOSgvp"></a>
                     <a name="//apple_ref/swift/Property/dynamicLabel" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean16CommonMetricDataV12dynamicLabelSSSgvp">dynamicLabel</a>
+                    <a class="token" href="#/s:5Glean16CommonMetricDataV12dynamicLabelAA07DynamicF4TypeOSgvp">dynamicLabel</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -746,7 +758,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dynamicLabel</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dynamicLabel</span><span class="p">:</span> <span class="kt"><a href="../Enums/DynamicLabelType.html">DynamicLabelType</a></span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -756,9 +768,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean16CommonMetricDataV8category4name11sendInPings8lifetime8disabled12dynamicLabelACSS_SSSaySSGAA8LifetimeOSbSSSgtcfc"></a>
+                    <a name="/s:5Glean16CommonMetricDataV8category4name11sendInPings8lifetime8disabled12dynamicLabelACSS_SSSaySSGAA8LifetimeOSbAA07DynamicM4TypeOSgtcfc"></a>
                     <a name="//apple_ref/swift/Method/init(category:name:sendInPings:lifetime:disabled:dynamicLabel:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean16CommonMetricDataV8category4name11sendInPings8lifetime8disabled12dynamicLabelACSS_SSSaySSGAA8LifetimeOSbSSSgtcfc">init(category:<wbr>name:<wbr>sendInPings:<wbr>lifetime:<wbr>disabled:<wbr>dynamicLabel:<wbr>)</a>
+                    <a class="token" href="#/s:5Glean16CommonMetricDataV8category4name11sendInPings8lifetime8disabled12dynamicLabelACSS_SSSaySSGAA8LifetimeOSbAA07DynamicM4TypeOSgtcfc">init(category:<wbr>name:<wbr>sendInPings:<wbr>lifetime:<wbr>disabled:<wbr>dynamicLabel:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -773,7 +785,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">category</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">sendInPings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">lifetime</span><span class="p">:</span> <span class="kt"><a href="../Enums/Lifetime.html">Lifetime</a></span><span class="p">,</span> <span class="nv">disabled</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">dynamicLabel</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">category</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">sendInPings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">lifetime</span><span class="p">:</span> <span class="kt"><a href="../Enums/Lifetime.html">Lifetime</a></span><span class="p">,</span> <span class="nv">disabled</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">dynamicLabel</span><span class="p">:</span> <span class="kt"><a href="../Enums/DynamicLabelType.html">DynamicLabelType</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -837,7 +849,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
+          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-17)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

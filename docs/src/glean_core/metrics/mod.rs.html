@@ -370,6 +370,9 @@
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -390,6 +393,7 @@
 <span class="kw">mod </span>custom_distribution;
 <span class="kw">mod </span>datetime;
 <span class="kw">mod </span>denominator;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>dual_labeled_counter;
 <span class="kw">mod </span>event;
 <span class="kw">mod </span>experiment;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>labeled;
@@ -412,6 +416,7 @@
 <span class="kw">mod </span>uuid;
 
 <span class="kw">use </span><span class="kw">crate</span>::common_metric_data::CommonMetricDataInternal;
+<span class="kw">pub use </span><span class="kw">crate</span>::common_metric_data::DynamicLabelType;
 <span class="kw">pub use </span><span class="kw">crate</span>::event_database::RecordedEvent;
 <span class="kw">use </span><span class="kw">crate</span>::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 <span class="kw">pub use </span><span class="kw">crate</span>::metrics::datetime::Datetime;
@@ -423,11 +428,12 @@
 <span class="kw">pub use </span><span class="self">self</span>::custom_distribution::{CustomDistributionMetric, LocalCustomDistribution};
 <span class="kw">pub use </span><span class="self">self</span>::datetime::DatetimeMetric;
 <span class="kw">pub use </span><span class="self">self</span>::denominator::DenominatorMetric;
+<span class="kw">pub use </span><span class="self">self</span>::dual_labeled_counter::DualLabeledCounterMetric;
 <span class="kw">pub use </span><span class="self">self</span>::event::EventMetric;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::experiment::ExperimentMetric;
 <span class="kw">pub use </span><span class="self">self</span>::labeled::{
     LabeledBoolean, LabeledCounter, LabeledCustomDistribution, LabeledMemoryDistribution,
-    LabeledMetric, LabeledQuantity, LabeledString, LabeledTimingDistribution,
+    LabeledMetric, LabeledMetricData, LabeledQuantity, LabeledString, LabeledTimingDistribution,
 };
 <span class="kw">pub use </span><span class="self">self</span>::memory_distribution::{LocalMemoryDistribution, MemoryDistributionMetric};
 <span class="kw">pub use </span><span class="self">self</span>::memory_unit::MemoryUnit;
@@ -565,7 +571,7 @@
     }
 
     <span class="doccomment">/// Create a new metric from this with a specific label.
-    </span><span class="kw">fn </span>with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, _label: String) -&gt; <span class="self">Self
+    </span><span class="kw">fn </span>with_dynamic_label(<span class="kw-2">&amp;</span><span class="self">self</span>, _label: DynamicLabelType) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span><span class="self">Self</span>: Sized,
     {
