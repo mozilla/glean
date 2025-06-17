@@ -235,6 +235,7 @@ glean.distribution:
             type: string
 
 test.dual_labeled:
+
   static_static:
     type: dual_labeled_counter
     description: >
@@ -258,7 +259,8 @@ test.dual_labeled:
       - http://example.com/reviews
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: never
+
   dynamic_static:
     type: dual_labeled_counter
     description: >
@@ -273,14 +275,14 @@ test.dual_labeled:
       category:
         description: >
           The category for the dual labeled counter
-        labels: []
     bugs:
       - https://bugzilla.mozilla.org/11137353
     data_reviews:
       - http://example.com/reviews
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: never
+
   static_dynamic:
     type: dual_labeled_counter
     description: >
@@ -289,7 +291,6 @@ test.dual_labeled:
       key:
         description: >
           The key for the dual labeled counter
-        labels: []
       category:
         description: >
           The category for the dual labeled counter
@@ -302,7 +303,8 @@ test.dual_labeled:
       - http://example.com/reviews
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: never
+
   dynamic_dynamic:
     type: dual_labeled_counter
     description: >
@@ -311,15 +313,13 @@ test.dual_labeled:
       key:
         description: >
           The key for the dual labeled counter
-        labels: []
       category:
         description: >
           The category for the dual labeled counter
-        labels: []
     bugs:
       - https://bugzilla.mozilla.org/11137353
     data_reviews:
       - http://example.com/reviews
     notification_emails:
       - CHANGE-ME@example.com
-    expires: 2100-01-01
+    expires: never
