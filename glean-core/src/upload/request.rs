@@ -274,7 +274,7 @@ mod test {
 
     #[test]
     fn date_header_resolution() {
-        let date: DateTime<Utc> = Utc.ymd(2018, 2, 25).and_hms(11, 10, 37);
+        let date: DateTime<Utc> = Utc.with_ymd_and_hms(2018, 2, 25, 11, 10, 37).unwrap();
         let test_value = create_date_header_value(date);
         assert_eq!("Sun, 25 Feb 2018 11:10:37 GMT", test_value);
     }
