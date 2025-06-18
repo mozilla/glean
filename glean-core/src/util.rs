@@ -72,7 +72,7 @@ pub(crate) fn local_now_with_offset() -> DateTime<FixedOffset> {
         use chrono::Utc;
 
         // Get timespec, including the user's timezone.
-        let tm = time::now();
+        let tm = zeitstempel::now();
         // Same as chrono:
         // https://docs.rs/chrono/0.4.10/src/chrono/offset/local.rs.html#37
         let offset = tm.tm_utcoff;
@@ -82,7 +82,7 @@ pub(crate) fn local_now_with_offset() -> DateTime<FixedOffset> {
                 offset
             );
             let now: DateTime<Utc> = Utc::now();
-            let utc_offset = FixedOffset::east(0);
+            let utc_offset = FixedOffset::east_opt(0).unwrap();
             return now.with_timezone(&utc_offset);
         }
     }
