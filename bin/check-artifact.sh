@@ -35,6 +35,8 @@ check_files() {
     local content
     local missing
 
+    echo "File check"
+
     artifact="$1"
     echo "Artifact: $artifact"
 
@@ -63,15 +65,64 @@ check_files() {
     fi
 }
 
+check_symbol() {
+    local artifact
+    local files
+    local content
+    local missing
+
+    echo "Symbol check"
+
+    artifact="$1"
+    shift
+    echo "Artifact: $artifact"
+
+    symbol="$1"
+    shift
+    echo "Symbol: $symbol"
+
+    if [[ -z "$artifact" ]]; then
+        echo "No artifact found. Skipping."
+        return
+    fi
+
+    nm=$(find "$(rustc --print sysroot)" -name "llvm-nm")
+    if [[ -z "$nm" ]]; then
+        echo "Missing llvm-nm."
+        echo "Did you install llvm-tools?"
+        echo
+        echo "    rustup component add llvm-tools"
+        exit 1
+    fi
+
+    files=("$@")
+    missing=0
+
+    for file in "${files[@]}"; do
+        if unzip -p "$artifact" "$file" | $nm - | grep -q "$symbol"; then
+            true
+        else
+            echo "Symbol missing in ${artifact}, file ${file}, symbol: ${symbol}" >&2
+            missing=1
+        fi
+    done
+
+    if [ "$missing" -eq 1 ]; then
+        echo "Symbol missing. Abort." >&2
+        exit 1
+    fi
+}
+
 
 case "$ARTIFACT_ID" in
     glean-native)
         ARTIFACT="$(find "${BUILD_DIR}" -path "*/${ARTIFACT_ID}/*" -name "*.aar")"
         check_files "$ARTIFACT" "${REQUIRED_FILES_AAR[@]}"
-        ;;
-    glean-native-forUnitTests)
+
+        ARTIFACT_ID=glean-native-forUnitTests
         ARTIFACT="$(find "${BUILD_DIR}" -path "*/${ARTIFACT_ID}/*" -name "*.jar")"
         check_files "$ARTIFACT" "${REQUIRED_FILES_TEST[@]}"
+        check_symbol "$ARTIFACT" "glean_core_uniffi_contract_version" "${REQUIRED_FILES_TEST[@]}"
         ;;
     *)
         echo "Unknown Artifact ID"

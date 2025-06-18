@@ -1,6 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...main)
+
+# v64.5.0 (2025-06-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...v64.5.0)
+
+* Python
+  * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
+* Rust
+  * Added new metric type (`DualLabeledCounter`) to support migration of legacy keyed-categorical histograms ([bug 1957085](https://bugzilla.mozilla.org/show_bug.cgi?id=1957085))
+* General
+  * BUGFIX: Count distinct labels, not total labels, before spilling into `__other__` bucket ([#3157](https://github.com/mozilla/glean/pull/3157))
+  * Updated to `glean_parser` v17.2.0 ([#3166](https://github.com/mozilla/glean/pull/3166))
 
 # v64.4.0 (2025-05-30)
 

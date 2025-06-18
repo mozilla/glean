@@ -60,6 +60,7 @@ build-xcframework:
 bindgen-python: glean-core/python/glean/_uniffi/glean.py glean-core/python/glean/_uniffi/__init__.py # Generate the uniffi wrapper code manually
 
 glean-core/python/glean/_uniffi/glean.py: glean-core/src/glean.udl
+	cargo build -p glean-bundle
 	cargo uniffi-bindgen generate $< --language python --out-dir $(@D)
 
 glean-core/python/glean/_uniffi/__init__.py:
@@ -72,7 +73,11 @@ glean-core/python/glean/_uniffi/__init__.py:
 test: test-rust
 
 test-rust: ## Run Rust tests for glean-core and glean-ffi
+ifeq (, $(shell command -v cargo-nextest))
 	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+else
+	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+endif
 
 test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
 	@for file in $^; do \
@@ -157,7 +162,7 @@ docs-python: build-python ## Build the Python documentation
 .PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=17.1
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=17.2
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

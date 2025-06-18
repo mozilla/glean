@@ -19,7 +19,7 @@ export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_TOOLCH
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_AR=/builds/worker/cctools/bin/aarch64-apple-darwin-ar
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RANLIB=/builds/worker/cctools/bin/aarch64-apple-darwin-ranlib
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_LD_LIBRARY_PATH=/builds/worker/clang/lib
-export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-fuse-ld=/builds/worker/cctools/bin/aarch64-apple-darwin-ld -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-dead_strip"
+export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS="-C linker=/builds/worker/clang/bin/clang -C link-arg=-fuse-ld=/builds/worker/cctools/bin/aarch64-apple-darwin-ld -C link-arg=-B -C link-arg=/builds/worker/cctools/bin -C link-arg=-target -C link-arg=aarch64-apple-darwin -C link-arg=-isysroot -C link-arg=/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-syslibroot,/tmp/MacOSX11.0.sdk -C link-arg=-Wl,-dead_strip -C link-arg=-Wl,-no_encryption"
 export ORG_GRADLE_PROJECT_RUST_ANDROID_GRADLE_TARGET_AARCH64_APPLE_DARWIN_CFLAGS_aarch64_apple_darwin="-B /builds/worker/cctools/bin -target aarch64-apple-darwin -isysroot /tmp/MacOSX11.0.sdk -Wl,-syslibroot,/tmp/MacOSX11.0.sdk -Wl,-dead_strip"
 
 # x86_64 Windows
