@@ -221,7 +221,7 @@ pub mod floating_point_context {
 #[cfg(test)]
 mod test {
     use super::*;
-    use chrono::offset::TimeZone;
+    use chrono::{offset::TimeZone, Timelike};
 
     #[test]
     fn test_sanitize_application_id() {
@@ -246,9 +246,12 @@ mod test {
     #[test]
     fn test_get_iso_time_string() {
         // `1985-07-03T12:09:14.000560274+01:00`
-        let dt = FixedOffset::east(3600)
-            .ymd(1985, 7, 3)
-            .and_hms_nano(12, 9, 14, 1_560_274);
+        let dt = FixedOffset::east_opt(3600)
+            .unwrap()
+            .with_ymd_and_hms(1985, 7, 3, 12, 9, 14)
+            .unwrap()
+            .with_nanosecond(1_560_274)
+            .unwrap();
         assert_eq!(
             "1985-07-03T12:09:14.001560274+01:00",
             get_iso_time_string(dt, TimeUnit::Nanosecond)
