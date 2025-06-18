@@ -116,6 +116,10 @@ pub fn kill() -> Result<(), DispatchError> {
     join_dispatcher_thread()
 }
 
+pub fn force_kill() -> Result<(), DispatchError> {
+    guard().force_kill()
+}
+
 /// Shuts down the dispatch queue.
 ///
 /// This will initiate a shutdown of the worker thread
