@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...main)
+
+# v64.5.0 (2025-06-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...v64.5.0)
 
 * Python
   * Stop building wheels for Windows i686 ([#3144](https://github.com/mozilla/glean/pull/3144))
