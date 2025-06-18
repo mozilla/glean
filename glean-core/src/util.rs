@@ -49,44 +49,10 @@ pub fn get_iso_time_string(datetime: DateTime<FixedOffset>, truncate_to: TimeUni
 /// This converts from the `Local` timezone into its fixed-offset equivalent.
 /// If a timezone outside of [-24h, +24h] is detected it corrects the timezone offset to UTC (+0).
 pub(crate) fn local_now_with_offset() -> DateTime<FixedOffset> {
-    #[cfg(target_os = "windows")]
-    {
-        // `Local::now` takes the user's timezone offset
-        // and panics if it's not within a range of [-24, +24] hours.
-        // This causes crashes in a small number of clients on Windows.
-        //
-        // We can't determine the faulty clients
-        // or the circumstancens under which this happens,
-        // so the best we can do is have a workaround:
-        //
-        // We try getting the time and timezone first,
-        // then manually check that it is a valid timezone offset.
-        // If it is, we proceed and use that time and offset.
-        // If it isn't we fallback to UTC.
-        //
-        // This has the small downside that it will use 2 calls to get the time,
-        // but only on Windows.
-        //
-        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770.
-
-        use chrono::Utc;
-
-        // Get timespec, including the user's timezone.
-        let tm = zeitstempel::now();
-        // Same as chrono:
-        // https://docs.rs/chrono/0.4.10/src/chrono/offset/local.rs.html#37
-        let offset = tm.tm_utcoff;
-        if let None = FixedOffset::east_opt(offset) {
-            log::warn!(
-                "Detected invalid timezone offset: {}. Using UTC fallback.",
-                offset
-            );
-            let now: DateTime<Utc> = Utc::now();
-            let utc_offset = FixedOffset::east_opt(0).unwrap();
-            return now.with_timezone(&utc_offset);
-        }
-    }
-
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770.
+    //
+    // It's not clear if this bug on Windows still exist with the latest versions of
+    // the `time` crate. Removed the workaround.
     let now: DateTime<Local> = Local::now();
     now.with_timezone(now.offset())
 }
