@@ -15,7 +15,7 @@ use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::CommonMetricData;
 use crate::Glean;
 
-use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike, Utc};
+use chrono::{DateTime, Datelike, FixedOffset, Local, TimeZone, Timelike};
 use malloc_size_of_derive::MallocSizeOf;
 
 /// A datetime type.
@@ -232,7 +232,7 @@ impl DatetimeMetric {
             TimeUnit::Hour => d.date_naive().and_hms_nano_opt(time.hour(), 0, 0, 0),
             TimeUnit::Day => d.date_naive().and_hms_nano_opt(0, 0, 0, 0),
         };
-        dt.map(|dt| Utc.from_local_datetime(&dt).unwrap().into())
+        dt.map(|dt| Local.from_local_datetime(&dt).unwrap().into())
     }
 
     fn get_value_inner(
