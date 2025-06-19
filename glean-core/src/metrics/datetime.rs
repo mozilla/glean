@@ -15,7 +15,7 @@ use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::CommonMetricData;
 use crate::Glean;
 
-use chrono::{DateTime, Datelike, FixedOffset, Local, TimeZone, Timelike};
+use chrono::{DateTime, Datelike, FixedOffset, NaiveTime, TimeZone, Timelike};
 use malloc_size_of_derive::MallocSizeOf;
 
 /// A datetime type.
@@ -198,41 +198,17 @@ impl DatetimeMetric {
     ) -> Option<ChronoDatetime> {
         let (d, tu) = self.get_value_inner(glean, ping_name.into())?;
 
-        // The string version of the test function truncates using string
-        // parsing. Unfortunately `parse_from_str` errors with `NotEnough` if we
-        // try to truncate with `get_iso_time_string` and then parse it back
-        // in a `Datetime`. So we need to truncate manually.
         let time = d.time();
-        let dt = match tu {
-            TimeUnit::Nanosecond => d.date_naive().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond(),
-            ),
-            TimeUnit::Microsecond => d.date_naive().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / 1000,
-            ),
-            TimeUnit::Millisecond => d.date_naive().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / 1000000,
-            ),
-            TimeUnit::Second => {
-                d.date_naive()
-                    .and_hms_nano_opt(time.hour(), time.minute(), time.second(), 0)
-            }
-            TimeUnit::Minute => d
-                .date_naive()
-                .and_hms_nano_opt(time.hour(), time.minute(), 0, 0),
-            TimeUnit::Hour => d.date_naive().and_hms_nano_opt(time.hour(), 0, 0, 0),
-            TimeUnit::Day => d.date_naive().and_hms_nano_opt(0, 0, 0, 0),
+        let time = match tu {
+            TimeUnit::Nanosecond => time,
+            TimeUnit::Microsecond => time.with_nanosecond(time.nanosecond() / 1000)?,
+            TimeUnit::Millisecond => time.with_nanosecond(time.nanosecond() / 1000000)?,
+            TimeUnit::Second => time.with_nanosecond(0)?,
+            TimeUnit::Minute => NaiveTime::from_hms_opt(time.hour(), time.minute(), 0)?,
+            TimeUnit::Hour => NaiveTime::from_hms_opt(time.hour(), 0, 0)?,
+            TimeUnit::Day => NaiveTime::MIN,
         };
-        dt.map(|dt| Local.from_local_datetime(&dt).unwrap().into())
+        d.with_time(time).single()
     }
 
     fn get_value_inner(
