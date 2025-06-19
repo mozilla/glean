@@ -43,7 +43,7 @@ fn datetime_serializer_should_correctly_serialize_datetime() {
             .unwrap()
             .with_ymd_and_hms(1983, 4, 13, 12, 9, 14)
             .unwrap()
-            .with_nanosecond(274)
+            .with_nanosecond(274 * 1_000_000)
             .unwrap();
         metric.set_sync(&glean, Some(dt.into()));
 

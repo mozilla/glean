@@ -232,7 +232,7 @@ impl DatetimeMetric {
             TimeUnit::Hour => d.date_naive().and_hms_nano_opt(time.hour(), 0, 0, 0),
             TimeUnit::Day => d.date_naive().and_hms_nano_opt(0, 0, 0, 0),
         };
-        dt.map(|dt| Utc.from_utc_datetime(&dt).into())
+        dt.map(|dt| Utc.from_local_datetime(&dt).unwrap().into())
     }
 
     fn get_value_inner(
