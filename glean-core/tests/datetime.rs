@@ -194,3 +194,31 @@ fn test_that_truncation_works() {
         );
     }
 }
+
+#[test]
+fn gotten_value_is_correct() {
+    let store_name = "store1";
+    let metric = DatetimeMetric::new(
+        CommonMetricData {
+            name: "like_an_arrow".into(),
+            category: "time.flies".into(),
+            send_in_pings: vec![store_name.into()],
+            ..Default::default()
+        },
+        TimeUnit::Second,
+    );
+
+    let (glean, _t) = new_glean(None);
+
+    // `1985-07-03T12:09:14.000560274+01:00`
+    let chrono_dt = FixedOffset::east_opt(3600)
+        .unwrap()
+        .with_ymd_and_hms(1985, 7, 3, 12, 9, 14)
+        .unwrap();
+
+    metric.set_sync(&glean, Some(chrono_dt.into()));
+    assert_eq!(
+        chrono_dt,
+        metric.get_value(&glean, Some(store_name)).unwrap()
+    );
+}
