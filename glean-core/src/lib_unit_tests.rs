@@ -550,7 +550,7 @@ fn backwards_compatible_deserialization() {
     use metrics::{Metric::*, TimeUnit};
 
     // Prepare some data to fill in
-    let dt = FixedOffset::east(9*3600).ymd(2014, 11, 28).and_hms_nano(21, 45, 59, 12);
+    let dt = FixedOffset::east_opt(9*3600).unwrap().with_ymd_and_hms(2014, 11, 28, 21, 45, 59).unwrap().with_nanosecond(12).unwrap();
 
     let mut custom_dist_exp = Histogram::exponential(1, 500, 10);
     custom_dist_exp.accumulate(10);

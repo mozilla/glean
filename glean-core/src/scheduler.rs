@@ -134,12 +134,14 @@ fn schedule_internal(
     // 3. The ping was NOT collected on the current calendar day BUT we still have
     //    some time to the due time; schedule for submitting the current calendar day.
 
-    let already_sent_today = last_sent_time.is_some_and(|d| d.date() == now.date());
+    let already_sent_today = last_sent_time.is_some_and(|d| d.date_naive() == now.date_naive());
     if already_sent_today {
         // Case #1
         log::info!("The 'metrics' ping was already sent today, {}", now);
         scheduler.start_scheduler(submitter, now, When::Tomorrow);
-    } else if now > now.date().and_hms(SCHEDULED_HOUR, 0, 0) {
+    } else if now
+        > Utc.from_utc_datetime(&now.date_naive().and_hms_opt(SCHEDULED_HOUR, 0, 0).unwrap())
+    {
         // Case #2
         log::info!("Sending the 'metrics' ping immediately, {}", now);
         submitter.submit_metrics_ping(glean, Some("overdue"), now);
@@ -165,15 +167,15 @@ impl When {
     /// our deadline has passed, this will return zero.
     fn until(&self, now: DateTime<FixedOffset>) -> std::time::Duration {
         let fire_date = match self {
-            Self::Today => now.date().and_hms(SCHEDULED_HOUR, 0, 0),
+            Self::Today => now.date_naive().and_hms_opt(SCHEDULED_HOUR, 0, 0).unwrap(),
             // Doesn't actually save us from being an hour off on DST because
             // chrono doesn't know when DST changes. : (
-            Self::Tomorrow | Self::Reschedule => {
-                (now.date() + Duration::days(1)).and_hms(SCHEDULED_HOUR, 0, 0)
-            }
+            Self::Tomorrow | Self::Reschedule => (now.date_naive() + Duration::days(1))
+                .and_hms_opt(SCHEDULED_HOUR, 0, 0)
+                .unwrap(),
         };
         // After rust-lang/rust#73544 can use std::time::Duration::ZERO
-        (fire_date - now)
+        (fire_date - now.naive_utc())
             .to_std()
             .unwrap_or_else(|_| std::time::Duration::from_millis(0))
     }
@@ -338,9 +340,10 @@ mod test {
         let lsb_metric = get_last_sent_build_metric();
         assert_eq!(None, lsb_metric.get_value(&glean, Some(INTERNAL_STORAGE)));
 
-        let fake_now = FixedOffset::east(0)
-            .ymd(2022, 11, 15)
-            .and_hms(SCHEDULED_HOUR, 0, 1);
+        let fake_now = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2022, 11, 15, SCHEDULED_HOUR, 0, 1)
+            .unwrap();
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
             |_, reason| assert_eq!(reason, Some("overdue")),
@@ -382,7 +385,10 @@ mod test {
     fn case_1_no_submit_but_schedule_tomorrow() {
         let (glean, _t) = new_glean(None);
 
-        let fake_now = FixedOffset::east(0).ymd(2021, 4, 30).and_hms(14, 36, 14);
+        let fake_now = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 30, 14, 36, 14)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(&glean, fake_now);
 
         let (submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
@@ -401,9 +407,10 @@ mod test {
     fn case_2_submit_ping_and_reschedule() {
         let (glean, _t) = new_glean(None);
 
-        let fake_yesterday = FixedOffset::east(0)
-            .ymd(2021, 4, 29)
-            .and_hms(SCHEDULED_HOUR, 0, 1);
+        let fake_yesterday = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 29, SCHEDULED_HOUR, 0, 1)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(&glean, fake_yesterday);
         let fake_now = fake_yesterday + Duration::days(1);
 
@@ -423,10 +430,10 @@ mod test {
     fn case_3_no_submit_but_schedule_today() {
         let (glean, _t) = new_glean(None);
 
-        let fake_yesterday =
-            FixedOffset::east(0)
-                .ymd(2021, 4, 29)
-                .and_hms(SCHEDULED_HOUR - 1, 0, 1);
+        let fake_yesterday = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 29, SCHEDULED_HOUR - 1, 0, 1)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(&glean, fake_yesterday);
         let fake_now = fake_yesterday + Duration::days(1);
 
@@ -442,14 +449,20 @@ mod test {
     // `When` is responsible for date math. Let's make sure it's correct.
     #[test]
     fn when_gets_at_least_some_date_math_correct() {
-        let now = FixedOffset::east(0).ymd(2021, 4, 30).and_hms(15, 2, 10);
+        let now = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 30, 15, 2, 10)
+            .unwrap();
         // `now` is after `SCHEDULED_HOUR` so should be zero:
         assert_eq!(std::time::Duration::from_secs(0), When::Today.until(now));
         // If we bring it back before `SCHEDULED_HOUR` it should give us the duration:
-        let earlier = now.date().and_hms(SCHEDULED_HOUR - 1, 0, 0);
+        let earlier = now
+            .date_naive()
+            .and_hms_opt(SCHEDULED_HOUR - 1, 0, 0)
+            .unwrap();
         assert_eq!(
             std::time::Duration::from_secs(3600),
-            When::Today.until(earlier)
+            When::Today.until(Utc.from_utc_datetime(&earlier).into())
         );
 
         // `Tomorrow` and `Reschedule` should differ only in their `reason()`
@@ -483,9 +496,10 @@ mod test {
 
         // Pick a time at least two hours from the next scheduled submission.
         // (So that this test will time out if cancellation fails).
-        let now = FixedOffset::east(0)
-            .ymd(2021, 4, 30)
-            .and_hms(SCHEDULED_HOUR - 2, 0, 0);
+        let now = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 30, SCHEDULED_HOUR - 2, 0, 0)
+            .unwrap();
 
         let proxy_factory = || {
             new_proxies(
@@ -541,7 +555,10 @@ mod test {
         assert!(crate::core::setup_glean(glean).is_ok());
 
         // We're choosing a time after SCHEDULED_HOUR so `When::Today` will give us a duration of 0.
-        let now = FixedOffset::east(0).ymd(2021, 4, 20).and_hms(15, 42, 0);
+        let now = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 4, 20, 15, 42, 0)
+            .unwrap();
 
         let (submitter, submitter_count, _, _) = new_proxies(
             move |_, reason| {

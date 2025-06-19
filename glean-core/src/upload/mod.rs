@@ -760,7 +760,7 @@ impl PingUploadManager {
     ) -> UploadTaskAction {
         use UploadResult::*;
 
-        let stop_time = time::precise_time_ns();
+        let stop_time = zeitstempel::now();
 
         if let Some(label) = status.get_label() {
             let metric = self.upload_metrics.ping_upload_failure.get(label);

@@ -15,7 +15,7 @@ use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::CommonMetricData;
 use crate::Glean;
 
-use chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
+use chrono::{DateTime, Datelike, FixedOffset, Local, TimeZone, Timelike};
 use malloc_size_of_derive::MallocSizeOf;
 
 /// A datetime type.
@@ -97,7 +97,7 @@ impl MetricType for DatetimeMetric {
 
 impl From<ChronoDatetime> for Datetime {
     fn from(dt: ChronoDatetime) -> Self {
-        let date = dt.date();
+        let date = dt.date_naive();
         let time = dt.time();
         let tz = dt.timezone();
         Self {
@@ -160,11 +160,13 @@ impl DatetimeMetric {
                     return;
                 };
 
-                let datetime_obj = FixedOffset::east(dt.offset_seconds)
-                    .ymd_opt(dt.year, dt.month, dt.day)
-                    .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
+                let datetime_obj = FixedOffset::east_opt(dt.offset_seconds)
+                    .unwrap()
+                    .with_ymd_and_hms(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+                    .unwrap()
+                    .with_nanosecond(dt.nanosecond);
 
-                if let Some(dt) = datetime_obj.single() {
+                if let Some(dt) = datetime_obj {
                     dt
                 } else {
                     record_error(
@@ -201,33 +203,36 @@ impl DatetimeMetric {
         // try to truncate with `get_iso_time_string` and then parse it back
         // in a `Datetime`. So we need to truncate manually.
         let time = d.time();
-        match tu {
-            TimeUnit::Nanosecond => d.date().and_hms_nano_opt(
+        let dt = match tu {
+            TimeUnit::Nanosecond => d.date_naive().and_hms_nano_opt(
                 time.hour(),
                 time.minute(),
                 time.second(),
                 time.nanosecond(),
             ),
-            TimeUnit::Microsecond => d.date().and_hms_nano_opt(
+            TimeUnit::Microsecond => d.date_naive().and_hms_nano_opt(
                 time.hour(),
                 time.minute(),
                 time.second(),
                 time.nanosecond() / 1000,
             ),
-            TimeUnit::Millisecond => d.date().and_hms_nano_opt(
+            TimeUnit::Millisecond => d.date_naive().and_hms_nano_opt(
                 time.hour(),
                 time.minute(),
                 time.second(),
                 time.nanosecond() / 1000000,
             ),
             TimeUnit::Second => {
-                d.date()
+                d.date_naive()
                     .and_hms_nano_opt(time.hour(), time.minute(), time.second(), 0)
             }
-            TimeUnit::Minute => d.date().and_hms_nano_opt(time.hour(), time.minute(), 0, 0),
-            TimeUnit::Hour => d.date().and_hms_nano_opt(time.hour(), 0, 0, 0),
-            TimeUnit::Day => d.date().and_hms_nano_opt(0, 0, 0, 0),
-        }
+            TimeUnit::Minute => d
+                .date_naive()
+                .and_hms_nano_opt(time.hour(), time.minute(), 0, 0),
+            TimeUnit::Hour => d.date_naive().and_hms_nano_opt(time.hour(), 0, 0, 0),
+            TimeUnit::Day => d.date_naive().and_hms_nano_opt(0, 0, 0, 0),
+        };
+        dt.map(|dt| Local.from_local_datetime(&dt).unwrap().into())
     }
 
     fn get_value_inner(
