@@ -123,15 +123,21 @@ glean_upload:
       - me@mozilla.com
     expires: 2020-10-01
     keys:
-      - baseline
-      - events
-      - metrics
+      description: |
+        The name of the ping.
+      labels:
+        - baseline
+        - events
+        - metrics
     categories:
-      - recoverable network error
-      - 4xx
-      - 5xx
-      - unknown
-      ...
+      description: |
+        The type of upload failure.
+      labels:
+        - recoverable network error
+        - 4xx
+        - 5xx
+        - unknown
+        ...
 ```
 
 ### Extra metric parameters
