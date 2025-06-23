@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Swift
+  * No change dot-release to fix failed Swift package deploy to `mozilla/glean-swift`
+
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...main)
 
 # v64.5.0 (2025-06-18)
