@@ -854,7 +854,44 @@ jobs:
             .venv3.8/bin/python3 -m twine upload target/wheels/*
       - install-ghr-linux
       - run:
-          name: Publish to Github
+          name: Publish to GitHub
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
+
+  pypi-linux-aarch64-release:
+    docker:
+      - image: cimg/python:3.13
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup Python env
+          command: |
+            make setup-python
+            .venv3.13/bin/pip install ziglang
+      - run:
+          name: Install aarch64-linux target
+          command: |
+            rustup target add aarch64-unknown-linux-gnu
+      - run:
+          name: Build Python package
+          command: |
+            # We need a binary with debug symbols, so uniffi-bindgen can extract data
+            cargo build -p glean-bundle
+
+            . .venv3.13/bin/activate
+            make build-python-wheel GLEAN_BUILD_TARGET=aarch64-unknown-linux-gnu GLEAN_BUILD_EXTRA="--zig"
+      - run:
+          name: Upload Linux wheel
+          command: |
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.13/bin/python3 -m twine upload target/wheels/*
+      - install-ghr-linux
+      - run:
+          name: Publish to GitHub
           command: |
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} target/wheels
@@ -892,7 +929,7 @@ jobs:
             .venv3.11/bin/python3 -m twine upload target/wheels/*
       - install-ghr-darwin
       - run:
-          name: Publish to Github
+          name: Publish to GitHub
           command: |
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} target/wheels
@@ -911,7 +948,7 @@ jobs:
             .venv3.8/bin/python3 -m twine upload target/wheels/*
       - install-ghr-linux
       - run:
-          name: Publish to Github
+          name: Publish to GitHub
           command: |
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} target/wheels
@@ -1114,6 +1151,10 @@ workflows:
             - Python 3_8 tests
           filters: *release-filters
       - pypi-linux-release:
+          requires:
+            - Python 3_8 tests
+          filters: *release-filters
+      - pypi-linux-aarch64-release:
           requires:
             - Python 3_8 tests
           filters: *release-filters
