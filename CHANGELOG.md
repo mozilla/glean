@@ -1,5 +1,8 @@
 # Unreleased changes
 
+* Rust
+  * Added `MetricType` implementation for `DualLabeledCounter` ([Bug 1973287](https://bugzilla.mozilla.org/show_bug.cgi?id=1973287))
+
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...main)
 
 # v64.5.1 (2025-06-23)
