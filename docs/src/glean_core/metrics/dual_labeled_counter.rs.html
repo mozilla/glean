@@ -393,6 +393,12 @@
 <a href="#393" id="393">393</a>
 <a href="#394" id="394">394</a>
 <a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -456,6 +462,12 @@
         // self.labels.size_of(ops) + self.submetric.size_of(ops) + map_size
         </span><span class="number">0
     </span>}
+}
+
+<span class="kw">impl </span>MetricType <span class="kw">for </span>DualLabeledCounterMetric {
+    <span class="kw">fn </span>meta(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>CommonMetricDataInternal {
+        <span class="self">self</span>.counter.meta()
+    }
 }
 
 <span class="kw">impl </span>DualLabeledCounterMetric {
