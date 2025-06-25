@@ -1,7 +1,7 @@
 # Dual Labeled Counters
 
 Dual labeled counters allow two levels of labels for a counter. This metric type allows recording counts along two dimensions.
-These labels are organized into a nested structure with a "key" label at the top level with "category" sub-labels that map to the underlying count.
+These labels are organized into a nested structure in the payload with a "key" label at the top level with "category" sub-labels that map to the underlying count.
 Each counter always starts from `0`.
 Each time you record to a dual labeled counter, its value is incremented.
 Unless incremented by a positive value, a counter will not be reported in pings,
@@ -41,14 +41,14 @@ glean_upload::failures.get("baseline", "4xx").add(3); // Adds 3 to the "baseline
 
 * Only increments
 * Saturates at the largest value that can be represented as a 32-bit signed integer.
-* Keys and Categories must conform to the [label format](index.md#label-format).
-* Each key or category may have a maximum of 111 characters.
-* The lists of keys and categories are limited to:
-  * 16 different dynamic keys and 16 categories, if no static labels are defined.
-    Additional keys and categories will all record to the special label `__other__`.
+* Key and category labels must conform to the [label format](index.md#label-format).
+* Each key or category label may have a maximum of 111 characters.
+* The lists of key and category labels are limited to:
+  * 16 different dynamic key labels and 16 category labels, if no static labels are defined.
+    Additional key and category labels will all record to the special label `__other__`.
     These labels may contain any UTF-8 characters.
-  * 4096 keys and 4096 categories if specified as static labels in `metrics.yaml`, see [keys](#keys) and [categories](#categories).
-    Unknown keys and categories will be recorded under the special label `__other__`.
+  * 4096 key labels and 4096 category labels if specified as static labels in `metrics.yaml`, see [key](#key) and [category](#category).
+    Unknown key and category labels will be recorded under the special label `__other__`.
     These labels may only be made of printable ASCII characters.
 
 ## Testing API
@@ -122,23 +122,32 @@ glean_upload:
     notification_emails:
       - me@mozilla.com
     expires: 2020-10-01
-    keys:
-      - baseline
-      - events
-      - metrics
-    categories:
-      - recoverable network error
-      - 4xx
-      - 5xx
-      - unknown
+    dual_labels:
+      key:
+        description: The ping associated with the upload failure
+        labels: 
+          - baseline
+          - events
+          - metrics
+      category:
+        description: The category of failure that was encountered
+        labels:
+          - recoverable network error
+          - 4xx
+          - 5xx
+          - unknown
       ...
 ```
 
 ### Extra metric parameters
 
-#### `keys`
+#### `dual_labels:`
 
-Labeled metrics may have an optional `keys` parameter, containing a list of known keys.
+Dual labeled metrics have a required `dual_labels` parameter, which in turn has required `key` and `category` parameters.
+
+##### `key`
+
+The `key` parameter has a required `description` field to describe the dimension, along with an optional `labels` parameter which accepts a list of static labels.
 The labels in this list must match the following requirements:
 
 * Conform to the [label format](index.md#label-format).
@@ -146,9 +155,9 @@ The labels in this list must match the following requirements:
 * Each label must only contain printable ASCII characters.
 * This list itself is limited to 4096 labels.
 
-#### `categories`
+##### `category`
 
-Labeled metrics may have an optional `categories` parameter, containing a list of known categories.
+The `category` parameter has a required `description` field to describe the dimension, along with an optional `labels` parameter which accepts a list of static labels.
 The labels in this list must match the following requirements:
 
 * Conform to the [label format](index.md#label-format).
@@ -160,14 +169,14 @@ The labels in this list must match the following requirements:
 
 ##### Important
 
-> If the key and/or categories are specified in the `metrics.yaml`, using any label not listed
+> If the key and/or category labels are specified in the `metrics.yaml`, using any label not listed
 > will be replaced with the special value `__other__`.
 >
-> If the keys and/or categories are **not** specified in the `metrics.yaml`, only 16 different dynamic labels
+> If the key and/or category labels are **not** specified in the `metrics.yaml`, only 16 different dynamic labels
 > may be used, after which the special value `__other__` will be used.
 
-Removing or changing keys and categories, including their order in the registry file, is permitted.
-Avoid reusing keys and categories that were removed in the past. It is best practice to add documentation
+Removing or changing key and category labels, including their order in the registry file, is permitted.
+Avoid reusing key and category labels that were removed in the past. It is best practice to add documentation
 when they are removed to the description field so that analysts will know of their existence and meaning in
 historical data. Special care must be taken when changing GeckoView metrics sent through the Glean SDK, as the
 index of the labels is used to report Gecko data through the Glean SDK.
