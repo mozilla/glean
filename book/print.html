@@ -6537,7 +6537,7 @@ index of the labels is used to report Gecko data through the Glean SDK.</p>
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/reference/metrics/labeled_counters.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="dual-labeled-counters"><a class="header" href="#dual-labeled-counters">Dual Labeled Counters</a></h1>
 <p>Dual labeled counters allow two levels of labels for a counter. This metric type allows recording counts along two dimensions.
-These labels are organized into a nested structure with a &quot;key&quot; label at the top level with &quot;category&quot; sub-labels that map to the underlying count.
+These labels are organized into a nested structure in the payload with a &quot;key&quot; label at the top level with &quot;category&quot; sub-labels that map to the underlying count.
 Each counter always starts from <code>0</code>.
 Each time you record to a dual labeled counter, its value is incremented.
 Unless incremented by a positive value, a counter will not be reported in pings,
@@ -6575,15 +6575,15 @@ glean_upload::failures.get(&quot;baseline&quot;, &quot;4xx&quot;).add(3); // Add
 <ul>
 <li>Only increments</li>
 <li>Saturates at the largest value that can be represented as a 32-bit signed integer.</li>
-<li>Keys and Categories must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
-<li>Each key or category may have a maximum of 111 characters.</li>
-<li>The lists of keys and categories are limited to:
+<li>Key and category labels must conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
+<li>Each key or category label may have a maximum of 111 characters.</li>
+<li>The lists of key and category labels are limited to:
 <ul>
-<li>16 different dynamic keys and 16 categories, if no static labels are defined.
-Additional keys and categories will all record to the special label <code>__other__</code>.
+<li>16 different dynamic key labels and 16 category labels, if no static labels are defined.
+Additional key and category labels will all record to the special label <code>__other__</code>.
 These labels may contain any UTF-8 characters.</li>
-<li>4096 keys and 4096 categories if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/dual_labeled_counters.html#keys">keys</a> and <a href="reference/metrics/dual_labeled_counters.html#categories">categories</a>.
-Unknown keys and categories will be recorded under the special label <code>__other__</code>.
+<li>4096 key labels and 4096 category labels if specified as static labels in <code>metrics.yaml</code>, see <a href="reference/metrics/dual_labeled_counters.html#key">key</a> and <a href="reference/metrics/dual_labeled_counters.html#category">category</a>.
+Unknown key and category labels will be recorded under the special label <code>__other__</code>.
 These labels may only be made of printable ASCII characters.</li>
 </ul>
 </li>
@@ -6645,20 +6645,27 @@ assert_eq!(
     notification_emails:
       - me@mozilla.com
     expires: 2020-10-01
-    keys:
-      - baseline
-      - events
-      - metrics
-    categories:
-      - recoverable network error
-      - 4xx
-      - 5xx
-      - unknown
+    dual_labels:
+      key:
+        description: The ping associated with the upload failure
+        labels: 
+          - baseline
+          - events
+          - metrics
+      category:
+        description: The category of failure that was encountered
+        labels:
+          - recoverable network error
+          - 4xx
+          - 5xx
+          - unknown
       ...
 </code></pre>
 <h3 id="extra-metric-parameters-4"><a class="header" href="#extra-metric-parameters-4">Extra metric parameters</a></h3>
-<h4 id="keys"><a class="header" href="#keys"><code>keys</code></a></h4>
-<p>Labeled metrics may have an optional <code>keys</code> parameter, containing a list of known keys.
+<h4 id="dual_labels"><a class="header" href="#dual_labels"><code>dual_labels:</code></a></h4>
+<p>Dual labeled metrics have a required <code>dual_labels</code> parameter, which in turn has required <code>key</code> and <code>category</code> parameters.</p>
+<h5 id="key"><a class="header" href="#key"><code>key</code></a></h5>
+<p>The <code>key</code> parameter has a required <code>description</code> field to describe the dimension, along with an optional <code>labels</code> parameter which accepts a list of static labels.
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
@@ -6666,8 +6673,8 @@ The labels in this list must match the following requirements:</p>
 <li>Each label must only contain printable ASCII characters.</li>
 <li>This list itself is limited to 4096 labels.</li>
 </ul>
-<h4 id="categories"><a class="header" href="#categories"><code>categories</code></a></h4>
-<p>Labeled metrics may have an optional <code>categories</code> parameter, containing a list of known categories.
+<h5 id="category-1"><a class="header" href="#category-1"><code>category</code></a></h5>
+<p>The <code>category</code> parameter has a required <code>description</code> field to describe the dimension, along with an optional <code>labels</code> parameter which accepts a list of static labels.
 The labels in this list must match the following requirements:</p>
 <ul>
 <li>Conform to the <a href="reference/metrics/index.html#label-format">label format</a>.</li>
@@ -6678,13 +6685,13 @@ The labels in this list must match the following requirements:</p>
 <div class="special-quote special-quote-warning fa fa-exclamation-triangle"></div>
 <h5 id="important-5"><a class="header" href="#important-5">Important</a></h5>
 <blockquote>
-<p>If the key and/or categories are specified in the <code>metrics.yaml</code>, using any label not listed
+<p>If the key and/or category labels are specified in the <code>metrics.yaml</code>, using any label not listed
 will be replaced with the special value <code>__other__</code>.</p>
-<p>If the keys and/or categories are <strong>not</strong> specified in the <code>metrics.yaml</code>, only 16 different dynamic labels
+<p>If the key and/or category labels are <strong>not</strong> specified in the <code>metrics.yaml</code>, only 16 different dynamic labels
 may be used, after which the special value <code>__other__</code> will be used.</p>
 </blockquote>
-<p>Removing or changing keys and categories, including their order in the registry file, is permitted.
-Avoid reusing keys and categories that were removed in the past. It is best practice to add documentation
+<p>Removing or changing key and category labels, including their order in the registry file, is permitted.
+Avoid reusing key and category labels that were removed in the past. It is best practice to add documentation
 when they are removed to the description field so that analysts will know of their existence and meaning in
 historical data. Special care must be taken when changing GeckoView metrics sent through the Glean SDK, as the
 index of the labels is used to report Gecko data through the Glean SDK.</p>
