@@ -36,7 +36,7 @@ class OnGleanEventsImpl: OnGleanEvents {
 
     func triggerUpload() {
         // If uploading is disabled, we need to send the deletion-request ping
-        HttpPingUploader.launch(configuration: self.glean.configuration!)
+        glean.pingUploadScheduler?.process()
     }
 
     func startMetricsPingScheduler() -> Bool {
@@ -47,7 +47,9 @@ class OnGleanEventsImpl: OnGleanEvents {
             return false
         }
 
-        self.glean.metricsPingScheduler = MetricsPingScheduler(self.glean.testingMode.value)
+        self.glean.metricsPingScheduler = MetricsPingScheduler(
+            self.glean.testingMode.value
+        )
         // Check for overdue metrics pings
         return self.glean.metricsPingScheduler!.schedule()
     }
@@ -69,6 +71,7 @@ public struct BuildInfo {
     }
 }
 
+// swiftlint:disable type_body_length
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
@@ -81,6 +84,7 @@ public class Glean {
     public static let shared = Glean()
 
     var metricsPingScheduler: MetricsPingScheduler?
+    var pingUploadScheduler: PingUploadScheduler?
 
     var initialized: Bool = false
 
@@ -135,7 +139,11 @@ public class Glean {
     ///       first_run_date) are cleared.
     ///     * configuration: A Glean `Configuration` object with global settings.
     ///     * buildInfo: A Glean `BuildInfo` object with build settings.
-    public func initialize(uploadEnabled: Bool, configuration: Configuration = Configuration(), buildInfo: BuildInfo) {
+    public func initialize(
+        uploadEnabled: Bool,
+        configuration: Configuration = Configuration(),
+        buildInfo: BuildInfo
+    ) {
         if let safeDataPath = configuration.dataPath {
             // When the `dataPath` is provided, we need to make sure:
             //   1. The database path provided is not the default glean database path.
@@ -143,13 +151,17 @@ public class Glean {
 
             // The background process and the main process cannot write to the same file.
             if safeDataPath == getGleanDirectory().relativePath {
-                logger.error("Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved")
+                logger.error(
+                    "Attempted to initialize Glean with an invalid database path \"glean_data\" is reserved"
+                )
                 return
             }
 
             // Check that the database path we are trying to write to is valid and writable.
             if !canWriteToDatabasePath(safeDataPath) {
-                logger.error("Attempted to initialize Glean with an invalid database path")
+                logger.error(
+                    "Attempted to initialize Glean with an invalid database path"
+                )
                 return
             }
 
@@ -202,11 +214,17 @@ public class Glean {
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
+
+        pingUploadScheduler = PingUploadScheduler(configuration: configuration)
+
         gleanInitialize(cfg, clientInfo, callbacks)
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).
-    internal func getClientInfo(_ configuration: Configuration, buildInfo: BuildInfo) -> ClientInfoMetrics {
+    internal func getClientInfo(
+        _ configuration: Configuration,
+        buildInfo: BuildInfo
+    ) -> ClientInfoMetrics {
         return ClientInfoMetrics(
             appBuild: AppInfo.buildId,
             appDisplayVersion: AppInfo.displayVersion,
@@ -267,7 +285,11 @@ public class Glean {
     ///     * experimentId: The id of the active experiment (maximum 100 bytes).
     ///     * branch: The branch of the experiment (maximum 100 bytes).
     ///     * extra: Optional metadata to output with the ping.
-    public func setExperimentActive(_ experimentId: String, branch: String, extra: [String: String]?) {
+    public func setExperimentActive(
+        _ experimentId: String,
+        branch: String,
+        extra: [String: String]?
+    ) {
         let map = extra ?? [:]
         gleanSetExperimentActive(experimentId, branch, map)
     }
@@ -298,7 +320,8 @@ public class Glean {
     ///     * experimentId: The id of the experiment to look for.
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
-    public func testGetExperimentData(_ experimentId: String) -> RecordedExperiment? {
+    public func testGetExperimentData(_ experimentId: String)
+        -> RecordedExperiment? {
         return gleanTestGetExperimentData(experimentId)
     }
 
@@ -394,9 +417,9 @@ public class Glean {
     /// should only be used for debug purposes.
     ///
     /// - returns: [String] value of the current debug tag, or `nil` if not set.
-     func getDebugViewTag() -> String? {
+    func getDebugViewTag() -> String? {
         return gleanGetDebugViewTag()
-     }
+    }
 
     /// Set the log_pings debug option,
     /// when this option is `true` the pings that are successfully submitted get logged.
@@ -496,7 +519,9 @@ public class Glean {
     /// Returns true if running in the base application process, otherwise returns false
     private func checkIsMainProcess() -> Bool {
         if isMainProcess == nil {
-            if let packageType = Bundle.main.object(forInfoDictionaryKey: "CFBundlePackageType") as? String {
+            if let packageType = Bundle.main.object(
+                forInfoDictionaryKey: "CFBundlePackageType"
+            ) as? String {
                 // This is the bundle type reported by embedded application extensions and so we test for it to
                 // make sure that we are not running in an extension.
                 //
@@ -519,7 +544,10 @@ public class Glean {
     }
 
     /// Test-only method to destroy the owned glean-core handle.
-    func testDestroyGleanHandle(_ clearStores: Bool = false, _ customDataPath: String? = nil) {
+    func testDestroyGleanHandle(
+        _ clearStores: Bool = false,
+        _ customDataPath: String? = nil
+    ) {
         // If it was initialized this also clears the directory
         let dataPath = customDataPath ?? getGleanDirectory().relativePath
         gleanTestDestroyGlean(clearStores, dataPath)
@@ -555,9 +583,11 @@ public class Glean {
     ///     * configuration: the `Configuration` to init Glean with
     ///     * clearStores: if true, clear the contents of all stores
     ///     * uploadEnabled: whether upload is enabled
-    public func resetGlean(configuration: Configuration = Configuration(),
-                           clearStores: Bool,
-                           uploadEnabled: Bool = true) {
+    public func resetGlean(
+        configuration: Configuration = Configuration(),
+        clearStores: Bool,
+        uploadEnabled: Bool = true
+    ) {
         // Init Glean.
         testDestroyGleanHandle(clearStores, configuration.dataPath)
 
@@ -581,7 +611,11 @@ public class Glean {
                 second: 0
             )
         )
-        initialize(uploadEnabled: uploadEnabled, configuration: configuration, buildInfo: buildInfo)
+        initialize(
+            uploadEnabled: uploadEnabled,
+            configuration: configuration,
+            buildInfo: buildInfo
+        )
     }
 
     /// Updates attribution fields with new values.
@@ -610,3 +644,4 @@ public class Glean {
         gleanTestGetDistribution()
     }
 }
+// swiftlint:enable type_body_length

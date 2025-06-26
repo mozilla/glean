@@ -4,28 +4,10 @@
 
 import Foundation
 
-/// `true` to allow the uploader to process pings.
-/// Note that this does not mean that an uploader is actually running.
-/// It will be invoked when a ping is submitted.
-///
-/// `false` to stop the uploader from starting new uploads.
-/// An already running uploader will finish work and then stop.
-var stateRunAllowed: AtomicBoolean = AtomicBoolean(false)
-
-// TODO(bug 1816403): Move this and the associated global state
-// into a singleton instance of `HttpPingUploader`.
-func shutdownUploader() {
-    stateRunAllowed.value = false
-}
-
-func startUploader() {
-    stateRunAllowed.value = true
-}
-
 /// This class represents a ping uploader via HTTP.
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
-public class HttpPingUploader {
+public class HttpPingUploader: PingUploader {
     var config: Configuration
     var session: URLSession
     var capabilities: [String] = []
@@ -35,78 +17,53 @@ public class HttpPingUploader {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let logTag = "glean/HttpPingUploader"
         static let connectionTimeout = 10000
-
-        // For this error, the ping will be retried later
-        static let recoverableErrorStatusCode: UInt16 = 500
-        // For this error, the ping data will be deleted and no retry happens
-        static let unrecoverableErrorStatusCode: UInt16 = 400
     }
 
     private let logger = Logger(tag: Constants.logTag)
 
     /// Initialize the HTTP Ping uploader from a Glean configuration object
-    /// and a URLSession
     ///
     /// - parameters:
-    ///     * configuration: The Glean `Configuration` to use.
-    ///     * session: A `URLSession` that will be reused to upload pings
-    public init(configuration: Configuration, session: URLSession) {
+    ///     * configuration: The Glean `Configuration` to use
+    public init(configuration: Configuration) {
         self.config = configuration
-        self.session = session
-    }
-
-    /// Launch a new instance of a HttpPingUploader that requests additional time to run in the background
-    /// in order to give Glean time to send pings when the app is closing.
-    ///
-    /// Also responsible for creating a session that will be reused for uploading all of the pings on this execution
-    ///
-    /// This function doesn't block.
-    static func launch(configuration: Configuration) {
-        Dispatchers.shared.launchAsync {
-            var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
-
-            // Begin the background task and save the id. We will reuse this same background task
-            // for all the ping uploads
-            backgroundTaskId = UIApplication.shared.beginBackgroundTask(withName: "Glean Upload Task") {
-                // End the background task if we run out of time
-                if backgroundTaskId != .invalid {
-                    UIApplication.shared.endBackgroundTask(backgroundTaskId)
-                    backgroundTaskId = .invalid
-                }
-            }
-
-            // Build a URLSession with no-caching suitable for uploading our pings
-            let config: URLSessionConfiguration = .default
-            config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-            config.urlCache = nil
-            let session = URLSession(configuration: config)
-
-            HttpPingUploader(configuration: configuration, session: session).process()
-
-            if backgroundTaskId != .invalid {
-                UIApplication.shared.endBackgroundTask(backgroundTaskId)
-                backgroundTaskId = .invalid
-            }
-        }
+        // Build a URLSession with no-caching suitable for uploading our pings
+        let sessionConfig: URLSessionConfiguration = .default
+        sessionConfig.requestCachePolicy =
+            NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        sessionConfig.urlCache = nil
+        self.session = URLSession(configuration: sessionConfig)
     }
 
     /// Synchronously upload a ping to Mozilla servers.
     ///
     /// - parameters:
-    ///     * request: A `PingRequest` containing the information needed to perform the upload
-    ///     * callback: A callback to return the success/failure of the upload
-    func upload(request: PingRequest, callback: @escaping (UploadResult) -> Void) {
+    ///     * request: A `CapablePingUploadRequest` containing the information needed to perform the upload
+    ///     * callback: A callback to return the success/failure of the upload to the scheduler
+    public func upload(
+        request: CapablePingUploadRequest,
+        callback: @escaping (UploadResult) -> Void
+    ) {
+        // Get the internal `PingUploadRequest` to gather all the things we need from it, shadowing
+        // `request` to make it less confusing
+        let request = request.request
         // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
         // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
         guard request.uploaderCapabilities.isEmpty else {
-            logger.info("Glean rejected ping \(request.pingName) upload due to unsupported capabilities")
+            logger.info(
+                "Glean rejected ping \(request.documentId) upload due to unsupported capabilities"
+            )
             callback(.incapable(unused: 0))
             return
         }
         // Build the request and create upload operation using a URLSession
-        var body = Data(capacity: request.body.count)
-        body.append(contentsOf: request.body)
-        if let request = self.buildRequest(path: request.path, data: body, headers: request.headers) {
+        var body = Data(capacity: request.data.count)
+        body.append(contentsOf: request.data)
+        if let request = self.buildRequest(
+            url: request.url,
+            data: body,
+            headers: request.headers
+        ) {
             // Create an URLSessionUploadTask to upload our ping and handle the
             // server responses.
             let uploadTask = session.uploadTask(with: request, from: body) { _, response, error in
@@ -135,13 +92,14 @@ public class HttpPingUploader {
     /// Internal function that builds the request used for uploading the pings.
     ///
     /// - parameters:
-    ///     * path: The URL path to append to the server address
+    ///     * url: The URL, including the path, to use for the destination of the ping
     ///     * data: The serialized text data to send
     ///     * headers: Map of headers from Glean to annotate ping with
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
-    func buildRequest(path: String, data: Data, headers: [String: String]) -> URLRequest? {
-        if let url = URL(string: config.serverEndpoint + path) {
+    func buildRequest(url: String, data: Data, headers: [String: String])
+        -> URLRequest? {
+        if let url = URL(string: url) {
             var request = URLRequest(url: url)
             for (field, value) in headers {
                 request.addValue(value, forHTTPHeaderField: field)
@@ -167,34 +125,5 @@ public class HttpPingUploader {
         }
 
         return nil
-    }
-
-    /// This function gets an upload task from Glean and, if told so, uploads the data.
-    ///
-    /// It will report back the task status to Glean, which will take care of deleting pending ping files.
-    /// It will continue upload as long as it can fetch new tasks.
-    func process() {
-        if !stateRunAllowed.value {
-            self.logger.info("Not allowed to continue running. Bye!")
-        }
-
-        while true {
-            // Limits are enforced by glean-core to avoid an infinite loop here.
-            // Whenever a limit is reached, this binding will receive `.done` and step out.
-            switch gleanGetUploadTask() {
-            case let .upload(request):
-                var body = Data(capacity: request.body.count)
-                body.append(contentsOf: request.body)
-                self.upload(request: request) { result in
-                    if gleanProcessPingUploadResponse(request.documentId, result) == .end {
-                        return
-                    }
-                }
-            case .wait(let time):
-                sleep(UInt32(time) / 1000)
-            case .done:
-                return
-            }
-        }
     }
 }

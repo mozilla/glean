@@ -23,6 +23,8 @@
 		1FB8F8382326EABD00618E47 /* ConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */; };
 		1FD4527523395B4500F4C7E8 /* UuidMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527423395B4500F4C7E8 /* UuidMetric.swift */; };
 		1FD4527723395EEB00F4C7E8 /* UuidMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */; };
+		60006D2B2E0DB174000C14E3 /* PingUploadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */; };
+		6003AE252E0C6E9400BC8E07 /* PingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6003AE242E0C6E9400BC8E07 /* PingUploader.swift */; };
 		60691AEB28DD0BF200BDF31A /* BaselinePingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */; };
 		AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529B26E032E300D92D5E /* QuantityMetric.swift */; };
 		AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */; };
@@ -100,6 +102,8 @@
 		1FB8F8372326EABD00618E47 /* ConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationTests.swift; sourceTree = "<group>"; };
 		1FD4527423395B4500F4C7E8 /* UuidMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetric.swift; sourceTree = "<group>"; };
 		1FD4527623395EEB00F4C7E8 /* UuidMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UuidMetricTests.swift; sourceTree = "<group>"; };
+		60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadScheduler.swift; sourceTree = "<group>"; };
+		6003AE242E0C6E9400BC8E07 /* PingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploader.swift; sourceTree = "<group>"; };
 		60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BaselinePingTests.swift; path = Net/BaselinePingTests.swift; sourceTree = "<group>"; };
 		AC06529B26E032E300D92D5E /* QuantityMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetric.swift; sourceTree = "<group>"; };
 		AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetricTypeTest.swift; sourceTree = "<group>"; };
@@ -215,6 +219,8 @@
 		1F60588E2314840B00307A9F /* Net */ = {
 			isa = PBXGroup;
 			children = (
+				60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */,
+				6003AE242E0C6E9400BC8E07 /* PingUploader.swift */,
 				1F605894231489AB00307A9F /* HttpPingUploader.swift */,
 			);
 			path = Net;
@@ -618,8 +624,10 @@
 				AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */,
 				BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */,
 				BF89055F232BC213003CA2BA /* StringMetric.swift in Sources */,
+				6003AE252E0C6E9400BC8E07 /* PingUploader.swift in Sources */,
 				1F605895231489AB00307A9F /* HttpPingUploader.swift in Sources */,
 				BF30FDC4233260B500840607 /* TimespanMetric.swift in Sources */,
+				60006D2B2E0DB174000C14E3 /* PingUploadScheduler.swift in Sources */,
 				BFE1CDCE233B989A0019EE47 /* GleanMetrics.swift in Sources */,
 				BF6C53B2232F870C00E3B43A /* Ping.swift in Sources */,
 				1F39E7B0239F0505009B13B3 /* GleanDebugTools.swift in Sources */,
