@@ -2,44 +2,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 // REASON: This test is long because of setup boilerplate
 class HttpPingUploaderTests: XCTestCase {
     var expectation: XCTestExpectation?
     private let testPath = "/some/random/path/not/important"
     private let testPing = "{ \"ping\": \"test\" }"
-    private let testRequest = PingRequest(
-        documentId: "12345",
-        path: "/some/random/path/not/important",
-        body: [UInt8]("{ \"ping\": \"test\" }".utf8),
-        headers: [:],
-        bodyHasInfoSections: true,
-        pingName: "testPing",
-        uploaderCapabilities: []
+    private let testRequest = CapablePingUploadRequest(
+        PingUploadRequest(
+            request: PingRequest(
+                documentId: "12345",
+                path: "/some/random/path/not/important",
+                body: [UInt8]("{ \"ping\": \"test\" }".utf8),
+                headers: [:],
+                bodyHasInfoSections: true,
+                pingName: "testPing",
+                uploaderCapabilities: []
+            ),
+            endpoint: Configuration.Constants.defaultTelemetryEndpoint
+        )
     )
 
     override func setUp() {
-        resetGleanDiscardingInitialPings(testCase: self, tag: "HttpPingUploaderTests", clearStores: true)
+        resetGleanDiscardingInitialPings(
+            testCase: self,
+            tag: "HttpPingUploaderTests",
+            clearStores: true
+        )
     }
 
     override func tearDown() {
         // Reset expectations
         expectation = nil
         tearDownStubs()
-    }
-
-    /// Launch a new ping uploader on the background thread.
-    ///
-    /// This function doesn't block.
-    private func getUploader() -> HttpPingUploader {
-        // Build a URLSession with no-caching suitable for uploading our pings
-        let config: URLSessionConfiguration = .default
-        config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        config.urlCache = nil
-        let session = URLSession(configuration: config)
-        return HttpPingUploader.init(configuration: Configuration(), session: session)
     }
 
     func testHTTPStatusCode() {
@@ -55,7 +53,7 @@ class HttpPingUploaderTests: XCTestCase {
 
         // Build a URLSession with no-caching suitable for uploading our pings
 
-        let httpPingUploader = self.getUploader()
+        let httpPingUploader = HttpPingUploader(configuration: Configuration())
         httpPingUploader.upload(request: testRequest) { result in
             testValue = result
             self.expectation?.fulfill()
@@ -67,25 +65,30 @@ class HttpPingUploaderTests: XCTestCase {
 
         // `UploadResult` is not `Equatable`, so instead of implementing that we just unpack it
         if case let .httpStatus(statusCode) = testValue {
-            XCTAssertEqual(200, statusCode, "`upload()` returns the expected HTTP status code")
+            XCTAssertEqual(
+                200,
+                statusCode,
+                "`upload()` returns the expected HTTP status code"
+            )
         } else {
             let value = String(describing: testValue)
-            XCTAssertTrue(false, "`upload()` returns the expected HTTP status code. Was: \(value)")
+            XCTAssertTrue(
+                false,
+                "`upload()` returns the expected HTTP status code. Was: \(value)"
+            )
         }
     }
 
     func testRequestParameters() {
-        // Build a URLSession with no-caching suitable for uploading our pings
-        let config: URLSessionConfiguration = .default
-        config.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        config.urlCache = nil
-        let session = URLSession(configuration: config)
-
         // Build a request.
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
-        let request = HttpPingUploader(configuration: Configuration(), session: session)
-            .buildRequest(path: testPath, data: Data(testPing.utf8), headers: ["X-Test-Only": "Glean"])
+        let request = HttpPingUploader(configuration: Configuration())
+            .buildRequest(
+                url: testPath,
+                data: Data(testPing.utf8),
+                headers: ["X-Test-Only": "Glean"]
+            )
 
         XCTAssertEqual(
             request?.url?.path,
@@ -128,8 +131,15 @@ class HttpPingUploaderTests: XCTestCase {
             pingName: "testPing",
             uploaderCapabilities: ["ohttp", "os2/warp", "sega-genesis"]
         )
-        let httpPingUploader = self.getUploader()
-        httpPingUploader.upload(request: testOhttpRequest) { result in
+        let httpPingUploader = HttpPingUploader(configuration: Configuration())
+        httpPingUploader.upload(
+            request: CapablePingUploadRequest(
+                PingUploadRequest(
+                    request: testOhttpRequest,
+                    endpoint: Configuration().serverEndpoint
+                )
+            )
+        ) { result in
             XCTAssertEqual(
                 .incapable(unused: 0),
                 result,

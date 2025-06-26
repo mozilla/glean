@@ -2,6 +2,8 @@
 
 * Rust
   * Added `MetricType` implementation for `DualLabeledCounter` ([Bug 1973287](https://bugzilla.mozilla.org/show_bug.cgi?id=1973287))
+* Swift
+  * Exposed interface to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...main)
 
