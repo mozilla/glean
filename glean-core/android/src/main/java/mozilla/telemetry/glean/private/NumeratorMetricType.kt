@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.NumeratorMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording the numerator of a rate metric
  * with an external denominator.
@@ -14,4 +19,38 @@ package mozilla.telemetry.glean.private
  * The numerator API exposes the [addToNumerator] method,
  * which takes care of validating the input data and making sure that limits are enforced.
  */
-typealias NumeratorMetricType = mozilla.telemetry.glean.internal.NumeratorMetric
+class NumeratorMetricType(private var meta: CommonMetricData) {
+    val inner: NumeratorMetric by lazy { NumeratorMetric(meta) }
+
+    /**
+     * Increases the numerator by `amount`.
+     *
+     * @param amount The amount to increase by. Should be non-negative.
+     */
+    fun addToNumerator(amount: Int) {
+        Dispatchers.Delayed.launch {
+            inner.addToNumerator(amount)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
+     * @return value of the stored rate
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+}
