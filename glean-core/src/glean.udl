@@ -389,6 +389,8 @@ interface CounterMetric {
     i32? test_get_value(optional string? ping_name = null);
 
     i32 test_get_num_recorded_errors(ErrorType error);
+
+    void record_error(ErrorType error, i32 count);
 };
 
 // Different resolutions supported by the time related metric types
