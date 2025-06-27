@@ -558,6 +558,23 @@
 <a href="#558" id="558">558</a>
 <a href="#559" id="559">559</a>
 <a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -694,12 +711,14 @@
     // 3. The ping was NOT collected on the current calendar day BUT we still have
     //    some time to the due time; schedule for submitting the current calendar day.
 
-    </span><span class="kw">let </span>already_sent_today = last_sent_time.is_some_and(|d| d.date() == now.date());
+    </span><span class="kw">let </span>already_sent_today = last_sent_time.is_some_and(|d| d.date_naive() == now.date_naive());
     <span class="kw">if </span>already_sent_today {
         <span class="comment">// Case #1
         </span><span class="macro">log::info!</span>(<span class="string">"The 'metrics' ping was already sent today, {}"</span>, now);
         scheduler.start_scheduler(submitter, now, When::Tomorrow);
-    } <span class="kw">else if </span>now &gt; now.date().and_hms(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>) {
+    } <span class="kw">else if </span>now
+        &gt; Utc.from_utc_datetime(<span class="kw-2">&amp;</span>now.date_naive().and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap())
+    {
         <span class="comment">// Case #2
         </span><span class="macro">log::info!</span>(<span class="string">"Sending the 'metrics' ping immediately, {}"</span>, now);
         submitter.submit_metrics_ping(glean, <span class="prelude-val">Some</span>(<span class="string">"overdue"</span>), now);
@@ -725,15 +744,15 @@
     /// our deadline has passed, this will return zero.
     </span><span class="kw">fn </span>until(<span class="kw-2">&amp;</span><span class="self">self</span>, now: DateTime&lt;FixedOffset&gt;) -&gt; std::time::Duration {
         <span class="kw">let </span>fire_date = <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Today =&gt; now.date().and_hms(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>),
+            <span class="self">Self</span>::Today =&gt; now.date_naive().and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap(),
             <span class="comment">// Doesn't actually save us from being an hour off on DST because
             // chrono doesn't know when DST changes. : (
-            </span><span class="self">Self</span>::Tomorrow | <span class="self">Self</span>::Reschedule =&gt; {
-                (now.date() + Duration::days(<span class="number">1</span>)).and_hms(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>)
-            }
+            </span><span class="self">Self</span>::Tomorrow | <span class="self">Self</span>::Reschedule =&gt; (now.date_naive() + Duration::days(<span class="number">1</span>))
+                .and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>)
+                .unwrap(),
         };
         <span class="comment">// After rust-lang/rust#73544 can use std::time::Duration::ZERO
-        </span>(fire_date - now)
+        </span>(fire_date - now.naive_utc())
             .to_std()
             .unwrap_or_else(|<span class="kw">_</span>| std::time::Duration::from_millis(<span class="number">0</span>))
     }
@@ -898,9 +917,10 @@
         <span class="kw">let </span>lsb_metric = get_last_sent_build_metric();
         <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, lsb_metric.get_value(<span class="kw-2">&amp;</span>glean, <span class="prelude-val">Some</span>(INTERNAL_STORAGE)));
 
-        <span class="kw">let </span>fake_now = FixedOffset::east(<span class="number">0</span>)
-            .ymd(<span class="number">2022</span>, <span class="number">11</span>, <span class="number">15</span>)
-            .and_hms(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>fake_now = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2022</span>, <span class="number">11</span>, <span class="number">15</span>, SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">1</span>)
+            .unwrap();
 
         <span class="kw">let </span>(submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
             |<span class="kw">_</span>, reason| <span class="macro">assert_eq!</span>(reason, <span class="prelude-val">Some</span>(<span class="string">"overdue"</span>)),
@@ -942,7 +962,10 @@
     </span><span class="kw">fn </span>case_1_no_submit_but_schedule_tomorrow() {
         <span class="kw">let </span>(glean, _t) = new_glean(<span class="prelude-val">None</span>);
 
-        <span class="kw">let </span>fake_now = FixedOffset::east(<span class="number">0</span>).ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>).and_hms(<span class="number">14</span>, <span class="number">36</span>, <span class="number">14</span>);
+        <span class="kw">let </span>fake_now = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>, <span class="number">14</span>, <span class="number">36</span>, <span class="number">14</span>)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(<span class="kw-2">&amp;</span>glean, fake_now);
 
         <span class="kw">let </span>(submitter, submitter_count, scheduler, scheduler_count) = new_proxies(
@@ -961,9 +984,10 @@
     </span><span class="kw">fn </span>case_2_submit_ping_and_reschedule() {
         <span class="kw">let </span>(glean, _t) = new_glean(<span class="prelude-val">None</span>);
 
-        <span class="kw">let </span>fake_yesterday = FixedOffset::east(<span class="number">0</span>)
-            .ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">29</span>)
-            .and_hms(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>fake_yesterday = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">29</span>, SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">1</span>)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(<span class="kw-2">&amp;</span>glean, fake_yesterday);
         <span class="kw">let </span>fake_now = fake_yesterday + Duration::days(<span class="number">1</span>);
 
@@ -983,10 +1007,10 @@
     </span><span class="kw">fn </span>case_3_no_submit_but_schedule_today() {
         <span class="kw">let </span>(glean, _t) = new_glean(<span class="prelude-val">None</span>);
 
-        <span class="kw">let </span>fake_yesterday =
-            FixedOffset::east(<span class="number">0</span>)
-                .ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">29</span>)
-                .and_hms(SCHEDULED_HOUR - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>fake_yesterday = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">29</span>, SCHEDULED_HOUR - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>)
+            .unwrap();
         get_last_sent_time_metric().set_sync_chrono(<span class="kw-2">&amp;</span>glean, fake_yesterday);
         <span class="kw">let </span>fake_now = fake_yesterday + Duration::days(<span class="number">1</span>);
 
@@ -1002,14 +1026,20 @@
     <span class="comment">// `When` is responsible for date math. Let's make sure it's correct.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>when_gets_at_least_some_date_math_correct() {
-        <span class="kw">let </span>now = FixedOffset::east(<span class="number">0</span>).ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>).and_hms(<span class="number">15</span>, <span class="number">2</span>, <span class="number">10</span>);
+        <span class="kw">let </span>now = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>, <span class="number">15</span>, <span class="number">2</span>, <span class="number">10</span>)
+            .unwrap();
         <span class="comment">// `now` is after `SCHEDULED_HOUR` so should be zero:
         </span><span class="macro">assert_eq!</span>(std::time::Duration::from_secs(<span class="number">0</span>), When::Today.until(now));
         <span class="comment">// If we bring it back before `SCHEDULED_HOUR` it should give us the duration:
-        </span><span class="kw">let </span>earlier = now.date().and_hms(SCHEDULED_HOUR - <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);
+        </span><span class="kw">let </span>earlier = now
+            .date_naive()
+            .and_hms_opt(SCHEDULED_HOUR - <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>)
+            .unwrap();
         <span class="macro">assert_eq!</span>(
             std::time::Duration::from_secs(<span class="number">3600</span>),
-            When::Today.until(earlier)
+            When::Today.until(Utc.from_utc_datetime(<span class="kw-2">&amp;</span>earlier).into())
         );
 
         <span class="comment">// `Tomorrow` and `Reschedule` should differ only in their `reason()`
@@ -1043,9 +1073,10 @@
 
         <span class="comment">// Pick a time at least two hours from the next scheduled submission.
         // (So that this test will time out if cancellation fails).
-        </span><span class="kw">let </span>now = FixedOffset::east(<span class="number">0</span>)
-            .ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>)
-            .and_hms(SCHEDULED_HOUR - <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>);
+        </span><span class="kw">let </span>now = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>, SCHEDULED_HOUR - <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>)
+            .unwrap();
 
         <span class="kw">let </span>proxy_factory = || {
             new_proxies(
@@ -1101,7 +1132,10 @@
         <span class="macro">assert!</span>(<span class="kw">crate</span>::core::setup_glean(glean).is_ok());
 
         <span class="comment">// We're choosing a time after SCHEDULED_HOUR so `When::Today` will give us a duration of 0.
-        </span><span class="kw">let </span>now = FixedOffset::east(<span class="number">0</span>).ymd(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">20</span>).and_hms(<span class="number">15</span>, <span class="number">42</span>, <span class="number">0</span>);
+        </span><span class="kw">let </span>now = FixedOffset::east_opt(<span class="number">0</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">20</span>, <span class="number">15</span>, <span class="number">42</span>, <span class="number">0</span>)
+            .unwrap();
 
         <span class="kw">let </span>(submitter, submitter_count, <span class="kw">_</span>, <span class="kw">_</span>) = new_proxies(
             <span class="kw">move </span>|<span class="kw">_</span>, reason| {

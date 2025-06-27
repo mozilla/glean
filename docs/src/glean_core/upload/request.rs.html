@@ -602,7 +602,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>date_header_resolution() {
-        <span class="kw">let </span>date: DateTime&lt;Utc&gt; = Utc.ymd(<span class="number">2018</span>, <span class="number">2</span>, <span class="number">25</span>).and_hms(<span class="number">11</span>, <span class="number">10</span>, <span class="number">37</span>);
+        <span class="kw">let </span>date: DateTime&lt;Utc&gt; = Utc.with_ymd_and_hms(<span class="number">2018</span>, <span class="number">2</span>, <span class="number">25</span>, <span class="number">11</span>, <span class="number">10</span>, <span class="number">37</span>).unwrap();
         <span class="kw">let </span>test_value = create_date_header_value(date);
         <span class="macro">assert_eq!</span>(<span class="string">"Sun, 25 Feb 2018 11:10:37 GMT"</span>, test_value);
     }

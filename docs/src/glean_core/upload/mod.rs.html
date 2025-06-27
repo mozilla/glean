@@ -2779,7 +2779,7 @@
     ) -&gt; UploadTaskAction {
         <span class="kw">use </span>UploadResult::<span class="kw-2">*</span>;
 
-        <span class="kw">let </span>stop_time = time::precise_time_ns();
+        <span class="kw">let </span>stop_time = zeitstempel::now();
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(label) = status.get_label() {
             <span class="kw">let </span>metric = <span class="self">self</span>.upload_metrics.ping_upload_failure.get(label);

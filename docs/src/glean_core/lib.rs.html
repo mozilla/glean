@@ -2011,7 +2011,7 @@
     //   * We don't know how long uploads take until we get data from bug 1814592.
     </span><span class="kw">let </span>result = rx.recv_timeout(Duration::from_secs(<span class="number">30</span>));
 
-    <span class="kw">let </span>stop_time = time::precise_time_ns();
+    <span class="kw">let </span>stop_time = zeitstempel::now();
     core::with_glean(|glean| {
         glean
             .additional_metrics
@@ -2087,7 +2087,7 @@
     <span class="kw">let </span>blocked = dispatcher::block_on_queue_timeout(Duration::from_secs(<span class="number">10</span>));
 
     <span class="comment">// Always record the dispatcher wait, regardless of the timeout.
-    </span><span class="kw">let </span>stop_time = time::precise_time_ns();
+    </span><span class="kw">let </span>stop_time = zeitstempel::now();
     core::with_glean(|glean| {
         glean
             .additional_metrics

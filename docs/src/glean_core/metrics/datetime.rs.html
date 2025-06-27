@@ -298,25 +298,6 @@
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -334,7 +315,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::CommonMetricData;
 <span class="kw">use </span><span class="kw">crate</span>::Glean;
 
-<span class="kw">use </span>chrono::{DateTime, Datelike, FixedOffset, TimeZone, Timelike};
+<span class="kw">use </span>chrono::{DateTime, Datelike, FixedOffset, NaiveTime, TimeZone, Timelike};
 <span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
 
 <span class="doccomment">/// A datetime type.
@@ -416,7 +397,7 @@
 
 <span class="kw">impl </span>From&lt;ChronoDatetime&gt; <span class="kw">for </span>Datetime {
     <span class="kw">fn </span>from(dt: ChronoDatetime) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>date = dt.date();
+        <span class="kw">let </span>date = dt.date_naive();
         <span class="kw">let </span>time = dt.time();
         <span class="kw">let </span>tz = dt.timezone();
         <span class="self">Self </span>{
@@ -479,11 +460,13 @@
                     <span class="kw">return</span>;
                 };
 
-                <span class="kw">let </span>datetime_obj = FixedOffset::east(dt.offset_seconds)
-                    .ymd_opt(dt.year, dt.month, dt.day)
-                    .and_hms_nano_opt(dt.hour, dt.minute, dt.second, dt.nanosecond);
+                <span class="kw">let </span>datetime_obj = FixedOffset::east_opt(dt.offset_seconds)
+                    .unwrap()
+                    .with_ymd_and_hms(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+                    .unwrap()
+                    .with_nanosecond(dt.nanosecond);
 
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(dt) = datetime_obj.single() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(dt) = datetime_obj {
                     dt
                 } <span class="kw">else </span>{
                     record_error(
@@ -515,38 +498,17 @@
     ) -&gt; <span class="prelude-ty">Option</span>&lt;ChronoDatetime&gt; {
         <span class="kw">let </span>(d, tu) = <span class="self">self</span>.get_value_inner(glean, ping_name.into())<span class="question-mark">?</span>;
 
-        <span class="comment">// The string version of the test function truncates using string
-        // parsing. Unfortunately `parse_from_str` errors with `NotEnough` if we
-        // try to truncate with `get_iso_time_string` and then parse it back
-        // in a `Datetime`. So we need to truncate manually.
-        </span><span class="kw">let </span>time = d.time();
-        <span class="kw">match </span>tu {
-            TimeUnit::Nanosecond =&gt; d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond(),
-            ),
-            TimeUnit::Microsecond =&gt; d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / <span class="number">1000</span>,
-            ),
-            TimeUnit::Millisecond =&gt; d.date().and_hms_nano_opt(
-                time.hour(),
-                time.minute(),
-                time.second(),
-                time.nanosecond() / <span class="number">1000000</span>,
-            ),
-            TimeUnit::Second =&gt; {
-                d.date()
-                    .and_hms_nano_opt(time.hour(), time.minute(), time.second(), <span class="number">0</span>)
-            }
-            TimeUnit::Minute =&gt; d.date().and_hms_nano_opt(time.hour(), time.minute(), <span class="number">0</span>, <span class="number">0</span>),
-            TimeUnit::Hour =&gt; d.date().and_hms_nano_opt(time.hour(), <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),
-            TimeUnit::Day =&gt; d.date().and_hms_nano_opt(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),
-        }
+        <span class="kw">let </span>time = d.time();
+        <span class="kw">let </span>time = <span class="kw">match </span>tu {
+            TimeUnit::Nanosecond =&gt; time,
+            TimeUnit::Microsecond =&gt; time.with_nanosecond(time.nanosecond() / <span class="number">1000</span>)<span class="question-mark">?</span>,
+            TimeUnit::Millisecond =&gt; time.with_nanosecond(time.nanosecond() / <span class="number">1000000</span>)<span class="question-mark">?</span>,
+            TimeUnit::Second =&gt; time.with_nanosecond(<span class="number">0</span>)<span class="question-mark">?</span>,
+            TimeUnit::Minute =&gt; NaiveTime::from_hms_opt(time.hour(), time.minute(), <span class="number">0</span>)<span class="question-mark">?</span>,
+            TimeUnit::Hour =&gt; NaiveTime::from_hms_opt(time.hour(), <span class="number">0</span>, <span class="number">0</span>)<span class="question-mark">?</span>,
+            TimeUnit::Day =&gt; NaiveTime::MIN,
+        };
+        d.with_time(time).single()
     }
 
     <span class="kw">fn </span>get_value_inner(

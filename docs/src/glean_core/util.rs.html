@@ -279,37 +279,6 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -361,45 +330,11 @@
 /// This converts from the `Local` timezone into its fixed-offset equivalent.
 /// If a timezone outside of [-24h, +24h] is detected it corrects the timezone offset to UTC (+0).
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>local_now_with_offset() -&gt; DateTime&lt;FixedOffset&gt; {
-    <span class="attr">#[cfg(target_os = <span class="string">"windows"</span>)]
-    </span>{
-        <span class="comment">// `Local::now` takes the user's timezone offset
-        // and panics if it's not within a range of [-24, +24] hours.
-        // This causes crashes in a small number of clients on Windows.
-        //
-        // We can't determine the faulty clients
-        // or the circumstancens under which this happens,
-        // so the best we can do is have a workaround:
-        //
-        // We try getting the time and timezone first,
-        // then manually check that it is a valid timezone offset.
-        // If it is, we proceed and use that time and offset.
-        // If it isn't we fallback to UTC.
-        //
-        // This has the small downside that it will use 2 calls to get the time,
-        // but only on Windows.
-        //
-        // See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770.
-
-        </span><span class="kw">use </span>chrono::Utc;
-
-        <span class="comment">// Get timespec, including the user's timezone.
-        </span><span class="kw">let </span>tm = time::now();
-        <span class="comment">// Same as chrono:
-        // https://docs.rs/chrono/0.4.10/src/chrono/offset/local.rs.html#37
-        </span><span class="kw">let </span>offset = tm.tm_utcoff;
-        <span class="kw">if let </span><span class="prelude-val">None </span>= FixedOffset::east_opt(offset) {
-            <span class="macro">log::warn!</span>(
-                <span class="string">"Detected invalid timezone offset: {}. Using UTC fallback."</span>,
-                offset
-            );
-            <span class="kw">let </span>now: DateTime&lt;Utc&gt; = Utc::now();
-            <span class="kw">let </span>utc_offset = FixedOffset::east(<span class="number">0</span>);
-            <span class="kw">return </span>now.with_timezone(<span class="kw-2">&amp;</span>utc_offset);
-        }
-    }
-
-    <span class="kw">let </span>now: DateTime&lt;Local&gt; = Local::now();
+    <span class="comment">// See https://bugzilla.mozilla.org/show_bug.cgi?id=1611770.
+    //
+    // It's not clear if this bug on Windows still exist with the latest versions of
+    // the `time` crate. Removed the workaround.
+    </span><span class="kw">let </span>now: DateTime&lt;Local&gt; = Local::now();
     now.with_timezone(now.offset())
 }
 
@@ -533,7 +468,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>chrono::offset::TimeZone;
+    <span class="kw">use </span>chrono::{offset::TimeZone, Timelike};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_sanitize_application_id() {
@@ -558,9 +493,12 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_get_iso_time_string() {
         <span class="comment">// `1985-07-03T12:09:14.000560274+01:00`
-        </span><span class="kw">let </span>dt = FixedOffset::east(<span class="number">3600</span>)
-            .ymd(<span class="number">1985</span>, <span class="number">7</span>, <span class="number">3</span>)
-            .and_hms_nano(<span class="number">12</span>, <span class="number">9</span>, <span class="number">14</span>, <span class="number">1_560_274</span>);
+        </span><span class="kw">let </span>dt = FixedOffset::east_opt(<span class="number">3600</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">1985</span>, <span class="number">7</span>, <span class="number">3</span>, <span class="number">12</span>, <span class="number">9</span>, <span class="number">14</span>)
+            .unwrap()
+            .with_nanosecond(<span class="number">1_560_274</span>)
+            .unwrap();
         <span class="macro">assert_eq!</span>(
             <span class="string">"1985-07-03T12:09:14.001560274+01:00"</span>,
             get_iso_time_string(dt, TimeUnit::Nanosecond)
