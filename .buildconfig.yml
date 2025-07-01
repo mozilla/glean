@@ -1,4 +1,4 @@
-libraryVersion: 64.5.1
+libraryVersion: 64.5.2
 groupId: org.mozilla.telemetry
 projects:
   glean:

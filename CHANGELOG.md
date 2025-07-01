@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...main)
+
+# v64.5.2 (2025-07-01)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...v64.5.2)
 
 * Rust
   * Added `MetricType` implementation for `DualLabeledCounter` ([Bug 1973287](https://bugzilla.mozilla.org/show_bug.cgi?id=1973287))
