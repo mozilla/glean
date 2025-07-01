@@ -4,6 +4,15 @@ Binary distributions of this software incorporate code from a number of third-pa
 These dependencies are available under a variety of free and open source licenses,
 the details of which are reproduced below.
 -->  <license>
+    <name>Apache License 2.0: num-conv</name>
+    <url>https://github.com/jhpratt/num-conv</url>
+  </license>  <license>
+    <name>Apache License 2.0: powerfmt</name>
+    <url>https://github.com/jhpratt/powerfmt</url>
+  </license>  <license>
+    <name>Apache License 2.0: deranged</name>
+    <url>https://github.com/jhpratt/deranged</url>
+  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -12,6 +21,24 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: tinyvec</name>
     <url>https://github.com/Lokathor/tinyvec</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-core</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-implement</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-interface</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-link</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-result</name>
+    <url>https://github.com/microsoft/windows-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: windows-strings</name>
+    <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
     <name>Apache License 2.0: windows-sys</name>
     <url>https://github.com/microsoft/windows-rs</url>
@@ -22,9 +49,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: windows_x86_64_gnu</name>
     <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
-    <name>Apache License 2.0: winapi</name>
-    <url>https://github.com/retep998/winapi-rs</url>
-  </license>  <license>
     <name>Apache License 2.0: crc32fast</name>
     <url>https://github.com/srijs/rust-crc32fast</url>
   </license>  <license>
@@ -33,6 +57,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: fd-lock</name>
     <url>https://github.com/yoshuawuyts/fd-lock</url>
+  </license>  <license>
+    <name>Apache License 2.0: android-tzdata</name>
+    <url>https://github.com/RumovZ/android-tzdata</url>
   </license>  <license>
     <name>Apache License 2.0: rinja</name>
     <url>https://github.com/rinja-rs/rinja</url>
@@ -43,6 +70,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: rinja_parser</name>
     <url>https://github.com/rinja-rs/rinja</url>
   </license>  <license>
+    <name>Apache License 2.0: iana-time-zone</name>
+    <url>https://github.com/strawlab/iana-time-zone</url>
+  </license>  <license>
     <name>Apache License 2.0: bitflags</name>
     <url>https://github.com/bitflags/bitflags</url>
   </license>  <license>
@@ -51,6 +81,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: cfg-if</name>
     <url>https://github.com/alexcrichton/cfg-if</url>
+  </license>  <license>
+    <name>Apache License 2.0: core-foundation-sys</name>
+    <url>https://github.com/servo/core-foundation-rs</url>
   </license>  <license>
     <name>Apache License 2.0: crossbeam-channel</name>
     <url>https://github.com/crossbeam-rs/crossbeam</url>
@@ -100,9 +133,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: mime</name>
     <url>https://github.com/hyperium/mime</url>
   </license>  <license>
-    <name>Apache License 2.0: num-integer</name>
-    <url>https://github.com/rust-num/num-integer</url>
-  </license>  <license>
     <name>Apache License 2.0: num-traits</name>
     <url>https://github.com/rust-num/num-traits</url>
   </license>  <license>
@@ -123,9 +153,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
-  </license>  <license>
-    <name>Apache License 2.0: time</name>
-    <url>https://github.com/time-rs/time</url>
   </license>  <license>
     <name>Apache License 2.0: toml</name>
     <url>https://github.com/toml-rs/toml</url>
@@ -171,6 +198,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: android_logger</name>
     <url>https://github.com/Nercury/android_logger-rs</url>
+  </license>  <license>
+    <name>Apache License 2.0: android_system_properties</name>
+    <url>https://github.com/nical/android_system_properties</url>
   </license>  <license>
     <name>Apache License 2.0: anyhow</name>
     <url>https://github.com/dtolnay/anyhow</url>
@@ -229,14 +259,17 @@ the details of which are reproduced below.
     <name>Apache License 2.0: thiserror</name>
     <url>https://github.com/dtolnay/thiserror</url>
   </license>  <license>
+    <name>Apache License 2.0: time-core</name>
+    <url>https://github.com/time-rs/time</url>
+  </license>  <license>
+    <name>Apache License 2.0: time</name>
+    <url>https://github.com/time-rs/time</url>
+  </license>  <license>
     <name>Apache License 2.0: tinyvec_macros</name>
     <url>https://github.com/Soveu/tinyvec_macros</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
-  </license>  <license>
-    <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
-    <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
