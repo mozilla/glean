@@ -992,9 +992,10 @@ mod test {
         let timestamps = [20, 40, 200, 12];
         let ecs = [0, 1];
         let some_hour = 16;
-        let startup_date = FixedOffset::east(0)
-            .ymd(2022, 11, 24)
-            .and_hms(some_hour, 29, 0); // TimeUnit::Minute -- don't put seconds
+        let startup_date = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2022, 11, 24, some_hour, 29, 0) // TimeUnit::Minute -- don't put seconds
+            .unwrap();
         let glean_start_time = startup_date.with_hour(some_hour - 1);
         let restarted_ts = 2;
         let mut store = vec![
@@ -1117,9 +1118,10 @@ mod test {
         let timestamps = [20, 40, 12, 200];
         let ecs = [0, 1];
         let some_hour = 10;
-        let startup_date = FixedOffset::east(0)
-            .ymd(2022, 11, 25)
-            .and_hms(some_hour, 37, 0); // TimeUnit::Minute -- don't put seconds
+        let startup_date = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2022, 11, 25, some_hour, 37, 0) // TimeUnit::Minute -- don't put seconds
+            .unwrap();
         let glean_start_time = startup_date.with_hour(some_hour + 1);
         let restarted_ts = 2;
         let mut store = vec![
