@@ -16,6 +16,10 @@ If no amount is passed it defaults to `1`.
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -25,6 +29,7 @@ glean_upload::failures.get("metrics", "recoverable network error").add(1); // Ad
 glean_upload::failures.get("baseline", "4xx").add(3); // Adds 3 to the "baseline: 4xx" counter.
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -63,6 +68,10 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -73,6 +82,7 @@ assert_eq!(1, glean_upload::failures.get("metrics", "recoverable network error")
 assert_eq!(3, glean_upload::failures.get("baseline", "4xx").test_get_value().unwrap());
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -84,6 +94,10 @@ Gets the number of errors recorded for a given labeled counter metric in total.
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -100,6 +114,7 @@ assert_eq!(
 );
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
 <div data-lang="Firefox Desktop" class="tab"></div>
 
@@ -125,7 +140,7 @@ glean_upload:
     dual_labels:
       key:
         description: The ping associated with the upload failure
-        labels: 
+        labels:
           - baseline
           - events
           - metrics
