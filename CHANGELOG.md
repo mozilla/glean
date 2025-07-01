@@ -1,9 +1,13 @@
 # Unreleased changes
 
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...main)
+
 * Rust
   * Added `MetricType` implementation for `DualLabeledCounter` ([Bug 1973287](https://bugzilla.mozilla.org/show_bug.cgi?id=1973287))
+  * Update `time` dependency to v0.3 ([#3165](https://github.com/mozilla/glean/pull/3165))
+* Python
+  * Ship a Python wheel for aarch64-linux ([#3173](https://github.com/mozilla/glean/pull/3173))
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...main)
 
 # v64.5.1 (2025-06-23)
 
