@@ -109,6 +109,8 @@ struct DispatchGuard {
 
     /// Sender for the unbounded queue.
     sender: Sender<Command>,
+
+    running: Arc<AtomicBool>,
 }
 
 impl DispatchGuard {
@@ -196,6 +198,11 @@ impl DispatchGuard {
         Ok(())
     }
 
+    fn force_kill(&mut self) -> Result<(), DispatchError> {
+        self.running.store(false, Ordering::Release);
+        Ok(())
+    }
+
     /// Flushes the pre-init buffer.
     ///
     /// This function blocks until tasks queued prior to this call are finished.
@@ -264,10 +271,14 @@ impl Dispatcher {
 
         let queue_preinit = Arc::new(AtomicBool::new(true));
         let overflow_count = Arc::new(AtomicUsize::new(0));
+        let running = Arc::new(AtomicBool::new(true));
 
+        let inner_running = running.clone();
         let worker = thread::Builder::new()
             .name("glean.dispatcher".into())
             .spawn(move || {
+                let running = inner_running;
+
                 match block_receiver.recv() {
                     Err(_) => {
                         // The other side was disconnected.
@@ -287,6 +298,13 @@ impl Dispatcher {
                 let mut receiver = preinit_receiver;
                 loop {
                     use Command::*;
+
+                    if !running.load(Ordering::Relaxed) {
+                        log::info!(
+                            "Not running anymore. Bailing out with potential tasks pending."
+                        );
+                        break;
+                    }
 
                     match receiver.recv() {
                         Ok(Shutdown) => {
@@ -333,6 +351,7 @@ impl Dispatcher {
             block_sender,
             preinit_sender,
             sender,
+            running,
         };
 
         Dispatcher {
