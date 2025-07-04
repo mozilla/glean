@@ -8,6 +8,19 @@ user-id = 696
 user-login = "fitzgen"
 user-name = "Nick Fitzgerald"
 
+[[publisher.hashbrown]]
+version = "0.15.4"
+when = "2025-06-07"
+user-id = 55123
+user-login = "rust-lang-owner"
+
+[[publisher.indexmap]]
+version = "2.10.0"
+when = "2025-06-26"
+user-id = 539
+user-login = "cuviper"
+user-name = "Josh Stone"
+
 [[publisher.inherent]]
 version = "1.0.9"
 when = "2023-07-04"
@@ -35,13 +48,6 @@ when = "2023-10-09"
 user-id = 6825
 user-login = "sunfishcode"
 user-name = "Dan Gohman"
-
-[[publisher.paste]]
-version = "1.0.15"
-when = "2024-05-07"
-user-id = 3618
-user-login = "dtolnay"
-user-name = "David Tolnay"
 
 [[publisher.rustix]]
 version = "0.38.20"
@@ -78,51 +84,71 @@ user-id = 3618
 user-login = "dtolnay"
 user-name = "David Tolnay"
 
+[[publisher.thiserror]]
+version = "2.0.12"
+when = "2025-03-03"
+user-id = 3618
+user-login = "dtolnay"
+user-name = "David Tolnay"
+
+[[publisher.thiserror-impl]]
+version = "2.0.12"
+when = "2025-03-03"
+user-id = 3618
+user-login = "dtolnay"
+user-name = "David Tolnay"
+
 [[publisher.uniffi]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_bindgen]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_build]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_core]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_internal_macros]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_macros]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_meta]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
+user-id = 127697
+user-login = "bendk"
+
+[[publisher.uniffi_pipeline]]
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_udl]]
-version = "0.29.0"
-when = "2025-02-06"
+version = "0.29.3"
+when = "2025-06-06"
 user-id = 127697
 user-login = "bendk"
 
@@ -230,6 +256,13 @@ user-id = 64539
 user-login = "kennykerr"
 user-name = "Kenny Kerr"
 
+[[publisher.winnow]]
+version = "0.7.11"
+when = "2025-06-10"
+user-id = 6743
+user-login = "epage"
+user-name = "Ed Page"
+
 [[publisher.wr_malloc_size_of]]
 version = "0.2.1"
 when = "2025-05-07"
@@ -306,6 +339,18 @@ who = "Pat Hickey <phickey@fastly.com>"
 criteria = "safe-to-deploy"
 version = "0.15.3"
 notes = "no build, no unsafe, inputs to cargo command are reasonably sanitized"
+
+[[audits.bytecode-alliance.audits.cargo_metadata]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "0.17.0 -> 0.18.1"
+notes = "No major changes, no unsafe code here."
+
+[[audits.bytecode-alliance.audits.cargo_metadata]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "0.18.1 -> 0.19.2"
+notes = "Dependency updates and minor changes, nothing suspicious."
 
 [[audits.bytecode-alliance.audits.cc]]
 who = "Alex Crichton <alex@alexcrichton.com>"
@@ -478,15 +523,6 @@ intended to multiplex across the internal representation of a tinyvec,
 presumably. This trivially doesn't contain anything bad.
 """
 
-[[audits.bytecode-alliance.audits.unicase]]
-who = "Alex Crichton <alex@alexcrichton.com>"
-criteria = "safe-to-deploy"
-version = "2.6.0"
-notes = """
-This crate contains no `unsafe` code and no unnecessary use of the standard
-library.
-"""
-
 [[audits.bytecode-alliance.audits.unicode-bidi]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
@@ -532,17 +568,11 @@ criteria = "safe-to-deploy"
 delta = "0.15.3 -> 0.15.4"
 notes = "No notable changes"
 
-[[audits.embark-studios.audits.thiserror]]
+[[audits.embark-studios.audits.cargo_metadata]]
 who = "Johan Andersson <opensource@embark-studios.com>"
 criteria = "safe-to-deploy"
-version = "1.0.40"
-notes = "Wrapper over implementation crate, found no unsafe or ambient capabilities used"
-
-[[audits.embark-studios.audits.thiserror-impl]]
-who = "Johan Andersson <opensource@embark-studios.com>"
-criteria = "safe-to-deploy"
-version = "1.0.40"
-notes = "Found no unsafe or ambient capabilities used"
+delta = "0.15.4 -> 0.17.0"
+notes = "No notable changes"
 
 [[audits.google.audits.android_system_properties]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -586,6 +616,19 @@ who = "George Burgess IV <gbiv@google.com>"
 criteria = "safe-to-run"
 version = "0.1.26"
 aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.equivalent]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = "safe-to-deploy"
+version = "1.0.1"
+aggregated-from = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
+
+[[audits.google.audits.equivalent]]
+who = "Jonathan Hao <phao@chromium.org>"
+criteria = "safe-to-deploy"
+delta = "1.0.1 -> 1.0.2"
+notes = "No changes to any .rs files or Rust code."
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
 [[audits.google.audits.fastrand]]
 who = "George Burgess IV <gbiv@google.com>"
@@ -1214,15 +1257,14 @@ who = "David Cook <dcook@divviup.org>"
 criteria = "safe-to-deploy"
 delta = "1.19.0 -> 1.20.1"
 
-[[audits.isrg.audits.thiserror]]
-who = "Brandon Pitman <bran@bran.land>"
+[[audits.mozilla.wildcard-audits.uniffi_pipeline]]
+who = "Ben Dean-Kawamura <bdk@mozilla.com>"
 criteria = "safe-to-deploy"
-delta = "1.0.40 -> 1.0.43"
-
-[[audits.isrg.audits.thiserror-impl]]
-who = "Brandon Pitman <bran@bran.land>"
-criteria = "safe-to-deploy"
-delta = "1.0.40 -> 1.0.43"
+user-id = 127697 # bendk
+start = "2021-10-27"
+end = "2026-02-01"
+notes = "Maintained by the Glean and Application Services teams"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.android-tzdata]]
 who = "Mark Hammond <mhammond@skippinet.com.au>"
@@ -1287,6 +1329,49 @@ aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-ch
 who = "Mike Hommey <mh+mozilla@glandium.org>"
 criteria = "safe-to-deploy"
 delta = "1.0.68 -> 1.0.69"
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.askama]]
+who = "Ben Dean-Kawamura <bdk@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.13.1"
+notes = """
+Template crate.  This is only used to generate the Rust/JS code for UniFFI.
+
+We used to use askama, then we switched to rinja which was a fork.  Now rinja and
+askama have merged again.
+
+The differences from askama 0.12, are pretty straightforward and don't seem risky to me.  There's
+some unsafe code and macros, but nothing that complicated.
+"""
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.askama_derive]]
+who = "Ben Dean-Kawamura <bdk@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.13.1"
+notes = """
+Template crate.  This is only used to generate the Rust/JS code for UniFFI.
+
+We used to use askama, then we switched to rinja which was a fork.  Now rinja and
+askama have merged again.
+
+I did a quick scan of the current code and couldn't find any issues.
+"""
+aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
+
+[[audits.mozilla.audits.askama_parser]]
+who = "Ben Dean-Kawamura <bdk@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.13.0"
+notes = """
+Template crate.  This is only used to generate the Rust/JS code for UniFFI.
+
+We used to use askama, then we switched to rinja which was a fork.  Now rinja and
+askama have merged again.
+
+I did a quick scan of the current code and couldn't find any issues.
+"""
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.bitflags]]
@@ -1472,36 +1557,6 @@ aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-ch
 who = "Mike Hommey <mh+mozilla@glandium.org>"
 criteria = "safe-to-deploy"
 delta = "0.2.13 -> 0.2.16"
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.rinja]]
-who = "Ben Dean-Kawamura <bdk@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.3.5"
-notes = """
-Template crate, forked from askama which has been audited.  The only unsafe code is calls to
-`str::from_utf8_unchecked` for known ASCII strings.
-"""
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.rinja_derive]]
-who = "Ben Dean-Kawamura <bdk@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.3.5"
-notes = """
-Template crate, forked from askama which has been audited.  The only unsafe code is calls to
-`str::from_utf8_unchecked` for known ASCII strings.
-"""
-aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
-
-[[audits.mozilla.audits.rinja_parser]]
-who = "Ben Dean-Kawamura <bdk@mozilla.com>"
-criteria = "safe-to-deploy"
-version = "0.3.5"
-notes = """
-Template crate, forked from askama which has been audited.  The only unsafe code is calls to
-`str::from_utf8_unchecked` for known ASCII strings.
-"""
 aggregated-from = "https://hg.mozilla.org/mozilla-central/raw-file/tip/supply-chain/audits.toml"
 
 [[audits.mozilla.audits.rkv]]

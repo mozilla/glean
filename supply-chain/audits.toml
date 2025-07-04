@@ -474,6 +474,11 @@ criteria = "safe-to-deploy"
 delta = "0.18.4 -> 0.19.0"
 notes = "Maintained by Mozilla, no addition of unsafe blocks"
 
+[[audits.rkv]]
+who = "Lars Eggert <lars@eggert.org>"
+criteria = "safe-to-deploy"
+delta = "0.19.0 -> 0.20.0"
+
 [[audits.rustversion]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -625,6 +630,18 @@ criteria = "safe-to-deploy"
 delta = "1.1.0 -> 1.2.0"
 notes = "Added a file lock on the created directory"
 
+[[trusted.hashbrown]]
+criteria = "safe-to-deploy"
+user-id = 55123 # rust-lang-owner
+start = "2025-04-30"
+end = "2026-07-04"
+
+[[trusted.indexmap]]
+criteria = "safe-to-deploy"
+user-id = 539 # Josh Stone (cuviper)
+start = "2020-01-15"
+end = "2026-07-04"
+
 [[trusted.inherent]]
 criteria = "safe-to-deploy"
 user-id = 3618 # David Tolnay (dtolnay)
@@ -684,6 +701,18 @@ criteria = "safe-to-deploy"
 user-id = 3618 # David Tolnay (dtolnay)
 start = "2019-03-01"
 end = "2026-06-18"
+
+[[trusted.thiserror]]
+criteria = "safe-to-deploy"
+user-id = 3618 # David Tolnay (dtolnay)
+start = "2019-10-09"
+end = "2026-07-04"
+
+[[trusted.thiserror-impl]]
+criteria = "safe-to-deploy"
+user-id = 3618 # David Tolnay (dtolnay)
+start = "2019-10-09"
+end = "2026-07-04"
 
 [[trusted.wasm-bindgen]]
 criteria = "safe-to-deploy"
@@ -768,3 +797,9 @@ criteria = "safe-to-deploy"
 user-id = 64539 # Kenny Kerr (kennykerr)
 start = "2022-09-01"
 end = "2026-06-18"
+
+[[trusted.winnow]]
+criteria = "safe-to-deploy"
+user-id = 6743 # Ed Page (epage)
+start = "2023-02-22"
+end = "2026-07-04"
