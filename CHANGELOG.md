@@ -20,6 +20,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...v64.5.1)
 
+* Python
+  * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
+
 # v64.5.0 (2025-06-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.4.0...v64.5.0)
