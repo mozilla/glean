@@ -146,7 +146,7 @@ commands:
           name: Install missing Android SDK & NDK
           command: |
             sdkmanager \
-              "build-tools;35.0.0" \
+              "build-tools;36.0.0" \
               "ndk;28.1.13356709"
 
   android-setup:
