@@ -4,13 +4,13 @@
 
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::fs;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, RwLock};
+use std::sync::{Arc, Mutex, RwLock};
+use std::{fs, mem};
 
 use chrono::{DateTime, FixedOffset, Utc};
 
@@ -99,13 +99,23 @@ pub struct EventDatabase {
     pub path: PathBuf,
     /// The in-memory list of events
     event_stores: RwLock<HashMap<String, Vec<StoredEvent>>>,
+    event_store_files: RwLock<HashMap<String, Arc<File>>>,
     /// A lock to be held when doing operations on the filesystem
     file_lock: Mutex<()>,
 }
 
 impl MallocSizeOf for EventDatabase {
     fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
-        self.event_stores.read().unwrap().size_of(ops)
+        let mut n = 0;
+        n += self.event_stores.read().unwrap().size_of(ops);
+
+        let map = self.event_store_files.read().unwrap();
+        for store_name in map.keys() {
+            n += store_name.size_of(ops);
+            // `File` doesn't allocate, but `Arc` puts it on the heap.
+            n += mem::size_of::<File>();
+        }
+        n
     }
 }
 
@@ -123,6 +133,7 @@ impl EventDatabase {
         Ok(Self {
             path,
             event_stores: RwLock::new(HashMap::new()),
+            event_store_files: RwLock::new(HashMap::new()),
             file_lock: Mutex::new(()),
         })
     }
@@ -333,6 +344,25 @@ impl EventDatabase {
         }
     }
 
+    fn get_event_store(&self, store_name: &str) -> Arc<File> {
+        Arc::clone(
+            self.event_store_files
+                .write()
+                .unwrap()
+                .entry(store_name.to_string())
+                .or_insert_with(|| {
+                    log::info!("opening event store for {store_name}");
+                    Arc::new(
+                        OpenOptions::new()
+                            .create(true)
+                            .append(true)
+                            .open(self.path.join(store_name))
+                            .unwrap(),
+                    )
+                }),
+        )
+    }
+
     /// Writes an event to a single store on disk.
     ///
     /// # Arguments
@@ -341,12 +371,11 @@ impl EventDatabase {
     /// * `event_json` - The event content, as a single-line JSON-encoded string.
     fn write_event_to_disk(&self, store_name: &str, event_json: &str) {
         let _lock = self.file_lock.lock().unwrap(); // safe unwrap, only error case is poisoning
-        if let Err(err) = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(self.path.join(store_name))
-            .and_then(|mut file| writeln!(file, "{}", event_json))
-        {
+        let mut file = self.get_event_store(store_name);
+        if let Err(err) = writeln!(&mut file, "{}", event_json) {
+            log::warn!("IO error writing event to store '{}': {}", store_name, err);
+        }
+        if let Err(err) = file.flush() {
             log::warn!("IO error writing event to store '{}': {}", store_name, err);
         }
     }
