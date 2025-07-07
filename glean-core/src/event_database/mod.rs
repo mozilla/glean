@@ -351,7 +351,6 @@ impl EventDatabase {
                 .unwrap()
                 .entry(store_name.to_string())
                 .or_insert_with(|| {
-                    log::info!("opening event store for {store_name}");
                     Arc::new(
                         OpenOptions::new()
                             .create(true)
@@ -372,10 +371,15 @@ impl EventDatabase {
     fn write_event_to_disk(&self, store_name: &str, event_json: &str) {
         let _lock = self.file_lock.lock().unwrap(); // safe unwrap, only error case is poisoning
         let mut file = self.get_event_store(store_name);
-        if let Err(err) = writeln!(&mut file, "{}", event_json) {
-            log::warn!("IO error writing event to store '{}': {}", store_name, err);
-        }
-        if let Err(err) = file.flush() {
+
+        let write_res = (|| {
+            file.write_all(event_json.as_bytes())?;
+            file.write_all(b"\n")?;
+            file.flush()?;
+            Ok::<(), std::io::Error>(())
+        })();
+
+        if let Err(err) = write_res {
             log::warn!("IO error writing event to store '{}': {}", store_name, err);
         }
     }
@@ -618,6 +622,10 @@ impl EventDatabase {
                 .write()
                 .unwrap() // safe unwrap, only error case is poisoning
                 .remove(&store_name.to_string());
+            self.event_store_files
+                .write()
+                .unwrap() // safe unwrap, only error case is poisoning
+                .remove(&store_name.to_string());
 
             let _lock = self.file_lock.lock().unwrap(); // safe unwrap, only error case is poisoning
             if let Err(err) = fs::remove_file(self.path.join(store_name)) {
@@ -637,6 +645,7 @@ impl EventDatabase {
     pub fn clear_all(&self) -> Result<()> {
         // safe unwrap, only error case is poisoning
         self.event_stores.write().unwrap().clear();
+        self.event_store_files.write().unwrap().clear();
 
         // safe unwrap, only error case is poisoning
         let _lock = self.file_lock.lock().unwrap();
