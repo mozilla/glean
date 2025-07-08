@@ -16,14 +16,10 @@ object ThreadUtils {
      * Assert that this code is run on the main (UI) thread.
      */
     fun assertOnUiThread() {
-        val currentThread = Thread.currentThread()
-        val currentThreadId = currentThread.id
-        val expectedThreadId = uiThread.id
-
-        if (currentThreadId == expectedThreadId) {
+        if (Thread.currentThread() === uiThread) {
             return
         }
 
-        throw IllegalThreadStateException("Expected UI thread, but running on " + currentThread.name)
+        throw IllegalThreadStateException("Expected UI thread, but running on ${Thread.currentThread().name}")
     }
 }

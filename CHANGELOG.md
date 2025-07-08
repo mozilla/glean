@@ -2,6 +2,11 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...main)
 
+* Android
+  * Updated Android Gradle Plugin to 8.11.0 ([#3180](https://github.com/mozilla/glean/pull/3180))
+  * Updated Android SDK target to version 36 ([#3180](https://github.com/mozilla/glean/pull/3180))
+  * Updated Gradle to 8.14.3 ([#3180](https://github.com/mozilla/glean/pull/3180))
+
 # v64.5.2 (2025-07-01)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.1...v64.5.2)
@@ -12,13 +17,12 @@
 * Python
   * Ship a Python wheel for aarch64-linux ([#3173](https://github.com/mozilla/glean/pull/3173))
 
-
 # v64.5.1 (2025-06-23)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...v64.5.1)
 
 * Swift
   * No change dot-release to fix failed Swift package deploy to `mozilla/glean-swift`
-
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.0...v64.5.1)
 
 # v64.5.0 (2025-06-18)
 
