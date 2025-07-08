@@ -17,10 +17,10 @@ rust-android-gradle = "0.9.6"
 
 # AndroidX
 androidx-annotation = "1.9.1"
-androidx-appcompat = "1.7.0"
+androidx-appcompat = "1.7.1"
 androidx-browser = "1.8.0"
-androidx-lifecycle = "2.8.7"
-androidx-work = "2.10.0"
+androidx-lifecycle = "2.9.1"
+androidx-work = "2.10.2"
 
 # JNA
 jna = "5.14.0" # Don't update until Android 5/6 support is dropped
