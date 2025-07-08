@@ -433,7 +433,7 @@ class GleanTest {
         val defaultLocale = Locale.getDefault()
 
         try {
-            Locale.setDefault(Locale("fy", "NL"))
+            Locale.setDefault(Locale.Builder().setLanguage("fy").setRegion("NL").build())
 
             val languageTag = getLocaleTag()
 
@@ -447,9 +447,9 @@ class GleanTest {
 
     @Test
     fun `getLanguage reports the modern translation for some languages`() {
-        assertEquals("he", getLanguageFromLocale(Locale("iw", "IL")))
-        assertEquals("id", getLanguageFromLocale(Locale("in", "ID")))
-        assertEquals("yi", getLanguageFromLocale(Locale("ji", "ID")))
+        assertEquals("he", getLanguageFromLocale(Locale.Builder().setLanguage("iw").setRegion("IL").build()))
+        assertEquals("id", getLanguageFromLocale(Locale.Builder().setLanguage("in").setRegion("ID").build()))
+        assertEquals("yi", getLanguageFromLocale(Locale.Builder().setLanguage("ji").setRegion("ID").build()))
     }
 
     @Test
