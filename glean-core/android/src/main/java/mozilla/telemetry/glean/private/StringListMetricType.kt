@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.StringListMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording string list metrics.
  *
@@ -13,4 +18,49 @@ package mozilla.telemetry.glean.private
  * The string list API only exposes the [add] and [set] methods, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-typealias StringListMetricType = mozilla.telemetry.glean.internal.StringListMetric
+class StringListMetricType constructor(private var meta: CommonMetricData) {
+    val inner: StringListMetric by lazy { StringListMetric(meta) }
+
+    /**
+     * Adds a new string to the list.
+     *
+     * @param value The string to add.
+     */
+    fun add(value: String) {
+        Dispatchers.Delayed.launch {
+            inner.add(value)
+        }
+    }
+
+    /**
+     * Sets to a specific list of strings.
+     *
+     * @param value The list of string to set the metric to.
+     */
+    fun set(value: List<String>) {
+        Dispatchers.Delayed.launch {
+            inner.set(value)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first value in `sendInPings`.
+     * @return value of the stored string list
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+}

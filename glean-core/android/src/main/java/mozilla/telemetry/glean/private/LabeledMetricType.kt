@@ -5,11 +5,40 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import mozilla.telemetry.glean.internal.LabeledBoolean
-import mozilla.telemetry.glean.internal.LabeledCounter
-import mozilla.telemetry.glean.internal.LabeledQuantity
-import mozilla.telemetry.glean.internal.LabeledString
 import mozilla.telemetry.glean.testing.ErrorType
+import mozilla.telemetry.glean.internal.LabeledBoolean as InternalLabeledBoolean
+import mozilla.telemetry.glean.internal.LabeledCounter as InternalLabeledCounter
+import mozilla.telemetry.glean.internal.LabeledQuantity as InternalLabeledQuantity
+import mozilla.telemetry.glean.internal.LabeledString as InternalLabeledString
+
+class LabeledBoolean constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+    val metric = InternalLabeledBoolean(meta, labels)
+
+    fun get(label: String): BooleanMetricType {
+        return BooleanMetricType(metric.get(label))
+    }
+}
+class LabeledCounter constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+    val metric = InternalLabeledCounter(meta, labels)
+
+    fun get(label: String): CounterMetricType {
+        return CounterMetricType(metric.get(label))
+    }
+}
+class LabeledQuantity constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+    val metric = InternalLabeledQuantity(meta, labels)
+
+    fun get(label: String): QuantityMetricType {
+        return QuantityMetricType(metric.get(label))
+    }
+}
+class LabeledString constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+    val metric = InternalLabeledString(meta, labels)
+
+    fun get(label: String): StringMetricType {
+        return StringMetricType(metric.get(label))
+    }
+}
 
 /**
  * This implements the developer facing API for labeled metrics.
@@ -114,10 +143,10 @@ class LabeledMetricType<T>(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetNumRecordedErrors(errorType: ErrorType): Int {
         return when (this.inner) {
-            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledQuantity -> this.inner.testGetNumRecordedErrors(errorType)
+            is LabeledCounter -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledBoolean -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledString -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledQuantity -> this.inner.metric.testGetNumRecordedErrors(errorType)
             else -> error("Can not create a labeled version of this metric type")
         }
     }
