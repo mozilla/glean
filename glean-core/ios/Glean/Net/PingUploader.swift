@@ -9,7 +9,7 @@ public protocol PingUploader {
     /**
      * Synchronously upload a ping to a server.
      *
-     * @param request the ping upload request, locked within a uploader capability check
+     * @param request the ping upload request, locked within an uploader capability check
      *
      * @param callback used to return the status code of the upload response, so Glean knows whether or not to try again
      */
