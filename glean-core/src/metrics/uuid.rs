@@ -82,7 +82,9 @@ impl UuidMetric {
         self.set_sync(glean, value.to_string())
     }
 
-    /// Generates a new random [`Uuid`'] and sets the metric to it.
+    /// Generates a new random [`Uuid`] and sets the metric to it.
+    ///
+    /// Returns the generated UUID formatted as a hex string.
     pub fn generate_and_set(&self) -> String {
         let uuid = Uuid::new_v4();
 

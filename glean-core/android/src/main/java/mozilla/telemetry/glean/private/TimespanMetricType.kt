@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.TimespanMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording timespans.
  *
@@ -12,24 +17,81 @@ package mozilla.telemetry.glean.private
  *
  * The timespans API exposes the [start], [stop] and [cancel] methods.
  */
-typealias TimespanMetricType = mozilla.telemetry.glean.internal.TimespanMetric
+class TimespanMetricType constructor(private var meta: CommonMetricData, var timeUnit: TimeUnit) {
+    val inner: TimespanMetric by lazy { TimespanMetric(meta, timeUnit) }
 
-/**
- * Convenience method to simplify measuring a function or block of code
- *
- * If the measured function throws, the measurement is canceled and the exception rethrown.
- */
-@Suppress("TooGenericExceptionCaught")
-fun <U> TimespanMetricType.measure(funcToMeasure: () -> U): U {
-    this.start()
+    /**
+     * Starts tracking time for the provided metric.
+     *
+     * This records an error if it's already tracking time (i.e. start was
+     * already called with no corresponding `set_stop`).
+     * In that case the original start time will be preserved.
+     */
+    fun start() = inner.start()
 
-    val returnValue = try {
-        funcToMeasure()
-    } catch (e: Exception) {
-        this.cancel()
-        throw e
+    /**
+     * Stops tracking time for the provided metric and records the elapsed time.
+     *
+     * This will record an error if no `start` was called, or if 'stop' has already been called.
+     */
+    fun stop() = inner.stop()
+
+    /**
+     * Aborts a previous `start` call.
+     *
+     * No error is recorded if `start` was not called.
+     */
+    fun cancel() = inner.cancel()
+
+    /**
+     * Convenience method to simplify measuring a function or block of code
+     *
+     * If the measured function throws, the measurement is canceled and the exception rethrown.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    fun <U> measure(funcToMeasure: () -> U): U {
+        this.start()
+
+        val returnValue = try {
+            funcToMeasure()
+        } catch (e: Exception) {
+            this.cancel()
+            throw e
+        }
+
+        this.stop()
+        return returnValue
     }
 
-    this.stop()
-    return returnValue
+    /**
+     * Explicitly sets the timespan value.
+     *
+     *  @param elapsed The elapsed time to record in nanoseconds
+     */
+    fun setRawNanos(elapsed: Long) {
+        Dispatchers.Delayed.launch {
+            inner.setRawNanos(elapsed)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored timespan as an integer
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
 }

@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.BooleanMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording boolean metrics.
  *
@@ -12,4 +17,48 @@ package mozilla.telemetry.glean.private
  *
  * The boolean API only exposes the [set] method.
  */
-typealias BooleanMetricType = mozilla.telemetry.glean.internal.BooleanMetric
+class BooleanMetricType {
+    lateinit var inner: BooleanMetric
+
+    constructor(meta: CommonMetricData) {
+        Dispatchers.Delayed.launch {
+            inner = BooleanMetric(meta)
+        }
+    }
+
+    constructor(metric: BooleanMetric) {
+        inner = metric
+    }
+
+    /**
+     * Sets to the specified boolean value.
+     *
+     * @param value The value to set.
+     */
+    fun set(value: Boolean) {
+        Dispatchers.Delayed.launch {
+            inner.set(value)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored boolean value
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+}

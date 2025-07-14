@@ -20,23 +20,42 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
     val inner: TimingDistributionMetric by lazy { TimingDistributionMetric(meta, timeUnit) }
 
     /**
-     * Delegate common methods to the underlying type directly.
+     * Starts tracking time for the provided metric.
+     *
+     * @return a timer ID to use with `stopAndAccumulate` or `cancel`
      */
-
     fun start() = inner.start()
+
+    /**
+     * Stops tracking time for the provided metric and associated timer id and accumulates the sample to the metric.
+     *
+     * @param timerId A timer ID from a previous `start()` call
+     */
     fun stopAndAccumulate(timerId: GleanTimerId) = inner.stopAndAccumulate(timerId)
+
+    /**
+     * Aborts a previous `start()` call.
+     *
+     * @param timerId A timer ID from a previous `start()` call
+     */
     fun cancel(timerId: GleanTimerId) = inner.cancel(timerId)
 
     /**
-     * Additional functionality
+     * Accumulates precisely one signed sample to the metric.
+     *
+     * @param sample A single sample to be recorded by the metric.
      */
-
     fun accumulateSingleSample(sample: Long) {
         Dispatchers.Delayed.launch {
             inner.accumulateSingleSample(sample)
         }
     }
 
+    /**
+     * Accumulates the provided signed samples in the metric.
+     *
+     * @param samples The list holding the samples to be recorded by the metric.
+     */
     override fun accumulateSamples(samples: List<Long>) {
         Dispatchers.Delayed.launch {
             inner.accumulateSamples(samples)
@@ -64,13 +83,23 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
     }
 
     /**
-     * Testing-only methods get an annotation
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored distribution data
      */
-
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
     fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
 
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetNumRecordedErrors(error: ErrorType) = inner.testGetNumRecordedErrors(error)
 }

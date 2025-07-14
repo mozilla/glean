@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.TextMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording text metrics.
  *
@@ -13,4 +18,38 @@ package mozilla.telemetry.glean.private
  * The text API only exposes the [set] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-typealias TextMetricType = mozilla.telemetry.glean.internal.TextMetric
+class TextMetricType constructor(private var meta: CommonMetricData) {
+    val inner: TextMetric by lazy { TextMetric(meta) }
+
+    /**
+     * Sets to the specified value.
+     *
+     * @param value The text to set the metric to.
+     */
+    fun set(value: String) {
+        Dispatchers.Delayed.launch {
+            inner.set(value)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored text as a string
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+}

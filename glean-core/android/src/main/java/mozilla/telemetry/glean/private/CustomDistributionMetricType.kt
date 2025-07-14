@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.CustomDistributionMetric
 import mozilla.telemetry.glean.testing.ErrorType
 
@@ -32,22 +33,50 @@ class CustomDistributionMetricType(
     bucketCount: Long,
     histogramType: HistogramType,
 ) : HistogramBase {
-    val inner = CustomDistributionMetric(meta, rangeMin, rangeMax, bucketCount, histogramType)
+    val inner: CustomDistributionMetric by lazy {
+        CustomDistributionMetric(meta, rangeMin, rangeMax, bucketCount, histogramType)
+    }
 
     /**
-     * Delegate common methods to the underlying type directly.
+     * Accumulates precisely one signed sample and appends it to the metric.
+     *
+     * @param sample The singular sample to be recorded by the metric.
      */
-    fun accumulateSingleSample(sample: Long) = inner.accumulateSingleSample(sample)
-    override fun accumulateSamples(samples: List<Long>) = inner.accumulateSamples(samples)
+    fun accumulateSingleSample(sample: Long) {
+        Dispatchers.Delayed.launch {
+            inner.accumulateSingleSample(sample)
+        }
+    }
 
     /**
-     * Testing-only methods get an annotation
+     * Accumulates the provided signed samples in the metric.
+     *
+     * @param samples The list holding the samples to be recorded by the metric.
      */
+    override fun accumulateSamples(samples: List<Long>) {
+        Dispatchers.Delayed.launch {
+            inner.accumulateSamples(samples)
+        }
+    }
 
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored distribution data
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
     fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
 
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of the error recorded.
+     * @return the number of errors recorded for the metric.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun testGetNumRecordedErrors(error: ErrorType) = inner.testGetNumRecordedErrors(error)
 }
