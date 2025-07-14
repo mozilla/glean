@@ -160,7 +160,7 @@ class HttpPingUploaderTests: XCTestCase {
         )
     }
 
-    func testUploaderReturnsRequestWhenCapbilitiesSupported() {
+    func testUploaderReturnsRequestWhenCapabilitiesSupported() {
         var testValue: UploadResult?
         let testOhttpRequest = PingRequest(
             documentId: "12345",
