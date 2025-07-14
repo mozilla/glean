@@ -164,6 +164,8 @@
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
 <a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -248,7 +250,9 @@
         <span class="self">self</span>.set_sync(glean, value.to_string())
     }
 
-    <span class="doccomment">/// Generates a new random [`Uuid`'] and sets the metric to it.
+    <span class="doccomment">/// Generates a new random [`Uuid`] and sets the metric to it.
+    ///
+    /// Returns the generated UUID formatted as a hex string.
     </span><span class="kw">pub fn </span>generate_and_set(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">let </span>uuid = Uuid::new_v4();
 

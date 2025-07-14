@@ -197,6 +197,8 @@
 <li>Updated Android SDK target to version 36 (<a href="https://github.com/mozilla/glean/pull/3180">#3180</a>)</li>
 <li>Updated Gradle to 8.14.3 (<a href="https://github.com/mozilla/glean/pull/3180">#3180</a>)</li>
 <li>Updated Kotlin to 2.2.0 (<a href="https://github.com/mozilla/glean/pull/3182">#3182</a>)</li>
+<li>BREAKING CHANGE: Dispatch most metric recordings on a Kotlin dispatcher to avoid calling into glean-core early.
+This does not change any behavior: The dispatch queue is worked on right after initialization (<a href="https://github.com/mozilla/glean/pull/3183">#3183</a>)</li>
 </ul>
 </li>
 <li>Python
