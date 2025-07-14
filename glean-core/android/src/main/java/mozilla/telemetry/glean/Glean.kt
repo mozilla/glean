@@ -179,8 +179,6 @@ open class GleanInternalAPI internal constructor() {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo,
     ) {
-        gleanEnableLogging()
-
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
             //   1. The database path provided is not `glean_data`.
@@ -240,12 +238,14 @@ open class GleanInternalAPI internal constructor() {
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
 
-        // First flush the Kotlin-side queue.
-        // This will put things on the Rust-side queue, and thus keep them in the right order.
-        Dispatchers.Delayed.flushQueuedInitialTasks()
-
         // Execute startup off the main thread.
         Dispatchers.API.executeTask {
+            gleanEnableLogging()
+
+            // First flush the Kotlin-side queue.
+            // This will put things on the Rust-side queue, and thus keep them in the right order.
+            Dispatchers.Delayed.flushQueuedInitialTasks()
+
             val cfg = InternalConfiguration(
                 dataPath = gleanDataDir.path,
                 applicationId = applicationContext.packageName,
