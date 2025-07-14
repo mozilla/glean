@@ -411,7 +411,7 @@ You can install it with <code>softwareupdate --install-rosetta</code></p>
 <p>Currently, this SDK only supports the iOS platform.</p>
 <h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
 <ul>
-<li>Python &gt;= 3.8.</li>
+<li>Python &gt;= 3.9.</li>
 </ul>
 <h2 id="setting-up-the-dependency-1"><a class="header" href="#setting-up-the-dependency-1">Setting up the dependency</a></h2>
 <p>The Glean Swift SDK can be consumed as a Swift Package.
@@ -615,7 +615,7 @@ the Glean JavaScript SDK into a JavaScript project.</p>
 <li>Node.js &gt;= 12.20.0</li>
 <li>npm &gt;= 7.0.0</li>
 <li>Webpack &gt;= 5.34.0</li>
-<li>Python &gt;= 3.8
+<li>Python &gt;= 3.9
 <ul>
 <li>The <code>glean</code> command requires Python to download <a href="https://mozilla.github.io/glean_parser/"><code>glean_parser</code></a> which is a Python library</li>
 </ul>
@@ -3174,7 +3174,7 @@ logging.basicConfig(level=logging.DEBUG)
 <pre><code class="language-python">logging.getLogger(&quot;glean&quot;).setLevel(logging.DEBUG)
 </code></pre>
 <p>The flexible logging API is unable to display networking-related log messages or ping contents with <code>GLEAN_LOG_PINGS</code> set to true.</p>
-<p>See the <a href="https://docs.python.org/3.8/library/logging.html">Python logging documentation</a> for more information.</p>
+<p>See the <a href="https://docs.python.org/3.9/library/logging.html">Python logging documentation</a> for more information.</p>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/user/debugging/python.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="debugging-javascript-applications-using-gleanjs"><a class="header" href="#debugging-javascript-applications-using-gleanjs">Debugging JavaScript applications using Glean.js</a></h1>
 <p>Debugging features in JavaScript can be enabled through APIs exposed on the Glean object.
 For more information on the available features and how to enable them,
@@ -13572,7 +13572,7 @@ When using the expiration by version feature in Android, products must provide t
 <p>In this mode Glean will setup its own virtualenv in <code>$gradleUserHomeDir/glean</code>, controlled by the <code>GLEAN_PYTHON</code> and <code>GLEAN_PYTHON_WHEELS_DIR</code> environment variables.</p>
 <ul>
 <li>
-<p>Install Python 3.8 or later and ensure it's on the <code>PATH</code>.</p>
+<p>Install Python 3.9 or later and ensure it's on the <code>PATH</code>.</p>
 <ul>
 <li>
 <p>On Linux, installing Python from your Linux distribution's package manager is usually sufficient.</p>
@@ -13996,12 +13996,22 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.5.2...main">Full changelog</a></p>
 <ul>
+<li>General
+<ul>
+<li>Performance improvement: Reduce file system operations when recording events (<a href="https://github.com/mozilla/glean/pull/3179">#3179</a>)</li>
+</ul>
+</li>
 <li>Android
 <ul>
 <li>Updated Android Gradle Plugin to 8.11.0 (<a href="https://github.com/mozilla/glean/pull/3180">#3180</a>)</li>
 <li>Updated Android SDK target to version 36 (<a href="https://github.com/mozilla/glean/pull/3180">#3180</a>)</li>
 <li>Updated Gradle to 8.14.3 (<a href="https://github.com/mozilla/glean/pull/3180">#3180</a>)</li>
 <li>Updated Kotlin to 2.2.0 (<a href="https://github.com/mozilla/glean/pull/3182">#3182</a>)</li>
+</ul>
+</li>
+<li>Python
+<ul>
+<li>Bump minimum required Python version to 3.9 (<a href="https://github.com/mozilla/glean/issues/3164">#3164</a>)</li>
 </ul>
 </li>
 </ul>

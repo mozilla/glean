@@ -1318,19 +1318,57 @@
 <a href="#1318" id="1318">1318</a>
 <a href="#1319" id="1319">1319</a>
 <a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
+<a href="#1323" id="1323">1323</a>
+<a href="#1324" id="1324">1324</a>
+<a href="#1325" id="1325">1325</a>
+<a href="#1326" id="1326">1326</a>
+<a href="#1327" id="1327">1327</a>
+<a href="#1328" id="1328">1328</a>
+<a href="#1329" id="1329">1329</a>
+<a href="#1330" id="1330">1330</a>
+<a href="#1331" id="1331">1331</a>
+<a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::collections::HashMap;
-<span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::fs::{create_dir_all, File, OpenOptions};
 <span class="kw">use </span>std::io::BufRead;
 <span class="kw">use </span>std::io::BufReader;
 <span class="kw">use </span>std::io::Write;
 <span class="kw">use </span>std::path::{Path, PathBuf};
-<span class="kw">use </span>std::sync::{Mutex, RwLock};
+<span class="kw">use </span>std::sync::{Arc, Mutex, RwLock};
+<span class="kw">use </span>std::{fs, mem};
 
 <span class="kw">use </span>chrono::{DateTime, FixedOffset, Utc};
 
@@ -1419,13 +1457,23 @@
     </span><span class="kw">pub </span>path: PathBuf,
     <span class="doccomment">/// The in-memory list of events
     </span>event_stores: RwLock&lt;HashMap&lt;String, Vec&lt;StoredEvent&gt;&gt;&gt;,
+    event_store_files: RwLock&lt;HashMap&lt;String, Arc&lt;File&gt;&gt;&gt;,
     <span class="doccomment">/// A lock to be held when doing operations on the filesystem
     </span>file_lock: Mutex&lt;()&gt;,
 }
 
 <span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>EventDatabase {
     <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
-        <span class="self">self</span>.event_stores.read().unwrap().size_of(ops)
+        <span class="kw">let </span><span class="kw-2">mut </span>n = <span class="number">0</span>;
+        n += <span class="self">self</span>.event_stores.read().unwrap().size_of(ops);
+
+        <span class="kw">let </span>map = <span class="self">self</span>.event_store_files.read().unwrap();
+        <span class="kw">for </span>store_name <span class="kw">in </span>map.keys() {
+            n += store_name.size_of(ops);
+            <span class="comment">// `File` doesn't allocate, but `Arc` puts it on the heap.
+            </span>n += mem::size_of::&lt;File&gt;();
+        }
+        n
     }
 }
 
@@ -1443,6 +1491,7 @@
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             path,
             event_stores: RwLock::new(HashMap::new()),
+            event_store_files: RwLock::new(HashMap::new()),
             file_lock: Mutex::new(()),
         })
     }
@@ -1653,6 +1702,24 @@
         </span>}
     }
 
+    <span class="kw">fn </span>get_event_store(<span class="kw-2">&amp;</span><span class="self">self</span>, store_name: <span class="kw-2">&amp;</span>str) -&gt; Arc&lt;File&gt; {
+        Arc::clone(
+            <span class="self">self</span>.event_store_files
+                .write()
+                .unwrap()
+                .entry(store_name.to_string())
+                .or_insert_with(|| {
+                    Arc::new(
+                        OpenOptions::new()
+                            .create(<span class="bool-val">true</span>)
+                            .append(<span class="bool-val">true</span>)
+                            .open(<span class="self">self</span>.path.join(store_name))
+                            .unwrap(),
+                    )
+                }),
+        )
+    }
+
     <span class="doccomment">/// Writes an event to a single store on disk.
     ///
     /// # Arguments
@@ -1661,12 +1728,16 @@
     /// * `event_json` - The event content, as a single-line JSON-encoded string.
     </span><span class="kw">fn </span>write_event_to_disk(<span class="kw-2">&amp;</span><span class="self">self</span>, store_name: <span class="kw-2">&amp;</span>str, event_json: <span class="kw-2">&amp;</span>str) {
         <span class="kw">let </span>_lock = <span class="self">self</span>.file_lock.lock().unwrap(); <span class="comment">// safe unwrap, only error case is poisoning
-        </span><span class="kw">if let </span><span class="prelude-val">Err</span>(err) = OpenOptions::new()
-            .create(<span class="bool-val">true</span>)
-            .append(<span class="bool-val">true</span>)
-            .open(<span class="self">self</span>.path.join(store_name))
-            .and_then(|<span class="kw-2">mut </span>file| <span class="macro">writeln!</span>(file, <span class="string">"{}"</span>, event_json))
-        {
+        </span><span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.get_event_store(store_name);
+
+        <span class="kw">let </span>write_res = (|| {
+            file.write_all(event_json.as_bytes())<span class="question-mark">?</span>;
+            file.write_all(<span class="string">b"\n"</span>)<span class="question-mark">?</span>;
+            file.flush()<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>::&lt;(), std::io::Error&gt;(())
+        })();
+
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = write_res {
             <span class="macro">log::warn!</span>(<span class="string">"IO error writing event to store '{}': {}"</span>, store_name, err);
         }
     }
@@ -1909,6 +1980,10 @@
                 .write()
                 .unwrap() <span class="comment">// safe unwrap, only error case is poisoning
                 </span>.remove(<span class="kw-2">&amp;</span>store_name.to_string());
+            <span class="self">self</span>.event_store_files
+                .write()
+                .unwrap() <span class="comment">// safe unwrap, only error case is poisoning
+                </span>.remove(<span class="kw-2">&amp;</span>store_name.to_string());
 
             <span class="kw">let </span>_lock = <span class="self">self</span>.file_lock.lock().unwrap(); <span class="comment">// safe unwrap, only error case is poisoning
             </span><span class="kw">if let </span><span class="prelude-val">Err</span>(err) = fs::remove_file(<span class="self">self</span>.path.join(store_name)) {
@@ -1928,6 +2003,7 @@
     </span><span class="kw">pub fn </span>clear_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// safe unwrap, only error case is poisoning
         </span><span class="self">self</span>.event_stores.write().unwrap().clear();
+        <span class="self">self</span>.event_store_files.write().unwrap().clear();
 
         <span class="comment">// safe unwrap, only error case is poisoning
         </span><span class="kw">let </span>_lock = <span class="self">self</span>.file_lock.lock().unwrap();
