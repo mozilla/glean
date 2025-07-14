@@ -11,6 +11,7 @@
   * Updated Kotlin to 2.2.0 ([#3182](https://github.com/mozilla/glean/pull/3182))
 * Python
   * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
+  * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
 
 # v64.5.2 (2025-07-01)
 

@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 import shutil
 import tempfile
+import platform
 import threading
 from typing import Dict, Optional, Set, TYPE_CHECKING
 
@@ -210,7 +211,7 @@ class Glean:
             app_display_version=cls._application_version,
             app_build_date=dt,
             channel=configuration.channel,
-            architecture="Unknown",
+            architecture=platform.machine() or "Unknown",
             os_version="Unknown",
             locale=None,
             device_manufacturer=None,
