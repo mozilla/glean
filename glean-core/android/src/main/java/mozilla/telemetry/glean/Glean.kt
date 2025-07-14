@@ -567,7 +567,9 @@ open class GleanInternalAPI internal constructor() {
      * @param json Stringified JSON Server Knobs configuration.
      */
     fun applyServerKnobsConfig(json: String) {
-        gleanApplyServerKnobsConfig(json)
+        Dispatchers.Delayed.launch {
+            gleanApplyServerKnobsConfig(json)
+        }
     }
 
     /**
