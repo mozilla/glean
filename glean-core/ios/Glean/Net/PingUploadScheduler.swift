@@ -47,12 +47,7 @@ public class PingUploadScheduler {
     /// - parameters:
     ///     * configuration: The Glean `Configuration` to use which contains the endpoint and http uploader
     public init(configuration: Configuration) {
-        if let httpUploader = configuration.httpClient {
-            self.httpUploader = httpUploader
-        } else {
-            self.httpUploader = HttpPingUploader(configuration: configuration)
-        }
-
+        self.httpUploader = configuration.httpClient
         self.httpEndpoint = configuration.serverEndpoint
     }
 

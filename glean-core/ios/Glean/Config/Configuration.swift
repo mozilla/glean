@@ -16,7 +16,7 @@ public struct Configuration {
     let pingLifetimeThreshold: Int
     let pingLifetimeMaxTime: Int
     let pingSchedule: [String: [String]]
-    let httpClient: PingUploader?
+    let httpClient: PingUploader
 
     struct Constants {
         static let defaultTelemetryEndpoint =
@@ -55,7 +55,7 @@ public struct Configuration {
         pingLifetimeThreshold: Int = 0,
         pingLifetimeMaxTime: Int = 0,
         pingSchedule: [String: [String]] = [:],
-        httpClient: PingUploader? = nil
+        httpClient: PingUploader = HttpPingUploader()
     ) {
         self.serverEndpoint =
             serverEndpoint ?? Constants.defaultTelemetryEndpoint

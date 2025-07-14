@@ -8,7 +8,6 @@ import Foundation
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to upload a ping to the server.
 public class HttpPingUploader: PingUploader {
-    var config: Configuration
     var session: URLSession
     var capabilities: [String] = []
 
@@ -25,8 +24,7 @@ public class HttpPingUploader: PingUploader {
     ///
     /// - parameters:
     ///     * configuration: The Glean `Configuration` to use
-    public init(configuration: Configuration) {
-        self.config = configuration
+    public init() {
         // Build a URLSession with no-caching suitable for uploading our pings
         let sessionConfig: URLSessionConfiguration = .default
         sessionConfig.requestCachePolicy =
@@ -44,14 +42,12 @@ public class HttpPingUploader: PingUploader {
         request: CapablePingUploadRequest,
         callback: @escaping (UploadResult) -> Void
     ) {
-        // Get the internal `PingUploadRequest` to gather all the things we need from it, shadowing
-        // `request` to make it less confusing
-        let request = request.request
-        // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
+        // This default reference HTTP uploader implementation does not support any capabilities
+        // and so we return `.incapable` if a ping requires capabilites.
         // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
-        guard request.uploaderCapabilities.isEmpty else {
+        guard let request = request.capable(self.capabilities) else {
             logger.info(
-                "Glean rejected ping \(request.documentId) upload due to unsupported capabilities"
+                "Glean rejected ping upload due to unsupported capabilities"
             )
             callback(.incapable(unused: 0))
             return

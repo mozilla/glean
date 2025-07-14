@@ -36,16 +36,23 @@ struct PingUploadRequest {
 }
 
 public struct CapablePingUploadRequest {
-    let request: PingUploadRequest
+    private let request: PingUploadRequest
 
     init(_ request: PingUploadRequest) {
         self.request = request
     }
 
-    func capable(f: (_ uploaderCapabilities: [String]) -> Bool)
-        -> PingUploadRequest? {
-        if f(request.uploaderCapabilities) {
-            return request
+    /**
+     * Checks to see if the requested uploader capabilites are within the advertised uploader capabilities.
+     *
+     *@param uploaderCapabilities an array of Strings representing the uploader's supported capabilities.
+     */
+    func capable(_ uploaderCapabilities: [String]) -> PingUploadRequest? {
+        // Check to see if the request's uploader capabilites are all satisfied by the
+        // uploader capabilites that were advertised by the uploader via the
+        // `uploaderCapabilities` parameter to this function. 
+        if self.request.uploaderCapabilities.allSatisfy(uploaderCapabilities.contains) {
+            return self.request
         }
         return nil
     }

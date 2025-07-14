@@ -53,7 +53,7 @@ class HttpPingUploaderTests: XCTestCase {
 
         // Build a URLSession with no-caching suitable for uploading our pings
 
-        let httpPingUploader = HttpPingUploader(configuration: Configuration())
+        let httpPingUploader = HttpPingUploader()
         httpPingUploader.upload(request: testRequest) { result in
             testValue = result
             self.expectation?.fulfill()
@@ -83,7 +83,7 @@ class HttpPingUploaderTests: XCTestCase {
         // Build a request.
         // We specify a single additional header here.
         // In usual code they are generated on the Rust side.
-        let request = HttpPingUploader(configuration: Configuration())
+        let request = HttpPingUploader()
             .buildRequest(
                 url: testPath,
                 data: Data(testPing.utf8),
@@ -117,11 +117,8 @@ class HttpPingUploaderTests: XCTestCase {
         )
     }
 
-    // We don't support capabilities yet, so return `.incapable` if a ping requires capabilites.
-    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1950143 for more info.
-    // Once we do support capabilities, this test will need to be removed or changed to test
-    // what is supported.
-    func testUploaderReturnsIncapableWhenRequestHasCapabilities() {
+    func testUploaderReturnsIncapableWhenCapabilitesUnsupported() {
+        var testValue: UploadResult?
         let testOhttpRequest = PingRequest(
             documentId: "12345",
             path: "/some/random/path/not/important",
@@ -131,7 +128,15 @@ class HttpPingUploaderTests: XCTestCase {
             pingName: "testPing",
             uploaderCapabilities: ["ohttp", "os2/warp", "sega-genesis"]
         )
-        let httpPingUploader = HttpPingUploader(configuration: Configuration())
+
+        stubServerReceive { _, json in
+            XCTAssert(json != nil)
+            XCTAssertEqual(json?["ping"] as? String, "test")
+        }
+
+        expectation = expectation(description: "Completed upload")
+
+        let httpPingUploader = HttpPingUploader()
         httpPingUploader.upload(
             request: CapablePingUploadRequest(
                 PingUploadRequest(
@@ -140,11 +145,62 @@ class HttpPingUploaderTests: XCTestCase {
                 )
             )
         ) { result in
-            XCTAssertEqual(
-                .incapable(unused: 0),
-                result,
-                "upload should return .incapable when capabilities don't match"
-            )
+            testValue = result
+            self.expectation?.fulfill()
         }
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        XCTAssertEqual(
+            .incapable(unused: 0),
+            testValue,
+            "upload should return .incapable when capabilities don't match"
+        )
+    }
+
+    func testUploaderReturnsRequestWhenCapbilitiesSupported() {
+        var testValue: UploadResult?
+        let testOhttpRequest = PingRequest(
+            documentId: "12345",
+            path: "/some/random/path/not/important",
+            body: [UInt8]("{ \"ping\": \"test\" }".utf8),
+            headers: [:],
+            bodyHasInfoSections: true,
+            pingName: "testPing",
+            uploaderCapabilities: ["ohttp", "os2/warp", "sega-genesis"]
+        )
+
+        stubServerReceive { _, json in
+            XCTAssert(json != nil)
+            XCTAssertEqual(json?["ping"] as? String, "test")
+        }
+
+        expectation = expectation(description: "Completed upload")
+
+        let httpPingUploader = HttpPingUploader()
+        httpPingUploader.capabilities = ["ohttp", "os2/warp", "sega-genesis"]
+        httpPingUploader.upload(
+            request: CapablePingUploadRequest(
+                PingUploadRequest(
+                    request: testOhttpRequest,
+                    endpoint: Configuration().serverEndpoint
+                )
+            )
+        ) { result in
+            testValue = result
+            self.expectation?.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0) { error in
+            XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
+        }
+
+        XCTAssertEqual(
+            .httpStatus(code: 200),
+            testValue,
+            "upload should return .incapable when capabilities don't match"
+        )
     }
 }
