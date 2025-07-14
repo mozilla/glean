@@ -13,6 +13,7 @@
     This does not change any behavior: The dispatch queue is worked on right after initialization ([#3183](https://github.com/mozilla/glean/pull/3183))
 * Python
   * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
+  * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
 * Swift
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
 
