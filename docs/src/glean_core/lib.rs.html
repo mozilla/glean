@@ -1390,6 +1390,14 @@
 <a href="#1390" id="1390">1390</a>
 <a href="#1391" id="1391">1391</a>
 <a href="#1392" id="1392">1392</a>
+<a href="#1393" id="1393">1393</a>
+<a href="#1394" id="1394">1394</a>
+<a href="#1395" id="1395">1395</a>
+<a href="#1396" id="1396">1396</a>
+<a href="#1397" id="1397">1397</a>
+<a href="#1398" id="1398">1398</a>
+<a href="#1399" id="1399">1399</a>
+<a href="#1400" id="1400">1400</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1967,6 +1975,14 @@
     </span><span class="kw">if </span>dispatcher::global::is_test_mode() {
         join_init();
     }
+}
+
+<span class="doccomment">/// Return the heap usage of the `Glean` object and all descendant heap-allocated structures.
+///
+/// Value is in bytes.
+</span><span class="kw">pub fn </span>alloc_size(ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+    <span class="kw">use </span>malloc_size_of::MallocSizeOf;
+    core::with_glean(|glean| glean.size_of(ops))
 }
 
 <span class="doccomment">/// TEST ONLY FUNCTION

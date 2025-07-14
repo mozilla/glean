@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/circleci/project/target/debug/build/glean-core-990cb84b49ba8d9c/out/glean.uniffi.rs`."><title>glean.uniffi.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../../../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../../../../../../static.files/rustdoc-492a78a4a87dcc01.css"><meta name="rustdoc-vars" data-root-path="../../../../../../../../../../" data-static-root-path="../../../../../../../../../../static.files/" data-current-crate="glean_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.82.0 (f6e511eec 2024-10-15)" data-channel="1.82.0" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../../../../../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../../../../../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../../../../../../../src-files.js"></script><script defer src="../../../../../../../../../../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/circleci/project/target/debug/build/glean-core-db94633628399baa/out/glean.uniffi.rs`."><title>glean.uniffi.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../../../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../../../../../../static.files/rustdoc-492a78a4a87dcc01.css"><meta name="rustdoc-vars" data-root-path="../../../../../../../../../../" data-static-root-path="../../../../../../../../../../static.files/" data-current-crate="glean_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.82.0 (f6e511eec 2024-10-15)" data-channel="1.82.0" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../../../../../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../../../../../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../../../../../../../src-files.js"></script><script defer src="../../../../../../../../../../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2720,7 +2720,7 @@
     .concat_str(<span class="string">"glean"</span>);
 
 <span class="attr">#[doc(hidden)]
-#[no_mangle]
+#[<span class="kw">unsafe</span>(no_mangle)]
 </span><span class="kw">pub static </span>UNIFFI_META_UDL_GLEAN: [u8; UNIFFI_META_CONST_UDL_GLEAN.size] = UNIFFI_META_CONST_UDL_GLEAN.into_array();
 
 
@@ -4692,722 +4692,722 @@
 
 <span class="comment">// Export scaffolding checksums for UDL items
 
-</span><span class="attr">#[no_mangle]
+</span><span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_apply_server_knobs_config() -&gt; u16 {
     <span class="number">60669
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_enable_logging() -&gt; u16 {
     <span class="number">23531
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_enable_logging_to_fd() -&gt; u16 {
     <span class="number">3838
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_get_debug_view_tag() -&gt; u16 {
     <span class="number">53587
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_get_log_pings() -&gt; u16 {
     <span class="number">20267
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_get_registered_ping_names() -&gt; u16 {
     <span class="number">28073
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_get_upload_task() -&gt; u16 {
     <span class="number">14859
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_handle_client_active() -&gt; u16 {
     <span class="number">15870
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_handle_client_inactive() -&gt; u16 {
     <span class="number">53329
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_initialize() -&gt; u16 {
     <span class="number">28494
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_initialize_for_subprocess() -&gt; u16 {
     <span class="number">51463
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_persist_ping_lifetime_data() -&gt; u16 {
     <span class="number">63318
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_process_ping_upload_response() -&gt; u16 {
     <span class="number">40546
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_register_event_listener() -&gt; u16 {
     <span class="number">53202
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_debug_view_tag() -&gt; u16 {
     <span class="number">40313
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_dirty_flag() -&gt; u16 {
     <span class="number">30094
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_experiment_active() -&gt; u16 {
     <span class="number">34395
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_experiment_inactive() -&gt; u16 {
     <span class="number">10322
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_experimentation_id() -&gt; u16 {
     <span class="number">36389
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_log_pings() -&gt; u16 {
     <span class="number">11842
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_source_tags() -&gt; u16 {
     <span class="number">52804
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_test_mode() -&gt; u16 {
     <span class="number">4528
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_set_upload_enabled() -&gt; u16 {
     <span class="number">20119
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_shutdown() -&gt; u16 {
     <span class="number">1598
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_submit_ping_by_name() -&gt; u16 {
     <span class="number">23631
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_submit_ping_by_name_sync() -&gt; u16 {
     <span class="number">39533
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_test_destroy_glean() -&gt; u16 {
     <span class="number">10441
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_test_get_attribution() -&gt; u16 {
     <span class="number">56753
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_test_get_distribution() -&gt; u16 {
     <span class="number">37826
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_test_get_experiment_data() -&gt; u16 {
     <span class="number">14791
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_test_get_experimentation_id() -&gt; u16 {
     <span class="number">22050
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_unregister_event_listener() -&gt; u16 {
     <span class="number">22885
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_update_attribution() -&gt; u16 {
     <span class="number">25183
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_func_glean_update_distribution() -&gt; u16 {
     <span class="number">64281
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_booleanmetric_set() -&gt; u16 {
     <span class="number">50883
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_booleanmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">38515
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_booleanmetric_test_get_value() -&gt; u16 {
     <span class="number">7431
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_countermetric_add() -&gt; u16 {
     <span class="number">22929
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_countermetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">39931
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_countermetric_test_get_value() -&gt; u16 {
     <span class="number">58948
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_customdistributionmetric_accumulate_samples() -&gt; u16 {
     <span class="number">53082
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_customdistributionmetric_accumulate_single_sample() -&gt; u16 {
     <span class="number">35720
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_customdistributionmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">38565
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_customdistributionmetric_test_get_value() -&gt; u16 {
     <span class="number">37615
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_datetimemetric_set() -&gt; u16 {
     <span class="number">32949
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_datetimemetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">48816
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_datetimemetric_test_get_value() -&gt; u16 {
     <span class="number">44669
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_datetimemetric_test_get_value_as_string() -&gt; u16 {
     <span class="number">36662
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_denominatormetric_add() -&gt; u16 {
     <span class="number">6770
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_denominatormetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">31850
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_denominatormetric_test_get_value() -&gt; u16 {
     <span class="number">52463
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_duallabeledcountermetric_get() -&gt; u16 {
     <span class="number">63792
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_duallabeledcountermetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">51617
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_eventmetric_record() -&gt; u16 {
     <span class="number">47767
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_eventmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">33068
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_eventmetric_test_get_value() -&gt; u16 {
     <span class="number">35467
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledboolean_get() -&gt; u16 {
     <span class="number">56079
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledboolean_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">19273
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledcounter_get() -&gt; u16 {
     <span class="number">3023
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledcounter_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">15148
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledquantity_get() -&gt; u16 {
     <span class="number">25364
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledquantity_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">15037
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledstring_get() -&gt; u16 {
     <span class="number">31395
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_labeledstring_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">45887
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_memorydistributionmetric_accumulate() -&gt; u16 {
     <span class="number">58021
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_memorydistributionmetric_accumulate_samples() -&gt; u16 {
     <span class="number">10336
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_memorydistributionmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">39138
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_memorydistributionmetric_test_get_value() -&gt; u16 {
     <span class="number">17749
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_numeratormetric_add_to_numerator() -&gt; u16 {
     <span class="number">32381
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_numeratormetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">11456
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_numeratormetric_test_get_value() -&gt; u16 {
     <span class="number">19373
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_objectmetric_record_schema_error() -&gt; u16 {
     <span class="number">17900
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_objectmetric_set_string() -&gt; u16 {
     <span class="number">64227
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_objectmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">38963
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_objectmetric_test_get_value() -&gt; u16 {
     <span class="number">39743
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_pingtype_set_enabled() -&gt; u16 {
     <span class="number">51804
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_pingtype_submit() -&gt; u16 {
     <span class="number">47957
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_quantitymetric_set() -&gt; u16 {
     <span class="number">44859
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_quantitymetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">58789
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_quantitymetric_test_get_value() -&gt; u16 {
     <span class="number">65232
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ratemetric_add_to_denominator() -&gt; u16 {
     <span class="number">40751
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ratemetric_add_to_numerator() -&gt; u16 {
     <span class="number">28742
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ratemetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">34026
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ratemetric_test_get_value() -&gt; u16 {
     <span class="number">52482
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringlistmetric_add() -&gt; u16 {
     <span class="number">48169
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringlistmetric_set() -&gt; u16 {
     <span class="number">59230
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringlistmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">35822
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringlistmetric_test_get_value() -&gt; u16 {
     <span class="number">26618
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringmetric_set() -&gt; u16 {
     <span class="number">8577
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">21908
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_stringmetric_test_get_value() -&gt; u16 {
     <span class="number">35393
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_textmetric_set() -&gt; u16 {
     <span class="number">47464
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_textmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">34916
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_textmetric_test_get_value() -&gt; u16 {
     <span class="number">44213
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_cancel() -&gt; u16 {
     <span class="number">24521
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_set_raw_nanos() -&gt; u16 {
     <span class="number">19360
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_start() -&gt; u16 {
     <span class="number">34133
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_stop() -&gt; u16 {
     <span class="number">19007
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">32350
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timespanmetric_test_get_value() -&gt; u16 {
     <span class="number">30315
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_accumulate_samples() -&gt; u16 {
     <span class="number">27974
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_accumulate_single_sample() -&gt; u16 {
     <span class="number">20027
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_cancel() -&gt; u16 {
     <span class="number">54798
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_start() -&gt; u16 {
     <span class="number">52131
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_stop_and_accumulate() -&gt; u16 {
     <span class="number">40025
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">31282
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_timingdistributionmetric_test_get_value() -&gt; u16 {
     <span class="number">50503
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_urlmetric_set() -&gt; u16 {
     <span class="number">18842
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_urlmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">21531
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_urlmetric_test_get_value() -&gt; u16 {
     <span class="number">53885
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_uuidmetric_generate_and_set() -&gt; u16 {
     <span class="number">65421
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_uuidmetric_set() -&gt; u16 {
     <span class="number">35424
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_uuidmetric_test_get_num_recorded_errors() -&gt; u16 {
     <span class="number">47242
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_uuidmetric_test_get_value() -&gt; u16 {
     <span class="number">13986
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_booleanmetric_new() -&gt; u16 {
     <span class="number">21464
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_countermetric_new() -&gt; u16 {
     <span class="number">10560
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_customdistributionmetric_new() -&gt; u16 {
     <span class="number">55228
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_datetimemetric_new() -&gt; u16 {
     <span class="number">41604
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_denominatormetric_new() -&gt; u16 {
     <span class="number">55721
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_duallabeledcountermetric_new() -&gt; u16 {
     <span class="number">45810
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_eventmetric_new() -&gt; u16 {
     <span class="number">29941
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_labeledboolean_new() -&gt; u16 {
     <span class="number">23334
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_labeledcounter_new() -&gt; u16 {
     <span class="number">9547
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_labeledquantity_new() -&gt; u16 {
     <span class="number">14259
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_labeledstring_new() -&gt; u16 {
     <span class="number">18295
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_memorydistributionmetric_new() -&gt; u16 {
     <span class="number">55298
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_numeratormetric_new() -&gt; u16 {
     <span class="number">64748
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_objectmetric_new() -&gt; u16 {
     <span class="number">41544
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_pingtype_new() -&gt; u16 {
     <span class="number">31559
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_quantitymetric_new() -&gt; u16 {
     <span class="number">29178
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_ratemetric_new() -&gt; u16 {
     <span class="number">5933
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_stringlistmetric_new() -&gt; u16 {
     <span class="number">21458
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_stringmetric_new() -&gt; u16 {
     <span class="number">26725
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_textmetric_new() -&gt; u16 {
     <span class="number">245
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_timespanmetric_new() -&gt; u16 {
     <span class="number">27434
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_timingdistributionmetric_new() -&gt; u16 {
     <span class="number">16339
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_urlmetric_new() -&gt; u16 {
     <span class="number">33728
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_constructor_uuidmetric_new() -&gt; u16 {
     <span class="number">617
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_gleaneventlistener_on_event_recorded() -&gt; u16 {
     <span class="number">16527
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ongleanevents_initialize_finished() -&gt; u16 {
     <span class="number">55717
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ongleanevents_trigger_upload() -&gt; u16 {
     <span class="number">9000
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ongleanevents_start_metrics_ping_scheduler() -&gt; u16 {
     <span class="number">14495
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ongleanevents_cancel_uploads() -&gt; u16 {
     <span class="number">60924
 </span>}
-<span class="attr">#[no_mangle]
+<span class="attr">#[<span class="kw">unsafe</span>(no_mangle)]
 #[doc(hidden)]
 </span><span class="kw">pub extern </span><span class="string">"C" </span><span class="kw">fn </span>r#uniffi_glean_core_checksum_method_ongleanevents_shutdown() -&gt; u16 {
     <span class="number">61713

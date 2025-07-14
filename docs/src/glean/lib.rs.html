@@ -384,6 +384,13 @@
 <a href="#384" id="384">384</a>
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -766,6 +773,13 @@
 /// Returns the current distribution metrics.
 </span><span class="kw">pub fn </span>test_get_distribution() -&gt; DistributionMetrics {
     glean_core::glean_test_get_distribution()
+}
+
+<span class="doccomment">/// Return the heap usage of the `Glean` object and all descendant heap-allocated structures.
+///
+/// Value is in bytes.
+</span><span class="kw">pub fn </span>alloc_size(ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+    glean_core::alloc_size(ops)
 }
 
 <span class="attr">#[cfg(test)]

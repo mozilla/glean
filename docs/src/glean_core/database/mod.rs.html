@@ -1619,9 +1619,6 @@
 <a href="#1619" id="1619">1619</a>
 <a href="#1620" id="1620">1620</a>
 <a href="#1621" id="1621">1621</a>
-<a href="#1622" id="1622">1622</a>
-<a href="#1623" id="1623">1623</a>
-<a href="#1624" id="1624">1624</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1769,31 +1766,28 @@
 }
 
 <span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>Database {
-    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, _ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
         <span class="comment">// TODO(bug 1960592): Fill in gaps.
 
-        /*
-        let mut n = 0;
+        </span><span class="kw">let </span><span class="kw-2">mut </span>n = <span class="number">0</span>;
 
-        n += 0; // self.rkv.size_of(ops) -- not implemented.
-        n += 0; // self.user_store.size_of(ops) -- not implemented.
+        n += <span class="self">self</span>.rkv.size_of(ops);
+        n += <span class="self">self</span>.user_store.size_of(ops);
+        n += <span class="self">self</span>.ping_store.size_of(ops);
+        n += <span class="self">self</span>.application_store.size_of(ops);
 
-        n += self
-            .ping_lifetime_data
+        n += <span class="self">self
+            </span>.ping_lifetime_data
             .as_ref()
-            .map(|_data| {
-                // TODO(bug 1960592): servo's malloc_size_of implements it for BTreeMap.
-                //let lock = data.read().unwrap();
-                //(*lock).size_of(ops)
-                0
+            .map(|data| {
+                <span class="comment">// TODO(bug 1960592): servo's malloc_size_of implements it for BTreeMap.
+                </span><span class="kw">let </span>lock = data.read().unwrap();
+                (<span class="kw-2">*</span>lock).size_of(ops)
             })
-            .unwrap_or(0);
+            .unwrap_or(<span class="number">0</span>);
 
         n
-        */
-
-        </span><span class="number">0
-    </span>}
+    }
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>Database {
