@@ -399,6 +399,16 @@
 <a href="#399" id="399">399</a>
 <a href="#400" id="400">400</a>
 <a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -406,6 +416,7 @@
 </span><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::char;
 <span class="kw">use </span>std::collections::{HashMap, HashSet};
+<span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::sync::{Arc, Mutex};
 
 <span class="kw">use </span><span class="kw">crate</span>::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
@@ -436,32 +447,41 @@
 }
 
 <span class="kw">impl </span>::malloc_size_of::MallocSizeOf <span class="kw">for </span>DualLabeledCounterMetric {
-    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, _ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
-        <span class="comment">// let map = self.dual_label_map.lock().unwrap();
-        // let keys: Vec&lt;String&gt; = map.keys().collect();
-        // let categories = map.values().for_each(|category| -&gt; String  { category.keys() });
+    <span class="kw">fn </span>size_of(<span class="kw-2">&amp;</span><span class="self">self</span>, ops: <span class="kw-2">&amp;mut </span>malloc_size_of::MallocSizeOfOps) -&gt; usize {
+        <span class="kw">let </span><span class="kw-2">mut </span>n = <span class="number">0</span>;
+        n += <span class="self">self</span>.keys.size_of(ops);
+        n += <span class="self">self</span>.categories.size_of(ops);
+        n += <span class="self">self</span>.counter.size_of(ops);
 
-        // // Copy of `MallocShallowSizeOf` implementation for `HashMap&lt;K, V&gt;` in `wr_malloc_size_of`.
-        // // Note: An instantiated submetric is behind an `Arc`.
-        // // `size_of` should only be called from a single thread to avoid double-counting.
-        // let shallow_size = if ops.has_malloc_enclosing_size_of() {
-        //     map.values()
-        //         .next()
-        //         .map_or(0, |v| unsafe { ops.malloc_enclosing_size_of(v) })
-        // } else {
-        //     map.capacity()
-        //         * (mem::size_of::&lt;String&gt;() + mem::size_of::&lt;T&gt;() + mem::size_of::&lt;usize&gt;())
-        // };
+        <span class="comment">// `MallocSizeOf` is not implemented for `Arc&lt;CounterMetric&gt;`,
+        // so we reimplement counting the size of the hashmap ourselves.
+        </span><span class="kw">let </span>map = <span class="self">self</span>.dual_label_map.lock().unwrap();
 
-        // let mut map_size = shallow_size;
-        // for (k, v) in map.iter() {
-        //     map_size += k.size_of(ops);
-        //     map_size += v.size_of(ops);
-        // }
+        <span class="comment">// Copy of `MallocShallowSizeOf` implementation for `HashMap&lt;K, V&gt;` in `wr_malloc_size_of`.
+        // Note: An instantiated submetric is behind an `Arc`.
+        // `size_of` should only be called from a single thread to avoid double-counting.
+        </span><span class="kw">let </span>shallow_size = <span class="kw">if </span>ops.has_malloc_enclosing_size_of() {
+            map.values()
+                .next()
+                .map_or(<span class="number">0</span>, |v| <span class="kw">unsafe </span>{ ops.malloc_enclosing_size_of(v) })
+        } <span class="kw">else </span>{
+            map.capacity()
+                * (mem::size_of::&lt;String&gt;() <span class="comment">// key
+                    </span>+ mem::size_of::&lt;Arc&lt;CounterMetric&gt;&gt;() <span class="comment">// allocation for the `Arc` value
+                    </span>+ mem::size_of::&lt;CounterMetric&gt;() <span class="comment">// allocation for the `CounterMetric` value
+                                                      // within the `Arc`
+                    </span>+ mem::size_of::&lt;usize&gt;())
+        };
 
-        // self.labels.size_of(ops) + self.submetric.size_of(ops) + map_size
-        </span><span class="number">0
-    </span>}
+        <span class="kw">let </span><span class="kw-2">mut </span>map_size = shallow_size;
+        <span class="kw">for </span>(k, v) <span class="kw">in </span>map.iter() {
+            map_size += k.size_of(ops);
+            map_size += v.size_of(ops);
+        }
+        n += map_size;
+
+        n
+    }
 }
 
 <span class="kw">impl </span>MetricType <span class="kw">for </span>DualLabeledCounterMetric {
