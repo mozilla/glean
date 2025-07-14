@@ -30,16 +30,16 @@ class TimespanMetricType constructor(private var meta: CommonMetricData, var tim
     fun start() = inner.start()
 
     /**
-     * Stops tracking time for the provided metric. Sets the metric to the elapsed time.
+     * Stops tracking time for the provided metric and records the elapsed time.
      *
-     * This will record an error if no `set_start` was called.
+     * This will record an error if no `start` was called, or if 'stop' has already been called.
      */
     fun stop() = inner.stop()
 
     /**
-     * Aborts a previous `set_start` call.
+     * Aborts a previous `start` call.
      *
-     * No error is recorded if no `set_start` was called.
+     * No error is recorded if `start` was not called.
      */
     fun cancel() = inner.cancel()
 
@@ -66,7 +66,7 @@ class TimespanMetricType constructor(private var meta: CommonMetricData, var tim
     /**
      * Explicitly sets the timespan value.
      *
-     *  @param elapsed The elapsed time to record.
+     *  @param elapsed The elapsed time to record in nanoseconds
      */
     fun setRawNanos(elapsed: Long) {
         Dispatchers.Delayed.launch {
@@ -79,7 +79,7 @@ class TimespanMetricType constructor(private var meta: CommonMetricData, var tim
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored timespan as an integer
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

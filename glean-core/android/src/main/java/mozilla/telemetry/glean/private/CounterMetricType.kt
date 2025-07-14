@@ -47,8 +47,8 @@ class CounterMetricType {
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
-     * @return value of the stored value
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return the stored value for the counter
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
@@ -57,7 +57,7 @@ class CounterMetricType {
     /**
      * Returns the number of errors recorded for the given metric.
      *
-     * @param errorType The type of the error recorded.
+     * @param errorType The type of error to get the error count of
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

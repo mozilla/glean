@@ -71,7 +71,7 @@ class EventMetricType<ExtraObject> constructor(
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored events
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

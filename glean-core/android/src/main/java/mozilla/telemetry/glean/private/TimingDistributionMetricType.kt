@@ -27,7 +27,7 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
     fun start() = inner.start()
 
     /**
-     * Stops tracking time for the provided metric and associated timer id.
+     * Stops tracking time for the provided metric and associated timer id and accumulates the sample to the metric.
      *
      * @param timerId A timer ID from a previous `start()` call
      */
@@ -41,9 +41,9 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
     fun cancel(timerId: GleanTimerId) = inner.cancel(timerId)
 
     /**
-     * Accumulates precisely one signed sample and appends it to the metric.
+     * Accumulates precisely one signed sample to the metric.
      *
-     * @param sample The singular sample to be recorded by the metric.
+     * @param sample A single sample to be recorded by the metric.
      */
     fun accumulateSingleSample(sample: Long) {
         Dispatchers.Delayed.launch {
@@ -87,7 +87,7 @@ class TimingDistributionMetricType(meta: CommonMetricData, timeUnit: TimeUnit) :
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored distribution data
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

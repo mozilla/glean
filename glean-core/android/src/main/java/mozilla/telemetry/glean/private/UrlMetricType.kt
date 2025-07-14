@@ -22,9 +22,9 @@ class UrlMetricType constructor(private var meta: CommonMetricData) {
     val inner: UrlMetric by lazy { UrlMetric(meta) }
 
     /**
-     *  Sets to the specified URL.
+     *  Records the specified URL to the metric
      *
-     * @param url The URL to set the metric to.
+     * @param url The String representation of the URL to set the metric to.
      */
     fun set(url: String) {
         Dispatchers.Delayed.launch {
@@ -37,7 +37,7 @@ class UrlMetricType constructor(private var meta: CommonMetricData) {
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored URL as a string
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

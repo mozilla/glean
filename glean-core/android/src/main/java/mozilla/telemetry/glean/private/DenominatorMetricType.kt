@@ -26,7 +26,7 @@ class DenominatorMetricType(private var meta: CommonMetricData, var numerators: 
     /**
      * Increases the denominator by `amount`.
      *
-     * @param amount The amount to increase by. Should be non-negative.
+     * @param amount The amount to increase by. Should be positive.
      */
     fun add(amount: Int) {
         Dispatchers.Delayed.launch {
@@ -39,7 +39,7 @@ class DenominatorMetricType(private var meta: CommonMetricData, var numerators: 
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored rate
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
