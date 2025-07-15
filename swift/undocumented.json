@@ -3124,14 +3124,14 @@
     },
     {
       "file": "/Users/distiller/project/glean-core/ios/Glean/Glean.swift",
-      "line": 64,
+      "line": 67,
       "symbol": "BuildInfo",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/distiller/project/glean-core/ios/Glean/Glean.swift",
-      "line": 67,
+      "line": 70,
       "symbol": "BuildInfo.init(buildDate:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -3155,6 +3155,13 @@
       "line": 13,
       "symbol": "Array.intoSerializedObject()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 38,
+      "symbol": "CapablePingUploadRequest",
+      "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     }
   ],

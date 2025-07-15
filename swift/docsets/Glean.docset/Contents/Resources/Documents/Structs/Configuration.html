@@ -17,7 +17,7 @@
     <a title="Configuration Structure Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">Glean Docs</a> (22% documented)</p>
+        <p><a href="../index.html">Glean Docs</a> (23% documented)</p>
         <p class="header-right"><a href="https://github.com/mozilla/glean"><img src="../img/gh.png" alt="GitHub"/>View on GitHub</a></p>
         <div class="header-right">
           <form role="search" action="../search.json">
@@ -109,6 +109,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/PingType.html">PingType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PingUploadScheduler.html">PingUploadScheduler</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/QuantityMetric.html">QuantityMetric</a>
@@ -452,6 +455,9 @@
                 <a href="../Protocols/PingTypeProtocol.html">PingTypeProtocol</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/PingUploader.html">PingUploader</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/QuantityMetricProtocol.html">QuantityMetricProtocol</a>
               </li>
               <li class="nav-group-task">
@@ -491,6 +497,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/BuildInfo.html">BuildInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:5Glean24CapablePingUploadRequestV">CapablePingUploadRequest</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/ClientInfoMetrics.html">ClientInfoMetrics</a>
@@ -606,9 +615,9 @@ property for calculating the <code>FfiConfiguration</code></p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean13ConfigurationV9maxEvents7channel14serverEndpoint8dataPath8logLevel21enableEventTimestamps17experimentationId0L13InternalPings21pingLifetimeThreshold0sT7MaxTime0S8ScheduleACs5Int32VSg_SSSgA2rA0K6FilterOSgSbARSbS2iSDySSSaySSGGtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(maxEvents:channel:serverEndpoint:dataPath:logLevel:enableEventTimestamps:experimentationId:enableInternalPings:pingLifetimeThreshold:pingLifetimeMaxTime:pingSchedule:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean13ConfigurationV9maxEvents7channel14serverEndpoint8dataPath8logLevel21enableEventTimestamps17experimentationId0L13InternalPings21pingLifetimeThreshold0sT7MaxTime0S8ScheduleACs5Int32VSg_SSSgA2rA0K6FilterOSgSbARSbS2iSDySSSaySSGGtcfc">init(maxEvents:<wbr>channel:<wbr>serverEndpoint:<wbr>dataPath:<wbr>logLevel:<wbr>enableEventTimestamps:<wbr>experimentationId:<wbr>enableInternalPings:<wbr>pingLifetimeThreshold:<wbr>pingLifetimeMaxTime:<wbr>pingSchedule:<wbr>)</a>
+                    <a name="/s:5Glean13ConfigurationV9maxEvents7channel14serverEndpoint8dataPath8logLevel21enableEventTimestamps17experimentationId0L13InternalPings21pingLifetimeThreshold0sT7MaxTime0S8Schedule10httpClientACs5Int32VSg_SSSgA2sA0K6FilterOSgSbASSbS2iSDySSSaySSGGAA12PingUploader_ptcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(maxEvents:channel:serverEndpoint:dataPath:logLevel:enableEventTimestamps:experimentationId:enableInternalPings:pingLifetimeThreshold:pingLifetimeMaxTime:pingSchedule:httpClient:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean13ConfigurationV9maxEvents7channel14serverEndpoint8dataPath8logLevel21enableEventTimestamps17experimentationId0L13InternalPings21pingLifetimeThreshold0sT7MaxTime0S8Schedule10httpClientACs5Int32VSg_SSSgA2sA0K6FilterOSgSbASSbS2iSDySSSaySSGGAA12PingUploader_ptcfc">init(maxEvents:<wbr>channel:<wbr>serverEndpoint:<wbr>dataPath:<wbr>logLevel:<wbr>enableEventTimestamps:<wbr>experimentationId:<wbr>enableInternalPings:<wbr>pingLifetimeThreshold:<wbr>pingLifetimeMaxTime:<wbr>pingSchedule:<wbr>httpClient:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -634,7 +643,8 @@ property for calculating the <code>FfiConfiguration</code></p>
     <span class="nv">enableInternalPings</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
     <span class="nv">pingLifetimeThreshold</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="nv">pingLifetimeMaxTime</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="nv">pingSchedule</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[:]</span>
+    <span class="nv">pingSchedule</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[:],</span>
+    <span class="nv">httpClient</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PingUploader.html">PingUploader</a></span> <span class="o">=</span> <span class="kt"><a href="../Classes/HttpPingUploader.html">HttpPingUploader</a></span><span class="p">()</span>
 <span class="p">)</span></code></pre>
 
                         </div>
@@ -647,7 +657,7 @@ property for calculating the <code>FfiConfiguration</code></p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-07-14)</p>
+          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-07-15)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

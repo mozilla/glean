@@ -17,7 +17,7 @@
     <a title="HttpPingUploader Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">Glean Docs</a> (22% documented)</p>
+        <p><a href="../index.html">Glean Docs</a> (23% documented)</p>
         <p class="header-right"><a href="https://github.com/mozilla/glean"><img src="../img/gh.png" alt="GitHub"/>View on GitHub</a></p>
         <div class="header-right">
           <form role="search" action="../search.json">
@@ -109,6 +109,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/PingType.html">PingType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PingUploadScheduler.html">PingUploadScheduler</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/QuantityMetric.html">QuantityMetric</a>
@@ -452,6 +455,9 @@
                 <a href="../Protocols/PingTypeProtocol.html">PingTypeProtocol</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Protocols/PingUploader.html">PingUploader</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/QuantityMetricProtocol.html">QuantityMetricProtocol</a>
               </li>
               <li class="nav-group-task">
@@ -491,6 +497,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/BuildInfo.html">BuildInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:5Glean24CapablePingUploadRequestV">CapablePingUploadRequest</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/ClientInfoMetrics.html">ClientInfoMetrics</a>
@@ -592,7 +601,7 @@
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">HttpPingUploader</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">HttpPingUploader</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/PingUploader.html">PingUploader</a></span></code></pre>
 
                 </div>
               </div>
@@ -607,9 +616,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean16HttpPingUploaderC13configuration7sessionAcA13ConfigurationV_So12NSURLSessionCtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(configuration:session:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean16HttpPingUploaderC13configuration7sessionAcA13ConfigurationV_So12NSURLSessionCtcfc">init(configuration:<wbr>session:<wbr>)</a>
+                    <a name="/s:5Glean16HttpPingUploaderCACycfc"></a>
+                    <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean16HttpPingUploaderCACycfc">init()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -617,15 +626,44 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Initialize the HTTP Ping uploader from a Glean configuration object
-and a URLSession</p>
+                        <p>Initialize the HTTP Ping uploader from a Glean configuration object</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Structs/Configuration.html">Configuration</a></span><span class="p">,</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">URLSession</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Glean16HttpPingUploaderC6upload7request8callbackyAA07CapableC13UploadRequestV_yAA0I6ResultOctF"></a>
+                    <a name="//apple_ref/swift/Method/upload(request:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean16HttpPingUploaderC6upload7request8callbackyAA07CapableC13UploadRequestV_yAA0I6ResultOctF">upload(request:<wbr>callback:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Synchronously upload a ping to Mozilla servers.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">upload</span><span class="p">(</span>
+    <span class="nv">request</span><span class="p">:</span> <span class="kt"><a href="../Structs.html#/s:5Glean24CapablePingUploadRequestV">CapablePingUploadRequest</a></span><span class="p">,</span>
+    <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/UploadResult.html">UploadResult</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
+<span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -636,24 +674,24 @@ and a URLSession</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>configuration</em>
+                                <em>request</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The Glean <code><a href="../Structs/Configuration.html">Configuration</a></code> to use.</p>
+                                  <p>A <code><a href="../Structs.html#/s:5Glean24CapablePingUploadRequestV">CapablePingUploadRequest</a></code> containing the information needed to perform the upload</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>session</em>
+                                <em>callback</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>A <code>URLSession</code> that will be reused to upload pings</p>
+                                  <p>A callback to return the success/failure of the upload to the scheduler</p>
                                 </div>
                               </td>
                             </tr>
@@ -668,7 +706,7 @@ and a URLSession</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-07-14)</p>
+          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-07-15)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

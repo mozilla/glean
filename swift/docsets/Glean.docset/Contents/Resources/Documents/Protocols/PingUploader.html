@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>PingUploadTask Enumeration Reference</title>
+    <title>PingUploader Protocol Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Enum/PingUploadTask" class="dashAnchor"></a>
-    <a title="PingUploadTask Enumeration Reference"></a>
+    <a name="//apple_ref/swift/Protocol/PingUploader" class="dashAnchor"></a>
+    <a title="PingUploader Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">Glean Docs</a> (23% documented)</p>
@@ -30,9 +30,9 @@
       <p id="breadcrumbs">
         <a href="../index.html">Glean</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        <a href="../Enums.html">Enumerations</a>
+        <a href="../Protocols.html">Protocols</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        PingUploadTask Enumeration Reference
+        PingUploader Protocol Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -597,16 +597,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>PingUploadTask</h1>
+            <h1>PingUploader</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PingUploadTask</span></code></pre>
-<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">PingUploadTask</span><span class="p">:</span> <span class="kt">Equatable</span><span class="p">,</span> <span class="kt">Hashable</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">PingUploader</span></code></pre>
 
                 </div>
               </div>
-            <p>Undocumented</p>
+            <p>The interface defining how to send pings.</p>
 
           </section>
           <section class="section task-group-section">
@@ -615,9 +614,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean14PingUploadTaskO6uploadyAcA0B7RequestV_tcACmF"></a>
-                    <a name="//apple_ref/swift/Element/upload(request:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean14PingUploadTaskO6uploadyAcA0B7RequestV_tcACmF">upload(request:<wbr>)</a>
+                    <a name="/s:5Glean12PingUploaderP6upload7request8callbackyAA07CapableB13UploadRequestV_yAA0H6ResultOctF"></a>
+                    <a name="//apple_ref/swift/Method/upload(request:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean12PingUploaderP6upload7request8callbackyAA07CapableB13UploadRequestV_yAA0H6ResultOctF">upload(request:<wbr>callback:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -625,70 +624,20 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Synchronously upload a ping to a server.</p>
+
+<p>@param request the ping upload request, locked within a uploader capability check</p>
+
+<p>@param callback used to return the status code of the upload response, so Glean knows whether or not to try again</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">upload</span><span class="p">(</span><span class="nv">request</span><span class="p">:</span> <span class="kt"><a href="../Structs/PingRequest.html">PingRequest</a></span>
-<span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5Glean14PingUploadTaskO4waityACs6UInt64V_tcACmF"></a>
-                    <a name="//apple_ref/swift/Element/wait(time:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean14PingUploadTaskO4waityACs6UInt64V_tcACmF">wait(time:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">wait</span><span class="p">(</span><span class="nv">time</span><span class="p">:</span> <span class="kt">UInt64</span>
-<span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5Glean14PingUploadTaskO4doneyACs4Int8V_tcACmF"></a>
-                    <a name="//apple_ref/swift/Element/done(unused:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean14PingUploadTaskO4doneyACs4Int8V_tcACmF">done(unused:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">done</span><span class="p">(</span><span class="nv">unused</span><span class="p">:</span> <span class="kt">Int8</span>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">upload</span><span class="p">(</span>
+    <span class="nv">request</span><span class="p">:</span> <span class="kt"><a href="../Structs.html#/s:5Glean24CapablePingUploadRequestV">CapablePingUploadRequest</a></span><span class="p">,</span>
+    <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/UploadResult.html">UploadResult</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
 <span class="p">)</span></code></pre>
 
                         </div>
