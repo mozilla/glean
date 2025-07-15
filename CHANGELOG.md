@@ -4,6 +4,7 @@
 
 * General
   * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
+  * New metric: `glean.ping.uploader_capabilities` reporting the requested uploader capabilities for a ping ([#3188](https://github.com/mozilla/glean/pull/3188))
 * Android
   * Updated Android Gradle Plugin to 8.11.0 ([#3180](https://github.com/mozilla/glean/pull/3180))
   * Updated Android SDK target to version 36 ([#3180](https://github.com/mozilla/glean/pull/3180))
