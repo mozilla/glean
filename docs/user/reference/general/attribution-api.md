@@ -75,7 +75,23 @@ glean::update_attribution(AttributionMetrics {
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1955429"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+Services.fog.updateAttribution(
+  "google-play" /* aSource */,
+  "organic" /* aMedium */,
+  "mozilla-org" /* aCampaign */,
+  "browser with developer tools for android" /* aTerm */,
+  "firefoxview" /* aContent */);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -138,7 +154,18 @@ glean::update_attribution(DistributionMetrics {
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1955429"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+Services.fog.updateDistribution("MozillaOnline" /* aName */);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -220,7 +247,25 @@ assert_eq!(AttributionMetrics {
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1955429"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+const expected = {
+  source: "google-play",
+  medium: "organic",
+  campaign: "mozilla-org",
+  term: "browser with developer tools for android",
+  content: "firefoxview",
+};
+Assert.deepEqual(expected, Services.fog.testGetAttribution());
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -273,7 +318,21 @@ assert_eq!(DistributionMetrics {
 ```
 </div>
 
-<div data-lang="Firefox Desktop" class="tab" data-bug="1955429"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+const expected = {
+  name: "MozillaOnline",
+};
+Assert.deepEqual(expected, Services.fog.testGetDistribution());
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
