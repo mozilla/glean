@@ -31,7 +31,24 @@ glean_upload::failures.get("baseline", "4xx").add(3); // Adds 3 to the "baseline
 </div>
 <div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::glean_upload::failures.Get("metrics"_ns, "recoverable network error"_ns).Add(1);
+mozilla::glean::glean_upload::failures.Get("baseline"_ns, "4xx"_ns).Add(3);
+```
+
+**JavaScript**
+
+```js
+Glean.gleanUpload.failures.get("metrics", "recoverable network error").add(1);
+Glean.gleanUpload.failures.get("baseline", "4xx").add(3);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -84,7 +101,42 @@ assert_eq!(3, glean_upload::failures.get("baseline", "4xx").test_get_value().unw
 </div>
 <div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_EQ(1,
+          mozilla::glean::glean_upload::failures.Get("metrics"_ns, "recoverable network error"_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+ASSERT_EQ(3,
+          mozilla::glean::glean_upload::failures.Get("baseline"_ns, "4xx"_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+```
+
+**JavaScript**
+
+```js
+Assert.equal(
+  1,
+  Glean.gleanUpload.failures
+    .get("metrics", "recoverable network error")
+    .testGetValue()
+);
+Assert.equal(
+  3,
+  Glean.gleanUpload.failures
+    .get("baseline", "4xx")
+    .testGetValue()
+);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -116,7 +168,7 @@ assert_eq!(
 </div>
 <div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
