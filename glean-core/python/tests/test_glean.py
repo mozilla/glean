@@ -1024,3 +1024,52 @@ def test_glean_shutdown(safe_httpserver):
     Glean.shutdown()
     wait_for_requests(safe_httpserver, n=10)
     assert 10 == len(safe_httpserver.requests)
+
+
+def test_ping_reports_uploader_capabilities(tmpdir, helpers):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=[],
+    )
+
+    counter_metric = CounterMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="counter_metric",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        )
+    )
+
+    counter_metric.add()
+    custom_ping.submit()
+
+    url_path, payload = helpers.wait_for_ping(info_path)
+
+    assert "store1" == url_path.split("/")[3]
+    string_lists = payload["metrics"].get("string_list", [])
+
+    assert "glean.ping.uploader_capabilities" not in string_lists
