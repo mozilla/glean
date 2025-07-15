@@ -21,9 +21,6 @@ public class HttpPingUploader: PingUploader {
     private let logger = Logger(tag: Constants.logTag)
 
     /// Initialize the HTTP Ping uploader from a Glean configuration object
-    ///
-    /// - parameters:
-    ///     * configuration: The Glean `Configuration` to use
     public init() {
         // Build a URLSession with no-caching suitable for uploading our pings
         let sessionConfig: URLSessionConfiguration = .default

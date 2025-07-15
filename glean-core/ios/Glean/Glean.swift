@@ -35,7 +35,8 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 
     func triggerUpload() {
-        // If uploading is disabled, we need to send the deletion-request ping
+        // Glean core has a pending ping upload, so we need to
+        // trigger the upload scheduler to process it.
         glean.pingUploadScheduler?.process()
     }
 
