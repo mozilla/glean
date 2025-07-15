@@ -950,3 +950,23 @@ glean:
       - chutten@mozilla.com
       - glean-team@mozilla.com
     expires: never
+
+glean.ping:
+  uploader_capabilities:
+    type: string_list
+    description: |
+      The list of requested uploader capabilities for the ping this is sent in.
+      Should be the same as the ones defined for that particular ping.
+
+      This metric is only attached to a ping if it already contains other data.
+    send_in_pings:
+      - all-pings
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1976479
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1976479#c2
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never

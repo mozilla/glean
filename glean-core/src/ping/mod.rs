@@ -287,6 +287,32 @@ impl PingMaker {
             .event_storage()
             .snapshot_as_json(glean, ping.name(), true);
 
+        // We're adding the metric `glean.ping.uploader_capabilities` the most manual way here.
+        // This avoids creating a `StringListMetric` and further indirection.
+        // It also avoids yet another database write.
+        // It's only added if
+        // (1) There's already data in `metrics` or `events`
+        // (2) or the ping should be sent empty (`send_if_empty=true`)
+        let uploader_capabilities = ping.uploader_capabilities();
+        if !uploader_capabilities.is_empty() {
+            if metrics_data.is_none() && (ping.send_if_empty() || events_data.is_some()) {
+                metrics_data = Some(json!({}))
+            }
+
+            if let Some(map) = metrics_data.as_mut().and_then(|o| o.as_object_mut()) {
+                let lists = map
+                    .entry("string_list")
+                    .or_insert_with(|| json!({}))
+                    .as_object_mut()
+                    .unwrap();
+
+                lists.insert(
+                    "glean.ping.uploader_capabilities".to_string(),
+                    json!(uploader_capabilities),
+                );
+            }
+        }
+
         // Due to the way the experimentation identifier could link datasets that are intentionally unlinked,
         // it will not be included in pings that specifically exclude the Glean client-id, those pings that
         // should not be sent if empty, or pings that exclude the {client|ping}_info sections wholesale.
