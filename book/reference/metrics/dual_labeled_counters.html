@@ -209,7 +209,18 @@ glean_upload::failures.get(&quot;baseline&quot;, &quot;4xx&quot;).add(3); // Add
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+<p><strong>C++</strong></p>
+<pre><code class="language-cpp">#include &quot;mozilla/glean/GleanMetrics.h&quot;
+
+mozilla::glean::glean_upload::failures.Get(&quot;metrics&quot;_ns, &quot;recoverable network error&quot;_ns).Add(1);
+mozilla::glean::glean_upload::failures.Get(&quot;baseline&quot;_ns, &quot;4xx&quot;_ns).Add(3);
+</code></pre>
+<p><strong>JavaScript</strong></p>
+<pre><code class="language-js">Glean.gleanUpload.failures.get(&quot;metrics&quot;, &quot;recoverable network error&quot;).add(1);
+Glean.gleanUpload.failures.get(&quot;baseline&quot;, &quot;4xx&quot;).add(3);
+</code></pre>
+</div>
 </div>
 </div>
 <h4 id="recorded-errors"><a class="header" href="#recorded-errors">Recorded Errors</a></h4>
@@ -264,7 +275,36 @@ assert_eq!(3, glean_upload::failures.get(&quot;baseline&quot;, &quot;4xx&quot;).
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+<p><strong>C++</strong></p>
+<pre><code class="language-cpp">#include &quot;mozilla/glean/GleanMetrics.h&quot;
+
+ASSERT_EQ(1,
+          mozilla::glean::glean_upload::failures.Get(&quot;metrics&quot;_ns, &quot;recoverable network error&quot;_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+ASSERT_EQ(3,
+          mozilla::glean::glean_upload::failures.Get(&quot;baseline&quot;_ns, &quot;4xx&quot;_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+</code></pre>
+<p><strong>JavaScript</strong></p>
+<pre><code class="language-js">Assert.equal(
+  1,
+  Glean.gleanUpload.failures
+    .get(&quot;metrics&quot;, &quot;recoverable network error&quot;)
+    .testGetValue()
+);
+Assert.equal(
+  3,
+  Glean.gleanUpload.failures
+    .get(&quot;baseline&quot;, &quot;4xx&quot;)
+    .testGetValue()
+);
+</code></pre>
+</div>
 </div>
 </div>
 <h3 id="testgetnumrecordederrors"><a class="header" href="#testgetnumrecordederrors"><code>testGetNumRecordedErrors</code></a></h3>
@@ -291,7 +331,7 @@ assert_eq!(
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 </div>
 </div>
 <h2 id="metric-parameters"><a class="header" href="#metric-parameters">Metric parameters</a></h2>
