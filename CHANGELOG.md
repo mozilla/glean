@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...main)
 
+* Swift
+  * Glean for iOS is now being built with Xcode 16.2 ([#3189](https://github.com/mozilla/glean/pull/3189))
+
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
