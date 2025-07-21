@@ -32,7 +32,8 @@ use uuid::Uuid;
 
 use metrics::RemoteSettingsConfig;
 
-mod common_metric_data;
+/// Common metric data types and utilities.
+pub mod common_metric_data;
 mod core;
 mod core_metrics;
 mod coverage;

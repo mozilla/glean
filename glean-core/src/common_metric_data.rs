@@ -110,9 +110,12 @@ impl Deref for DynamicLabelType {
     }
 }
 
+/// Internal representation of common metric data, including thread-safe disabled state.
 #[derive(Default, Debug, MallocSizeOf)]
 pub struct CommonMetricDataInternal {
+    /// The underlying common metric data.
     pub inner: CommonMetricData,
+    /// Whether or not the metric is disabled (thread-safe).
     pub disabled: AtomicU8,
 }
 

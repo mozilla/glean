@@ -1,9 +1,10 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-
+use lasso::Spur;
+use lasso::Rodeo;
+use once_cell::sync::OnceCell;
 use std::borrow::Cow;
-use std::char;
 use std::collections::{HashMap, HashSet};
 use std::mem;
 use std::sync::{Arc, Mutex};
@@ -18,59 +19,60 @@ const OTHER_LABEL: &str = "__other__";
 const MAX_LABEL_LENGTH: usize = 111;
 pub(crate) const RECORD_SEPARATOR: char = '\x1E';
 
+impl ::malloc_size_of::MallocSizeOf for DualLabeledCounterMetric {
+    fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
+        // let mut n = 0;
+        // n += self.keys.size_of(ops);
+        // n += self.categories.size_of(ops);
+        // n += self.counter.size_of(ops);
+
+        // // `MallocSizeOf` is not implemented for `Arc<CounterMetric>`,
+        // // so we reimplement counting the size of the hashmap ourselves.
+        // let map = self.dual_label_map.lock().unwrap();
+
+        // // Copy of `MallocShallowSizeOf` implementation for `HashMap<K, V>` in `wr_malloc_size_of`.
+        // // Note: An instantiated submetric is behind an `Arc`.
+        // // `size_of` should only be called from a single thread to avoid double-counting.
+        // let shallow_size = if ops.has_malloc_enclosing_size_of() {
+        //     map.values()
+        //         .next()
+        //         .map_or(0, |v| unsafe { ops.malloc_enclosing_size_of(v) })
+        // } else {
+        //     map.capacity()
+        //         * (mem::size_of::<String>() // key
+        //             + mem::size_of::<Arc<CounterMetric>>() // allocation for the `Arc` value
+        //             + mem::size_of::<CounterMetric>() // allocation for the `CounterMetric` value
+        //                                               // within the `Arc`
+        //             + mem::size_of::<usize>())
+        // };
+
+        // let mut map_size = shallow_size;
+        // for (k, v) in map.iter() {
+        //     map_size += k.size_of(ops);
+        //     map_size += v.size_of(ops);
+        // }
+        // n += map_size;
+
+        // n
+        0
+    }
+}
+
 /// A dual labled metric
 ///
 /// Dual labled metrics allow recording multiple sub-metrics of the same type, in relation
 /// to two dimensions rather than the single label provided by the standard labeled type.
+// #[derive(Debug)]
 #[derive(Debug)]
 pub struct DualLabeledCounterMetric {
     keys: Option<Vec<Cow<'static, str>>>,
     categories: Option<Vec<Cow<'static, str>>>,
-    /// Type of the underlying metric
-    /// We hold on to an instance of it, which is cloned to create new modified instances.
     counter: CounterMetric,
+    rodeo: Mutex<Rodeo>, // Add this field
+    dual_label_map: Mutex<HashMap<(Spur, Spur), Arc<CounterMetric>>>,
 
-    /// A map from a unique ID for the dual labeled submetric to a handle of an instantiated
-    /// metric type.
-    dual_label_map: Mutex<HashMap<(String, String), Arc<CounterMetric>>>,
-}
-
-impl ::malloc_size_of::MallocSizeOf for DualLabeledCounterMetric {
-    fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
-        let mut n = 0;
-        n += self.keys.size_of(ops);
-        n += self.categories.size_of(ops);
-        n += self.counter.size_of(ops);
-
-        // `MallocSizeOf` is not implemented for `Arc<CounterMetric>`,
-        // so we reimplement counting the size of the hashmap ourselves.
-        let map = self.dual_label_map.lock().unwrap();
-
-        // Copy of `MallocShallowSizeOf` implementation for `HashMap<K, V>` in `wr_malloc_size_of`.
-        // Note: An instantiated submetric is behind an `Arc`.
-        // `size_of` should only be called from a single thread to avoid double-counting.
-        let shallow_size = if ops.has_malloc_enclosing_size_of() {
-            map.values()
-                .next()
-                .map_or(0, |v| unsafe { ops.malloc_enclosing_size_of(v) })
-        } else {
-            map.capacity()
-                * (mem::size_of::<String>() // key
-                    + mem::size_of::<Arc<CounterMetric>>() // allocation for the `Arc` value
-                    + mem::size_of::<CounterMetric>() // allocation for the `CounterMetric` value
-                                                      // within the `Arc`
-                    + mem::size_of::<usize>())
-        };
-
-        let mut map_size = shallow_size;
-        for (k, v) in map.iter() {
-            map_size += k.size_of(ops);
-            map_size += v.size_of(ops);
-        }
-        n += map_size;
-
-        n
-    }
+    allowed_keys: OnceCell<HashSet<String>>,
+    allowed_categories: OnceCell<HashSet<String>>,
 }
 
 impl MetricType for DualLabeledCounterMetric {
@@ -84,23 +86,16 @@ impl DualLabeledCounterMetric {
     pub fn new(
         meta: CommonMetricData,
         keys: Option<Vec<Cow<'static, str>>>,
-        catgories: Option<Vec<Cow<'static, str>>>,
-    ) -> DualLabeledCounterMetric {
-        let submetric = CounterMetric::new(meta);
-        DualLabeledCounterMetric::new_inner(submetric, keys, catgories)
-    }
-
-    fn new_inner(
-        counter: CounterMetric,
-        keys: Option<Vec<Cow<'static, str>>>,
         categories: Option<Vec<Cow<'static, str>>>,
-    ) -> DualLabeledCounterMetric {
-        let dual_label_map = Default::default();
+    ) -> Self {
         DualLabeledCounterMetric {
+            counter: CounterMetric::new(meta),
             keys,
             categories,
-            counter,
-            dual_label_map,
+            rodeo: Mutex::new(Rodeo::default()),
+            dual_label_map: Default::default(),
+            allowed_keys: OnceCell::new(),
+            allowed_categories: OnceCell::new(),
         }
     }
 
@@ -108,29 +103,21 @@ impl DualLabeledCounterMetric {
     /// the static or dynamic labels where needed.
     fn new_counter_metric(&self, key: &str, category: &str) -> CounterMetric {
         match (&self.keys, &self.categories) {
-            (None, None) => self
-                .counter
-                .with_dynamic_label(DynamicLabelType::KeyAndCategory(
-                    make_label_from_key_and_category(key, category),
-                )),
+            (None, None) => self.counter.with_dynamic_label(make_label(key, category)),
             (None, _) => {
                 let static_category = self.static_category(category);
-                self.counter.with_dynamic_label(DynamicLabelType::KeyOnly(
-                    make_label_from_key_and_category(key, static_category),
-                ))
+                self.counter
+                    .with_dynamic_label(make_label(key, static_category))
             }
             (_, None) => {
                 let static_key = self.static_key(key);
                 self.counter
-                    .with_dynamic_label(DynamicLabelType::CategoryOnly(
-                        make_label_from_key_and_category(static_key, category),
-                    ))
+                    .with_dynamic_label(make_label(static_key, category))
             }
             (_, _) => {
-                // Both labels are static and can be validated now
                 let static_key = self.static_key(key);
                 let static_category = self.static_category(category);
-                let name = combine_base_identifier_and_labels(
+                let name = combine_metric_name(
                     self.counter.meta().inner.name.as_str(),
                     static_key,
                     static_category,
@@ -155,9 +142,15 @@ impl DualLabeledCounterMetric {
     /// The requested key if it is in the list of allowed labels.
     /// Otherwise `OTHER_LABEL` is returned.
     fn static_key<'a>(&self, key: &'a str) -> &'a str {
-        debug_assert!(self.keys.is_some());
-        let keys = self.keys.as_ref().unwrap();
-        if keys.iter().any(|l| l == key) {
+        let keys = self.allowed_keys.get_or_init(|| {
+            self.keys
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(|s| s.to_string())
+                .collect()
+        });
+        if keys.contains(key) {
             key
         } else {
             OTHER_LABEL
@@ -179,9 +172,15 @@ impl DualLabeledCounterMetric {
     /// The requested category if it is in the list of allowed labels.
     /// Otherwise `OTHER_LABEL` is returned.
     fn static_category<'a>(&self, category: &'a str) -> &'a str {
-        debug_assert!(self.categories.is_some());
-        let categories = self.categories.as_ref().unwrap();
-        if categories.iter().any(|l| l == category) {
+        let cats = self.allowed_categories.get_or_init(|| {
+            self.categories
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(|s| s.to_string())
+                .collect()
+        });
+        if cats.contains(category) {
             category
         } else {
             OTHER_LABEL
@@ -198,18 +197,27 @@ impl DualLabeledCounterMetric {
     /// After that, any additional labels will be recorded under the special `OTHER_LABEL` label.
     ///
     /// Labels must have a maximum of 111 characters, and may comprise any printable ASCII characters.
-    /// If an invalid label is used, the metric will be recorded in the special `OTHER_LABEL` label.
-    pub fn get<S: AsRef<str>>(&self, key: S, category: S) -> Arc<CounterMetric> {
-        let key = key.as_ref();
-        let category = category.as_ref();
+    /// If an invalid label is us
 
+    pub fn get<S: AsRef<str>>(&self, key: S, category: S) -> Arc<CounterMetric> {
+        let key_str = key.as_ref();
+        let cat_str = category.as_ref();
+
+        // Intern the strings
+        let mut rodeo = self.rodeo.lock().unwrap();
+        let key_sym: Spur = rodeo.get_or_intern(key_str);
+        let cat_sym: Spur = rodeo.get_or_intern(cat_str);
+        let interned_key = (key_sym, cat_sym);
+
+        // Single-lock get + insert
         let mut map = self.dual_label_map.lock().unwrap();
-        map.entry((key.to_string(), category.to_string()))
-            .or_insert_with(|| {
-                let metric = self.new_counter_metric(key, category);
-                Arc::new(metric)
-            })
-            .clone()
+        if let Some(existing) = map.get(&interned_key) {
+            return Arc::clone(existing);
+        }
+
+        let new_metric = Arc::new(self.new_counter_metric(key_str, cat_str));
+        map.insert(interned_key, Arc::clone(&new_metric));
+        new_metric
     }
 
     /// **Exported for test purposes.**
@@ -229,6 +237,24 @@ impl DualLabeledCounterMetric {
             test_get_num_recorded_errors(glean, self.counter.meta(), error).unwrap_or(0)
         })
     }
+}
+
+fn make_label<'a>(key: &str, category: &str) -> crate::common_metric_data::DynamicLabelType {
+    use crate::common_metric_data::DynamicLabelType::KeyAndCategory;
+    KeyAndCategory(format!(
+        "{}{}{}{}",
+        RECORD_SEPARATOR, key, RECORD_SEPARATOR, category
+    ))
+}
+
+fn combine_metric_name(base: &str, key: &str, cat: &str) -> String {
+    let mut result = String::with_capacity(base.len() + key.len() + cat.len() + 2);
+    result.push_str(base);
+    result.push(RECORD_SEPARATOR);
+    result.push_str(key);
+    result.push(RECORD_SEPARATOR);
+    result.push_str(cat);
+    result
 }
 
 /// Combines a metric's base identifier and label
