@@ -9,7 +9,7 @@ Glean sends a [`baseline`][] ping when the app is sent to background.
 
 ## Build
 
-1. Install Xcode 15.0 or higher.
+1. Install Xcode 16.2 or higher.
 
 2. Install the latest [Xcode developer tools](https://developer.apple.com/xcode/downloads/) from Apple.
 

@@ -15,6 +15,7 @@
   * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
 * Swift
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
+  * Glean for iOS is now being built with Xcode 16.2 ([#]())
 
 # v64.5.2 (2025-07-01)
 
