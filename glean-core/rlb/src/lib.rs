@@ -36,8 +36,8 @@ pub use configuration::{Builder as ConfigurationBuilder, Configuration};
 pub use core_metrics::ClientInfoMetrics;
 pub use glean_core::{
     metrics::{
-        Datetime, DistributionData, MemoryUnit, MetricIdentifier, Rate, RecordedEvent, TimeUnit,
-        TimerId,
+        Datetime, DistributionData, MemoryUnit, MetricIdentifier, Rate, RecordedEvent,
+        TestGetLabeledValues, TestGetValue, TimeUnit, TimerId,
     },
     traits, AttributionMetrics, CommonMetricData, DistributionMetrics, Error, ErrorType, Glean,
     HistogramType, LabeledMetricData, Lifetime, PingRateLimit, RecordedExperiment, Result,

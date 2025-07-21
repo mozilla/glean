@@ -13,7 +13,7 @@ use std::time::Duration;
 use tempfile::Builder;
 
 use flate2::read::GzDecoder;
-use glean::{net, ClientInfoMetrics, ConfigurationBuilder, ErrorType};
+use glean::{net, ClientInfoMetrics, ConfigurationBuilder, ErrorType, TestGetValue};
 
 #[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {

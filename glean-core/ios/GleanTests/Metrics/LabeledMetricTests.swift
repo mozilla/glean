@@ -247,4 +247,31 @@ class LabeledMetricTypeTests: XCTestCase {
             XCTAssertEqual(error as! String, "Can not create a labeled version of this metric type")
         }
     }
+
+    func testLabeledMetricTestGetLabeledValues() {
+        let counterMetric = CounterMetricType(CommonMetricData(
+            category: "telemetry",
+            name: "labeled_counter_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false
+        ))
+
+        let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
+            category: "telemetry",
+            name: "labeled_counter_metric",
+            sendInPings: ["metrics"],
+            lifetime: .application,
+            disabled: false,
+            subMetric: counterMetric
+        )
+
+        labeledCounterMetric["label1"].add(1)
+        labeledCounterMetric["label2"].add(2)
+
+        let labeledValues = labeledCounterMetric.testGetLabeledValues()
+        XCTAssertEqual(2, labeledValues.count)
+        XCTAssertEqual(1, labeledValues["telemetry.labeled_counter_metric/label1"] as! Int32)
+        XCTAssertEqual(2, labeledValues["telemetry.labeled_counter_metric/label2"] as! Int32)
+    }
 }

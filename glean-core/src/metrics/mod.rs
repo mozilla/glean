@@ -269,6 +269,47 @@ pub trait MetricIdentifier<'a> {
     fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>);
 }
 
+/// [`TestGetValue`] describes an interface for retrieving the value for a given metric
+pub trait TestGetValue<T> {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Returns the currently stored value of the appropriate type for the given metric.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<T>;
+}
+
+/// [`TestGetLabeledValues`] describes an interface for retrieving all labels and values
+/// for a given labeled metric
+pub trait TestGetLabeledValues<T> {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Returns the currently stored values for each label as the appropriate type for the given
+    /// metric.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// A HashMap mapping each label to its metric's stored value. If the label exists but there is
+    /// nothing stored for it, it will not be returned on the HashMap.
+    fn test_get_labeled_values(&self, ping_name: Option<String>) -> HashMap<String, T>;
+}
+
 // Provide a blanket implementation for MetricIdentifier for all the types
 // that implement MetricType.
 impl<'a, T> MetricIdentifier<'a> for T

@@ -10,7 +10,7 @@
 
 mod common;
 
-use glean::ConfigurationBuilder;
+use glean::{ConfigurationBuilder, TestGetValue};
 
 /// Some user metrics.
 mod metrics {
