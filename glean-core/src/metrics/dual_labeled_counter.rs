@@ -1,8 +1,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-use lasso::Spur;
 use lasso::Rodeo;
+use lasso::Spur;
 use once_cell::sync::OnceCell;
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
@@ -241,10 +241,14 @@ impl DualLabeledCounterMetric {
 
 fn make_label<'a>(key: &str, category: &str) -> crate::common_metric_data::DynamicLabelType {
     use crate::common_metric_data::DynamicLabelType::KeyAndCategory;
-    KeyAndCategory(format!(
-        "{}{}{}{}",
-        RECORD_SEPARATOR, key, RECORD_SEPARATOR, category
-    ))
+
+    let mut label = String::with_capacity(2 + key.len() + category.len());
+    label.push(RECORD_SEPARATOR);
+    label.push_str(key);
+    label.push(RECORD_SEPARATOR);
+    label.push_str(category);
+
+    KeyAndCategory(label)
 }
 
 fn combine_metric_name(base: &str, key: &str, cat: &str) -> String {
@@ -263,11 +267,11 @@ pub fn combine_base_identifier_and_labels(
     key: &str,
     category: &str,
 ) -> String {
-    format!(
-        "{}{}",
-        base_identifer,
-        make_label_from_key_and_category(key, category)
-    )
+    let suffix = make_label_from_key_and_category(key, category);
+    let mut s = String::with_capacity(base_identifer.len() + suffix.len());
+    s.push_str(base_identifer);
+    s.push_str(&suffix);
+    s
 }
 
 /// Separate label into key and category components.
@@ -283,10 +287,12 @@ pub fn separate_label_into_key_and_category(label: &str) -> Option<(&str, &str)>
 /// Construct and return a label from a given key and category with the RECORD_SEPARATOR
 /// characters in the format: <RS><key><RS><category>
 pub fn make_label_from_key_and_category(key: &str, category: &str) -> String {
-    format!(
-        "{}{}{}{}",
-        RECORD_SEPARATOR, key, RECORD_SEPARATOR, category
-    )
+    let mut s = String::with_capacity(2 + key.len() + category.len());
+    s.push(RECORD_SEPARATOR);
+    s.push_str(key);
+    s.push(RECORD_SEPARATOR);
+    s.push_str(category);
+    s
 }
 
 /// Validates a dynamic label, changing it to `OTHER_LABEL` if it's invalid.
@@ -403,7 +409,10 @@ fn get_seen_keys_and_categories(
     glean: &Glean,
 ) -> (HashSet<String>, HashSet<String>) {
     let base_identifier = &meta.base_identifier();
-    let prefix = format!("{base_identifier}{RECORD_SEPARATOR}");
+    let mut prefix = String::with_capacity(base_identifier.len() + 1);
+    prefix.push_str(base_identifier);
+    prefix.push(RECORD_SEPARATOR);
+
     let mut seen_keys: HashSet<String> = HashSet::new();
     let mut seen_categories: HashSet<String> = HashSet::new();
     let mut snapshotter = |metric_id: &[u8], _: &Metric| {

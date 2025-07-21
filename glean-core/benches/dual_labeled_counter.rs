@@ -4,7 +4,7 @@
 
 use criterion::{criterion_group, criterion_main, Criterion};
 use glean_core::common_metric_data::CommonMetricData;
-use glean_core::metrics::DualLabeledCounterMetric; // Replace with actual crate path
+use glean_core::metrics::DualLabeledCounterMetric;
 use glean_core::Lifetime;
 use std::hint::black_box;
 
