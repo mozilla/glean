@@ -1,7 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-use lasso::Rodeo;
+use lasso::ThreadedRodeo;
 use lasso::Spur;
 use once_cell::sync::OnceCell;
 use std::borrow::Cow;
@@ -68,7 +68,7 @@ pub struct DualLabeledCounterMetric {
     keys: Option<Vec<Cow<'static, str>>>,
     categories: Option<Vec<Cow<'static, str>>>,
     counter: CounterMetric,
-    rodeo: Mutex<Rodeo>, // Add this field
+    rodeo: ThreadedRodeo, // Add this field
     dual_label_map: Mutex<HashMap<(Spur, Spur), Arc<CounterMetric>>>,
 
     allowed_keys: OnceCell<HashSet<String>>,
@@ -92,7 +92,7 @@ impl DualLabeledCounterMetric {
             counter: CounterMetric::new(meta),
             keys,
             categories,
-            rodeo: Mutex::new(Rodeo::default()),
+            rodeo: ThreadedRodeo::default(),
             dual_label_map: Default::default(),
             allowed_keys: OnceCell::new(),
             allowed_categories: OnceCell::new(),
@@ -204,7 +204,7 @@ impl DualLabeledCounterMetric {
         let cat_str = category.as_ref();
 
         // Intern the strings
-        let mut rodeo = self.rodeo.lock().unwrap();
+        let rodeo = &self.rodeo;
         let key_sym: Spur = rodeo.get_or_intern(key_str);
         let cat_sym: Spur = rodeo.get_or_intern(cat_str);
         let interned_key = (key_sym, cat_sym);
