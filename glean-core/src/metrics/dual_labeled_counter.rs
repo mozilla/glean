@@ -21,42 +21,47 @@ pub(crate) const RECORD_SEPARATOR: char = '\x1E';
 
 impl ::malloc_size_of::MallocSizeOf for DualLabeledCounterMetric {
     fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
-        // let mut n = 0;
-        // n += self.keys.size_of(ops);
-        // n += self.categories.size_of(ops);
-        // n += self.counter.size_of(ops);
+        let mut n = 0;
+        n += self.keys.size_of(ops);
+        n += self.categories.size_of(ops);
+        n += self.counter.size_of(ops);
 
-        // // `MallocSizeOf` is not implemented for `Arc<CounterMetric>`,
-        // // so we reimplement counting the size of the hashmap ourselves.
-        // let map = self.dual_label_map.lock().unwrap();
+        let map = self.dual_label_map.lock().unwrap();
 
-        // // Copy of `MallocShallowSizeOf` implementation for `HashMap<K, V>` in `wr_malloc_size_of`.
-        // // Note: An instantiated submetric is behind an `Arc`.
-        // // `size_of` should only be called from a single thread to avoid double-counting.
-        // let shallow_size = if ops.has_malloc_enclosing_size_of() {
-        //     map.values()
-        //         .next()
-        //         .map_or(0, |v| unsafe { ops.malloc_enclosing_size_of(v) })
-        // } else {
-        //     map.capacity()
-        //         * (mem::size_of::<String>() // key
-        //             + mem::size_of::<Arc<CounterMetric>>() // allocation for the `Arc` value
-        //             + mem::size_of::<CounterMetric>() // allocation for the `CounterMetric` value
-        //                                               // within the `Arc`
-        //             + mem::size_of::<usize>())
-        // };
+        // `MallocSizeOf` is not implemented for `Arc<CounterMetric>`,
+        // so we reimplement counting the size of the hashmap ourselves.
 
-        // let mut map_size = shallow_size;
-        // for (k, v) in map.iter() {
-        //     map_size += k.size_of(ops);
-        //     map_size += v.size_of(ops);
-        // }
-        // n += map_size;
+        // Copy of `MallocShallowSizeOf` implementation for `HashMap<K, V>` in `wr_malloc_size_of`.
+        //
+        // Note: An instantiated submetric is behind an `Arc`.
+        // `size_of` should only be called from a single thread to avoid double-counting.
+        //
+        // Spur is a compact interned symbol (u32), so keys do not contribute heap size.
+        let shallow_size = if ops.has_malloc_enclosing_size_of() {
+            map.values()
+                .next()
+                .map_or(0, |v| unsafe { ops.malloc_enclosing_size_of(v) })
+        } else {
+            map.capacity()
+                * (std::mem::size_of::<(lasso::Spur, lasso::Spur)>() // key (interned, stack-only)
+                    + std::mem::size_of::<Arc<CounterMetric>>() // value (Arc pointer to CounterMetric)
+                    + mem::size_of::<CounterMetric>()     // CounterMetric itself
+                    + std::mem::size_of::<usize>())
+        };
 
-        // n
-        0
+        let mut map_size = shallow_size;
+
+        for (_k, v) in map.iter() {
+            // We no longer count `k.size_of(ops)` — Spur is stack-only
+            map_size += v.size_of(ops);
+        }
+
+        n += map_size;
+
+        n
     }
 }
+
 
 /// A dual labled metric
 ///
