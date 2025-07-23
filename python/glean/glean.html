@@ -201,7 +201,7 @@ el.replaceWith(d);
             app_display_version=cls._application_version,
             app_build_date=dt,
             channel=configuration.channel,
-            architecture=&#34;Unknown&#34;,
+            architecture=platform.machine() or &#34;Unknown&#34;,
             os_version=&#34;Unknown&#34;,
             locale=None,
             device_manufacturer=None,
