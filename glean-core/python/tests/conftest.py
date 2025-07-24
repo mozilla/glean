@@ -75,30 +75,6 @@ def safe_httpserver(httpserver):
 
 
 @pytest.fixture
-def slow_httpserver(httpserver):
-    """
-    An httpserver that takes 0.5 seconds to respond.
-    """
-    wait_for_server(httpserver)
-
-    orig_call = httpserver.__call__
-
-    def __call__(self, *args, **kwargs):
-        time.sleep(0.5)
-        return orig_call(*args, **kwargs)
-
-    httpserver.__call__ = __call__
-
-    return httpserver
-
-
-@pytest.fixture
-def safe_httpsserver(httpsserver):
-    wait_for_server(httpsserver)
-    return httpsserver
-
-
-@pytest.fixture
 def ping_schema_url():
     return str(GLEAN_PING_SCHEMA_PATH)
 
