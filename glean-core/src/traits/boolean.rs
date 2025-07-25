@@ -8,7 +8,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Boolean : TestGetValue<bool> {
+pub trait Boolean: TestGetValue<bool> {
     /// Sets to the specified boolean value.
     ///
     /// # Arguments

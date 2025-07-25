@@ -513,7 +513,7 @@ class LabeledMetricTypeTest {
     }
 
     @Test
-    fun `test labeled metric testGetLabeledValues`() {
+    fun `test labeled metric testGetValue`() {
         val counterMetric = CounterMetricType(
             CommonMetricData(
                 disabled = false,
@@ -536,9 +536,9 @@ class LabeledMetricTypeTest {
         labeledCounterMetric["label1"].add(1)
         labeledCounterMetric["label2"].add(2)
 
-        val labeledValues = labeledCounterMetric.testGetValue()
-        assertEquals(2, labeledValues.size)
-        assertEquals(1, labeledValues["telemetry.labeled_counter_metric/label1"])
-        assertEquals(2, labeledValues["telemetry.labeled_counter_metric/label2"])
+        val values = labeledCounterMetric.testGetValue()
+        assertEquals(2, values.size)
+        assertEquals(1, values["telemetry.labeled_counter_metric/label1"])
+        assertEquals(2, values["telemetry.labeled_counter_metric/label2"])
     }
 }

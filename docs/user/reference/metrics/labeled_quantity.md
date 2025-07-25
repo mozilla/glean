@@ -102,8 +102,10 @@ Glean.gfx.display["height"].set(aHeight);
 ### `testGetValue`
 
 Gets the recorded value for a given label in a labeled quantity metric.  
-Returns the quantity value if data is stored.  
-Returns a language-specific empty/null value if no data is stored.  
+Returns the quantity value if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.   
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except  
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
@@ -114,8 +116,9 @@ in Rust where it's required. `None` or no argument will default to the first val
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Gfx
 
-assertEquals(433, Gfx.display["width"].testGetValue())
-assertEquals(42, Gfx.display["height"].testGetValue())
+val values = Gfx.display.testGetValue()
+assertEquals(433, values["category.gfx/width"])
+assertEquals(42, values["category.gfx/height"])
 ```
 
 </div>
@@ -124,15 +127,17 @@ assertEquals(42, Gfx.display["height"].testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Gfx;
 
-assertEquals(433, Gfx.INSTANCE.display()["width"].testGetValue());
-assertEquals(42, Gfx.INSTANCE.display()["height"].testGetValue());
+Map<String, ?> values = 
+assertEquals(433, values["category.gfx/width"]);
+assertEquals(42, values["category.gfx/height"]);
 ```
 </div>
 <div data-lang="Swift" class="tab">
 
 ```Swift
-XCTAssertEqual(433, Gfx.display["width"].testGetValue())
-XCTAssertEqual(42, Gfx.display["heigth"].testGetValue())
+let values = Gfx.display.testGetValue()
+XCTAssertEqual(433, values["category.gfx/width"])
+XCTAssertEqual(42, values["category.gfx/heigth"])
 ```
 
 </div>
@@ -142,8 +147,9 @@ XCTAssertEqual(42, Gfx.display["heigth"].testGetValue())
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
-assert 433 == metrics.gfx.display["width"].test_get_value()
-assert 42 == metrics.gfx.display["height"].test_get_value()
+values = metrics.gfx.display.test_get_value()
+assert 433 == values["category.gfx/width"]
+assert 42 == values["category.gfx/height"]
 ```
 
 </div>
@@ -152,9 +158,10 @@ assert 42 == metrics.gfx.display["height"].test_get_value()
 ```Rust
 use glean_metrics::gfx;
 
+let values = gfx::display.test_get_value(None).unwrap();
 // Was anything recorded?
-assert_eq!(433, gfx::display.get("width").test_get_value(None).unwrap());
-assert_eq!(42, gfx::display.get("height").test_get_value(None).unwrap());
+assert_eq!(433, values["category.gfx/width"]);
+assert_eq!(42, values["category.gfx/height"]);
 ```
 </div>
 

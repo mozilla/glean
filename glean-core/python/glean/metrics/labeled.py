@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Any, Optional, Set, Type, Dict
+from typing import Any, Dict, Optional, Set, Type
 
 
 from .._uniffi import LabeledBoolean

@@ -14,7 +14,11 @@ use malloc_size_of::MallocSizeOf;
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
-use crate::metrics::{BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit, Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit, TimingDistributionMetric};
+use crate::metrics::{
+    BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
+    Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit,
+    TimingDistributionMetric,
+};
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
@@ -349,7 +353,7 @@ where
     }
 }
 
-impl <T, S> TestGetValue<HashMap<String, S>> for LabeledMetric<T>
+impl<T, S> TestGetValue<HashMap<String, S>> for LabeledMetric<T>
 where
     T: AllowLabeled + TestGetValue<S>,
     S: Any,

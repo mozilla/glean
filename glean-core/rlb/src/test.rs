@@ -1291,23 +1291,26 @@ fn test_labeled_counter_metric() {
     let _t = new_glean(None, false);
 
     let metric = LabeledCounter::new(
-        LabeledMetricData::Common { cmd: CommonMetricData {
-            name: "labeled_counter".into(),
-            category: "telemetry".into(),
-            send_in_pings: vec!["store1".into()],
-            disabled: false,
-            lifetime: Lifetime::Ping,
-            ..Default::default()
-        } },
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_counter".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
         Some(vec!["key1".into()]),
     );
 
     metric.get("key1").add(1);
+    metric.get("key2").add(2);
 
     // Check that the value was recorded
-    let value = metric
-        .test_get_value(Some("store1".into()));
-    assert_eq!(value.unwrap()["telemetry.labeled_counter/key1"], 1);
+    let value = metric.test_get_value(Some("store1".into())).unwrap();
+    assert_eq!(value["telemetry.labeled_counter/key1"], 1);
+    assert_eq!(value["telemetry.labeled_counter/key2"], 2);
 
     // Check for an invalid label
     let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel);

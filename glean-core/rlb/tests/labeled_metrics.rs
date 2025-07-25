@@ -67,7 +67,7 @@ fn test_labeled_metrics_test_get_value_functions_appropriately() {
     pings::validation.submit(None);
     let map = metrics::labeled_boolean.test_get_value(None).unwrap();
     assert_eq!(map.len(), 0);
-    assert!(map.get("sample.labeled_boolean/label1").is_none());
+    assert!(!map.contains_key("sample.labeled_boolean/label1"));
 
     glean::shutdown();
 }

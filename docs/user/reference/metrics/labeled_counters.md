@@ -115,8 +115,10 @@ Glean.stability.crashCount["native_code_crash"].add(3);
 ### `testGetValue`
 
 Gets the recorded value for a given label in a labeled counter metric.  
-Returns the count if data is stored.  
-Returns a language-specific empty/null value if no data is stored.
+Returns the count if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.  
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
@@ -127,9 +129,10 @@ in Rust where it's required. `None` or no argument will default to the first val
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Stability
 
+val values = Stability.crashCount.testGetValue()
 // Do the counters have the expected values?
-assertEquals(1, Stability.crashCount["uncaught_exception"].testGetValue())
-assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
+assertEquals(1, values["category.stability/uncaught_exception"])
+assertEquals(3, values["category.stability/native_code_crash"])
 ```
 </div>
 
@@ -138,18 +141,20 @@ assertEquals(3, Stability.crashCount["native_code_crash"].testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Stability;
 
+Map<String, ?> values = Stability.INSTANCE.crashCount().testGetValue();
 // Do the counters have the expected values?
-assertEquals(1, Stability.INSTANCE.crashCount()["uncaught_exception"].testGetValue());
-assertEquals(3, Stability.INSTANCE.crashCount()["native_code_crash"].testGetValue());
+assertEquals(1, values["category.stability/uncaught_exception"]);
+assertEquals(3, values["category.stability/native_code_crash"]);
 ```
 </div>
 
 <div data-lang="Swift" class="tab">
 
 ```Swift
+let values = Stability.crashCount.testGetValue()
 // Do the counters have the expected values?
-XCTAssertEqual(1, Stability.crashCount["uncaught_exception"].testGetValue())
-XCTAssertEqual(3, Stability.crashCount["native_code_crash"].testGetValue())
+XCTAssertEqual(1, values["category.stability/uncaught_exception"])
+XCTAssertEqual(3, values["category.stability/native_code_crash"])
 ```
 </div>
 
@@ -159,9 +164,10 @@ XCTAssertEqual(3, Stability.crashCount["native_code_crash"].testGetValue())
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
+values = metrics.stability.crash_count.test_get_value()
 # Do the counters have the expected values?
-assert 1 == metrics.stability.crash_count["uncaught_exception"].test_get_value()
-assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
+assert 1 == values["category.stability/uncaught_exception"]
+assert 3 == values["category.stability/native_code_crash"]
 ```
 </div>
 
@@ -170,9 +176,10 @@ assert 3 == metrics.stability.crash_count["native_code_crash"].test_get_value()
 ```Rust
 use glean_metrics::stability;
 
+let values = stability::crash_count.test_get_value(None).unwrap();
 // Do the counters have the expected values?
-assert_eq!(1, stability::crash_count.get("uncaught_exception").test_get_value().unwrap());
-assert_eq!(3, stability::crash_count.get("native_code_crash").test_get_value().unwrap());
+assert_eq!(1, values["uncaught_exception"]);
+assert_eq!(3, values["native_code_crash"]);
 ```
 </div>
 
