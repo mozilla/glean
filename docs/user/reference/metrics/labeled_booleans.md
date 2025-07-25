@@ -118,8 +118,8 @@ import org.mozilla.yourApplication.GleanMetrics.Accessibility
 
 val values = Accessibility.features.testGetValue()
 // Do the booleans have the expected values?
-assertEquals(True, values["category.accessibility/screen_reader"])
-assertEquals(False, values["category.accessibility/high_contrast"])
+assertEquals(True, values["screen_reader"])
+assertEquals(False, values["high_contrast"])
 ```
 </div>
 
@@ -130,8 +130,8 @@ import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
 Map<String, ?> values = Accessibility.INSTANCE.features().testGetValue();
 // Do the booleans have the expected values?
-assertEquals(True, values["category.accessibility/screen_reader"]);
-assertEquals(False, values["category.accessibility/high_contrast"]);
+assertEquals(True, values["screen_reader"]);
+assertEquals(False, values["high_contrast"]);
 ```
 </div>
 
@@ -140,8 +140,8 @@ assertEquals(False, values["category.accessibility/high_contrast"]);
 ```Swift
 let values = Accessibility.features.testGetValue()
 // Do the booleans have the expected values?
-XCTAssertEqual(true, values["category.accessibility/screen_reader"])
-XCTAssertEqual(false, values["category.accessibility/high_contrast"])
+XCTAssertEqual(true, values["screen_reader"])
+XCTAssertEqual(false, values["high_contrast"])
 ```
 </div>
 
@@ -153,8 +153,8 @@ metrics = load_metrics("metrics.yaml")
 
 values = metrics.accessibility.features.testGetValue()
 # Do the booleans have the expected values?
-assert values["category.accessibility/screen_reader"]
-assert not values["category.accessibility/high_contrast"]
+assert values["screen_reader"]
+assert not values["high_contrast"]
 ```
 </div>
 
@@ -165,8 +165,8 @@ use glean_metrics::accessibility;
 
 let values = accessibility::features.test_get_value(None).unwrap();
 // Do the booleans have the expected values?
-assert!(values["category.accessibility/screen_reader"]);
-assert!(!values["category.accessibility/high_contrast"]);
+assert!(values["screen_reader"]);
+assert!(!values["high_contrast"]);
 ```
 </div>
 

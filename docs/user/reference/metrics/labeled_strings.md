@@ -111,7 +111,7 @@ import org.mozilla.yourApplication.GleanMetrics.Login
 
 val values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-assertTrue(values["category.errorsByStage/server_auth"])
+assertTrue(values["server_auth"])
 ```
 </div>
 
@@ -122,7 +122,7 @@ import org.mozilla.yourApplication.GleanMetrics.Login;
 
 Map<String, ?> values = Login.INSTANCE.errorsByStage().testGetValue();
 // Does the metric have the expected value?
-assertTrue(values["category.errorsByStage/server_auth"]);
+assertTrue(values["server_auth"]);
 ```
 </div>
 
@@ -131,7 +131,7 @@ assertTrue(values["category.errorsByStage/server_auth"]);
 ```Swift
 let values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-XCTAssert(values["category.errorsByStage/server_auth"])
+XCTAssert(values["server_auth"])
 ```
 
 </div>
@@ -144,7 +144,7 @@ metrics = load_metrics("metrics.yaml")
 
 values = metrics.login.errors_by_stage.testGetValue()
 # Does the metric have the expected value?
-assert "Invalid password" == values["category.errorsByStage/server_auth"])
+assert "Invalid password" == values["server_auth"])
 ```
 </div>
 
@@ -155,7 +155,7 @@ use glean_metrics::login;
 
 let values = login::errors_by_stage.test_get_value(None).unwrap();
 // Does the metric have the expected value?
-assert!(values["category.errorsByStage/server_auth"]);
+assert!(values["server_auth"]);
 ```
 </div>
 

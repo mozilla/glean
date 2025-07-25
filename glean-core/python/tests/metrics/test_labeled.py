@@ -50,9 +50,9 @@ def test_labeled_counter_type_test_get_metrics():
 
     values = labeled_counter_metric.test_get_value()
 
-    assert 1 == values["telemetry.labeled_counter_metric/label1"]
+    assert 1 == values["label1"]
 
-    assert 2 == values["telemetry.labeled_counter_metric/label2"]
+    assert 2 == values["label2"]
 
 
 def test_labeled_boolean_type():

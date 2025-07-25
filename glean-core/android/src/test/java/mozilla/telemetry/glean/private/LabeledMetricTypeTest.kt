@@ -538,7 +538,7 @@ class LabeledMetricTypeTest {
 
         val values = labeledCounterMetric.testGetValue()
         assertEquals(2, values.size)
-        assertEquals(1, values["telemetry.labeled_counter_metric/label1"])
-        assertEquals(2, values["telemetry.labeled_counter_metric/label2"])
+        assertEquals(1, values["label1"])
+        assertEquals(2, values["label2"])
     }
 }

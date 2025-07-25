@@ -1309,8 +1309,8 @@ fn test_labeled_counter_metric() {
 
     // Check that the value was recorded
     let value = metric.test_get_value(Some("store1".into())).unwrap();
-    assert_eq!(value["telemetry.labeled_counter/key1"], 1);
-    assert_eq!(value["telemetry.labeled_counter/key2"], 2);
+    assert_eq!(value["key1"], 1);
+    assert_eq!(value["key2"], 2);
 
     // Check for an invalid label
     let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel);

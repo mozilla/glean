@@ -131,8 +131,8 @@ import org.mozilla.yourApplication.GleanMetrics.Stability
 
 val values = Stability.crashCount.testGetValue()
 // Do the counters have the expected values?
-assertEquals(1, values["category.stability/uncaught_exception"])
-assertEquals(3, values["category.stability/native_code_crash"])
+assertEquals(1, values["uncaught_exception"])
+assertEquals(3, values["native_code_crash"])
 ```
 </div>
 
@@ -143,8 +143,8 @@ import org.mozilla.yourApplication.GleanMetrics.Stability;
 
 Map<String, ?> values = Stability.INSTANCE.crashCount().testGetValue();
 // Do the counters have the expected values?
-assertEquals(1, values["category.stability/uncaught_exception"]);
-assertEquals(3, values["category.stability/native_code_crash"]);
+assertEquals(1, values["uncaught_exception"]);
+assertEquals(3, values["native_code_crash"]);
 ```
 </div>
 
@@ -153,8 +153,8 @@ assertEquals(3, values["category.stability/native_code_crash"]);
 ```Swift
 let values = Stability.crashCount.testGetValue()
 // Do the counters have the expected values?
-XCTAssertEqual(1, values["category.stability/uncaught_exception"])
-XCTAssertEqual(3, values["category.stability/native_code_crash"])
+XCTAssertEqual(1, values["uncaught_exception"])
+XCTAssertEqual(3, values["native_code_crash"])
 ```
 </div>
 
@@ -166,8 +166,8 @@ metrics = load_metrics("metrics.yaml")
 
 values = metrics.stability.crash_count.test_get_value()
 # Do the counters have the expected values?
-assert 1 == values["category.stability/uncaught_exception"]
-assert 3 == values["category.stability/native_code_crash"]
+assert 1 == values["uncaught_exception"]
+assert 3 == values["native_code_crash"]
 ```
 </div>
 

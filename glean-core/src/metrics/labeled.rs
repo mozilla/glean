@@ -363,7 +363,10 @@ where
         let map = self.label_map.lock().unwrap();
         map.iter().for_each(|(label, submetric)| {
             if let Some(v) = submetric.test_get_value(ping_name.clone()) {
-                out.insert(label.clone(), v);
+                out.insert(
+                    label.replace(&format!("{}/", self.submetric.meta().base_identifier()), ""),
+                    v,
+                );
             }
         });
         Some(out)

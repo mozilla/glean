@@ -62,12 +62,12 @@ fn test_labeled_metrics_test_get_value_functions_appropriately() {
 
     let map = metrics::labeled_boolean.test_get_value(None).unwrap();
     assert_eq!(map.len(), 1);
-    assert_eq!(map.get("sample.labeled_boolean/label1").unwrap(), &true);
+    assert_eq!(map.get("label1").unwrap(), &true);
 
     pings::validation.submit(None);
     let map = metrics::labeled_boolean.test_get_value(None).unwrap();
     assert_eq!(map.len(), 0);
-    assert!(!map.contains_key("sample.labeled_boolean/label1"));
+    assert!(!map.contains_key("label1"));
 
     glean::shutdown();
 }

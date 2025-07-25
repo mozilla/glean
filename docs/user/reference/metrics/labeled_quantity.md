@@ -117,8 +117,8 @@ in Rust where it's required. `None` or no argument will default to the first val
 import org.mozilla.yourApplication.GleanMetrics.Gfx
 
 val values = Gfx.display.testGetValue()
-assertEquals(433, values["category.gfx/width"])
-assertEquals(42, values["category.gfx/height"])
+assertEquals(433, values["width"])
+assertEquals(42, values["height"])
 ```
 
 </div>
@@ -128,16 +128,16 @@ assertEquals(42, values["category.gfx/height"])
 import org.mozilla.yourApplication.GleanMetrics.Gfx;
 
 Map<String, ?> values = 
-assertEquals(433, values["category.gfx/width"]);
-assertEquals(42, values["category.gfx/height"]);
+assertEquals(433, values["width"]);
+assertEquals(42, values["height"]);
 ```
 </div>
 <div data-lang="Swift" class="tab">
 
 ```Swift
 let values = Gfx.display.testGetValue()
-XCTAssertEqual(433, values["category.gfx/width"])
-XCTAssertEqual(42, values["category.gfx/heigth"])
+XCTAssertEqual(433, values["width"])
+XCTAssertEqual(42, values["heigth"])
 ```
 
 </div>
@@ -148,8 +148,8 @@ from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
 values = metrics.gfx.display.test_get_value()
-assert 433 == values["category.gfx/width"]
-assert 42 == values["category.gfx/height"]
+assert 433 == values["width"]
+assert 42 == values["height"]
 ```
 
 </div>
@@ -160,8 +160,8 @@ use glean_metrics::gfx;
 
 let values = gfx::display.test_get_value(None).unwrap();
 // Was anything recorded?
-assert_eq!(433, values["category.gfx/width"]);
-assert_eq!(42, values["category.gfx/height"]);
+assert_eq!(433, values["width"]);
+assert_eq!(42, values["height"]);
 ```
 </div>
 
