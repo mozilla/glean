@@ -45,18 +45,18 @@ export TARGET_CFLAGS="-DNDEBUG"
 #   (drop the "index." prefix, ensure the "public/build" path matches the artifacts of the TC task)
 pushd /builds/worker
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port.pushdate.2024.07.23.20240723071212/artifacts/public%2Fbuild%2Fcctools.tar.zst > cctools.tar.zst
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-cctools-port.pushdate.2025.07.22.20250722101257/artifacts/public%2Fbuild%2Fcctools.tar.zst > cctools.tar.zst
 tar -I zstd -xf cctools.tar.zst
 rm cctools.tar.zst
 curl -sfSL --retry 5 --retry-delay 10 \
-    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.clang-dist-toolchain.pushdate.2024.07.30.20240730145721/artifacts/public%2Fbuild%2Fclang-dist-toolchain.tar.xz > clang-dist-toolchain.tar.xz
+    https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.clang-dist-toolchain.pushdate.2025.07.22.20250722101257/artifacts/public%2Fbuild%2Fclang-dist-toolchain.tar.xz > clang-dist-toolchain.tar.xz
 tar -xf clang-dist-toolchain.tar.xz
 mv builds/worker/toolchains/clang clang
 rm clang-dist-toolchain.tar.xz
 
 # Fixup symlink
 rm /builds/worker/clang/bin/clang
-ln -s /builds/worker/clang/bin/clang-18 /builds/worker/clang/bin/clang
+ln -s /builds/worker/clang/bin/clang-19 /builds/worker/clang/bin/clang
 
 popd
 
@@ -80,6 +80,6 @@ rustup target add x86_64-pc-windows-gnu
 echo "Verifying paths after extraction"
 ls -la /builds/worker/clang/bin
 file /builds/worker/clang/bin/clang
-file /builds/worker/clang/bin/clang-18
+file /builds/worker/clang/bin/clang-19
 
 set +eu
