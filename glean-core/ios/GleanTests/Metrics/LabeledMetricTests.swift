@@ -269,7 +269,7 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledCounterMetric["label1"].add(1)
         labeledCounterMetric["label2"].add(2)
 
-        let labeledValues = labeledCounterMetric.testGetLabeledValues()
+        let labeledValues = labeledCounterMetric.testGetValue()
         XCTAssertEqual(2, labeledValues.count)
         XCTAssertEqual(1, labeledValues["telemetry.labeled_counter_metric/label1"] as! Int32)
         XCTAssertEqual(2, labeledValues["telemetry.labeled_counter_metric/label2"] as! Int32)

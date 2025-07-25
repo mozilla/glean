@@ -121,16 +121,16 @@ public class LabeledMetricType<T> {
     ///     * pingName: The optional name of the ping to retrieve the metrics for. Defaults to the first value in
     ///       `send_in_pings`.
     /// - returns: The values for each label in the labeled metric.
-    public func testGetLabeledValues(_ pingName: String? = nil) -> [String: Any] {
+    public func testGetValue(_ pingName: String? = nil) -> [String: Any] {
         switch self.inner {
-        case is LabeledCounter:
-            return (self.inner as! LabeledCounter).testGetLabeledValues(pingName)
-        case is LabeledBoolean:
-            return (self.inner as! LabeledBoolean).testGetLabeledValues(pingName)
-        case is LabeledString:
-            return (self.inner as! LabeledString).testGetLabeledValues(pingName)
-        case is LabeledQuantity:
-            return (self.inner as! LabeledQuantity).testGetLabeledValues(pingName)
+        case let labeled as LabeledCounter:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledBoolean:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledString:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledQuantity:
+            return labeled.testGetValue(pingName)!
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()

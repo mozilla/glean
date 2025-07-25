@@ -162,13 +162,13 @@ class LabeledMetricType<T>(
      * @return The values for each label in the labeled metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetLabeledValues(pingName: String? = null): Map<String, Any> {
+    fun testGetValue(pingName: String? = null): Map<String, Any> {
         return when (this.inner) {
-            is LabeledBoolean -> this.inner.metric.testGetLabeledValues(pingName)
-            is LabeledCounter -> this.inner.metric.testGetLabeledValues(pingName)
-            is LabeledString -> this.inner.metric.testGetLabeledValues(pingName)
-            is LabeledQuantity -> this.inner.metric.testGetLabeledValues(pingName)
+            is LabeledBoolean -> this.inner.metric.testGetValue(pingName)
+            is LabeledCounter -> this.inner.metric.testGetValue(pingName)
+            is LabeledString -> this.inner.metric.testGetValue(pingName)
+            is LabeledQuantity -> this.inner.metric.testGetValue(pingName)
             else -> error("Can not create a labeled version of this metric type")
-        }
+        }!!
     }
 }

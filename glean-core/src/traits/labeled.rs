@@ -2,15 +2,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::ErrorType;
+use std::any::Any;
+use std::collections::HashMap;
+use crate::{ErrorType, TestGetValue};
 
 /// A description for the [`LabeledMetric`](crate::metrics::LabeledMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Labeled<T>
+pub trait Labeled<T, S> : TestGetValue<HashMap<String, S>>
 where
-    T: Clone,
+    T: Clone + TestGetValue<S>,
+    S: Any
 {
     /// Gets a specific metric for a given label.
     ///

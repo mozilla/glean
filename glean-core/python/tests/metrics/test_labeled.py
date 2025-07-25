@@ -31,6 +31,30 @@ def test_labeled_counter_type():
     assert 2 == labeled_counter_metric["label2"].test_get_value()
 
 
+def test_labeled_counter_type_test_get_metrics():
+    labeled_counter_metric = metrics.LabeledCounterMetricType(
+        LabeledMetricData.COMMON(
+            CommonMetricData(
+                disabled=False,
+                category="telemetry",
+                lifetime=Lifetime.APPLICATION,
+                name="labeled_counter_metric",
+                send_in_pings=["metrics"],
+                dynamic_label=None,
+            )
+        )
+    )
+
+    labeled_counter_metric["label1"].add(1)
+    labeled_counter_metric["label2"].add(2)
+
+    values = labeled_counter_metric.test_get_value()
+
+    assert 1 == values["telemetry.labeled_counter_metric/label1"]
+
+    assert 2 == values["telemetry.labeled_counter_metric/label2"]
+
+
 def test_labeled_boolean_type():
     labeled_boolean_metric = metrics.LabeledBooleanMetricType(
         LabeledMetricData.COMMON(
