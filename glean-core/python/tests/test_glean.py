@@ -23,11 +23,12 @@ from glean import __version__ as glean_version
 from glean import _builtins
 from glean import _util
 from glean.metrics import (
+    CommonMetricData,
     CounterMetricType,
     EventMetricType,
-    CommonMetricData,
     Lifetime,
     PingType,
+    StringListMetricType,
     StringMetricType,
 )
 from glean.net import PingUploadWorker
@@ -1024,3 +1025,242 @@ def test_glean_shutdown(safe_httpserver):
     Glean.shutdown()
     wait_for_requests(safe_httpserver, n=10)
     assert 10 == len(safe_httpserver.requests)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
+def test_uploader_capabilities_reported(tmpdir, helpers):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path, ["mock-cap"]),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=["mock-cap"],
+    )
+
+    counter_metric = CounterMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.APPLICATION,
+            name="counter_metric",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        )
+    )
+
+    counter_metric.add()
+    custom_ping.submit()
+
+    url_path, payload = helpers.wait_for_ping(info_path)
+
+    assert "store1" == url_path.split("/")[3]
+    string_lists = payload["metrics"].get("string_list", [])
+
+    uploader_capabilities = string_lists["glean.ping.uploader_capabilities"]
+    assert ["mock-cap"] == uploader_capabilities
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
+def test_uploader_capabilities_empty_not_reported(tmpdir, helpers):
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path, ["mock-cap"]),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=[],
+    )
+
+    metric = StringListMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="telemetry",
+            lifetime=Lifetime.PING,
+            name="stringlist_metric",
+            send_in_pings=["store1"],
+            dynamic_label=None,
+        )
+    )
+
+    metric.add("value1")
+    custom_ping.submit()
+
+    url_path, payload = helpers.wait_for_ping(info_path)
+
+    assert "store1" == url_path.split("/")[3]
+    string_lists = payload["metrics"].get("string_list", [])
+
+    assert ["value1"] == string_lists["telemetry.stringlist_metric"]
+    assert "glean.ping.uploader_capabilities" not in string_lists
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
+def test_uploader_capabilities_in_send_if_empty_ping(tmpdir, helpers):
+    """
+    `glean.ping.uploader_capabilities` is added to an otherwise empty ping if `send_if_empty=true`
+    """
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path, ["mock-cap"]),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=True,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=["mock-cap"],
+    )
+
+    custom_ping.submit()
+
+    url_path, payload = helpers.wait_for_ping(info_path)
+
+    assert "store1" == url_path.split("/")[3]
+    string_lists = payload["metrics"].get("string_list", [])
+
+    uploader_capabilities = string_lists["glean.ping.uploader_capabilities"]
+    assert ["mock-cap"] == uploader_capabilities
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
+def test_uploader_capabilities_in_empty_ping(tmpdir, helpers):
+    """
+    `glean.ping.uploader_capabilities` is NOT added to an otherwise empty ping if `send_if_empty=false`
+    """
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path, ["mock-cap"]),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="store1",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=["mock-cap"],
+    )
+
+    custom_ping.submit()
+
+    with pytest.raises(TimeoutError):
+        helpers.wait_for_ping(info_path, timeout=1)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
+def test_uploader_capabilities_in_events_ping(tmpdir, helpers):
+    """
+    `glean.ping.uploader_capabilities` is NOT added to an otherwise empty ping if `send_if_empty=false`
+    """
+
+    info_path = Path(str(tmpdir)) / "info.txt"
+    data_dir = Path(str(tmpdir)) / "glean"
+
+    Glean._reset()
+    Glean.initialize(
+        application_id=GLEAN_APP_ID,
+        application_version=glean_version,
+        upload_enabled=True,
+        data_dir=data_dir,
+        configuration=Configuration(
+            max_events=1,
+            ping_uploader=_RecordingUploader(info_path, ["mock-cap"]),
+        ),
+    )
+
+    custom_ping = PingType(
+        name="custom-events",
+        include_client_id=True,
+        send_if_empty=False,
+        precise_timestamps=True,
+        include_info_sections=True,
+        schedules_pings=[],
+        reason_codes=[],
+        uploader_capabilities=["mock-cap"],
+    )
+
+    event = EventMetricType(
+        CommonMetricData(
+            disabled=False,
+            category="test",
+            name="custom",
+            lifetime=Lifetime.PING,
+            send_in_pings=["custom-events"],
+            dynamic_label=None,
+        ),
+        allowed_extra_keys=[],
+    )
+
+    event.record()
+    custom_ping.submit()
+
+    url_path, payload = helpers.wait_for_ping(info_path)
+
+    assert "custom-events" == url_path.split("/")[3]
+    string_lists = payload["metrics"].get("string_list", [])
+
+    uploader_capabilities = string_lists["glean.ping.uploader_capabilities"]
+    assert ["mock-cap"] == uploader_capabilities

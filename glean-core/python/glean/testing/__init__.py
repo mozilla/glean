@@ -73,8 +73,9 @@ class _RecordingUploader(base_uploader.BaseUploader):
     package since it runs in the ping upload worker subprocess.
     """
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, capabilities=None):
         self.file_path = file_path
+        self.capabilities = set(capabilities or {})
 
     def do_upload(
         self, capable_request: "CapablePingUploadRequest"
@@ -85,7 +86,9 @@ class _RecordingUploader(base_uploader.BaseUploader):
         UploadResult.HTTP_STATUS,
         UploadResult.INCAPABLE,
     ]:
-        request = capable_request.capable(lambda _capabilities: True)
+        request = capable_request.capable(
+            lambda capabilities: set(capabilities).issubset(self.capabilities)
+        )
         assert request is not None
         data = request.body
         headers = request.headers
