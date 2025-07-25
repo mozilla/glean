@@ -16,6 +16,7 @@
   * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
 * Swift
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
+  * Glean for iOS is now being built with Xcode 16.2 ([#]())
 
 # v64.5.2 (2025-07-01)
 

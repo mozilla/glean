@@ -59,4 +59,5 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 # Reminder to add a changelog entry
 run echo "Updated Xcode to version ${NEW_VERSION_MAJOR_MINOR}"
 run echo "Please add the following to the CHANGELOG.md under the unrelased section for iOS:"
-run echo "'* Glean for iOS is now being built with Xcode 15.1 ([<pull request #>](<pull request URL>))'"
+echo
+run echo "* Glean for iOS is now being built with Xcode ${NEW_VERSION} ([<pull request #>](<pull request URL>))'"
