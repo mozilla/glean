@@ -9,7 +9,7 @@ use std::{thread, time};
 use once_cell::sync::Lazy;
 
 use glean::net;
-use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder};
+use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
 
 pub mod glean_metrics {
     use glean::{private::BooleanMetric, CommonMetricData, Lifetime};

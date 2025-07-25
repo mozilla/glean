@@ -150,4 +150,25 @@ class LabeledMetricType<T>(
             else -> error("Can not create a labeled version of this metric type")
         }
     }
+
+    /**
+     * Returns the currently stored values for each label as the appropriate type for the given
+     * metric.
+     *
+     * This doesn't clear the stored value.
+     *
+     * @param pingName The optional name of the ping to retrieve the metrics for. Defaults to the
+     *   first value in `send_in_pings`.
+     * @return The values for each label in the labeled metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetValue(pingName: String? = null): Map<String, Any> {
+        return when (this.inner) {
+            is LabeledBoolean -> this.inner.metric.testGetValue(pingName)
+            is LabeledCounter -> this.inner.metric.testGetValue(pingName)
+            is LabeledString -> this.inner.metric.testGetValue(pingName)
+            is LabeledQuantity -> this.inner.metric.testGetValue(pingName)
+            else -> error("Can not create a labeled version of this metric type")
+        }!!
+    }
 }

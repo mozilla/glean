@@ -9,8 +9,7 @@ use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
-use glean::{net, Configuration};
-use glean::{ClientInfoMetrics, ConfigurationBuilder};
+use glean::{net, ClientInfoMetrics, Configuration, ConfigurationBuilder, TestGetValue};
 use serde_json::Value as JsonValue;
 
 /// A timing_distribution

@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
-use glean_core::{glean_test_get_experimentation_id, DynamicLabelType};
+use glean_core::{glean_test_get_experimentation_id, DynamicLabelType, LabeledCounter};
 use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
@@ -1281,6 +1281,39 @@ fn test_boolean_get_num_errors() {
     // Check specifically for an invalid label
     let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel);
 
+    assert_eq!(result, 0);
+}
+
+#[test]
+fn test_labeled_counter_metric() {
+    let _lock = lock_test();
+
+    let _t = new_glean(None, false);
+
+    let metric = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_counter".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        Some(vec!["key1".into()]),
+    );
+
+    metric.get("key1").add(1);
+    metric.get("key2").add(2);
+
+    // Check that the value was recorded
+    let value = metric.test_get_value(Some("store1".into())).unwrap();
+    assert_eq!(value["key1"], 1);
+    assert_eq!(value["key2"], 2);
+
+    // Check for an invalid label
+    let result = metric.test_get_num_recorded_errors(ErrorType::InvalidLabel);
     assert_eq!(result, 0);
 }
 

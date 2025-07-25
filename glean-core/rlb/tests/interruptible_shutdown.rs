@@ -18,8 +18,7 @@ use crossbeam_channel::{bounded, Sender};
 use flate2::read::GzDecoder;
 use serde_json::Value as JsonValue;
 
-use glean::net;
-use glean::{ConfigurationBuilder, PingRateLimit};
+use glean::{net, ConfigurationBuilder, PingRateLimit, TestGetValue};
 
 mod metrics {
     #![allow(non_upper_case_globals)]

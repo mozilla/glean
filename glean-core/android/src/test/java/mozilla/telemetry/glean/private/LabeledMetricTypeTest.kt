@@ -511,4 +511,34 @@ class LabeledMetricTypeTest {
         assertEquals(maxAttempts, labeledCounterMetric["foo"].testGetValue())
         assertEquals(0, labeledCounterMetric.testGetNumRecordedErrors(ErrorType.INVALID_LABEL))
     }
+
+    @Test
+    fun `test labeled metric testGetValue`() {
+        val counterMetric = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.APPLICATION,
+                name = "labeled_counter_metric",
+                sendInPings = listOf("metrics"),
+            ),
+        )
+
+        val labeledCounterMetric = LabeledMetricType(
+            disabled = false,
+            category = "telemetry",
+            lifetime = Lifetime.APPLICATION,
+            name = "labeled_counter_metric",
+            sendInPings = listOf("metrics"),
+            subMetric = counterMetric,
+        )
+
+        labeledCounterMetric["label1"].add(1)
+        labeledCounterMetric["label2"].add(2)
+
+        val values = labeledCounterMetric.testGetValue()
+        assertEquals(2, values.size)
+        assertEquals(1, values["label1"])
+        assertEquals(2, values["label2"])
+    }
 }

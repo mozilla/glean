@@ -75,7 +75,8 @@ pub use crate::metrics::{
     LocalCustomDistribution, LocalMemoryDistribution, LocalTimingDistribution,
     MemoryDistributionMetric, MemoryUnit, NumeratorMetric, ObjectMetric, PingType, QuantityMetric,
     Rate, RateMetric, RecordedEvent, RecordedExperiment, StringListMetric, StringMetric,
-    TextMetric, TimeUnit, TimerId, TimespanMetric, TimingDistributionMetric, UrlMetric, UuidMetric,
+    TestGetValue, TextMetric, TimeUnit, TimerId, TimespanMetric, TimingDistributionMetric,
+    UrlMetric, UuidMetric,
 };
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult, UploadTaskAction};
 

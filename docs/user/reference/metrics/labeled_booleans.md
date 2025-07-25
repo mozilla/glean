@@ -102,8 +102,10 @@ Glean.accessibility.features["high_contrast"].set(false);
 ### `testGetValue`
 
 Gets the recorded value for a given label in a labeled boolean metric.  
-Returns the count if data is stored.  
-Returns a language-specific empty/null value if no data is stored.
+Returns the boolean value if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.  
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always 
+return a map, but it will be empty if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
@@ -114,9 +116,10 @@ in Rust where it's required. `None` or no argument will default to the first val
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Accessibility
 
+val values = Accessibility.features.testGetValue()
 // Do the booleans have the expected values?
-assertEquals(True, Accessibility.features["screen_reader"].testGetValue())
-assertEquals(False, Accessibility.features["high_contrast"].testGetValue())
+assertEquals(True, values["screen_reader"])
+assertEquals(False, values["high_contrast"])
 ```
 </div>
 
@@ -125,18 +128,20 @@ assertEquals(False, Accessibility.features["high_contrast"].testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
+Map<String, ?> values = Accessibility.INSTANCE.features().testGetValue();
 // Do the booleans have the expected values?
-assertEquals(True, Acessibility.INSTANCE.features()["screen_reader"].testGetValue());
-assertEquals(False, Acessibility.INSTANCE.features()["high_contrast"].testGetValue());
+assertEquals(True, values["screen_reader"]);
+assertEquals(False, values["high_contrast"]);
 ```
 </div>
 
 <div data-lang="Swift" class="tab">
 
 ```Swift
+let values = Accessibility.features.testGetValue()
 // Do the booleans have the expected values?
-XCTAssertEqual(true, Accessibility.features["screen_reader"].testGetValue())
-XCTAssertEqual(false, Accessibility.features["high_contrast"].testGetValue())
+XCTAssertEqual(true, values["screen_reader"])
+XCTAssertEqual(false, values["high_contrast"])
 ```
 </div>
 
@@ -146,9 +151,10 @@ XCTAssertEqual(false, Accessibility.features["high_contrast"].testGetValue())
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
+values = metrics.accessibility.features.testGetValue()
 # Do the booleans have the expected values?
-assert metrics.accessibility.features["screen_reader"].test_get_value()
-assert not metrics.accessibility.features["high_contrast"].test_get_value()
+assert values["screen_reader"]
+assert not values["high_contrast"]
 ```
 </div>
 
@@ -157,9 +163,10 @@ assert not metrics.accessibility.features["high_contrast"].test_get_value()
 ```Rust
 use glean_metrics::accessibility;
 
+let values = accessibility::features.test_get_value(None).unwrap();
 // Do the booleans have the expected values?
-assert!(accessibility::features.get("screen_reader").test_get_value(None).unwrap());
-assert!(!accessibility::features.get("high_contrast").test_get_value(None).unwrap());
+assert!(values["screen_reader"]);
+assert!(!values["high_contrast"]);
 ```
 </div>
 
