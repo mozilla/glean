@@ -92,56 +92,56 @@ user-login = "dtolnay"
 user-name = "David Tolnay"
 
 [[publisher.uniffi]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_bindgen]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_build]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_core]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_internal_macros]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_macros]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_meta]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_pipeline]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
 [[publisher.uniffi_udl]]
-version = "0.29.3"
-when = "2025-06-06"
+version = "0.29.4"
+when = "2025-07-24"
 user-id = 127697
 user-login = "bendk"
 
