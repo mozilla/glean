@@ -639,6 +639,7 @@ The only difference is that labeled metrics are stored with the special key <cod
 <li><code><a href="../Typealiases.html#/s:5Glean17BooleanMetricTypea">BooleanMetricType</a></code></li>
 <li><code><a href="../Typealiases.html#/s:5Glean17CounterMetricTypea">CounterMetricType</a></code></li>
 <li><code><a href="../Typealiases.html#/s:5Glean16StringMetricTypea">StringMetricType</a></code></li>
+<li><code><a href="../Classes/QuantityMetric.html">QuantityMetric</a></code></li>
 </ul>
 
 <p>Throws an exception when used with unsupported sub-metrics.</p>
@@ -770,6 +771,59 @@ If an invalid label is used, the metric will be recorded in the special <code>OT
                       <div>
                         <h4>Return Value</h4>
                         <p>the number of errors recorded for the metric.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Glean17LabeledMetricTypeC12testGetValueySDySSypGSSSgF"></a>
+                    <a name="//apple_ref/swift/Method/testGetValue(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean17LabeledMetricTypeC12testGetValueySDySSypGSSSgF">testGetValue(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the currently stored values for each label as the appropriate type for the given metric.</p>
+
+<p>This doesn&rsquo;t clear the stored value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">testGetValue</span><span class="p">(</span><span class="n">_</span> <span class="nv">pingName</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>pingName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The optional name of the ping to retrieve the metrics for. Defaults to the first value in
+<code>send_in_pings</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The values for each label in the labeled metric.</p>
                       </div>
                     </section>
                   </div>

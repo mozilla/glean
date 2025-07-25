@@ -373,6 +373,25 @@
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -642,6 +661,25 @@
 </span><span class="kw">pub trait </span>MetricIdentifier&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Retrieve the category, name and (maybe) label of the metric
     </span><span class="kw">fn </span>get_identifiers(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; (<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;);
+}
+
+<span class="doccomment">/// [`TestGetValue`] describes an interface for retrieving the value for a given metric
+</span><span class="kw">pub trait </span>TestGetValue&lt;T&gt; {
+    <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Returns the currently stored value of the appropriate type for the given metric.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    </span><span class="kw">fn </span>test_get_value(<span class="kw-2">&amp;</span><span class="self">self</span>, ping_name: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt;;
 }
 
 <span class="comment">// Provide a blanket implementation for MetricIdentifier for all the types

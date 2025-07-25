@@ -280,8 +280,10 @@ These labels may only be made of printable ASCII characters.</li>
 <h2 id="testing-api"><a class="header" href="#testing-api">Testing API</a></h2>
 <h3 id="testgetvalue"><a class="header" href="#testgetvalue"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled string metric.<br />
-Returns the string if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.
+Returns the string if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -290,35 +292,40 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Login
 
+val values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-assertTrue(Login.errorsByStage[&quot;server_auth&quot;].testGetValue())
+assertTrue(values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Login;
 
+Map&lt;String, ?&gt; values = Login.INSTANCE.errorsByStage().testGetValue();
 // Does the metric have the expected value?
-assertTrue(Login.INSTANCE.errorsByStage()[&quot;server_auth&quot;].testGetValue());
+assertTrue(values[&quot;server_auth&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">// Does the metric have the expected value?
-XCTAssert(Login.errorsByStage[&quot;server_auth&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Login.errorsByStage.testGetValue()
+// Does the metric have the expected value?
+XCTAssert(values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
+values = metrics.login.errors_by_stage.testGetValue()
 # Does the metric have the expected value?
-assert &quot;Invalid password&quot; == metrics.login.errors_by_stage[&quot;server_auth&quot;].testGetValue())
+assert &quot;Invalid password&quot; == values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::login;
 
+let values = login::errors_by_stage.test_get_value(None).unwrap();
 // Does the metric have the expected value?
-assert!(login::errors_by_stage.get(&quot;server_auth&quot;).test_get_value());
+assert!(values[&quot;server_auth&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab">

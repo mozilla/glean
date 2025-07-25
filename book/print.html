@@ -5851,8 +5851,10 @@ These labels may only be made of printable ASCII characters.</li>
 <h2 id="testing-api-4"><a class="header" href="#testing-api-4">Testing API</a></h2>
 <h3 id="testgetvalue-1"><a class="header" href="#testgetvalue-1"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled boolean metric.<br />
-Returns the count if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.
+Returns the boolean value if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always 
+return a map, but it will be empty if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -5861,40 +5863,45 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Accessibility
 
+val values = Accessibility.features.testGetValue()
 // Do the booleans have the expected values?
-assertEquals(True, Accessibility.features[&quot;screen_reader&quot;].testGetValue())
-assertEquals(False, Accessibility.features[&quot;high_contrast&quot;].testGetValue())
+assertEquals(True, values[&quot;screen_reader&quot;])
+assertEquals(False, values[&quot;high_contrast&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Accessibility;
 
+Map&lt;String, ?&gt; values = Accessibility.INSTANCE.features().testGetValue();
 // Do the booleans have the expected values?
-assertEquals(True, Acessibility.INSTANCE.features()[&quot;screen_reader&quot;].testGetValue());
-assertEquals(False, Acessibility.INSTANCE.features()[&quot;high_contrast&quot;].testGetValue());
+assertEquals(True, values[&quot;screen_reader&quot;]);
+assertEquals(False, values[&quot;high_contrast&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">// Do the booleans have the expected values?
-XCTAssertEqual(true, Accessibility.features[&quot;screen_reader&quot;].testGetValue())
-XCTAssertEqual(false, Accessibility.features[&quot;high_contrast&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Accessibility.features.testGetValue()
+// Do the booleans have the expected values?
+XCTAssertEqual(true, values[&quot;screen_reader&quot;])
+XCTAssertEqual(false, values[&quot;high_contrast&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
+values = metrics.accessibility.features.testGetValue()
 # Do the booleans have the expected values?
-assert metrics.accessibility.features[&quot;screen_reader&quot;].test_get_value()
-assert not metrics.accessibility.features[&quot;high_contrast&quot;].test_get_value()
+assert values[&quot;screen_reader&quot;]
+assert not values[&quot;high_contrast&quot;]
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::accessibility;
 
+let values = accessibility::features.test_get_value(None).unwrap();
 // Do the booleans have the expected values?
-assert!(accessibility::features.get(&quot;screen_reader&quot;).test_get_value(None).unwrap());
-assert!(!accessibility::features.get(&quot;high_contrast&quot;).test_get_value(None).unwrap());
+assert!(values[&quot;screen_reader&quot;]);
+assert!(!values[&quot;high_contrast&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab">
@@ -6382,8 +6389,10 @@ These labels may only be made of printable ASCII characters.</li>
 <h2 id="testing-api-6"><a class="header" href="#testing-api-6">Testing API</a></h2>
 <h3 id="testgetvalue-3"><a class="header" href="#testgetvalue-3"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled counter metric.<br />
-Returns the count if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.
+Returns the count if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored.
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -6392,40 +6401,45 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Stability
 
+val values = Stability.crashCount.testGetValue()
 // Do the counters have the expected values?
-assertEquals(1, Stability.crashCount[&quot;uncaught_exception&quot;].testGetValue())
-assertEquals(3, Stability.crashCount[&quot;native_code_crash&quot;].testGetValue())
+assertEquals(1, values[&quot;uncaught_exception&quot;])
+assertEquals(3, values[&quot;native_code_crash&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Stability;
 
+Map&lt;String, ?&gt; values = Stability.INSTANCE.crashCount().testGetValue();
 // Do the counters have the expected values?
-assertEquals(1, Stability.INSTANCE.crashCount()[&quot;uncaught_exception&quot;].testGetValue());
-assertEquals(3, Stability.INSTANCE.crashCount()[&quot;native_code_crash&quot;].testGetValue());
+assertEquals(1, values[&quot;uncaught_exception&quot;]);
+assertEquals(3, values[&quot;native_code_crash&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">// Do the counters have the expected values?
-XCTAssertEqual(1, Stability.crashCount[&quot;uncaught_exception&quot;].testGetValue())
-XCTAssertEqual(3, Stability.crashCount[&quot;native_code_crash&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Stability.crashCount.testGetValue()
+// Do the counters have the expected values?
+XCTAssertEqual(1, values[&quot;uncaught_exception&quot;])
+XCTAssertEqual(3, values[&quot;native_code_crash&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
+values = metrics.stability.crash_count.test_get_value()
 # Do the counters have the expected values?
-assert 1 == metrics.stability.crash_count[&quot;uncaught_exception&quot;].test_get_value()
-assert 3 == metrics.stability.crash_count[&quot;native_code_crash&quot;].test_get_value()
+assert 1 == values[&quot;uncaught_exception&quot;]
+assert 3 == values[&quot;native_code_crash&quot;]
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::stability;
 
+let values = stability::crash_count.test_get_value(None).unwrap();
 // Do the counters have the expected values?
-assert_eq!(1, stability::crash_count.get(&quot;uncaught_exception&quot;).test_get_value().unwrap());
-assert_eq!(3, stability::crash_count.get(&quot;native_code_crash&quot;).test_get_value().unwrap());
+assert_eq!(1, values[&quot;uncaught_exception&quot;]);
+assert_eq!(3, values[&quot;native_code_crash&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab">
@@ -7169,8 +7183,10 @@ These labels may only be made of printable ASCII characters.</li>
 <h2 id="testing-api-9"><a class="header" href="#testing-api-9">Testing API</a></h2>
 <h3 id="testgetvalue-6"><a class="header" href="#testgetvalue-6"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled string metric.<br />
-Returns the string if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.
+Returns the string if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -7179,35 +7195,40 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Login
 
+val values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-assertTrue(Login.errorsByStage[&quot;server_auth&quot;].testGetValue())
+assertTrue(values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Login;
 
+Map&lt;String, ?&gt; values = Login.INSTANCE.errorsByStage().testGetValue();
 // Does the metric have the expected value?
-assertTrue(Login.INSTANCE.errorsByStage()[&quot;server_auth&quot;].testGetValue());
+assertTrue(values[&quot;server_auth&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">// Does the metric have the expected value?
-XCTAssert(Login.errorsByStage[&quot;server_auth&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Login.errorsByStage.testGetValue()
+// Does the metric have the expected value?
+XCTAssert(values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
+values = metrics.login.errors_by_stage.testGetValue()
 # Does the metric have the expected value?
-assert &quot;Invalid password&quot; == metrics.login.errors_by_stage[&quot;server_auth&quot;].testGetValue())
+assert &quot;Invalid password&quot; == values[&quot;server_auth&quot;])
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::login;
 
+let values = login::errors_by_stage.test_get_value(None).unwrap();
 // Does the metric have the expected value?
-assert!(login::errors_by_stage.get(&quot;server_auth&quot;).test_get_value());
+assert!(values[&quot;server_auth&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab">
@@ -12228,8 +12249,10 @@ Glean.gfx.display[&quot;height&quot;].set(aHeight);
 <h2 id="testing-api-23"><a class="header" href="#testing-api-23">Testing API</a></h2>
 <h3 id="testgetvalue-20"><a class="header" href="#testgetvalue-20"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled quantity metric.<br />
-Returns the quantity value if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.<br />
+Returns the quantity value if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except<br />
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -12238,36 +12261,41 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Gfx
 
-assertEquals(433, Gfx.display[&quot;width&quot;].testGetValue())
-assertEquals(42, Gfx.display[&quot;height&quot;].testGetValue())
+val values = Gfx.display.testGetValue()
+assertEquals(433, values[&quot;width&quot;])
+assertEquals(42, values[&quot;height&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">org
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Gfx;
 
-assertEquals(433, Gfx.INSTANCE.display()[&quot;width&quot;].testGetValue());
-assertEquals(42, Gfx.INSTANCE.display()[&quot;height&quot;].testGetValue());
+Map&lt;String, ?&gt; values = 
+assertEquals(433, values[&quot;width&quot;]);
+assertEquals(42, values[&quot;height&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">XCTAssertEqual(433, Gfx.display[&quot;width&quot;].testGetValue())
-XCTAssertEqual(42, Gfx.display[&quot;heigth&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Gfx.display.testGetValue()
+XCTAssertEqual(433, values[&quot;width&quot;])
+XCTAssertEqual(42, values[&quot;heigth&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
-assert 433 == metrics.gfx.display[&quot;width&quot;].test_get_value()
-assert 42 == metrics.gfx.display[&quot;height&quot;].test_get_value()
+values = metrics.gfx.display.test_get_value()
+assert 433 == values[&quot;width&quot;]
+assert 42 == values[&quot;height&quot;]
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::gfx;
 
+let values = gfx::display.test_get_value(None).unwrap();
 // Was anything recorded?
-assert_eq!(433, gfx::display.get(&quot;width&quot;).test_get_value(None).unwrap());
-assert_eq!(42, gfx::display.get(&quot;height&quot;).test_get_value(None).unwrap());
+assert_eq!(433, values[&quot;width&quot;]);
+assert_eq!(42, values[&quot;height&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
@@ -14093,6 +14121,7 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li>General
 <ul>
 <li>Performance improvement: Reduce file system operations when recording events (<a href="https://github.com/mozilla/glean/pull/3179">#3179</a>)</li>
+<li><code>LabeledMetric</code> improvement: Added <code>testGetValue</code> as a test method on all labeled metric types (<a href="https://github.com/mozilla/glean/pull/3190">#3190</a>)</li>
 </ul>
 </li>
 <li>Android

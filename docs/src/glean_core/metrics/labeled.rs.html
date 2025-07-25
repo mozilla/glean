@@ -421,11 +421,34 @@
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-</span><span class="kw">use </span>std::borrow::Cow;
+</span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::collections::HashSet;
 <span class="kw">use </span>std::collections::{hash_map::Entry, HashMap};
 <span class="kw">use </span>std::mem;
@@ -438,7 +461,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::histogram::HistogramType;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
-    Metric, MetricType, QuantityMetric, StringMetric, TimeUnit, TimingDistributionMetric,
+    Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit,
+    TimingDistributionMetric,
 };
 <span class="kw">use </span><span class="kw">crate</span>::Glean;
 
@@ -771,6 +795,26 @@
         <span class="kw">crate</span>::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, <span class="self">self</span>.submetric.meta(), error).unwrap_or(<span class="number">0</span>)
         })
+    }
+}
+
+<span class="kw">impl</span>&lt;T, S&gt; TestGetValue&lt;HashMap&lt;String, S&gt;&gt; <span class="kw">for </span>LabeledMetric&lt;T&gt;
+<span class="kw">where
+    </span>T: AllowLabeled + TestGetValue&lt;S&gt;,
+    S: Any,
+{
+    <span class="kw">fn </span>test_get_value(<span class="kw-2">&amp;</span><span class="self">self</span>, ping_name: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;HashMap&lt;String, S&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>out = HashMap::new();
+        <span class="kw">let </span>map = <span class="self">self</span>.label_map.lock().unwrap();
+        map.iter().for_each(|(label, submetric)| {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = submetric.test_get_value(ping_name.clone()) {
+                out.insert(
+                    label.replace(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{}/"</span>, <span class="self">self</span>.submetric.meta().base_identifier()), <span class="string">""</span>),
+                    v,
+                );
+            }
+        });
+        <span class="prelude-val">Some</span>(out)
     }
 }
 

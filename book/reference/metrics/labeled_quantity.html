@@ -265,8 +265,10 @@ Glean.gfx.display[&quot;height&quot;].set(aHeight);
 <h2 id="testing-api"><a class="header" href="#testing-api">Testing API</a></h2>
 <h3 id="testgetvalue"><a class="header" href="#testgetvalue"><code>testGetValue</code></a></h3>
 <p>Gets the recorded value for a given label in a labeled quantity metric.<br />
-Returns the quantity value if data is stored.<br />
-Returns a language-specific empty/null value if no data is stored.<br />
+Returns the quantity value if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.<br />
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except<br />
 in Rust where it's required. <code>None</code> or no argument will default to the first value found for <code>send_in_pings</code>.</p>
 <div class="tabs">
@@ -275,36 +277,41 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Kotlin" class="tab">
 <pre><code class="language-Kotlin">import org.mozilla.yourApplication.GleanMetrics.Gfx
 
-assertEquals(433, Gfx.display[&quot;width&quot;].testGetValue())
-assertEquals(42, Gfx.display[&quot;height&quot;].testGetValue())
+val values = Gfx.display.testGetValue()
+assertEquals(433, values[&quot;width&quot;])
+assertEquals(42, values[&quot;height&quot;])
 </code></pre>
 </div>
 <div data-lang="Java" class="tab">org
 <pre><code class="language-Java">import org.mozilla.yourApplication.GleanMetrics.Gfx;
 
-assertEquals(433, Gfx.INSTANCE.display()[&quot;width&quot;].testGetValue());
-assertEquals(42, Gfx.INSTANCE.display()[&quot;height&quot;].testGetValue());
+Map&lt;String, ?&gt; values = 
+assertEquals(433, values[&quot;width&quot;]);
+assertEquals(42, values[&quot;height&quot;]);
 </code></pre>
 </div>
 <div data-lang="Swift" class="tab">
-<pre><code class="language-Swift">XCTAssertEqual(433, Gfx.display[&quot;width&quot;].testGetValue())
-XCTAssertEqual(42, Gfx.display[&quot;heigth&quot;].testGetValue())
+<pre><code class="language-Swift">let values = Gfx.display.testGetValue()
+XCTAssertEqual(433, values[&quot;width&quot;])
+XCTAssertEqual(42, values[&quot;heigth&quot;])
 </code></pre>
 </div>
 <div data-lang="Python" class="tab">
 <pre><code class="language-Python">from glean import load_metrics
 metrics = load_metrics(&quot;metrics.yaml&quot;)
 
-assert 433 == metrics.gfx.display[&quot;width&quot;].test_get_value()
-assert 42 == metrics.gfx.display[&quot;height&quot;].test_get_value()
+values = metrics.gfx.display.test_get_value()
+assert 433 == values[&quot;width&quot;]
+assert 42 == values[&quot;height&quot;]
 </code></pre>
 </div>
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::gfx;
 
+let values = gfx::display.test_get_value(None).unwrap();
 // Was anything recorded?
-assert_eq!(433, gfx::display.get(&quot;width&quot;).test_get_value(None).unwrap());
-assert_eq!(42, gfx::display.get(&quot;height&quot;).test_get_value(None).unwrap());
+assert_eq!(433, values[&quot;width&quot;]);
+assert_eq!(42, values[&quot;height&quot;]);
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
