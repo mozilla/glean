@@ -509,6 +509,32 @@
 <a href="#509" id="509">509</a>
 <a href="#510" id="510">510</a>
 <a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -797,6 +823,32 @@
         <span class="kw">let </span>events_data = glean
             .event_storage()
             .snapshot_as_json(glean, ping.name(), <span class="bool-val">true</span>);
+
+        <span class="comment">// We're adding the metric `glean.ping.uploader_capabilities` the most manual way here.
+        // This avoids creating a `StringListMetric` and further indirection.
+        // It also avoids yet another database write.
+        // It's only added if
+        // (1) There's already data in `metrics` or `events`
+        // (2) or the ping should be sent empty (`send_if_empty=true`)
+        </span><span class="kw">let </span>uploader_capabilities = ping.uploader_capabilities();
+        <span class="kw">if </span>!uploader_capabilities.is_empty() {
+            <span class="kw">if </span>metrics_data.is_none() &amp;&amp; (ping.send_if_empty() || events_data.is_some()) {
+                metrics_data = <span class="prelude-val">Some</span>(<span class="macro">json!</span>({}))
+            }
+
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(map) = metrics_data.as_mut().and_then(|o| o.as_object_mut()) {
+                <span class="kw">let </span>lists = map
+                    .entry(<span class="string">"string_list"</span>)
+                    .or_insert_with(|| <span class="macro">json!</span>({}))
+                    .as_object_mut()
+                    .unwrap();
+
+                lists.insert(
+                    <span class="string">"glean.ping.uploader_capabilities"</span>.to_string(),
+                    <span class="macro">json!</span>(uploader_capabilities),
+                );
+            }
+        }
 
         <span class="comment">// Due to the way the experimentation identifier could link datasets that are intentionally unlinked,
         // it will not be included in pings that specifically exclude the Glean client-id, those pings that
