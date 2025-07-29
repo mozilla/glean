@@ -315,7 +315,8 @@ class PingTypeTest {
         val pingJson = JSONObject(request.getPlainBody())
         assertNull(pingJson.getJSONObject("client_info").opt("client_id"))
         assertNull(
-            pingJson.optJSONObject("metrics")
+            pingJson
+                .optJSONObject("metrics")
                 ?.optJSONObject("string")
                 ?.opt("glean.client.annotation.experimentation_id"),
         )

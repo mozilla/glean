@@ -185,7 +185,10 @@ class MetricsPingSchedulerTest {
     @Test
     fun `getLastCollectedDate must report null when no stored date is available`() {
         val mps = MetricsPingScheduler(context, GleanBuildInfo.buildInfo)
-        mps.sharedPreferences.edit().clear().apply()
+        mps.sharedPreferences
+            .edit()
+            .clear()
+            .apply()
 
         assertNull(
             "null must be reported when no date is stored",
@@ -339,7 +342,8 @@ class MetricsPingSchedulerTest {
             assertEquals(
                 "The reported metric must contain the expected value",
                 expectedValue,
-                metricsJson.getJSONObject("metrics")
+                metricsJson
+                    .getJSONObject("metrics")
                     .getJSONObject("string")
                     .getString("telemetry.string_metric"),
             )
@@ -475,7 +479,10 @@ class MetricsPingSchedulerTest {
         // Clear the last sent date.
         val mpsSpy =
             spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
-        mpsSpy.sharedPreferences.edit().clear().apply()
+        mpsSpy.sharedPreferences
+            .edit()
+            .clear()
+            .apply()
         // Restore the version number, so we don't get an "upgrade" reason ping
         mpsSpy.isDifferentVersion()
 
@@ -501,10 +508,16 @@ class MetricsPingSchedulerTest {
         // Clear the last sent date.
         val mpsSpy =
             spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
-        mpsSpy.sharedPreferences.edit().clear().apply()
+        mpsSpy.sharedPreferences
+            .edit()
+            .clear()
+            .apply()
 
         // Insert an old version identifier into shared preferences
-        mpsSpy.sharedPreferences.edit()?.putString("last_version_of_app_used", "old version")?.apply()
+        mpsSpy.sharedPreferences
+            .edit()
+            ?.putString("last_version_of_app_used", "old version")
+            ?.apply()
 
         // Trigger the startup check.
         mpsSpy.schedule()
@@ -633,7 +646,10 @@ class MetricsPingSchedulerTest {
         // Clear the last sent date.
         val mpsSpy =
             spy(MetricsPingScheduler(context, GleanBuildInfo.buildInfo))
-        mpsSpy.sharedPreferences.edit().clear().apply()
+        mpsSpy.sharedPreferences
+            .edit()
+            .clear()
+            .apply()
         // Restore the version number, so we don't get an "upgrade" reason ping
         mpsSpy.isDifferentVersion()
 
@@ -873,7 +889,8 @@ class MetricsPingSchedulerTest {
             assertEquals(
                 "The expected metric must be in this ping",
                 expectedString,
-                metricsJson.getJSONObject("metrics")
+                metricsJson
+                    .getJSONObject("metrics")
                     .getJSONObject("string")
                     .getString("telemetry.test_applifetime_metric"),
             )

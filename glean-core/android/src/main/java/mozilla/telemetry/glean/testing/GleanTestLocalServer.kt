@@ -49,7 +49,8 @@ class GleanTestLocalServer(
     override fun starting(description: Description?) {
         Glean.testSetLocalEndpoint(localPort)
 
-        val config = Configuration.Builder()
+        val config = Configuration
+            .Builder()
             // Use a single thread executor rather than the default test
             // executor which runs on the main thread as we cannot make background
             // upload tasks run on that thread. Otherwise the application will crash

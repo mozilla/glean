@@ -276,7 +276,8 @@ class GleanTest {
                     if (seq == 1) {
                         assertEquals(
                             2,
-                            json.getJSONObject("metrics")
+                            json
+                                .getJSONObject("metrics")
                                 .getJSONObject("counter")
                                 .getLong("glean.validation.foreground_count"),
                         )
@@ -433,7 +434,13 @@ class GleanTest {
         val defaultLocale = Locale.getDefault()
 
         try {
-            Locale.setDefault(Locale.Builder().setLanguage("fy").setRegion("NL").build())
+            Locale.setDefault(
+                Locale
+                    .Builder()
+                    .setLanguage("fy")
+                    .setRegion("NL")
+                    .build(),
+            )
 
             val languageTag = getLocaleTag()
 
@@ -447,9 +454,36 @@ class GleanTest {
 
     @Test
     fun `getLanguage reports the modern translation for some languages`() {
-        assertEquals("he", getLanguageFromLocale(Locale.Builder().setLanguage("iw").setRegion("IL").build()))
-        assertEquals("id", getLanguageFromLocale(Locale.Builder().setLanguage("in").setRegion("ID").build()))
-        assertEquals("yi", getLanguageFromLocale(Locale.Builder().setLanguage("ji").setRegion("ID").build()))
+        assertEquals(
+            "he",
+            getLanguageFromLocale(
+                Locale
+                    .Builder()
+                    .setLanguage("iw")
+                    .setRegion("IL")
+                    .build(),
+            ),
+        )
+        assertEquals(
+            "id",
+            getLanguageFromLocale(
+                Locale
+                    .Builder()
+                    .setLanguage("in")
+                    .setRegion("ID")
+                    .build(),
+            ),
+        )
+        assertEquals(
+            "yi",
+            getLanguageFromLocale(
+                Locale
+                    .Builder()
+                    .setLanguage("ji")
+                    .setRegion("ID")
+                    .build(),
+            ),
+        )
     }
 
     @Test
@@ -898,7 +932,8 @@ class GleanTest {
     fun `test passing in explicit BuildInfo`() {
         Glean.testDestroyGleanHandle()
 
-        val buildDate = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"))
+        val buildDate = Calendar
+            .getInstance(TimeZone.getTimeZone("GMT+0"))
             .also { cal -> cal.set(2020, 10, 6, 11, 30, 50) }
         Glean.initialize(
             context,
