@@ -438,12 +438,9 @@ open class GleanInternalAPI internal constructor() {
             appBuild = buildInfo.versionCode,
             appDisplayVersion = buildInfo.versionName,
             appBuildDate = calendarToDatetime(buildInfo.buildDate),
-
             architecture = Build.SUPPORTED_ABIS[0],
             osVersion = Build.VERSION.RELEASE,
-
             channel = configuration.channel,
-
             // https://developer.android.com/reference/android/os/Build.VERSION
             androidSdkVersion = Build.VERSION.SDK_INT.toString(),
             // https://developer.android.com/reference/android/os/Build
