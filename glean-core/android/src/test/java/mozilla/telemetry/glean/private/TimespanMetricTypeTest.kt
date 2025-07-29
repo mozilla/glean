@@ -22,7 +22,6 @@ import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

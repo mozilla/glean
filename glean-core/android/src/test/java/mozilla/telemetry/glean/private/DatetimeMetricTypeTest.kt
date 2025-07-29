@@ -28,7 +28,6 @@ private fun Date.asSeconds() = time / MILLIS_PER_SEC
 
 @RunWith(AndroidJUnit4::class)
 class DatetimeMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

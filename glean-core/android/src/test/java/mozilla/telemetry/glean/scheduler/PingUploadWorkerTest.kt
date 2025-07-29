@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
 class PingUploadWorkerTest {
-
     @Mock
     var workerParams: WorkerParameters? = null
 

@@ -22,7 +22,6 @@ import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimingDistributionMetricTypeTest {
-
     val context: Context
         get() = ApplicationProvider.getApplicationContext()
 

@@ -22,7 +22,6 @@ import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class UuidMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

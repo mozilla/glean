@@ -79,7 +79,6 @@ data class TestEventExtras(val someExtra: String? = null) : EventExtras {
 @Suppress("DEPRECATION")
 @RunWith(AndroidJUnit4::class)
 class EventMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

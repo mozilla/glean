@@ -19,7 +19,6 @@ class KArgumentCaptor<out T : Any?>(
     private val captor: ArgumentCaptor<T>,
     private val tClass: KClass<*>,
 ) {
-
     /**
      * The first captured value of the argument.
      * @throws IndexOutOfBoundsException if the value is not available.
