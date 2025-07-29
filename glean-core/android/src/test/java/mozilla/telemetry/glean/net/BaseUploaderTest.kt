@@ -33,7 +33,14 @@ class BaseUploaderTest {
         val uploader = spy<BaseUploader>(BaseUploader(TestUploader()))
 
         val expectedUrl = testDefaultConfig.serverEndpoint + testPath
-        val request = CapablePingUploadRequest(PingUploadRequest(expectedUrl, testPing.toByteArray(Charsets.UTF_8), testHeaders, emptyList()))
+        val request = CapablePingUploadRequest(
+            PingUploadRequest(
+                expectedUrl,
+                testPing.toByteArray(Charsets.UTF_8),
+                testHeaders,
+                emptyList(),
+            ),
+        )
         uploader.doUpload(request)
         verify(uploader).upload(eq(request))
     }
