@@ -33,8 +33,8 @@ internal object Dispatchers {
         /**
          * Helper function to execute the task as an asynchronous operation.
          */
-        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? {
-            return when {
+        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? =
+            when {
                 testingMode -> {
                     runBlocking {
                         block()
@@ -43,7 +43,6 @@ internal object Dispatchers {
                 }
                 else -> coroutineScope.launch(block = block)
             }
-        }
     }
 
     class DelayedTaskQueue {

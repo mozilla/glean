@@ -26,9 +26,7 @@ class SampleBackgroundProcess : Service() {
      * Required override, don't need to do anything here so we
      * just return a default Binder
      */
-    override fun onBind(intent: Intent?): IBinder {
-        return Binder()
-    }
+    override fun onBind(intent: Intent?): IBinder = Binder()
 
     /**
      * Entry point when the Service gets started by ServiceIntent

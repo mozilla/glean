@@ -53,7 +53,5 @@ class UuidMetricType(private var meta: CommonMetricData) {
      * @return value of the stored UUID
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetValue(pingName: String? = null): UUID? {
-        return inner.testGetValue(pingName)?.let { UUID.fromString(it) }
-    }
+    fun testGetValue(pingName: String? = null): UUID? = inner.testGetValue(pingName)?.let { UUID.fromString(it) }
 }

@@ -294,9 +294,7 @@ class TimespanMetricTypeTest {
 
         // Create a function to measure, which also returns a value to test that we properly pass
         // along the returned value from the measure function
-        fun testFunc(value: Boolean): Boolean {
-            return value
-        }
+        fun testFunc(value: Boolean): Boolean = value
 
         // Capture returned value to determine if the function return value matches what is expected
         // and measure the test function, which should record to the metric
@@ -358,9 +356,7 @@ class TimespanMetricTypeTest {
         )
 
         // Create a function that will throw a NPE
-        fun testFunc() {
-            throw NullPointerException()
-        }
+        fun testFunc(): Unit = throw NullPointerException()
 
         // Attempt to measure the function that will throw an exception.  The `measure` function
         // should allow the exception to bubble up, the timespan measurement is canceled.

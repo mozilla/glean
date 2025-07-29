@@ -270,9 +270,7 @@ class TimingDistributionMetricTypeTest {
 
         // Create a test function to "measure". This works by mocking the getElapsedNanos return
         // value setting it to return a known value to make it easier to validate.
-        fun testFunc(value: Long): Long {
-            return value
-        }
+        fun testFunc(value: Long): Long = value
 
         // Accumulate a few values
         for (i in 1L..3L) {
@@ -347,9 +345,7 @@ class TimingDistributionMetricTypeTest {
         )
 
         // Create a test function that throws a NPE
-        fun testFunc() {
-            throw NullPointerException()
-        }
+        fun testFunc(): Unit = throw NullPointerException()
 
         // Attempt to measure the function that will throw an exception.  The `measure` function
         // should allow the exception to bubble up, the timespan measurement is canceled.

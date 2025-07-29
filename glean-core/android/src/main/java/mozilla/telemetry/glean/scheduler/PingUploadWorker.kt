@@ -42,12 +42,11 @@ internal fun buildConstraints(): Constraints =
  *
  * @return [OneTimeWorkRequest] representing the task for the [WorkManager] to enqueue and run
  */
-internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest {
-    return OneTimeWorkRequestBuilder<W>()
+internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest =
+    OneTimeWorkRequestBuilder<W>()
         .addTag(tag)
         .setConstraints(buildConstraints())
         .build()
-}
 
 /**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.

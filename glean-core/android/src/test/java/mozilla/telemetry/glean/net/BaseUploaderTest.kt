@@ -23,9 +23,7 @@ class BaseUploaderTest {
      * A stub uploader class that does not upload anything.
      */
     private class TestUploader : PingUploader {
-        override fun upload(request: CapablePingUploadRequest): UploadResult {
-            return UnrecoverableFailure(0)
-        }
+        override fun upload(request: CapablePingUploadRequest): UploadResult = UnrecoverableFailure(0)
     }
 
     @Test
