@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...main)
+
+# v64.5.3 (2025-07-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...v64.5.3)
 
 * General
   * BUGFIX: Avoid accidental rapid rescheduling of the `metrics` ping on startup ([#3201](https://github.com/mozilla/glean/pull/3201))
