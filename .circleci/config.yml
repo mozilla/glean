@@ -152,7 +152,7 @@ commands:
           command: |
             sdkmanager \
               "build-tools;36.0.0" \
-              "ndk;28.1.13356709"
+              "ndk;28.2.13676358"
 
   android-setup:
     steps:
