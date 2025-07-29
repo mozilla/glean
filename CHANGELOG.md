@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...main)
 
+* General
+  * Update the compiler used on CI
+
 # v64.5.3 (2025-07-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...v64.5.3)
