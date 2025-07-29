@@ -46,7 +46,7 @@ enum class NoReasonCodes(
  * @property reasonCodes The list of acceptable reason codes for this ping.
  */
 @Suppress("LongParameterList")
-class PingType<ReasonCodesEnum> (
+class PingType<ReasonCodesEnum>(
     name: String,
     includeClientId: Boolean,
     sendIfEmpty: Boolean,
