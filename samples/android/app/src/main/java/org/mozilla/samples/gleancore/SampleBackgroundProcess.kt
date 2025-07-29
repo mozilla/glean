@@ -54,18 +54,18 @@ class SampleBackgroundProcess : Service() {
             // GleanBuildInfo can only be generated for application,
             // We are in a library so we have to build it ourselves.
             buildInfo =
-            BuildInfo(
-                "0.0.1",
-                "0.0.1",
-                Calendar.getInstance(),
-            ),
+                BuildInfo(
+                    "0.0.1",
+                    "0.0.1",
+                    Calendar.getInstance(),
+                ),
             configuration =
-            Configuration(
-                channel = "sample",
-                // When initializing Glean from outside the main process,
-                // we need to provide it with a dataPath manually.
-                dataPath = customDataPath,
-            ),
+                Configuration(
+                    channel = "sample",
+                    // When initializing Glean from outside the main process,
+                    // we need to provide it with a dataPath manually.
+                    dataPath = customDataPath,
+                ),
         )
 
         Log.i(TAG, "Initialized Glean in background service")
