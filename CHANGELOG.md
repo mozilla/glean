@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...main)
 
 * General
   * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
@@ -18,6 +18,13 @@
   * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
 * Swift
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
+
+# v64.5.4 (2025-07-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...v64.5.4)
+
+* General
+  * Update the compiler used on CI
 
 # v64.5.3 (2025-07-29)
 
