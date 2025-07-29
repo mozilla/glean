@@ -14116,14 +14116,13 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li><a href="appendix/changelog/./js.html"><code>mozilla/glean.js</code></a></li>
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
-<p><a href="https://github.com/mozilla/glean/compare/v64.5.2...main">Full changelog</a></p>
+<p><a href="https://github.com/mozilla/glean/compare/v64.5.4...main">Full changelog</a></p>
 <ul>
 <li>General
 <ul>
 <li>Performance improvement: Reduce file system operations when recording events (<a href="https://github.com/mozilla/glean/pull/3179">#3179</a>)</li>
 <li><code>LabeledMetric</code> improvement: Added <code>testGetValue</code> as a test method on all labeled metric types (<a href="https://github.com/mozilla/glean/pull/3190">#3190</a>)</li>
 <li>New metric: <code>glean.ping.uploader_capabilities</code> reporting the requested uploader capabilities for a ping (<a href="https://github.com/mozilla/glean/pull/3188">#3188</a>)</li>
-<li>BUGFIX: Avoid accidental rapid rescheduling of the <code>metrics</code> ping on startup (<a href="https://github.com/mozilla/glean/pull/3201">#3201</a>)</li>
 </ul>
 </li>
 <li>Android
@@ -14145,6 +14144,24 @@ This does not change any behavior: The dispatch queue is worked on right after i
 <li>Swift
 <ul>
 <li>Expose an interface by which to supply an external uploader on iOS (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1950143">Bug 1950143</a>)</li>
+</ul>
+</li>
+</ul>
+<h1 id="v6454-2025-07-29"><a class="header" href="#v6454-2025-07-29">v64.5.4 (2025-07-29)</a></h1>
+<p><a href="https://github.com/mozilla/glean/compare/v64.5.3...v64.5.4">Full changelog</a></p>
+<ul>
+<li>General
+<ul>
+<li>Update the compiler used on CI</li>
+</ul>
+</li>
+</ul>
+<h1 id="v6453-2025-07-29"><a class="header" href="#v6453-2025-07-29">v64.5.3 (2025-07-29)</a></h1>
+<p><a href="https://github.com/mozilla/glean/compare/v64.5.2...v64.5.3">Full changelog</a></p>
+<ul>
+<li>General
+<ul>
+<li>BUGFIX: Avoid accidental rapid rescheduling of the <code>metrics</code> ping on startup (<a href="https://github.com/mozilla/glean/pull/3201">#3201</a>)</li>
 </ul>
 </li>
 </ul>
