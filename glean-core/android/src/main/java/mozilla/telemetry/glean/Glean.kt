@@ -735,7 +735,7 @@ open class GleanInternalAPI internal constructor() {
             activityManager.runningAppProcesses?.any { processInfo ->
                 (processInfo.pid == pid && processInfo.processName == context.packageName)
             }
-            ) ?: false
+        ) ?: false
 
         return isMainProcess as Boolean
     }

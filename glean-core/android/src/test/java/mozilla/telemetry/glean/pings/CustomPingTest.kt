@@ -270,13 +270,14 @@ class CustomPingTest {
         assertEquals("custom-ping", docType)
 
         // Now disable the custom ping using Server Knobs
-        val remoteSettingsConfig = """
+        val remoteSettingsConfig =
+            """
             {
               "pings_enabled": {
                 "custom-ping": false
               }
             }
-        """.trimIndent()
+            """.trimIndent()
         Glean.applyServerKnobsConfig(remoteSettingsConfig)
 
         customPing.submit()

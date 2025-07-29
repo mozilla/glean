@@ -994,13 +994,14 @@ class GleanTest {
         )
 
         // Set a metric configuration which will enable the telemetry.string_metric
-        val metricConfig = """
+        val metricConfig =
+            """
             {
               "metrics_enabled": {
                 "telemetry.string_metric": true
               }
             }
-        """.trimIndent()
+            """.trimIndent()
         Glean.applyServerKnobsConfig(metricConfig)
 
         // This should result in the metric being set to "foo"
