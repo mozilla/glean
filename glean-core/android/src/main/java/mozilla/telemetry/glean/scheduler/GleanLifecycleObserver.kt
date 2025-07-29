@@ -17,7 +17,10 @@ internal class GleanLifecycleObserver : LifecycleEventObserver {
     /**
      * Called when lifecycle events are triggered.
      */
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event,
+    ) {
         when (event) {
             Lifecycle.Event.ON_STOP -> {
                 Glean.handleBackgroundEvent()

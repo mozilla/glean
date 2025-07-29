@@ -33,7 +33,11 @@ class SampleBackgroundProcess : Service() {
     /**
      * Entry point when the Service gets started by ServiceIntent
      */
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         Log.i(TAG, "Service Started by Intent")
 
         initializeGlean()

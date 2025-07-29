@@ -33,7 +33,10 @@ data class BalloonsObject(var items: MutableList<BalloonsObjectItem> = mutableLi
 
     fun removeAt(index: Int) = items.removeAt(index)
 
-    fun set(index: Int, element: BalloonsObjectItem) = items.set(index, element)
+    fun set(
+        index: Int,
+        element: BalloonsObjectItem,
+    ) = items.set(index, element)
 
     override fun intoSerializedObject(): String {
         return Json.encodeToString(items)

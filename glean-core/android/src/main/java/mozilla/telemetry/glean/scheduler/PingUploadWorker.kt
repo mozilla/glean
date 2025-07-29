@@ -31,9 +31,10 @@ import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
  * @return [Constraints] object containing the required work constraints
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun buildConstraints(): Constraints = Constraints.Builder()
-    .setRequiredNetworkType(NetworkType.CONNECTED)
-    .build()
+internal fun buildConstraints(): Constraints =
+    Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
 
 /**
  * Build the [OneTimeWorkRequest] for enqueueing in the [WorkManager].  This also adds a tag
