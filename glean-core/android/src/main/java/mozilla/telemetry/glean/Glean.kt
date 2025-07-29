@@ -36,9 +36,15 @@ import java.util.Calendar
  */
 typealias GleanTimerId = mozilla.telemetry.glean.internal.TimerId
 
-data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
+data class BuildInfo(
+    val versionCode: String,
+    val versionName: String,
+    val buildDate: Calendar,
+)
 
-internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
+internal class OnGleanEventsImpl(
+    val glean: GleanInternalAPI,
+) : OnGleanEvents {
     override fun initializeFinished() {
         // Only set up the lifecycle observers if we don't provide a custom
         // data path.

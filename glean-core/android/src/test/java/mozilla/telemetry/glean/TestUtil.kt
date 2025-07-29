@@ -140,7 +140,10 @@ internal fun getContext(): Context = ApplicationProvider.getApplicationContext<C
 /**
  * Represents the Worker status returned by [getWorkerStatus]
  */
-internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
+internal class WorkerStatus(
+    val isEnqueued: Boolean,
+    val workerId: UUID? = null,
+)
 
 /**
  * Helper function to check to see if a worker has been scheduled with the [WorkManager] and return

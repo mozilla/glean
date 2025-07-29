@@ -17,7 +17,10 @@ import mozilla.telemetry.glean.testing.ErrorType
  *
  * The timespans API exposes the [start], [stop] and [cancel] methods.
  */
-class TimespanMetricType constructor(private var meta: CommonMetricData, var timeUnit: TimeUnit) {
+class TimespanMetricType constructor(
+    private var meta: CommonMetricData,
+    var timeUnit: TimeUnit,
+) {
     val inner: TimespanMetric by lazy { TimespanMetric(meta, timeUnit) }
 
     /**

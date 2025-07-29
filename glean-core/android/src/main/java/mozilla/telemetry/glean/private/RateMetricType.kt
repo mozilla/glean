@@ -18,7 +18,9 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The rate API exposes the [addToNumerator] and [addToDenominator] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class RateMetricType(private var meta: CommonMetricData) {
+class RateMetricType(
+    private var meta: CommonMetricData,
+) {
     val inner: RateMetric by lazy { RateMetric(meta) }
 
     /**
