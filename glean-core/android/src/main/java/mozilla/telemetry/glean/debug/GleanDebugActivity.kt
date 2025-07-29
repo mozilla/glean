@@ -27,6 +27,7 @@ class GleanDebugActivity : Activity() {
         private const val LOG_TAG = "glean/DebugActivity"
 
         // This is a list of the currently accepted commands
+
         /**
          * Sends the ping with the given name immediately
          */
