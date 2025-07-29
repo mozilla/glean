@@ -17,7 +17,5 @@ class BaseUploader(d: PingUploader) : PingUploader by d {
      *
      * @return return the status code of the upload response
      */
-    internal fun doUpload(request: CapablePingUploadRequest): UploadResult {
-        return upload(request)
-    }
+    internal fun doUpload(request: CapablePingUploadRequest): UploadResult = upload(request)
 }

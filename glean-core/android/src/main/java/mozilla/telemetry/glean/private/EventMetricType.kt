@@ -29,9 +29,7 @@ interface EventExtras {
  * that an [EventMetricType] can accept.
  */
 class NoExtras : EventExtras {
-    override fun toExtraRecord(): Map<String, String> {
-        return emptyMap()
-    }
+    override fun toExtraRecord(): Map<String, String> = emptyMap()
 }
 
 /**
@@ -76,9 +74,7 @@ class EventMetricType<ExtraObject> constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null): List<RecordedEvent>? {
-        return inner.testGetValue(pingName)
-    }
+    fun testGetValue(pingName: String? = null): List<RecordedEvent>? = inner.testGetValue(pingName)
 
     /**
      * Returns the number of errors recorded for the given metric.

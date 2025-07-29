@@ -23,9 +23,7 @@ internal fun createMockWebServer(): MockWebServer {
     val server = MockWebServer()
     server.dispatcher = (
         object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                return MockResponse().setBody("OK")
-            }
+            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse().setBody("OK")
         }
     )
     return server
@@ -37,9 +35,8 @@ internal fun createMockWebServer(): MockWebServer {
  * @param data the gzipped [ByteArray] to decompress
  * @return a [String] containing the uncompressed data.
  */
-fun decompressGZIP(data: ByteArray): String {
-    return GZIPInputStream(ByteArrayInputStream(data)).bufferedReader().use(BufferedReader::readText)
-}
+fun decompressGZIP(data: ByteArray): String =
+    GZIPInputStream(ByteArrayInputStream(data)).bufferedReader().use(BufferedReader::readText)
 
 /**
  * Convenience method to get the body of a request as a String.
@@ -48,14 +45,13 @@ fun decompressGZIP(data: ByteArray): String {
  *
  * @return a [String] containing the body of the request.
  */
-fun RecordedRequest.getPlainBody(): String {
-    return if (this.getHeader("Content-Encoding") == "gzip") {
+fun RecordedRequest.getPlainBody(): String =
+    if (this.getHeader("Content-Encoding") == "gzip") {
         val bodyInBytes = this.body.readByteArray()
         decompressGZIP(bodyInBytes)
     } else {
         this.body.readUtf8()
     }
-}
 
 /**
  * Waits for ping with the given name to be received

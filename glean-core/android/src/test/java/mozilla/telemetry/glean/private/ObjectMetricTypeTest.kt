@@ -38,9 +38,7 @@ data class BalloonsObject(var items: MutableList<BalloonsObjectItem> = mutableLi
         element: BalloonsObjectItem,
     ) = items.set(index, element)
 
-    override fun intoSerializedObject(): String {
-        return Json.encodeToString(items)
-    }
+    override fun intoSerializedObject(): String = Json.encodeToString(items)
 }
 
 @Serializable
