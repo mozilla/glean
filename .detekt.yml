@@ -20,6 +20,13 @@ style:
 build:
   maxIssues: 0
 
+comments:
+  active: true
+  AbsentOrWrongFileLicense:
+    active: true
+    licenseTemplateFile: 'license.template'
+    licenseTemplateIsRegex: false
+
 complexity:
   LongMethod:
     active: true
