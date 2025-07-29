@@ -399,7 +399,11 @@ class EventMetricTypeTest {
         assertEquals(
             "Ping payload: $pingJson",
             "run1",
-            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra"),
+            pingJson
+                .getJSONArray("events")
+                .getJSONObject(0)
+                .getJSONObject("extra")
+                .getString("some_extra"),
         )
 
         Glean.submitPingByName("events", "inactive")
@@ -423,11 +427,19 @@ class EventMetricTypeTest {
         )
         assertEquals(
             "pre-init",
-            pingJson.getJSONArray("events").getJSONObject(0).getJSONObject("extra").getString("some_extra"),
+            pingJson
+                .getJSONArray("events")
+                .getJSONObject(0)
+                .getJSONObject("extra")
+                .getString("some_extra"),
         )
         assertEquals(
             "post-init",
-            pingJson.getJSONArray("events").getJSONObject(1).getJSONObject("extra").getString("some_extra"),
+            pingJson
+                .getJSONArray("events")
+                .getJSONObject(1)
+                .getJSONObject("extra")
+                .getString("some_extra"),
         )
     }
 

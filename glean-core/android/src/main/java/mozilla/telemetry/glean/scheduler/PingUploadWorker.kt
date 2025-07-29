@@ -32,7 +32,8 @@ import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 internal fun buildConstraints(): Constraints =
-    Constraints.Builder()
+    Constraints
+        .Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
@@ -94,7 +95,9 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         // If the status is `null` there was some kind of unrecoverable error
                         // so we return a known unrecoverable error status code
                         // which will ensure this gets treated as such.
-                        val body = action.request.body.toUByteArray().asByteArray()
+                        val body = action.request.body
+                            .toUByteArray()
+                            .asByteArray()
                         val request = CapablePingUploadRequest(
                             PingUploadRequest(
                                 Glean.configuration.serverEndpoint + action.request.path,
