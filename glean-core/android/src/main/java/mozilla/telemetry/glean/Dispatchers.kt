@@ -117,6 +117,7 @@ internal object Dispatchers {
      * This needs to be a `var` so that our tests can override this.
      */
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @Suppress("ktlint:standard:property-naming")
     var API = WaitableCoroutineScope(
         CoroutineScope(
             newSingleThreadContext("GleanAPIPool") + supervisorJob,
@@ -124,5 +125,6 @@ internal object Dispatchers {
     )
 
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @Suppress("ktlint:standard:property-naming")
     var Delayed = DelayedTaskQueue()
 }
