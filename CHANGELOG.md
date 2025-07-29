@@ -1,12 +1,11 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...main)
 
 * General
   * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
   * `LabeledMetric` improvement: Added `testGetValue` as a test method on all labeled metric types ([#3190](https://github.com/mozilla/glean/pull/3190))
   * New metric: `glean.ping.uploader_capabilities` reporting the requested uploader capabilities for a ping ([#3188](https://github.com/mozilla/glean/pull/3188))
-  * BUGFIX: Avoid accidental rapid rescheduling of the `metrics` ping on startup ([#3201](https://github.com/mozilla/glean/pull/3201))
 * Android
   * Updated Android Gradle Plugin to 8.11.0 ([#3180](https://github.com/mozilla/glean/pull/3180))
   * Updated Android SDK target to version 36 ([#3180](https://github.com/mozilla/glean/pull/3180))
@@ -19,6 +18,13 @@
   * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
 * Swift
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
+
+# v64.5.3 (2025-07-29)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.2...v64.5.3)
+
+* General
+  * BUGFIX: Avoid accidental rapid rescheduling of the `metrics` ping on startup ([#3201](https://github.com/mozilla/glean/pull/3201))
 
 # v64.5.2 (2025-07-01)
 
