@@ -28,7 +28,9 @@ data class BalloonsObject(var items: MutableList<BalloonsObjectItem> = mutableLi
     fun clear() = items.clear()
 
     fun remove(element: BalloonsObjectItem) = items.remove(element)
+
     fun removeAll(elements: Collection<BalloonsObjectItem>) = items.removeAll(elements)
+
     fun removeAt(index: Int) = items.removeAt(index)
 
     fun set(index: Int, element: BalloonsObjectItem) = items.set(index, element)

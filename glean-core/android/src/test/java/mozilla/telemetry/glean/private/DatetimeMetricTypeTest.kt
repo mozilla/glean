@@ -23,6 +23,7 @@ import java.util.Date
 import java.util.TimeZone
 
 const val MILLIS_PER_SEC = 1000L
+
 private fun Date.asSeconds() = time / MILLIS_PER_SEC
 
 @RunWith(AndroidJUnit4::class)

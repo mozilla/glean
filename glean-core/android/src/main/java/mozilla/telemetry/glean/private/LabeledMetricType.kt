@@ -18,6 +18,7 @@ class LabeledBoolean constructor(meta: CommonLabeledMetricData, labels: List<Str
         return BooleanMetricType(metric.get(label))
     }
 }
+
 class LabeledCounter constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
     val metric = InternalLabeledCounter(meta, labels)
 
@@ -25,6 +26,7 @@ class LabeledCounter constructor(meta: CommonLabeledMetricData, labels: List<Str
         return CounterMetricType(metric.get(label))
     }
 }
+
 class LabeledQuantity constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
     val metric = InternalLabeledQuantity(meta, labels)
 
@@ -32,6 +34,7 @@ class LabeledQuantity constructor(meta: CommonLabeledMetricData, labels: List<St
         return QuantityMetricType(metric.get(label))
     }
 }
+
 class LabeledString constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
     val metric = InternalLabeledString(meta, labels)
 
