@@ -299,7 +299,9 @@ internal class MetricsPingScheduler(
         @Suppress("MaxLineLength")
         Log.i(
             LOG_TAG,
-            "Collecting the 'metrics' ping, now = ${safeDateToString(now.time)}, startup = $startupPing, reason = $reasonString",
+            "Collecting the 'metrics' ping, now = ${safeDateToString(
+                now.time,
+            )}, startup = $startupPing, reason = $reasonString",
         )
         if (startupPing) {
             // **IMPORTANT**
