@@ -45,7 +45,6 @@ data class BalloonsObjectItem(var colour: String? = null, var diameter: Int? = n
 
 @RunWith(AndroidJUnit4::class)
 class ObjectMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
