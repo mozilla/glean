@@ -8,7 +8,9 @@ package mozilla.telemetry.glean.net
  * The logic for uploading pings: this leaves the actual upload implementation
  * to the user-provided delegate.
  */
-class BaseUploader(d: PingUploader) : PingUploader by d {
+class BaseUploader(
+    d: PingUploader,
+) : PingUploader by d {
     /**
      * This function triggers the actual upload: logs the ping and calls the implementation
      * specific upload function.

@@ -18,7 +18,9 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The URL API only exposes the [set] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class UrlMetricType constructor(private var meta: CommonMetricData) {
+class UrlMetricType constructor(
+    private var meta: CommonMetricData,
+) {
     val inner: UrlMetric by lazy { UrlMetric(meta) }
 
     /**

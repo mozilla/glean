@@ -18,7 +18,9 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The string list API only exposes the [add] and [set] methods, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class StringListMetricType constructor(private var meta: CommonMetricData) {
+class StringListMetricType constructor(
+    private var meta: CommonMetricData,
+) {
     val inner: StringListMetric by lazy { StringListMetric(meta) }
 
     /**

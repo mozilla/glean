@@ -19,7 +19,9 @@ import java.util.UUID
  *
  * The internal constructor is only used by [LabeledMetricType] directly.
  */
-class UuidMetricType(private var meta: CommonMetricData) {
+class UuidMetricType(
+    private var meta: CommonMetricData,
+) {
     val inner: UuidMetric by lazy { UuidMetric(meta) }
 
     /**

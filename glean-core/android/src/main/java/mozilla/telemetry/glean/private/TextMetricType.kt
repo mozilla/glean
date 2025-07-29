@@ -18,7 +18,9 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The text API only exposes the [set] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-class TextMetricType constructor(private var meta: CommonMetricData) {
+class TextMetricType constructor(
+    private var meta: CommonMetricData,
+) {
     val inner: TextMetric by lazy { TextMetric(meta) }
 
     /**

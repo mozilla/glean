@@ -15,7 +15,9 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal object Dispatchers {
-    class WaitableCoroutineScope(private val coroutineScope: CoroutineScope) {
+    class WaitableCoroutineScope(
+        private val coroutineScope: CoroutineScope,
+    ) {
         // When true, jobs will be run synchronously
         internal var testingMode = false
 

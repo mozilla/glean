@@ -11,25 +11,37 @@ import mozilla.telemetry.glean.internal.LabeledCounter as InternalLabeledCounter
 import mozilla.telemetry.glean.internal.LabeledQuantity as InternalLabeledQuantity
 import mozilla.telemetry.glean.internal.LabeledString as InternalLabeledString
 
-class LabeledBoolean constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+class LabeledBoolean constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
     val metric = InternalLabeledBoolean(meta, labels)
 
     fun get(label: String): BooleanMetricType = BooleanMetricType(metric.get(label))
 }
 
-class LabeledCounter constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+class LabeledCounter constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
     val metric = InternalLabeledCounter(meta, labels)
 
     fun get(label: String): CounterMetricType = CounterMetricType(metric.get(label))
 }
 
-class LabeledQuantity constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+class LabeledQuantity constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
     val metric = InternalLabeledQuantity(meta, labels)
 
     fun get(label: String): QuantityMetricType = QuantityMetricType(metric.get(label))
 }
 
-class LabeledString constructor(meta: CommonLabeledMetricData, labels: List<String>?) {
+class LabeledString constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
     val metric = InternalLabeledString(meta, labels)
 
     fun get(label: String): StringMetricType = StringMetricType(metric.get(label))

@@ -19,7 +19,9 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The numerator API exposes the [addToNumerator] method,
  * which takes care of validating the input data and making sure that limits are enforced.
  */
-class NumeratorMetricType(private var meta: CommonMetricData) {
+class NumeratorMetricType(
+    private var meta: CommonMetricData,
+) {
     val inner: NumeratorMetric by lazy { NumeratorMetric(meta) }
 
     /**

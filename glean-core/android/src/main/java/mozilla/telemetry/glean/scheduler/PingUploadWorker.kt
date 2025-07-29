@@ -53,7 +53,10 @@ internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeW
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
  * @suppress This is internal only, don't show it in the docs.
  */
-class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class PingUploadWorker(
+    context: Context,
+    params: WorkerParameters,
+) : Worker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 

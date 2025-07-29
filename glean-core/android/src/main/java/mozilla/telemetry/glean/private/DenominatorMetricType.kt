@@ -20,7 +20,10 @@ import mozilla.telemetry.glean.testing.ErrorType
  * The denominator API exposes the [add] method,
  * which takes care of validating the input data and making sure that limits are enforced.
  */
-class DenominatorMetricType(private var meta: CommonMetricData, var numerators: List<CommonMetricData>) {
+class DenominatorMetricType(
+    private var meta: CommonMetricData,
+    var numerators: List<CommonMetricData>,
+) {
     val inner: DenominatorMetric by lazy { DenominatorMetric(meta, numerators) }
 
     /**
