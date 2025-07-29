@@ -575,6 +575,50 @@
 <a href="#575" id="575">575</a>
 <a href="#576" id="576">576</a>
 <a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -590,7 +634,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::util::local_now_with_offset;
 <span class="kw">use crate</span>::{CommonMetricData, Glean, Lifetime};
 <span class="kw">use </span>chrono::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span>chrono::Duration;
+<span class="kw">use </span>chrono::Days;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::sync::{Arc, Condvar, Mutex};
 <span class="kw">use </span>std::thread::JoinHandle;
@@ -712,13 +756,20 @@
     //    some time to the due time; schedule for submitting the current calendar day.
 
     </span><span class="kw">let </span>already_sent_today = last_sent_time.is_some_and(|d| d.date_naive() == now.date_naive());
+    <span class="comment">// Today's 04:00 in local time
+    </span><span class="kw">let </span>cutoff_time = now
+        .naive_local()
+        .date()
+        .and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>)
+        .unwrap()
+        .and_local_timezone(now.timezone())
+        .unwrap();
+
     <span class="kw">if </span>already_sent_today {
         <span class="comment">// Case #1
         </span><span class="macro">log::info!</span>(<span class="string">"The 'metrics' ping was already sent today, {}"</span>, now);
         scheduler.start_scheduler(submitter, now, When::Tomorrow);
-    } <span class="kw">else if </span>now
-        &gt; Utc.from_utc_datetime(<span class="kw-2">&amp;</span>now.date_naive().and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap())
-    {
+    } <span class="kw">else if </span>now &gt; cutoff_time {
         <span class="comment">// Case #2
         </span><span class="macro">log::info!</span>(<span class="string">"Sending the 'metrics' ping immediately, {}"</span>, now);
         submitter.submit_metrics_ping(glean, <span class="prelude-val">Some</span>(<span class="string">"overdue"</span>), now);
@@ -743,18 +794,24 @@
     /// Note that std::time::Duration doesn't do negative time spans, so if
     /// our deadline has passed, this will return zero.
     </span><span class="kw">fn </span>until(<span class="kw-2">&amp;</span><span class="self">self</span>, now: DateTime&lt;FixedOffset&gt;) -&gt; std::time::Duration {
+        <span class="kw">let </span>now_local = now.naive_local();
+
         <span class="kw">let </span>fire_date = <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Today =&gt; now.date_naive().and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap(),
+            <span class="self">Self</span>::Today =&gt; now_local.date().and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap(),
             <span class="comment">// Doesn't actually save us from being an hour off on DST because
             // chrono doesn't know when DST changes. : (
-            </span><span class="self">Self</span>::Tomorrow | <span class="self">Self</span>::Reschedule =&gt; (now.date_naive() + Duration::days(<span class="number">1</span>))
-                .and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>)
-                .unwrap(),
+            </span><span class="self">Self</span>::Tomorrow | <span class="self">Self</span>::Reschedule =&gt; {
+                <span class="kw">let </span>next_day = now_local.checked_add_days(Days::new(<span class="number">1</span>)).unwrap();
+                <span class="kw">let </span>next_day_date = next_day.date();
+                next_day_date.and_hms_opt(SCHEDULED_HOUR, <span class="number">0</span>, <span class="number">0</span>).unwrap()
+            }
         };
-        <span class="comment">// After rust-lang/rust#73544 can use std::time::Duration::ZERO
-        </span>(fire_date - now.naive_utc())
-            .to_std()
-            .unwrap_or_else(|<span class="kw">_</span>| std::time::Duration::from_millis(<span class="number">0</span>))
+
+        (fire_date - now_local).to_std().unwrap_or_else(|<span class="kw">_</span>| {
+            <span class="comment">// If we're somehow out of range schedule 24 hours into the future.
+            // We do NOT want to schedule a ping submission immediately.
+            </span>std::time::Duration::from_secs(<span class="number">24 </span>* <span class="number">60 </span>* <span class="number">60</span>)
+        })
     }
 
     <span class="doccomment">/// The "metrics" ping reason corresponding to our deadline.
@@ -850,6 +907,8 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::tests::new_glean;
     <span class="kw">use </span>std::sync::atomic::{AtomicU32, Ordering};
+
+    <span class="kw">use </span>chrono::Duration;
 
     <span class="kw">struct </span>ValidatingSubmitter&lt;F: Fn(DateTime&lt;FixedOffset&gt;, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;)&gt; {
         submit_validator: F,
@@ -1030,8 +1089,8 @@
             .unwrap()
             .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">30</span>, <span class="number">15</span>, <span class="number">2</span>, <span class="number">10</span>)
             .unwrap();
-        <span class="comment">// `now` is after `SCHEDULED_HOUR` so should be zero:
-        </span><span class="macro">assert_eq!</span>(std::time::Duration::from_secs(<span class="number">0</span>), When::Today.until(now));
+        <span class="comment">// `now` is after `SCHEDULED_HOUR` but we should never schedule immediately:
+        </span><span class="macro">assert_ne!</span>(std::time::Duration::from_secs(<span class="number">0</span>), When::Today.until(now));
         <span class="comment">// If we bring it back before `SCHEDULED_HOUR` it should give us the duration:
         </span><span class="kw">let </span>earlier = now
             .date_naive()
@@ -1055,6 +1114,34 @@
         );
         <span class="macro">assert_eq!</span>(When::Tomorrow.until(now), When::Reschedule.until(now));
         <span class="macro">assert_ne!</span>(When::Tomorrow.reason(), When::Reschedule.reason());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>datetime_offset_doesnt_cause_rapid_rescheduling() {
+        <span class="kw">let </span>now = FixedOffset::west_opt(<span class="number">3600 </span>* <span class="number">7</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2025</span>, <span class="number">7</span>, <span class="number">27</span>, <span class="number">22</span>, <span class="number">27</span>, <span class="number">59</span>)
+            .unwrap();
+
+        <span class="kw">let </span>next_schedule = When::Reschedule.until(now);
+
+        <span class="comment">// 22:27:59 -&gt; (next day) 04:00 is 5h 32min 1s = 19921 seconds
+        </span><span class="kw">let </span>expected_duration = std::time::Duration::from_secs(<span class="number">19921</span>);
+        <span class="macro">assert_eq!</span>(expected_duration, next_schedule);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>todays_scheduling_is_in_localtime() {
+        <span class="kw">let </span>now = FixedOffset::west_opt(<span class="number">3600 </span>* <span class="number">7</span>)
+            .unwrap()
+            .with_ymd_and_hms(<span class="number">2025</span>, <span class="number">7</span>, <span class="number">27</span>, <span class="number">3</span>, <span class="number">30</span>, <span class="number">0</span>)
+            .unwrap();
+
+        <span class="kw">let </span>next_schedule = When::Today.until(now);
+
+        <span class="comment">// 03:30:00 -&gt; 04:00 is 30min
+        </span><span class="kw">let </span>expected_duration = std::time::Duration::from_secs(<span class="number">30 </span>* <span class="number">60</span>);
+        <span class="macro">assert_eq!</span>(expected_duration, next_schedule);
     }
 
     <span class="comment">// Scheduler tests mutate global state and thus must not be run in parallel.
@@ -1117,6 +1204,7 @@
     <span class="comment">// We're not keen to wait like the scheduler is, but we can test a quick schedule.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>immediate_task_runs_immediately() {
+        <span class="kw">let _ </span>= env_logger::builder().try_init();
         <span class="comment">// First and foremost, all scheduler tests must ensure they start uncancelled.
         // Perils of having shared state.
         </span><span class="kw">let </span>_test_lock = SCHEDULER_TEST_MUTEX.lock().unwrap();
@@ -1131,10 +1219,10 @@
         </span>);
         <span class="macro">assert!</span>(<span class="kw">crate</span>::core::setup_glean(glean).is_ok());
 
-        <span class="comment">// We're choosing a time after SCHEDULED_HOUR so `When::Today` will give us a duration of 0.
+        <span class="comment">// We're choosing the exact `SCHEDULED_HOUR` to give us a duration of 0.
         </span><span class="kw">let </span>now = FixedOffset::east_opt(<span class="number">0</span>)
             .unwrap()
-            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">20</span>, <span class="number">15</span>, <span class="number">42</span>, <span class="number">0</span>)
+            .with_ymd_and_hms(<span class="number">2021</span>, <span class="number">4</span>, <span class="number">21</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">0</span>)
             .unwrap();
 
         <span class="kw">let </span>(submitter, submitter_count, <span class="kw">_</span>, <span class="kw">_</span>) = new_proxies(
