@@ -152,7 +152,10 @@ internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
  * @param tag a string representing the worker tag
  * @return [WorkerStatus] that contains the enqueued state along with the ID
  */
-internal fun getWorkerStatus(context: Context, tag: String): WorkerStatus {
+internal fun getWorkerStatus(
+    context: Context,
+    tag: String,
+): WorkerStatus {
     val instance = WorkManager.getInstance(context)
     val statuses = instance.getWorkInfosByTag(tag)
     try {

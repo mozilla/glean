@@ -312,16 +312,17 @@ class TimingDistributionMetricTypeTest {
         )
 
         // We define a function that measures the whole function call runtime
-        fun testFunc(): Long = metric.measure {
-            // We want to simulate an early return.
-            if (true) {
-                // Blank 'return' is not allowed here, because `measure` is not inlined.
-                // We can return by label though.
-                return@measure 17
-            }
+        fun testFunc(): Long =
+            metric.measure {
+                // We want to simulate an early return.
+                if (true) {
+                    // Blank 'return' is not allowed here, because `measure` is not inlined.
+                    // We can return by label though.
+                    return@measure 17
+                }
 
-            42
-        }
+                42
+            }
 
         val res = testFunc()
         assertEquals("Test value must match", 17, res)

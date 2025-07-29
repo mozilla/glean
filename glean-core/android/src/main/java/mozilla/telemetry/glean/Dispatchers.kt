@@ -61,9 +61,7 @@ internal object Dispatchers {
          * then the work will be queued and executed when [flushQueuedInitialTasks] is called.
          * If [queueInitialTasks] is false the block is executed synchronously.
          */
-        fun launch(
-            block: () -> Unit,
-        ) {
+        fun launch(block: () -> Unit) {
             if (queueInitialTasks.get()) {
                 addTaskToQueue(block)
             } else {

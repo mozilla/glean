@@ -201,7 +201,10 @@ internal class MetricsPingScheduler(
      * @return a new [Calendar] instance representing the due hour for the current calendar day.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun getDueTimeForToday(now: Calendar, dueHourOfTheDay: Int): Calendar {
+    internal fun getDueTimeForToday(
+        now: Calendar,
+        dueHourOfTheDay: Int,
+    ): Calendar {
         val dueTime = now.clone() as Calendar
         dueTime.set(Calendar.HOUR_OF_DAY, dueHourOfTheDay)
         dueTime.set(Calendar.MINUTE, 0)
@@ -286,7 +289,11 @@ internal class MetricsPingScheduler(
      * @param reason The reason the ping is being submitted.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun collectPingAndReschedule(now: Calendar, startupPing: Boolean, reason: Pings.metricsReasonCodes) {
+    internal fun collectPingAndReschedule(
+        now: Calendar,
+        startupPing: Boolean,
+        reason: Pings.metricsReasonCodes,
+    ) {
         val reasonString = Pings.metrics.reasonCodes[reason.ordinal]
 
         @Suppress("MaxLineLength")

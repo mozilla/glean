@@ -417,7 +417,10 @@ open class GleanInternalAPI internal constructor() {
      * @param tag a tag to use when unregistering the listener
      * @param listener implements the `GleanEventListener` interface
      */
-    fun registerEventListener(tag: String, listener: GleanEventListener) {
+    fun registerEventListener(
+        tag: String,
+        listener: GleanEventListener,
+    ) {
         gleanRegisterEventListener(tag, listener)
     }
 
@@ -433,7 +436,10 @@ open class GleanInternalAPI internal constructor() {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    internal fun getClientInfo(configuration: Configuration, buildInfo: BuildInfo): ClientInfoMetrics {
+    internal fun getClientInfo(
+        configuration: Configuration,
+        buildInfo: BuildInfo,
+    ): ClientInfoMetrics {
         return ClientInfoMetrics(
             appBuild = buildInfo.versionCode,
             appDisplayVersion = buildInfo.versionName,
@@ -496,7 +502,10 @@ open class GleanInternalAPI internal constructor() {
      * @param pingName Name of the ping to submit.
      * @param reason The reason the ping is being submitted.
      */
-    fun submitPingByName(pingName: String, reason: String? = null) {
+    fun submitPingByName(
+        pingName: String,
+        reason: String? = null,
+    ) {
         gleanSubmitPingByName(pingName, reason)
     }
 
@@ -703,7 +712,10 @@ open class GleanInternalAPI internal constructor() {
      * @param dataPath The path to the data folder. Must be set if `clearStores` is `true`.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
+    fun testDestroyGleanHandle(
+        clearStores: Boolean = false,
+        dataPath: String? = null,
+    ) {
         // If it was initialized this also clears the directory
         gleanTestDestroyGlean(clearStores, dataPath)
 
