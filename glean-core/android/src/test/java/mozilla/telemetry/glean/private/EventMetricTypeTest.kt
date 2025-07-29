@@ -1,14 +1,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+package mozilla.telemetry.glean.private
 
 /* This file is based on the tests in the Glean android-components implementation.
  *
  * Care should be taken to not reorder elements in this file so it will be easier
  * to track changes in Glean android-components.
  */
-
-package mozilla.telemetry.glean.private
 
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
