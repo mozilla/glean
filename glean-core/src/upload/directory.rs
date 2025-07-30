@@ -50,6 +50,7 @@ pub struct PingPayload {
 pub struct PingPayloadsByDirectory {
     pub pending_pings: Vec<(u64, PingPayload)>,
     pub deletion_request_pings: Vec<(u64, PingPayload)>,
+    pub discarded_on_scan: u32,
 }
 
 impl MallocSizeOf for PingPayloadsByDirectory {
@@ -260,9 +261,17 @@ impl PingDirectoryManager {
 
     /// Processes both ping directories.
     pub fn process_dirs(&self) -> PingPayloadsByDirectory {
+        let mut discarded_on_scan = 0;
+        let (discarded, pending_pings) = self.process_dir(&self.pending_pings_dir);
+        discarded_on_scan += discarded;
+        let (discarded, deletion_request_pings) =
+            self.process_dir(&self.deletion_request_pings_dir);
+        discarded_on_scan += discarded;
+
         PingPayloadsByDirectory {
-            pending_pings: self.process_dir(&self.pending_pings_dir),
-            deletion_request_pings: self.process_dir(&self.deletion_request_pings_dir),
+            pending_pings,
+            deletion_request_pings,
+            discarded_on_scan,
         }
     }
 
@@ -275,8 +284,9 @@ impl PingDirectoryManager {
     ///
     /// # Returns
     ///
-    /// A vector of tuples with the file size and payload of each ping file in the directory.
-    fn process_dir(&self, dir: &Path) -> Vec<(u64, PingPayload)> {
+    /// The number of files discarded because the `HIGH_WATERMARK_PENDING_PINGS` was exceeded
+    /// and a vector of tuples with the file size and payload of each ping file in the directory.
+    fn process_dir(&self, dir: &Path) -> (u32, Vec<(u64, PingPayload)>) {
         log::trace!("Processing persisted pings.");
 
         let entries = match dir.read_dir() {
@@ -284,11 +294,12 @@ impl PingDirectoryManager {
             Err(_) => {
                 // This may error simply because the directory doesn't exist,
                 // which is expected if no pings were stored yet.
-                return Vec::new();
+                return (0, Vec::new());
             }
         };
 
         let mut pending_count = 0;
+        let mut discarded_files = 0;
         let mut pending_pings: Vec<_> = entries
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| {
@@ -304,6 +315,7 @@ impl PingDirectoryManager {
                     pending_count += 1;
                     if pending_count > HIGH_WATERMARK_PENDING_PINGS {
                         log::debug!("Too many pending pings: {pending_count} > {HIGH_WATERMARK_PENDING_PINGS}. Deleting.");
+                        discarded_files += 1;
                         self.delete_file(file_name);
                         return None;
                     }
@@ -342,10 +354,13 @@ impl PingDirectoryManager {
             }
         });
 
-        pending_pings
-            .into_iter()
-            .map(|(metadata, data)| (metadata.len(), data))
-            .collect()
+        (
+            discarded_files,
+            pending_pings
+                .into_iter()
+                .map(|(metadata, data)| (metadata.len(), data))
+                .collect(),
+        )
     }
 
     /// Gets the path for a ping file based on its document_id.
@@ -581,5 +596,9 @@ mod test {
         let data = directory_manager.process_dirs();
         // Depending on ordering the inital ping could still be there.
         assert!(data.pending_pings.len() <= 1);
+        assert_eq!(
+            n_files - HIGH_WATERMARK_PENDING_PINGS + 1,
+            data.discarded_on_scan as u64
+        );
     }
 }

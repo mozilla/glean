@@ -216,6 +216,9 @@ pub struct PingUploadManager {
     /// Policies for ping storage, uploading and requests.
     policy: Policy,
 
+    /// Total number of discarded files after a ping directory scan
+    discarded_files: Arc<AtomicU32>,
+
     in_flight: RwLock<HashMap<String, (TimerId, TimerId)>>,
 }
 
@@ -283,6 +286,7 @@ impl PingUploadManager {
             language_binding_name: language_binding_name.into(),
             upload_metrics: UploadMetrics::new(),
             policy: Policy::default(),
+            discarded_files: Arc::new(AtomicU32::new(0)),
             in_flight: RwLock::new(HashMap::default()),
         }
     }
@@ -299,6 +303,7 @@ impl PingUploadManager {
     ) -> std::thread::JoinHandle<()> {
         let local_manager = self.directory_manager.clone();
         let local_cached_pings = self.cached_pings.clone();
+        let local_discarded_files = self.discarded_files.clone();
         let local_flag = self.processed_pending_pings.clone();
         thread::Builder::new()
             .name("glean.ping_directory_manager.process_dir".to_string())
@@ -308,7 +313,9 @@ impl PingUploadManager {
                     let mut local_cached_pings = local_cached_pings
                         .write()
                         .expect("Can't write to pending pings cache.");
-                    local_cached_pings.extend(local_manager.process_dirs());
+                    let pings = local_manager.process_dirs();
+                    local_discarded_files.store(pings.discarded_on_scan, Ordering::SeqCst);
+                    local_cached_pings.extend(pings);
                     local_flag.store(true, Ordering::SeqCst);
                 }
                 if trigger_upload {
@@ -478,6 +485,13 @@ impl PingUploadManager {
             .cached_pings
             .write()
             .expect("Can't write to pending pings cache.");
+
+        let discarded_files = self.discarded_files.load(Ordering::SeqCst);
+        if discarded_files > 0 {
+            self.upload_metrics
+                .discarded_pings
+                .set_sync(glean, discarded_files.into());
+        }
 
         if cached_pings.len() > 0 {
             let mut pending_pings_directory_size: u64 = 0;
