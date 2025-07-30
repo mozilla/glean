@@ -17,7 +17,7 @@ const MAX_PENDING_PINGS_DIRECTORY_SIZE: u64 = 10 * 1024 * 1024; // 10MB
 // A baseline ping file averages about 600 bytes, so that's a total of just 144 kB we store.
 // With the default rate limit of 15 pings per 60s it would take roughly 16 minutes to send out all pending
 // pings.
-const MAX_PENDING_PINGS_COUNT: u64 = 250;
+pub(crate) const MAX_PENDING_PINGS_COUNT: u64 = 250;
 
 /// A struct holding the values for all the policies related to ping storage, uploading and requests.
 #[derive(Debug, MallocSizeOf)]
