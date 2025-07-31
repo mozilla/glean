@@ -134,6 +134,10 @@ commands:
           command: |
             sudo apt install -y faketime
             glean-core/rlb/tests/test-mps-delay.sh
+      - run:
+          name: Run Rust Rkv open test
+          command: |
+            glean-core/tests/test-rkv-cases.sh
 
   install-rustup:
     steps:
