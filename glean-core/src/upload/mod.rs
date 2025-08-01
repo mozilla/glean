@@ -511,6 +511,8 @@ impl PingUploadManager {
                 );
             }
 
+            let mut deleted_pings_after_quota_hit = 0;
+
             // The pending pings vector is sorted by date in ascending order (oldest -> newest).
             // We need to calculate the size of the pending pings directory
             // and delete the **oldest** pings in case quota is reached.
@@ -538,14 +540,18 @@ impl PingUploadManager {
                 }
 
                 if deleting && self.directory_manager.delete_file(document_id) {
-                    self.upload_metrics
-                        .deleted_pings_after_quota_hit
-                        .add_sync(glean, 1);
+                    deleted_pings_after_quota_hit += 1;
                     return false;
                 }
 
                 true
             });
+
+            if deleted_pings_after_quota_hit > 0 {
+                self.upload_metrics
+                    .deleted_pings_after_quota_hit
+                    .add_sync(glean, deleted_pings_after_quota_hit);
+            }
             // After calculating the size of the pending pings directory,
             // we record the calculated number and reverse the pings array back for enqueueing.
             cached_pings.pending_pings.reverse();
