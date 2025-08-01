@@ -7,7 +7,7 @@
   * `LabeledMetric` improvement: Added `testGetValue` as a test method on all labeled metric types ([#3190](https://github.com/mozilla/glean/pull/3190))
   * New metric: `glean.ping.uploader_capabilities` reporting the requested uploader capabilities for a ping ([#3188](https://github.com/mozilla/glean/pull/3188))
 * Android
-  * Updated Android Gradle Plugin to 8.11.0 ([#3180](https://github.com/mozilla/glean/pull/3180))
+  * Updated Android Gradle Plugin to 8.12.0 ([#3208](https://github.com/mozilla/glean/pull/3208))
   * Updated Android NDK to r28c ([#3199](https://github.com/mozilla/glean/pull/3199))
   * Updated Android SDK target to version 36 ([#3180](https://github.com/mozilla/glean/pull/3180))
   * Updated Gradle to 8.14.3 ([#3180](https://github.com/mozilla/glean/pull/3180))
