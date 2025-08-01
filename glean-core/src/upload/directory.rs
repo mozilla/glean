@@ -17,6 +17,15 @@ use uuid::Uuid;
 use super::request::HeaderMap;
 use crate::{DELETION_REQUEST_PINGS_DIRECTORY, PENDING_PINGS_DIRECTORY};
 
+// The maximum number of files we process per directory.
+// If we detect more files in the pending pings directory any excess files are removed without processing.
+// Note that the order in which we read the files is arbitrary, no guarantee is given for recency.
+//
+// The number was chosen rather arbitrarily.
+// Processing reads all files into memory. To avoid excessive CPU and memory usage we shouldn't do
+// that for too many files.
+const HIGH_WATERMARK_PENDING_PINGS: u64 = super::policy::MAX_PENDING_PINGS_COUNT * 4;
+
 /// A representation of the data extracted from a ping file,
 #[derive(Clone, Debug, Default, MallocSizeOf)]
 pub struct PingPayload {
@@ -41,6 +50,7 @@ pub struct PingPayload {
 pub struct PingPayloadsByDirectory {
     pub pending_pings: Vec<(u64, PingPayload)>,
     pub deletion_request_pings: Vec<(u64, PingPayload)>,
+    pub discarded_on_scan: u32,
 }
 
 impl MallocSizeOf for PingPayloadsByDirectory {
@@ -251,9 +261,17 @@ impl PingDirectoryManager {
 
     /// Processes both ping directories.
     pub fn process_dirs(&self) -> PingPayloadsByDirectory {
+        let mut discarded_on_scan = 0;
+        let (discarded, pending_pings) = self.process_dir(&self.pending_pings_dir);
+        discarded_on_scan += discarded;
+        let (discarded, deletion_request_pings) =
+            self.process_dir(&self.deletion_request_pings_dir);
+        discarded_on_scan += discarded;
+
         PingPayloadsByDirectory {
-            pending_pings: self.process_dir(&self.pending_pings_dir),
-            deletion_request_pings: self.process_dir(&self.deletion_request_pings_dir),
+            pending_pings,
+            deletion_request_pings,
+            discarded_on_scan,
         }
     }
 
@@ -266,8 +284,9 @@ impl PingDirectoryManager {
     ///
     /// # Returns
     ///
-    /// A vector of tuples with the file size and payload of each ping file in the directory.
-    fn process_dir(&self, dir: &Path) -> Vec<(u64, PingPayload)> {
+    /// The number of files discarded because the `HIGH_WATERMARK_PENDING_PINGS` was exceeded
+    /// and a vector of tuples with the file size and payload of each ping file in the directory.
+    fn process_dir(&self, dir: &Path) -> (u32, Vec<(u64, PingPayload)>) {
         log::trace!("Processing persisted pings.");
 
         let entries = match dir.read_dir() {
@@ -275,10 +294,12 @@ impl PingDirectoryManager {
             Err(_) => {
                 // This may error simply because the directory doesn't exist,
                 // which is expected if no pings were stored yet.
-                return Vec::new();
+                return (0, Vec::new());
             }
         };
 
+        let mut pending_count = 0;
+        let mut discarded_files = 0;
         let mut pending_pings: Vec<_> = entries
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| {
@@ -290,6 +311,15 @@ impl PingDirectoryManager {
                         self.delete_file(file_name);
                         return None;
                     }
+
+                    pending_count += 1;
+                    if pending_count > HIGH_WATERMARK_PENDING_PINGS {
+                        log::debug!("Too many pending pings: {pending_count} > {HIGH_WATERMARK_PENDING_PINGS}. Deleting.");
+                        discarded_files += 1;
+                        self.delete_file(file_name);
+                        return None;
+                    }
+
                     if let Some(data) = self.process_file(file_name) {
                         let metadata = match fs::metadata(&path) {
                             Ok(metadata) => metadata,
@@ -324,10 +354,13 @@ impl PingDirectoryManager {
             }
         });
 
-        pending_pings
-            .into_iter()
-            .map(|(metadata, data)| (metadata.len(), data))
-            .collect()
+        (
+            discarded_files,
+            pending_pings
+                .into_iter()
+                .map(|(metadata, data)| (metadata.len(), data))
+                .collect(),
+        )
     }
 
     /// Gets the path for a ping file based on its document_id.
@@ -517,5 +550,55 @@ mod test {
         let request_ping_type = ping.upload_path.split('/').nth(3).unwrap();
         assert_eq!(request_ping_type, ping.ping_name);
         assert_eq!(request_ping_type, "deletion-request");
+    }
+
+    #[test]
+    fn delete_pings_above_high_watermark() {
+        let _ = env_logger::builder().try_init();
+        let (mut glean, dir) = new_glean(None);
+
+        // Register a ping for testing
+        let ping_type = PingType::new(
+            "test",
+            true,
+            true,
+            true,
+            true,
+            true,
+            vec![],
+            vec![],
+            true,
+            vec![],
+        );
+        glean.register_ping_type(&ping_type);
+
+        // Submit the ping to populate the pending_pings directory
+        ping_type.submit_sync(&glean, None);
+
+        let directory_manager = PingDirectoryManager::new(dir.path());
+
+        // Try and process the pings directories
+        let data = directory_manager.process_dirs();
+
+        // Verify there is just the one request
+        assert_eq!(data.pending_pings.len(), 1);
+
+        // Create many more
+        let n_files = HIGH_WATERMARK_PENDING_PINGS * 2;
+        for _ in 0..n_files {
+            let path = dir
+                .path()
+                .join(PENDING_PINGS_DIRECTORY)
+                .join(Uuid::new_v4().to_string());
+            File::create(&path).unwrap();
+        }
+
+        let data = directory_manager.process_dirs();
+        // Depending on ordering the inital ping could still be there.
+        assert!(data.pending_pings.len() <= 1);
+        assert_eq!(
+            n_files - HIGH_WATERMARK_PENDING_PINGS + 1,
+            data.discarded_on_scan as u64
+        );
     }
 }
