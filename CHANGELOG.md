@@ -5,6 +5,8 @@
 * General
   * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
   * `LabeledMetric` improvement: Added `testGetValue` as a test method on all labeled metric types ([#3190](https://github.com/mozilla/glean/pull/3190))
+  * `DualLabeledCounter` improvement: Added `testGetValue` as a test method ([#3209](https://github.com/mozilla/glean/pull/3209))
+  * Improvement: Updated all remaining metrics to implement the `TestGetValue` trait ([#3209](https://github.com/mozilla/glean/pull/3209))
   * New metric: `glean.ping.uploader_capabilities` reporting the requested uploader capabilities for a ping ([#3188](https://github.com/mozilla/glean/pull/3188))
 * Android
   * Updated Android Gradle Plugin to 8.12.0 ([#3208](https://github.com/mozilla/glean/pull/3208))
