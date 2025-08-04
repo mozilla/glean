@@ -11,6 +11,7 @@
 mod common;
 
 use glean::{ConfigurationBuilder, ErrorType};
+use glean_core::TestGetValue;
 
 /// A timing_distribution
 mod metrics {

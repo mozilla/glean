@@ -11,6 +11,7 @@
 mod common;
 
 use glean::ConfigurationBuilder;
+use glean_core::TestGetValue;
 
 mod metrics {
     use glean::private::*;

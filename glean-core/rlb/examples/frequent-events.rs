@@ -24,6 +24,7 @@ use once_cell::sync::Lazy;
 
 use glean::net;
 use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder};
+use glean_core::TestGetValue;
 
 pub mod glean_metrics {
     use glean::{private::EventMetric, traits::NoExtraKeys, CommonMetricData, Lifetime};

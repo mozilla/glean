@@ -2,12 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! This integration test should model how the RLB is used when embedded in another Rust application
-//! (e.g. FOG/Firefox Desktop).
-//!
-//! We write a single test scenario per file to avoid any state keeping across runs
-//! (different files run as different processes).
-
 mod common;
 
 use glean::ConfigurationBuilder;
@@ -15,23 +9,23 @@ use glean_core::TestGetValue;
 
 /// Some user metrics.
 mod metrics {
-    use glean::private::*;
-    use glean::{Lifetime, TimeUnit};
-    use glean_core::CommonMetricData;
+    use glean::Lifetime;
+    use glean_core::{CommonMetricData, DualLabeledCounterMetric};
     use once_cell::sync::Lazy;
 
     #[allow(non_upper_case_globals)]
-    pub static initialization: Lazy<TimespanMetric> = Lazy::new(|| {
-        TimespanMetric::new(
+    pub static dual_labeled_counter: Lazy<DualLabeledCounterMetric> = Lazy::new(|| {
+        DualLabeledCounterMetric::new(
             CommonMetricData {
-                name: "initialization".into(),
+                name: "labeled_boolean".into(),
                 category: "sample".into(),
                 send_in_pings: vec!["validation".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
                 ..Default::default()
             },
-            TimeUnit::Nanosecond,
+            None,
+            None,
         )
     });
 }
@@ -49,16 +43,13 @@ mod pings {
     });
 }
 
-/// Test scenario: A clean run
-///
-/// The app is initialized, in turn Glean gets initialized without problems.
-/// Some data is recorded (before and after initialization).
-/// And later the whole process is shutdown.
 #[test]
-fn simple_lifecycle() {
+fn test_dual_labeled_metrics_test_get_value_functions_appropriately() {
     common::enable_test_logging();
 
-    metrics::initialization.start();
+    metrics::dual_labeled_counter
+        .get("label1", "category1")
+        .add(10);
 
     // Create a custom configuration to use a validating uploader.
     let dir = tempfile::tempdir().unwrap();
@@ -70,14 +61,14 @@ fn simple_lifecycle() {
         .build();
     common::initialize(cfg);
 
-    metrics::initialization.stop();
-
-    // This would never be called outside of tests,
-    // but it's the only way we can really test it's working right now.
-    assert!(metrics::initialization.test_get_value(None).is_some());
+    let map = metrics::dual_labeled_counter.test_get_value(None).unwrap();
+    assert_eq!(map.len(), 1);
+    assert_eq!(map.get("label1").unwrap().get("category1").unwrap(), &10);
 
     pings::validation.submit(None);
-    assert!(metrics::initialization.test_get_value(None).is_none());
+    let map = metrics::dual_labeled_counter.test_get_value(None).unwrap();
+    assert_eq!(map.len(), 0);
+    assert!(!map.contains_key("label1"));
 
     glean::shutdown();
 }
