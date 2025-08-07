@@ -10,8 +10,7 @@
 
 mod common;
 
-use glean::{ConfigurationBuilder, ErrorType};
-use glean_core::TestGetValue;
+use glean::{ConfigurationBuilder, ErrorType, TestGetValue};
 
 mod metrics {
     use glean::private::*;

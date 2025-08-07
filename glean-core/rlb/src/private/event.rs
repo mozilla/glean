@@ -73,8 +73,7 @@ impl<K: traits::ExtraKeys> EventMetric<K> {
 
 #[inherent]
 impl<K: traits::ExtraKeys> TestGetValue<Vec<RecordedEvent>> for EventMetric<K> {
-    #[allow(unused)]
-    fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
+    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
         self.inner.test_get_value(ping_name)
     }
 }
