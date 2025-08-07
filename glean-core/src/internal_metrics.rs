@@ -208,6 +208,7 @@ pub struct UploadMetrics {
     pub pending_pings_directory_size: MemoryDistributionMetric,
     pub deleted_pings_after_quota_hit: CounterMetric,
     pub pending_pings: CounterMetric,
+    pub discarded_pings: QuantityMetric,
     pub send_success: TimingDistributionMetric,
     pub send_failure: TimingDistributionMetric,
     pub in_flight_pings_dropped: CounterMetric,
@@ -273,6 +274,15 @@ impl UploadMetrics {
 
             pending_pings: CounterMetric::new(CommonMetricData {
                 name: "pending_pings".into(),
+                category: "glean.upload".into(),
+                send_in_pings: vec!["metrics".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
+
+            discarded_pings: QuantityMetric::new(CommonMetricData {
+                name: "discarded_pings".into(),
                 category: "glean.upload".into(),
                 send_in_pings: vec!["metrics".into()],
                 lifetime: Lifetime::Ping,
