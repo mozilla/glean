@@ -39,7 +39,7 @@ impl<'a, K> MetricIdentifier<'a> for ObjectMetric<K> {
     }
 }
 
-impl<K: traits::ObjectSerialize> TestGetValue<JsonValue> for ObjectMetric<K> {
+impl<K> TestGetValue<JsonValue> for ObjectMetric<K> {
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as JSON-encoded string.
