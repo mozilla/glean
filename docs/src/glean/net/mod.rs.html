@@ -293,9 +293,6 @@
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -307,7 +304,7 @@
 
 </span><span class="kw">use </span>crossbeam_channel::{Receiver, Sender};
 <span class="kw">use </span>std::sync::{atomic::Ordering, Arc, Mutex};
-<span class="kw">use </span>std::thread::{<span class="self">self</span>, JoinHandle};
+<span class="kw">use </span>std::thread::JoinHandle;
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>glean_core::upload::PingUploadTask;
@@ -429,71 +426,68 @@
 
         <span class="comment">// Need to lock before we start so that noone thinks we're not running.
         </span><span class="kw">let </span><span class="kw-2">mut </span>handle = <span class="self">self</span>.inner.handle.lock().unwrap();
-        <span class="kw">let </span>thread = thread::Builder::new()
-            .name(<span class="string">"glean.upload"</span>.into())
-            .spawn(<span class="kw">move </span>|| {
-                <span class="macro">log::trace!</span>(<span class="string">"Started glean.upload thread"</span>);
-                <span class="kw">loop </span>{
-                    <span class="kw">let </span>incoming_task = glean_core::glean_get_upload_task();
+        <span class="kw">let </span>thread = glean_core::thread::spawn(<span class="string">"glean.upload"</span>, <span class="kw">move </span>|| {
+            <span class="macro">log::trace!</span>(<span class="string">"Started glean.upload thread"</span>);
+            <span class="kw">loop </span>{
+                <span class="kw">let </span>incoming_task = glean_core::glean_get_upload_task();
 
-                    <span class="kw">match </span>incoming_task {
-                        PingUploadTask::Upload { request } =&gt; {
-                            <span class="macro">log::trace!</span>(<span class="string">"Received upload task with request {:?}"</span>, request);
-                            <span class="kw">let </span>doc_id = request.document_id.clone();
-                            <span class="kw">let </span>upload_url = <span class="macro">format!</span>(<span class="string">"{}{}"</span>, inner.server_endpoint, request.path);
-                            <span class="kw">let </span>headers: Vec&lt;(String, String)&gt; =
-                                request.headers.into_iter().collect();
-                            <span class="kw">let </span>upload_request = PingUploadRequest {
-                                url: upload_url,
-                                body: request.body,
-                                headers,
-                                body_has_info_sections: request.body_has_info_sections,
-                                ping_name: request.ping_name,
-                            };
-                            <span class="kw">let </span>upload_request = CapablePingUploadRequest {
-                                request: upload_request,
-                                capabilities: request.uploader_capabilities,
-                            };
-                            <span class="kw">let </span>result = inner.uploader.upload(upload_request);
-                            <span class="comment">// Process the upload response.
-                            </span><span class="kw">match </span>glean_core::glean_process_ping_upload_response(doc_id, result) {
-                                UploadTaskAction::Next =&gt; (),
-                                UploadTaskAction::End =&gt; <span class="kw">break</span>,
-                            }
-
-                            <span class="kw">let </span>status = inner.thread_running.load(Ordering::SeqCst);
-                            <span class="comment">// asked to shut down. let's do it.
-                            </span><span class="kw">if </span>status == State::ShuttingDown {
-                                <span class="kw">break</span>;
-                            }
+                <span class="kw">match </span>incoming_task {
+                    PingUploadTask::Upload { request } =&gt; {
+                        <span class="macro">log::trace!</span>(<span class="string">"Received upload task with request {:?}"</span>, request);
+                        <span class="kw">let </span>doc_id = request.document_id.clone();
+                        <span class="kw">let </span>upload_url = <span class="macro">format!</span>(<span class="string">"{}{}"</span>, inner.server_endpoint, request.path);
+                        <span class="kw">let </span>headers: Vec&lt;(String, String)&gt; = request.headers.into_iter().collect();
+                        <span class="kw">let </span>upload_request = PingUploadRequest {
+                            url: upload_url,
+                            body: request.body,
+                            headers,
+                            body_has_info_sections: request.body_has_info_sections,
+                            ping_name: request.ping_name,
+                        };
+                        <span class="kw">let </span>upload_request = CapablePingUploadRequest {
+                            request: upload_request,
+                            capabilities: request.uploader_capabilities,
+                        };
+                        <span class="kw">let </span>result = inner.uploader.upload(upload_request);
+                        <span class="comment">// Process the upload response.
+                        </span><span class="kw">match </span>glean_core::glean_process_ping_upload_response(doc_id, result) {
+                            UploadTaskAction::Next =&gt; (),
+                            UploadTaskAction::End =&gt; <span class="kw">break</span>,
                         }
-                        PingUploadTask::Wait { time } =&gt; {
-                            <span class="macro">log::trace!</span>(<span class="string">"Instructed to wait for {:?}ms"</span>, time);
-                            <span class="kw">let _ </span>= inner.rx.recv_timeout(Duration::from_millis(time));
 
-                            <span class="kw">let </span>status = inner.thread_running.load(Ordering::SeqCst);
-                            <span class="comment">// asked to shut down. let's do it.
-                            </span><span class="kw">if </span>status == State::ShuttingDown {
-                                <span class="kw">break</span>;
-                            }
-                        }
-                        PingUploadTask::Done { .. } =&gt; {
-                            <span class="macro">log::trace!</span>(<span class="string">"Received PingUploadTask::Done. Exiting."</span>);
-                            <span class="comment">// Nothing to do here, break out of the loop.
-                            </span><span class="kw">break</span>;
+                        <span class="kw">let </span>status = inner.thread_running.load(Ordering::SeqCst);
+                        <span class="comment">// asked to shut down. let's do it.
+                        </span><span class="kw">if </span>status == State::ShuttingDown {
+                            <span class="kw">break</span>;
                         }
                     }
-                }
+                    PingUploadTask::Wait { time } =&gt; {
+                        <span class="macro">log::trace!</span>(<span class="string">"Instructed to wait for {:?}ms"</span>, time);
+                        <span class="kw">let _ </span>= inner.rx.recv_timeout(Duration::from_millis(time));
 
-                <span class="comment">// Clear the running flag to signal that this thread is done,
-                // but only if there's no shutdown thread.
-                </span><span class="kw">let _ </span>= inner.thread_running.compare_exchange(
-                    State::Running,
-                    State::Stopped,
-                    Ordering::SeqCst,
-                    Ordering::SeqCst,
-                );
-            });
+                        <span class="kw">let </span>status = inner.thread_running.load(Ordering::SeqCst);
+                        <span class="comment">// asked to shut down. let's do it.
+                        </span><span class="kw">if </span>status == State::ShuttingDown {
+                            <span class="kw">break</span>;
+                        }
+                    }
+                    PingUploadTask::Done { .. } =&gt; {
+                        <span class="macro">log::trace!</span>(<span class="string">"Received PingUploadTask::Done. Exiting."</span>);
+                        <span class="comment">// Nothing to do here, break out of the loop.
+                        </span><span class="kw">break</span>;
+                    }
+                }
+            }
+
+            <span class="comment">// Clear the running flag to signal that this thread is done,
+            // but only if there's no shutdown thread.
+            </span><span class="kw">let _ </span>= inner.thread_running.compare_exchange(
+                State::Running,
+                State::Stopped,
+                Ordering::SeqCst,
+                Ordering::SeqCst,
+            );
+        });
 
         <span class="kw">match </span>thread {
             <span class="prelude-val">Ok</span>(thread) =&gt; <span class="kw-2">*</span>handle = <span class="prelude-val">Some</span>(thread),

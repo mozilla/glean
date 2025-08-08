@@ -619,6 +619,12 @@
 <a href="#619" id="619">619</a>
 <a href="#620" id="620">620</a>
 <a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -830,53 +836,59 @@
     when: When,
 ) -&gt; JoinHandle&lt;()&gt; {
     <span class="kw">let </span>pair = Arc::clone(<span class="kw-2">&amp;</span>TASK_CONDVAR);
-    std::thread::Builder::new()
-        .name(<span class="string">"glean.mps"</span>.into())
-        .spawn(<span class="kw">move </span>|| {
-            <span class="kw">let </span>(cancelled_lock, condvar) = <span class="kw-2">&amp;*</span>pair;
-            <span class="kw">let </span><span class="kw-2">mut </span>when = when;
-            <span class="kw">let </span><span class="kw-2">mut </span>now = now;
-            <span class="kw">loop </span>{
-                <span class="kw">let </span>dur = when.until(now);
-                <span class="macro">log::info!</span>(<span class="string">"Scheduling for {} after {:?}, reason {:?}"</span>, now, dur, when);
-                <span class="kw">let </span><span class="kw-2">mut </span>timed_out = <span class="bool-val">false</span>;
-                {
-                    <span class="kw">match </span>condvar.wait_timeout_while(cancelled_lock.lock().unwrap(), dur, |cancelled| !<span class="kw-2">*</span>cancelled) {
-                        <span class="prelude-val">Err</span>(err) =&gt; {
-                            <span class="macro">log::warn!</span>(<span class="string">"Condvar wait failure. MPS exiting. {}"</span>, err);
+    <span class="kw">crate</span>::thread::spawn(<span class="string">"glean.mps"</span>, <span class="kw">move </span>|| {
+        <span class="kw">let </span>(cancelled_lock, condvar) = <span class="kw-2">&amp;*</span>pair;
+        <span class="kw">let </span><span class="kw-2">mut </span>when = when;
+        <span class="kw">let </span><span class="kw-2">mut </span>now = now;
+        <span class="kw">loop </span>{
+            <span class="kw">let </span>dur = when.until(now);
+            <span class="macro">log::info!</span>(<span class="string">"Scheduling for {} after {:?}, reason {:?}"</span>, now, dur, when);
+            <span class="kw">let </span><span class="kw-2">mut </span>timed_out = <span class="bool-val">false</span>;
+            {
+                <span class="kw">match </span>condvar.wait_timeout_while(cancelled_lock.lock().unwrap(), dur, |cancelled| {
+                    !<span class="kw-2">*</span>cancelled
+                }) {
+                    <span class="prelude-val">Err</span>(err) =&gt; {
+                        <span class="macro">log::warn!</span>(<span class="string">"Condvar wait failure. MPS exiting. {}"</span>, err);
+                        <span class="kw">break</span>;
+                    }
+                    <span class="prelude-val">Ok</span>((cancelled, wait_result)) =&gt; {
+                        <span class="kw">if </span><span class="kw-2">*</span>cancelled {
+                            <span class="macro">log::info!</span>(<span class="string">"Metrics Ping Scheduler cancelled. Exiting."</span>);
                             <span class="kw">break</span>;
-                        }
-                        <span class="prelude-val">Ok</span>((cancelled, wait_result)) =&gt; {
-                            <span class="kw">if </span><span class="kw-2">*</span>cancelled {
-                                <span class="macro">log::info!</span>(<span class="string">"Metrics Ping Scheduler cancelled. Exiting."</span>);
-                                <span class="kw">break</span>;
-                            } <span class="kw">else if </span>wait_result.timed_out() {
-                                <span class="comment">// Can't get the global glean while holding cancelled's lock.
-                                </span>timed_out = <span class="bool-val">true</span>;
-                            } <span class="kw">else </span>{
-                                <span class="comment">// This should be impossible. `cancelled_lock` is acquired, and
-                                // `!*cancelled` is checked by the condvar before it is allowed
-                                // to return from `wait_timeout_while` (I checked).
-                                // So `Ok(_)` implies `*cancelled || wait_result.timed_out`.
-                                </span><span class="macro">log::warn!</span>(<span class="string">"Spurious wakeup of the MPS condvar should be impossible."</span>);
-                            }
+                        } <span class="kw">else if </span>wait_result.timed_out() {
+                            <span class="comment">// Can't get the global glean while holding cancelled's lock.
+                            </span>timed_out = <span class="bool-val">true</span>;
+                        } <span class="kw">else </span>{
+                            <span class="comment">// This should be impossible. `cancelled_lock` is acquired, and
+                            // `!*cancelled` is checked by the condvar before it is allowed
+                            // to return from `wait_timeout_while` (I checked).
+                            // So `Ok(_)` implies `*cancelled || wait_result.timed_out`.
+                            </span><span class="macro">log::warn!</span>(<span class="string">"Spurious wakeup of the MPS condvar should be impossible."</span>);
                         }
                     }
                 }
-                <span class="comment">// Safety:
-                // We are okay dropping the condvar's cancelled lock here because it only guards
-                // whether we're cancelled, and we've established that we weren't when we timed out.
-                // We might _now_ be cancelled at any time, in which case when we loop back over
-                // we'll immediately exit. But first we need to submit our "metrics" ping.
-                </span><span class="kw">if </span>timed_out {
-                    <span class="macro">log::info!</span>(<span class="string">"Time to submit our metrics ping, {:?}"</span>, when);
-                    <span class="kw">let </span>glean = <span class="kw">crate</span>::core::global_glean().expect(<span class="string">"Global Glean not present when trying to send scheduled 'metrics' ping?!"</span>).lock().unwrap();
-                    submitter.submit_metrics_ping(<span class="kw-2">&amp;</span>glean, <span class="prelude-val">Some</span>(when.reason()), now);
-                    when = When::Reschedule;
-                }
-                now = local_now_with_offset();
             }
-        }).expect(<span class="string">"Unable to spawn Metrics Ping Scheduler thread."</span>)
+            <span class="comment">// Safety:
+            // We are okay dropping the condvar's cancelled lock here because it only guards
+            // whether we're cancelled, and we've established that we weren't when we timed out.
+            // We might _now_ be cancelled at any time, in which case when we loop back over
+            // we'll immediately exit. But first we need to submit our "metrics" ping.
+            </span><span class="kw">if </span>timed_out {
+                <span class="macro">log::info!</span>(<span class="string">"Time to submit our metrics ping, {:?}"</span>, when);
+                <span class="kw">let </span>glean = <span class="kw">crate</span>::core::global_glean()
+                    .expect(
+                        <span class="string">"Global Glean not present when trying to send scheduled 'metrics' ping?!"</span>,
+                    )
+                    .lock()
+                    .unwrap();
+                submitter.submit_metrics_ping(<span class="kw-2">&amp;</span>glean, <span class="prelude-val">Some</span>(when.reason()), now);
+                when = When::Reschedule;
+            }
+            now = local_now_with_offset();
+        }
+    })
+    .expect(<span class="string">"Unable to spawn Metrics Ping Scheduler thread."</span>)
 }
 
 <span class="kw">fn </span>get_last_sent_time_metric() -&gt; DatetimeMetric {

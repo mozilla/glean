@@ -2014,9 +2014,6 @@
 <a href="#2014" id="2014">2014</a>
 <a href="#2015" id="2015">2015</a>
 <a href="#2016" id="2016">2016</a>
-<a href="#2017" id="2017">2017</a>
-<a href="#2018" id="2018">2018</a>
-<a href="#2019" id="2019">2019</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -2037,7 +2034,6 @@
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 <span class="kw">use </span>std::sync::{Arc, RwLock, RwLockWriteGuard};
-<span class="kw">use </span>std::thread;
 <span class="kw">use </span>std::time::{Duration, Instant};
 
 <span class="kw">use </span>chrono::Utc;
@@ -2319,32 +2315,29 @@
         <span class="kw">let </span>local_manager = <span class="self">self</span>.directory_manager.clone();
         <span class="kw">let </span>local_cached_pings = <span class="self">self</span>.cached_pings.clone();
         <span class="kw">let </span>local_flag = <span class="self">self</span>.processed_pending_pings.clone();
-        thread::Builder::new()
-            .name(<span class="string">"glean.ping_directory_manager.process_dir"</span>.to_string())
-            .spawn(<span class="kw">move </span>|| {
-                {
-                    <span class="comment">// Be sure to drop local_cached_pings lock before triggering upload.
-                    </span><span class="kw">let </span><span class="kw-2">mut </span>local_cached_pings = local_cached_pings
-                        .write()
-                        .expect(<span class="string">"Can't write to pending pings cache."</span>);
-                    local_cached_pings.extend(local_manager.process_dirs());
-                    local_flag.store(<span class="bool-val">true</span>, Ordering::SeqCst);
-                }
-                <span class="kw">if </span>trigger_upload {
-                    <span class="kw">crate</span>::dispatcher::launch(|| {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = <span class="kw">crate</span>::maybe_global_state().and_then(|s| s.lock().ok())
-                        {
-                            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
-                                <span class="macro">log::error!</span>(
-                                    <span class="string">"Triggering upload after pending ping scan failed. Error: {}"</span>,
-                                    e
-                                );
-                            }
+        <span class="kw">crate</span>::thread::spawn(<span class="string">"glean.ping_directory_manager.process_dir"</span>, <span class="kw">move </span>|| {
+            {
+                <span class="comment">// Be sure to drop local_cached_pings lock before triggering upload.
+                </span><span class="kw">let </span><span class="kw-2">mut </span>local_cached_pings = local_cached_pings
+                    .write()
+                    .expect(<span class="string">"Can't write to pending pings cache."</span>);
+                local_cached_pings.extend(local_manager.process_dirs());
+                local_flag.store(<span class="bool-val">true</span>, Ordering::SeqCst);
+            }
+            <span class="kw">if </span>trigger_upload {
+                <span class="kw">crate</span>::dispatcher::launch(|| {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = <span class="kw">crate</span>::maybe_global_state().and_then(|s| s.lock().ok()) {
+                        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
+                            <span class="macro">log::error!</span>(
+                                <span class="string">"Triggering upload after pending ping scan failed. Error: {}"</span>,
+                                e
+                            );
                         }
-                    });
-                }
-            })
-            .expect(<span class="string">"Unable to spawn thread to process pings directories."</span>)
+                    }
+                });
+            }
+        })
+        .expect(<span class="string">"Unable to spawn thread to process pings directories."</span>)
     }
 
     <span class="doccomment">/// Creates a new upload manager with no limitations, for tests.
@@ -2921,6 +2914,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
+    <span class="kw">use </span>std::thread;
     <span class="kw">use </span>uuid::Uuid;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;

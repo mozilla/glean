@@ -1395,10 +1395,6 @@
 <a href="#1395" id="1395">1395</a>
 <a href="#1396" id="1396">1396</a>
 <a href="#1397" id="1397">1397</a>
-<a href="#1398" id="1398">1398</a>
-<a href="#1399" id="1399">1399</a>
-<a href="#1400" id="1400">1400</a>
-<a href="#1401" id="1401">1401</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1422,7 +1418,6 @@
 <span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::sync::atomic::{AtomicBool, Ordering};
 <span class="kw">use </span>std::sync::{Arc, Mutex};
-<span class="kw">use </span>std::thread;
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>crossbeam_channel::unbounded;
@@ -1452,6 +1447,8 @@
 <span class="kw">mod </span>scheduler;
 <span class="kw">pub mod </span>storage;
 <span class="kw">mod </span>system;
+<span class="attr">#[doc(hidden)]
+</span><span class="kw">pub mod </span>thread;
 <span class="kw">pub mod </span>traits;
 <span class="kw">pub mod </span>upload;
 <span class="kw">mod </span>util;
@@ -1785,185 +1782,182 @@
         <span class="kw">return</span>;
     }
 
-    <span class="kw">let </span>init_handle = std::thread::Builder::new()
-        .name(<span class="string">"glean.init"</span>.into())
-        .spawn(<span class="kw">move </span>|| {
-            <span class="kw">let </span>upload_enabled = cfg.upload_enabled;
-            <span class="kw">let </span>trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
+    <span class="kw">let </span>init_handle = thread::spawn(<span class="string">"glean.init"</span>, <span class="kw">move </span>|| {
+        <span class="kw">let </span>upload_enabled = cfg.upload_enabled;
+        <span class="kw">let </span>trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
 
-            <span class="comment">// Set the internal logging level.
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(level) = cfg.log_level {
-                log::set_max_level(level)
-            }
+        <span class="comment">// Set the internal logging level.
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(level) = cfg.log_level {
+            log::set_max_level(level)
+        }
 
-            <span class="kw">let </span>glean = <span class="kw">match </span>Glean::new(cfg) {
-                <span class="prelude-val">Ok</span>(glean) =&gt; glean,
-                <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="macro">log::error!</span>(<span class="string">"Failed to initialize Glean: {}"</span>, err);
-                    <span class="kw">return</span>;
-                }
-            };
-            <span class="kw">if </span>core::setup_glean(glean).is_err() {
+        <span class="kw">let </span>glean = <span class="kw">match </span>Glean::new(cfg) {
+            <span class="prelude-val">Ok</span>(glean) =&gt; glean,
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">log::error!</span>(<span class="string">"Failed to initialize Glean: {}"</span>, err);
                 <span class="kw">return</span>;
             }
+        };
+        <span class="kw">if </span>core::setup_glean(glean).is_err() {
+            <span class="kw">return</span>;
+        }
 
-            <span class="macro">log::info!</span>(<span class="string">"Glean initialized"</span>);
+        <span class="macro">log::info!</span>(<span class="string">"Glean initialized"</span>);
 
-            setup_state(State {
-                client_info,
-                callbacks,
-            });
+        setup_state(State {
+            client_info,
+            callbacks,
+        });
 
-            <span class="kw">let </span><span class="kw-2">mut </span>is_first_run = <span class="bool-val">false</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>dirty_flag = <span class="bool-val">false</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>pings_submitted = <span class="bool-val">false</span>;
-            core::with_glean_mut(|glean| {
-                <span class="comment">// The debug view tag might have been set before initialize,
-                // get the cached value and set it.
-                </span><span class="kw">let </span>debug_tag = PRE_INIT_DEBUG_VIEW_TAG.lock().unwrap();
-                <span class="kw">if </span>!debug_tag.is_empty() {
-                    glean.set_debug_view_tag(<span class="kw-2">&amp;</span>debug_tag);
-                }
-
-                <span class="comment">// The log pings debug option might have been set before initialize,
-                // get the cached value and set it.
-                </span><span class="kw">let </span>log_pigs = PRE_INIT_LOG_PINGS.load(Ordering::SeqCst);
-                <span class="kw">if </span>log_pigs {
-                    glean.set_log_pings(log_pigs);
-                }
-
-                <span class="comment">// The source tags might have been set before initialize,
-                // get the cached value and set them.
-                </span><span class="kw">let </span>source_tags = PRE_INIT_SOURCE_TAGS.lock().unwrap();
-                <span class="kw">if </span>!source_tags.is_empty() {
-                    glean.set_source_tags(source_tags.to_vec());
-                }
-
-                <span class="comment">// Get the current value of the dirty flag so we know whether to
-                // send a dirty startup baseline ping below.  Immediately set it to
-                // `false` so that dirty startup pings won't be sent if Glean
-                // initialization does not complete successfully.
-                </span>dirty_flag = glean.is_dirty_flag_set();
-                glean.set_dirty_flag(<span class="bool-val">false</span>);
-
-                <span class="comment">// Perform registration of pings that were attempted to be
-                // registered before init.
-                </span><span class="kw">let </span>pings = PRE_INIT_PING_REGISTRATION.lock().unwrap();
-                <span class="kw">for </span>ping <span class="kw">in </span>pings.iter() {
-                    glean.register_ping_type(ping);
-                }
-                <span class="kw">let </span>pings = PRE_INIT_PING_ENABLED.lock().unwrap();
-                <span class="kw">for </span>(ping, enabled) <span class="kw">in </span>pings.iter() {
-                    glean.set_ping_enabled(ping, <span class="kw-2">*</span>enabled);
-                }
-
-                <span class="comment">// The attribution and distribution might have been set before initialize,
-                // take the cached values and set them.
-                </span><span class="kw">if let </span><span class="prelude-val">Some</span>(attribution) = PRE_INIT_ATTRIBUTION.lock().unwrap().take() {
-                    glean.update_attribution(attribution);
-                }
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(distribution) = PRE_INIT_DISTRIBUTION.lock().unwrap().take() {
-                    glean.update_distribution(distribution);
-                }
-
-                <span class="comment">// If this is the first time ever the Glean SDK runs, make sure to set
-                // some initial core metrics in case we need to generate early pings.
-                // The next times we start, we would have them around already.
-                </span>is_first_run = glean.is_first_run();
-                <span class="kw">if </span>is_first_run {
-                    <span class="kw">let </span>state = global_state().lock().unwrap();
-                    initialize_core_metrics(glean, <span class="kw-2">&amp;</span>state.client_info);
-                }
-
-                <span class="comment">// Deal with any pending events so we can start recording new ones
-                </span>pings_submitted = glean.on_ready_to_submit_pings(trim_data_to_registered_pings);
-            });
-
-            {
-                <span class="kw">let </span>state = global_state().lock().unwrap();
-                <span class="comment">// We need to kick off upload in these cases:
-                // 1. Pings were submitted through Glean and it is ready to upload those pings;
-                // 2. Upload is disabled, to upload a possible deletion-request ping.
-                </span><span class="kw">if </span>pings_submitted || !upload_enabled {
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
-                        <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
-                    }
-                }
+        <span class="kw">let </span><span class="kw-2">mut </span>is_first_run = <span class="bool-val">false</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>dirty_flag = <span class="bool-val">false</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>pings_submitted = <span class="bool-val">false</span>;
+        core::with_glean_mut(|glean| {
+            <span class="comment">// The debug view tag might have been set before initialize,
+            // get the cached value and set it.
+            </span><span class="kw">let </span>debug_tag = PRE_INIT_DEBUG_VIEW_TAG.lock().unwrap();
+            <span class="kw">if </span>!debug_tag.is_empty() {
+                glean.set_debug_view_tag(<span class="kw-2">&amp;</span>debug_tag);
             }
 
-            core::with_glean(|glean| {
-                <span class="comment">// Start the MPS if its handled within Rust.
-                </span>glean.start_metrics_ping_scheduler();
-            });
-
-            <span class="comment">// The metrics ping scheduler might _synchronously_ submit a ping
-            // so that it runs before we clear application-lifetime metrics further below.
-            // For that it needs access to the `Glean` object.
-            // Thus we need to unlock that by leaving the context above,
-            // then re-lock it afterwards.
-            // That's safe because user-visible functions will be queued and thus not execute until
-            // we unblock later anyway.
-            </span>{
-                <span class="kw">let </span>state = global_state().lock().unwrap();
-
-                <span class="comment">// Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
-                // ping startup check should be performed before any other ping, since it relies
-                // on being dispatched to the API context before any other metric.
-                </span><span class="kw">if </span>state.callbacks.start_metrics_ping_scheduler() {
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
-                        <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
-                    }
-                }
+            <span class="comment">// The log pings debug option might have been set before initialize,
+            // get the cached value and set it.
+            </span><span class="kw">let </span>log_pigs = PRE_INIT_LOG_PINGS.load(Ordering::SeqCst);
+            <span class="kw">if </span>log_pigs {
+                glean.set_log_pings(log_pigs);
             }
 
-            core::with_glean_mut(|glean| {
-                <span class="kw">let </span>state = global_state().lock().unwrap();
-
-                <span class="comment">// Check if the "dirty flag" is set. That means the product was probably
-                // force-closed. If that's the case, submit a 'baseline' ping with the
-                // reason "dirty_startup". We only do that from the second run.
-                </span><span class="kw">if </span>!is_first_run &amp;&amp; dirty_flag {
-                    <span class="comment">// The `submit_ping_by_name_sync` function cannot be used, otherwise
-                    // startup will cause a dead-lock, since that function requests a
-                    // write lock on the `glean` object.
-                    // Note that unwrapping below is safe: the function will return an
-                    // `Ok` value for a known ping.
-                    </span><span class="kw">if </span>glean.submit_ping_by_name(<span class="string">"baseline"</span>, <span class="prelude-val">Some</span>(<span class="string">"dirty_startup"</span>)) {
-                        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
-                            <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
-                        }
-                    }
-                }
-
-                <span class="comment">// From the second time we run, after all startup pings are generated,
-                // make sure to clear `lifetime: application` metrics and set them again.
-                // Any new value will be sent in newly generated pings after startup.
-                </span><span class="kw">if </span>!is_first_run {
-                    glean.clear_application_lifetime_metrics();
-                    initialize_core_metrics(glean, <span class="kw-2">&amp;</span>state.client_info);
-                }
-            });
-
-            <span class="comment">// Signal Dispatcher that init is complete
-            // bug 1839433: It is important that this happens after any init tasks
-            // that shutdown() depends on. At time of writing that's only setting up
-            // the global Glean, but it is probably best to flush the preinit queue
-            // as late as possible in the glean.init thread.
-            </span><span class="kw">match </span>dispatcher::flush_init() {
-                <span class="prelude-val">Ok</span>(task_count) <span class="kw">if </span>task_count &gt; <span class="number">0 </span>=&gt; {
-                    core::with_glean(|glean| {
-                        glean_metrics::error::preinit_tasks_overflow
-                            .add_sync(glean, task_count <span class="kw">as </span>i32);
-                    });
-                }
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {}
-                <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">log::error!</span>(<span class="string">"Unable to flush the preinit queue: {}"</span>, err),
+            <span class="comment">// The source tags might have been set before initialize,
+            // get the cached value and set them.
+            </span><span class="kw">let </span>source_tags = PRE_INIT_SOURCE_TAGS.lock().unwrap();
+            <span class="kw">if </span>!source_tags.is_empty() {
+                glean.set_source_tags(source_tags.to_vec());
             }
 
+            <span class="comment">// Get the current value of the dirty flag so we know whether to
+            // send a dirty startup baseline ping below.  Immediately set it to
+            // `false` so that dirty startup pings won't be sent if Glean
+            // initialization does not complete successfully.
+            </span>dirty_flag = glean.is_dirty_flag_set();
+            glean.set_dirty_flag(<span class="bool-val">false</span>);
+
+            <span class="comment">// Perform registration of pings that were attempted to be
+            // registered before init.
+            </span><span class="kw">let </span>pings = PRE_INIT_PING_REGISTRATION.lock().unwrap();
+            <span class="kw">for </span>ping <span class="kw">in </span>pings.iter() {
+                glean.register_ping_type(ping);
+            }
+            <span class="kw">let </span>pings = PRE_INIT_PING_ENABLED.lock().unwrap();
+            <span class="kw">for </span>(ping, enabled) <span class="kw">in </span>pings.iter() {
+                glean.set_ping_enabled(ping, <span class="kw-2">*</span>enabled);
+            }
+
+            <span class="comment">// The attribution and distribution might have been set before initialize,
+            // take the cached values and set them.
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(attribution) = PRE_INIT_ATTRIBUTION.lock().unwrap().take() {
+                glean.update_attribution(attribution);
+            }
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(distribution) = PRE_INIT_DISTRIBUTION.lock().unwrap().take() {
+                glean.update_distribution(distribution);
+            }
+
+            <span class="comment">// If this is the first time ever the Glean SDK runs, make sure to set
+            // some initial core metrics in case we need to generate early pings.
+            // The next times we start, we would have them around already.
+            </span>is_first_run = glean.is_first_run();
+            <span class="kw">if </span>is_first_run {
+                <span class="kw">let </span>state = global_state().lock().unwrap();
+                initialize_core_metrics(glean, <span class="kw-2">&amp;</span>state.client_info);
+            }
+
+            <span class="comment">// Deal with any pending events so we can start recording new ones
+            </span>pings_submitted = glean.on_ready_to_submit_pings(trim_data_to_registered_pings);
+        });
+
+        {
             <span class="kw">let </span>state = global_state().lock().unwrap();
-            state.callbacks.initialize_finished();
-        })
-        .expect(<span class="string">"Failed to spawn Glean's init thread"</span>);
+            <span class="comment">// We need to kick off upload in these cases:
+            // 1. Pings were submitted through Glean and it is ready to upload those pings;
+            // 2. Upload is disabled, to upload a possible deletion-request ping.
+            </span><span class="kw">if </span>pings_submitted || !upload_enabled {
+                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
+                    <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
+                }
+            }
+        }
+
+        core::with_glean(|glean| {
+            <span class="comment">// Start the MPS if its handled within Rust.
+            </span>glean.start_metrics_ping_scheduler();
+        });
+
+        <span class="comment">// The metrics ping scheduler might _synchronously_ submit a ping
+        // so that it runs before we clear application-lifetime metrics further below.
+        // For that it needs access to the `Glean` object.
+        // Thus we need to unlock that by leaving the context above,
+        // then re-lock it afterwards.
+        // That's safe because user-visible functions will be queued and thus not execute until
+        // we unblock later anyway.
+        </span>{
+            <span class="kw">let </span>state = global_state().lock().unwrap();
+
+            <span class="comment">// Set up information and scheduling for Glean owned pings. Ideally, the "metrics"
+            // ping startup check should be performed before any other ping, since it relies
+            // on being dispatched to the API context before any other metric.
+            </span><span class="kw">if </span>state.callbacks.start_metrics_ping_scheduler() {
+                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
+                    <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
+                }
+            }
+        }
+
+        core::with_glean_mut(|glean| {
+            <span class="kw">let </span>state = global_state().lock().unwrap();
+
+            <span class="comment">// Check if the "dirty flag" is set. That means the product was probably
+            // force-closed. If that's the case, submit a 'baseline' ping with the
+            // reason "dirty_startup". We only do that from the second run.
+            </span><span class="kw">if </span>!is_first_run &amp;&amp; dirty_flag {
+                <span class="comment">// The `submit_ping_by_name_sync` function cannot be used, otherwise
+                // startup will cause a dead-lock, since that function requests a
+                // write lock on the `glean` object.
+                // Note that unwrapping below is safe: the function will return an
+                // `Ok` value for a known ping.
+                </span><span class="kw">if </span>glean.submit_ping_by_name(<span class="string">"baseline"</span>, <span class="prelude-val">Some</span>(<span class="string">"dirty_startup"</span>)) {
+                    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
+                        <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
+                    }
+                }
+            }
+
+            <span class="comment">// From the second time we run, after all startup pings are generated,
+            // make sure to clear `lifetime: application` metrics and set them again.
+            // Any new value will be sent in newly generated pings after startup.
+            </span><span class="kw">if </span>!is_first_run {
+                glean.clear_application_lifetime_metrics();
+                initialize_core_metrics(glean, <span class="kw-2">&amp;</span>state.client_info);
+            }
+        });
+
+        <span class="comment">// Signal Dispatcher that init is complete
+        // bug 1839433: It is important that this happens after any init tasks
+        // that shutdown() depends on. At time of writing that's only setting up
+        // the global Glean, but it is probably best to flush the preinit queue
+        // as late as possible in the glean.init thread.
+        </span><span class="kw">match </span>dispatcher::flush_init() {
+            <span class="prelude-val">Ok</span>(task_count) <span class="kw">if </span>task_count &gt; <span class="number">0 </span>=&gt; {
+                core::with_glean(|glean| {
+                    glean_metrics::error::preinit_tasks_overflow.add_sync(glean, task_count <span class="kw">as </span>i32);
+                });
+            }
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {}
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">log::error!</span>(<span class="string">"Unable to flush the preinit queue: {}"</span>, err),
+        }
+
+        <span class="kw">let </span>state = global_state().lock().unwrap();
+        state.callbacks.initialize_finished();
+    })
+    .expect(<span class="string">"Failed to spawn Glean's init thread"</span>);
 
     <span class="comment">// For test purposes, store the glean init thread's JoinHandle.
     </span>INIT_HANDLES.lock().unwrap().push(init_handle);
@@ -2007,18 +2001,16 @@
     <span class="kw">let </span>timer_id = core::with_glean(|glean| glean.additional_metrics.shutdown_wait.start_sync());
     <span class="kw">let </span>(tx, rx) = unbounded();
 
-    <span class="kw">let </span>handle = thread::Builder::new()
-        .name(<span class="string">"glean.shutdown"</span>.to_string())
-        .spawn(<span class="kw">move </span>|| {
-            <span class="kw">let </span>state = global_state().lock().unwrap();
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.shutdown() {
-                <span class="macro">log::error!</span>(<span class="string">"Shutdown callback failed: {e:?}"</span>);
-            }
+    <span class="kw">let </span>handle = thread::spawn(<span class="string">"glean.shutdown"</span>, <span class="kw">move </span>|| {
+        <span class="kw">let </span>state = global_state().lock().unwrap();
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.shutdown() {
+            <span class="macro">log::error!</span>(<span class="string">"Shutdown callback failed: {e:?}"</span>);
+        }
 
-            <span class="comment">// Best-effort sending. The other side might have timed out already.
-            </span><span class="kw">let _ </span>= tx.send(()).ok();
-        })
-        .expect(<span class="string">"Unable to spawn thread to wait on shutdown"</span>);
+        <span class="comment">// Best-effort sending. The other side might have timed out already.
+        </span><span class="kw">let _ </span>= tx.send(()).ok();
+    })
+    .expect(<span class="string">"Unable to spawn thread to wait on shutdown"</span>);
 
     <span class="comment">// TODO: 30 seconds? What's a good default here? Should this be configurable?
     // Reasoning:

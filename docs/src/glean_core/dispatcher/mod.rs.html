@@ -585,9 +585,6 @@
 <a href="#585" id="585">585</a>
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -618,7 +615,7 @@
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
     },
-    thread::{<span class="self">self</span>, JoinHandle},
+    thread::JoinHandle,
     time::Duration,
 };
 
@@ -855,66 +852,62 @@
         <span class="kw">let </span>queue_preinit = Arc::new(AtomicBool::new(<span class="bool-val">true</span>));
         <span class="kw">let </span>overflow_count = Arc::new(AtomicUsize::new(<span class="number">0</span>));
 
-        <span class="kw">let </span>worker = thread::Builder::new()
-            .name(<span class="string">"glean.dispatcher"</span>.into())
-            .spawn(<span class="kw">move </span>|| {
-                <span class="kw">match </span>block_receiver.recv() {
-                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-                        <span class="comment">// The other side was disconnected.
-                        // There's nothing the worker thread can do.
-                        </span><span class="macro">log::error!</span>(<span class="string">"The task producer was disconnected. Worker thread will exit."</span>);
+        <span class="kw">let </span>worker = <span class="kw">crate</span>::thread::spawn(<span class="string">"glean.dispatcher"</span>, <span class="kw">move </span>|| {
+            <span class="kw">match </span>block_receiver.recv() {
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
+                    <span class="comment">// The other side was disconnected.
+                    // There's nothing the worker thread can do.
+                    </span><span class="macro">log::error!</span>(<span class="string">"The task producer was disconnected. Worker thread will exit."</span>);
+                    <span class="kw">return</span>;
+                }
+                <span class="prelude-val">Ok</span>(Blocked::Shutdown) =&gt; {
+                    <span class="comment">// The other side wants us to stop immediately
+                    </span><span class="kw">return</span>;
+                }
+                <span class="prelude-val">Ok</span>(Blocked::Continue) =&gt; {
+                    <span class="comment">// Queue is unblocked, processing continues as normal.
+                </span>}
+            }
+
+            <span class="kw">let </span><span class="kw-2">mut </span>receiver = preinit_receiver;
+            <span class="kw">loop </span>{
+                <span class="kw">use </span>Command::<span class="kw-2">*</span>;
+
+                <span class="kw">match </span>receiver.recv() {
+                    <span class="prelude-val">Ok</span>(Shutdown) =&gt; {
+                        <span class="kw">break</span>;
+                    }
+
+                    <span class="prelude-val">Ok</span>(Task(f)) =&gt; {
+                        (f)();
+                    }
+
+                    <span class="prelude-val">Ok</span>(Swap(swap_done)) =&gt; {
+                        <span class="comment">// A swap should only occur exactly once.
+                        // This is upheld by `flush_init`, which errors out if the preinit buffer
+                        // was already flushed.
+
+                        // We swap the channels we listen on for new tasks.
+                        // The next iteration will continue with the unbounded queue.
+                        </span>mem::swap(<span class="kw-2">&amp;mut </span>receiver, <span class="kw-2">&amp;mut </span>unbounded_receiver);
+
+                        <span class="comment">// The swap command MUST be the last one received on the preinit buffer,
+                        // so by the time we run this we know all preinit tasks were processed.
+                        // We can notify the other side.
+                        </span>swap_done
+                            .send(())
+                            .expect(<span class="string">"The caller of `flush_init` has gone missing"</span>);
+                    }
+
+                    <span class="comment">// Other side was disconnected.
+                    </span><span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
+                        <span class="macro">log::error!</span>(<span class="string">"The task producer was disconnected. Worker thread will exit."</span>);
                         <span class="kw">return</span>;
                     }
-                    <span class="prelude-val">Ok</span>(Blocked::Shutdown) =&gt; {
-                        <span class="comment">// The other side wants us to stop immediately
-                        </span><span class="kw">return</span>;
-                    }
-                    <span class="prelude-val">Ok</span>(Blocked::Continue) =&gt; {
-                        <span class="comment">// Queue is unblocked, processing continues as normal.
-                    </span>}
                 }
-
-                <span class="kw">let </span><span class="kw-2">mut </span>receiver = preinit_receiver;
-                <span class="kw">loop </span>{
-                    <span class="kw">use </span>Command::<span class="kw-2">*</span>;
-
-                    <span class="kw">match </span>receiver.recv() {
-                        <span class="prelude-val">Ok</span>(Shutdown) =&gt; {
-                            <span class="kw">break</span>;
-                        }
-
-                        <span class="prelude-val">Ok</span>(Task(f)) =&gt; {
-                            (f)();
-                        }
-
-                        <span class="prelude-val">Ok</span>(Swap(swap_done)) =&gt; {
-                            <span class="comment">// A swap should only occur exactly once.
-                            // This is upheld by `flush_init`, which errors out if the preinit buffer
-                            // was already flushed.
-
-                            // We swap the channels we listen on for new tasks.
-                            // The next iteration will continue with the unbounded queue.
-                            </span>mem::swap(<span class="kw-2">&amp;mut </span>receiver, <span class="kw-2">&amp;mut </span>unbounded_receiver);
-
-                            <span class="comment">// The swap command MUST be the last one received on the preinit buffer,
-                            // so by the time we run this we know all preinit tasks were processed.
-                            // We can notify the other side.
-                            </span>swap_done
-                                .send(())
-                                .expect(<span class="string">"The caller of `flush_init` has gone missing"</span>);
-                        }
-
-                        <span class="comment">// Other side was disconnected.
-                        </span><span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-                            <span class="macro">log::error!</span>(
-                                <span class="string">"The task producer was disconnected. Worker thread will exit."
-                            </span>);
-                            <span class="kw">return</span>;
-                        }
-                    }
-                }
-            })
-            .expect(<span class="string">"Failed to spawn Glean's dispatcher thread"</span>);
+            }
+        })
+        .expect(<span class="string">"Failed to spawn Glean's dispatcher thread"</span>);
 
         <span class="kw">let </span>guard = DispatchGuard {
             queue_preinit,
@@ -952,6 +945,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>std::sync::atomic::AtomicU8;
     <span class="kw">use </span>std::sync::Mutex;
+    <span class="kw">use </span>std::thread;
 
     <span class="kw">fn </span>enable_test_logging() {
         <span class="comment">// When testing we want all logs to go to stdout/stderr by default,
