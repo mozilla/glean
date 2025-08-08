@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 use crate::event_database::RecordedEvent;
-use crate::ErrorType;
+use crate::{ErrorType, TestGetValue};
 
 /// Extra keys for events.
 ///
@@ -76,7 +76,7 @@ impl TryFrom<&str> for NoExtraKeys {
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Event {
+pub trait Event: TestGetValue<Vec<RecordedEvent>> {
     /// The type of the allowed extra keys for this event.
     type Extra: ExtraKeys;
 
@@ -86,21 +86,6 @@ pub trait Event {
     ///
     /// * `extra` - (optional) An object for the extra keys.
     fn record<M: Into<Option<Self::Extra>>>(&self, extra: M);
-
-    /// **Exported for test purposes.**
-    ///
-    /// Get the vector of currently stored events for this event metric.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(
-        &self,
-        ping_name: S,
-    ) -> Option<Vec<RecordedEvent>>;
 
     /// **Exported for test purposes.**
     ///

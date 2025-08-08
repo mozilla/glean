@@ -2,14 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::ErrorType;
+use crate::{ErrorType, TestGetValue};
 use std::time::Duration;
 
 /// A description for the [`TimespanMetric`](crate::metrics::TimespanMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Timespan {
+pub trait Timespan: TestGetValue<u64> {
     /// Starts tracking time for the provided metric.
     ///
     /// This uses an internal monotonic timer.
@@ -39,18 +39,6 @@ pub trait Timespan {
     ///
     /// * `elapsed` - The elapsed time to record.
     fn set_raw(&self, elapsed: Duration);
-
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value as an integer.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<u64>;
 
     /// **Exported for test purposes.**
     ///

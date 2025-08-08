@@ -9,8 +9,8 @@ use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::metrics::RateMetric;
 use crate::storage::StorageManager;
-use crate::CommonMetricData;
 use crate::Glean;
+use crate::{CommonMetricData, TestGetValue};
 
 /// A Denominator metric (a kind of count shared among Rate metrics).
 ///
@@ -86,25 +86,6 @@ impl DenominatorMetric {
             })
     }
 
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Gets the currently stored value as an integer.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - the optional name of the ping to retrieve the metric
-    ///                 for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The stored value or `None` if nothing stored.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
-        crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
-    }
-
     #[doc(hidden)]
     pub fn get_value<'a, S: Into<Option<&'a str>>>(
         &self,
@@ -143,5 +124,26 @@ impl DenominatorMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<i32> for DenominatorMetric {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets the currently stored value as an integer.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }

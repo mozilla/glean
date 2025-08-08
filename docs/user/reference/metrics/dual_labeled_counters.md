@@ -94,9 +94,10 @@ in Rust where it's required. `None` or no argument will default to the first val
 ```Rust
 use glean_metrics::glean_upload;
 
+let values = glean_upload::failures.test_get_value(None).unwrap();
 // Do the counters have the expected values?
-assert_eq!(1, glean_upload::failures.get("metrics", "recoverable network error").test_get_value().unwrap());
-assert_eq!(3, glean_upload::failures.get("baseline", "4xx").test_get_value().unwrap());
+assert_eq!(1, values.get("metrics").unwrap().get("recoverable network error").unwrap());
+assert_eq!(3, values.get("baseline").unwrap().get("4xx").unwrap());
 ```
 </div>
 <div data-lang="JavaScript" class="tab"></div>

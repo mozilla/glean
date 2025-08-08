@@ -2,13 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::ErrorType;
+use crate::{ErrorType, TestGetValue};
 
 /// A description for the [`StringListMetric`](crate::metrics::StringListMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait StringList {
+pub trait StringList: TestGetValue<Vec<String>> {
     /// Adds a new string to the list.
     ///
     /// # Arguments
@@ -32,18 +32,6 @@ pub trait StringList {
     /// Truncates the list if it is longer than `MAX_LIST_LENGTH` and logs an error.
     /// Truncates any value in the list if it is longer than `MAX_STRING_LENGTH` and logs an error.
     fn set(&self, value: Vec<String>);
-
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the currently-stored values.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(&self, ping_name: S) -> Option<Vec<String>>;
 
     /// **Exported for test purposes.**
     ///

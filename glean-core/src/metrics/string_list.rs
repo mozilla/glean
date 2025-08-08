@@ -10,8 +10,8 @@ use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
 use crate::util::truncate_string_at_boundary_with_error;
-use crate::CommonMetricData;
 use crate::Glean;
+use crate::{CommonMetricData, TestGetValue};
 
 // Maximum length of any list
 const MAX_LIST_LENGTH: usize = 100;
@@ -166,25 +166,6 @@ impl StringListMetric {
         }
     }
 
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Gets the currently-stored values.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - the optional name of the ping to retrieve the metric
-    ///                 for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The stored value or `None` if nothing stored.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<String>> {
-        crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
-    }
-
     /// **Exported for test purposes.**
     ///
     /// Gets the number of recorded errors for the given metric and error type.
@@ -202,5 +183,26 @@ impl StringListMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<Vec<String>> for StringListMetric {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets the currently-stored values.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<String>> {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }

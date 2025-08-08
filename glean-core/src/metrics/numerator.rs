@@ -9,8 +9,8 @@ use crate::error_recording::ErrorType;
 use crate::metrics::MetricType;
 use crate::metrics::Rate;
 use crate::metrics::RateMetric;
-use crate::CommonMetricData;
 use crate::Glean;
+use crate::{CommonMetricData, TestGetValue};
 
 /// Developer-facing API for recording rate metrics with external denominators.
 ///
@@ -51,25 +51,6 @@ impl NumeratorMetric {
         self.0.add_to_numerator_sync(glean, amount)
     }
 
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value as a pair of integers.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - the optional name of the ping to retrieve the metric
-    ///                 for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The stored value or `None` if nothing stored.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
-        crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
-    }
-
     #[doc(hidden)]
     pub fn get_value<'a, S: Into<Option<&'a str>>>(
         &self,
@@ -92,5 +73,26 @@ impl NumeratorMetric {
     /// The number of errors reported.
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
         self.0.test_get_num_recorded_errors(error)
+    }
+}
+
+impl TestGetValue<Rate> for NumeratorMetric {
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the currently stored value as a pair of integers.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }
