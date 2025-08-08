@@ -71,8 +71,14 @@ fn main() {
     glean::initialize(cfg, client_info);
 
     glean_metrics::sample_boolean.set(true);
+    _ = glean_metrics::sample_boolean.test_get_value(None);
 
     PrototypePing.submit(None);
 
+    glean_core::dispatcher::launch(|| {
+        std::thread::sleep(std::time::Duration::from_secs(15));
+    });
+
     glean::shutdown();
+    std::thread::sleep(std::time::Duration::from_secs(10));
 }
