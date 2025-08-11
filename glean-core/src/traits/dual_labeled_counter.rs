@@ -2,13 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::{CounterMetric, ErrorType};
+use crate::{CounterMetric, ErrorType, TestGetValue};
+use std::collections::HashMap;
 
 /// A description for the [`DualLabeledCounterMetric`](crate::metrics::DualLabeledCounterMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait DualLabeledCounter {
+pub trait DualLabeledCounter: TestGetValue<HashMap<String, HashMap<String, i32>>> {
     /// Gets a specific counter for a given key/category pair.
     ///
     /// If a set of acceptable keys or categorires were specified in the `metrics.yaml` file,

@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{CounterMetric, Metric, MetricType};
-use crate::Glean;
+use crate::{Glean, TestGetValue};
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -228,6 +228,24 @@ impl DualLabeledCounterMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.counter.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<HashMap<String, HashMap<String, i32>>> for DualLabeledCounterMetric {
+    fn test_get_value(
+        &self,
+        ping_name: Option<String>,
+    ) -> Option<HashMap<String, HashMap<String, i32>>> {
+        let mut out: HashMap<String, HashMap<String, i32>> = HashMap::new();
+        let map = self.dual_label_map.lock().unwrap();
+        for ((key, category), metric) in map.iter() {
+            if let Some(value) = metric.test_get_value(ping_name.clone()) {
+                out.entry(key.clone())
+                    .or_default()
+                    .insert(category.clone(), value);
+            }
+        }
+        Some(out)
     }
 }
 

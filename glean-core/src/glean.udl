@@ -746,5 +746,7 @@ interface DualLabeledCounterMetric {
 
     CounterMetric get(string key, string category);
 
+    record<string, record<string, i32>>? test_get_value(optional string? ping_name = null);
+
     i32 test_get_num_recorded_errors(ErrorType error);
 };
