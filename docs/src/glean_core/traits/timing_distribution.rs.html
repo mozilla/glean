@@ -141,28 +141,13 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span><span class="kw">crate</span>::metrics::DistributionData;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::TimerId;
-<span class="kw">use </span><span class="kw">crate</span>::ErrorType;
+<span class="kw">use crate</span>::{ErrorType, TestGetValue};
 
 <span class="kw">use </span>std::time::Duration;
 
@@ -170,7 +155,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>TimingDistribution {
+</span><span class="kw">pub trait </span>TimingDistribution: TestGetValue&lt;DistributionData&gt; {
     <span class="doccomment">/// Start tracking time for the provided metric.
     /// Multiple timers can run simultaneously.
     ///
@@ -285,21 +270,6 @@
     /// the application's platforms. Otherwise the resulting data may not share the same
     /// guarantees that other `timing_distribution` metrics' data do.
     </span><span class="kw">fn </span>accumulate_raw_duration(<span class="kw-2">&amp;</span><span class="self">self</span>, duration: Duration);
-
-    <span class="doccomment">/// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value of the metric.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    </span><span class="kw">fn </span>test_get_value&lt;<span class="lifetime">'a</span>, S: Into&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;&gt;(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        ping_name: S,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;DistributionData&gt;;
 
     <span class="doccomment">/// **Exported for test purposes.**
     ///

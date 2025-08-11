@@ -53,30 +53,18 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-</span><span class="kw">use </span><span class="kw">crate</span>::ErrorType;
+</span><span class="kw">use crate</span>::{ErrorType, TestGetValue};
 <span class="kw">use </span>std::time::Duration;
 
 <span class="doccomment">/// A description for the [`TimespanMetric`](crate::metrics::TimespanMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Timespan {
+</span><span class="kw">pub trait </span>Timespan: TestGetValue&lt;u64&gt; {
     <span class="doccomment">/// Starts tracking time for the provided metric.
     ///
     /// This uses an internal monotonic timer.
@@ -106,18 +94,6 @@
     ///
     /// * `elapsed` - The elapsed time to record.
     </span><span class="kw">fn </span>set_raw(<span class="kw-2">&amp;</span><span class="self">self</span>, elapsed: Duration);
-
-    <span class="doccomment">/// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value as an integer.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    </span><span class="kw">fn </span>test_get_value&lt;<span class="lifetime">'a</span>, S: Into&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ping_name: S) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt;;
 
     <span class="doccomment">/// **Exported for test purposes.**
     ///

@@ -35,17 +35,19 @@
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-</span><span class="kw">use crate</span>::{CounterMetric, ErrorType};
+</span><span class="kw">use crate</span>::{CounterMetric, ErrorType, TestGetValue};
+<span class="kw">use </span>std::collections::HashMap;
 
 <span class="doccomment">/// A description for the [`DualLabeledCounterMetric`](crate::metrics::DualLabeledCounterMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>DualLabeledCounter {
+</span><span class="kw">pub trait </span>DualLabeledCounter: TestGetValue&lt;HashMap&lt;String, HashMap&lt;String, i32&gt;&gt;&gt; {
     <span class="doccomment">/// Gets a specific counter for a given key/category pair.
     ///
     /// If a set of acceptable keys or categorires were specified in the `metrics.yaml` file,

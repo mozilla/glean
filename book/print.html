@@ -6674,9 +6674,10 @@ in Rust where it's required. <code>None</code> or no argument will default to th
 <div data-lang="Rust" class="tab">
 <pre><code class="language-Rust">use glean_metrics::glean_upload;
 
+let values = glean_upload::failures.test_get_value(None).unwrap();
 // Do the counters have the expected values?
-assert_eq!(1, glean_upload::failures.get(&quot;metrics&quot;, &quot;recoverable network error&quot;).test_get_value().unwrap());
-assert_eq!(3, glean_upload::failures.get(&quot;baseline&quot;, &quot;4xx&quot;).test_get_value().unwrap());
+assert_eq!(1, values.get(&quot;metrics&quot;).unwrap().get(&quot;recoverable network error&quot;).unwrap());
+assert_eq!(3, values.get(&quot;baseline&quot;).unwrap().get(&quot;4xx&quot;).unwrap());
 </code></pre>
 </div>
 <div data-lang="JavaScript" class="tab"></div>
@@ -14122,6 +14123,8 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <ul>
 <li>Performance improvement: Reduce file system operations when recording events (<a href="https://github.com/mozilla/glean/pull/3179">#3179</a>)</li>
 <li><code>LabeledMetric</code> improvement: Added <code>testGetValue</code> as a test method on all labeled metric types (<a href="https://github.com/mozilla/glean/pull/3190">#3190</a>)</li>
+<li><code>DualLabeledCounter</code> improvement: Added <code>testGetValue</code> as a test method (<a href="https://github.com/mozilla/glean/pull/3209">#3209</a>)</li>
+<li>Improvement: Updated all remaining metrics to implement the <code>TestGetValue</code> trait (<a href="https://github.com/mozilla/glean/pull/3209">#3209</a>)</li>
 <li>New metric: <code>glean.ping.uploader_capabilities</code> reporting the requested uploader capabilities for a ping (<a href="https://github.com/mozilla/glean/pull/3188">#3188</a>)</li>
 </ul>
 </li>
