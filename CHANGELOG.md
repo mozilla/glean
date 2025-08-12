@@ -16,6 +16,8 @@
   * Updated Kotlin to 2.2.10 ([#3219](https://github.com/mozilla/glean/pull/3219))
   * BREAKING CHANGE: Dispatch most metric recordings on a Kotlin dispatcher to avoid calling into glean-core early.
     This does not change any behavior: The dispatch queue is worked on right after initialization ([#3183](https://github.com/mozilla/glean/pull/3183))
+  * The `testBeforeNextSubmit` now returns a job to be awaited. This allows to wait for the callback
+    and properly handles exceptions ([#3218](https://github.com/mozilla/glean/pull/3218))
 * Python
   * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
   * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
