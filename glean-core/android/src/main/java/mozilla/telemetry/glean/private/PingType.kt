@@ -6,6 +6,8 @@ package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.Dispatchers
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import mozilla.telemetry.glean.internal.PingType as GleanPingType
 
 /**
@@ -34,6 +36,42 @@ enum class NoReasonCodes(
     val value: Int,
 ) : ReasonCode {
     // deliberately empty
+}
+
+class JobTimeoutException : Exception("Job timed out")
+
+/**
+ * A job awaiting an async `testBeforeNextSubmit` callback run.
+ *
+ * The callback is set using `PingType.testBeforeNextSubmit` and called upoon `PingType.submit`.
+ *
+ * A job **MUST* be `join()`ed in order to wait for the callback and rethrow any exceptions.
+ */
+class TestJob {
+    var lastException: Throwable? = null
+    val waitQueue: LinkedBlockingQueue<Boolean> = LinkedBlockingQueue()
+
+    /**
+     * Join the task.
+     *
+     * Blocks for the callback to finish once or time out.
+     * If it times out a `JobTimeoutException` is thrown.
+     * If the callback throws any `Throwable` it is rethrown.
+     *
+     * @param timeout how long to wait before giving up, in units of unit
+     * @param unit a `TimeUnit` determining how to interpret the `timeout` parameter
+     */
+    fun join(
+        timeout: Long = 3,
+        unit: TimeUnit = TimeUnit.SECONDS,
+    ) {
+        val wait = this.waitQueue.poll(timeout, unit)
+        if (wait == null) {
+            throw JobTimeoutException()
+        }
+        this.lastException?.let { throw it }
+        this.lastException = null
+    }
 }
 
 /**
@@ -87,11 +125,25 @@ class PingType<ReasonCodesEnum>(
      * Note: The callback will be called on any call to submit.
      * A ping might not be sent afterwards, e.g. if the ping is otherwise empty (and
      * `send_if_empty` is `false`).
+     *
+     * @returns a `TestJob` to `join` on the callback. `TestJob.join` resolves after the callback runs.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @Suppress("TooGenericExceptionCaught")
     @Synchronized
-    fun testBeforeNextSubmit(cb: (ReasonCodesEnum?) -> Unit) {
-        this.testCallback = cb
+    fun testBeforeNextSubmit(cb: (ReasonCodesEnum?) -> Unit): TestJob {
+        val testJob = TestJob()
+        this.testCallback = { reason ->
+            try {
+                cb(reason)
+            } catch (e: Throwable) {
+                testJob.lastException = e
+            } finally {
+                testJob.waitQueue.put(true)
+            }
+        }
+
+        return testJob
     }
 
     /**
@@ -107,12 +159,12 @@ class PingType<ReasonCodesEnum>(
      */
     @JvmOverloads
     fun submit(reason: ReasonCodesEnum? = null) {
-        this.testCallback?.let {
-            it(reason)
-        }
-        this.testCallback = null
-
         Dispatchers.Delayed.launch {
+            this.testCallback?.let {
+                it(reason)
+            }
+            this.testCallback = null
+
             val reasonString = reason?.let { this.reasonCodes[it.code()] }
             this.innerPing.submit(reasonString)
         }
