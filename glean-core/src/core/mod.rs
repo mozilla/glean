@@ -3,10 +3,11 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
+use std::time::{Duration, UNIX_EPOCH};
 
 use chrono::{DateTime, FixedOffset};
 use malloc_size_of_derive::MallocSizeOf;
@@ -15,7 +16,9 @@ use once_cell::sync::OnceCell;
 use crate::database::Database;
 use crate::debug::DebugOptions;
 use crate::event_database::EventDatabase;
-use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
+use crate::internal_metrics::{
+    AdditionalMetrics, CoreMetrics, DataDirectoryInfoObject, DatabaseMetrics, HealthMetrics,
+};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{
     self, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment, RemoteSettingsConfig,
@@ -156,6 +159,7 @@ pub struct Glean {
     pub(crate) core_metrics: CoreMetrics,
     pub(crate) additional_metrics: AdditionalMetrics,
     pub(crate) database_metrics: DatabaseMetrics,
+    pub(crate) health_metrics: HealthMetrics,
     pub(crate) internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
@@ -218,6 +222,7 @@ impl Glean {
             core_metrics: CoreMetrics::new(),
             additional_metrics: AdditionalMetrics::new(),
             database_metrics: DatabaseMetrics::new(),
+            health_metrics: HealthMetrics::new(),
             internal_pings: InternalPings::new(cfg.enable_internal_pings),
             upload_manager,
             data_path: PathBuf::from(&cfg.data_path),
@@ -241,6 +246,7 @@ impl Glean {
         this.register_ping_type(&pings.baseline);
         this.register_ping_type(&pings.metrics);
         this.register_ping_type(&pings.events);
+        this.register_ping_type(&pings.health);
         this.register_ping_type(&pings.deletion_request);
 
         Ok(this)
@@ -257,6 +263,7 @@ impl Glean {
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
         let data_path = Path::new(&cfg.data_path);
+        let dir_info = glean.collect_directory_info(&glean.data_path);
         let ping_lifetime_threshold = cfg.ping_lifetime_threshold as usize;
         let ping_lifetime_max_time = Duration::from_millis(cfg.ping_lifetime_max_time);
         glean.data_store = Some(Database::new(
@@ -323,6 +330,16 @@ impl Glean {
         // and we need to do that **before** scanning the pending pings folder
         // to ensure we don't enqueue pings before their files are deleted.
         let _scanning_thread = glean.upload_manager.scan_pending_pings_directories(true);
+
+        glean
+            .health_metrics
+            .data_directory_info
+            .set_sync(&glean, dir_info.unwrap_or(serde_json::json!({})));
+        // Submit the health ping.
+        glean
+            .internal_pings
+            .health
+            .submit_sync(&glean, Some("startup"));
 
         Ok(glean)
     }
@@ -1159,6 +1176,110 @@ impl Glean {
                 .core_metrics
                 .distribution_name
                 .get_value(self, Some("glean_client_info")),
+        }
+    }
+
+    /// Collects information about the data directories used by FOG.
+    fn collect_directory_info(&self, path: &PathBuf) -> Option<serde_json::Value> {
+        // List of child directories to check
+        let subdirs = ["db", "events", "pending_pings"];
+        let mut directories_info: crate::internal_metrics::DataDirectoryInfoObject =
+            DataDirectoryInfoObject::new();
+
+        for subdir in subdirs.iter() {
+            let dir_path = path.join(subdir);
+
+            // Initialize a DataDirectoryInfoObjectItem for each directory
+            let mut directory_info = crate::internal_metrics::DataDirectoryInfoObjectItem {
+                dir_name: Some(subdir.to_string()),
+                dir_exists: None,
+                dir_created: None,
+                dir_modified: None,
+                file_count: None,
+                files: Vec::new(),
+            };
+
+            // Check if the directory exists
+            if dir_path.is_dir() {
+                directory_info.dir_exists = Some(true);
+
+                // Get directory metadata
+                if let Ok(metadata) = fs::metadata(&dir_path) {
+                    if let Ok(created) = metadata.created() {
+                        directory_info.dir_created = Some(
+                            created
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap_or(Duration::ZERO)
+                                .as_secs() as i64,
+                        );
+                    }
+                    if let Ok(modified) = metadata.modified() {
+                        directory_info.dir_modified = Some(
+                            modified
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap_or(Duration::ZERO)
+                                .as_secs() as i64,
+                        );
+                    }
+                }
+
+                // Read the directory's contents
+                let mut file_count = 0;
+                for entry in fs::read_dir(&dir_path).unwrap() {
+                    let entry = entry.unwrap();
+                    let metadata = entry.metadata().unwrap();
+
+                    // Check if the entry is a file
+                    if metadata.is_file() {
+                        file_count += 1;
+
+                        // Collect file details
+                        let file_size = metadata.len() as i64;
+                        let modified_time = metadata
+                            .modified()
+                            .unwrap_or(UNIX_EPOCH)
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64;
+
+                        let creation_time = metadata
+                            .created()
+                            .unwrap_or(UNIX_EPOCH)
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64;
+                        let file_name = entry.file_name().to_string_lossy().to_string();
+
+                        let file_info =
+                            crate::internal_metrics::DataDirectoryInfoObjectItemItemFilesItem {
+                                file_name: Some(file_name),
+                                file_created: Some(creation_time),
+                                file_modified: Some(modified_time),
+                                file_size: Some(file_size),
+                            };
+
+                        directory_info.files.push(file_info);
+                    }
+                }
+
+                directory_info.file_count = Some(file_count as i64);
+            } else {
+                directory_info.dir_exists = Some(false);
+            }
+
+            // Add the directory info to the final collection
+            directories_info.push(directory_info);
+        }
+
+        let directories_info_json = serde_json::to_value(directories_info);
+        if directories_info_json.is_err() {
+            log::error!(
+                "Failed to serialize data directory info: {:?}",
+                directories_info_json.err()
+            );
+            return None;
+        } else {
+            return Some(directories_info_json.unwrap());
         }
     }
 }
