@@ -5,6 +5,7 @@
 use std::borrow::Cow;
 
 use malloc_size_of_derive::MallocSizeOf;
+use serde::{Deserialize, Serialize};
 
 use super::{metrics::*, CommonMetricData, LabeledMetricData, Lifetime};
 
@@ -373,4 +374,61 @@ impl DatabaseMetrics {
             ),
         }
     }
+}
+
+#[derive(Debug, MallocSizeOf)]
+pub struct HealthMetrics {
+    // Information about the data directory prior to Glean initialization.
+    pub data_directory_info: ObjectMetric,
+}
+
+impl HealthMetrics {
+    pub fn new() -> HealthMetrics {
+        HealthMetrics {
+            data_directory_info: ObjectMetric::new(CommonMetricData {
+                name: "data_directory_info".into(),
+                category: "glean.health".into(),
+                send_in_pings: vec!["metrics".into(), "health".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
+        }
+    }
+}
+
+pub type DataDirectoryInfoObject = Vec<DataDirectoryInfoObjectItem>;
+
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Serialize, Deserialize)]
+#[allow(non_snake_case)]
+#[serde(deny_unknown_fields)]
+pub struct DataDirectoryInfoObjectItem {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dir_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dir_exists: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dir_created: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dir_modified: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_count: Option<i64>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
+    pub files: DataDirectoryInfoObjectItemItemFiles,
+}
+
+pub type DataDirectoryInfoObjectItemItemFiles = Vec<DataDirectoryInfoObjectItemItemFilesItem>;
+
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Serialize, Deserialize)]
+#[allow(non_snake_case)]
+#[serde(deny_unknown_fields)]
+pub struct DataDirectoryInfoObjectItemItemFilesItem {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_created: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_modified: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_size: Option<i64>,
 }
