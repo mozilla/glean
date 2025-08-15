@@ -376,6 +376,7 @@ impl EventDatabase {
             file.write_all(event_json.as_bytes())?;
             file.write_all(b"\n")?;
             file.flush()?;
+            file.sync_all()?;
             Ok::<(), std::io::Error>(())
         })();
 
