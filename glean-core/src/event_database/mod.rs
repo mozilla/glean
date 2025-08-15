@@ -641,6 +641,14 @@ impl EventDatabase {
         result
     }
 
+    pub fn sync_event_data(&self) {
+        let files = self.event_store_files.write().unwrap();
+        for (_name, file) in &*files {
+            // let's ignore errors
+            _ = file.sync_all();
+        }
+    }
+
     /// Clears all stored events, both in memory and on-disk.
     pub fn clear_all(&self) -> Result<()> {
         // safe unwrap, only error case is poisoning
