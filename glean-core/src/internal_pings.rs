@@ -82,7 +82,7 @@ impl InternalPings {
                 true,
                 enabled,
                 vec![],
-                vec!["startup".to_string()],
+                vec!["pre_init".to_string(), "post_init".to_string()],
                 true,
                 vec![],
             ),

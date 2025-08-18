@@ -396,7 +396,9 @@ fn initialize_inner(
             log::set_max_level(level)
         }
 
-        let dir_info = collect_directory_info(Path::new(&cfg.data_path.clone()));
+        let data_path_str = cfg.data_path.clone();
+        let data_path = Path::new(&data_path_str);
+        let dir_info = collect_directory_info(Path::new(&data_path));
 
         let glean = match Glean::new(cfg) {
             Ok(glean) => glean,
@@ -562,19 +564,13 @@ fn initialize_inner(
         }
 
         if !dispatcher::global::is_test_mode() {
-            core::with_glean(|glean| {
-                glean
-                    .health_metrics
-                    .data_directory_info
-                    .set_sync(glean, dir_info.unwrap_or(serde_json::json!({})));
-            });
-            // Submit the health ping.
-            core::with_glean(|glean| {
-                glean
-                    .internal_pings
-                    .health
-                    .submit_sync(glean, Some("startup"));
-            });
+            // Now that Glean is initialized, we can capture the directory info from the pre_init phase and send it in
+            // a health ping with reason "pre_init".
+            record_dir_info_and_submit_health_ping(dir_info, "pre_init");
+
+            // Now capture a post_init snapshot of the state of Glean's data directories after initialization to send
+            // in a health ping with reason "post_init".
+            record_dir_info_and_submit_health_ping(collect_directory_info(data_path), "post_init");
         }
         let state = global_state().lock().unwrap();
         state.callbacks.initialize_finished();
@@ -1477,6 +1473,18 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
         log::error!("Failed to serialize data directory info");
         None
     }
+}
+
+fn record_dir_info_and_submit_health_ping(dir_info: Option<serde_json::Value>, reason: &str) {
+    core::with_glean(|glean| {
+        glean
+            .health_metrics
+            .data_directory_info
+            .set_sync(glean, dir_info.unwrap_or(serde_json::json!({})));
+    });
+    core::with_glean(|glean| {
+        glean.internal_pings.health.submit_sync(glean, Some(reason));
+    });
 }
 
 /// Unused function. Not used on Android or iOS.
