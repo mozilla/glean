@@ -10,16 +10,14 @@ import kotlin.reflect.KClass
 /**
  * Creates a [KArgumentCaptor] for given type.
  */
-inline fun <reified T : Any> argumentCaptor(): KArgumentCaptor<T> {
-    return KArgumentCaptor(ArgumentCaptor.forClass(T::class.java), T::class)
-}
+inline fun <reified T : Any> argumentCaptor(): KArgumentCaptor<T> =
+    KArgumentCaptor(ArgumentCaptor.forClass(T::class.java), T::class)
 
 @Suppress("UnusedPrivateMember")
 class KArgumentCaptor<out T : Any?>(
     private val captor: ArgumentCaptor<T>,
     private val tClass: KClass<*>,
 ) {
-
     /**
      * The first captured value of the argument.
      * @throws IndexOutOfBoundsException if the value is not available.
@@ -31,9 +29,7 @@ class KArgumentCaptor<out T : Any?>(
         get() = captor.allValues
 
     @Suppress("UNCHECKED_CAST")
-    fun capture(): T {
-        return captor.capture() ?: castNull()
-    }
+    fun capture(): T = captor.capture() ?: castNull()
 }
 
 /**

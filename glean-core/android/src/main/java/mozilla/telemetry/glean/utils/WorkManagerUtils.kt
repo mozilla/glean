@@ -23,7 +23,11 @@ import kotlinx.coroutines.withTimeout
  * @param workTag the tag of the WorkManager work unit
  * @param timeoutMs the maximum time to wait for the job to be enqueued in the WorkManager
  */
-internal fun testFlushWorkManagerJob(context: Context, workTag: String, timeoutMs: Long = 5000L) {
+internal fun testFlushWorkManagerJob(
+    context: Context,
+    workTag: String,
+    timeoutMs: Long = 5000L,
+) {
     runBlocking {
         withTimeout(timeoutMs) {
             do {

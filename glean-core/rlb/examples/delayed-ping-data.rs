@@ -10,8 +10,7 @@ use std::{env, process};
 use once_cell::sync::Lazy;
 
 use flate2::read::GzDecoder;
-use glean::net;
-use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder};
+use glean::{net, private::PingType, ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
 
 pub mod glean_metrics {
     use glean::{private::CounterMetric, CommonMetricData, Lifetime};

@@ -16,9 +16,11 @@ public struct Configuration {
     let pingLifetimeThreshold: Int
     let pingLifetimeMaxTime: Int
     let pingSchedule: [String: [String]]
+    let httpClient: PingUploader
 
     struct Constants {
-        static let defaultTelemetryEndpoint = "https://incoming.telemetry.mozilla.org"
+        static let defaultTelemetryEndpoint =
+            "https://incoming.telemetry.mozilla.org"
     }
 
     /// Create a new Glean `Configuration` object
@@ -40,6 +42,7 @@ public struct Configuration {
     ///   * pingSchedule A ping schedule map.
     ///   Maps a ping name to a list of pings to schedule along with it.
     ///   Only used if the ping's own ping schedule list is empty.
+    ///   * httpClient An http uploader that supports the `PingUploader` protocol
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -51,9 +54,11 @@ public struct Configuration {
         enableInternalPings: Bool = true,
         pingLifetimeThreshold: Int = 0,
         pingLifetimeMaxTime: Int = 0,
-        pingSchedule: [String: [String]] = [:]
+        pingSchedule: [String: [String]] = [:],
+        httpClient: PingUploader = HttpPingUploader()
     ) {
-        self.serverEndpoint = serverEndpoint ?? Constants.defaultTelemetryEndpoint
+        self.serverEndpoint =
+            serverEndpoint ?? Constants.defaultTelemetryEndpoint
         self.maxEvents = maxEvents
         self.channel = channel
         self.dataPath = dataPath
@@ -64,5 +69,6 @@ public struct Configuration {
         self.pingLifetimeThreshold = pingLifetimeThreshold
         self.pingLifetimeMaxTime = pingLifetimeMaxTime
         self.pingSchedule = pingSchedule
+        self.httpClient = httpClient
     }
 }

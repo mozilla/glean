@@ -18,7 +18,6 @@ use std::mem;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, RwLock, RwLockWriteGuard};
-use std::thread;
 use std::time::{Duration, Instant};
 
 use chrono::Utc;
@@ -300,32 +299,29 @@ impl PingUploadManager {
         let local_manager = self.directory_manager.clone();
         let local_cached_pings = self.cached_pings.clone();
         let local_flag = self.processed_pending_pings.clone();
-        thread::Builder::new()
-            .name("glean.ping_directory_manager.process_dir".to_string())
-            .spawn(move || {
-                {
-                    // Be sure to drop local_cached_pings lock before triggering upload.
-                    let mut local_cached_pings = local_cached_pings
-                        .write()
-                        .expect("Can't write to pending pings cache.");
-                    local_cached_pings.extend(local_manager.process_dirs());
-                    local_flag.store(true, Ordering::SeqCst);
-                }
-                if trigger_upload {
-                    crate::dispatcher::launch(|| {
-                        if let Some(state) = crate::maybe_global_state().and_then(|s| s.lock().ok())
-                        {
-                            if let Err(e) = state.callbacks.trigger_upload() {
-                                log::error!(
-                                    "Triggering upload after pending ping scan failed. Error: {}",
-                                    e
-                                );
-                            }
+        crate::thread::spawn("glean.ping_directory_manager.process_dir", move || {
+            {
+                // Be sure to drop local_cached_pings lock before triggering upload.
+                let mut local_cached_pings = local_cached_pings
+                    .write()
+                    .expect("Can't write to pending pings cache.");
+                local_cached_pings.extend(local_manager.process_dirs());
+                local_flag.store(true, Ordering::SeqCst);
+            }
+            if trigger_upload {
+                crate::dispatcher::launch(|| {
+                    if let Some(state) = crate::maybe_global_state().and_then(|s| s.lock().ok()) {
+                        if let Err(e) = state.callbacks.trigger_upload() {
+                            log::error!(
+                                "Triggering upload after pending ping scan failed. Error: {}",
+                                e
+                            );
                         }
-                    });
-                }
-            })
-            .expect("Unable to spawn thread to process pings directories.")
+                    }
+                });
+            }
+        })
+        .expect("Unable to spawn thread to process pings directories.")
     }
 
     /// Creates a new upload manager with no limitations, for tests.
@@ -902,6 +898,7 @@ pub fn chunked_log_info(_path: &str, payload: &str) {
 
 #[cfg(test)]
 mod test {
+    use std::thread;
     use uuid::Uuid;
 
     use super::*;

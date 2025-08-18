@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package mozilla.telemetry.glean.private
 
@@ -50,7 +50,7 @@ class ObjectMetricType<K> constructor(
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored object as a JSON value
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

@@ -5,11 +5,47 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
-import mozilla.telemetry.glean.internal.LabeledBoolean
-import mozilla.telemetry.glean.internal.LabeledCounter
-import mozilla.telemetry.glean.internal.LabeledQuantity
-import mozilla.telemetry.glean.internal.LabeledString
 import mozilla.telemetry.glean.testing.ErrorType
+import mozilla.telemetry.glean.internal.LabeledBoolean as InternalLabeledBoolean
+import mozilla.telemetry.glean.internal.LabeledCounter as InternalLabeledCounter
+import mozilla.telemetry.glean.internal.LabeledQuantity as InternalLabeledQuantity
+import mozilla.telemetry.glean.internal.LabeledString as InternalLabeledString
+
+class LabeledBoolean constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledBoolean(meta, labels)
+
+    fun get(label: String): BooleanMetricType = BooleanMetricType(metric.get(label))
+}
+
+class LabeledCounter constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledCounter(meta, labels)
+
+    fun get(label: String): CounterMetricType = CounterMetricType(metric.get(label))
+}
+
+class LabeledQuantity constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledQuantity(meta, labels)
+
+    fun get(label: String): QuantityMetricType = QuantityMetricType(metric.get(label))
+}
+
+class LabeledString constructor(
+    meta: CommonLabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledString(meta, labels)
+
+    fun get(label: String): StringMetricType = StringMetricType(metric.get(label))
+}
 
 /**
  * This implements the developer facing API for labeled metrics.
@@ -74,15 +110,14 @@ class LabeledMetricType<T>(
      * @return The specific metric for that label
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun get(label: String): T {
-        return when (this.inner) {
+    operator fun get(label: String): T =
+        when (this.inner) {
             is LabeledCounter -> this.inner.get(label) as T
             is LabeledBoolean -> this.inner.get(label) as T
             is LabeledString -> this.inner.get(label) as T
             is LabeledQuantity -> this.inner.get(label) as T
             else -> error("Can not create a labeled version of this metric type")
         }
-    }
 
     /**
      * Get the specific metric for a given label index.
@@ -112,13 +147,32 @@ class LabeledMetricType<T>(
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(errorType: ErrorType): Int {
-        return when (this.inner) {
-            is LabeledCounter -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledBoolean -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledString -> this.inner.testGetNumRecordedErrors(errorType)
-            is LabeledQuantity -> this.inner.testGetNumRecordedErrors(errorType)
+    fun testGetNumRecordedErrors(errorType: ErrorType): Int =
+        when (this.inner) {
+            is LabeledCounter -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledBoolean -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledString -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledQuantity -> this.inner.metric.testGetNumRecordedErrors(errorType)
             else -> error("Can not create a labeled version of this metric type")
         }
-    }
+
+    /**
+     * Returns the currently stored values for each label as the appropriate type for the given
+     * metric.
+     *
+     * This doesn't clear the stored value.
+     *
+     * @param pingName The optional name of the ping to retrieve the metrics for. Defaults to the
+     *   first value in `send_in_pings`.
+     * @return The values for each label in the labeled metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetValue(pingName: String? = null): Map<String, Any> =
+        when (this.inner) {
+            is LabeledBoolean -> this.inner.metric.testGetValue(pingName)
+            is LabeledCounter -> this.inner.metric.testGetValue(pingName)
+            is LabeledString -> this.inner.metric.testGetValue(pingName)
+            is LabeledQuantity -> this.inner.metric.testGetValue(pingName)
+            else -> error("Can not create a labeled version of this metric type")
+        }!!
 }

@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::any::Any;
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::collections::{hash_map::Entry, HashMap};
@@ -15,7 +16,8 @@ use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorTy
 use crate::histogram::HistogramType;
 use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
-    Metric, MetricType, QuantityMetric, StringMetric, TimeUnit, TimingDistributionMetric,
+    Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit,
+    TimingDistributionMetric,
 };
 use crate::Glean;
 
@@ -348,6 +350,26 @@ where
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.submetric.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl<T, S> TestGetValue<HashMap<String, S>> for LabeledMetric<T>
+where
+    T: AllowLabeled + TestGetValue<S>,
+    S: Any,
+{
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<HashMap<String, S>> {
+        let mut out = HashMap::new();
+        let map = self.label_map.lock().unwrap();
+        map.iter().for_each(|(label, submetric)| {
+            if let Some(v) = submetric.test_get_value(ping_name.clone()) {
+                out.insert(
+                    label.replace(&format!("{}/", self.submetric.meta().base_identifier()), ""),
+                    v,
+                );
+            }
+        });
+        Some(out)
     }
 }
 

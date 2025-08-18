@@ -27,6 +27,7 @@ class GleanDebugActivity : Activity() {
         private const val LOG_TAG = "glean/DebugActivity"
 
         // This is a list of the currently accepted commands
+
         /**
          * Sends the ping with the given name immediately
          */
@@ -62,14 +63,13 @@ class GleanDebugActivity : Activity() {
     // exposed this way.  For example, it would be dangerous to change the
     // submission URL.
 
-    private fun isActivityExported(targetActivity: ComponentName): Boolean {
-        return try {
+    private fun isActivityExported(targetActivity: ComponentName): Boolean =
+        try {
             @Suppress("DEPRECATION")
             packageManager.getActivityInfo(targetActivity, PackageManager.GET_META_DATA).exported
         } catch (_: PackageManager.NameNotFoundException) {
             false
         }
-    }
 
     /**
      * On creation of the debug activity, launch the requested command.

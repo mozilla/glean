@@ -23,9 +23,7 @@ class BaseUploaderTest {
      * A stub uploader class that does not upload anything.
      */
     private class TestUploader : PingUploader {
-        override fun upload(request: CapablePingUploadRequest): UploadResult {
-            return UnrecoverableFailure(0)
-        }
+        override fun upload(request: CapablePingUploadRequest): UploadResult = UnrecoverableFailure(0)
     }
 
     @Test
@@ -33,7 +31,14 @@ class BaseUploaderTest {
         val uploader = spy<BaseUploader>(BaseUploader(TestUploader()))
 
         val expectedUrl = testDefaultConfig.serverEndpoint + testPath
-        val request = CapablePingUploadRequest(PingUploadRequest(expectedUrl, testPing.toByteArray(Charsets.UTF_8), testHeaders, emptyList()))
+        val request = CapablePingUploadRequest(
+            PingUploadRequest(
+                expectedUrl,
+                testPing.toByteArray(Charsets.UTF_8),
+                testHeaders,
+                emptyList(),
+            ),
+        )
         uploader.doUpload(request)
         verify(uploader).upload(eq(request))
     }

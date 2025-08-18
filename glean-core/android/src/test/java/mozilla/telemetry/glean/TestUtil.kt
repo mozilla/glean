@@ -135,14 +135,15 @@ internal fun resetGlean(
  *
  * @return an application [Context] that can be used to init Glean
  */
-internal fun getContext(): Context {
-    return ApplicationProvider.getApplicationContext<Context>()
-}
+internal fun getContext(): Context = ApplicationProvider.getApplicationContext<Context>()
 
 /**
  * Represents the Worker status returned by [getWorkerStatus]
  */
-internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
+internal class WorkerStatus(
+    val isEnqueued: Boolean,
+    val workerId: UUID? = null,
+)
 
 /**
  * Helper function to check to see if a worker has been scheduled with the [WorkManager] and return
@@ -152,7 +153,10 @@ internal class WorkerStatus(val isEnqueued: Boolean, val workerId: UUID? = null)
  * @param tag a string representing the worker tag
  * @return [WorkerStatus] that contains the enqueued state along with the ID
  */
-internal fun getWorkerStatus(context: Context, tag: String): WorkerStatus {
+internal fun getWorkerStatus(
+    context: Context,
+    tag: String,
+): WorkerStatus {
     val instance = WorkManager.getInstance(context)
     val statuses = instance.getWorkInfosByTag(tag)
     try {
@@ -222,11 +226,9 @@ internal fun getMockWebServer(): MockWebServer {
     val server = MockWebServer()
     server.dispatcher = (
         object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                return MockResponse().setBody("OK")
-            }
+            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse().setBody("OK")
         }
-        )
+    )
     return server
 }
 
@@ -237,14 +239,13 @@ internal fun getMockWebServer(): MockWebServer {
  *
  * @return a [String] containing the body of the request.
  */
-fun RecordedRequest.getPlainBody(): String {
-    return if (this.getHeader("Content-Encoding") == "gzip") {
+fun RecordedRequest.getPlainBody(): String =
+    if (this.getHeader("Content-Encoding") == "gzip") {
         val bodyInBytes = ByteArrayInputStream(this.body.readByteArray()).readBytes()
         decompressGZIP(bodyInBytes)
     } else {
         this.body.readUtf8()
     }
-}
 
 /**
  * Ensure no overdue metrics ping is triggered on `Glean.initialize`.
@@ -293,9 +294,7 @@ internal fun <T> any(): T {
  *
  * (The version from Mockito doesn't work correctly with Kotlin code.)
  */
-internal fun <T> eq(value: T): T {
-    return Mockito.eq(value) ?: value
-}
+internal fun <T> eq(value: T): T = Mockito.eq(value) ?: value
 
 /**
  * Mockito matcher that captures the passed argument.

@@ -15,7 +15,9 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal object Dispatchers {
-    class WaitableCoroutineScope(private val coroutineScope: CoroutineScope) {
+    class WaitableCoroutineScope(
+        private val coroutineScope: CoroutineScope,
+    ) {
         // When true, jobs will be run synchronously
         internal var testingMode = false
 
@@ -33,8 +35,8 @@ internal object Dispatchers {
         /**
          * Helper function to execute the task as an asynchronous operation.
          */
-        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? {
-            return when {
+        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? =
+            when {
                 testingMode -> {
                     runBlocking {
                         block()
@@ -43,7 +45,6 @@ internal object Dispatchers {
                 }
                 else -> coroutineScope.launch(block = block)
             }
-        }
     }
 
     class DelayedTaskQueue {
@@ -61,9 +62,7 @@ internal object Dispatchers {
          * then the work will be queued and executed when [flushQueuedInitialTasks] is called.
          * If [queueInitialTasks] is false the block is executed synchronously.
          */
-        fun launch(
-            block: () -> Unit,
-        ) {
+        fun launch(block: () -> Unit) {
             if (queueInitialTasks.get()) {
                 addTaskToQueue(block)
             } else {
@@ -117,6 +116,7 @@ internal object Dispatchers {
      * This needs to be a `var` so that our tests can override this.
      */
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @Suppress("ktlint:standard:property-naming")
     var API = WaitableCoroutineScope(
         CoroutineScope(
             newSingleThreadContext("GleanAPIPool") + supervisorJob,
@@ -124,5 +124,6 @@ internal object Dispatchers {
     )
 
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @Suppress("ktlint:standard:property-naming")
     var Delayed = DelayedTaskQueue()
 }

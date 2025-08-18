@@ -19,7 +19,6 @@ import java.util.UUID
 private const val TAG = "Glean"
 
 class GleanApplication : Application() {
-
     override fun onCreate() {
         super.onCreate()
 

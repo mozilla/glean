@@ -22,7 +22,6 @@ import java.lang.NullPointerException
 
 @RunWith(AndroidJUnit4::class)
 class TimespanMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
@@ -295,9 +294,7 @@ class TimespanMetricTypeTest {
 
         // Create a function to measure, which also returns a value to test that we properly pass
         // along the returned value from the measure function
-        fun testFunc(value: Boolean): Boolean {
-            return value
-        }
+        fun testFunc(value: Boolean): Boolean = value
 
         // Capture returned value to determine if the function return value matches what is expected
         // and measure the test function, which should record to the metric
@@ -326,16 +323,17 @@ class TimespanMetricTypeTest {
         )
 
         // We define a function that measures the whole function call runtime
-        fun testFunc(): Long = metric.measure {
-            // We want to simulate an early return.
-            if (true) {
-                // Blank 'return' is not allowed here, because `measure` is not inlined.
-                // We can return by label though.
-                return@measure 17
-            }
+        fun testFunc(): Long =
+            metric.measure {
+                // We want to simulate an early return.
+                if (true) {
+                    // Blank 'return' is not allowed here, because `measure` is not inlined.
+                    // We can return by label though.
+                    return@measure 17
+                }
 
-            42
-        }
+                42
+            }
 
         val res = testFunc()
         assertEquals("Test value must match", 17, res)
@@ -358,9 +356,7 @@ class TimespanMetricTypeTest {
         )
 
         // Create a function that will throw a NPE
-        fun testFunc() {
-            throw NullPointerException()
-        }
+        fun testFunc(): Unit = throw NullPointerException()
 
         // Attempt to measure the function that will throw an exception.  The `measure` function
         // should allow the exception to bubble up, the timespan measurement is canceled.

@@ -6,8 +6,8 @@ use std::sync::Arc;
 
 use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
-use crate::metrics::Metric;
 use crate::metrics::MetricType;
+use crate::metrics::{Metric, TestGetValue};
 use crate::storage::StorageManager;
 use crate::CommonMetricData;
 use crate::Glean;
@@ -100,25 +100,6 @@ impl BooleanMetric {
         }
     }
 
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Gets the currently stored value as an integer.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - the optional name of the ping to retrieve the metric
-    ///                 for. Defaults to the first value in `send_in_pings`.
-    ///
-    /// # Returns
-    ///
-    /// The stored value or `None` if nothing stored.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<bool> {
-        crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
-    }
-
     /// **Exported for test purposes.**
     ///
     /// Gets the number of recorded errors for the given metric and error type.
@@ -136,5 +117,26 @@ impl BooleanMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<bool> for BooleanMetric {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets the currently stored value as a boolean.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    ///
+    /// # Returns
+    ///
+    /// The stored value or `None` if nothing stored.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<bool> {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }

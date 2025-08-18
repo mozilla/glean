@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Any, Optional, Set, Type
+from typing import Any, Dict, Optional, Set, Type
 
 
 from .._uniffi import LabeledBoolean
@@ -68,14 +68,27 @@ class LabeledMetricBase:
 
         Args:
             error_type (ErrorType): The type of error recorded.
-            ping_name (str): (default: first value in send_in_pings) The name
-                of the ping to retrieve the metric for.
 
         Returns:
             num_errors (int): The number of errors recorded for the metric for
                 the given error type.
         """
         return self._inner.test_get_num_recorded_errors(error_type)
+
+    def test_get_value(self, ping_name: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Returns the currently stored value of the appropriate type for the given metric.
+
+        This doesn't clear the stored value.
+
+        Args:
+            ping_name (str): (default: first value in send_in_pings) The name
+                of the ping to retrieve the metric for.
+
+        Returns:
+            value (Dict[str: Any]): A map of the set labels to their values.
+        """
+        return self._inner.test_get_value(ping_name)
 
 
 class LabeledBooleanMetricType(LabeledMetricBase):

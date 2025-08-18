@@ -135,9 +135,10 @@ internal fun calendarToDatetime(cal: Calendar): Datetime {
         minute = cal.get(Calendar.MINUTE).toUInt(),
         second = cal.get(Calendar.SECOND).toUInt(),
         nanosecond = AndroidTimeUnit.MILLISECONDS.toNanos(cal.get(Calendar.MILLISECOND).toLong()).toUInt(),
-        offsetSeconds = AndroidTimeUnit.MILLISECONDS.toSeconds(
-            cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET),
-        ).toInt(),
+        offsetSeconds = AndroidTimeUnit.MILLISECONDS
+            .toSeconds(
+                cal.get(Calendar.ZONE_OFFSET).toLong() + cal.get(Calendar.DST_OFFSET),
+            ).toInt(),
     )
 
     return dt

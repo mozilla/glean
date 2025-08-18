@@ -9,7 +9,7 @@
 
 use crossbeam_channel::{Receiver, Sender};
 use std::sync::{atomic::Ordering, Arc, Mutex};
-use std::thread::{self, JoinHandle};
+use std::thread::JoinHandle;
 use std::time::Duration;
 
 use glean_core::upload::PingUploadTask;
@@ -131,71 +131,68 @@ impl UploadManager {
 
         // Need to lock before we start so that noone thinks we're not running.
         let mut handle = self.inner.handle.lock().unwrap();
-        let thread = thread::Builder::new()
-            .name("glean.upload".into())
-            .spawn(move || {
-                log::trace!("Started glean.upload thread");
-                loop {
-                    let incoming_task = glean_core::glean_get_upload_task();
+        let thread = glean_core::thread::spawn("glean.upload", move || {
+            log::trace!("Started glean.upload thread");
+            loop {
+                let incoming_task = glean_core::glean_get_upload_task();
 
-                    match incoming_task {
-                        PingUploadTask::Upload { request } => {
-                            log::trace!("Received upload task with request {:?}", request);
-                            let doc_id = request.document_id.clone();
-                            let upload_url = format!("{}{}", inner.server_endpoint, request.path);
-                            let headers: Vec<(String, String)> =
-                                request.headers.into_iter().collect();
-                            let upload_request = PingUploadRequest {
-                                url: upload_url,
-                                body: request.body,
-                                headers,
-                                body_has_info_sections: request.body_has_info_sections,
-                                ping_name: request.ping_name,
-                            };
-                            let upload_request = CapablePingUploadRequest {
-                                request: upload_request,
-                                capabilities: request.uploader_capabilities,
-                            };
-                            let result = inner.uploader.upload(upload_request);
-                            // Process the upload response.
-                            match glean_core::glean_process_ping_upload_response(doc_id, result) {
-                                UploadTaskAction::Next => (),
-                                UploadTaskAction::End => break,
-                            }
-
-                            let status = inner.thread_running.load(Ordering::SeqCst);
-                            // asked to shut down. let's do it.
-                            if status == State::ShuttingDown {
-                                break;
-                            }
+                match incoming_task {
+                    PingUploadTask::Upload { request } => {
+                        log::trace!("Received upload task with request {:?}", request);
+                        let doc_id = request.document_id.clone();
+                        let upload_url = format!("{}{}", inner.server_endpoint, request.path);
+                        let headers: Vec<(String, String)> = request.headers.into_iter().collect();
+                        let upload_request = PingUploadRequest {
+                            url: upload_url,
+                            body: request.body,
+                            headers,
+                            body_has_info_sections: request.body_has_info_sections,
+                            ping_name: request.ping_name,
+                        };
+                        let upload_request = CapablePingUploadRequest {
+                            request: upload_request,
+                            capabilities: request.uploader_capabilities,
+                        };
+                        let result = inner.uploader.upload(upload_request);
+                        // Process the upload response.
+                        match glean_core::glean_process_ping_upload_response(doc_id, result) {
+                            UploadTaskAction::Next => (),
+                            UploadTaskAction::End => break,
                         }
-                        PingUploadTask::Wait { time } => {
-                            log::trace!("Instructed to wait for {:?}ms", time);
-                            let _ = inner.rx.recv_timeout(Duration::from_millis(time));
 
-                            let status = inner.thread_running.load(Ordering::SeqCst);
-                            // asked to shut down. let's do it.
-                            if status == State::ShuttingDown {
-                                break;
-                            }
-                        }
-                        PingUploadTask::Done { .. } => {
-                            log::trace!("Received PingUploadTask::Done. Exiting.");
-                            // Nothing to do here, break out of the loop.
+                        let status = inner.thread_running.load(Ordering::SeqCst);
+                        // asked to shut down. let's do it.
+                        if status == State::ShuttingDown {
                             break;
                         }
                     }
-                }
+                    PingUploadTask::Wait { time } => {
+                        log::trace!("Instructed to wait for {:?}ms", time);
+                        let _ = inner.rx.recv_timeout(Duration::from_millis(time));
 
-                // Clear the running flag to signal that this thread is done,
-                // but only if there's no shutdown thread.
-                let _ = inner.thread_running.compare_exchange(
-                    State::Running,
-                    State::Stopped,
-                    Ordering::SeqCst,
-                    Ordering::SeqCst,
-                );
-            });
+                        let status = inner.thread_running.load(Ordering::SeqCst);
+                        // asked to shut down. let's do it.
+                        if status == State::ShuttingDown {
+                            break;
+                        }
+                    }
+                    PingUploadTask::Done { .. } => {
+                        log::trace!("Received PingUploadTask::Done. Exiting.");
+                        // Nothing to do here, break out of the loop.
+                        break;
+                    }
+                }
+            }
+
+            // Clear the running flag to signal that this thread is done,
+            // but only if there's no shutdown thread.
+            let _ = inner.thread_running.compare_exchange(
+                State::Running,
+                State::Stopped,
+                Ordering::SeqCst,
+                Ordering::SeqCst,
+            );
+        });
 
         match thread {
             Ok(thread) => *handle = Some(thread),

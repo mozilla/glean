@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package mozilla.telemetry.glean.scheduler
 
@@ -31,9 +31,11 @@ import mozilla.telemetry.glean.utils.testFlushWorkManagerJob
  * @return [Constraints] object containing the required work constraints
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun buildConstraints(): Constraints = Constraints.Builder()
-    .setRequiredNetworkType(NetworkType.CONNECTED)
-    .build()
+internal fun buildConstraints(): Constraints =
+    Constraints
+        .Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
 
 /**
  * Build the [OneTimeWorkRequest] for enqueueing in the [WorkManager].  This also adds a tag
@@ -41,18 +43,20 @@ internal fun buildConstraints(): Constraints = Constraints.Builder()
  *
  * @return [OneTimeWorkRequest] representing the task for the [WorkManager] to enqueue and run
  */
-internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest {
-    return OneTimeWorkRequestBuilder<W>()
+internal inline fun <reified W : Worker> buildWorkRequest(tag: String): OneTimeWorkRequest =
+    OneTimeWorkRequestBuilder<W>()
         .addTag(tag)
         .setConstraints(buildConstraints())
         .build()
-}
 
 /**
  * This class is the worker class used by [WorkManager] to handle uploading the ping to the server.
  * @suppress This is internal only, don't show it in the docs.
  */
-class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class PingUploadWorker(
+    context: Context,
+    params: WorkerParameters,
+) : Worker(context, params) {
     companion object {
         internal const val PING_WORKER_TAG = "mozac_service_glean_ping_upload_worker"
 
@@ -94,7 +98,9 @@ class PingUploadWorker(context: Context, params: WorkerParameters) : Worker(cont
                         // If the status is `null` there was some kind of unrecoverable error
                         // so we return a known unrecoverable error status code
                         // which will ensure this gets treated as such.
-                        val body = action.request.body.toUByteArray().asByteArray()
+                        val body = action.request.body
+                            .toUByteArray()
+                            .asByteArray()
                         val request = CapablePingUploadRequest(
                             PingUploadRequest(
                                 Glean.configuration.serverEndpoint + action.request.path,

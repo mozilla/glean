@@ -95,8 +95,10 @@ Glean.login.errorsByStage["server_auth"].set("Invalid password");
 ### `testGetValue`
 
 Gets the recorded value for a given label in a labeled string metric.  
-Returns the string if data is stored.  
-Returns a language-specific empty/null value if no data is stored.
+Returns the string if data is stored. The Glean SDK will return a map of each label with a
+stored value to its value.   
+Returns a language-specific empty/null value if no data is stored. The Glean SDK will always
+return a map, but it will be empty if no data is stored. 
 Has an optional argument to specify the name of the ping you wish to retrieve data from, except
 in Rust where it's required. `None` or no argument will default to the first value found for `send_in_pings`.
 
@@ -107,8 +109,9 @@ in Rust where it's required. `None` or no argument will default to the first val
 ```Kotlin
 import org.mozilla.yourApplication.GleanMetrics.Login
 
+val values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-assertTrue(Login.errorsByStage["server_auth"].testGetValue())
+assertTrue(values["server_auth"])
 ```
 </div>
 
@@ -117,16 +120,18 @@ assertTrue(Login.errorsByStage["server_auth"].testGetValue())
 ```Java
 import org.mozilla.yourApplication.GleanMetrics.Login;
 
+Map<String, ?> values = Login.INSTANCE.errorsByStage().testGetValue();
 // Does the metric have the expected value?
-assertTrue(Login.INSTANCE.errorsByStage()["server_auth"].testGetValue());
+assertTrue(values["server_auth"]);
 ```
 </div>
 
 <div data-lang="Swift" class="tab">
 
 ```Swift
+let values = Login.errorsByStage.testGetValue()
 // Does the metric have the expected value?
-XCTAssert(Login.errorsByStage["server_auth"].testGetValue())
+XCTAssert(values["server_auth"])
 ```
 
 </div>
@@ -137,8 +142,9 @@ XCTAssert(Login.errorsByStage["server_auth"].testGetValue())
 from glean import load_metrics
 metrics = load_metrics("metrics.yaml")
 
+values = metrics.login.errors_by_stage.testGetValue()
 # Does the metric have the expected value?
-assert "Invalid password" == metrics.login.errors_by_stage["server_auth"].testGetValue())
+assert "Invalid password" == values["server_auth"])
 ```
 </div>
 
@@ -147,8 +153,9 @@ assert "Invalid password" == metrics.login.errors_by_stage["server_auth"].testGe
 ```Rust
 use glean_metrics::login;
 
+let values = login::errors_by_stage.test_get_value(None).unwrap();
 // Does the metric have the expected value?
-assert!(login::errors_by_stage.get("server_auth").test_get_value());
+assert!(values["server_auth"]);
 ```
 </div>
 

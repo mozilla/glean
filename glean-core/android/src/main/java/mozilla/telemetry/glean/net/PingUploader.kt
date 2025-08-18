@@ -31,7 +31,9 @@ data class PingUploadRequest(
     val uploaderCapabilities: List<String>,
 )
 
-class CapablePingUploadRequest(val request: PingUploadRequest) {
+class CapablePingUploadRequest(
+    val request: PingUploadRequest,
+) {
     fun capable(f: (uploaderCapabilities: List<String>) -> Boolean): PingUploadRequest? {
         if (f(request.uploaderCapabilities)) {
             return request

@@ -107,7 +107,10 @@ class HttpURLConnectionUploader : PingUploader {
     }
 
     @Throws(IOException::class)
-    internal fun doUpload(connection: HttpURLConnection, data: ByteArray): Int {
+    internal fun doUpload(
+        connection: HttpURLConnection,
+        data: ByteArray,
+    ): Int {
         connection.outputStream.use {
             val byteOutputStream = ByteArrayOutputStream()
             byteOutputStream.write(data)
@@ -120,7 +123,5 @@ class HttpURLConnectionUploader : PingUploader {
 
     @VisibleForTesting
     @Throws(IOException::class)
-    internal fun openConnection(url: String): HttpURLConnection {
-        return URL(url).openConnection() as HttpURLConnection
-    }
+    internal fun openConnection(url: String): HttpURLConnection = URL(url).openConnection() as HttpURLConnection
 }

@@ -1,6 +1,34 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.0...main)
+
+# v65.0.0 (2025-08-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...v65.0.0)
+
+* General
+  * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
+  * `LabeledMetric` improvement: Added `testGetValue` as a test method on all labeled metric types ([#3190](https://github.com/mozilla/glean/pull/3190))
+  * `DualLabeledCounter` improvement: Added `testGetValue` as a test method ([#3209](https://github.com/mozilla/glean/pull/3209))
+  * Improvement: Updated all remaining metrics to implement the `TestGetValue` trait ([#3209](https://github.com/mozilla/glean/pull/3209))
+  * New metric: `glean.ping.uploader_capabilities` reporting the requested uploader capabilities for a ping ([#3188](https://github.com/mozilla/glean/pull/3188))
+* Android
+  * Updated Android Gradle Plugin to 8.12.0 ([#3208](https://github.com/mozilla/glean/pull/3208))
+  * Updated Android NDK to r28c ([#3199](https://github.com/mozilla/glean/pull/3199))
+  * Updated Android SDK target to version 36 ([#3180](https://github.com/mozilla/glean/pull/3180))
+  * Updated Gradle to 8.14.3 ([#3180](https://github.com/mozilla/glean/pull/3180))
+  * Updated Kotlin to 2.2.10 ([#3219](https://github.com/mozilla/glean/pull/3219))
+  * BREAKING CHANGE: Dispatch most metric recordings on a Kotlin dispatcher to avoid calling into glean-core early.
+    This does not change any behavior: The dispatch queue is worked on right after initialization ([#3183](https://github.com/mozilla/glean/pull/3183))
+  * The `testBeforeNextSubmit` now returns a job to be awaited. This allows to wait for the callback
+    and properly handles exceptions ([#3218](https://github.com/mozilla/glean/pull/3218))
+* Python
+  * Bump minimum required Python version to 3.9 ([#3164](https://github.com/mozilla/glean/issues/3164))
+  * Report `client_info.architecture` as reported from Python again ([#3185](https://github.com/mozilla/glean/issues/3185))
+* Swift
+  * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
+* Rust
+  * New feature `gecko`. If enabled spawned threads are registered with the Gecko profiler (non-Android only) ([#3212](https://github.com/mozilla/glean/pull/3212))
 
 # v64.5.4 (2025-07-29)
 
@@ -25,7 +53,6 @@
   * Update `time` dependency to v0.3 ([#3165](https://github.com/mozilla/glean/pull/3165))
 * Python
   * Ship a Python wheel for aarch64-linux ([#3173](https://github.com/mozilla/glean/pull/3173))
-
 
 # v64.5.1 (2025-06-23)
 

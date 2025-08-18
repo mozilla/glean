@@ -3,14 +3,14 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::metrics::DistributionData;
-use crate::ErrorType;
+use crate::{ErrorType, TestGetValue};
 
 /// A description for the
 /// [`MemoryDistributionMetric`](crate::metrics::MemoryDistributionMetric) type.
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait MemoryDistribution {
+pub trait MemoryDistribution: TestGetValue<DistributionData> {
     /// Accumulates the provided sample in the metric.
     ///
     /// # Arguments
@@ -23,21 +23,6 @@ pub trait MemoryDistribution {
     /// Values bigger than 1 Terabyte (2<sup>40</sup> bytes) are truncated
     /// and an `ErrorType::InvalidValue` error is recorded.
     fn accumulate(&self, sample: u64);
-
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the currently stored value as a DistributionData of the serialized value.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - represents the optional name of the ping to retrieve the
-    ///   metric for. Defaults to the first value in `send_in_pings`.
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(
-        &self,
-        ping_name: S,
-    ) -> Option<DistributionData>;
 
     /// **Exported for test purposes.**
     ///

@@ -31,28 +31,30 @@ import mozilla.telemetry.glean.net.PingUploader
  *           Maps a ping name to a list of pings to schedule along with it.
  *           Only used if the ping's own ping schedule list is empty.
  */
-data class Configuration @JvmOverloads constructor(
-    val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
-    val channel: String? = null,
-    val maxEvents: Int? = null,
-    // NOTE: since only simple object or strings can be made `const val`s, if the
-    // default values for the lines below are ever changed, they are required
-    // to change in the public constructor below.
-    val httpClient: PingUploader = HttpURLConnectionUploader(),
-    val dataPath: String? = null,
-    val logLevel: LevelFilter? = null,
-    val enableEventTimestamps: Boolean = true,
-    val experimentationId: String? = null,
-    val enableInternalPings: Boolean = true,
-    val delayPingLifetimeIo: Boolean = true,
-    val pingLifetimeThreshold: Int = 1000,
-    val pingLifetimeMaxTime: Int = 0,
-    val pingSchedule: Map<String, List<String>> = emptyMap(),
-) {
-    companion object {
-        /**
-         * The default server pings are sent to.
-         */
-        const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
+data class Configuration
+    @JvmOverloads
+    constructor(
+        val serverEndpoint: String = DEFAULT_TELEMETRY_ENDPOINT,
+        val channel: String? = null,
+        val maxEvents: Int? = null,
+        // NOTE: since only simple object or strings can be made `const val`s, if the
+        // default values for the lines below are ever changed, they are required
+        // to change in the public constructor below.
+        val httpClient: PingUploader = HttpURLConnectionUploader(),
+        val dataPath: String? = null,
+        val logLevel: LevelFilter? = null,
+        val enableEventTimestamps: Boolean = true,
+        val experimentationId: String? = null,
+        val enableInternalPings: Boolean = true,
+        val delayPingLifetimeIo: Boolean = true,
+        val pingLifetimeThreshold: Int = 1000,
+        val pingLifetimeMaxTime: Int = 0,
+        val pingSchedule: Map<String, List<String>> = emptyMap(),
+    ) {
+        companion object {
+            /**
+             * The default server pings are sent to.
+             */
+            const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
+        }
     }
-}

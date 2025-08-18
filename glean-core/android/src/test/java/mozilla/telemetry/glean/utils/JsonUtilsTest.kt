@@ -43,7 +43,8 @@ class JsonUtilsTest {
     fun itCanBeIterated() {
         val array = JSONArray("[1, 2, 3]")
 
-        val sum = array.asSequence()
+        val sum = array
+            .asSequence()
             .map { it as Int }
             .sum()
 

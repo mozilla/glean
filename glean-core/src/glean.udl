@@ -460,6 +460,8 @@ interface LabeledCounter {
     CounterMetric get(string label);
 
     i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, i32>? test_get_value(optional string? ping_name = null);
 };
 
 interface LabeledBoolean {
@@ -468,6 +470,8 @@ interface LabeledBoolean {
     BooleanMetric get(string label);
 
     i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, boolean>? test_get_value(optional string? ping_name = null);
 };
 
 interface LabeledString {
@@ -476,6 +480,8 @@ interface LabeledString {
     StringMetric get(string label);
 
     i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, string>? test_get_value(optional string? ping_name = null);
 };
 
 interface LabeledQuantity {
@@ -484,6 +490,8 @@ interface LabeledQuantity {
     QuantityMetric get(string label);
 
     i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, i64>? test_get_value(optional string? ping_name = null);
 };
 
 interface StringListMetric {
@@ -737,6 +745,8 @@ interface DualLabeledCounterMetric {
     constructor(CommonMetricData meta, sequence<CowString>? keys, sequence<CowString>? categories);
 
     CounterMetric get(string key, string category);
+
+    record<string, record<string, i32>>? test_get_value(optional string? ping_name = null);
 
     i32 test_get_num_recorded_errors(ErrorType error);
 };

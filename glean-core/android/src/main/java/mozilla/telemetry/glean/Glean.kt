@@ -36,9 +36,15 @@ import java.util.Calendar
  */
 typealias GleanTimerId = mozilla.telemetry.glean.internal.TimerId
 
-data class BuildInfo(val versionCode: String, val versionName: String, val buildDate: Calendar)
+data class BuildInfo(
+    val versionCode: String,
+    val versionName: String,
+    val buildDate: Calendar,
+)
 
-internal class OnGleanEventsImpl(val glean: GleanInternalAPI) : OnGleanEvents {
+internal class OnGleanEventsImpl(
+    val glean: GleanInternalAPI,
+) : OnGleanEvents {
     override fun initializeFinished() {
         // Only set up the lifecycle observers if we don't provide a custom
         // data path.
@@ -179,8 +185,6 @@ open class GleanInternalAPI internal constructor() {
         configuration: Configuration = Configuration(),
         buildInfo: BuildInfo,
     ) {
-        gleanEnableLogging()
-
         configuration.dataPath?.let { safeDataPath ->
             // When the `dataPath` is provided, we need to make sure:
             //   1. The database path provided is not `glean_data`.
@@ -240,12 +244,14 @@ open class GleanInternalAPI internal constructor() {
         this.configuration = configuration
         this.httpClient = BaseUploader(configuration.httpClient)
 
-        // First flush the Kotlin-side queue.
-        // This will put things on the Rust-side queue, and thus keep them in the right order.
-        Dispatchers.Delayed.flushQueuedInitialTasks()
-
         // Execute startup off the main thread.
         Dispatchers.API.executeTask {
+            gleanEnableLogging()
+
+            // First flush the Kotlin-side queue.
+            // This will put things on the Rust-side queue, and thus keep them in the right order.
+            Dispatchers.Delayed.flushQueuedInitialTasks()
+
             val cfg = InternalConfiguration(
                 dataPath = gleanDataDir.path,
                 applicationId = applicationContext.packageName,
@@ -274,9 +280,7 @@ open class GleanInternalAPI internal constructor() {
     /**
      * Returns true if the Glean SDK has been initialized.
      */
-    internal fun isInitialized(): Boolean {
-        return initialized
-    }
+    internal fun isInitialized(): Boolean = initialized
 
     /**
      * Register the pings generated from `pings.yaml` with the Glean SDK.
@@ -371,9 +375,7 @@ open class GleanInternalAPI internal constructor() {
      * @return true if the experiment is active and reported in pings, otherwise false
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testIsExperimentActive(experimentId: String): Boolean {
-        return gleanTestGetExperimentData(experimentId) != null
-    }
+    fun testIsExperimentActive(experimentId: String): Boolean = gleanTestGetExperimentData(experimentId) != null
 
     /**
      * Returns the stored data for the requested active experiment, for testing purposes only.
@@ -383,9 +385,8 @@ open class GleanInternalAPI internal constructor() {
      * @throws [NullPointerException] if the requested experiment is not active or data is corrupt.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetExperimentData(experimentId: String): RecordedExperiment {
-        return gleanTestGetExperimentData(experimentId) ?: throw NullPointerException("Experiment data is not set")
-    }
+    fun testGetExperimentData(experimentId: String): RecordedExperiment =
+        gleanTestGetExperimentData(experimentId) ?: throw NullPointerException("Experiment data is not set")
 
     /**
      * Dynamically set the experimentation identifier, as opposed to setting it through the configuration
@@ -404,9 +405,8 @@ open class GleanInternalAPI internal constructor() {
      * @throws [NullPointerException] if no experimentation id is set.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetExperimentationId(): String {
-        return gleanTestGetExperimentationId() ?: throw NullPointerException("Experimentation Id is not set")
-    }
+    fun testGetExperimentationId(): String =
+        gleanTestGetExperimentationId() ?: throw NullPointerException("Experimentation Id is not set")
 
     /**
      * EXPERIMENTAL: Register a listener to receive event recording notifications
@@ -417,7 +417,10 @@ open class GleanInternalAPI internal constructor() {
      * @param tag a tag to use when unregistering the listener
      * @param listener implements the `GleanEventListener` interface
      */
-    fun registerEventListener(tag: String, listener: GleanEventListener) {
+    fun registerEventListener(
+        tag: String,
+        listener: GleanEventListener,
+    ) {
         gleanRegisterEventListener(tag, listener)
     }
 
@@ -433,17 +436,17 @@ open class GleanInternalAPI internal constructor() {
     /**
      * Initialize the core metrics internally managed by Glean (e.g. client id).
      */
-    internal fun getClientInfo(configuration: Configuration, buildInfo: BuildInfo): ClientInfoMetrics {
-        return ClientInfoMetrics(
+    internal fun getClientInfo(
+        configuration: Configuration,
+        buildInfo: BuildInfo,
+    ): ClientInfoMetrics =
+        ClientInfoMetrics(
             appBuild = buildInfo.versionCode,
             appDisplayVersion = buildInfo.versionName,
             appBuildDate = calendarToDatetime(buildInfo.buildDate),
-
             architecture = Build.SUPPORTED_ABIS[0],
             osVersion = Build.VERSION.RELEASE,
-
             channel = configuration.channel,
-
             // https://developer.android.com/reference/android/os/Build.VERSION
             androidSdkVersion = Build.VERSION.SDK_INT.toString(),
             // https://developer.android.com/reference/android/os/Build
@@ -451,14 +454,11 @@ open class GleanInternalAPI internal constructor() {
             deviceModel = Build.MODEL,
             locale = getLocaleTag(),
         )
-    }
 
     /**
      * Get the data directory for Glean.
      */
-    internal fun getDataDir(): File {
-        return this.gleanDataDir
-    }
+    internal fun getDataDir(): File = this.gleanDataDir
 
     /**
      * Handle the foreground event and send the appropriate pings.
@@ -499,7 +499,10 @@ open class GleanInternalAPI internal constructor() {
      * @param pingName Name of the ping to submit.
      * @param reason The reason the ping is being submitted.
      */
-    fun submitPingByName(pingName: String, reason: String? = null) {
+    fun submitPingByName(
+        pingName: String,
+        reason: String? = null,
+    ) {
         gleanSubmitPingByName(pingName, reason)
     }
 
@@ -510,9 +513,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @return The set of ping names that have been registered.
      */
-    fun getRegisteredPingNames(): Set<String> {
-        return gleanGetRegisteredPingNames().toSet()
-    }
+    fun getRegisteredPingNames(): Set<String> = gleanGetRegisteredPingNames().toSet()
 
     /**
      * Set a tag to be applied to headers when uploading pings for debug view.
@@ -522,9 +523,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param value The value of the tag, which must be a valid HTTP header value.
      */
-    fun setDebugViewTag(value: String): Boolean {
-        return gleanSetDebugViewTag(value)
-    }
+    fun setDebugViewTag(value: String): Boolean = gleanSetDebugViewTag(value)
 
     /**
      * Get the current Debug View tag
@@ -534,9 +533,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @return The [String] value of the current debug tag or `null` if not set.
      */
-    fun getDebugViewTag(): String? {
-        return gleanGetDebugViewTag()
-    }
+    fun getDebugViewTag(): String? = gleanGetDebugViewTag()
 
     /**
      * Set the source tags to be applied as headers when uploading pings.
@@ -546,9 +543,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @param tags A list of tags, which must be valid HTTP header values.
      */
-    fun setSourceTags(tags: Set<String>): Boolean {
-        return gleanSetSourceTags(tags.toList())
-    }
+    fun setSourceTags(tags: Set<String>): Boolean = gleanSetSourceTags(tags.toList())
 
     /**
      * Asks the database to persist ping-lifetime data to disk. Probably expensive to call.
@@ -556,9 +551,7 @@ open class GleanInternalAPI internal constructor() {
      * If Glean hasn't been initialized this will dispatch and return Ok(()),
      * otherwise it will block until the persist is done and return its Result.
      */
-    fun persistPingLifetimeData() {
-        return gleanPersistPingLifetimeData()
-    }
+    fun persistPingLifetimeData() = gleanPersistPingLifetimeData()
 
     /**
      * Set configuration to override metrics' enabled/disabled state, typically from a remote_settings
@@ -567,7 +560,9 @@ open class GleanInternalAPI internal constructor() {
      * @param json Stringified JSON Server Knobs configuration.
      */
     fun applyServerKnobsConfig(json: String) {
-        gleanApplyServerKnobsConfig(json)
+        Dispatchers.Delayed.launch {
+            gleanApplyServerKnobsConfig(json)
+        }
     }
 
     /**
@@ -588,9 +583,7 @@ open class GleanInternalAPI internal constructor() {
      *
      * @return Returns a [Boolean] value indicating the state of debug ping logging.
      */
-    fun getLogPings(): Boolean {
-        return gleanGetLogPings()
-    }
+    fun getLogPings(): Boolean = gleanGetLogPings()
 
     /**
      * TEST ONLY FUNCTION.
@@ -704,7 +697,10 @@ open class GleanInternalAPI internal constructor() {
      * @param dataPath The path to the data folder. Must be set if `clearStores` is `true`.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testDestroyGleanHandle(clearStores: Boolean = false, dataPath: String? = null) {
+    fun testDestroyGleanHandle(
+        clearStores: Boolean = false,
+        dataPath: String? = null,
+    ) {
         // If it was initialized this also clears the directory
         gleanTestDestroyGlean(clearStores, dataPath)
 
@@ -733,7 +729,7 @@ open class GleanInternalAPI internal constructor() {
             activityManager.runningAppProcesses?.any { processInfo ->
                 (processInfo.pid == pid && processInfo.processName == context.packageName)
             }
-            ) ?: false
+        ) ?: false
 
         return isMainProcess as Boolean
     }
@@ -750,9 +746,7 @@ open class GleanInternalAPI internal constructor() {
      * Test-only method for getting the current attribution metrics.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun testGetAttribution(): AttributionMetrics {
-        return gleanTestGetAttribution()
-    }
+    fun testGetAttribution(): AttributionMetrics = gleanTestGetAttribution()
 
     /**
      * Updates distribution fields with new values.
@@ -766,9 +760,7 @@ open class GleanInternalAPI internal constructor() {
      * Test-only method for getting the current distribution metrics.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun testGetDistribution(): DistributionMetrics {
-        return gleanTestGetDistribution()
-    }
+    fun testGetDistribution(): DistributionMetrics = gleanTestGetDistribution()
 }
 
 /**

@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.samples.gleancore
 
 import android.app.Service
@@ -22,14 +26,16 @@ class SampleBackgroundProcess : Service() {
      * Required override, don't need to do anything here so we
      * just return a default Binder
      */
-    override fun onBind(intent: Intent?): IBinder {
-        return Binder()
-    }
+    override fun onBind(intent: Intent?): IBinder = Binder()
 
     /**
      * Entry point when the Service gets started by ServiceIntent
      */
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         Log.i(TAG, "Service Started by Intent")
 
         initializeGlean()
@@ -54,18 +60,18 @@ class SampleBackgroundProcess : Service() {
             // GleanBuildInfo can only be generated for application,
             // We are in a library so we have to build it ourselves.
             buildInfo =
-            BuildInfo(
-                "0.0.1",
-                "0.0.1",
-                Calendar.getInstance(),
-            ),
+                BuildInfo(
+                    "0.0.1",
+                    "0.0.1",
+                    Calendar.getInstance(),
+                ),
             configuration =
-            Configuration(
-                channel = "sample",
-                // When initializing Glean from outside the main process,
-                // we need to provide it with a dataPath manually.
-                dataPath = customDataPath,
-            ),
+                Configuration(
+                    channel = "sample",
+                    // When initializing Glean from outside the main process,
+                    // we need to provide it with a dataPath manually.
+                    dataPath = customDataPath,
+                ),
         )
 
         Log.i(TAG, "Initialized Glean in background service")

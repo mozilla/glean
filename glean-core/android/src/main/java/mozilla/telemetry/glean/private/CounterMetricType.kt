@@ -4,6 +4,11 @@
 
 package mozilla.telemetry.glean.private
 
+import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
+import mozilla.telemetry.glean.internal.CounterMetric
+import mozilla.telemetry.glean.testing.ErrorType
+
 /**
  * This implements the developer facing API for recording counter metrics.
  *
@@ -13,4 +18,48 @@ package mozilla.telemetry.glean.private
  * The counter API only exposes the [add] method, which takes care of validating the input
  * data and making sure that limits are enforced.
  */
-typealias CounterMetricType = mozilla.telemetry.glean.internal.CounterMetric
+class CounterMetricType {
+    lateinit var inner: CounterMetric
+
+    constructor(meta: CommonMetricData) {
+        Dispatchers.Delayed.launch {
+            inner = CounterMetric(meta)
+        }
+    }
+
+    constructor(metric: CounterMetric) {
+        inner = metric
+    }
+
+    /**
+     * Increases the counter by `amount`.
+     *
+     * @param amount The amount to increase by. Should be positive.
+     */
+    fun add(amount: Int = 1) {
+        Dispatchers.Delayed.launch {
+            inner.add(amount)
+        }
+    }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return the stored value for the counter
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @JvmOverloads
+    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+
+    /**
+     * Returns the number of errors recorded for the given metric.
+     *
+     * @param errorType The type of error to get the error count of
+     * @return the number of errors recorded for the metric.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+}

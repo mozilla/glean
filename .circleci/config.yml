@@ -151,8 +151,8 @@ commands:
           name: Install missing Android SDK & NDK
           command: |
             sdkmanager \
-              "build-tools;35.0.0" \
-              "ndk;28.1.13356709"
+              "build-tools;36.0.0" \
+              "ndk;28.2.13676358"
 
   android-setup:
     steps:
@@ -311,7 +311,7 @@ jobs:
 
   Lint YAML with yamllint:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
     steps:
       - checkout
       - run: pip install yamllint
@@ -699,13 +699,6 @@ jobs:
           name: Python lints
           command: make lint-python
 
-  Python 3_8 tests:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - test-python
-
   Python 3_9 tests:
     docker:
       - image: cimg/python:3.9
@@ -803,7 +796,7 @@ jobs:
 
   pypi-source-release:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
     steps:
       - install-rustup
       - setup-rust-toolchain
@@ -811,7 +804,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp39-cp39/bin:$PATH' >> $BASH_ENV
       - run:
           name: Setup Python env
           command: |
@@ -825,7 +818,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.8/bin/python3 -m twine upload target/wheels/*
+            .venv3.9/bin/python3 -m twine upload target/wheels/*
 
   pypi-linux-release:
     docker:
@@ -842,7 +835,7 @@ jobs:
       - run:
           name: Setup default Python version
           command: |
-            echo 'export PATH=/opt/python/cp38-cp38/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/opt/python/cp39-cp39/bin:$PATH' >> $BASH_ENV
       - run:
           name: Setup Python env
           command: |
@@ -856,7 +849,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.8/bin/python3 -m twine upload target/wheels/*
+            .venv3.9/bin/python3 -m twine upload target/wheels/*
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -941,7 +934,7 @@ jobs:
 
   pypi-windows-x86_64-release:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.9
     steps:
       - checkout
       - build-windows-x86_64-wheel
@@ -950,7 +943,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.8/bin/python3 -m twine upload target/wheels/*
+            .venv3.9/bin/python3 -m twine upload target/wheels/*
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -1082,8 +1075,6 @@ workflows:
           filters:
             branches:
               only: main
-      - Python 3_8 tests:
-          filters: *ci-filters
       - Python 3_9 tests:
           filters: *ci-filters
       - Python 3_9 on Alpine tests:
@@ -1149,27 +1140,27 @@ workflows:
 
   release:
     jobs:
-      - Python 3_8 tests:
+      - Python 3_9 tests:
           filters: *release-filters
       - pypi-source-release:
           requires:
-            - Python 3_8 tests
+            - Python 3_9 tests
           filters: *release-filters
       - pypi-linux-release:
           requires:
-            - Python 3_8 tests
+            - Python 3_9 tests
           filters: *release-filters
       - pypi-linux-aarch64-release:
           requires:
-            - Python 3_8 tests
+            - Python 3_9 tests
           filters: *release-filters
       - pypi-macos-release:
           requires:
-            - Python 3_8 tests
+            - Python 3_9 tests
           filters: *release-filters
       - pypi-windows-x86_64-release:
           requires:
-            - Python 3_8 tests
+            - Python 3_9 tests
           filters: *release-filters
       - iOS build and test:
           filters: *release-filters

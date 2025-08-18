@@ -1,14 +1,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* This file is based on the tests in the Glean android-components implentation.
+package mozilla.telemetry.glean.private
+
+/* This file is based on the tests in the Glean android-components implementation.
  *
  * Care should be taken to not reorder elements in this file so it will be easier
  * to track changes in Glean android-components.
  */
-
-package mozilla.telemetry.glean.private
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,7 +22,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class StringListMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

@@ -21,6 +21,7 @@ use serde_json::Value as JsonValue;
 
 use glean::net;
 use glean::ConfigurationBuilder;
+use glean_core::TestGetValue;
 
 pub mod metrics {
     #![allow(non_upper_case_globals)]

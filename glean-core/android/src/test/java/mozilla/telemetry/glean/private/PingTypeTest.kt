@@ -24,6 +24,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class PingTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 
@@ -105,6 +105,62 @@ class PingTypeTest {
         assertNotNull(pingJson.getJSONObject("client_info")["locale"])
 
         checkPingSchema(pingJson)
+    }
+
+    @Test
+    fun `test testBeforeNextSubmit handles exceptions`() {
+        val server = getMockWebServer()
+
+        val context = getContext()
+        delayMetricsPing(context)
+        resetGlean(
+            context,
+            Glean.configuration.copy(
+                serverEndpoint = "http://" + server.hostName + ":" + server.port,
+            ),
+        )
+
+        val customPing = PingType<NoReasonCodes>(
+            name = "custom",
+            includeClientId = true,
+            sendIfEmpty = false,
+            preciseTimestamps = true,
+            includeInfoSections = true,
+            enabled = true,
+            schedulesPings = emptyList(),
+            reasonCodes = listOf(),
+            followsCollectionEnabled = true,
+            uploaderCapabilities = emptyList(),
+        )
+
+        val counter = CounterMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "test",
+                lifetime = Lifetime.APPLICATION,
+                name = "counter",
+                sendInPings = listOf("custom"),
+            ),
+        )
+
+        counter.add()
+        assertEquals(1, counter.testGetValue())
+
+        var job = customPing.testBeforeNextSubmit { _ ->
+            assertTrue(true)
+        }
+
+        customPing.submit()
+        // This works as expected
+        job.join()
+
+        // This throws an AssertionError, that `join` rethrows
+        job = customPing.testBeforeNextSubmit { _ ->
+            assertNotNull(null)
+        }
+
+        customPing.submit()
+        assertThrows(AssertionError::class.java) { job.join() }
     }
 
     @Test
@@ -315,7 +371,12 @@ class PingTypeTest {
 
         val pingJson = JSONObject(request.getPlainBody())
         assertNull(pingJson.getJSONObject("client_info").opt("client_id"))
-        assertNull(pingJson.optJSONObject("metrics")?.optJSONObject("string")?.opt("glean.client.annotation.experimentation_id"))
+        assertNull(
+            pingJson
+                .optJSONObject("metrics")
+                ?.optJSONObject("string")
+                ?.opt("glean.client.annotation.experimentation_id"),
+        )
         checkPingSchema(pingJson)
     }
 

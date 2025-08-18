@@ -61,14 +61,17 @@ the details of which are reproduced below.
     <name>Apache License 2.0: android-tzdata</name>
     <url>https://github.com/RumovZ/android-tzdata</url>
   </license>  <license>
-    <name>Apache License 2.0: rinja</name>
-    <url>https://github.com/rinja-rs/rinja</url>
+    <name>Apache License 2.0: askama</name>
+    <url>https://github.com/askama-rs/askama</url>
   </license>  <license>
-    <name>Apache License 2.0: rinja_derive</name>
-    <url>https://github.com/rinja-rs/rinja</url>
+    <name>Apache License 2.0: askama_derive</name>
+    <url>https://github.com/askama-rs/askama</url>
   </license>  <license>
-    <name>Apache License 2.0: rinja_parser</name>
-    <url>https://github.com/rinja-rs/rinja</url>
+    <name>Apache License 2.0: askama_parser</name>
+    <url>https://github.com/askama-rs/askama</url>
+  </license>  <license>
+    <name>Apache License 2.0: iana-time-zone</name>
+    <url>https://github.com/strawlab/iana-time-zone</url>
   </license>  <license>
     <name>Apache License 2.0: iana-time-zone</name>
     <url>https://github.com/strawlab/iana-time-zone</url>
@@ -94,6 +97,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: env_logger</name>
     <url>https://github.com/rust-cli/env_logger/</url>
   </license>  <license>
+    <name>Apache License 2.0: equivalent</name>
+    <url>https://github.com/indexmap-rs/equivalent</url>
+  </license>  <license>
     <name>Apache License 2.0: errno</name>
     <url>https://github.com/lambda-fairy/rust-errno</url>
   </license>  <license>
@@ -109,6 +115,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: glob</name>
     <url>https://github.com/rust-lang/glob</url>
   </license>  <license>
+    <name>Apache License 2.0: hashbrown</name>
+    <url>https://github.com/rust-lang/hashbrown</url>
+  </license>  <license>
     <name>Apache License 2.0: heck</name>
     <url>https://github.com/withoutboats/heck</url>
   </license>  <license>
@@ -117,6 +126,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: idna</name>
     <url>https://github.com/servo/rust-url/</url>
+  </license>  <license>
+    <name>Apache License 2.0: indexmap</name>
+    <url>https://github.com/indexmap-rs/indexmap</url>
   </license>  <license>
     <name>Apache License 2.0: lazy_static</name>
     <url>https://github.com/rust-lang-nursery/lazy-static.rs</url>
@@ -129,9 +141,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: malloc_size_of_derive</name>
     <url>https://github.com/bholley/malloc_size_of_derive</url>
-  </license>  <license>
-    <name>Apache License 2.0: mime</name>
-    <url>https://github.com/hyperium/mime</url>
   </license>  <license>
     <name>Apache License 2.0: num-traits</name>
     <url>https://github.com/rust-num/num-traits</url>
@@ -156,9 +165,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: toml</name>
     <url>https://github.com/toml-rs/toml</url>
-  </license>  <license>
-    <name>Apache License 2.0: unicase</name>
-    <url>https://github.com/seanmonstar/unicase</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-bidi</name>
     <url>https://github.com/servo/unicode-bidi</url>
@@ -219,9 +225,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: miniz_oxide</name>
     <url>https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide</url>
-  </license>  <license>
-    <name>Apache License 2.0: paste</name>
-    <url>https://github.com/dtolnay/paste</url>
   </license>  <license>
     <name>Apache License 2.0: proc-macro2</name>
     <url>https://github.com/dtolnay/proc-macro2</url>
@@ -316,8 +319,8 @@ the details of which are reproduced below.
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
   </license>  <license>
-    <name>MIT License: byteorder</name>
-    <url>https://github.com/BurntSushi/byteorder</url>
+    <name>MIT License: winnow</name>
+    <url>https://github.com/winnow-rs/winnow</url>
   </license>  <license>
     <name>MIT License: memchr</name>
     <url>https://github.com/BurntSushi/memchr</url>
@@ -336,9 +339,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
-  </license>  <license>
-    <name>MIT License: mime_guess</name>
-    <url>https://github.com/abonander/mime_guess</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
@@ -377,6 +377,9 @@ the details of which are reproduced below.
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_meta</name>
+    <url>https://github.com/mozilla/uniffi-rs</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: uniffi_pipeline</name>
     <url>https://github.com/mozilla/uniffi-rs</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: uniffi_udl</name>

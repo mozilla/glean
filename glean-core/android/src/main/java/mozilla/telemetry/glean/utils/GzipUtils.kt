@@ -14,6 +14,5 @@ import java.util.zip.GZIPInputStream
  * @param data the gzipped [ByteArray] to decompress
  * @return a [String] containing the uncompressed data.
  */
-fun decompressGZIP(data: ByteArray): String {
-    return GZIPInputStream(ByteArrayInputStream(data)).bufferedReader().use(BufferedReader::readText)
-}
+fun decompressGZIP(data: ByteArray): String =
+    GZIPInputStream(ByteArrayInputStream(data)).bufferedReader().use(BufferedReader::readText)

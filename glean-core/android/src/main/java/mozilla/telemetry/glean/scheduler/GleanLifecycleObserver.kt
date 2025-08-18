@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package mozilla.telemetry.glean.scheduler
 
@@ -17,7 +17,10 @@ internal class GleanLifecycleObserver : LifecycleEventObserver {
     /**
      * Called when lifecycle events are triggered.
      */
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event,
+    ) {
         when (event) {
             Lifecycle.Event.ON_STOP -> {
                 Glean.handleBackgroundEvent()

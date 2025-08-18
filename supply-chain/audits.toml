@@ -13,7 +13,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi]]
@@ -35,7 +35,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_bindgen]]
@@ -57,7 +57,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_build]]
@@ -79,7 +79,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_checksum_derive]]
@@ -101,7 +101,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_core]]
@@ -130,7 +130,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_macros]]
@@ -152,7 +152,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-08-31"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_meta]]
@@ -174,7 +174,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2022-05-05"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_testing]]
@@ -225,7 +225,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 48 # Jan-Erik Rediger (badboy)
 start = "2021-03-03"
-end = "2025-08-05"
+end = "2026-07-02"
 notes = "Maintained by me"
 
 [[audits.anyhow]]
@@ -367,6 +367,12 @@ criteria = "safe-to-deploy"
 delta = "0.7.1 -> 0.8.0"
 notes = "MSRV bump, no unsafe changes"
 
+[[audits.indexmap]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "2.8.0 -> 2.9.0"
+notes = "Doc update, a new API, one carefully annotated unsafe code block with all preconditions checked"
+
 [[audits.inherent]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -473,6 +479,12 @@ who = "Kagami Sascha Rosylight <krosylight@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.18.4 -> 0.19.0"
 notes = "Maintained by Mozilla, no addition of unsafe blocks"
+
+[[audits.rkv]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.19.0 -> 0.20.0"
+notes = "Removed all LMDB-specific code, added malloc_size_of integration"
 
 [[audits.rustversion]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -625,6 +637,12 @@ criteria = "safe-to-deploy"
 delta = "1.1.0 -> 1.2.0"
 notes = "Added a file lock on the created directory"
 
+[[trusted.hashbrown]]
+criteria = "safe-to-deploy"
+user-id = 55123 # rust-lang-owner
+start = "2025-04-30"
+end = "2026-06-10"
+
 [[trusted.inherent]]
 criteria = "safe-to-deploy"
 user-id = 3618 # David Tolnay (dtolnay)
@@ -684,6 +702,18 @@ criteria = "safe-to-deploy"
 user-id = 3618 # David Tolnay (dtolnay)
 start = "2019-03-01"
 end = "2026-06-18"
+
+[[trusted.thiserror]]
+criteria = "safe-to-deploy"
+user-id = 3618 # David Tolnay (dtolnay)
+start = "2019-10-09"
+end = "2026-06-10"
+
+[[trusted.thiserror-impl]]
+criteria = "safe-to-deploy"
+user-id = 3618 # David Tolnay (dtolnay)
+start = "2019-10-09"
+end = "2026-06-10"
 
 [[trusted.wasm-bindgen]]
 criteria = "safe-to-deploy"
@@ -768,3 +798,9 @@ criteria = "safe-to-deploy"
 user-id = 64539 # Kenny Kerr (kennykerr)
 start = "2022-09-01"
 end = "2026-06-18"
+
+[[trusted.winnow]]
+criteria = "safe-to-deploy"
+user-id = 6743 # Ed Page (epage)
+start = "2023-02-22"
+end = "2026-06-10"

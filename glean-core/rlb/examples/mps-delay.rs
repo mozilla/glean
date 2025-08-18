@@ -15,7 +15,7 @@ use std::{env, thread};
 
 use flate2::read::GzDecoder;
 use glean::net;
-use glean::{ClientInfoMetrics, ConfigurationBuilder};
+use glean::{ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
 
 /// A timing_distribution
 mod metrics {

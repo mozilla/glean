@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.UuidMetric
 import java.util.UUID
 
@@ -18,19 +19,41 @@ import java.util.UUID
  *
  * The internal constructor is only used by [LabeledMetricType] directly.
  */
-class UuidMetricType(meta: CommonMetricData) {
-    val inner = UuidMetric(meta)
+class UuidMetricType(
+    private var meta: CommonMetricData,
+) {
+    val inner: UuidMetric by lazy { UuidMetric(meta) }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmOverloads
-    fun testGetValue(pingName: String? = null): UUID? {
-        return inner.testGetValue(pingName)?.let { UUID.fromString(it) }
+    /**
+     * Sets to the specified value.
+     *
+     * @param value A UUID type with the value to record
+     */
+    fun set(value: UUID) {
+        Dispatchers.Delayed.launch {
+            inner.set(value.toString())
+        }
     }
 
-    fun set(value: UUID) = inner.set(value.toString())
-
+    /**
+     * Generates a new random uuid and sets the metric to it.
+     *
+     * @return the generated UUID
+     */
     fun generateAndSet(): UUID {
-        val uuid = inner.generateAndSet()
-        return UUID.fromString(uuid)
+        val uuid = UUID.randomUUID()
+        this.set(uuid)
+        return uuid
     }
+
+    /**
+     * Returns the stored value for testing purposes only. This function will attempt to await the
+     * last task (if any) writing to the the metric's storage engine before returning a value.
+     *
+     * @param pingName represents the name of the ping to retrieve the metric for.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
+     * @return value of the stored UUID
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun testGetValue(pingName: String? = null): UUID? = inner.testGetValue(pingName)?.let { UUID.fromString(it) }
 }

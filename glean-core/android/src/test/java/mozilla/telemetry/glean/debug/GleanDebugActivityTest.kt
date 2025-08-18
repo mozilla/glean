@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class GleanDebugActivityTest {
-
     private val testPackageName = "mozilla.telemetry.glean.test"
 
     @get:Rule

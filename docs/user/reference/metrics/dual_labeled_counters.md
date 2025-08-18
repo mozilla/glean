@@ -16,6 +16,10 @@ If no amount is passed it defaults to `1`.
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -25,8 +29,26 @@ glean_upload::failures.get("metrics", "recoverable network error").add(1); // Ad
 glean_upload::failures.get("baseline", "4xx").add(3); // Adds 3 to the "baseline: 4xx" counter.
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+mozilla::glean::glean_upload::failures.Get("metrics"_ns, "recoverable network error"_ns).Add(1);
+mozilla::glean::glean_upload::failures.Get("baseline"_ns, "4xx"_ns).Add(3);
+```
+
+**JavaScript**
+
+```js
+Glean.gleanUpload.failures.get("metrics", "recoverable network error").add(1);
+Glean.gleanUpload.failures.get("baseline", "4xx").add(3);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -63,18 +85,59 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
 use glean_metrics::glean_upload;
 
+let values = glean_upload::failures.test_get_value(None).unwrap();
 // Do the counters have the expected values?
-assert_eq!(1, glean_upload::failures.get("metrics", "recoverable network error").test_get_value().unwrap());
-assert_eq!(3, glean_upload::failures.get("baseline", "4xx").test_get_value().unwrap());
+assert_eq!(1, values.get("metrics").unwrap().get("recoverable network error").unwrap());
+assert_eq!(3, values.get("baseline").unwrap().get("4xx").unwrap());
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```cpp
+#include "mozilla/glean/GleanMetrics.h"
+
+ASSERT_EQ(1,
+          mozilla::glean::glean_upload::failures.Get("metrics"_ns, "recoverable network error"_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+ASSERT_EQ(3,
+          mozilla::glean::glean_upload::failures.Get("baseline"_ns, "4xx"_ns)
+              .TestGetValue()
+              .unwrap()
+              .ref());
+```
+
+**JavaScript**
+
+```js
+Assert.equal(
+  1,
+  Glean.gleanUpload.failures
+    .get("metrics", "recoverable network error")
+    .testGetValue()
+);
+Assert.equal(
+  3,
+  Glean.gleanUpload.failures
+    .get("baseline", "4xx")
+    .testGetValue()
+);
+```
+</div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -84,6 +147,10 @@ Gets the number of errors recorded for a given labeled counter metric in total.
 
 {{#include ../../../shared/tab_header.md}}
 
+<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Java" class="tab"></div>
+<div data-lang="Swift" class="tab"></div>
+<div data-lang="Python" class="tab"></div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -100,8 +167,9 @@ assert_eq!(
 );
 ```
 </div>
+<div data-lang="JavaScript" class="tab"></div>
 
-<div data-lang="Firefox Desktop" class="tab"></div>
+<div data-lang="Firefox Desktop" class="tab" data-info="Firefox Desktop uses testGetValue to communicate errors"></div>
 
 {{#include ../../../shared/tab_footer.md}}
 
@@ -125,7 +193,7 @@ glean_upload:
     dual_labels:
       key:
         description: The ping associated with the upload failure
-        labels: 
+        labels:
           - baseline
           - events
           - metrics

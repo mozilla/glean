@@ -20,7 +20,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @Serializable
-data class BalloonsObject(var items: MutableList<BalloonsObjectItem> = mutableListOf()) : ObjectSerialize {
+data class BalloonsObject(
+    var items: MutableList<BalloonsObjectItem> = mutableListOf(),
+) : ObjectSerialize {
     fun add(elem: BalloonsObjectItem) = items.add(elem)
 
     fun addAll(elements: Collection<BalloonsObjectItem>) = items.addAll(elements)
@@ -28,22 +30,27 @@ data class BalloonsObject(var items: MutableList<BalloonsObjectItem> = mutableLi
     fun clear() = items.clear()
 
     fun remove(element: BalloonsObjectItem) = items.remove(element)
+
     fun removeAll(elements: Collection<BalloonsObjectItem>) = items.removeAll(elements)
+
     fun removeAt(index: Int) = items.removeAt(index)
 
-    fun set(index: Int, element: BalloonsObjectItem) = items.set(index, element)
+    fun set(
+        index: Int,
+        element: BalloonsObjectItem,
+    ) = items.set(index, element)
 
-    override fun intoSerializedObject(): String {
-        return Json.encodeToString(items)
-    }
+    override fun intoSerializedObject(): String = Json.encodeToString(items)
 }
 
 @Serializable
-data class BalloonsObjectItem(var colour: String? = null, var diameter: Int? = null)
+data class BalloonsObjectItem(
+    var colour: String? = null,
+    var diameter: Int? = null,
+)
 
 @RunWith(AndroidJUnit4::class)
 class ObjectMetricTypeTest {
-
     @get:Rule
     val gleanRule = GleanTestRule(ApplicationProvider.getApplicationContext())
 

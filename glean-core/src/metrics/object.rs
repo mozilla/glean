@@ -10,8 +10,8 @@ use crate::metrics::JsonValue;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
 use crate::storage::StorageManager;
-use crate::CommonMetricData;
 use crate::Glean;
+use crate::{CommonMetricData, TestGetValue};
 
 /// An object metric.
 ///
@@ -129,18 +129,6 @@ impl ObjectMetric {
         }
     }
 
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Gets the currently stored value as JSON.
-    ///
-    /// This doesn't clear the stored value.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
-        crate::block_on_dispatcher();
-        let value = crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()));
-        // We only store valid JSON
-        value.map(|val| serde_json::from_str(&val).unwrap())
-    }
-
     /// **Exported for test purposes.**
     ///
     /// Gets the number of recorded errors for the given metric and error type.
@@ -160,5 +148,19 @@ impl ObjectMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<JsonValue> for ObjectMetric {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Gets the currently stored value as JSON.
+    ///
+    /// This doesn't clear the stored value.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
+        crate::block_on_dispatcher();
+        let value = crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()));
+        // We only store valid JSON
+        value.map(|val| serde_json::from_str(&val).unwrap())
     }
 }

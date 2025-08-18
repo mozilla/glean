@@ -1,6 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package mozilla.telemetry.glean.private
 
@@ -29,9 +29,7 @@ interface EventExtras {
  * that an [EventMetricType] can accept.
  */
 class NoExtras : EventExtras {
-    override fun toExtraRecord(): Map<String, String> {
-        return emptyMap()
-    }
+    override fun toExtraRecord(): Map<String, String> = emptyMap()
 }
 
 /**
@@ -71,14 +69,12 @@ class EventMetricType<ExtraObject> constructor(
      * last task (if any) writing to the the metric's storage engine before returning a value.
      *
      * @param pingName represents the name of the ping to retrieve the metric for.
-     *                 Defaults to the first value in `sendInPings`.
+     *                 Defaults to the first ping listed in `send_in_pings` in the metric definition.
      * @return value of the stored events
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null): List<RecordedEvent>? {
-        return inner.testGetValue(pingName)
-    }
+    fun testGetValue(pingName: String? = null): List<RecordedEvent>? = inner.testGetValue(pingName)
 
     /**
      * Returns the number of errors recorded for the given metric.

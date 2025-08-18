@@ -9,8 +9,8 @@ use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorTy
 use crate::event_database::RecordedEvent;
 use crate::metrics::MetricType;
 use crate::util::truncate_string_at_boundary_with_error;
-use crate::CommonMetricData;
 use crate::Glean;
+use crate::{CommonMetricData, TestGetValue};
 
 use chrono::Utc;
 
@@ -192,21 +192,6 @@ impl EventMetric {
         })
     }
 
-    /// **Test-only API (exported for FFI purposes).**
-    ///
-    /// Get the vector of currently stored events for this event metric.
-    ///
-    /// This doesn't clear the stored value.
-    ///
-    /// # Arguments
-    ///
-    /// * `ping_name` - the optional name of the ping to retrieve the metric
-    ///                 for. Defaults to the first value in `send_in_pings`.
-    pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
-        crate::block_on_dispatcher();
-        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
-    }
-
     /// **Exported for test purposes.**
     ///
     /// Gets the number of recorded errors for the given metric and error type.
@@ -224,5 +209,22 @@ impl EventMetric {
         crate::core::with_glean(|glean| {
             test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
         })
+    }
+}
+
+impl TestGetValue<Vec<RecordedEvent>> for EventMetric {
+    /// **Test-only API (exported for FFI purposes).**
+    ///
+    /// Get the vector of currently stored events for this event metric.
+    ///
+    /// This doesn't clear the stored value.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping_name` - the optional name of the ping to retrieve the metric
+    ///                 for. Defaults to the first value in `send_in_pings`.
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
+        crate::block_on_dispatcher();
+        crate::core::with_glean(|glean| self.get_value(glean, ping_name.as_deref()))
     }
 }
