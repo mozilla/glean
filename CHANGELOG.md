@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.0...main)
+
+# v65.0.0 (2025-08-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...v65.0.0)
 
 * General
   * Performance improvement: Reduce file system operations when recording events ([#3179](https://github.com/mozilla/glean/pull/3179))
