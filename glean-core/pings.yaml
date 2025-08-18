@@ -108,7 +108,8 @@ health:
     The purpose of the health ping is to transport all of the health
     metric information. The `health` ping is automatically sent when the
     application calls Glean initialize before any operations are done on
-    the data path.
+    the data path with a reason of `pre_init`, and once after Glean
+    initialization with a reason of `post_init`.
   include_client_id: true
   bugs:
     - https://bugzilla.mozilla.org/1667815
@@ -118,10 +119,12 @@ health:
   notification_emails:
     - glean-team@mozilla.com
   reasons:
-    startup: |
-      The ping was submitted at startup. The health ping is always sent at
-      startup, because health metrics are intended to capture data about the
-      startup process itself.
+    pre_init: |
+      The ping was submitted before Glean initialization with the state of
+      Glean's data directories prior to rkv opening files on the data path.
+    post_init: |
+      The ping was submitted after Glean initialization with the state of
+      Glean's data directories after rkv opened files on the data path.
 
 deletion-request:
   description: |
