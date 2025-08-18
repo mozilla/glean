@@ -18,10 +18,11 @@
 
 use std::borrow::Cow;
 use std::collections::HashMap;
-use std::fmt;
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
+use std::time::{Duration, UNIX_EPOCH};
+use std::{fmt, fs};
 
 use crossbeam_channel::unbounded;
 use log::LevelFilter;
@@ -65,6 +66,7 @@ pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, Distributio
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 pub use crate::histogram::HistogramType;
+use crate::internal_metrics::DataDirectoryInfoObject;
 pub use crate::metrics::labeled::{
     AllowLabeled, LabeledBoolean, LabeledCounter, LabeledCustomDistribution,
     LabeledMemoryDistribution, LabeledMetric, LabeledMetricData, LabeledQuantity, LabeledString,
@@ -394,6 +396,8 @@ fn initialize_inner(
             log::set_max_level(level)
         }
 
+        let dir_info = collect_directory_info(Path::new(&cfg.data_path.clone()));
+
         let glean = match Glean::new(cfg) {
             Ok(glean) => glean,
             Err(err) => {
@@ -557,6 +561,21 @@ fn initialize_inner(
             Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
         }
 
+        if !dispatcher::global::is_test_mode() {
+            core::with_glean(|glean| {
+                glean
+                    .health_metrics
+                    .data_directory_info
+                    .set_sync(glean, dir_info.unwrap_or(serde_json::json!({})));
+            });
+            // Submit the health ping.
+            core::with_glean(|glean| {
+                glean
+                    .internal_pings
+                    .health
+                    .submit_sync(glean, Some("startup"));
+            });
+        }
         let state = global_state().lock().unwrap();
         state.callbacks.initialize_finished();
     })
@@ -1357,6 +1376,106 @@ pub fn glean_enable_logging_to_fd(fd: u64) {
         if log::set_logger(logger).is_ok() {
             log::set_max_level(log::LevelFilter::Debug);
         }
+    }
+}
+
+/// Collects information about the data directories used by FOG.
+fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
+    // List of child directories to check
+    let subdirs = ["db", "events", "pending_pings"];
+    let mut directories_info: crate::internal_metrics::DataDirectoryInfoObject =
+        DataDirectoryInfoObject::new();
+
+    for subdir in subdirs.iter() {
+        let dir_path = path.join(subdir);
+
+        // Initialize a DataDirectoryInfoObjectItem for each directory
+        let mut directory_info = crate::internal_metrics::DataDirectoryInfoObjectItem {
+            dir_name: Some(subdir.to_string()),
+            dir_exists: None,
+            dir_created: None,
+            dir_modified: None,
+            file_count: None,
+            files: Vec::new(),
+        };
+
+        // Check if the directory exists
+        if dir_path.is_dir() {
+            directory_info.dir_exists = Some(true);
+
+            // Get directory metadata
+            if let Ok(metadata) = fs::metadata(&dir_path) {
+                if let Ok(created) = metadata.created() {
+                    directory_info.dir_created = Some(
+                        created
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64,
+                    );
+                }
+                if let Ok(modified) = metadata.modified() {
+                    directory_info.dir_modified = Some(
+                        modified
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64,
+                    );
+                }
+            }
+
+            // Read the directory's contents
+            let mut file_count = 0;
+            for entry in fs::read_dir(&dir_path).unwrap() {
+                let entry = entry.unwrap();
+                let metadata = entry.metadata().unwrap();
+
+                // Check if the entry is a file
+                if metadata.is_file() {
+                    file_count += 1;
+
+                    // Collect file details
+                    let file_size = metadata.len() as i64;
+                    let modified_time = metadata
+                        .modified()
+                        .unwrap_or(UNIX_EPOCH)
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or(Duration::ZERO)
+                        .as_secs() as i64;
+
+                    let creation_time = metadata
+                        .created()
+                        .unwrap_or(UNIX_EPOCH)
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or(Duration::ZERO)
+                        .as_secs() as i64;
+                    let file_name = entry.file_name().to_string_lossy().to_string();
+
+                    let file_info =
+                        crate::internal_metrics::DataDirectoryInfoObjectItemItemFilesItem {
+                            file_name: Some(file_name),
+                            file_created: Some(creation_time),
+                            file_modified: Some(modified_time),
+                            file_size: Some(file_size),
+                        };
+
+                    directory_info.files.push(file_info);
+                }
+            }
+
+            directory_info.file_count = Some(file_count as i64);
+        } else {
+            directory_info.dir_exists = Some(false);
+        }
+
+        // Add the directory info to the final collection
+        directories_info.push(directory_info);
+    }
+
+    if let Ok(directories_info_json) = serde_json::to_value(directories_info) {
+        Some(directories_info_json)
+    } else {
+        log::error!("Failed to serialize data directory info");
+        None
     }
 }
 

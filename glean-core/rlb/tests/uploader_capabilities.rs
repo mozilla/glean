@@ -87,6 +87,8 @@ fn interruptible_shutdown() {
         .with_use_core_mps(false)
         .with_uploader(ReportingUploader { sender: tx })
         .build();
+
+    glean_core::glean_set_test_mode(true);
     common::initialize(cfg);
 
     pings::no_capabilities.submit(None);

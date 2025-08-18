@@ -613,6 +613,9 @@ glean.error:
       Only sent if the buffer ever overflows.
 
       In Version 0 this reported the total number of tasks enqueued.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1609482
     data_reviews:
@@ -630,6 +633,9 @@ glean.error:
     description: |
       The number of times we encountered an IO error
       when writing a pending ping to disk.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1686233
     data_reviews:
@@ -655,6 +661,9 @@ glean.upload:
       - "unrecoverable"
       - "recoverable"
       - "incapable"
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1589124
     data_reviews:
@@ -672,6 +681,9 @@ glean.upload:
     description: |
       The size of pings that exceeded the maximum ping size allowed for upload.
     memory_unit: kilobyte
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1597761
     data_reviews:
@@ -690,6 +702,9 @@ glean.upload:
       The size of the pending pings directory upon initialization of Glean.
       This does not include the size of the deletion request pings directory.
     memory_unit: kilobyte
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550
     data_reviews:
@@ -710,6 +725,9 @@ glean.upload:
       Since quota is only calculated for the pending pings directory,
       and deletion request ping live in a different directory,
       deletion request pings are never deleted.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1601550
     data_reviews:
@@ -727,6 +745,9 @@ glean.upload:
     description: |
       The total number of pending pings at startup.
       This does not include deletion-request pings.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1665041
     data_reviews:
@@ -745,6 +766,9 @@ glean.upload:
     time_unit: millisecond
     description: |
       Time needed for a successful send of a ping to the servers and getting a reply back
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
     data_reviews:
@@ -761,6 +785,9 @@ glean.upload:
     time_unit: millisecond
     description: |
       Time needed for a failed send of a ping to the servers and getting a reply back.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
     data_reviews:
@@ -776,6 +803,9 @@ glean.upload:
     type: counter
     description: |
       How many pings were dropped because we found them already in-flight.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1816401
     data_reviews:
@@ -793,6 +823,9 @@ glean.upload:
       How many ping upload responses did we not record as a success or failure
       (in `glean.upload.send_success` or `glean.upload.send_failue`,
       respectively) due to an inconsistency in our internal bookkeeping?
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1816400
     data_reviews:
@@ -810,6 +843,9 @@ glean.database:
     description: |
       The size of the database file at startup.
     memory_unit: byte
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1656589
     data_reviews:
@@ -824,6 +860,9 @@ glean.database:
     type: string
     description: |
       If there was an error loading the RKV database, record it.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1815253
     data_reviews:
@@ -839,6 +878,9 @@ glean.database:
     time_unit: microsecond
     description: |
       The time it takes for a write-commit for the Glean database.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1896193
     data_reviews:
@@ -884,6 +926,7 @@ glean.validation:
     send_in_pings:
       - metrics
       - baseline
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1586764
     data_reviews:
@@ -970,3 +1013,76 @@ glean.ping:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
+
+glean.health:
+  data_directory_info:
+      type: object
+      description: |
+        Information about the data directories and files used by FOG.
+
+        Structure is an array of objects, each containing the following properties:
+        - `dir_name`: The name of the directory. This is the subdirectory name relative to the
+          FOG data directory and should only include "db", "events", and "pending_pings".
+        - `dir_exists`: Whether the directory exists. This should only be false on the first
+          run of FOG, or if the directory was deleted.
+        - `dir_created`: The creation time of the directory, in seconds since the unix epoch. If
+          the directory does not exist, this will be `null` and if the time cannot be determined,
+          it will default to `0`.
+        - `dir_modified`: The last modification time of the directory, in seconds since the unix
+          epoch. If the directory does not exist, this will be `null` and if the time cannot be
+          determined, it will default to `0`.
+        - `file_count`: The number of files in the directory. If the directory does not exist,
+          this will be `0`.
+        - `files`: An array of objects, each containing:
+          - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
+            A uuid representing the doc-id of a pending ping.
+          - `file_created`: The creation time of the file, in seconds since the epoch. If the
+            file does not exist, this will be `null` and if the time cannot be determined, it
+            will default to `0`.
+          - `file_modified`: The last modification time of the file, in seconds since the epoch.
+            If the file does not exist, this will be `null` and if the time cannot be determined,
+            it will default to `0`.
+          - `file_size`: The size of the file in bytes. This can be just about any size but a
+            `0` value indicates the file is empty.
+      notification_emails:
+        - glean-team@mozilla.org
+        - tlong@mozilla.com
+      bugs:
+        - https://bugzilla.mozilla.org/1667815
+        - https://bugzilla.mozilla.org/1982711
+      data_reviews:
+        - https://bugzilla.mozilla.org/1982711
+      data_sensitivity:
+        - technical
+      expires: never
+      send_in_pings:
+        - health
+        - metrics
+      structure:
+        type: array
+        items:
+          type: object
+          properties:
+            dir_name:
+              type: string
+            dir_exists:
+              type: boolean
+            dir_created:
+              type: number
+            dir_modified:
+              type: number
+            file_count:
+              type: number
+            files:
+              type: array
+              items:
+                type: object
+                properties:
+                  file_name:
+                    type: string
+                  file_created:
+                    type: number
+                  file_modified:
+                    type: number
+                  file_size:
+                    type: number
