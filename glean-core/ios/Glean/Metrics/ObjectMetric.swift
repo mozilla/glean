@@ -5,16 +5,44 @@
 /// An object that can be serialized into JSON.
 ///
 /// Objects are defined by their structure in the metrics definition.
-public protocol ObjectSerialize: Codable, Decodable {
+public protocol ObjectSerialize: Decodable {
     func intoSerializedObject() -> String
 }
 
-extension Array: ObjectSerialize where Element: Codable {
+extension Array: ObjectSerialize where Element: ObjectSerialize {
+    public func intoSerializedObject() -> String {
+        var json = "["
+        var first = true
+        for elem in self {
+            if !first {
+                json.append(",")
+            }
+            first = false
+            json.append(elem.intoSerializedObject())
+        }
+        json.append("]")
+        return json
+    }
+}
+
+extension String: ObjectSerialize {
     public func intoSerializedObject() -> String {
         let jsonEncoder = JSONEncoder()
         let jsonData = try! jsonEncoder.encode(self)
         let json = String(data: jsonData, encoding: String.Encoding.utf8)!
         return json
+    }
+}
+
+extension Bool: ObjectSerialize {
+    public func intoSerializedObject() -> String {
+        return self ? "true" : "false"
+    }
+}
+
+extension Int64: ObjectSerialize {
+    public func intoSerializedObject() -> String {
+        return String(self)
     }
 }
 
