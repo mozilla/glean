@@ -5,9 +5,26 @@
 @testable import Glean
 import XCTest
 
-struct BalloonsObjectItem: Codable, Equatable {
+struct BalloonsObjectItem: Decodable, Equatable, ObjectSerialize {
     var colour: String?
-    var diameter: Int?
+    var diameter: Int64?
+
+    func intoSerializedObject() -> String {
+        var data: [String] = []
+        if let val = self.colour {
+            var elem = "\"colour\":"
+            elem.append(val.intoSerializedObject())
+            data.append(elem)
+        }
+        if let val = self.diameter {
+            var elem = "\"diameter\":"
+            elem.append(val.intoSerializedObject())
+            data.append(elem)
+        }
+        let obj = data.joined(separator: ",")
+        let json = "{" + obj + "}"
+        return json
+    }
 }
 
 typealias BalloonsObject = [BalloonsObjectItem]
