@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.0...main)
 
+* Kotlin
+  * Lock access to the internal dispatcher to ensure correct order of operations.
+    Previously a race condition could lead to early metric recordings throwing an exception and crashing the application ([#3228](https://github.com/mozilla/glean/pull/3228))
+
 # v65.0.0 (2025-08-18)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...v65.0.0)
