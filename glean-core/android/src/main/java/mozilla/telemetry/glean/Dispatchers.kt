@@ -63,7 +63,11 @@ internal object Dispatchers {
          * If [queueInitialTasks] is false the block is executed synchronously.
          */
         fun launch(block: () -> Unit) {
-            if (queueInitialTasks.get()) {
+            val queueTasks = synchronized(this) {
+                queueInitialTasks.get()
+            }
+
+            if (queueTasks) {
                 addTaskToQueue(block)
             } else {
                 block()
@@ -81,20 +85,16 @@ internal object Dispatchers {
         internal fun flushQueuedInitialTasks() {
             val dispatcherObject = this
 
-            queueInitialTasks.set(false)
-
-            // Nothing should be added to this list. However, the flush could get called
-            // while a `addTaskToQueue` is being executed. For this reason, we need synchronized
-            // access to the queue. However, we can't simply wrap the task execution in a sync
-            // block: suspending functions are not allowed inside critical sections.
             val queueCopy: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
             synchronized(dispatcherObject) {
                 queueCopy.addAll(taskQueue)
                 taskQueue.clear()
-            }
 
-            queueCopy.forEach { task ->
-                task()
+                queueCopy.forEach { task ->
+                    task()
+                }
+
+                queueInitialTasks.set(false)
             }
         }
 
