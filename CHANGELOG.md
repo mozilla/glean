@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...main)
 
+* General
+  * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
