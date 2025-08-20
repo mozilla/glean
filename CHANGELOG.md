@@ -4,6 +4,7 @@
 
 * General
   * Added a Glean Health ping which collects telemetry health data into a single ping sent before and after initialization in order to track issues with Glean storage files and other telemetry health characteristics. ([#3221](https://github.com/mozilla/glean/pull/3221))
+  * Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
 
 # v65.0.3 (2025-09-02)
 
