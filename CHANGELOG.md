@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...main)
 
+* General
+  * Pings on a ping schedule now get submitted even if the related ping might be disabled ([#3226](https://github.com/mozilla/glean/pull/3226))
+
 # v64.5.4 (2025-07-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...v64.5.4)
