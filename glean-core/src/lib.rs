@@ -1481,8 +1481,6 @@ fn record_dir_info_and_submit_health_ping(dir_info: Option<serde_json::Value>, r
             .health_metrics
             .data_directory_info
             .set_sync(glean, dir_info.unwrap_or(serde_json::json!({})));
-    });
-    core::with_glean(|glean| {
         glean.internal_pings.health.submit_sync(glean, Some(reason));
     });
 }
