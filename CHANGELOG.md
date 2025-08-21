@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.1...main)
+
+# v65.0.1 (2025-08-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.0...v65.0.1)
 
 * Kotlin
   * Lock access to the internal dispatcher to ensure correct order of operations.
