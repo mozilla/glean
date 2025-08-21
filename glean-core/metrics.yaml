@@ -943,6 +943,9 @@ glean.validation:
     time_unit: millisecond
     description: |
       Time waited for the uploader at shutdown.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1814592
     data_reviews:
@@ -960,6 +963,9 @@ glean.validation:
     description: |
       Time waited for the dispatcher to unblock during shutdown.
       Most samples are expected to be below the 10s timeout used.
+    send_in_pings:
+      - metrics
+      - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1828066
     data_reviews:
@@ -1016,73 +1022,73 @@ glean.ping:
 
 glean.health:
   data_directory_info:
-      type: object
-      description: |
-        Information about the data directories and files used by FOG.
+    type: object
+    description: |
+      Information about the data directories and files used by FOG.
 
-        Structure is an array of objects, each containing the following properties:
-        - `dir_name`: The name of the directory. This is the subdirectory name relative to the
-          FOG data directory and should only include "db", "events", and "pending_pings".
-        - `dir_exists`: Whether the directory exists. This should only be false on the first
-          run of FOG, or if the directory was deleted.
-        - `dir_created`: The creation time of the directory, in seconds since the unix epoch. If
-          the directory does not exist, this will be `null` and if the time cannot be determined,
+      Structure is an array of objects, each containing the following properties:
+      - `dir_name`: The name of the directory. This is the subdirectory name relative to the
+        FOG data directory and should only include "db", "events", and "pending_pings".
+      - `dir_exists`: Whether the directory exists. This should only be false on the first
+        run of FOG, or if the directory was deleted.
+      - `dir_created`: The creation time of the directory, in seconds since the unix epoch. If
+        the directory does not exist, this will be `null` and if the time cannot be determined,
+        it will default to `0`.
+      - `dir_modified`: The last modification time of the directory, in seconds since the unix
+        epoch. If the directory does not exist, this will be `null` and if the time cannot be
+        determined, it will default to `0`.
+      - `file_count`: The number of files in the directory. If the directory does not exist,
+        this will be `0`.
+      - `files`: An array of objects, each containing:
+        - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
+          A uuid representing the doc-id of a pending ping.
+        - `file_created`: The creation time of the file, in seconds since the epoch. If the
+          file does not exist, this will be `null` and if the time cannot be determined, it
+          will default to `0`.
+        - `file_modified`: The last modification time of the file, in seconds since the epoch.
+          If the file does not exist, this will be `null` and if the time cannot be determined,
           it will default to `0`.
-        - `dir_modified`: The last modification time of the directory, in seconds since the unix
-          epoch. If the directory does not exist, this will be `null` and if the time cannot be
-          determined, it will default to `0`.
-        - `file_count`: The number of files in the directory. If the directory does not exist,
-          this will be `0`.
-        - `files`: An array of objects, each containing:
-          - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
-            A uuid representing the doc-id of a pending ping.
-          - `file_created`: The creation time of the file, in seconds since the epoch. If the
-            file does not exist, this will be `null` and if the time cannot be determined, it
-            will default to `0`.
-          - `file_modified`: The last modification time of the file, in seconds since the epoch.
-            If the file does not exist, this will be `null` and if the time cannot be determined,
-            it will default to `0`.
-          - `file_size`: The size of the file in bytes. This can be just about any size but a
-            `0` value indicates the file is empty.
-      notification_emails:
-        - glean-team@mozilla.org
-        - tlong@mozilla.com
-      bugs:
-        - https://bugzilla.mozilla.org/1667815
-        - https://bugzilla.mozilla.org/1982711
-      data_reviews:
-        - https://bugzilla.mozilla.org/1982711
-      data_sensitivity:
-        - technical
-      expires: never
-      send_in_pings:
-        - health
-        - metrics
-      structure:
-        type: array
-        items:
-          type: object
-          properties:
-            dir_name:
-              type: string
-            dir_exists:
-              type: boolean
-            dir_created:
-              type: number
-            dir_modified:
-              type: number
-            file_count:
-              type: number
-            files:
-              type: array
-              items:
-                type: object
-                properties:
-                  file_name:
-                    type: string
-                  file_created:
-                    type: number
-                  file_modified:
-                    type: number
-                  file_size:
-                    type: number
+        - `file_size`: The size of the file in bytes. This can be just about any size but a
+          `0` value indicates the file is empty.
+    notification_emails:
+      - glean-team@mozilla.org
+      - tlong@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1667815
+      - https://bugzilla.mozilla.org/1982711
+    data_reviews:
+      - https://bugzilla.mozilla.org/1982711
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+      - metrics
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          dir_name:
+            type: string
+          dir_exists:
+            type: boolean
+          dir_created:
+            type: number
+          dir_modified:
+            type: number
+          file_count:
+            type: number
+          files:
+            type: array
+            items:
+              type: object
+              properties:
+                file_name:
+                  type: string
+                file_created:
+                  type: number
+                file_modified:
+                  type: number
+                file_size:
+                  type: number
