@@ -14118,6 +14118,14 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v65.0.0...main">Full changelog</a></p>
+<ul>
+<li>Kotlin
+<ul>
+<li>Lock access to the internal dispatcher to ensure correct order of operations.
+Previously a race condition could lead to early metric recordings throwing an exception and crashing the application (<a href="https://github.com/mozilla/glean/pull/3228">#3228</a>)</li>
+</ul>
+</li>
+</ul>
 <h1 id="v6500-2025-08-18"><a class="header" href="#v6500-2025-08-18">v65.0.0 (2025-08-18)</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v64.5.4...v65.0.0">Full changelog</a></p>
 <ul>
