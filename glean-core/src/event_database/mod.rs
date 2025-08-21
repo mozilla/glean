@@ -641,6 +641,15 @@ impl EventDatabase {
         result
     }
 
+    pub fn sync_event_data(&self) {
+        let files = self.event_store_files.read().unwrap();
+        for (name, file) in &*files {
+            if let Err(e) = file.sync_all() {
+                log::error!("Failed to sync event data for {name}: {e}");
+            }
+        }
+    }
+
     /// Clears all stored events, both in memory and on-disk.
     pub fn clear_all(&self) -> Result<()> {
         // safe unwrap, only error case is poisoning
