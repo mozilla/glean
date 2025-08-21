@@ -1013,6 +1013,68 @@ so you should be able to configure it by simply adding the path to the Glean rep
 <p>See <a href="android/gradle-plugin-in-mc.html">Replacing the Glean Gradle plugin in mozilla-central</a>.<br />
 For replacing <code>glean_parser</code> in a local build, see <a href="android/glean-parser-substitution.html">Substituting <code>glean_parser</code></a>.</p>
 </blockquote>
+<h2 id="manual-mavenlocal"><a class="header" href="#manual-mavenlocal">Manual <code>mavenLocal()</code></a></h2>
+<p>If the <a href="android/development-with-mozilla-central.html#substituting-projects">Substituting projects</a> does not work you can manually switch to using <code>mavenLocal()</code>.</p>
+<p>In the Glean repository:</p>
+<ol>
+<li>Bump the version: <code>bin/prepare-release.sh 65.1.0</code>
+<ul>
+<li>Only increase the minor version to ensure it works transitively</li>
+</ul>
+</li>
+<li>Publish the Gradle project locally: <code>./gradlew publishToMavenLocal</code></li>
+<li>Check that the packages are available in <code>~/.m2/repository</code></li>
+</ol>
+<p>In <code>mozilla-central</code>:</p>
+<ol>
+<li>In <code>gradle.properties</code> remove the line <code>org.gradle.configuration-cache=true</code>
+<ul>
+<li>Alternatively use <code>--no-build-cache --no-configuration-cache</code> on all Gradle invocations when building Fenix/Focus</li>
+</ul>
+</li>
+<li>In <code>gradle/libs.versions.toml</code> change the version of <code>mozilla-glean</code></li>
+<li>In the top-level <code>build.gradle</code> add <code>mavenLocal()</code> to the <code>repositories</code> block under <code>allprojects</code>, e.g.
+<pre><code class="language-gradle">allprojects {
+    repositories {
+        mavenLocal()
+    }
+}
+</code></pre>
+</li>
+<li>Further down in the top-level <code>build.gradle</code> disable the check in <code>verifyGleanVersion</code>, e.g.
+<pre><code class="language-gradle">@TaskAction
+void verifyGleanVersion() {
+}
+</code></pre>
+</li>
+</ol>
+<p>Now you can build Fenix or Focus, for example with <code>./mach gradle fenix:assembleFenixDebug</code>.
+After changes in the Glean repository publish a new package using <code>./gradlew publishToMavenLocal</code> and rebuild Fenix.</p>
+<h2 id="try-runs-with-development-versions-of-glean"><a class="header" href="#try-runs-with-development-versions-of-glean">Try runs with development versions of Glean</a></h2>
+<p>Publish Glean to the local maven repository as above.</p>
+<p>In <code>mozilla-central</code>:</p>
+<ol>
+<li>Create a directory: <code>mkdir -p third_party/kotlin</code></li>
+<li>Add the local packages: <code>cp -a ~/.m2/repository/* third_party/kotlin</code></li>
+<li>Commit the new files: <code>git add third_party/kotlin &amp;&amp; git commit -m &quot;dev glean from local repo&quot;</code></li>
+<li>Change the version number in <code>gradle/libs.versions.toml</code></li>
+<li>Add the following under <code>repositories </code>to the top-level <code>build.gradle</code> and nested <code>build.gradle</code> files:
+<pre><code class="language-gradle">maven {
+   url uri(&quot;${gradle.mozconfig.topsrcdir}/third_party/kotlin&quot;)
+}
+</code></pre>
+</li>
+</ol>
+<p>The nested <code>build.gradle</code> files are:</p>
+<ul>
+<li><code>mobile/android/fenix/build.gradle</code></li>
+<li><code>mobile/android/focus-android/build.gradle</code></li>
+<li><code>mobile/android/android-components/build.gradle</code></li>
+</ul>
+<p>You can now launch try tasks with the modified Glean.</p>
+<p>After changes in the Glean repository publish a new package using <code>./gradlew publishToMavenLocal</code>,
+then copy the files again with <code>cp -a ~/.m2/repository/* third_party/kotlin</code>.
+Commit the changes and push to try again.</p>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/dev/android/development-with-mozilla-central.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="replacing-the-glean-gradle-plugin-in-mozilla-central"><a class="header" href="#replacing-the-glean-gradle-plugin-in-mozilla-central">Replacing the Glean Gradle plugin in mozilla-central</a></h1>
 <blockquote>
 <p><strong>Note</strong>: If you only need to replace the <code>glean_parser</code> Python parts used in the build see <a href="android/glean-parser-substitution.html">Substituting <code>glean_parser</code></a>.
