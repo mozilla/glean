@@ -4,15 +4,6 @@ Binary distributions of this software incorporate code from a number of third-pa
 These dependencies are available under a variety of free and open source licenses,
 the details of which are reproduced below.
 -->  <license>
-    <name>Apache License 2.0: num-conv</name>
-    <url>https://github.com/jhpratt/num-conv</url>
-  </license>  <license>
-    <name>Apache License 2.0: powerfmt</name>
-    <url>https://github.com/jhpratt/powerfmt</url>
-  </license>  <license>
-    <name>Apache License 2.0: deranged</name>
-    <url>https://github.com/jhpratt/deranged</url>
-  </license>  <license>
     <name>Apache License 2.0: rkv</name>
     <url>https://github.com/mozilla/rkv</url>
   </license>  <license>
@@ -49,6 +40,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: windows_x86_64_gnu</name>
     <url>https://github.com/microsoft/windows-rs</url>
   </license>  <license>
+    <name>Apache License 2.0: winapi</name>
+    <url>https://github.com/retep998/winapi-rs</url>
+  </license>  <license>
     <name>Apache License 2.0: crc32fast</name>
     <url>https://github.com/srijs/rust-crc32fast</url>
   </license>  <license>
@@ -69,9 +63,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: askama_parser</name>
     <url>https://github.com/askama-rs/askama</url>
-  </license>  <license>
-    <name>Apache License 2.0: iana-time-zone</name>
-    <url>https://github.com/strawlab/iana-time-zone</url>
   </license>  <license>
     <name>Apache License 2.0: iana-time-zone</name>
     <url>https://github.com/strawlab/iana-time-zone</url>
@@ -262,17 +253,14 @@ the details of which are reproduced below.
     <name>Apache License 2.0: thiserror</name>
     <url>https://github.com/dtolnay/thiserror</url>
   </license>  <license>
-    <name>Apache License 2.0: time-core</name>
-    <url>https://github.com/time-rs/time</url>
-  </license>  <license>
-    <name>Apache License 2.0: time</name>
-    <url>https://github.com/time-rs/time</url>
-  </license>  <license>
     <name>Apache License 2.0: tinyvec_macros</name>
     <url>https://github.com/Soveu/tinyvec_macros</url>
   </license>  <license>
     <name>Apache License 2.0: unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
+  </license>  <license>
+    <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
+    <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
