@@ -20,7 +20,7 @@ datapath=$(mktemp -d "${tmp}/glean_long_running.XXXX")
 cargo run -p glean --example long-running -- "$datapath"
 count=$(ls -1q "$datapath/pending_pings" | wc -l)
 
-if [[ "$count" -eq 0 ]]; then
+if [[ "$count" -eq 2 ]]; then # Only one ping, the "health" ping is expected but it is sent twice
   echo "test result: ok."
   exit 0
 else
