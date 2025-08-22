@@ -468,11 +468,22 @@ def test_set_application_id_and_version(safe_httpserver):
     _builtins.pings.baseline.submit()
     wait_for_requests(safe_httpserver)
 
-    assert 1 == len(safe_httpserver.requests)
+    # Expect 3 total requests: 1 baseline + 2 health
+    assert 3 == len(safe_httpserver.requests)
 
-    request = safe_httpserver.requests[0]
-    assert "baseline" in request.url
-    assert "my-id" in request.url
+    # Extract all ping URLs
+    ping_urls = [req.url for req in safe_httpserver.requests]
+
+    # Verify ping counts
+    baseline_pings = [url for url in ping_urls if "baseline" in url]
+    health_pings = [url for url in ping_urls if "health" in url]
+
+    assert len(baseline_pings) == 1
+    assert len(health_pings) == 2
+
+    # All requests should include the application id
+    for url in ping_urls:
+        assert "my-id" in url
 
 
 def test_disabling_upload_sends_deletion_request(safe_httpserver):
