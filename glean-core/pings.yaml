@@ -115,7 +115,7 @@ health:
     - https://bugzilla.mozilla.org/1667815
     - https://bugzilla.mozilla.org/1982711
   data_reviews:
-    - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
   notification_emails:
     - glean-team@mozilla.com
   reasons:
