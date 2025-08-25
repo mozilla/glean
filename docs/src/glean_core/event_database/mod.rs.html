@@ -1356,16 +1356,19 @@
 <a href="#1356" id="1356">1356</a>
 <a href="#1357" id="1357">1357</a>
 <a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 </span><span class="kw">use </span>std::cmp::Ordering;
+<span class="kw">use </span>std::collections::hash_map::Entry;
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::fs::{create_dir_all, File, OpenOptions};
-<span class="kw">use </span>std::io::BufRead;
 <span class="kw">use </span>std::io::BufReader;
 <span class="kw">use </span>std::io::Write;
+<span class="kw">use </span>std::io::{<span class="self">self</span>, BufRead};
 <span class="kw">use </span>std::path::{Path, PathBuf};
 <span class="kw">use </span>std::sync::{Arc, Mutex, RwLock};
 <span class="kw">use </span>std::{fs, mem};
@@ -1702,22 +1705,23 @@
         </span>}
     }
 
-    <span class="kw">fn </span>get_event_store(<span class="kw-2">&amp;</span><span class="self">self</span>, store_name: <span class="kw-2">&amp;</span>str) -&gt; Arc&lt;File&gt; {
-        Arc::clone(
-            <span class="self">self</span>.event_store_files
-                .write()
-                .unwrap()
-                .entry(store_name.to_string())
-                .or_insert_with(|| {
-                    Arc::new(
-                        OpenOptions::new()
-                            .create(<span class="bool-val">true</span>)
-                            .append(<span class="bool-val">true</span>)
-                            .open(<span class="self">self</span>.path.join(store_name))
-                            .unwrap(),
-                    )
-                }),
-        )
+    <span class="kw">fn </span>get_event_store(<span class="kw-2">&amp;</span><span class="self">self</span>, store_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;File&gt;, io::Error&gt; {
+        <span class="comment">// safe unwrap, only error case is poisoning
+        </span><span class="kw">let </span><span class="kw-2">mut </span>map = <span class="self">self</span>.event_store_files.write().unwrap();
+        <span class="kw">let </span>entry = map.entry(store_name.to_string());
+
+        <span class="kw">match </span>entry {
+            Entry::Occupied(entry) =&gt; <span class="prelude-val">Ok</span>(Arc::clone(entry.get())),
+            Entry::Vacant(entry) =&gt; {
+                <span class="kw">let </span>file = OpenOptions::new()
+                    .create(<span class="bool-val">true</span>)
+                    .append(<span class="bool-val">true</span>)
+                    .open(<span class="self">self</span>.path.join(store_name))<span class="question-mark">?</span>;
+                <span class="kw">let </span>file = Arc::new(file);
+                <span class="kw">let </span>entry = entry.insert(file);
+                <span class="prelude-val">Ok</span>(Arc::clone(entry))
+            }
+        }
     }
 
     <span class="doccomment">/// Writes an event to a single store on disk.
@@ -1728,9 +1732,9 @@
     /// * `event_json` - The event content, as a single-line JSON-encoded string.
     </span><span class="kw">fn </span>write_event_to_disk(<span class="kw-2">&amp;</span><span class="self">self</span>, store_name: <span class="kw-2">&amp;</span>str, event_json: <span class="kw-2">&amp;</span>str) {
         <span class="kw">let </span>_lock = <span class="self">self</span>.file_lock.lock().unwrap(); <span class="comment">// safe unwrap, only error case is poisoning
-        </span><span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.get_event_store(store_name);
 
-        <span class="kw">let </span>write_res = (|| {
+        </span><span class="kw">let </span>write_res = (|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.get_event_store(store_name)<span class="question-mark">?</span>;
             file.write_all(event_json.as_bytes())<span class="question-mark">?</span>;
             file.write_all(<span class="string">b"\n"</span>)<span class="question-mark">?</span>;
             file.flush()<span class="question-mark">?</span>;
