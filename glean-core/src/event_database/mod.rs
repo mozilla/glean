@@ -3,11 +3,12 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::cmp::Ordering;
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::fs::{create_dir_all, File, OpenOptions};
-use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
+use std::io::{self, BufRead};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, RwLock};
 use std::{fs, mem};
@@ -344,22 +345,23 @@ impl EventDatabase {
         }
     }
 
-    fn get_event_store(&self, store_name: &str) -> Arc<File> {
-        Arc::clone(
-            self.event_store_files
-                .write()
-                .unwrap()
-                .entry(store_name.to_string())
-                .or_insert_with(|| {
-                    Arc::new(
-                        OpenOptions::new()
-                            .create(true)
-                            .append(true)
-                            .open(self.path.join(store_name))
-                            .unwrap(),
-                    )
-                }),
-        )
+    fn get_event_store(&self, store_name: &str) -> Result<Arc<File>, io::Error> {
+        // safe unwrap, only error case is poisoning
+        let mut map = self.event_store_files.write().unwrap();
+        let entry = map.entry(store_name.to_string());
+
+        match entry {
+            Entry::Occupied(entry) => Ok(Arc::clone(entry.get())),
+            Entry::Vacant(entry) => {
+                let file = OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(self.path.join(store_name))?;
+                let file = Arc::new(file);
+                let entry = entry.insert(file);
+                Ok(Arc::clone(entry))
+            }
+        }
     }
 
     /// Writes an event to a single store on disk.
@@ -370,9 +372,9 @@ impl EventDatabase {
     /// * `event_json` - The event content, as a single-line JSON-encoded string.
     fn write_event_to_disk(&self, store_name: &str, event_json: &str) {
         let _lock = self.file_lock.lock().unwrap(); // safe unwrap, only error case is poisoning
-        let mut file = self.get_event_store(store_name);
 
         let write_res = (|| {
+            let mut file = self.get_event_store(store_name)?;
             file.write_all(event_json.as_bytes())?;
             file.write_all(b"\n")?;
             file.flush()?;

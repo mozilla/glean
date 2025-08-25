@@ -4,6 +4,7 @@
 
 * General
   * Pings on a ping schedule now get submitted even if the related ping might be disabled ([#3226](https://github.com/mozilla/glean/pull/3226))
+  * Gracefully handle inability to open the event storage file ([#3232](https://github.com/mozilla/glean/pull/3232))
 
 # v65.0.1 (2025-08-21)
 

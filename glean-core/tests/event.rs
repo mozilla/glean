@@ -588,3 +588,36 @@ fn with_event_timestamps() {
         .expect("glean_timestamp should be an integer");
     assert_eq!(12345, glean_timestamp);
 }
+
+#[test]
+fn doesnt_crash_on_inaccessible_event_store_file() {
+    let store_names = vec!["store1".into(), "store2".into()];
+
+    let (glean, t) = new_glean(None);
+
+    // put a directory in the way of the event storage file
+    let event_path = t.path().join("events").join("store1");
+    fs::create_dir_all(&event_path).unwrap();
+
+    let metric = EventMetric::new(
+        CommonMetricData {
+            name: "test_event_no_optional".into(),
+            category: "telemetry".into(),
+            send_in_pings: store_names.clone(),
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec![],
+    );
+
+    metric.record_sync(&glean, 1000, HashMap::new(), 0);
+
+    for store_name in store_names {
+        let events = metric.get_value(&glean, &*store_name).unwrap();
+        assert_eq!(1, events.len());
+        assert_eq!("telemetry", events[0].category);
+        assert_eq!("test_event_no_optional", events[0].name);
+        assert!(events[0].extra.is_none());
+    }
+}
