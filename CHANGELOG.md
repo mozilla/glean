@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...main)
+
+# v65.0.2 (2025-08-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.1...v65.0.2)
 
 * General
   * Pings on a ping schedule now get submitted even if the related ping might be disabled ([#3226](https://github.com/mozilla/glean/pull/3226))
