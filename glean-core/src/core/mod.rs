@@ -15,7 +15,7 @@ use once_cell::sync::OnceCell;
 use crate::database::Database;
 use crate::debug::DebugOptions;
 use crate::event_database::EventDatabase;
-use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
+use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics, HealthMetrics};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{
     self, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment, RemoteSettingsConfig,
@@ -156,6 +156,7 @@ pub struct Glean {
     pub(crate) core_metrics: CoreMetrics,
     pub(crate) additional_metrics: AdditionalMetrics,
     pub(crate) database_metrics: DatabaseMetrics,
+    pub(crate) health_metrics: HealthMetrics,
     pub(crate) internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
@@ -218,6 +219,7 @@ impl Glean {
             core_metrics: CoreMetrics::new(),
             additional_metrics: AdditionalMetrics::new(),
             database_metrics: DatabaseMetrics::new(),
+            health_metrics: HealthMetrics::new(),
             internal_pings: InternalPings::new(cfg.enable_internal_pings),
             upload_manager,
             data_path: PathBuf::from(&cfg.data_path),
@@ -241,6 +243,7 @@ impl Glean {
         this.register_ping_type(&pings.baseline);
         this.register_ping_type(&pings.metrics);
         this.register_ping_type(&pings.events);
+        this.register_ping_type(&pings.health);
         this.register_ping_type(&pings.deletion_request);
 
         Ok(this)
