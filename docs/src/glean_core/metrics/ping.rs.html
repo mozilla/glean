@@ -415,6 +415,12 @@
 <a href="#415" id="415">415</a>
 <a href="#416" id="416">416</a>
 <a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -699,15 +705,6 @@
     /// Whether the ping was succesfully assembled and queued.
     </span><span class="attr">#[doc(hidden)]
     </span><span class="kw">pub fn </span>submit_sync(<span class="kw-2">&amp;</span><span class="self">self</span>, glean: <span class="kw-2">&amp;</span>Glean, reason: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; bool {
-        <span class="kw">if </span>!<span class="self">self</span>.enabled(glean) {
-            <span class="macro">log::info!</span>(
-                <span class="string">"The ping '{}' is disabled and will be discarded and not submitted"</span>,
-                <span class="self">self</span>.<span class="number">0</span>.name
-            );
-
-            <span class="kw">return </span><span class="bool-val">false</span>;
-        }
-
         <span class="kw">let </span>ping = <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>;
 
         <span class="comment">// Allowing `clippy::manual_filter`.
@@ -728,10 +725,21 @@
             <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
         };
 
+        <span class="kw">if </span>!<span class="self">self</span>.enabled(glean) {
+            <span class="macro">log::info!</span>(
+                <span class="string">"The ping '{}' is disabled and will be discarded and not submitted"</span>,
+                <span class="self">self</span>.<span class="number">0</span>.name
+            );
+
+            <span class="self">self</span>.handle_ping_schedule(glean, ping, reason);
+            <span class="kw">return </span><span class="bool-val">false</span>;
+        }
+
         <span class="kw">let </span>ping_maker = PingMaker::new();
         <span class="kw">let </span>doc_id = Uuid::new_v4().to_string();
         <span class="kw">let </span>url_path = glean.make_path(<span class="kw-2">&amp;</span>ping.name, <span class="kw-2">&amp;</span>doc_id);
-        <span class="kw">match </span>ping_maker.collect(glean, <span class="self">self</span>, corrected_reason, <span class="kw-2">&amp;</span>doc_id, <span class="kw-2">&amp;</span>url_path) {
+        <span class="kw">let </span>submitted = <span class="kw">match </span>ping_maker.collect(glean, <span class="self">self</span>, corrected_reason, <span class="kw-2">&amp;</span>doc_id, <span class="kw-2">&amp;</span>url_path)
+        {
             <span class="prelude-val">None </span>=&gt; {
                 <span class="macro">log::info!</span>(
                     <span class="string">"No content for ping '{}', therefore no ping queued."</span>,
@@ -739,16 +747,15 @@
                 );
                 <span class="bool-val">false
             </span>}
+            <span class="prelude-val">Some</span>(ping) <span class="kw">if </span>!<span class="self">self</span>.enabled(glean) =&gt; {
+                <span class="macro">log::info!</span>(
+                    <span class="string">"The ping '{}' is disabled and will be discarded and not submitted"</span>,
+                    ping.name
+                );
+
+                <span class="bool-val">false
+            </span>}
             <span class="prelude-val">Some</span>(ping) =&gt; {
-                <span class="kw">if </span>!<span class="self">self</span>.enabled(glean) {
-                    <span class="macro">log::info!</span>(
-                        <span class="string">"The ping '{}' is disabled and will be discarded and not submitted"</span>,
-                        ping.name
-                    );
-
-                    <span class="kw">return </span><span class="bool-val">false</span>;
-                }
-
                 <span class="kw">const </span>BUILTIN_PINGS: [<span class="kw-2">&amp;</span>str; <span class="number">4</span>] =
                     [<span class="string">"baseline"</span>, <span class="string">"metrics"</span>, <span class="string">"events"</span>, <span class="string">"deletion-request"</span>];
 
@@ -798,37 +805,42 @@
                     ping.name
                 );
 
-                <span class="kw">if </span>ping.schedules_pings.is_empty() {
-                    <span class="kw">let </span>ping_schedule = glean
-                        .ping_schedule
-                        .get(ping.name)
-                        .map(|v| <span class="kw-2">&amp;</span>v[..])
-                        .unwrap_or(<span class="kw-2">&amp;</span>[]);
-
-                    <span class="kw">if </span>!ping_schedule.is_empty() {
-                        <span class="macro">log::info!</span>(
-                            <span class="string">"The ping '{}' is being used to schedule other pings: {:?}"</span>,
-                            ping.name,
-                            ping_schedule
-                        );
-
-                        <span class="kw">for </span>scheduled_ping_name <span class="kw">in </span>ping_schedule {
-                            glean.submit_ping_by_name(scheduled_ping_name, reason);
-                        }
-                    }
-                } <span class="kw">else </span>{
-                    <span class="macro">log::info!</span>(
-                        <span class="string">"The ping '{}' is being used to schedule other pings: {:?}"</span>,
-                        ping.name,
-                        ping.schedules_pings
-                    );
-                    <span class="kw">for </span>scheduled_ping_name <span class="kw">in </span><span class="kw-2">&amp;</span>ping.schedules_pings {
-                        glean.submit_ping_by_name(scheduled_ping_name, reason);
-                    }
-                }
-
                 <span class="bool-val">true
             </span>}
+        };
+
+        <span class="self">self</span>.handle_ping_schedule(glean, ping, reason);
+        submitted
+    }
+
+    <span class="kw">fn </span>handle_ping_schedule(<span class="kw-2">&amp;</span><span class="self">self</span>, glean: <span class="kw-2">&amp;</span>Glean, ping: <span class="kw-2">&amp;</span>InnerPing, reason: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="kw">if </span>ping.schedules_pings.is_empty() {
+            <span class="kw">let </span>ping_schedule = glean
+                .ping_schedule
+                .get(<span class="kw-2">&amp;</span>ping.name)
+                .map(|v| <span class="kw-2">&amp;</span>v[..])
+                .unwrap_or(<span class="kw-2">&amp;</span>[]);
+
+            <span class="kw">if </span>!ping_schedule.is_empty() {
+                <span class="macro">log::info!</span>(
+                    <span class="string">"The ping '{}' is being used to schedule other pings: {:?}"</span>,
+                    ping.name,
+                    ping_schedule
+                );
+
+                <span class="kw">for </span>scheduled_ping_name <span class="kw">in </span>ping_schedule {
+                    glean.submit_ping_by_name(scheduled_ping_name, reason);
+                }
+            }
+        } <span class="kw">else </span>{
+            <span class="macro">log::info!</span>(
+                <span class="string">"The ping '{}' is being used to schedule other pings: {:?}"</span>,
+                ping.name,
+                ping.schedules_pings
+            );
+            <span class="kw">for </span>scheduled_ping_name <span class="kw">in </span><span class="kw-2">&amp;</span>ping.schedules_pings {
+                glean.submit_ping_by_name(scheduled_ping_name, reason);
+            }
         }
     }
 }
