@@ -20,6 +20,12 @@ interface ObjectSerialize {
     fun intoSerializedObject(): String
 }
 
+fun Boolean.intoSerializedObject(): String = Json.encodeToString(this)
+
+fun Int.intoSerializedObject(): String = Json.encodeToString(this)
+
+fun String.intoSerializedObject(): String = Json.encodeToString(this)
+
 /**
  * This implements the developer facing API for the object metric type.
  *
