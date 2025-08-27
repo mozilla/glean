@@ -46,6 +46,14 @@
 * Rust
   * New feature `gecko`. If enabled spawned threads are registered with the Gecko profiler (non-Android only) ([#3212](https://github.com/mozilla/glean/pull/3212))
 
+# v64.5.5 (2025-08-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...v64.5.5)
+
+* General
+  * Pings on a ping schedule now get submitted even if the related ping might be disabled ([#3226](https://github.com/mozilla/glean/pull/3226))
+    (Backported changes)
+
 # v64.5.4 (2025-07-29)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v64.5.3...v64.5.4)
