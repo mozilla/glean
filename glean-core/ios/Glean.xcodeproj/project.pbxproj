@@ -26,6 +26,8 @@
 		60006D2B2E0DB174000C14E3 /* PingUploadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */; };
 		6003AE252E0C6E9400BC8E07 /* PingUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6003AE242E0C6E9400BC8E07 /* PingUploader.swift */; };
 		60691AEB28DD0BF200BDF31A /* BaselinePingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */; };
+		8AF3BEA12E60EC670007A9ED /* PingUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3BEA02E60EC620007A9ED /* PingUploaderTests.swift */; };
+		8AF3BEA32E60EEDD0007A9ED /* makeCapablePingUploadRequestForTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF3BEA22E60EED50007A9ED /* makeCapablePingUploadRequestForTests.swift */; };
 		AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529B26E032E300D92D5E /* QuantityMetric.swift */; };
 		AC06529E26E034BF00D92D5E /* QuantityMetricTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */; };
 		AC1DB401237EF0ED005A0F8A /* Glean.h in Headers */ = {isa = PBXBuildFile; fileRef = BF3DE3942243A2F20018E23F /* Glean.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -105,6 +107,8 @@
 		60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploadScheduler.swift; sourceTree = "<group>"; };
 		6003AE242E0C6E9400BC8E07 /* PingUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploader.swift; sourceTree = "<group>"; };
 		60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BaselinePingTests.swift; path = Net/BaselinePingTests.swift; sourceTree = "<group>"; };
+		8AF3BEA02E60EC620007A9ED /* PingUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingUploaderTests.swift; sourceTree = "<group>"; };
+		8AF3BEA22E60EED50007A9ED /* makeCapablePingUploadRequestForTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = makeCapablePingUploadRequestForTests.swift; sourceTree = "<group>"; };
 		AC06529B26E032E300D92D5E /* QuantityMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetric.swift; sourceTree = "<group>"; };
 		AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuantityMetricTypeTest.swift; sourceTree = "<group>"; };
 		BF10007F23548B0500064051 /* MemoryDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDistributionMetric.swift; sourceTree = "<group>"; };
@@ -379,6 +383,8 @@
 		BF80AA5923992FFB00A8B172 /* Net */ = {
 			isa = PBXGroup;
 			children = (
+				8AF3BEA22E60EED50007A9ED /* makeCapablePingUploadRequestForTests.swift */,
+				8AF3BEA02E60EC620007A9ED /* PingUploaderTests.swift */,
 				60691AEA28DD0BF200BDF31A /* BaselinePingTests.swift */,
 				CD3682F22CAC10FE00B02F04 /* RidealongPingTests.swift */,
 				BF80AA5E2399305200A8B172 /* DeletionRequestPingTests.swift */,
@@ -642,6 +648,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F39E7B3239F0777009B13B3 /* GleanDebugUtilityTests.swift in Sources */,
+				8AF3BEA32E60EEDD0007A9ED /* makeCapablePingUploadRequestForTests.swift in Sources */,
+				8AF3BEA12E60EC670007A9ED /* PingUploaderTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				60691AEB28DD0BF200BDF31A /* BaselinePingTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
