@@ -3,8 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from pathlib import Path
-import json
-import time
 import uuid
 
 from glean import Glean
@@ -133,7 +131,7 @@ def test_invalid_uuid_string():
     assert uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
 
 
-def test_what_looks_like_it_might_be_uuid(tmpdir):
+def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
     import hashlib
 
     Glean._reset()
@@ -206,17 +204,11 @@ def test_what_looks_like_it_might_be_uuid(tmpdir):
     # We check the actual payload to verify how it is encoded.
     _builtins.pings.metrics.submit()
 
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert "metrics" == url_path.split("/")[3]
 
-    json_content = json.loads(serialized_ping)
-    uuids = json_content["metrics"]["uuid"]
+    uuids = payload["metrics"]["uuid"]
 
     assert uuids["c.chksum"] == "39621ca5-f9d2-ef5c-d021-afc9a789535e"
     assert uuids["c.random"] == valid
