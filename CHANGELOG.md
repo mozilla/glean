@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...main)
 
+* Swift
+  * "Swift: BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
+
 # v65.0.2 (2025-08-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.1...v65.0.2)
