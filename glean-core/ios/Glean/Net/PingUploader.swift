@@ -36,7 +36,7 @@ public struct PingUploadRequest {
 }
 
 public struct CapablePingUploadRequest {
-    public let request: PingUploadRequest
+    private let request: PingUploadRequest
 
     init(_ request: PingUploadRequest) {
         self.request = request
