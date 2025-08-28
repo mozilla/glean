@@ -9,7 +9,7 @@ Utilities for writing unit tests involving Glean.
 
 import gzip
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 
 from .._uniffi import glean_set_test_mode, glean_set_log_pings
 from .._uniffi import ErrorType
@@ -73,9 +73,12 @@ class _RecordingUploader(base_uploader.BaseUploader):
     package since it runs in the ping upload worker subprocess.
     """
 
-    def __init__(self, file_path, capabilities=None):
+    _filtered_pings: list[Tuple[str, str]] = []
+
+    def __init__(self, file_path, capabilities=None, filter_string="health"):
         self.file_path = file_path
         self.capabilities = set(capabilities or {})
+        self.filter_string = filter_string
 
     def do_upload(
         self, capable_request: "CapablePingUploadRequest"
@@ -96,6 +99,11 @@ class _RecordingUploader(base_uploader.BaseUploader):
         is_gzipped = headers.get("Content-Encoding", None) == "gzip"
 
         uncompressed_data = gzip.decompress(data) if is_gzipped else data
+
+        if self.filter_string in path:
+            self._filtered_pings.append((str(path), uncompressed_data.decode("utf-8")))
+            return UploadResult.HTTP_STATUS(200)
+
         with self.file_path.open("w") as fd:
             fd.write(str(path) + "\n")
             fd.write(uncompressed_data.decode("utf-8") + "\n")
