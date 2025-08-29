@@ -63,6 +63,7 @@ fn send_a_ping() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Define a new ping and submit it.
@@ -105,6 +106,7 @@ fn send_a_ping_without_info_sections() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Define a new ping and submit it.
@@ -272,6 +274,7 @@ fn sending_of_foreground_background_pings() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Simulate becoming active.
@@ -1078,6 +1081,7 @@ fn setting_source_tags_after_initialization_should_not_crash() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Attempt to set source tags after `Glean.initialize` is called,
@@ -1195,6 +1199,7 @@ fn registering_pings_before_init_must_work() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Submit a test ping.
@@ -1234,6 +1239,7 @@ fn test_a_ping_before_submission() {
         .with_uploader(FakeUploader { sender: s })
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     // Create a custom ping and register it.
@@ -1553,6 +1559,7 @@ fn pings_ride_along_builtin_pings() {
         .with_ping_schedule(ping_schedule)
         .build();
 
+    glean_core::glean_set_test_mode(true);
     let _t = new_glean(Some(cfg), true);
 
     let _ride_along_ping = new_test_ping("ride-along");

@@ -25,16 +25,16 @@ cargo build -p glean --example pending-gets-removed
 cmd="cargo run -q -p glean --example pending-gets-removed -- $datapath"
 
 $cmd 1
-count=$(ls -1q "$datapath/pending_pings" | wc -l)
+count=$(find "$datapath/pending_pings" -name "*-*" -exec grep -e "submit.*\(validation\|nofollows\)" {} ';' | wc -l)
 if [[ "$count" -ne 2 ]]; then
-  echo "1: test result: FAILED."
+  echo "1: test result: FAILED. Expected: 2; Actual: $count"
   exit 101
 fi
 
 $cmd 2
-count=$(ls -1q "$datapath/pending_pings" | wc -l)
+count=$(find "$datapath/pending_pings" -name "*-*" -exec grep -e "submit.*\(validation\|nofollows\)" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
-  echo "2: test result: FAILED."
+  echo "2: test result: FAILED. Expected: 1; Actual: $count"
   exit 101
 fi
 
@@ -44,9 +44,9 @@ if ! grep -q "/submit/glean-pending-removed/nofollows/" "$datapath/pending_pings
 fi
 
 $cmd 3
-count=$(ls -1q "$datapath/pending_pings" | wc -l)
+count=$(find "$datapath/pending_pings" -name "*-*" -exec grep -e "submit.*\(validation\|nofollows\)" {} ';' | wc -l)
 if [[ "$count" -ne 0 ]]; then
-  echo "4: test result: FAILED."
+  echo "4: test result: FAILED. Expected: 0; Actual: $count"
   exit 101
 fi
 

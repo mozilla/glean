@@ -24,7 +24,7 @@ ret=$?
 count=$(ls -1q "$datapath/pending_pings" | wc -l)
 
 # We expect 1 `prototype` ping:
-if [[ $ret -eq 0 ]] && [[ "$count" -eq 1 ]]; then
+if [[ $ret -eq 0 ]] && [[ "$count" -eq 3 ]]; then
   echo "test result: ok."
   exit 0
 else

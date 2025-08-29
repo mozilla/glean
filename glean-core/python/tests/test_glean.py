@@ -298,7 +298,7 @@ def test_get_language_tag_reports_the_tag_for_the_default_locale():
 
 
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
-    tmpdir, ping_schema_url, monkeypatch
+    tmpdir, ping_schema_url, monkeypatch, helpers
 ):
     # Given the following block of code:
     #
@@ -346,24 +346,17 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
     string_metric.set(test_value)
     ping.submit()
 
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert ping_name == url_path.split("/")[3]
 
-    json_content = json.loads(serialized_ping)
-
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping),
+        io.StringIO(json.dumps(payload)),
         sys.stdout,
         schema_url=ping_schema_url,
     )
 
-    assert {"category.string_metric": test_value} == json_content["metrics"]["string"]
+    assert {"category.string_metric": test_value} == payload["metrics"]["string"]
 
 
 def test_basic_metrics_should_be_cleared_when_disabling_uploading():
@@ -466,13 +459,24 @@ def test_set_application_id_and_version(safe_httpserver):
     )
 
     _builtins.pings.baseline.submit()
-    wait_for_requests(safe_httpserver)
+    wait_for_requests(safe_httpserver, 3)
 
-    assert 1 == len(safe_httpserver.requests)
+    # Expect 3 total requests: 1 baseline + 2 health
+    assert 3 == len(safe_httpserver.requests)
 
-    request = safe_httpserver.requests[0]
-    assert "baseline" in request.url
-    assert "my-id" in request.url
+    # Extract all ping URLs
+    ping_urls = [req.url for req in safe_httpserver.requests]
+
+    # Verify ping counts
+    baseline_pings = [url for url in ping_urls if "baseline" in url]
+    health_pings = [url for url in ping_urls if "health" in url]
+
+    assert len(baseline_pings) == 1
+    assert len(health_pings) == 2
+
+    # All requests should include the application id
+    for url in ping_urls:
+        assert "my-id" in url
 
 
 def test_disabling_upload_sends_deletion_request(safe_httpserver):
@@ -513,7 +517,7 @@ def test_configuration_property(safe_httpserver):
     assert "baseline" in request.url
 
 
-def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_url):
+def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_url, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
 
@@ -537,24 +541,17 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
         configuration=Configuration(ping_uploader=_RecordingUploader(info_path)),
     )
 
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert "deletion-request" == url_path.split("/")[3]
 
-    json_content = json.loads(serialized_ping)
-
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping),
+        io.StringIO(json.dumps(payload)),
         sys.stdout,
         schema_url=ping_schema_url,
     )
 
-    assert not json_content["client_info"]["client_id"].startswith("c0ffee")
+    assert not payload["client_info"]["client_id"].startswith("c0ffee")
 
 
 def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, tmpdir):
@@ -585,7 +582,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     assert 0 == len(safe_httpserver.requests)
 
 
-def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url):
+def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
 
@@ -615,18 +612,11 @@ def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_u
         ),
     )
 
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert "deletion-request" == url_path.split("/")[3]
 
-    json_content = json.loads(serialized_ping)
-
-    assert {"glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"} == json_content[
+    assert {"glean.client.annotation.experimentation_id": "alpha-beta-gamma-delta"} == payload[
         "metrics"
     ]["string"]
 
@@ -707,7 +697,7 @@ def test_clear_application_lifetime_metrics(tmpdir):
     assert not metrics.core_ping.seq.test_get_value()
 
 
-def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
+def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch, helpers):
     # Bug 1648140: Submitting a ping prior to initialize meant that the core
     # metrics wouldn't yet be set.
 
@@ -740,17 +730,12 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch):
 
     monkeypatch.setattr(Glean._configuration, "ping_uploader", _RecordingUploader(info_path))
 
-    while not info_path.exists():
-        time.sleep(0.1)
-
-    with info_path.open("r") as fd:
-        url_path = fd.readline()
-        serialized_ping = fd.readline()
+    url_path, payload = helpers.wait_for_ping(info_path)
 
     assert ping_name == url_path.split("/")[3]
 
     assert 0 == validate_ping.validate_ping(
-        io.StringIO(serialized_ping),
+        io.StringIO(json.dumps(payload)),
         sys.stdout,
         schema_url=ping_schema_url,
     )
@@ -1024,7 +1009,7 @@ def test_glean_shutdown(safe_httpserver):
 
     Glean.shutdown()
     wait_for_requests(safe_httpserver, n=10)
-    assert 10 == len(safe_httpserver.requests)
+    assert 12 == len(safe_httpserver.requests)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")
