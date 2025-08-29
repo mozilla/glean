@@ -100,7 +100,9 @@ fn get_pings(pings_dir: &Path) -> Vec<(String, JsonValue, Option<JsonValue>)> {
                 let parsed_metadata = metadata.map(|m| {
                     serde_json::from_str::<JsonValue>(&m).expect("metadata should be valid JSON")
                 });
-                if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
+                if url.contains("health") {
+                    None
+                } else if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
                     Some((url, parsed_body, parsed_metadata))
                 } else {
                     None

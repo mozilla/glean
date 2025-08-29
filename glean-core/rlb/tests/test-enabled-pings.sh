@@ -23,7 +23,7 @@ cargo build -p glean --example enabled-pings
 cmd="cargo run -q -p glean --example enabled-pings -- $datapath"
 
 $cmd default
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*\(one\|two\)" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
   echo "1: test result: FAILED."
   exit 101
@@ -36,7 +36,7 @@ fi
 
 rm -r $datapath
 $cmd enable-both
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*\(one\|two\)" {} ';' | wc -l)
 if [[ "$count" -ne 2 ]]; then
   echo "3: test result: FAILED."
   exit 101
@@ -44,7 +44,7 @@ fi
 
 rm -r $datapath
 $cmd enable-only-two
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*\(one\|two\)" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
   echo "4: test result: FAILED."
   exit 101
