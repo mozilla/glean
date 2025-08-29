@@ -459,7 +459,7 @@ def test_set_application_id_and_version(safe_httpserver):
     )
 
     _builtins.pings.baseline.submit()
-    wait_for_requests(safe_httpserver)
+    wait_for_requests(safe_httpserver, 3)
 
     # Expect 3 total requests: 1 baseline + 2 health
     assert 3 == len(safe_httpserver.requests)
