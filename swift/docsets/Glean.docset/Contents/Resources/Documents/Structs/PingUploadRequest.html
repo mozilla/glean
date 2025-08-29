@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>CounterMetric Class Reference</title>
+    <title>PingUploadRequest Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/CounterMetric" class="dashAnchor"></a>
-    <a title="CounterMetric Class Reference"></a>
+    <a name="//apple_ref/swift/Struct/PingUploadRequest" class="dashAnchor"></a>
+    <a title="PingUploadRequest Structure Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">Glean Docs</a> (23% documented)</p>
@@ -30,9 +30,9 @@
       <p id="breadcrumbs">
         <a href="../index.html">Glean</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        <a href="../Classes.html">Classes</a>
+        <a href="../Structs.html">Structures</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        CounterMetric Class Reference
+        PingUploadRequest Structure Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -603,11 +603,11 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>CounterMetric</h1>
+            <h1>PingUploadRequest</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CounterMetric</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/CounterMetricProtocol.html">CounterMetricProtocol</a></span><span class="p">,</span> <span class="kd">@unchecked</span> <span class="kt">Sendable</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">PingUploadRequest</span></code></pre>
 
                 </div>
               </div>
@@ -620,9 +620,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean13CounterMetricCyAcA06CommonC4DataVcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean13CounterMetricCyAcA06CommonC4DataVcfc">init(_:<wbr>)</a>
+                    <a name="/s:5Glean17PingUploadRequestV3urlSSvp"></a>
+                    <a name="//apple_ref/swift/Property/url" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean17PingUploadRequestV3urlSSvp">url</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -637,7 +637,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">meta</span><span class="p">:</span> <span class="kt"><a href="../Structs/CommonMetricData.html">CommonMetricData</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -647,9 +647,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean13CounterMetricC3addyys5Int32VF"></a>
-                    <a name="//apple_ref/swift/Method/add(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean13CounterMetricC3addyys5Int32VF">add(_:<wbr>)</a>
+                    <a name="/s:5Glean17PingUploadRequestV4dataSays5UInt8VGvp"></a>
+                    <a name="//apple_ref/swift/Property/data" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean17PingUploadRequestV4dataSays5UInt8VGvp">data</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -664,7 +664,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">add</span><span class="p">(</span><span class="n">_</span> <span class="nv">amount</span><span class="p">:</span> <span class="kt">Int32</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[</span><span class="kt">UInt8</span><span class="p">]</span></code></pre>
 
                         </div>
                       </div>
@@ -674,9 +674,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean13CounterMetricC24testGetNumRecordedErrorsys5Int32VAA9ErrorTypeOF"></a>
-                    <a name="//apple_ref/swift/Method/testGetNumRecordedErrors(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean13CounterMetricC24testGetNumRecordedErrorsys5Int32VAA9ErrorTypeOF">testGetNumRecordedErrors(_:<wbr>)</a>
+                    <a name="/s:5Glean17PingUploadRequestV7headersSDyS2SGvp"></a>
+                    <a name="//apple_ref/swift/Property/headers" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean17PingUploadRequestV7headersSDyS2SGvp">headers</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -691,34 +691,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">testGetNumRecordedErrors</span><span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Enums/ErrorType.html">ErrorType</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int32</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5Glean13CounterMetricC12testGetValueys5Int32VSgSSSgF"></a>
-                    <a name="//apple_ref/swift/Method/testGetValue(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean13CounterMetricC12testGetValueys5Int32VSgSSSgF">testGetValue(_:<wbr>)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">testGetValue</span><span class="p">(</span><span class="n">_</span> <span class="nv">pingName</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int32</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">headers</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:5Glean11HeadersLista">HeadersList</a></span></code></pre>
 
                         </div>
                       </div>

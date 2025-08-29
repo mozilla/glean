@@ -3229,6 +3229,41 @@
     },
     {
       "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 5,
+      "symbol": "HeadersList",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 22,
+      "symbol": "PingUploadRequest",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 24,
+      "symbol": "PingUploadRequest.url",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 25,
+      "symbol": "PingUploadRequest.data",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
+      "line": 26,
+      "symbol": "PingUploadRequest.headers",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
       "line": 38,
       "symbol": "CapablePingUploadRequest",
       "symbol_kind": "source.lang.swift.decl.struct",
