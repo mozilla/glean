@@ -51,6 +51,10 @@ impl MovingUploader {
 impl net::PingUploader for MovingUploader {
     fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
         let upload_request = upload_request.capable(|_| true).unwrap();
+        // Filter out uninteristing pings.
+        if upload_request.ping_name != "metrics" {
+            return net::UploadResult::http_status(200);
+        }
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;
@@ -127,10 +131,9 @@ fn main() {
 
     glean::initialize(cfg, client_info);
 
-    // Wait for init to finish,
-    // otherwise we might be to quick with calling `shutdown`.
-    let _ = metrics::boo.test_get_value(None);
     metrics::boo.add(1);
+
+    let _ = metrics::boo.test_get_value(None);
 
     thread::sleep(Duration::from_millis(100));
 

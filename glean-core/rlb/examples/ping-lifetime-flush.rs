@@ -44,6 +44,10 @@ impl MovingUploader {
 impl net::PingUploader for MovingUploader {
     fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
         let upload_request = upload_request.capable(|_| true).unwrap();
+        // Filter out uninteristing pings.
+        if upload_request.ping_name != "prototype" {
+            return net::UploadResult::http_status(200);
+        }
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;
@@ -139,6 +143,7 @@ fn main() {
             log::info!("submitting PrototypePing");
             PrototypePing.submit(None);
 
+            thread::sleep(Duration::from_millis(100));
             glean::shutdown();
         }
         _ => {

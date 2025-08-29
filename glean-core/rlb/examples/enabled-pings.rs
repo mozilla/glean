@@ -84,6 +84,10 @@ impl MovingUploader {
 impl net::PingUploader for MovingUploader {
     fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
         let upload_request = upload_request.capable(|_| true).unwrap();
+        // Filter out uninteristing pings.
+        if upload_request.ping_name != "one" && upload_request.ping_name != "two" {
+            return net::UploadResult::http_status(200);
+        }
         let net::PingUploadRequest {
             body, url, headers, ..
         } = upload_request;
@@ -219,5 +223,6 @@ fn main() {
             .is_none());
     }
 
+    std::thread::sleep(std::time::Duration::from_millis(100));
     glean::shutdown(); // Cleanly shut down at the end of the test.
 }

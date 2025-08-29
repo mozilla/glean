@@ -1423,7 +1423,10 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
             let mut file_count = 0;
             for entry in fs::read_dir(&dir_path).unwrap() {
                 let entry = entry.unwrap();
-                let metadata = entry.metadata().unwrap();
+                let Ok(metadata) = entry.metadata() else {
+                    log::error!("Unable to read metadata {:?}", entry.path());
+                    continue;
+                };
 
                 // Check if the entry is a file
                 if metadata.is_file() {

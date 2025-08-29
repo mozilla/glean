@@ -19,7 +19,6 @@ cd "$WORKSPACE_ROOT"
 
 tmp="${TMPDIR:-/tmp}"
 datapath=$(mktemp -d "${tmp}/glean_mps_delay.XXXX")
-
 # Build it once
 cargo build -p glean --example mps-delay || exit 1
 
@@ -30,21 +29,21 @@ export TZ=America/Los_Angeles
 export RUST_LOG=debug
 
 timeout 5s faketime --exclude-monotonic -f "2025-07-27 04:05:00" $cmd init
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*metrics" {} ';' | wc -l)
 if [[ "$count" -ne 0 ]]; then
   echo "1/3 test result: FAILED. Expected 0, got $count pings"
   exit 101
 fi
 
 timeout 5s faketime --exclude-monotonic -f "2025-07-28 22:27:00" $cmd second
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*metrics" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
   echo "2/3 test result: FAILED. Expected 1, got $count pings"
   exit 101
 fi
 
 timeout 5s faketime --exclude-monotonic -f "2025-07-28 22:30:00" $cmd third
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name "*.json" -exec grep -e "url.*metrics" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
   echo "3/3 test result: FAILED. Expected 1, got $count pings"
   exit 101
