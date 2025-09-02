@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-typealias HeadersList = [String: String]
+public typealias HeadersList = [String: String]
 
 /// The interface defining how to send pings.
 public protocol PingUploader {
@@ -19,11 +19,11 @@ public protocol PingUploader {
     )
 }
 
-struct PingUploadRequest {
+public struct PingUploadRequest {
     let documentId: String
-    let url: String
-    let data: [UInt8]
-    let headers: HeadersList
+    public let url: String
+    public let data: [UInt8]
+    public let headers: HeadersList
     let uploaderCapabilities: [String]
 
     init(request: PingRequest, endpoint: String) {
@@ -47,7 +47,7 @@ public struct CapablePingUploadRequest {
      *
      *@param uploaderCapabilities an array of Strings representing the uploader's supported capabilities.
      */
-    func capable(_ uploaderCapabilities: [String]) -> PingUploadRequest? {
+    public func capable(_ uploaderCapabilities: [String]) -> PingUploadRequest? {
         // Check to see if the request's uploader capabilites are all satisfied by the
         // uploader capabilites that were advertised by the uploader via the
         // `uploaderCapabilities` parameter to this function. 

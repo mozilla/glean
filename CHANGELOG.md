@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.3...main)
+
+# v65.0.3 (2025-09-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...v65.0.3)
+
+* Swift
+  * "Swift: BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
 
 # v65.0.2 (2025-08-25)
 
@@ -45,6 +52,14 @@
   * Expose an interface by which to supply an external uploader on iOS ([Bug 1950143](https://bugzilla.mozilla.org/show_bug.cgi?id=1950143))
 * Rust
   * New feature `gecko`. If enabled spawned threads are registered with the Gecko profiler (non-Android only) ([#3212](https://github.com/mozilla/glean/pull/3212))
+
+# v64.5.5 (2025-08-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v64.5.4...v64.5.5)
+
+* General
+  * Pings on a ping schedule now get submitted even if the related ping might be disabled ([#3226](https://github.com/mozilla/glean/pull/3226))
+    (Backported changes)
 
 # v64.5.4 (2025-07-29)
 
