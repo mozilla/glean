@@ -63,6 +63,7 @@ mod fd_logger;
 pub use crate::common_metric_data::{CommonMetricData, DynamicLabelType, Lifetime};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
+use crate::dispatcher::is_test_mode;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 pub use crate::histogram::HistogramType;
@@ -398,7 +399,12 @@ fn initialize_inner(
 
         let data_path_str = cfg.data_path.clone();
         let data_path = Path::new(&data_path_str);
-        let dir_info = collect_directory_info(Path::new(&data_path));
+        let internal_pings_enabled = cfg.enable_internal_pings;
+        let dir_info = if !is_test_mode() && internal_pings_enabled {
+            collect_directory_info(Path::new(&data_path))
+        } else {
+            None
+        };
 
         let glean = match Glean::new(cfg) {
             Ok(glean) => glean,
@@ -563,7 +569,7 @@ fn initialize_inner(
             Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
         }
 
-        if !dispatcher::global::is_test_mode() {
+        if !is_test_mode() && internal_pings_enabled {
             // Now that Glean is initialized, we can capture the directory info from the pre_init phase and send it in
             // a health ping with reason "pre_init".
             record_dir_info_and_submit_health_ping(dir_info, "pre_init");
