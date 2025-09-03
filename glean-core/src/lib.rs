@@ -1421,10 +1421,38 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
 
             // Read the directory's contents
             let mut file_count = 0;
-            for entry in fs::read_dir(&dir_path).unwrap() {
-                let entry = entry.unwrap();
+            let Ok(entries) = fs::read_dir(&dir_path) else {
+                core::with_glean(|glean| {
+                    glean
+                        .health_metrics
+                        .subdir_err
+                        .get(dir_path.to_string_lossy())
+                        .set(true);
+                });
+                log::error!("Unable to read directory {:?}", dir_path);
+                continue;
+            };
+            for entry in entries {
+                let Ok(entry) = entry else {
+                    core::with_glean(|glean| {
+                        glean
+                            .health_metrics
+                            .subdir_entry_err
+                            .get(dir_path.to_string_lossy())
+                            .add(1);
+                    });
+                    log::error!("Unable to read entry in directory {:?}", dir_path);
+                    continue;
+                };
                 let Ok(metadata) = entry.metadata() else {
-                    log::error!("Unable to read metadata {:?}", entry.path());
+                    core::with_glean(|glean| {
+                        glean
+                            .health_metrics
+                            .subdir_entry_metadata_err
+                            .get(dir_path.to_string_lossy())
+                            .add(1);
+                    });
+                    log::error!("Unable to read entry metadata for entry {:?}", entry.path());
                     continue;
                 };
 
