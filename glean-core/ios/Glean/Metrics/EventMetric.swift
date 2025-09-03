@@ -32,7 +32,7 @@ public class NoExtras: EventExtras {
 ///
 /// The Events API only exposes the `EventMetricType.record(extra:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public class EventMetricType<ExtraObject: EventExtras> {
+public final class EventMetricType<ExtraObject: EventExtras>: Sendable {
     let inner: EventMetric
 
     /// The public constructor used by automatically generated metrics.
