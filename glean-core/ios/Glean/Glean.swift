@@ -13,7 +13,7 @@ private typealias Pings = GleanMetrics.Pings
 /// Public exported type identifying individual timers for `TimingDistributionMetricType`
 public typealias GleanTimerId = TimerId
 
-class OnGleanEventsImpl: OnGleanEvents {
+final class OnGleanEventsImpl: OnGleanEvents {
     let glean: Glean
 
     init(glean: Glean) {
@@ -64,7 +64,7 @@ class OnGleanEventsImpl: OnGleanEvents {
     }
 }
 
-public struct BuildInfo {
+public struct BuildInfo: Sendable {
     var buildDate: DateComponents
 
     public init(buildDate: DateComponents) {

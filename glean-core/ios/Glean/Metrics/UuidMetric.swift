@@ -11,7 +11,7 @@ import Foundation
 ///
 /// The UUID API only exposes the `UuidMetricType.generateAndSet()` and `UuidMetricType.set(_:)` methods,
 /// which takes care of validating the input data and making sure that limits are enforced.
-public class UuidMetricType {
+public final class UuidMetricType: Sendable {
     let inner: UuidMetric
 
     /// The public constructor used by automatically generated metrics.
