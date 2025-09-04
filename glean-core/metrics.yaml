@@ -1079,6 +1079,8 @@ glean.health:
             type: number
           file_count:
             type: number
+          error_message:
+            type: string
           files:
             type: array
             items:
@@ -1092,63 +1094,5 @@ glean.health:
                   type: number
                 file_size:
                   type: number
-  subdir_err:
-    type: labeled_boolean
-    description: |
-      Which data subdirectories suffered an err between is_dir and read_dir
-      while reporting fog.data_diretory_info.
-      (Potentially because they were removed in the interim).
-    labels: &data_subdir_labels
-      - db
-      - events
-      - pending_pings
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?1667815
-      - https://bugzilla.mozilla.org/show_bug.cgi?1982711
-      - https://bugzilla.mozilla.org/show_bug.cgi?1985911
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - tlong@mozilla.com
-      - glean-team@mozilla.com
-    expires: never
-
-  subdir_entry_err:
-    type: labeled_counter
-    description: |
-      How many dir entries per data subdirectory errored while reporting fog.data_diretory_info.
-      (Potentially because they were removed between `read_dir` and the iteration).
-    labels: *data_subdir_labels
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?1667815
-      - https://bugzilla.mozilla.org/show_bug.cgi?1982711
-      - https://bugzilla.mozilla.org/show_bug.cgi?1985911
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - tlong@mozilla.com
-      - glean-team@mozilla.com
-    expires: never
-
-  subdir_entry_metadata_err:
-    type: labeled_counter
-    description: |
-      How many dir entries per data subdirectory errored while retrieving their metadata
-      while reporting fog.data_diretory_info.
-    labels: *data_subdir_labels
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?1667815
-      - https://bugzilla.mozilla.org/show_bug.cgi?1982711
-      - https://bugzilla.mozilla.org/show_bug.cgi?1985911
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - tlong@mozilla.com
-      - glean-team@mozilla.com
-    expires: never
+                error_message:
+                  type: string

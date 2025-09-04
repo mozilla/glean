@@ -1399,6 +1399,7 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
             dir_modified: None,
             file_count: None,
             files: Vec::new(),
+            error_message: None,
         };
 
         // Check if the directory exists
@@ -1406,60 +1407,74 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
             directory_info.dir_exists = Some(true);
 
             // Get directory metadata
-            if let Ok(metadata) = fs::metadata(&dir_path) {
-                if let Ok(created) = metadata.created() {
-                    directory_info.dir_created = Some(
-                        created
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap_or(Duration::ZERO)
-                            .as_secs() as i64,
-                    );
+            match fs::metadata(&dir_path) {
+                Ok(metadata) => {
+                    if let Ok(created) = metadata.created() {
+                        directory_info.dir_created = Some(
+                            created
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap_or(Duration::ZERO)
+                                .as_secs() as i64,
+                        );
+                    }
+                    if let Ok(modified) = metadata.modified() {
+                        directory_info.dir_modified = Some(
+                            modified
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap_or(Duration::ZERO)
+                                .as_secs() as i64,
+                        );
+                    }
                 }
-                if let Ok(modified) = metadata.modified() {
-                    directory_info.dir_modified = Some(
-                        modified
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap_or(Duration::ZERO)
-                            .as_secs() as i64,
-                    );
+                Err(error) => {
+                    let msg = format!("Unable to get metadata for subdir {}: {}", subdir, error);
+                    directory_info.error_message = Some(msg.clone());
+                    log::error!("{}", msg);
+                    continue;
                 }
             }
 
             // Read the directory's contents
             let mut file_count = 0;
-            let Ok(entries) = fs::read_dir(&dir_path) else {
-                core::with_glean(|glean| {
-                    glean
-                        .health_metrics
-                        .subdir_err
-                        .get(dir_path.to_string_lossy())
-                        .set(true);
-                });
-                log::error!("Unable to read directory {:?}", dir_path);
-                continue;
+            let entries = match fs::read_dir(&dir_path) {
+                Ok(entries) => entries,
+                Err(error) => {
+                    let msg = format!("Unable to read subdir {}: {}", subdir, error);
+                    directory_info.error_message = Some(msg.clone());
+                    log::error!("{}", msg);
+
+                    continue;
+                }
             };
             for entry in entries {
-                let Ok(entry) = entry else {
-                    core::with_glean(|glean| {
-                        glean
-                            .health_metrics
-                            .subdir_entry_err
-                            .get(dir_path.to_string_lossy())
-                            .add(1);
-                    });
-                    log::error!("Unable to read entry in directory {:?}", dir_path);
-                    continue;
+                let mut file_info =
+                    crate::internal_metrics::DataDirectoryInfoObjectItemItemFilesItem {
+                        file_name: None,
+                        file_created: None,
+                        file_modified: None,
+                        file_size: None,
+                        error_message: None,
+                    };
+                let entry = match entry {
+                    Ok(entry) => entry,
+                    Err(error) => {
+                        let msg = format!("Unable to read file: {}", error);
+                        file_info.error_message = Some(msg.clone());
+                        log::error!("{}", msg);
+                        directory_info.files.push(file_info);
+                        continue;
+                    }
                 };
-                let Ok(metadata) = entry.metadata() else {
-                    core::with_glean(|glean| {
-                        glean
-                            .health_metrics
-                            .subdir_entry_metadata_err
-                            .get(dir_path.to_string_lossy())
-                            .add(1);
-                    });
-                    log::error!("Unable to read entry metadata for entry {:?}", entry.path());
-                    continue;
+                let metadata = match entry.metadata() {
+                    Ok(metadata) => metadata,
+                    Err(error) => {
+                        let msg = format!("Unable to read file metadata: {}", error);
+                        file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                        file_info.error_message = Some(msg.clone());
+                        log::error!("Unable to read entry metadata: {}", error);
+                        directory_info.files.push(file_info);
+                        continue;
+                    }
                 };
 
                 // Check if the entry is a file
@@ -1467,32 +1482,36 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
                     file_count += 1;
 
                     // Collect file details
-                    let file_size = metadata.len() as i64;
-                    let modified_time = metadata
-                        .modified()
-                        .unwrap_or(UNIX_EPOCH)
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap_or(Duration::ZERO)
-                        .as_secs() as i64;
-
-                    let creation_time = metadata
-                        .created()
-                        .unwrap_or(UNIX_EPOCH)
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap_or(Duration::ZERO)
-                        .as_secs() as i64;
-                    let file_name = entry.file_name().to_string_lossy().to_string();
-
-                    let file_info =
-                        crate::internal_metrics::DataDirectoryInfoObjectItemItemFilesItem {
-                            file_name: Some(file_name),
-                            file_created: Some(creation_time),
-                            file_modified: Some(modified_time),
-                            file_size: Some(file_size),
-                        };
-
-                    directory_info.files.push(file_info);
+                    file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                    file_info.file_created = Some(
+                        metadata
+                            .created()
+                            .unwrap_or(UNIX_EPOCH)
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64,
+                    );
+                    file_info.file_modified = Some(
+                        metadata
+                            .modified()
+                            .unwrap_or(UNIX_EPOCH)
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap_or(Duration::ZERO)
+                            .as_secs() as i64,
+                    );
+                    file_info.file_size = Some(metadata.len() as i64);
+                } else {
+                    let msg = format!(
+                        "Skipping non-file entry in {}: {:?}",
+                        subdir,
+                        entry.file_name()
+                    );
+                    file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                    file_info.error_message = Some(msg.clone());
+                    log::warn!("{}", msg);
                 }
+
+                directory_info.files.push(file_info);
             }
 
             directory_info.file_count = Some(file_count as i64);

@@ -127,12 +127,13 @@ fn main() {
         "accumulate_ten_and_orderly_shutdown" => {
             log::debug!("incrementing by 10, waiting, shutdown. should trigger a flush.");
             glean_metrics::sample_counter.add(10);
-            std::thread::sleep(std::time::Duration::from_millis(100));
             glean::shutdown();
         }
         "submit_ping" => {
             log::info!("submitting PrototypePing");
             PrototypePing.submit(None);
+            // Wait just a bit to let the ping machinery kick in and
+            // ensure the ping is uploaded before we exit.
             std::thread::sleep(std::time::Duration::from_millis(100));
             glean::shutdown();
         }

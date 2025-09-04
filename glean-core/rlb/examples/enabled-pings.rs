@@ -223,6 +223,8 @@ fn main() {
             .is_none());
     }
 
+    // Wait just a bit to let the ping machinery kick in and
+    // ensure the ping is uploaded before we exit.
     std::thread::sleep(std::time::Duration::from_millis(100));
     glean::shutdown(); // Cleanly shut down at the end of the test.
 }

@@ -15,7 +15,7 @@ use std::{env, thread};
 
 use flate2::read::GzDecoder;
 use glean::net;
-use glean::{ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
+use glean::{ClientInfoMetrics, ConfigurationBuilder};
 
 /// A timing_distribution
 mod metrics {
@@ -133,8 +133,8 @@ fn main() {
 
     metrics::boo.add(1);
 
-    let _ = metrics::boo.test_get_value(None);
-
+    // Wait for init to finish, otherwise the metrics increment above might be lost
+    // before we call `shutdown`.
     thread::sleep(Duration::from_millis(100));
 
     glean::shutdown(); // Cleanly shut down at the end of the test.

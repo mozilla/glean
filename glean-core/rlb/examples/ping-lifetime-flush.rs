@@ -143,6 +143,8 @@ fn main() {
             log::info!("submitting PrototypePing");
             PrototypePing.submit(None);
 
+            // Wait just a bit to let the ping machinery kick in and
+            // ensure the ping is uploaded before we exit.
             thread::sleep(Duration::from_millis(100));
             glean::shutdown();
         }

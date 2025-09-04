@@ -380,9 +380,6 @@ impl DatabaseMetrics {
 pub struct HealthMetrics {
     // Information about the data directory prior to Glean initialization.
     pub data_directory_info: ObjectMetric,
-    pub subdir_err: LabeledBoolean,
-    pub subdir_entry_err: LabeledCounter,
-    pub subdir_entry_metadata_err: LabeledCounter,
 }
 
 impl HealthMetrics {
@@ -396,48 +393,6 @@ impl HealthMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
-
-            subdir_err: LabeledMetric::<BooleanMetric>::new(
-                LabeledMetricData::Common {
-                    cmd: CommonMetricData {
-                        name: "subdir_err".into(),
-                        category: "glean.health".into(),
-                        send_in_pings: vec!["metrics".into(), "health".into()],
-                        lifetime: Lifetime::Ping,
-                        disabled: false,
-                        dynamic_label: None,
-                    },
-                },
-                None,
-            ),
-
-            subdir_entry_err: LabeledMetric::<CounterMetric>::new(
-                LabeledMetricData::Common {
-                    cmd: CommonMetricData {
-                        name: "subdir_entry_err".into(),
-                        category: "glean.health".into(),
-                        send_in_pings: vec!["metrics".into(), "health".into()],
-                        lifetime: Lifetime::Ping,
-                        disabled: false,
-                        dynamic_label: None,
-                    },
-                },
-                None,
-            ),
-
-            subdir_entry_metadata_err: LabeledMetric::<CounterMetric>::new(
-                LabeledMetricData::Common {
-                    cmd: CommonMetricData {
-                        name: "subdir_entry_metadata_err".into(),
-                        category: "glean.health".into(),
-                        send_in_pings: vec!["metrics".into(), "health".into()],
-                        lifetime: Lifetime::Ping,
-                        disabled: false,
-                        dynamic_label: None,
-                    },
-                },
-                None,
-            ),
         }
     }
 }
@@ -457,6 +412,8 @@ pub struct DataDirectoryInfoObjectItem {
     pub dir_modified: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub file_count: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error_message: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty", default = "Vec::new")]
     pub files: DataDirectoryInfoObjectItemItemFiles,
 }
@@ -474,4 +431,6 @@ pub struct DataDirectoryInfoObjectItemItemFilesItem {
     pub file_modified: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub file_size: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error_message: Option<String>,
 }
