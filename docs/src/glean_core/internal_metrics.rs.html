@@ -374,6 +374,66 @@
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
 <a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -381,6 +441,7 @@
 </span><span class="kw">use </span>std::borrow::Cow;
 
 <span class="kw">use </span>malloc_size_of_derive::MallocSizeOf;
+<span class="kw">use </span>serde::Serialize;
 
 <span class="kw">use super</span>::{metrics::<span class="kw-2">*</span>, CommonMetricData, LabeledMetricData, Lifetime};
 
@@ -513,7 +574,7 @@
             io_errors: CounterMetric::new(CommonMetricData {
                 name: <span class="string">"io"</span>.into(),
                 category: <span class="string">"glean.error"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -524,7 +585,7 @@
                     cmd: CommonMetricData {
                         name: <span class="string">"pings_submitted"</span>.into(),
                         category: <span class="string">"glean.validation"</span>.into(),
-                        send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"baseline"</span>.into()],
+                        send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"baseline"</span>.into(), <span class="string">"health"</span>.into()],
                         lifetime: Lifetime::Ping,
                         disabled: <span class="bool-val">false</span>,
                         dynamic_label: <span class="prelude-val">None</span>,
@@ -537,7 +598,7 @@
                 CommonMetricData {
                     name: <span class="string">"shutdown_wait"</span>.into(),
                     category: <span class="string">"glean.validation"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -549,7 +610,7 @@
                 CommonMetricData {
                     name: <span class="string">"shutdown_dispatcher_wait"</span>.into(),
                     category: <span class="string">"glean.validation"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -598,7 +659,7 @@
                     cmd: CommonMetricData {
                         name: <span class="string">"ping_upload_failure"</span>.into(),
                         category: <span class="string">"glean.upload"</span>.into(),
-                        send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                        send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                         lifetime: Lifetime::Ping,
                         disabled: <span class="bool-val">false</span>,
                         dynamic_label: <span class="prelude-val">None</span>,
@@ -618,7 +679,7 @@
                 CommonMetricData {
                     name: <span class="string">"discarded_exceeding_ping_size"</span>.into(),
                     category: <span class="string">"glean.upload"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -630,7 +691,7 @@
                 CommonMetricData {
                     name: <span class="string">"pending_pings_directory_size"</span>.into(),
                     category: <span class="string">"glean.upload"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -641,7 +702,7 @@
             deleted_pings_after_quota_hit: CounterMetric::new(CommonMetricData {
                 name: <span class="string">"deleted_pings_after_quota_hit"</span>.into(),
                 category: <span class="string">"glean.upload"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -650,7 +711,7 @@
             pending_pings: CounterMetric::new(CommonMetricData {
                 name: <span class="string">"pending_pings"</span>.into(),
                 category: <span class="string">"glean.upload"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -660,7 +721,7 @@
                 CommonMetricData {
                     name: <span class="string">"send_success"</span>.into(),
                     category: <span class="string">"glean.upload"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -672,7 +733,7 @@
                 CommonMetricData {
                     name: <span class="string">"send_failure"</span>.into(),
                     category: <span class="string">"glean.upload"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -683,7 +744,7 @@
             in_flight_pings_dropped: CounterMetric::new(CommonMetricData {
                 name: <span class="string">"in_flight_pings_dropped"</span>.into(),
                 category: <span class="string">"glean.upload"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -692,7 +753,7 @@
             missing_send_ids: CounterMetric::new(CommonMetricData {
                 name: <span class="string">"missing_send_ids"</span>.into(),
                 category: <span class="string">"glean.upload"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -719,7 +780,7 @@
                 CommonMetricData {
                     name: <span class="string">"size"</span>.into(),
                     category: <span class="string">"glean.database"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">false</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -730,7 +791,7 @@
             rkv_load_error: StringMetric::new(CommonMetricData {
                 name: <span class="string">"rkv_load_error"</span>.into(),
                 category: <span class="string">"glean.error"</span>.into(),
-                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
@@ -740,7 +801,7 @@
                 CommonMetricData {
                     name: <span class="string">"write_time"</span>.into(),
                     category: <span class="string">"glean.database"</span>.into(),
-                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+                    send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                     lifetime: Lifetime::Ping,
                     disabled: <span class="bool-val">true</span>,
                     dynamic_label: <span class="prelude-val">None</span>,
@@ -749,5 +810,64 @@
             ),
         }
     }
+}
+
+<span class="attr">#[derive(Debug, MallocSizeOf)]
+</span><span class="kw">pub struct </span>HealthMetrics {
+    <span class="comment">// Information about the data directory prior to Glean initialization.
+    </span><span class="kw">pub </span>data_directory_info: ObjectMetric,
+}
+
+<span class="kw">impl </span>HealthMetrics {
+    <span class="kw">pub fn </span>new() -&gt; HealthMetrics {
+        HealthMetrics {
+            data_directory_info: ObjectMetric::new(CommonMetricData {
+                name: <span class="string">"data_directory_info"</span>.into(),
+                category: <span class="string">"glean.health"</span>.into(),
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
+                lifetime: Lifetime::Ping,
+                disabled: <span class="bool-val">false</span>,
+                dynamic_label: <span class="prelude-val">None</span>,
+            }),
+        }
+    }
+}
+
+<span class="kw">pub type </span>DataDirectoryInfoObject = Vec&lt;DataDirectoryInfoObjectItem&gt;;
+
+<span class="attr">#[derive(Debug, Serialize)]
+#[serde(deny_unknown_fields)]
+</span><span class="kw">pub struct </span>DataDirectoryInfoObjectItem {
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>dir_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>dir_exists: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>dir_created: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>dir_modified: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>file_count: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>error_message: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Vec::is_empty"</span>, default = <span class="string">"Vec::new"</span>)]
+    </span><span class="kw">pub </span>files: DataDirectoryInfoObjectItemItemFiles,
+}
+
+<span class="kw">pub type </span>DataDirectoryInfoObjectItemItemFiles = Vec&lt;DataDirectoryInfoObjectItemItemFilesItem&gt;;
+
+<span class="attr">#[derive(Debug, Serialize)]
+#[serde(deny_unknown_fields)]
+</span><span class="kw">pub struct </span>DataDirectoryInfoObjectItemItemFilesItem {
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>file_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>file_created: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>file_modified: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>file_size: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
+    </span><span class="kw">pub </span>error_message: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 </code></pre></div></section></main></body></html>

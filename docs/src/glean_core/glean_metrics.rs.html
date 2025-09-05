@@ -43,7 +43,7 @@
         CounterMetric::new(CommonMetricData {
             category: <span class="string">"glean.error"</span>.into(),
             name: <span class="string">"preinit_tasks_overflow"</span>.into(),
-            send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into()],
+            send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
             lifetime: Lifetime::Ping,
             disabled: <span class="bool-val">false</span>,
             ..Default::default()

@@ -1162,6 +1162,9 @@
 <a href="#1162" id="1162">1162</a>
 <a href="#1163" id="1163">1163</a>
 <a href="#1164" id="1164">1164</a>
+<a href="#1165" id="1165">1165</a>
+<a href="#1166" id="1166">1166</a>
+<a href="#1167" id="1167">1167</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1179,7 +1182,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::database::Database;
 <span class="kw">use </span><span class="kw">crate</span>::debug::DebugOptions;
 <span class="kw">use </span><span class="kw">crate</span>::event_database::EventDatabase;
-<span class="kw">use </span><span class="kw">crate</span>::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics};
+<span class="kw">use </span><span class="kw">crate</span>::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics, HealthMetrics};
 <span class="kw">use </span><span class="kw">crate</span>::internal_pings::InternalPings;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{
     <span class="self">self</span>, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment, RemoteSettingsConfig,
@@ -1320,6 +1323,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) core_metrics: CoreMetrics,
     <span class="kw">pub</span>(<span class="kw">crate</span>) additional_metrics: AdditionalMetrics,
     <span class="kw">pub</span>(<span class="kw">crate</span>) database_metrics: DatabaseMetrics,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) health_metrics: HealthMetrics,
     <span class="kw">pub</span>(<span class="kw">crate</span>) internal_pings: InternalPings,
     data_path: PathBuf,
     application_id: String,
@@ -1382,6 +1386,7 @@
             core_metrics: CoreMetrics::new(),
             additional_metrics: AdditionalMetrics::new(),
             database_metrics: DatabaseMetrics::new(),
+            health_metrics: HealthMetrics::new(),
             internal_pings: InternalPings::new(cfg.enable_internal_pings),
             upload_manager,
             data_path: PathBuf::from(<span class="kw-2">&amp;</span>cfg.data_path),
@@ -1405,6 +1410,7 @@
         this.register_ping_type(<span class="kw-2">&amp;</span>pings.baseline);
         this.register_ping_type(<span class="kw-2">&amp;</span>pings.metrics);
         this.register_ping_type(<span class="kw-2">&amp;</span>pings.events);
+        this.register_ping_type(<span class="kw-2">&amp;</span>pings.health);
         this.register_ping_type(<span class="kw-2">&amp;</span>pings.deletion_request);
 
         <span class="prelude-val">Ok</span>(this)
