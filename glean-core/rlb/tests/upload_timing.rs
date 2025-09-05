@@ -178,6 +178,8 @@ fn upload_timings() {
             sender: tx,
         })
         .build();
+
+    glean_core::glean_set_test_mode(true);
     common::initialize(cfg);
 
     // Wait for init to finish,

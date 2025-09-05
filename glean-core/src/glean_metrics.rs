@@ -17,7 +17,7 @@ pub mod error {
         CounterMetric::new(CommonMetricData {
             category: "glean.error".into(),
             name: "preinit_tasks_overflow".into(),
-            send_in_pings: vec!["metrics".into()],
+            send_in_pings: vec!["metrics".into(), "health".into()],
             lifetime: Lifetime::Ping,
             disabled: false,
             ..Default::default()

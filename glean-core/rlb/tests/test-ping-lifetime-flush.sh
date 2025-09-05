@@ -21,26 +21,26 @@ cmd="cargo run -p glean --example ping-lifetime-flush -- $datapath"
 
 # First run "crashes" -> no increment stored
 $cmd accumulate_one_and_pretend_crash
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name '*.json' -exec grep -e "url.*prototype" {} ';' | wc -l)
 if [[ "$count" -ne 0 ]]; then
-  echo "test result: FAILED."
+  echo "test result: FAILED. Expected: 0; Actual: $count"
   exit 101
 fi
 
 # Second run increments, waits, increments -> increment flushed to disk.
 # No ping is sent.
 $cmd accumulate_ten_and_wait
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name '*.json' -exec grep -e "url.*prototype" {} ';' | wc -l)
 if [[ "$count" -ne 0 ]]; then
-  echo "test result: FAILED."
+  echo "test result: FAILED. Expected: 0; Actual: $count"
   exit 101
 fi
 
 # Third run sends the ping.
 $cmd submit_ping
-count=$(ls -1q "$datapath/sent_pings" | wc -l)
+count=$(find "$datapath/sent_pings" -name '*.json' -exec grep -e "url.*prototype" {} ';' | wc -l)
 if [[ "$count" -ne 1 ]]; then
-  echo "test result: FAILED."
+  echo "test result: FAILED. Expected: 1; Actual: $count"
   exit 101
 fi
 
