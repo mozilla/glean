@@ -1386,7 +1386,7 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
     // List of child directories to check
     let subdirs = ["db", "events", "pending_pings"];
     let mut directories_info: crate::internal_metrics::DataDirectoryInfoObject =
-        DataDirectoryInfoObject::new();
+        DataDirectoryInfoObject::with_capacity(subdirs.len());
 
     for subdir in subdirs.iter() {
         let dir_path = path.join(subdir);
@@ -1427,9 +1427,9 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
                     }
                 }
                 Err(error) => {
-                    let msg = format!("Unable to get metadata for subdir {}: {}", subdir, error);
+                    let msg = format!("Unable to get metadata: {}", error.kind());
                     directory_info.error_message = Some(msg.clone());
-                    log::error!("{}", msg);
+                    log::warn!("{}", msg);
                     continue;
                 }
             }
@@ -1439,40 +1439,49 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
             let entries = match fs::read_dir(&dir_path) {
                 Ok(entries) => entries,
                 Err(error) => {
-                    let msg = format!("Unable to read subdir {}: {}", subdir, error);
+                    let msg = format!("Unable to read subdir: {}", error.kind());
                     directory_info.error_message = Some(msg.clone());
-                    log::error!("{}", msg);
-
+                    log::warn!("{}", msg);
                     continue;
                 }
             };
             for entry in entries {
-                let mut file_info =
+                directory_info.files.push(
                     crate::internal_metrics::DataDirectoryInfoObjectItemItemFilesItem {
                         file_name: None,
                         file_created: None,
                         file_modified: None,
                         file_size: None,
                         error_message: None,
-                    };
+                    },
+                );
+                // Safely get and unwrap the file_info we just pushed so we can populate it
+                let file_info = directory_info.files.last_mut().unwrap();
                 let entry = match entry {
                     Ok(entry) => entry,
                     Err(error) => {
-                        let msg = format!("Unable to read file: {}", error);
+                        let msg = format!("Unable to read file: {}", error.kind());
                         file_info.error_message = Some(msg.clone());
-                        log::error!("{}", msg);
-                        directory_info.files.push(file_info);
+                        log::warn!("{}", msg);
+                        continue;
+                    }
+                };
+                let file_name = match entry.file_name().into_string() {
+                    Ok(file_name) => file_name,
+                    _ => {
+                        let msg = "Unable to convert file name to string".to_string();
+                        file_info.error_message = Some(msg.clone());
+                        log::warn!("{}", msg);
                         continue;
                     }
                 };
                 let metadata = match entry.metadata() {
                     Ok(metadata) => metadata,
                     Err(error) => {
-                        let msg = format!("Unable to read file metadata: {}", error);
-                        file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                        let msg = format!("Unable to read file metadata: {}", error.kind());
+                        file_info.file_name = Some(file_name);
                         file_info.error_message = Some(msg.clone());
-                        log::error!("Unable to read entry metadata: {}", error);
-                        directory_info.files.push(file_info);
+                        log::warn!("{}", msg);
                         continue;
                     }
                 };
@@ -1482,7 +1491,7 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
                     file_count += 1;
 
                     // Collect file details
-                    file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                    file_info.file_name = Some(file_name);
                     file_info.file_created = Some(
                         metadata
                             .created()
@@ -1501,17 +1510,11 @@ fn collect_directory_info(path: &Path) -> Option<serde_json::Value> {
                     );
                     file_info.file_size = Some(metadata.len() as i64);
                 } else {
-                    let msg = format!(
-                        "Skipping non-file entry in {}: {:?}",
-                        subdir,
-                        entry.file_name()
-                    );
-                    file_info.file_name = Some(entry.file_name().to_string_lossy().to_string());
+                    let msg = format!("Skipping non-file entry: {}", file_name.clone());
+                    file_info.file_name = Some(file_name);
                     file_info.error_message = Some(msg.clone());
                     log::warn!("{}", msg);
                 }
-
-                directory_info.files.push(file_info);
             }
 
             directory_info.file_count = Some(file_count as i64);
