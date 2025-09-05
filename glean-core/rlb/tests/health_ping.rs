@@ -75,7 +75,7 @@ fn test_pre_post_init_health_pings_exist() {
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().to_path_buf();
 
-    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "firefox-desktop")
+    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
         .with_server_endpoint("invalid-test-host")
         .with_uploader(FakeUploader)
         .build();
