@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...main)
 
+* iOS
+  * Make objects BuildInfo, DatetimeMetricType, EventMetricType, and UuidMetricType sendable ([#3241] (https://github.com/mozilla/glean/pull/3241))
+
 # v65.0.2 (2025-08-25)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.1...v65.0.2)
