@@ -14181,9 +14181,16 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <h1 id="v6503-2025-09-02"><a class="header" href="#v6503-2025-09-02">v65.0.3 (2025-09-02)</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v65.0.2...v65.0.3">Full changelog</a></p>
 <ul>
-<li>Swift
+<li>
+<p>Swift</p>
 <ul>
 <li>&quot;Swift: BUGFIX: Refactor uploader interfaces to permit customization (<a href="https://github.com/mozilla/glean/pull/3235">#3235</a>, <a href="https://github.com/mozilla/glean/pull/3239">#3239</a>)</li>
+</ul>
+</li>
+<li>
+<p>iOS</p>
+<ul>
+<li>Make objects <code>BuildInfo</code>, <code>DatetimeMetricType</code>, <code>EventMetricType</code>, and <code>UuidMetricType</code> <code>sendable</code> ([#3241] (https://github.com/mozilla/glean/pull/3241))</li>
 </ul>
 </li>
 </ul>
@@ -17370,6 +17377,9 @@ This is a major milestone in using a cross-platform implementation of Glean on t
 <p>First testing release.</p>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/sdk.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes-1"><a class="header" href="#unreleased-changes-1">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean.js/compare/v5.0.5...main">Full changelog</a></p>
+<ul>
+<li><a href="https://github.com/mozilla/glean.js/pull/2011">#2011</a>: Bug 1987158 - Capture page <code>url</code>/<code>referrer</code>/<code>title</code> with <code>recordElementClick()</code>.</li>
+</ul>
 <h1 id="v505-2025-07-17"><a class="header" href="#v505-2025-07-17">v5.0.5 (2025-07-17)</a></h1>
 <ul>
 <li><a href="https://github.com/mozilla/glean.js/pull/1993">#1993</a>: Add try-catch around uses of sessionStorage and localStorage in core.</li>
