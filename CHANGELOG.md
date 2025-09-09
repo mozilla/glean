@@ -10,10 +10,8 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...v65.0.3)
 
 * Swift
-  * "Swift: BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
-
-* iOS
-  * Make objects `BuildInfo`, `DatetimeMetricType`, `EventMetricType`, and `UuidMetricType` `sendable` ([#3241] (https://github.com/mozilla/glean/pull/3241))
+  * BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
+  * Make objects `BuildInfo`, `DatetimeMetricType`, `EventMetricType`, and `UuidMetricType` `sendable` ([#3241](https://github.com/mozilla/glean/pull/3241))
 
 # v65.0.2 (2025-08-25)
 
