@@ -11,7 +11,7 @@ import Foundation
 ///
 /// The datetime API only exposes the `DatetimeMetricType.set(_:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public class DatetimeMetricType {
+public final class DatetimeMetricType: Sendable {
     let inner: DatetimeMetric
     let timeUnit: TimeUnit
 

@@ -108,7 +108,7 @@ def test_recording_upload_errors_doesnt_clobber_database(tmpdir, safe_httpserver
     time.sleep(0.5)
     ProcessDispatcher._wait_for_last_process()
 
-    assert 1 == len(safe_httpserver.requests)
+    assert 3 == len(safe_httpserver.requests)
 
     # Force a reload of the database from disk
     Glean._reset()

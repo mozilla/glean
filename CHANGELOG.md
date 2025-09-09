@@ -1,13 +1,23 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.0.3...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...main)
+
+# v65.1.0 (2025-09-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.0.3...v65.1.0)
+
+* General
+  * Added a Glean Health ping which collects telemetry health data into a single ping sent before and after initialization in order to track issues with Glean storage files and other telemetry health characteristics. ([#3221](https://github.com/mozilla/glean/pull/3221))
+* Python
+  * Ship a Python wheel for aarch64-windows ([#3245](https://github.com/mozilla/glean/pull/3245))
 
 # v65.0.3 (2025-09-02)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.0.2...v65.0.3)
 
 * Swift
-  * "Swift: BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
+  * BUGFIX: Refactor uploader interfaces to permit customization ([#3235](https://github.com/mozilla/glean/pull/3235), [#3239](https://github.com/mozilla/glean/pull/3239))
+  * Make objects `BuildInfo`, `DatetimeMetricType`, `EventMetricType`, and `UuidMetricType` `sendable` ([#3241](https://github.com/mozilla/glean/pull/3241))
 
 # v65.0.2 (2025-08-25)
 

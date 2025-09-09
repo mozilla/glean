@@ -17,6 +17,7 @@ pub struct InternalPings {
     pub baseline: PingType,
     pub metrics: PingType,
     pub events: PingType,
+    pub health: PingType,
     pub deletion_request: PingType,
 }
 
@@ -70,6 +71,18 @@ impl InternalPings {
                     "inactive".to_string(),
                     "max_capacity".to_string(),
                 ],
+                true,
+                vec![],
+            ),
+            health: PingType::new(
+                "health",
+                true,
+                true,
+                true,
+                true,
+                enabled,
+                vec![],
+                vec!["pre_init".to_string(), "post_init".to_string()],
                 true,
                 vec![],
             ),

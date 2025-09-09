@@ -814,7 +814,7 @@ jobs:
           command: |
             make build-python-sdist
       - run:
-          name: Upload Linux source distribution
+          name: Upload source distribution
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
@@ -845,7 +845,7 @@ jobs:
           command: |
             make build-python-wheel
       - run:
-          name: Upload Linux wheel
+          name: Upload x86_64-linux wheel
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
@@ -882,7 +882,7 @@ jobs:
             . .venv3.13/bin/activate
             make build-python-wheel GLEAN_BUILD_TARGET=aarch64-unknown-linux-gnu GLEAN_BUILD_EXTRA="--zig"
       - run:
-          name: Upload Linux wheel
+          name: Upload aarch64-linux wheel
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
@@ -920,7 +920,7 @@ jobs:
           command: |
             make build-python-wheel GLEAN_BUILD_TARGET="universal2-apple-darwin"
       - run:
-          name: Upload wheels to PyPI
+          name: Upload macos wheels
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
@@ -939,11 +939,48 @@ jobs:
       - checkout
       - build-windows-x86_64-wheel
       - run:
-          name: Upload to PyPI
+          name: Upload x86_64-windows wheel
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
             .venv3.9/bin/python3 -m twine upload target/wheels/*
+      - install-ghr-linux
+      - run:
+          name: Publish to GitHub
+          command: |
+            # Upload to GitHub
+            ./ghr -replace ${CIRCLE_TAG} target/wheels
+
+  pypi-windows-aarch64-release:
+    docker:
+      - image: cimg/python:3.13
+    steps:
+      - install-rustup
+      - setup-rust-toolchain
+      - checkout
+      - run:
+          name: Setup Python env
+          command: |
+            make setup-python
+            .venv3.13/bin/pip install ziglang
+      - run:
+          name: Install aarch64-windows target
+          command: |
+            rustup target add aarch64-pc-windows-gnullvm
+      - run:
+          name: Build Python package
+          command: |
+            # We need a binary with debug symbols, so uniffi-bindgen can extract data
+            cargo build -p glean-bundle
+
+            . .venv3.13/bin/activate
+            make build-python-wheel GLEAN_BUILD_TARGET=aarch64-pc-windows-gnullvm GLEAN_BUILD_EXTRA="--zig"
+      - run:
+          name: Upload aarch64-windows wheel
+          command: |
+            # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
+            # variables are configured in CircleCI's environment variables.
+            .venv3.13/bin/python3 -m twine upload target/wheels/*
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -1159,6 +1196,10 @@ workflows:
             - Python 3_9 tests
           filters: *release-filters
       - pypi-windows-x86_64-release:
+          requires:
+            - Python 3_9 tests
+          filters: *release-filters
+      - pypi-windows-aarch64-release:
           requires:
             - Python 3_9 tests
           filters: *release-filters
