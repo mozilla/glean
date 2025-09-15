@@ -251,7 +251,6 @@ pub(crate) fn destroy_glean(clear_stores: bool, data_path: &Path) {
 /// Resets the Glean state and triggers init again.
 pub fn test_reset_glean(cfg: Configuration, client_info: ClientInfoMetrics, clear_stores: bool) {
     destroy_glean(clear_stores, &cfg.data_path);
-    glean_core::glean_set_test_mode(true);
     initialize_internal(cfg, client_info);
     glean_core::join_init();
 }

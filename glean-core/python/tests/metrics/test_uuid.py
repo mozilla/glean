@@ -11,6 +11,7 @@ from glean import metrics
 from glean import testing
 from glean.metrics import Lifetime, CommonMetricData
 from glean.testing import _RecordingUploader
+from glean._uniffi import glean_set_test_mode
 
 
 def test_the_api_saves_to_its_storage_engine():
@@ -135,6 +136,8 @@ def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
     import hashlib
 
     Glean._reset()
+
+    glean_set_test_mode(True)
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
