@@ -446,6 +446,8 @@ def test_set_application_id_and_version(safe_httpserver):
     safe_httpserver.serve_content(b"", code=200)
     Glean._reset()
 
+    glean_set_test_mode(True)
+
     Glean._initialize_with_tempdir_for_testing(
         application_id="my-id",
         application_version="my-version",
@@ -459,20 +461,17 @@ def test_set_application_id_and_version(safe_httpserver):
     )
 
     _builtins.pings.baseline.submit()
-    wait_for_requests(safe_httpserver, 3)
+    wait_for_requests(safe_httpserver, 1)
 
-    # Expect 3 total requests: 1 baseline + 2 health
-    assert 3 == len(safe_httpserver.requests)
+    assert 1 == len(safe_httpserver.requests)
 
     # Extract all ping URLs
     ping_urls = [req.url for req in safe_httpserver.requests]
 
     # Verify ping counts
     baseline_pings = [url for url in ping_urls if "baseline" in url]
-    health_pings = [url for url in ping_urls if "health" in url]
 
     assert len(baseline_pings) == 1
-    assert len(health_pings) == 2
 
     # All requests should include the application id
     for url in ping_urls:
@@ -523,6 +522,8 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
 
     Glean._reset()
 
+    glean_set_test_mode(True)
+
     Glean.initialize(
         application_id=GLEAN_APP_ID,
         application_version=glean_version,
@@ -532,6 +533,8 @@ def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_ur
     )
 
     Glean._reset()
+
+    glean_set_test_mode(True)
 
     Glean.initialize(
         application_id=GLEAN_APP_ID,
@@ -739,6 +742,8 @@ def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch, help
         sys.stdout,
         schema_url=ping_schema_url,
     )
+
+    Glean._reset()
 
 
 def test_app_display_version_unknown():

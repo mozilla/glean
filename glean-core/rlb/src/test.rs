@@ -358,6 +358,8 @@ fn sending_of_startup_baseline_ping() {
 fn no_dirty_baseline_on_clean_shutdowns() {
     let _lock = lock_test();
 
+    glean_core::glean_set_test_mode(true);
+
     // Create an instance of Glean, wait for init and then flip the dirty
     // bit to true.
     let data_dir = new_glean(None, true);
@@ -593,6 +595,8 @@ fn ping_collection_must_happen_after_concurrently_scheduled_metrics_recordings()
 
     let (s, r) = crossbeam_channel::bounded(1);
 
+    glean_core::glean_set_test_mode(true);
+
     // Define a fake uploader that reports back the submission URL
     // using a crossbeam channel.
     #[derive(Debug)]
@@ -773,6 +777,8 @@ fn no_sending_of_deletion_ping_if_unchanged_outside_of_run() {
     let _lock = lock_test();
 
     let (s, r) = crossbeam_channel::bounded::<String>(1);
+
+    glean_core::glean_set_test_mode(true);
 
     // Define a fake uploader that reports back the submission URL
     // using a crossbeam channel.
@@ -1119,6 +1125,8 @@ fn flipping_upload_enabled_respects_order_of_events() {
 
     let (s, r) = crossbeam_channel::bounded::<String>(1);
 
+    glean_core::glean_set_test_mode(true);
+
     // Define a fake uploader that reports back the submission URL
     // using a crossbeam channel.
     #[derive(Debug)]
@@ -1455,6 +1463,8 @@ fn configure_ping_throttling() {
     let _lock = lock_test();
 
     let (s, r) = crossbeam_channel::bounded::<String>(1);
+
+    glean_core::glean_set_test_mode(true);
 
     // Define a fake uploader that reports back the submission URL
     // using a crossbeam channel.
