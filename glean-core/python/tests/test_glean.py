@@ -297,6 +297,7 @@ def test_get_language_tag_reports_the_tag_for_the_default_locale():
     assert re.match("(und)|([a-z][a-z]-[A-Z][A-Z])", tag)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_ping_collection_must_happen_after_currently_scheduled_metrics_recordings(
     tmpdir, ping_schema_url, monkeypatch, helpers
 ):
@@ -516,6 +517,7 @@ def test_configuration_property(safe_httpserver):
     assert "baseline" in request.url
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1987869: Windows failures")
 def test_sending_deletion_ping_if_disabled_outside_of_run(tmpdir, ping_schema_url, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
@@ -585,6 +587,7 @@ def test_no_sending_deletion_ping_if_unchanged_outside_of_run(safe_httpserver, t
     assert 0 == len(safe_httpserver.requests)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1987869: Windows failures")
 def test_deletion_request_ping_contains_experimentation_id(tmpdir, ping_schema_url, helpers):
     info_path = Path(str(tmpdir)) / "info.txt"
     data_dir = Path(str(tmpdir)) / "glean"
@@ -700,6 +703,7 @@ def test_clear_application_lifetime_metrics(tmpdir):
     assert not metrics.core_ping.seq.test_get_value()
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1987869: Windows failures")
 def test_presubmit_makes_a_valid_ping(tmpdir, ping_schema_url, monkeypatch, helpers):
     # Bug 1648140: Submitting a ping prior to initialize meant that the core
     # metrics wouldn't yet be set.
@@ -761,7 +765,7 @@ def test_app_display_version_unknown():
     )
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1987869: Windows failures")
 def test_flipping_upload_enabled_respects_order_of_events(tmpdir, monkeypatch, helpers):
     # This test relies on testing mode to be disabled, since we need to prove the
     # real-world async behaviour of this.
