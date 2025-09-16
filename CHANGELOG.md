@@ -1,6 +1,12 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...main)
+
+# v65.1.1 (2025-09-16)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
+* General
+  * Remove newly added call to set test-mode in `test_reset_glean`, instead setting test-mode only in necessary tests.
 
 # v65.1.0 (2025-09-09)
 

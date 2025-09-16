@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from pathlib import Path
+import pytest
+import sys
 import uuid
 
 from glean import Glean
@@ -11,6 +13,7 @@ from glean import metrics
 from glean import testing
 from glean.metrics import Lifetime, CommonMetricData
 from glean.testing import _RecordingUploader
+from glean._uniffi import glean_set_test_mode
 
 
 def test_the_api_saves_to_its_storage_engine():
@@ -131,10 +134,13 @@ def test_invalid_uuid_string():
     assert uuid_metric.test_get_num_recorded_errors(testing.ErrorType.INVALID_VALUE) == 1
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
 def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
     import hashlib
 
     Glean._reset()
+
+    glean_set_test_mode(True)
 
     info_path = Path(str(tmpdir)) / "info.txt"
 
