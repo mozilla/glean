@@ -15,7 +15,7 @@ public class HttpPingUploader: PingUploader {
     struct Constants {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
         static let logTag = "glean/HttpPingUploader"
-        static let connectionTimeout = 10000
+        static let connectionTimeout = 10
     }
 
     private let logger = Logger(tag: Constants.logTag)
@@ -90,33 +90,36 @@ public class HttpPingUploader: PingUploader {
     ///     * headers: Map of headers from Glean to annotate ping with
     ///
     /// - returns: Optional `URLRequest` object with the configured headings set.
-    func buildRequest(url: String, data: Data, headers: [String: String])
-        -> URLRequest? {
-        if let url = URL(string: url) {
-            var request = URLRequest(url: url)
-            for (field, value) in headers {
-                request.addValue(value, forHTTPHeaderField: field)
-            }
-            request.timeoutInterval = TimeInterval(Constants.connectionTimeout)
-            request.httpMethod = "POST"
-            request.httpShouldHandleCookies = false
-
-            // NOTE: We're using `URLSession.uploadTask` which ignores the `httpBody` and
-            // instead takes the body payload as a parameter to add to the request.
-            // However in tests we're using OHHTTPStubs to stub out the HTTP upload.
-            // It has the known limitation that it doesn't simulate data upload,
-            // because the underlying protocol doesn't expose a hook for that.
-            // By setting `httpBody` here the data is still attached to the request,
-            // so OHHTTPStubs sees it.
-            // It shouldn't be too bad memory-wise and not duplicate the data in memory.
-            // This should only be a reference and Swift keeps track of all the places it's needed.
-            //
-            // See https://github.com/AliSoftware/OHHTTPStubs#known-limitations.
-            request.httpBody = data
-
-            return request
+    func buildRequest(
+        url: String,
+        data: Data,
+        headers: [String: String]
+    ) -> URLRequest? {
+        guard let url = URL(string: url) else {
+            return nil
         }
 
-        return nil
+        var request = URLRequest(url: url)
+        for (field, value) in headers {
+            request.addValue(value, forHTTPHeaderField: field)
+        }
+        request.timeoutInterval = TimeInterval(Constants.connectionTimeout)
+        request.httpMethod = "POST"
+        request.httpShouldHandleCookies = false
+
+        // NOTE: We're using `URLSession.uploadTask` which ignores the `httpBody` and
+        // instead takes the body payload as a parameter to add to the request.
+        // However in tests we're using OHHTTPStubs to stub out the HTTP upload.
+        // It has the known limitation that it doesn't simulate data upload,
+        // because the underlying protocol doesn't expose a hook for that.
+        // By setting `httpBody` here the data is still attached to the request,
+        // so OHHTTPStubs sees it.
+        // It shouldn't be too bad memory-wise and not duplicate the data in memory.
+        // This should only be a reference and Swift keeps track of all the places it's needed.
+        //
+        // See https://github.com/AliSoftware/OHHTTPStubs#known-limitations.
+        request.httpBody = data
+
+        return request
     }
 }
