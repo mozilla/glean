@@ -1,0 +1,18 @@
+[package]
+name = "rapid-metrics"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "MIT"
+
+[dependencies]
+env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
+glean = { path = "../../glean-core/rlb" }
+log = "0.4.28"
+fastrand = "2.3.0"
+serde_json = "1.0.44"
+tempfile = "3.3.0"
+xflags = "0.3.2"
+
+[build-dependencies]
+glean-build = { path = "../../glean-core/build" }
