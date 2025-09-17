@@ -1,0 +1,83 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK. They are
+# automatically converted to Rust code at build time using the `glean_parser`
+# PyPI package.
+
+---
+
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+test.metrics:
+  sample_boolean:
+    type: boolean
+    description: |
+      Just testing booleans
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+
+  sample_counter:
+    type: counter
+    description: |
+      Just testing counter.
+    bugs:
+      - https://bugzilla.mozilla.org/1907991
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    no_lint:
+      - COMMON_PREFIX
+
+  sample_string:
+    type: string
+    description: |
+      Just testing string.
+    bugs:
+      - https://bugzilla.mozilla.org/1907991
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    no_lint:
+      - COMMON_PREFIX
+
+  static_static:
+    type: dual_labeled_counter
+    description: >
+      A dual labeled counter with static keys and categories
+    dual_labels:
+      key:
+        description: >
+          The key for the dual labeled counter
+        labels:
+          - key1
+          - key2
+      category:
+        description: >
+          The category for the dual labeled counter
+        labels:
+          - category1
+          - category2
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
