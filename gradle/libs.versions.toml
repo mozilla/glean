@@ -38,9 +38,9 @@ androidx-test-uiautomator = "2.3.0"
 
 # Third Party Testing
 junit = "4.13.2"
-mockito = "5.18.0"
+mockito = "5.20.0"
 mockwebserver = "5.1.0"
-robolectric = "4.15.1"
+robolectric = "4.16"
 
 # Miscellaneous Gradle plugins
 jacoco = "0.8.13"
