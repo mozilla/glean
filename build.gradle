@@ -11,7 +11,7 @@ buildscript {
         ndkVersion: "28.2.13676358", // Keep it in sync in TC Dockerfile.
         compileSdkVersion: 36,
         targetSdkVersion: 36,
-        minSdkVersion: 21,
+        minSdkVersion: 26,
         jvmTargetCompatibility: 17,
     ]
 
