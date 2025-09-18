@@ -79,8 +79,19 @@ fn main() {
     _ = &*glean_metrics::usage_reporting;
     glean::initialize(cfg, client_info);
 
-    for _ in 0..maxn {
-        let coin = rng.random_range(0..4);
+    let mut timer_id = None;
+    let mut timer_id_start = 0;
+
+    for i in 0..maxn {
+        let coin = rng.random_range(0..5);
+
+        if timer_id.is_some() {
+            if (i - timer_id_start) == 10 {
+                log::info!("Got timer. Stopping timings after 10 rounds.");
+                let Some(timer_id) = timer_id.take() else { unreachable!() };
+                glean_metrics::test_metrics::timings.stop_and_accumulate(timer_id);
+            }
+        }
 
         match coin {
             0 => {
@@ -105,6 +116,15 @@ fn main() {
                 log::info!("Setting string val={val}");
                 glean_metrics::test_metrics::sample_string.set(val);
             },
+            4 => {
+                if let Some(timer_id) = timer_id.take() {
+                    log::info!("Got timer. Stopping timings.");
+                    glean_metrics::test_metrics::timings.stop_and_accumulate(timer_id);
+                }
+                log::info!("Starting timings.");
+                timer_id = Some(glean_metrics::test_metrics::timings.start());
+                timer_id_start = i;
+            }
             _ => unreachable!(),
         }
     }

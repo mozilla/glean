@@ -57,6 +57,23 @@ test.metrics:
     no_lint:
       - COMMON_PREFIX
 
+  timings:
+    type: timing_distribution
+    time_unit: millisecond
+    description: |
+      Just testing timing_distribution.
+    bugs:
+      - https://bugzilla.mozilla.org/1907991
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    no_lint:
+      - COMMON_PREFIX
+
   static_static:
     type: dual_labeled_counter
     description: >
