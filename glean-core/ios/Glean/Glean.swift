@@ -72,11 +72,12 @@ public struct BuildInfo: Sendable {
     }
 }
 
+// TODO: 1987503 Make Glean actually sendable
 // swiftlint:disable type_body_length
 /// The main Glean API.
 ///
 /// This is exposed through the global `Glean.shared` object.
-public class Glean {
+public final class Glean: @unchecked Sendable {
     /// The main Glean object.
     ///
     /// ```swift
