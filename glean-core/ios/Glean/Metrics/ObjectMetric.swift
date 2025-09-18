@@ -25,7 +25,7 @@ extension Array: ObjectSerialize where Element: Codable {
 ///
 /// The Events API only exposes the `ObjectMetricType.set(obj:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public class ObjectMetricType<K: ObjectSerialize> {
+public final class ObjectMetricType<K: ObjectSerialize>: Sendable {
     let inner: ObjectMetric
 
     /// The public constructor used by automatically generated metrics.
