@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...main)
 
+* Swift
+  * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
+
 # v65.2.1 (2025-09-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...v65.2.1)
@@ -22,6 +25,7 @@
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
+
 * General
   * Remove newly added call to set test-mode in `test_reset_glean`, instead setting test-mode only in necessary tests.
 
