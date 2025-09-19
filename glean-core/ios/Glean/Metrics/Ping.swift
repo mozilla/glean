@@ -28,7 +28,8 @@ public enum NoReasonCodes: ReasonCodes {
 ///
 /// The Ping API only exposes the `Ping.sumbit()` method, which collects and
 /// schedules a ping for eventual upload.
-public class Ping<ReasonCodesEnum: ReasonCodes> {
+// TODO: Make Ping actually sendable, blocked by testCallback
+public final class Ping<ReasonCodesEnum: ReasonCodes>: @unchecked Sendable {
     let name: String
     let reasonCodes: [String]
     let innerPing: PingType

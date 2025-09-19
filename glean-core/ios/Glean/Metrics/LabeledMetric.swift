@@ -10,7 +10,8 @@
 /// Unlike most metric types, LabeledMetricType does not have its own corresponding storage engine,
 /// but records metrics for the underlying metric type `T` in the storage engine for that type.
 /// The only difference is that labeled metrics are stored with the special key `$category.$name/$label`.
-public class LabeledMetricType<T> {
+// TODO: Make LabeledMetricType actaully sendable.
+public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
     let disabled: Bool
     let sendInPings: [String]
     let subMetric: T
