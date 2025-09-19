@@ -1039,6 +1039,8 @@ glean.health:
         determined, it will default to `0`.
       - `file_count`: The number of files in the directory. If the directory does not exist,
         this will be `0`.
+      - `error_message`: If there was an error accessing the directory, this will contain a
+        brief description of the error. If there was no error, this will be null.
       - `files`: An array of objects, each containing:
         - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
           A uuid representing the doc-id of a pending ping.
@@ -1050,6 +1052,8 @@ glean.health:
           it will default to `0`.
         - `file_size`: The size of the file in bytes. This can be just about any size but a
           `0` value indicates the file is empty.
+        - `error_message`: If there was an error accessing the file, this will contain a brief
+          description of the error. If there was no error, this will be null.
     notification_emails:
       - glean-team@mozilla.org
       - tlong@mozilla.com
