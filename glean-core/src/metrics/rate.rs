@@ -178,7 +178,9 @@ impl RateMetric {
     }
 }
 
-impl TestGetValue<Rate> for RateMetric {
+impl TestGetValue for RateMetric {
+    type Output = Rate;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a pair of integers.

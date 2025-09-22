@@ -9,7 +9,7 @@ use std::time::Duration;
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Timespan: TestGetValue<u64> {
+pub trait Timespan: TestGetValue<Output = u64> {
     /// Starts tracking time for the provided metric.
     ///
     /// This uses an internal monotonic timer.

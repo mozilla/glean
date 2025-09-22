@@ -145,7 +145,9 @@ impl UuidMetric {
     }
 }
 
-impl TestGetValue<String> for UuidMetric {
+impl TestGetValue for UuidMetric {
+    type Output = String;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a string.

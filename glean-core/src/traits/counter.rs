@@ -8,7 +8,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Counter: TestGetValue<i32> {
+pub trait Counter: TestGetValue<Output = i32> {
     /// Increases the counter by `amount`.
     ///
     /// # Arguments

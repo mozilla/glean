@@ -146,7 +146,9 @@ impl UrlMetric {
     }
 }
 
-impl TestGetValue<String> for UrlMetric {
+impl TestGetValue for UrlMetric {
+    type Output = String;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a string.

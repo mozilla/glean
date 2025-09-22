@@ -127,7 +127,9 @@ impl StringMetric {
     }
 }
 
-impl TestGetValue<String> for StringMetric {
+impl TestGetValue for StringMetric {
+    type Output = String;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a string.
