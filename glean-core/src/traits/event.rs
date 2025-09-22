@@ -76,7 +76,7 @@ impl TryFrom<&str> for NoExtraKeys {
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Event: TestGetValue<Vec<RecordedEvent>> {
+pub trait Event: TestGetValue<Output = Vec<RecordedEvent>> {
     /// The type of the allowed extra keys for this event.
     type Extra: ExtraKeys;
 

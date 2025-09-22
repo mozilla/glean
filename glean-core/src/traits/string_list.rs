@@ -8,7 +8,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait StringList: TestGetValue<Vec<String>> {
+pub trait StringList: TestGetValue<Output = Vec<String>> {
     /// Adds a new string to the list.
     ///
     /// # Arguments

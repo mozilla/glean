@@ -10,7 +10,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Datetime: TestGetValue<crate::metrics::Datetime> {
+pub trait Datetime: TestGetValue<Output = crate::metrics::Datetime> {
     /// Sets the metric to a date/time which including the timezone offset.
     ///
     /// # Arguments

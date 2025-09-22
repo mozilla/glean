@@ -613,7 +613,9 @@ impl TimingDistributionMetric {
     }
 }
 
-impl TestGetValue<DistributionData> for TimingDistributionMetric {
+impl TestGetValue for TimingDistributionMetric {
+    type Output = DistributionData;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

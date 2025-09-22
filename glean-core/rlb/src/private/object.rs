@@ -39,7 +39,9 @@ impl<'a, K> MetricIdentifier<'a> for ObjectMetric<K> {
     }
 }
 
-impl<K> TestGetValue<JsonValue> for ObjectMetric<K> {
+impl<K> TestGetValue for ObjectMetric<K> {
+    type Output = JsonValue;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as JSON-encoded string.

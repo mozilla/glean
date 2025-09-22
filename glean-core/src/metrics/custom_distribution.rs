@@ -303,7 +303,9 @@ impl CustomDistributionMetric {
     }
 }
 
-impl TestGetValue<DistributionData> for CustomDistributionMetric {
+impl TestGetValue for CustomDistributionMetric {
+    type Output = DistributionData;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

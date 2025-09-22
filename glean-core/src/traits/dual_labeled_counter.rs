@@ -9,7 +9,7 @@ use std::collections::HashMap;
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait DualLabeledCounter: TestGetValue<HashMap<String, HashMap<String, i32>>> {
+pub trait DualLabeledCounter: TestGetValue<Output = HashMap<String, HashMap<String, i32>>> {
     /// Gets a specific counter for a given key/category pair.
     ///
     /// If a set of acceptable keys or categorires were specified in the `metrics.yaml` file,

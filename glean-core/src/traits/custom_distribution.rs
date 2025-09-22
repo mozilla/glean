@@ -9,7 +9,7 @@ use crate::{DistributionData, ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait CustomDistribution: TestGetValue<DistributionData> {
+pub trait CustomDistribution: TestGetValue<Output = DistributionData> {
     /// Accumulates the provided signed samples in the metric.
     ///
     /// This is required so that the platform-specific code can provide us with

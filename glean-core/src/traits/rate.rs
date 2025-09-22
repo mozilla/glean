@@ -7,7 +7,7 @@ use crate::{ErrorType, TestGetValue};
 // When changing this trait, ensure all operations are implemented in the
 // related type in `../metrics`. (Except test_get_num_errors)
 /// A description for the [`RateMetric`](crate::metrics::RateMetric) type.
-pub trait Rate: TestGetValue<crate::Rate> {
+pub trait Rate: TestGetValue<Output = crate::Rate> {
     /// Increases the numerator by `amount`.
     ///
     /// # Arguments

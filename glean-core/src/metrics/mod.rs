@@ -270,7 +270,10 @@ pub trait MetricIdentifier<'a> {
 }
 
 /// [`TestGetValue`] describes an interface for retrieving the value for a given metric
-pub trait TestGetValue<T> {
+pub trait TestGetValue {
+    /// The output type of `test_get_value`
+    type Output;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Returns the currently stored value of the appropriate type for the given metric.
@@ -285,7 +288,7 @@ pub trait TestGetValue<T> {
     /// # Returns
     ///
     /// The stored value or `None` if nothing stored.
-    fn test_get_value(&self, ping_name: Option<String>) -> Option<T>;
+    fn test_get_value(&self, ping_name: Option<String>) -> Option<Self::Output>;
 }
 
 // Provide a blanket implementation for MetricIdentifier for all the types
