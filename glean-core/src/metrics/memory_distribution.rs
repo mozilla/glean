@@ -324,7 +324,9 @@ impl MemoryDistributionMetric {
     }
 }
 
-impl TestGetValue<DistributionData> for MemoryDistributionMetric {
+impl TestGetValue for MemoryDistributionMetric {
+    type Output = DistributionData;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value.

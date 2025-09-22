@@ -8,7 +8,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Quantity: TestGetValue<i64> {
+pub trait Quantity: TestGetValue<Output = i64> {
     /// Sets the value. Must be non-negative.
     ///
     /// # Arguments
