@@ -19,6 +19,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...v65.2.0)
 
+* Rust
+  *  Rust: Use an associated type for `TestGetValue` ([#3259](https://github.com/mozilla/glean/pull/3259))
 * Swift
   * Glean for iOS is now being built with Xcode 16.2 ([#3189](https://github.com/mozilla/glean/pull/3189))
 * General

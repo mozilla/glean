@@ -127,7 +127,9 @@ impl DenominatorMetric {
     }
 }
 
-impl TestGetValue<i32> for DenominatorMetric {
+impl TestGetValue for DenominatorMetric {
+    type Output = i32;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

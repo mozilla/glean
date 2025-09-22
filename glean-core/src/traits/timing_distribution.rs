@@ -12,7 +12,7 @@ use std::time::Duration;
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait TimingDistribution: TestGetValue<DistributionData> {
+pub trait TimingDistribution: TestGetValue<Output = DistributionData> {
     /// Start tracking time for the provided metric.
     /// Multiple timers can run simultaneously.
     ///

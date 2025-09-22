@@ -285,7 +285,8 @@ impl TimespanMetric {
     }
 }
 
-impl TestGetValue<i64> for TimespanMetric {
+impl TestGetValue for TimespanMetric {
+    type Output = i64;
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.
