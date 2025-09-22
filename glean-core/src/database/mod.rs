@@ -482,7 +482,7 @@ impl Database {
                 if let Err(e) =
                     self.record_per_lifetime(data.inner.lifetime, ping_name, &name, value)
                 {
-                    log::error!(
+                    log::warn!(
                         "Failed to record metric '{}' into {}: {:?}",
                         data.base_identifier(),
                         ping_name,
@@ -553,7 +553,7 @@ impl Database {
                     &name,
                     &mut transform,
                 ) {
-                    log::error!(
+                    log::warn!(
                         "Failed to record metric '{}' into {}: {:?}",
                         data.base_identifier(),
                         ping_name,

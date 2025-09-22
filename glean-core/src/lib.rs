@@ -628,7 +628,7 @@ fn uploader_shutdown() {
     let handle = thread::spawn("glean.shutdown", move || {
         let state = global_state().lock().unwrap();
         if let Err(e) = state.callbacks.shutdown() {
-            log::error!("Shutdown callback failed: {e:?}");
+            log::warn!("Shutdown callback failed: {e:?}");
         }
 
         // Best-effort sending. The other side might have timed out already.
@@ -674,7 +674,7 @@ pub fn shutdown() {
     if !was_initialize_called() {
         log::warn!("Shutdown called before Glean is initialized");
         if let Err(e) = dispatcher::kill() {
-            log::error!("Can't kill dispatcher thread: {:?}", e);
+            log::warn!("Can't kill dispatcher thread: {:?}", e);
         }
         return;
     }
@@ -695,7 +695,7 @@ pub fn shutdown() {
     if core::global_glean().is_none() {
         log::warn!("Waiting for Glean initialization timed out. Exiting.");
         if let Err(e) = dispatcher::kill() {
-            log::error!("Can't kill dispatcher thread: {:?}", e);
+            log::warn!("Can't kill dispatcher thread: {:?}", e);
         }
         return;
     }
@@ -729,14 +729,14 @@ pub fn shutdown() {
             .set_stop_and_accumulate(glean, timer_id, stop_time);
     });
     if blocked.is_err() {
-        log::error!(
+        log::warn!(
             "Timeout while blocking on the dispatcher. No further shutdown cleanup will happen."
         );
         return;
     }
 
     if let Err(e) = dispatcher::shutdown() {
-        log::error!("Can't shutdown dispatcher thread: {:?}", e);
+        log::warn!("Can't shutdown dispatcher thread: {:?}", e);
     }
 
     uploader_shutdown();
@@ -744,7 +744,7 @@ pub fn shutdown() {
     // Be sure to call this _after_ draining the dispatcher
     core::with_glean(|glean| {
         if let Err(e) = glean.persist_ping_lifetime_data() {
-            log::error!("Can't persist ping lifetime data: {:?}", e);
+            log::warn!("Can't persist ping lifetime data: {:?}", e);
         }
     });
 }
