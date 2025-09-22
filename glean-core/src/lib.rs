@@ -748,7 +748,7 @@ pub fn shutdown() {
     // Be sure to call this _after_ draining the dispatcher
     core::with_glean(|glean| {
         if let Err(e) = glean.persist_ping_lifetime_data() {
-            log::error!("Can't persist ping lifetime data: {:?}", e);
+            log::info!("Can't persist ping lifetime data: {:?}", e);
         }
     });
 }
