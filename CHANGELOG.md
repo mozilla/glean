@@ -4,6 +4,8 @@
 
 * Swift
   * Glean for iOS is now being built with Xcode 16.2 ([#3189](https://github.com/mozilla/glean/pull/3189))
+* General
+  * Report running count of initializations in "health" ping ([bug 1990624](https://bugzilla.mozilla.org/show_bug.cgi?id=1990624))
 
 # v65.1.1 (2025-09-16)
 
