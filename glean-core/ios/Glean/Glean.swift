@@ -72,7 +72,7 @@ public struct BuildInfo: Sendable {
     }
 }
 
-// TODO: Make Glean actually sendable
+// TODO: 1987503 Make Glean actually sendable
 // swiftlint:disable type_body_length
 /// The main Glean API.
 ///
