@@ -380,6 +380,8 @@ impl DatabaseMetrics {
 pub struct HealthMetrics {
     // Information about the data directory prior to Glean initialization.
     pub data_directory_info: ObjectMetric,
+    // A running count of the number of initializations.
+    pub init_count: CounterMetric,
 }
 
 impl HealthMetrics {
@@ -390,6 +392,14 @@ impl HealthMetrics {
                 category: "glean.health".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
+            init_count: CounterMetric::new(CommonMetricData {
+                name: "init_count".into(),
+                category: "glean.health".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::User,
                 disabled: false,
                 dynamic_label: None,
             }),

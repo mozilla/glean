@@ -1058,8 +1058,8 @@ glean.health:
       - glean-team@mozilla.org
       - tlong@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?1667815
-      - https://bugzilla.mozilla.org/show_bug.cgi?1982711
+      - https://bugzilla.mozilla.org/1667815
+      - https://bugzilla.mozilla.org/1982711
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
     data_sensitivity:
@@ -1100,3 +1100,21 @@ glean.health:
                   type: number
                 error_message:
                   type: string
+
+  init_count:
+    type: counter
+    lifetime: user
+    description: |
+      A running count of how many times the Glean SDK has been initialized.
+    notification_emails:
+      - glean-team@mozilla.org
+      - chutten@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1990624
+    data_reviews:
+      - https://bugzilla.mozilla.org/1990624
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health

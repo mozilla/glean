@@ -112,4 +112,20 @@ fn test_pre_post_init_health_pings_exist() {
                 && body.get("ping_info").unwrap().get("reason").unwrap() == "post_init")
             .count()
     );
+    // Ensure both "health" pings have the same init count.
+    assert_eq!(
+        2,
+        pings
+            .iter()
+            .filter(|(url, body, _)| url.contains("health")
+                && body
+                    .get("metrics")
+                    .unwrap()
+                    .get("counter")
+                    .unwrap()
+                    .get("glean.health.init_count")
+                    .unwrap()
+                    == 1)
+            .count()
+    );
 }
