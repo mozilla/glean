@@ -11,7 +11,7 @@ import Foundation
 ///
 /// The URL API only exposes the `UrlMetricType.set(_:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public class UrlMetricType {
+public final class UrlMetricType: Sendable {
     let inner: UrlMetric
 
     /// The public constructor used by automatically generated metrics.
