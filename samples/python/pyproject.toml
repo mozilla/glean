@@ -1,3 +1,10 @@
 [project]
 name = "glean-sample"
 version = "0.0.1"
+requires-python = ">=3.9"
+dependencies = [
+    "glean-sdk",
+]
+
+[tool.uv.sources]
+glean-sdk = { path = "../../", editable = true }

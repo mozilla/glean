@@ -14,6 +14,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::RwLock;
 use std::time::{Duration, Instant};
 
+use crate::internal_metrics::LoadSizesObject;
 use crate::ErrorKind;
 
 use malloc_size_of::MallocSizeOf;
@@ -144,6 +145,9 @@ pub struct Database {
     /// Times an Rkv write-commit took.
     /// Re-applied as samples in a timing distribution later.
     pub(crate) write_timings: RefCell<Vec<i64>>,
+
+    /// The database size at various phases of loading.
+    load_sizes: Option<LoadSizesObject>,
 }
 
 impl MallocSizeOf for Database {
@@ -228,11 +232,18 @@ impl Database {
         ping_lifetime_max_time: Duration,
     ) -> Result<Self> {
         let path = data_path.join("db");
+        let mut load_sizes = LoadSizesObject {
+            new: database_size(&path).map(|x| x.get() as i64),
+            ..Default::default()
+        };
         log::debug!("Database path: {:?}", path.display());
         let file_size = database_size(&path);
 
+        load_sizes.open = file_size.map(|x| x.get() as i64);
         let (rkv, rkv_load_state) = Self::open_rkv(&path)?;
+        load_sizes.post_open = database_size(&path).map(|x| x.get() as i64);
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
+        load_sizes.post_open_user = database_size(&path).map(|x| x.get() as i64);
         let ping_store = rkv.open_single(Lifetime::Ping.as_str(), StoreOptions::create())?;
         let application_store =
             rkv.open_single(Lifetime::Application.as_str(), StoreOptions::create())?;
@@ -248,7 +259,7 @@ impl Database {
 
         let now = Instant::now();
 
-        let db = Self {
+        let mut db = Self {
             rkv,
             user_store,
             ping_store,
@@ -261,9 +272,13 @@ impl Database {
             file_size,
             rkv_load_state,
             write_timings,
+            load_sizes: Some(load_sizes),
         };
 
         db.load_ping_lifetime_data();
+        // Safe unwrap: just set it to Some above.
+        db.load_sizes.as_mut().unwrap().post_load_ping_lifetime_data =
+            database_size(&path).map(|x| x.get() as i64);
 
         Ok(db)
     }
@@ -280,6 +295,11 @@ impl Database {
         } else {
             None
         }
+    }
+
+    /// Get the load events.
+    pub fn load_sizes(&mut self) -> Option<LoadSizesObject> {
+        self.load_sizes.take()
     }
 
     fn get_store(&self, lifetime: Lifetime) -> &SingleStore {

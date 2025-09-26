@@ -419,6 +419,10 @@ fn initialize_inner(
 
         log::info!("Glean initialized");
 
+        core::with_glean(|glean| {
+            glean.health_metrics.init_count.add_sync(glean, 1);
+        });
+
         setup_state(State {
             client_info,
             callbacks,

@@ -1,6 +1,16 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...main)
+
+# v65.2.0 (2025-09-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.1.1...v65.2.0)
+
+* Swift
+  * Glean for iOS is now being built with Xcode 16.2 ([#3189](https://github.com/mozilla/glean/pull/3189))
+* General
+  * Report running count of initializations in "health" ping ([bug 1990624](https://bugzilla.mozilla.org/show_bug.cgi?id=1990624))
+  * Report db file sizes during init phases ([bug 1990627](https://bugzilla.mozilla.org/show_bug.cgi?id=1990627))
 
 # v65.1.1 (2025-09-16)
 

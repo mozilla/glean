@@ -893,6 +893,34 @@ glean.database:
     expires: never
     disabled: true
 
+  load_sizes:
+    type: object
+    description: |
+      The size of the db file during specific phases of initialization.
+    bugs:
+      - https://bugzilla.mozilla.org/1990627
+    data_reviews:
+      - https://bugzilla.mozilla.org/1990627
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    expires: 2025-12-01
+    structure:
+      type: object
+      properties:
+        new:
+          type: number
+        open:
+          type: number
+        post_open:
+          type: number
+        post_open_user:
+          type: number
+        post_load_ping_lifetime_data:
+          type: number
+
 glean.validation:
   foreground_count:
     type: counter
@@ -1039,6 +1067,8 @@ glean.health:
         determined, it will default to `0`.
       - `file_count`: The number of files in the directory. If the directory does not exist,
         this will be `0`.
+      - `error_message`: If there was an error accessing the directory, this will contain a
+        brief description of the error. If there was no error, this will be null.
       - `files`: An array of objects, each containing:
         - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
           A uuid representing the doc-id of a pending ping.
@@ -1050,12 +1080,14 @@ glean.health:
           it will default to `0`.
         - `file_size`: The size of the file in bytes. This can be just about any size but a
           `0` value indicates the file is empty.
+        - `error_message`: If there was an error accessing the file, this will contain a brief
+          description of the error. If there was no error, this will be null.
     notification_emails:
       - glean-team@mozilla.org
       - tlong@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?1667815
-      - https://bugzilla.mozilla.org/show_bug.cgi?1982711
+      - https://bugzilla.mozilla.org/1667815
+      - https://bugzilla.mozilla.org/1982711
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1982711#c3
     data_sensitivity:
@@ -1096,3 +1128,21 @@ glean.health:
                   type: number
                 error_message:
                   type: string
+
+  init_count:
+    type: counter
+    lifetime: user
+    description: |
+      A running count of how many times the Glean SDK has been initialized.
+    notification_emails:
+      - glean-team@mozilla.org
+      - chutten@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1990624
+    data_reviews:
+      - https://bugzilla.mozilla.org/1990624
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health

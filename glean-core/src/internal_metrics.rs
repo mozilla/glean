@@ -335,6 +335,9 @@ pub struct DatabaseMetrics {
 
     /// The time it takes for a write-commit for the Glean database.
     pub write_time: TimingDistributionMetric,
+
+    /// The database size at specific phases of initialization.
+    pub load_sizes: ObjectMetric,
 }
 
 impl DatabaseMetrics {
@@ -372,6 +375,15 @@ impl DatabaseMetrics {
                 },
                 TimeUnit::Microsecond,
             ),
+
+            load_sizes: ObjectMetric::new(CommonMetricData {
+                name: "load_sizes".into(),
+                category: "glean.database".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
         }
     }
 }
@@ -380,6 +392,8 @@ impl DatabaseMetrics {
 pub struct HealthMetrics {
     // Information about the data directory prior to Glean initialization.
     pub data_directory_info: ObjectMetric,
+    // A running count of the number of initializations.
+    pub init_count: CounterMetric,
 }
 
 impl HealthMetrics {
@@ -390,6 +404,14 @@ impl HealthMetrics {
                 category: "glean.health".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
+            init_count: CounterMetric::new(CommonMetricData {
+                name: "init_count".into(),
+                category: "glean.health".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::User,
                 disabled: false,
                 dynamic_label: None,
             }),
@@ -433,4 +455,19 @@ pub struct DataDirectoryInfoObjectItemItemFilesItem {
     pub file_size: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error_message: Option<String>,
+}
+
+#[derive(Debug, Default, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct LoadSizesObject {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub new: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub open: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_open: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_open_user: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_load_ping_lifetime_data: Option<i64>,
 }

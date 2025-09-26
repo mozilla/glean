@@ -3,9 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import os
 
 from glean import Configuration, Glean, load_metrics, load_pings
 
+if not os.environ.get("GLEAN_DEBUG_VIEW_TAG"):
+    os.environ["GLEAN_DEBUG_VIEW_TAG"] = "gleanpy-sample"
 
 config = Configuration()
 
