@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 use crate::event_database::RecordedEvent;
-use crate::{ErrorType, TestGetValue};
+use crate::TestGetValue;
 
 /// Extra keys for events.
 ///
@@ -86,17 +86,4 @@ pub trait Event: TestGetValue<Vec<RecordedEvent>> {
     ///
     /// * `extra` - (optional) An object for the extra keys.
     fn record<M: Into<Option<Self::Extra>>>(&self, extra: M);
-
-    /// **Exported for test purposes.**
-    ///
-    /// Gets the number of recorded errors for the given metric and error type.
-    ///
-    /// # Arguments
-    ///
-    /// * `error` - The type of error
-    ///
-    /// # Returns
-    ///
-    /// The number of errors reported.
-    fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32;
 }

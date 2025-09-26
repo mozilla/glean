@@ -71,6 +71,24 @@ impl<K: traits::ExtraKeys> EventMetric<K> {
     }
 }
 
+// Separately implemented so it doesn't require `K: ExtraKeys`.
+impl<K> EventMetric<K> {
+    /// **Exported for test purposes.**
+    ///
+    /// Gets the number of recorded errors for the given metric and error type.
+    ///
+    /// # Arguments
+    ///
+    /// * `error` - The type of error
+    ///
+    /// # Returns
+    ///
+    /// The number of errors reported.
+    pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        self.inner.test_get_num_recorded_errors(error)
+    }
+}
+
 #[inherent]
 impl<K> TestGetValue<Vec<RecordedEvent>> for EventMetric<K> {
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
@@ -88,10 +106,6 @@ impl<K: traits::ExtraKeys> traits::Event for EventMetric<K> {
             .map(|e| e.into_ffi_extra())
             .unwrap_or_else(HashMap::new);
         self.inner.record(extra);
-    }
-
-    pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
-        self.inner.test_get_num_recorded_errors(error)
     }
 }
 
