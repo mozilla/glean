@@ -12,6 +12,9 @@
   * Report running count of initializations in "health" ping ([bug 1990624](https://bugzilla.mozilla.org/show_bug.cgi?id=1990624))
   * Report db file sizes during init phases ([bug 1990627](https://bugzilla.mozilla.org/show_bug.cgi?id=1990627))
 
+* General
+  * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
