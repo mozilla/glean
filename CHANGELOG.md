@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...main)
+
+# v65.2.1 (2025-09-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...v65.2.1)
+
+* Python
+  * BUGFIX: Fix macOS python wheel deploy
 
 # v65.2.0 (2025-09-26)
 
