@@ -434,6 +434,16 @@
 <a href="#434" id="434">434</a>
 <a href="#435" id="435">435</a>
 <a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -816,6 +826,8 @@
 </span><span class="kw">pub struct </span>HealthMetrics {
     <span class="comment">// Information about the data directory prior to Glean initialization.
     </span><span class="kw">pub </span>data_directory_info: ObjectMetric,
+    <span class="comment">// A running count of the number of initializations.
+    </span><span class="kw">pub </span>init_count: CounterMetric,
 }
 
 <span class="kw">impl </span>HealthMetrics {
@@ -826,6 +838,14 @@
                 category: <span class="string">"glean.health"</span>.into(),
                 send_in_pings: <span class="macro">vec!</span>[<span class="string">"metrics"</span>.into(), <span class="string">"health"</span>.into()],
                 lifetime: Lifetime::Ping,
+                disabled: <span class="bool-val">false</span>,
+                dynamic_label: <span class="prelude-val">None</span>,
+            }),
+            init_count: CounterMetric::new(CommonMetricData {
+                name: <span class="string">"init_count"</span>.into(),
+                category: <span class="string">"glean.health"</span>.into(),
+                send_in_pings: <span class="macro">vec!</span>[<span class="string">"health"</span>.into()],
+                lifetime: Lifetime::User,
                 disabled: <span class="bool-val">false</span>,
                 dynamic_label: <span class="prelude-val">None</span>,
             }),
