@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "glean-sdk"
-version = "63.1.0"
+version = "65.2.0"
 requires-python = ">=3.8"
 classifiers = [
     "Intended Audience :: Developers",

@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...main)
+
+# v65.2.0 (2025-09-26)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v63.1.0...v65.2.0)
 
 * Rust
   * Report more desktop architectures in `client_info.architecture` ([bug 1944694](https://bugzilla.mozilla.org/show_bug.cgi?id=1944694))
