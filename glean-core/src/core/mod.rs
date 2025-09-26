@@ -427,6 +427,17 @@ impl Glean {
                 .rkv_load_error
                 .set_sync(self, rkv_load_state)
         }
+
+        if let Some(load_sizes) = self
+            .data_store
+            .as_mut()
+            .and_then(|database| database.load_sizes())
+        {
+            self.database_metrics.load_sizes.set_sync(
+                self,
+                serde_json::to_value(load_sizes).unwrap_or(serde_json::json!({})),
+            );
+        }
     }
 
     /// Signals that the environment is ready to submit pings.

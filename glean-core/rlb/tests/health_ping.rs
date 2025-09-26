@@ -81,7 +81,7 @@ fn test_pre_post_init_health_pings_exist() {
         .build();
     common::initialize(cfg);
 
-    glean::shutdown();
+    glean_core::glean_test_destroy_glean(false, Some(tmpname.display().to_string()));
 
     // Check for the initialization pings.
     let pings = get_pings(&tmpname.join("pending_pings"));
@@ -96,14 +96,14 @@ fn test_pre_post_init_health_pings_exist() {
             .filter(|(url, _, _)| url.contains("health"))
             .count()
     );
-    assert_eq!(
-        1,
-        pings
-            .iter()
-            .filter(|(url, body, _)| url.contains("health")
-                && body.get("ping_info").unwrap().get("reason").unwrap() == "pre_init")
-            .count()
-    );
+    let preinits: Vec<_> = pings
+        .iter()
+        .filter(|(url, body, _)| {
+            url.contains("health")
+                && body.get("ping_info").unwrap().get("reason").unwrap() == "pre_init"
+        })
+        .collect();
+    assert_eq!(1, preinits.len());
     assert_eq!(
         1,
         pings
@@ -127,5 +127,71 @@ fn test_pre_post_init_health_pings_exist() {
                     .unwrap()
                     == 1)
             .count()
+    );
+    // An initial preinit "health" ping will show no db file sizes
+    let load_sizes = preinits[0]
+        .1
+        .get("metrics")
+        .unwrap()
+        .get("object")
+        .unwrap()
+        .get("glean.database.load_sizes")
+        .unwrap();
+    assert_eq!(None, load_sizes.get("new"));
+    assert_eq!(None, load_sizes.get("open"));
+    assert_eq!(None, load_sizes.get("post_open"));
+    assert_eq!(None, load_sizes.get("post_open_user"));
+    assert_eq!(None, load_sizes.get("post_load_ping_lifetime_data"));
+
+    let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
+        .with_server_endpoint("invalid-test-host")
+        .with_uploader(FakeUploader)
+        .build();
+    common::initialize(cfg);
+
+    glean::shutdown();
+
+    let pings = get_pings(&tmpname.join("pending_pings"));
+    let second_preinit: Vec<_> = pings
+        .iter()
+        .filter(|(url, body, _)| {
+            url.contains("health")
+                && body.get("ping_info").unwrap().get("reason").unwrap() == "pre_init"
+                && body.get("ping_info").unwrap().get("seq").unwrap() == 2
+        })
+        .collect();
+
+    // We should have a second "pre_init"-reason "health" ping now.
+    assert_eq!(1, second_preinit.len());
+
+    let load_sizes = second_preinit[0]
+        .1
+        .get("metrics")
+        .unwrap()
+        .get("object")
+        .unwrap()
+        .get("glean.database.load_sizes")
+        .unwrap();
+    assert_ne!(0, load_sizes.get("new").unwrap().as_i64().unwrap());
+    assert_ne!(0, load_sizes.get("open").unwrap().as_i64().unwrap());
+    assert_ne!(0, load_sizes.get("post_open").unwrap().as_i64().unwrap());
+    assert_ne!(
+        0,
+        load_sizes.get("post_open_user").unwrap().as_i64().unwrap()
+    );
+    assert_ne!(
+        0,
+        load_sizes
+            .get("post_load_ping_lifetime_data")
+            .unwrap()
+            .as_i64()
+            .unwrap()
+    );
+    assert_eq!(
+        load_sizes.get("new").unwrap().as_i64(),
+        load_sizes
+            .get("post_load_ping_lifetime_data")
+            .unwrap()
+            .as_i64()
     );
 }
