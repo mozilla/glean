@@ -1231,7 +1231,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Glean</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">Glean</span> <span class="p">:</span> <span class="kd">@unchecked</span> <span class="kt">Sendable</span></code></pre>
 
                         </div>
                       </div>
@@ -1296,7 +1296,7 @@ that an <code><a href="Classes/EventMetricType.html">EventMetricType</a></code> 
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">NoExtras</span> <span class="p">:</span> <span class="kt"><a href="Protocols/EventExtras.html">EventExtras</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">NoExtras</span> <span class="p">:</span> <span class="kt"><a href="Protocols/EventExtras.html">EventExtras</a></span></code></pre>
 
                         </div>
                       </div>
@@ -1365,7 +1365,7 @@ The only difference is that labeled metrics are stored with the special key <cod
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">LabeledMetricType</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">LabeledMetricType</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kd">@unchecked</span> <span class="kt">Sendable</span> <span class="k">where</span> <span class="kt">T</span> <span class="p">:</span> <span class="kt">Sendable</span></code></pre>
 
                         </div>
                       </div>
@@ -1399,7 +1399,7 @@ data and making sure that limits are enforced.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ObjectMetricType</span><span class="o">&lt;</span><span class="kt">K</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">K</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ObjectSerialize.html">ObjectSerialize</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">ObjectMetricType</span><span class="o">&lt;</span><span class="kt">K</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Sendable</span> <span class="k">where</span> <span class="kt">K</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ObjectSerialize.html">ObjectSerialize</a></span></code></pre>
 
                         </div>
                       </div>
@@ -1432,7 +1432,7 @@ schedules a ping for eventual upload.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Ping</span><span class="o">&lt;</span><span class="kt">ReasonCodesEnum</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">ReasonCodesEnum</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ReasonCodes.html">ReasonCodes</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">Ping</span><span class="o">&lt;</span><span class="kt">ReasonCodesEnum</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kd">@unchecked</span> <span class="kt">Sendable</span> <span class="k">where</span> <span class="kt">ReasonCodesEnum</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ReasonCodes.html">ReasonCodes</a></span></code></pre>
 
                         </div>
                       </div>
@@ -1466,7 +1466,7 @@ data and making sure that limits are enforced.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">UrlMetricType</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">UrlMetricType</span> <span class="p">:</span> <span class="kt">Sendable</span></code></pre>
 
                         </div>
                       </div>
@@ -1573,7 +1573,7 @@ uploader specified in the Glean <code><a href="Structs/Configuration.html">Confi
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-09-26)</p>
+          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-09-29)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
