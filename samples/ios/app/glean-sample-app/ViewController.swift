@@ -70,6 +70,13 @@ class ViewController: UIViewController {
         animals.append("Cat")
         Party.animals.set(animals)
 
+        var ch: Party.ChooserObject = []
+        var f = Party.ChooserObjectItem(key: "fortytwo", value: .number(42))
+        ch.append(f)
+        f = Party.ChooserObjectItem(key: "to-be", value: .boolean(false))
+        ch.append(f)
+        Party.chooser.set(ch)
+
         // This is referencing the event ping named 'click' from the metrics.yaml file. In
         // order to illustrate adding extra information to the event, it is also adding to the
         // 'extras' field a dictionary of values.  Note that the dictionary keys must be
