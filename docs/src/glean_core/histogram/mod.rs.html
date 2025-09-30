@@ -258,18 +258,6 @@
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -396,19 +384,7 @@
     <span class="doccomment">/// Gets a snapshot of all values from the first bucket until one past the last filled bucket,
     /// filling in empty buckets with 0.
     </span><span class="kw">pub fn </span>snapshot_values(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; HashMap&lt;u64, u64&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.values.clone();
-
-        <span class="kw">let </span>max_bucket = <span class="self">self</span>.values.keys().max().cloned().unwrap_or(<span class="number">0</span>);
-
-        <span class="kw">for </span><span class="kw-2">&amp;</span>min_bucket <span class="kw">in </span><span class="self">self</span>.bucketing.ranges() {
-            <span class="comment">// Fill in missing entries.
-            </span><span class="kw">let _ </span>= res.entry(min_bucket).or_insert(<span class="number">0</span>);
-            <span class="comment">// stop one after the last filled bucket
-            </span><span class="kw">if </span>min_bucket &gt; max_bucket {
-                <span class="kw">break</span>;
-            }
-        }
-        res
+        <span class="self">self</span>.values.clone()
     }
 
     <span class="doccomment">/// Clear this histogram.

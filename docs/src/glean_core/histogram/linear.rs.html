@@ -177,6 +177,12 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -216,7 +222,7 @@
 ///
 /// Buckets are pre-computed at instantiation with a linear  distribution from `min` to `max`
 /// and `bucket_count` buckets.
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, MallocSizeOf)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, Eq, MallocSizeOf)]
 </span><span class="kw">pub struct </span>PrecomputedLinear {
     <span class="comment">// Don't serialize the (potentially large) array of ranges, instead compute them on first
     // access.
@@ -225,6 +231,12 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) min: u64,
     <span class="kw">pub</span>(<span class="kw">crate</span>) max: u64,
     <span class="kw">pub</span>(<span class="kw">crate</span>) bucket_count: usize,
+}
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>PrecomputedLinear {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.min == other.min &amp;&amp; <span class="self">self</span>.max == other.max &amp;&amp; <span class="self">self</span>.bucket_count == other.bucket_count
+    }
 }
 
 <span class="kw">impl </span>Bucketing <span class="kw">for </span>PrecomputedLinear {
