@@ -3,8 +3,7 @@
 ## Development
 
 ```
-make dev
-. .venv/bin/activate
+uv sync
 ```
 
 ## Run the sample app
