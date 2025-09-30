@@ -212,7 +212,7 @@ def _object_factory(
         yield (name, newclass)
         yield from _object_factory(f"{name}Item", structure["items"])
     elif structure["type"] == "object":
-        fields = []  # list[tuple[str, type, Any]]
+        fields: List[Tuple[str, Any, Any]] = []
         for itemname, val in structure["properties"].items():
             if val["type"] == "object":
                 fct = _object_factory(f"{name}Item{Camelize(itemname)}Object", val)
@@ -226,6 +226,10 @@ def _object_factory(
                 yield n, ty
                 yield from fct
                 fields.append((itemname, ty, field(default=None)))
+            elif val["type"] == "oneof":
+                # TODO(bug 1992726): We don't actually enforce proper validation here.
+                # We might want to do some runtime checks.
+                fields.append((itemname, Any, field(default=None)))
             else:
                 fields.append((itemname, _struct_type(val["type"]), field(default=None)))
         newclass = make_dataclass(name, fields, bases=(metrics.ObjectSerialize,))
