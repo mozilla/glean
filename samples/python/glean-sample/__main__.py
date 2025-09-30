@@ -35,6 +35,15 @@ metrics.party.balloons.set(balloons)
 # Does not throw an exception, but will record an error
 metrics.party.balloons.set([])
 
+ch = metrics.party.ChooserObject()
+f = metrics.party.ChooserObjectItem(key="fortywo", value=42)
+ch.append(f)
+f = metrics.party.ChooserObjectItem(key="to-be", value=False)
+ch.append(f)
+f = metrics.party.ChooserObjectItem(key="to-be", value=["string"])
+ch.append(f)
+metrics.party.chooser.set(ch)
+
 pings.prototype.submit()
 
 Glean.shutdown()
