@@ -15,6 +15,8 @@ import org.mozilla.samples.gleancore.GleanMetrics.Pings
 import org.mozilla.samples.gleancore.GleanMetrics.Test
 import org.mozilla.samples.gleancore.databinding.ActivityMainBinding
 
+// 42 is magic! It's a test value.
+@Suppress("MagicNumber")
 open class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var serviceIntent: Intent
@@ -53,6 +55,13 @@ open class MainActivity : AppCompatActivity() {
             balloons.add(Party.BalloonsObjectItem(colour = "red", diameter = 5, labels = labels))
             balloons.add(Party.BalloonsObjectItem(colour = "green"))
             Party.balloons.set(balloons)
+
+            val ch = Party.ChooserObject()
+            var f = Party.ChooserObjectItem(key = "fortytwo", value = Party.ChooserObjectItemValueEnum.Number(42))
+            ch.add(f)
+            f = Party.ChooserObjectItem(key = "to-be", value = Party.ChooserObjectItemValueEnum.Boolean(false))
+            ch.add(f)
+            Party.chooser.set(ch)
 
             val animals = Party.AnimalsObject()
             animals.add("Dog")
