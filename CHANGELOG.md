@@ -6,6 +6,7 @@
   * BUGFIX: Correct `glean.database.rkv_load_error`'s category and `glean.upload.discarded_exceeding_pings_size`'s name ([bug 2009475](https://bugzilla.mozilla.org/show_bug.cgi?id=2009475))
   * Event timestamps are now always clamped to the range of a signed 64-bit integer.
     An overflow is recorded in the new metric `glean.error.event_timestamp_clamped` in case this happens ([#3308](https://github.com/mozilla/glean/pull/3308)).
+  * BREAKING CHANGE: Updated to UniFFI 0.31.0 ([#3366](https://github.com/mozilla/glean/pull/3366))
 
 # v66.3.0 (2025-12-19)
 
