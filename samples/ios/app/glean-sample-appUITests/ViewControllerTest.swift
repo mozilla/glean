@@ -49,6 +49,14 @@ class ViewControllerTest: XCTestCase {
         let objects = metrics["object"] as! [String: Any]
         let balloons = objects["party.balloons"] as! [Any]
         XCTAssertEqual(balloons.count, 2)
+
+        let expectedChooser: [[String: AnyHashable]] = [
+            ["key": "fortytwo", "value": 42],
+            ["key": "to-be", "value": false]
+        ]
+
+        let chooser = objects["party.chooser"] as! [[String: AnyHashable]]
+        XCTAssertEqual(expectedChooser, chooser)
     }
 
     func testViewControllerInteraction() {
