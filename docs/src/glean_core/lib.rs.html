@@ -2333,7 +2333,7 @@
     <span class="comment">// Be sure to call this _after_ draining the dispatcher
     </span>core::with_glean(|glean| {
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = glean.persist_ping_lifetime_data() {
-            <span class="macro">log::error!</span>(<span class="string">"Can't persist ping lifetime data: {:?}"</span>, e);
+            <span class="macro">log::info!</span>(<span class="string">"Can't persist ping lifetime data: {:?}"</span>, e);
         }
     });
 }

@@ -2145,7 +2145,7 @@
                 <span class="kw">if let </span><span class="prelude-val">Err</span>(e) =
                     <span class="self">self</span>.record_per_lifetime(data.inner.lifetime, ping_name, <span class="kw-2">&amp;</span>name, value)
                 {
-                    <span class="macro">log::error!</span>(
+                    <span class="macro">log::info!</span>(
                         <span class="string">"Failed to record metric '{}' into {}: {:?}"</span>,
                         data.base_identifier(),
                         ping_name,
@@ -2216,7 +2216,7 @@
                     <span class="kw-2">&amp;</span>name,
                     <span class="kw-2">&amp;mut </span>transform,
                 ) {
-                    <span class="macro">log::error!</span>(
+                    <span class="macro">log::info!</span>(
                         <span class="string">"Failed to record metric '{}' into {}: {:?}"</span>,
                         data.base_identifier(),
                         ping_name,
