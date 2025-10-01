@@ -823,7 +823,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
 
   pypi-linux-release:
     docker:
@@ -854,7 +854,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -891,7 +891,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.13/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -929,7 +929,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.13/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
       - install-ghr-darwin
       - run:
           name: Publish to GitHub
@@ -948,7 +948,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.9/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
       - install-ghr-linux
       - run:
           name: Publish to GitHub
@@ -985,7 +985,7 @@ jobs:
           command: |
             # Requires that the TWINE_USERNAME and TWINE_PASSWORD environment
             # variables are configured in CircleCI's environment variables.
-            .venv3.13/bin/python3 -m twine upload target/wheels/*
+            make upload-wheels
       - install-ghr-linux
       - run:
           name: Publish to GitHub
