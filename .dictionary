@@ -1,4 +1,4 @@
-personal_ws-1.1 en 303 utf-8
+personal_ws-1.1 en 304 utf-8
 AAR
 AARs
 ABI
@@ -264,6 +264,7 @@ subpath
 subprocess
 subprocesses
 substring
+subtypes
 swiftlint
 tcsh
 templating

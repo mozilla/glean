@@ -4,6 +4,7 @@
 
 * General
   * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+  * Add a new `oneOf` type to Glean's object metric type structure ([#3273](https://github.com/mozilla/glean/pull/3273))
 * Rust
   *  Use an associated type for `TestGetValue` ([#3259](https://github.com/mozilla/glean/pull/3259))
 * Swift
