@@ -907,6 +907,8 @@ glean.database:
       - glean-team@mozilla.com
       - chutten@mozilla.com
     expires: 2025-12-01
+    send_in_pings:
+      - health
     structure:
       type: object
       properties:
