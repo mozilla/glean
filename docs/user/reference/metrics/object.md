@@ -218,6 +218,7 @@ The allowed types are:
 * `boolean`
 * `array`
 * `object`
+* `oneOf`
 
 The `array` type takes an `items` parameter, that does define the element types it can hold.  
 The `object` type takes a `properties` parameter, that defines the nested object structure.
@@ -225,6 +226,8 @@ The `object` type takes a `properties` parameter, that defines the nested object
 `array` and `object` metrics can be nested.  
 No other schema parameters are allowed.  
 All fields are optional.
+
+`oneOf` requires a list of allowed subtypes. The available types are `[string, number, boolean]`.
 
 Data is validated against this schema at recording time.  
 Missing values will not be serialized into the payload.
