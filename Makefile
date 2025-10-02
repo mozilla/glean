@@ -207,3 +207,8 @@ coverage-python: build-python ## Generate a code coverage report for Python
 	$(GLEAN_PYENV)/bin/python3 -m coverage combine
 	$(GLEAN_PYENV)/bin/python3 -m coverage html
 .PHONY: coverage-python
+
+upload-wheels: setup-python
+	VIRTUAL_ENV=$(GLEAN_PYENV) \
+		$(GLEAN_PYENV)/bin/python3 -m twine upload target/wheels/*
+.PHONY: upload-wheels

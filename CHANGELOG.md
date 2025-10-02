@@ -2,6 +2,12 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...main)
 
+* General
+  * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+* Swift
+  * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
+  * Glean for iOS is now being built with Xcode 16.4 ([#3270](https://github.com/mozilla/glean/pull/3270))
+
 # v65.2.2 (2025-10-02)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...v65.2.2)
@@ -29,6 +35,7 @@
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
+
 * General
   * Remove newly added call to set test-mode in `test_reset_glean`, instead setting test-mode only in necessary tests.
 

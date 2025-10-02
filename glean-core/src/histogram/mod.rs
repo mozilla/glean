@@ -124,19 +124,7 @@ impl<B: Bucketing> Histogram<B> {
     /// Gets a snapshot of all values from the first bucket until one past the last filled bucket,
     /// filling in empty buckets with 0.
     pub fn snapshot_values(&self) -> HashMap<u64, u64> {
-        let mut res = self.values.clone();
-
-        let max_bucket = self.values.keys().max().cloned().unwrap_or(0);
-
-        for &min_bucket in self.bucketing.ranges() {
-            // Fill in missing entries.
-            let _ = res.entry(min_bucket).or_insert(0);
-            // stop one after the last filled bucket
-            if min_bucket > max_bucket {
-                break;
-            }
-        }
-        res
+        self.values.clone()
     }
 
     /// Clear this histogram.

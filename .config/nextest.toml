@@ -1,2 +1,8 @@
 [profile.ci.junit]
 path = "junit.xml"
+
+# https://nexte.st/docs/features/slow-tests/?h=time#configuring-timeouts
+# Tests longer than 30s are considered "slow".
+# After 120s (4 * 30s) they will be terminated
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 4 }

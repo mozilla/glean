@@ -228,8 +228,8 @@ A [Custom distribution](../../../book/reference/metrics/custom_distribution.md) 
 | `sum` | Integer | The sum of all recorded values. |
 | `values` | Map&lt;String, Integer&gt; | The values in each bucket. The key is the minimum value for the range of that bucket. |
 
-A contiguous range of buckets is always sent, so that the server can aggregate and visualize distributions, without knowing anything about the specific bucketing function used.
-This range starts with the first bucket (as specified in the `range_min` parameter), and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
+From Glean v66.0.0 on the `values` only includes filled buckets.
+Empty buckets are not sent.
 
 For example, suppose you had a custom distribution defined by the following parameters:
 
@@ -241,9 +241,12 @@ For example, suppose you had a custom distribution defined by the following para
 The following shows the recorded values vs. what is sent in the payload.
 
 ```
-recorded:        12: 2,                      22: 1
-sent:     10: 0, 12: 2, 14: 0, 17: 0, 19: 0, 22: 1, 24: 0
+recorded: 12: 2, 22: 1
+sent:     12: 2, 22: 1
 ```
+
+Up until Glean v65.0.3 a contiguous range of buckets was always sent, so that the server can aggregate and visualize distributions, without knowing anything about the specific bucketing function used.
+This range started with the first bucket (as specified in the `range_min` parameter), and ends at one bucket beyond the last bucket with a non-zero accumulation (so that the upper bound on the last bucket is retained).
 
 #### Example:
 
@@ -251,13 +254,8 @@ sent:     10: 0, 12: 2, 14: 0, 17: 0, 19: 0, 22: 1, 24: 0
 {
     "sum": 3,
     "values": {
-        "10": 0,
         "12": 2,
-        "14": 0,
-        "17": 0,
-        "19": 0,
         "22": 1,
-        "24": 0
     }
 }
 ```

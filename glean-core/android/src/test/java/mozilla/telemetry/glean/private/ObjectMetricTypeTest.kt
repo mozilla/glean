@@ -19,7 +19,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@Serializable
 data class BalloonsObject(
     var items: MutableList<BalloonsObjectItem> = mutableListOf(),
 ) : ObjectSerialize {
@@ -40,14 +39,50 @@ data class BalloonsObject(
         element: BalloonsObjectItem,
     ) = items.set(index, element)
 
-    override fun intoSerializedObject(): String = Json.encodeToString(items)
+    override fun intoSerializedObject(): String {
+        var json = buildString {
+            append("[")
+            var first = true
+            for (item in items) {
+                if (!first) {
+                    append(",")
+                }
+                first = false
+                append(item.intoSerializedObject())
+            }
+            append("]")
+        }
+        return json
+    }
 }
 
-@Serializable
 data class BalloonsObjectItem(
     var colour: String? = null,
     var diameter: Int? = null,
-)
+) : ObjectSerialize {
+    override fun intoSerializedObject(): String {
+        var data: MutableList<String> = mutableListOf()
+        this.colour?.let { colour ->
+            val elem = buildString {
+                append("\"colour\":")
+                append(colour.intoSerializedObject())
+            }
+            data.add(elem)
+        }
+        this.diameter?.let { diameter ->
+            val elem = buildString {
+                append("\"diameter\":")
+                append(diameter.intoSerializedObject())
+            }
+            data.add(elem)
+        }
+        return buildString {
+            append("{")
+            append(data.joinToString(","))
+            append("}")
+        }
+    }
+}
 
 @RunWith(AndroidJUnit4::class)
 class ObjectMetricTypeTest {
