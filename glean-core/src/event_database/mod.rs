@@ -219,7 +219,7 @@ impl EventDatabase {
                     self.record(
                         glean,
                         &glean_restarted.into(),
-                        crate::get_timestamp_ms(),
+                        crate::get_awake_timestamp_ms(),
                         Some(extra),
                     );
                 }
