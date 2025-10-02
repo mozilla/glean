@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...main)
+
+# v65.2.2 (2025-10-02)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...v65.2.2)
 
 * General
   * Report db record counts during init phases ([bug 1992024](https://bugzilla.mozilla.org/show_bug.cgi?id=1992024))
