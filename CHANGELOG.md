@@ -6,6 +6,7 @@
   * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
   * Add a new `oneOf` type to Glean's object metric type structure ([#3273](https://github.com/mozilla/glean/pull/3273))
   * Updated to `glean_parser` v18.0.2 ([#3273](https://github.com/mozilla/glean/pull/3273), [#3289](https://github.com/mozilla/glean/pull/3289))
+  * For timestamps in timespan and timing distribution metrics we only consider awake time now ([#3279](https://github.com/mozilla/glean/issues/3279))
 * Rust
   *  Use an associated type for `TestGetValue` ([#3259](https://github.com/mozilla/glean/pull/3259))
 * Swift
