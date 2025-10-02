@@ -87,19 +87,6 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -108,7 +95,7 @@
 <span class="kw">use </span>std::hash::Hash;
 
 <span class="kw">use </span><span class="kw">crate</span>::event_database::RecordedEvent;
-<span class="kw">use crate</span>::{ErrorType, TestGetValue};
+<span class="kw">use </span><span class="kw">crate</span>::TestGetValue;
 
 <span class="doccomment">/// Extra keys for events.
 ///
@@ -188,18 +175,5 @@
     ///
     /// * `extra` - (optional) An object for the extra keys.
     </span><span class="kw">fn </span>record&lt;M: Into&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Extra&gt;&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, extra: M);
-
-    <span class="doccomment">/// **Exported for test purposes.**
-    ///
-    /// Gets the number of recorded errors for the given metric and error type.
-    ///
-    /// # Arguments
-    ///
-    /// * `error` - The type of error
-    ///
-    /// # Returns
-    ///
-    /// The number of errors reported.
-    </span><span class="kw">fn </span>test_get_num_recorded_errors(<span class="kw-2">&amp;</span><span class="self">self</span>, error: ErrorType) -&gt; i32;
 }
 </code></pre></div></section></main></body></html>
