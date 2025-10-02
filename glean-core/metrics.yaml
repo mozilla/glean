@@ -922,6 +922,16 @@ glean.database:
           type: number
         post_load_ping_lifetime_data:
           type: number
+        user_records:
+          type: number
+        ping_records:
+          type: number
+        application_records:
+          type: number
+        ping_memory_records:
+          type: number
+        error:
+          type: string
 
 glean.validation:
   foreground_count:
