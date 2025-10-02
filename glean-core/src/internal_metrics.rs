@@ -470,4 +470,14 @@ pub struct LoadSizesObject {
     pub post_open_user: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post_load_ping_lifetime_data: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_records: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ping_records: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub application_records: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ping_memory_records: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
 }
