@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>NoReasonCodes Enumeration Reference</title>
+    <title>Bool Extension Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Enum/NoReasonCodes" class="dashAnchor"></a>
-    <a title="NoReasonCodes Enumeration Reference"></a>
+    <a name="//apple_ref/swift/Extension/Bool" class="dashAnchor"></a>
+    <a title="Bool Extension Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">Glean Docs</a> (22% documented)</p>
@@ -30,9 +30,9 @@
       <p id="breadcrumbs">
         <a href="../index.html">Glean</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        <a href="../Enums.html">Enumerations</a>
+        <a href="../Extensions.html">Extensions</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        NoReasonCodes Enumeration Reference
+        Swift.Bool Extension Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -537,19 +537,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>NoReasonCodes</h1>
+            <h1>Bool</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">NoReasonCodes</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/ReasonCodes.html">ReasonCodes</a></span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Bool</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ObjectSerialize.html">ObjectSerialize</a></span></code></pre>
 
                 </div>
               </div>
-            <p>Default of no reason codes for pings.</p>
-
-<p>An enum with no values for convenient use as the default set of reason codes
-that an <code><a href="../Classes/Ping.html">Ping</a></code> can accept.</p>
-
+            
           </section>
           <section class="section task-group-section">
             <div class="task-group">
@@ -557,9 +553,9 @@ that an <code><a href="../Classes/Ping.html">Ping</a></code> can accept.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean11ReasonCodesP5indexSiyF"></a>
-                    <a name="//apple_ref/swift/Method/index()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean11ReasonCodesP5indexSiyF">index()</a>
+                    <a name="/s:Sb5GleanE20intoSerializedObjectSSyF"></a>
+                    <a name="//apple_ref/swift/Method/intoSerializedObject()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:Sb5GleanE20intoSerializedObjectSSyF">intoSerializedObject()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -567,13 +563,14 @@ that an <code><a href="../Classes/Ping.html">Ping</a></code> can accept.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Undocumented</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Int</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">intoSerializedObject</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
