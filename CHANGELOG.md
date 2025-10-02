@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.1...main)
 
+* General
+  * Report db record counts during init phases ([bug 1992024](https://bugzilla.mozilla.org/show_bug.cgi?id=1992024))
+
 # v65.2.1 (2025-09-26)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.2.0...v65.2.1)

@@ -142,6 +142,11 @@ fn test_pre_post_init_health_pings_exist() {
     assert_eq!(None, load_sizes.get("post_open"));
     assert_eq!(None, load_sizes.get("post_open_user"));
     assert_eq!(None, load_sizes.get("post_load_ping_lifetime_data"));
+    assert_eq!(0, *load_sizes.get("user_records").unwrap());
+    assert_eq!(0, *load_sizes.get("ping_records").unwrap());
+    assert_eq!(0, *load_sizes.get("application_records").unwrap());
+    assert_eq!(None, load_sizes.get("ping_memory_records"));
+    assert_eq!(None, load_sizes.get("error"));
 
     let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
         .with_server_endpoint("invalid-test-host")
@@ -194,4 +199,15 @@ fn test_pre_post_init_health_pings_exist() {
             .unwrap()
             .as_i64()
     );
+    assert!(0 < load_sizes.get("user_records").unwrap().as_i64().unwrap());
+    assert!(0 < load_sizes.get("ping_records").unwrap().as_i64().unwrap());
+    assert!(
+        0 < load_sizes
+            .get("application_records")
+            .unwrap()
+            .as_i64()
+            .unwrap()
+    );
+    assert_eq!(None, load_sizes.get("ping_memory_records"));
+    assert_eq!(None, load_sizes.get("error"));
 }

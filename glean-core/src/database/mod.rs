@@ -217,6 +217,12 @@ fn database_size(dir: &Path) -> Option<NonZeroU64> {
     NonZeroU64::new(total_size)
 }
 
+fn store_size(rkv: &Rkv, store: &SingleStore) -> Result<i64> {
+    let reader = rkv.read()?;
+    let iter = store.iter_start(&reader)?;
+    Ok(iter.count().try_into().unwrap_or(-1))
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -243,10 +249,22 @@ impl Database {
         let (rkv, rkv_load_state) = Self::open_rkv(&path)?;
         load_sizes.post_open = database_size(&path).map(|x| x.get() as i64);
         let user_store = rkv.open_single(Lifetime::User.as_str(), StoreOptions::create())?;
+        match store_size(&rkv, &user_store) {
+            Ok(record_count) => load_sizes.user_records = Some(record_count),
+            Err(e) => load_sizes.error = Some(e.to_string()),
+        };
         load_sizes.post_open_user = database_size(&path).map(|x| x.get() as i64);
         let ping_store = rkv.open_single(Lifetime::Ping.as_str(), StoreOptions::create())?;
+        match store_size(&rkv, &ping_store) {
+            Ok(record_count) => load_sizes.ping_records = Some(record_count),
+            Err(e) => load_sizes.error = Some(e.to_string()),
+        };
         let application_store =
             rkv.open_single(Lifetime::Application.as_str(), StoreOptions::create())?;
+        match store_size(&rkv, &application_store) {
+            Ok(record_count) => load_sizes.application_records = Some(record_count),
+            Err(e) => load_sizes.error = Some(e.to_string()),
+        };
         let ping_lifetime_data = if delay_ping_lifetime_io {
             Some(RwLock::new(BTreeMap::new()))
         } else {
@@ -279,6 +297,12 @@ impl Database {
         // Safe unwrap: just set it to Some above.
         db.load_sizes.as_mut().unwrap().post_load_ping_lifetime_data =
             database_size(&path).map(|x| x.get() as i64);
+        if let Some(ref ping_data) = db.ping_lifetime_data {
+            // Safe unwrap: just set load_sizes to Some above.
+            // Safe unwrap: Unless the read lock is poisoned (already?!).
+            db.load_sizes.as_mut().unwrap().ping_memory_records =
+                Some(ping_data.read().unwrap().len().try_into().unwrap_or(-1));
+        }
 
         Ok(db)
     }
