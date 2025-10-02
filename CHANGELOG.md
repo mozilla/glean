@@ -4,6 +4,7 @@
 
 * General
   * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+  * Report db record counts during init phases ([bug 1992024](https://bugzilla.mozilla.org/show_bug.cgi?id=1992024))
 * Swift
   * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
   * Glean for iOS is now being built with Xcode 16.4 ([#3270](https://github.com/mozilla/glean/pull/3270))
