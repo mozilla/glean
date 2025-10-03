@@ -1453,8 +1453,7 @@ dependencies = [
 [[package]]
 name = "zeitstempel"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94652f036694517fa67509942c3b60a51a19e1cd9cfd0f456eeb830ae8798d3d"
+source = "git+https://github.com/badboy/zeitstempel?branch=now-awake#f84fccdf8cf7af60fae5beac19743043e66255ca"
 dependencies = [
  "cfg-if",
  "libc",
