@@ -192,6 +192,8 @@ party:
     notification_emails:
       - CHANGE-ME@example.com
     expires: never
+    send_in_pings:
+      - sample
     structure:
       type: array
       items:
@@ -218,7 +220,35 @@ party:
     data_sensitivity:
       - technical
     expires: never
+    send_in_pings:
+      - sample
     structure:
       type: array
       items:
         type: string
+
+  chooser:
+    type: object
+    description: |
+      Array of key-value elements
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - sample
+    structure:
+      type: array
+      items:
+        type: object
+        properties:
+          key:
+            type: string
+          value:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean

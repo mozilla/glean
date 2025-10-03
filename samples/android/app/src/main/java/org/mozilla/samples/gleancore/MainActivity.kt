@@ -54,6 +54,13 @@ open class MainActivity : AppCompatActivity() {
             balloons.add(Party.BalloonsObjectItem(colour = "green"))
             Party.balloons.set(balloons)
 
+            val ch = Party.ChooserObject()
+            var f = Party.ChooserObjectItem(key = "fortytwo", value = Party.ChooserObjectItemValueEnum.Number(42))
+            ch.add(f)
+            f = Party.ChooserObjectItem(key = "to-be", value = Party.ChooserObjectItemValueEnum.Boolean(false))
+            ch.add(f)
+            Party.chooser.set(ch)
+
             val animals = Party.AnimalsObject()
             animals.add("Dog")
             animals.add("Cat")

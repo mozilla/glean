@@ -226,6 +226,10 @@ def _object_factory(
                 yield n, ty
                 yield from fct
                 fields.append((itemname, ty, field(default=None)))
+            elif val["type"] == "oneof":
+                # We don't actually enforce proper validation here
+                subtypes = [_struct_type(st) for st in val["subtypes"]]
+                fields.append((itemname, Union[None, *subtypes], field(default=None)))
             else:
                 fields.append((itemname, _struct_type(val["type"]), field(default=None)))
         newclass = make_dataclass(name, fields, bases=(metrics.ObjectSerialize,))
