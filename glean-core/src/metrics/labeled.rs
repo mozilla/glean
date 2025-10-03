@@ -353,11 +353,13 @@ where
     }
 }
 
-impl<T, S> TestGetValue<HashMap<String, S>> for LabeledMetric<T>
+impl<T, S> TestGetValue for LabeledMetric<T>
 where
-    T: AllowLabeled + TestGetValue<S>,
+    T: AllowLabeled + TestGetValue<Output = S>,
     S: Any,
 {
+    type Output = HashMap<String, S>;
+
     fn test_get_value(&self, ping_name: Option<String>) -> Option<HashMap<String, S>> {
         let mut out = HashMap::new();
         let map = self.label_map.lock().unwrap();

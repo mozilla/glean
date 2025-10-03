@@ -231,7 +231,9 @@ impl DualLabeledCounterMetric {
     }
 }
 
-impl TestGetValue<HashMap<String, HashMap<String, i32>>> for DualLabeledCounterMetric {
+impl TestGetValue for DualLabeledCounterMetric {
+    type Output = HashMap<String, HashMap<String, i32>>;
+
     fn test_get_value(
         &self,
         ping_name: Option<String>,

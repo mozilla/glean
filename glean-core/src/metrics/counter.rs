@@ -157,7 +157,9 @@ impl CounterMetric {
     }
 }
 
-impl TestGetValue<i32> for CounterMetric {
+impl TestGetValue for CounterMetric {
+    type Output = i32;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.
