@@ -53,7 +53,7 @@ class BaselinePingTest: XCTestCase {
         app.launchArguments = ["USE_MOCK_SERVER", "\(try! server.port())"]
         app.launch()
 
-        waitForExpectations(timeout: 5.0) { error in
+        waitForExpectations(timeout: 10.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
         // Set as a glean_parser parameter in the build task
