@@ -11,6 +11,10 @@
 * Swift
   * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
   * Glean for iOS is now being built with Xcode 16.4 ([#3270](https://github.com/mozilla/glean/pull/3270))
+* Android
+  * BREAKING CHANGE: Updated the minimum Android API level to 26 (Android 8) ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated Android Gradle Plugin to 8.13.0 ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated Kotlin to 2.2.20 ([#3287](https://github.com/mozilla/glean/pull/3287))
 
 # v65.2.2 (2025-10-02)
 
