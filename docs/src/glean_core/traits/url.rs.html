@@ -44,7 +44,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Url: TestGetValue&lt;String&gt; {
+</span><span class="kw">pub trait </span>Url: TestGetValue&lt;Output = String&gt; {
     <span class="doccomment">/// Sets to the specified stringified URL.
     ///
     /// # Arguments

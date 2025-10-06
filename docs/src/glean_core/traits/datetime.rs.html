@@ -45,7 +45,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Datetime: TestGetValue&lt;<span class="kw">crate</span>::metrics::Datetime&gt; {
+</span><span class="kw">pub trait </span>Datetime: TestGetValue&lt;Output = <span class="kw">crate</span>::metrics::Datetime&gt; {
     <span class="doccomment">/// Sets the metric to a date/time which including the timezone offset.
     ///
     /// # Arguments

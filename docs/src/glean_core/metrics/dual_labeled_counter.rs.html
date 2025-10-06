@@ -427,6 +427,8 @@
 <a href="#427" id="427">427</a>
 <a href="#428" id="428">428</a>
 <a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -660,7 +662,9 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;HashMap&lt;String, HashMap&lt;String, i32&gt;&gt;&gt; <span class="kw">for </span>DualLabeledCounterMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>DualLabeledCounterMetric {
+    <span class="kw">type </span>Output = HashMap&lt;String, HashMap&lt;String, i32&gt;&gt;;
+
     <span class="kw">fn </span>test_get_value(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         ping_name: <span class="prelude-ty">Option</span>&lt;String&gt;,

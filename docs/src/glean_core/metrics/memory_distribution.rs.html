@@ -402,6 +402,8 @@
 <a href="#402" id="402">402</a>
 <a href="#403" id="403">403</a>
 <a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -728,7 +730,9 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;DistributionData&gt; <span class="kw">for </span>MemoryDistributionMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>MemoryDistributionMetric {
+    <span class="kw">type </span>Output = DistributionData;
+
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value.

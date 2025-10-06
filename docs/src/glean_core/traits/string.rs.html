@@ -43,7 +43,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>String: TestGetValue&lt;std::string::String&gt; {
+</span><span class="kw">pub trait </span>String: TestGetValue&lt;Output = std::string::String&gt; {
     <span class="doccomment">/// Sets to the specified value.
     ///
     /// # Arguments

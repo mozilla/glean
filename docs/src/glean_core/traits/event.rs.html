@@ -165,7 +165,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Event: TestGetValue&lt;Vec&lt;RecordedEvent&gt;&gt; {
+</span><span class="kw">pub trait </span>Event: TestGetValue&lt;Output = Vec&lt;RecordedEvent&gt;&gt; {
     <span class="doccomment">/// The type of the allowed extra keys for this event.
     </span><span class="kw">type </span>Extra: ExtraKeys;
 

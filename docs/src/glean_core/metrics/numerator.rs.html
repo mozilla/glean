@@ -96,6 +96,8 @@
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -174,7 +176,9 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;Rate&gt; <span class="kw">for </span>NumeratorMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>NumeratorMetric {
+    <span class="kw">type </span>Output = Rate;
+
     <span class="doccomment">/// **Exported for test purposes.**
     ///
     /// Gets the currently stored value as a pair of integers.

@@ -392,6 +392,9 @@
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
 <a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -664,7 +667,10 @@
 }
 
 <span class="doccomment">/// [`TestGetValue`] describes an interface for retrieving the value for a given metric
-</span><span class="kw">pub trait </span>TestGetValue&lt;T&gt; {
+</span><span class="kw">pub trait </span>TestGetValue {
+    <span class="doccomment">/// The output type of `test_get_value`
+    </span><span class="kw">type </span>Output;
+
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Returns the currently stored value of the appropriate type for the given metric.
@@ -679,7 +685,7 @@
     /// # Returns
     ///
     /// The stored value or `None` if nothing stored.
-    </span><span class="kw">fn </span>test_get_value(<span class="kw-2">&amp;</span><span class="self">self</span>, ping_name: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt;;
+    </span><span class="kw">fn </span>test_get_value(<span class="kw-2">&amp;</span><span class="self">self</span>, ping_name: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt;;
 }
 
 <span class="comment">// Provide a blanket implementation for MetricIdentifier for all the types

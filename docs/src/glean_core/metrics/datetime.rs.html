@@ -300,6 +300,8 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -579,7 +581,9 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;Datetime&gt; <span class="kw">for </span>DatetimeMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>DatetimeMetric {
+    <span class="kw">type </span>Output = Datetime;
+
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the stored datetime value.

@@ -155,7 +155,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>TimingDistribution: TestGetValue&lt;DistributionData&gt; {
+</span><span class="kw">pub trait </span>TimingDistribution: TestGetValue&lt;Output = DistributionData&gt; {
     <span class="doccomment">/// Start tracking time for the provided metric.
     /// Multiple timers can run simultaneously.
     ///

@@ -140,6 +140,7 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -262,7 +263,8 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;bool&gt; <span class="kw">for </span>BooleanMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>BooleanMetric {
+    <span class="kw">type </span>Output = bool;
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a boolean.

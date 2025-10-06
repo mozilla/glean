@@ -68,7 +68,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>CustomDistribution: TestGetValue&lt;DistributionData&gt; {
+</span><span class="kw">pub trait </span>CustomDistribution: TestGetValue&lt;Output = DistributionData&gt; {
     <span class="doccomment">/// Accumulates the provided signed samples in the metric.
     ///
     /// This is required so that the platform-specific code can provide us with

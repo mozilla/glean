@@ -381,6 +381,8 @@
 <a href="#381" id="381">381</a>
 <a href="#382" id="382">382</a>
 <a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -686,7 +688,9 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;DistributionData&gt; <span class="kw">for </span>CustomDistributionMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>CustomDistributionMetric {
+    <span class="kw">type </span>Output = DistributionData;
+
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

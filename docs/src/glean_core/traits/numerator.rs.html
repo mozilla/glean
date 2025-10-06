@@ -43,7 +43,7 @@
 <span class="comment">// When changing this trait, ensure all operations are implemented in the
 // related type in `../metrics`. (Except test_get_num_errors)
 </span><span class="doccomment">/// A description for the `NumeratorMetric` subtype of the [`RateMetric`](crate::metrics::RateMetric) type.
-</span><span class="kw">pub trait </span>Numerator: TestGetValue&lt;Rate&gt; {
+</span><span class="kw">pub trait </span>Numerator: TestGetValue&lt;Output = Rate&gt; {
     <span class="doccomment">/// Increases the numerator by `amount`.
     ///
     /// # Arguments

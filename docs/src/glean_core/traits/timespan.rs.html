@@ -64,7 +64,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Timespan: TestGetValue&lt;u64&gt; {
+</span><span class="kw">pub trait </span>Timespan: TestGetValue&lt;Output = u64&gt; {
     <span class="doccomment">/// Starts tracking time for the provided metric.
     ///
     /// This uses an internal monotonic timer.

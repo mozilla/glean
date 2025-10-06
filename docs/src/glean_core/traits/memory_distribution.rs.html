@@ -49,7 +49,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>MemoryDistribution: TestGetValue&lt;DistributionData&gt; {
+</span><span class="kw">pub trait </span>MemoryDistribution: TestGetValue&lt;Output = DistributionData&gt; {
     <span class="doccomment">/// Accumulates the provided sample in the metric.
     ///
     /// # Arguments

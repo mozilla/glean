@@ -42,7 +42,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Uuid: TestGetValue&lt;uuid::Uuid&gt; {
+</span><span class="kw">pub trait </span>Uuid: TestGetValue&lt;Output = uuid::Uuid&gt; {
     <span class="doccomment">/// Sets to the specified value.
     ///
     /// # Arguments

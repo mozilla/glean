@@ -56,7 +56,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>StringList: TestGetValue&lt;Vec&lt;String&gt;&gt; {
+</span><span class="kw">pub trait </span>StringList: TestGetValue&lt;Output = Vec&lt;String&gt;&gt; {
     <span class="doccomment">/// Adds a new string to the list.
     ///
     /// # Arguments

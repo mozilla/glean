@@ -310,6 +310,7 @@
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -597,7 +598,8 @@
     }
 }
 
-<span class="kw">impl </span>TestGetValue&lt;i64&gt; <span class="kw">for </span>TimespanMetric {
+<span class="kw">impl </span>TestGetValue <span class="kw">for </span>TimespanMetric {
+    <span class="kw">type </span>Output = i64;
     <span class="doccomment">/// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

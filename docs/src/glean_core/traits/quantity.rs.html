@@ -43,7 +43,7 @@
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-</span><span class="kw">pub trait </span>Quantity: TestGetValue&lt;i64&gt; {
+</span><span class="kw">pub trait </span>Quantity: TestGetValue&lt;Output = i64&gt; {
     <span class="doccomment">/// Sets the value. Must be non-negative.
     ///
     /// # Arguments
