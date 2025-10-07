@@ -5,12 +5,12 @@
 * General
   * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
   * Add a new `oneOf` type to Glean's object metric type structure ([#3273](https://github.com/mozilla/glean/pull/3273))
+  * Updated to `glean_parser` v18.0.0 ([#3273](https://github.com/mozilla/glean/pull/3273))
 * Rust
   *  Use an associated type for `TestGetValue` ([#3259](https://github.com/mozilla/glean/pull/3259))
 * Swift
   * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
   * Glean for iOS is now being built with Xcode 16.4 ([#3270](https://github.com/mozilla/glean/pull/3270))
-  * Updated to `glean_parser` v18.0.0 ([#3273](https://github.com/mozilla/glean/pull/3273))
 
 # v65.2.2 (2025-10-02)
 
