@@ -13244,12 +13244,14 @@ This defines the accepted structure of the object using a subset of <a href="htt
 <li><code>boolean</code></li>
 <li><code>array</code></li>
 <li><code>object</code></li>
+<li><code>oneOf</code></li>
 </ul>
 <p>The <code>array</code> type takes an <code>items</code> parameter, that does define the element types it can hold.<br />
 The <code>object</code> type takes a <code>properties</code> parameter, that defines the nested object structure.</p>
 <p><code>array</code> and <code>object</code> metrics can be nested.<br />
 No other schema parameters are allowed.<br />
 All fields are optional.</p>
+<p><code>oneOf</code> requires a list of allowed subtypes. The available types are <code>[string, number, boolean]</code>.</p>
 <p>Data is validated against this schema at recording time.<br />
 Missing values will not be serialized into the payload.</p>
 <h3 id="example-object-metric-definition"><a class="header" href="#example-object-metric-definition">Example object metric definition:</a></h3>
@@ -14175,6 +14177,7 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li>General
 <ul>
 <li>BREAKING: Remove infill 0 buckets from custom distributions (<a href="https://github.com/mozilla/glean/pull/3246">#3246</a>)</li>
+<li>Add a new <code>oneOf</code> type to Glean's object metric type structure (<a href="https://github.com/mozilla/glean/pull/3273">#3273</a>)</li>
 </ul>
 </li>
 <li>Rust
@@ -14186,6 +14189,7 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <ul>
 <li>Make <code>EventMetricType</code>, <code>ObjectMetricType</code>, <code>URLMetricType</code> and <code>Ping</code> <code>Sendable</code>  (<a href="https://github.com/mozilla/glean/pull/3255">#3255</a>)</li>
 <li>Glean for iOS is now being built with Xcode 16.4 (<a href="https://github.com/mozilla/glean/pull/3270">#3270</a>)</li>
+<li>Updated to <code>glean_parser</code> v18.0.0 (<a href="https://github.com/mozilla/glean/pull/3273">#3273</a>)</li>
 </ul>
 </li>
 </ul>

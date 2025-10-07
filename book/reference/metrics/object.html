@@ -334,12 +334,14 @@ This defines the accepted structure of the object using a subset of <a href="htt
 <li><code>boolean</code></li>
 <li><code>array</code></li>
 <li><code>object</code></li>
+<li><code>oneOf</code></li>
 </ul>
 <p>The <code>array</code> type takes an <code>items</code> parameter, that does define the element types it can hold.<br />
 The <code>object</code> type takes a <code>properties</code> parameter, that defines the nested object structure.</p>
 <p><code>array</code> and <code>object</code> metrics can be nested.<br />
 No other schema parameters are allowed.<br />
 All fields are optional.</p>
+<p><code>oneOf</code> requires a list of allowed subtypes. The available types are <code>[string, number, boolean]</code>.</p>
 <p>Data is validated against this schema at recording time.<br />
 Missing values will not be serialized into the payload.</p>
 <h3 id="example-object-metric-definition"><a class="header" href="#example-object-metric-definition">Example object metric definition:</a></h3>
