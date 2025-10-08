@@ -15,6 +15,7 @@
   * BREAKING CHANGE: Updated the minimum Android API level to 26 (Android 8) ([#3287](https://github.com/mozilla/glean/pull/3287))
   * Updated Android Gradle Plugin to 8.13.0 ([#3287](https://github.com/mozilla/glean/pull/3287))
   * Updated Kotlin to 2.2.20 ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated NDK to r29 ([#3290](https://github.com/mozilla/glean/pull/3290))
 
 # v65.2.2 (2025-10-02)
 
