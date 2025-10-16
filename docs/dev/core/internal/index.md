@@ -21,3 +21,4 @@ This includes:
 * [Debug Pings](debug-pings.md)
 * [Upload mechanism](upload.md)
 * [Implementations](implementations.md)
+* [Client ID recovery](client_id_recovery.md)

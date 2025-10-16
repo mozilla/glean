@@ -147,7 +147,7 @@ pub struct Database {
     pub(crate) write_timings: RefCell<Vec<i64>>,
 
     /// The database size at various phases of loading.
-    load_sizes: Option<LoadSizesObject>,
+    pub(crate) load_sizes: Option<LoadSizesObject>,
 }
 
 impl MallocSizeOf for Database {
@@ -187,7 +187,7 @@ impl std::fmt::Debug for Database {
     }
 }
 
-/// Calculate the  database size from all the files in the directory.
+/// Calculate the database size from all the files in the directory.
 ///
 ///  # Arguments
 ///
