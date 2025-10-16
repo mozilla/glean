@@ -1158,3 +1158,46 @@ glean.health:
     expires: never
     send_in_pings:
       - health
+
+  exception_state:
+    type: string
+    lifetime: ping
+    description: |
+      An exceptional state was detected upon trying to laod the database.
+
+      Valid options are:
+        - empty-db
+        - regen-db
+        - c0ffee-in-db
+        - client-id-mismatch
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/1994757
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+
+  recovered_client_id:
+    type: uuid
+    lifetime: ping
+    description: |
+      A client_id recovered from a `client_id.txt` file on disk.
+      See `exception_state` for different exception states when this can happen.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/1994757
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
