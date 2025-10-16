@@ -3,6 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -11,6 +13,7 @@ use std::time::Duration;
 use chrono::{DateTime, FixedOffset};
 use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
+use uuid::Uuid;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
@@ -30,6 +33,7 @@ use crate::{
     GLEAN_SCHEMA_VERSION, GLEAN_VERSION, KNOWN_CLIENT_ID,
 };
 
+const CLIENT_ID_PLAIN_FILENAME: &str = "client_id.txt";
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
 pub fn global_glean() -> Option<&'static Mutex<Glean>> {
@@ -373,6 +377,20 @@ impl Glean {
         self.data_store = None;
     }
 
+    /// Write the client ID to a separate plain file on disk
+    fn store_client_id(&self, client_id: Uuid) -> Result<()> {
+        let mut path = self.data_path.clone();
+        path.push(CLIENT_ID_PLAIN_FILENAME);
+        let mut fp = File::create(path)?;
+
+        let mut buffer = Uuid::encode_buffer();
+        let uuid_str = client_id.hyphenated().encode_lower(&mut buffer);
+        fp.write_all(uuid_str.as_bytes())?;
+        fp.sync_all()?;
+
+        Ok(())
+    }
+
     /// Initializes the core metrics managed by Glean's Rust core.
     fn initialize_core_metrics(&mut self) {
         let need_new_client_id = match self
@@ -384,7 +402,8 @@ impl Glean {
             Some(uuid) => uuid == *KNOWN_CLIENT_ID,
         };
         if need_new_client_id {
-            self.core_metrics.client_id.generate_and_set_sync(self);
+            let new_clientid = self.core_metrics.client_id.generate_and_set_sync(self);
+            _ = self.store_client_id(new_clientid);
         }
 
         if self
