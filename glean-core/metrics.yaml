@@ -1158,3 +1158,92 @@ glean.health:
     expires: never
     send_in_pings:
       - health
+
+  exception_state:
+    type: string
+    lifetime: ping
+    description: |
+      An exceptional state was detected upon trying to laod the database.
+
+      Valid options are:
+        - empty-db
+        - regen-db
+        - c0ffee-in-db
+        - client-id-mismatch
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+
+  recovered_client_id:
+    type: uuid
+    lifetime: ping
+    description: |
+      A client_id recovered from a `client_id.txt` file on disk.
+      Only expected to have a value for the exception states `empty-db`, `c0ffee-in-db` and `client-id-mismatch`.
+      See `exception_state` for different exception states when this can happen.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+
+  file_read_error:
+    type: labeled_counter
+    lifetime: ping
+    description: |
+      Count of different errors that happened when trying to read the `client_id.txt` file from disk.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+    labels:
+      - parse
+      - permission-denied
+      - io
+      - c0ffee-in-file
+
+  file_write_error:
+    type: labeled_counter
+    lifetime: ping
+    description: |
+      Count of different errors that happened when trying to write the `client_id.txt` file to disk.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+    labels:
+      - permission-denied
+      - io
+      - not-found
