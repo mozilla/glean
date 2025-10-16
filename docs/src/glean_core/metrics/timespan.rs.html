@@ -369,7 +369,7 @@
     /// [`set_stop`](TimespanMetric::set_stop)): in that case the original start
     /// time will be preserved.
     </span><span class="kw">pub fn </span>start(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span>start_time = zeitstempel::now();
+        <span class="kw">let </span>start_time = zeitstempel::now_awake();
 
         <span class="kw">let </span>metric = <span class="self">self</span>.clone();
         <span class="kw">crate</span>::launch_with_glean(<span class="kw">move </span>|glean| metric.set_start(glean, start_time));
@@ -401,7 +401,7 @@
     ///
     /// This will record an error if no [`set_start`](TimespanMetric::set_start) was called.
     </span><span class="kw">pub fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">let </span>stop_time = zeitstempel::now();
+        <span class="kw">let </span>stop_time = zeitstempel::now_awake();
 
         <span class="kw">let </span>metric = <span class="self">self</span>.clone();
         <span class="kw">crate</span>::launch_with_glean(<span class="kw">move </span>|glean| metric.set_stop(glean, stop_time));
