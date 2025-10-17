@@ -62,6 +62,9 @@ pub enum ErrorKind {
 
     /// Ping request body size overflowed
     PingBodyOverflow(usize),
+
+    /// Parsing a UUID from a string failed
+    UuidError(uuid::Error),
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -117,6 +120,7 @@ impl Display for Error {
                 "Ping request body size exceeded maximum size allowed: {}kB.",
                 s / 1024
             ),
+            UuidError(e) => write!(f, "Failed to parse UUID: {}", e),
         }
     }
 }
@@ -165,5 +169,11 @@ impl From<OsString> for Error {
 impl From<std::convert::Infallible> for Error {
     fn from(_: std::convert::Infallible) -> Error {
         unreachable!()
+    }
+}
+
+impl From<uuid::Error> for Error {
+    fn from(error: uuid::Error) -> Self {
+        Error { kind: ErrorKind::UuidError(error) }
     }
 }

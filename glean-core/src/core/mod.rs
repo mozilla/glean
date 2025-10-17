@@ -3,8 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::Write;
+use std::fs::{self, File};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -261,6 +261,33 @@ impl Glean {
     pub fn new(cfg: InternalConfiguration) -> Result<Self> {
         let mut glean = Self::new_for_subprocess(&cfg, false)?;
 
+        let stored_client_id = match glean.client_id_from_file() {
+            Ok(id) => Some(id),
+            Err(err) => {
+                match err.kind() {
+                    crate::ErrorKind::IoError(io_err) => {
+                        match io_err.kind() {
+                            io::ErrorKind::NotFound => {
+                                // That's ok, the file might just not exist yet.
+                            }
+                            io::ErrorKind::PermissionDenied => {
+                                // Uhm ... who removed our permission?
+                            }
+                            _ => {
+                                // Everything else seems unlikely to be hit?
+                            }
+
+                        }
+                    }
+                    crate::ErrorKind::UuidError(..) => {
+                        // TODO: can't parse it.
+                    }
+                    _ => unreachable!(),
+                }
+                None
+            }
+        };
+
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
         let data_path = Path::new(&cfg.data_path);
@@ -272,6 +299,43 @@ impl Glean {
             ping_lifetime_threshold,
             ping_lifetime_max_time,
         )?);
+
+        {
+            // We just set it.
+            let data_store = glean.data_store.as_ref().unwrap();
+            let db_load_sizes = data_store.load_sizes.as_ref().unwrap();
+            let new_size = db_load_sizes.new.unwrap_or(0);
+
+            // If we have a client ID on disk, we check the database
+            if let Some(stored_client_id) = stored_client_id {
+                if new_size <= 0 {
+                    // record that we have a client ID but no database
+                } else {
+                    let db_client_id = glean
+                        .core_metrics
+                        .client_id
+                        .get_value(&glean, Some("glean_client_info"));
+
+                    match db_client_id {
+                        None => {
+                            // client_id regen issue!
+                            log::error!("got no client_id in DB, {stored_client_id} in file. REGEN!");
+                        }
+                        Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
+                            // c0ffee issue!
+                            log::error!("got c0ffee client_id in DB, {stored_client_id} in file. REGEN!");
+                        }
+                        Some(db_client_id) if db_client_id == stored_client_id => {
+                            // all valid. nothing to do
+                        }
+                        Some(db_client_id) => {
+                            // database differs from plain on-disk. report that!
+                            log::error!("got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!");
+                        }
+                    }
+                }
+            }
+        }
 
         // Set experimentation identifier (if any)
         if let Some(experimentation_id) = &cfg.experimentation_id {
@@ -300,6 +364,9 @@ impl Glean {
             {
                 None => glean.clear_metrics(),
                 Some(uuid) => {
+                    if let Err(e) = glean.remove_stored_client_id() {
+                        log::error!("Couldn't remove client ID on disk. This might lead to a resurrection of this client ID later. Error: {e}");
+                    }
                     if uuid == *KNOWN_CLIENT_ID {
                         // Previously Glean kept the KNOWN_CLIENT_ID stored.
                         // Let's ensure we erase it now.
@@ -377,17 +444,37 @@ impl Glean {
         self.data_store = None;
     }
 
-    /// Write the client ID to a separate plain file on disk
-    fn store_client_id(&self, client_id: Uuid) -> Result<()> {
+    fn client_id_file_path(&self) -> PathBuf {
         let mut path = self.data_path.clone();
         path.push(CLIENT_ID_PLAIN_FILENAME);
-        let mut fp = File::create(path)?;
+        path
+    }
+
+    /// Write the client ID to a separate plain file on disk
+    fn store_client_id(&self, client_id: Uuid) -> Result<(), ClientIdFileError> {
+        let mut fp = File::create(self.client_id_file_path())?;
 
         let mut buffer = Uuid::encode_buffer();
         let uuid_str = client_id.hyphenated().encode_lower(&mut buffer);
         fp.write_all(uuid_str.as_bytes())?;
         fp.sync_all()?;
 
+        Ok(())
+    }
+
+    /// Try to load a client ID from the plain file on disk.
+    fn client_id_from_file(&self) -> Result<Uuid> {
+        let uuid_str = fs::read_to_string(self.client_id_file_path())?;
+        // We don't write a newline, but we still trim it. Who knows who else touches that file by accident.
+        // We're also a bit more lenient in what we accept here: uppercase, lowercase, with or without dashes.
+        let uuid = Uuid::parse_str(uuid_str.trim_end())?;
+        Ok(uuid)
+    }
+
+    /// Remove the stored client ID from disk.
+    /// Should only be called when the client ID is also removed from the database.
+    fn remove_stored_client_id(&self) -> Result<(), ClientIdFileError> {
+        fs::remove_file(self.client_id_file_path())?;
         Ok(())
     }
 
@@ -636,6 +723,10 @@ impl Glean {
             .collect::<Vec<_>>();
         if let Err(err) = ping_maker.clear_pending_pings(self.get_data_path(), &disabled_pings) {
             log::warn!("Error clearing pending pings: {}", err);
+        }
+
+        if let Err(e) = self.remove_stored_client_id() {
+            log::error!("Couldn't remove client ID on disk. This might lead to a resurrection of this client ID later. Error: {e}");
         }
 
         // Delete all stored metrics.
