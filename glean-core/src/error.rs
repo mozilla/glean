@@ -174,7 +174,9 @@ impl From<std::convert::Infallible> for Error {
 
 impl From<uuid::Error> for Error {
     fn from(error: uuid::Error) -> Self {
-        Error { kind: ErrorKind::UuidError(error) }
+        Error {
+            kind: ErrorKind::UuidError(error),
+        }
     }
 }
 
@@ -195,7 +197,10 @@ impl Display for ClientIdFileError {
         use ClientIdFileError::*;
         match self {
             NotFound => write!(f, "File not found"),
-            PermissionDenied => write!(f, "The operation lacked the necessary privileges to complete."),
+            PermissionDenied => write!(
+                f,
+                "The operation lacked the necessary privileges to complete."
+            ),
             IoError(e) => write!(f, "IO error occured: {e}"),
             ParseError(e) => write!(f, "Parse error occured: {e}"),
         }

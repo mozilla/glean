@@ -306,7 +306,9 @@ impl Glean {
             if let Some(stored_client_id) = stored_client_id {
                 if new_size <= 0 {
                     // record that we have a client ID but no database
-                    log::error!("got no database, but {stored_client_id} in file. OTHER regen issue?");
+                    log::error!(
+                        "got no database, but {stored_client_id} in file. OTHER regen issue?"
+                    );
                 } else {
                     let db_client_id = glean
                         .core_metrics
@@ -316,18 +318,24 @@ impl Glean {
                     match db_client_id {
                         None => {
                             // client_id regen issue!
-                            log::error!("got no client_id in DB, {stored_client_id} in file. REGEN!");
+                            log::error!(
+                                "got no client_id in DB, {stored_client_id} in file. REGEN!"
+                            );
                         }
                         Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
                             // c0ffee issue!
-                            log::error!("got c0ffee client_id in DB, {stored_client_id} in file. REGEN!");
+                            log::error!(
+                                "got c0ffee client_id in DB, {stored_client_id} in file. REGEN!"
+                            );
                         }
                         Some(db_client_id) if db_client_id == stored_client_id => {
                             // all valid. nothing to do
                         }
                         Some(db_client_id) => {
                             // database differs from plain on-disk. report that!
-                            log::error!("got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!");
+                            log::error!(
+                                "got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!"
+                            );
                         }
                     }
                 }
