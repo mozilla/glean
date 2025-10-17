@@ -177,3 +177,43 @@ impl From<uuid::Error> for Error {
         Error { kind: ErrorKind::UuidError(error) }
     }
 }
+
+#[derive(Debug)]
+pub enum ClientIdFileError {
+    /// The file could not be found.
+    NotFound,
+    /// Can't access the file due to permissions
+    PermissionDenied,
+    /// Another io error happened
+    IoError(io::Error),
+    /// Parsing the content into a UUID failed
+    ParseError(uuid::Error),
+}
+
+impl Display for ClientIdFileError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use ClientIdFileError::*;
+        match self {
+            NotFound => write!(f, "File not found"),
+            PermissionDenied => write!(f, "The operation lacked the necessary privileges to complete."),
+            IoError(e) => write!(f, "IO error occured: {e}"),
+            ParseError(e) => write!(f, "Parse error occured: {e}"),
+        }
+    }
+}
+
+impl From<io::Error> for ClientIdFileError {
+    fn from(error: io::Error) -> Self {
+        match error.kind() {
+            io::ErrorKind::NotFound => ClientIdFileError::NotFound,
+            io::ErrorKind::PermissionDenied => ClientIdFileError::PermissionDenied,
+            _ => ClientIdFileError::IoError(error),
+        }
+    }
+}
+
+impl From<uuid::Error> for ClientIdFileError {
+    fn from(error: uuid::Error) -> Self {
+        ClientIdFileError::ParseError(error)
+    }
+}

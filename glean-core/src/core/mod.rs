@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 use std::fs::{self, File};
-use std::io::{self, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -17,6 +17,7 @@ use uuid::Uuid;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
+use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
 use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics, HealthMetrics};
 use crate::internal_pings::InternalPings;
@@ -263,27 +264,22 @@ impl Glean {
 
         let stored_client_id = match glean.client_id_from_file() {
             Ok(id) => Some(id),
-            Err(err) => {
-                match err.kind() {
-                    crate::ErrorKind::IoError(io_err) => {
-                        match io_err.kind() {
-                            io::ErrorKind::NotFound => {
-                                // That's ok, the file might just not exist yet.
-                            }
-                            io::ErrorKind::PermissionDenied => {
-                                // Uhm ... who removed our permission?
-                            }
-                            _ => {
-                                // Everything else seems unlikely to be hit?
-                            }
-
-                        }
-                    }
-                    crate::ErrorKind::UuidError(..) => {
-                        // TODO: can't parse it.
-                    }
-                    _ => unreachable!(),
-                }
+            Err(ClientIdFileError::NotFound) => {
+                // That's ok, the file might just not exist yet.
+                None
+            }
+            Err(ClientIdFileError::PermissionDenied) => {
+                // Uhm ... who removed our permission?
+                None
+            }
+            Err(ClientIdFileError::ParseError(e)) => {
+                // TODO: can't parse it.
+                log::debug!("Could not parse into UUID: {e}");
+                None
+            }
+            Err(ClientIdFileError::IoError(e)) => {
+                // Everything else seems unlikely to be hit?
+                log::debug!("Unexpected io error: {e}");
                 None
             }
         };
@@ -479,7 +475,7 @@ impl Glean {
     }
 
     /// Try to load a client ID from the plain file on disk.
-    fn client_id_from_file(&self) -> Result<Uuid> {
+    fn client_id_from_file(&self) -> Result<Uuid, ClientIdFileError> {
         let uuid_str = fs::read_to_string(self.client_id_file_path())?;
         // We don't write a newline, but we still trim it. Who knows who else touches that file by accident.
         // We're also a bit more lenient in what we accept here: uppercase, lowercase, with or without dashes.
