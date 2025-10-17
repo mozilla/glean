@@ -309,6 +309,7 @@ impl Glean {
                     log::error!(
                         "got no database, but {stored_client_id} in file. OTHER regen issue?"
                     );
+                    glean.core_metrics.client_id.set_from_uuid_sync(&glean, stored_client_id);
                 } else {
                     let db_client_id = glean
                         .core_metrics
