@@ -119,8 +119,8 @@ fn main() {
 
     glean_metrics::test_metrics::sample_boolean.set(true);
 
-    glean::set_upload_enabled(false);
-    glean::set_upload_enabled(true);
+    //glean::set_upload_enabled(false);
+    //glean::set_upload_enabled(true);
 
     // Need to wait a short time for Glean to actually act.
     thread::sleep(Duration::from_millis(100));

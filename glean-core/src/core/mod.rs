@@ -310,6 +310,7 @@ impl Glean {
             if let Some(stored_client_id) = stored_client_id {
                 if new_size <= 0 {
                     // record that we have a client ID but no database
+                    log::error!("got no database, but {stored_client_id} in file. OTHER regen issue?");
                 } else {
                     let db_client_id = glean
                         .core_metrics
@@ -333,6 +334,21 @@ impl Glean {
                             log::error!("got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!");
                         }
                     }
+                }
+            } else {
+                log::debug!("No stored client ID. Database might have it.");
+
+                let db_client_id = glean
+                    .core_metrics
+                    .client_id
+                    .get_value(&glean, Some("glean_client_info"));
+                if let Some(db_client_id) = db_client_id {
+                    log::debug!("got {db_client_id} in DB. writing to state file");
+                    if let Err(e) = glean.store_client_id(db_client_id) {
+                        log::error!("Could not write {db_client_id} to state file. Might happen on next init then. Error: {e}");
+                    }
+                } else {
+                    log::debug!("Database has no client ID either. We might be fresh!");
                 }
             }
         }
