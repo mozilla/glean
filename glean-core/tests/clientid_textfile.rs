@@ -79,7 +79,6 @@ fn restores_clientid_file_from_db() {
 
     let (glean, temp) = new_glean(Some(temp));
     let file_client_id = clientid_from_file(temp.path()).unwrap();
-
     assert_eq!(file_client_id, db_client_id);
 
     let db_client_id2 = clientid_metric().get_value(&glean, None).unwrap();
@@ -113,5 +112,28 @@ fn clientid_regen_issue_with_existing_db() {
     let (glean, _temp) = new_glean(Some(temp));
 
     let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
+}
+
+#[test]
+fn db_client_id_prefered_over_file_client_id() {
+    let (db_client_id, temp) = {
+        // Ensure we initialize once to get a client_id
+        let (glean, temp) = new_glean(None);
+        let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+        drop(glean);
+
+        (db_client_id, temp)
+    };
+
+    // We modify the client id file
+    let new_uuid = Uuid::new_v4();
+    write_clientid_to_file(temp.path(), &new_uuid).unwrap();
+
+    let (glean, temp) = new_glean(Some(temp));
+    let db_client_id2 = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(db_client_id, db_client_id2);
+
+    let file_client_id = clientid_from_file(temp.path()).unwrap();
     assert_eq!(file_client_id, db_client_id);
 }

@@ -337,6 +337,7 @@ impl Glean {
                             log::error!(
                                 "got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!"
                             );
+                            glean.store_client_id(db_client_id).ok();
                         }
                     }
                 }
