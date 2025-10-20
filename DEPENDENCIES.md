@@ -1921,7 +1921,7 @@ The following text applies to code linked from these dependencies:
 
 * [bitflags 2.4.1]( https://github.com/bitflags/bitflags )
 * [camino 1.1.9]( https://github.com/camino-rs/camino )
-* [cfg-if 1.0.0]( https://github.com/alexcrichton/cfg-if )
+* [cfg-if 1.0.3]( https://github.com/rust-lang/cfg-if )
 * [core-foundation-sys 0.8.7]( https://github.com/servo/core-foundation-rs )
 * [crossbeam-channel 0.5.15]( https://github.com/crossbeam-rs/crossbeam )
 * [crossbeam-utils 0.8.19]( https://github.com/crossbeam-rs/crossbeam )
@@ -1943,7 +1943,7 @@ The following text applies to code linked from these dependencies:
 * [malloc_size_of_derive 0.1.3]( https://github.com/bholley/malloc_size_of_derive )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.15.0]( https://github.com/seanmonstar/num_cpus )
-* [once_cell 1.20.2]( https://github.com/matklad/once_cell )
+* [once_cell 1.21.3]( https://github.com/matklad/once_cell )
 * [percent-encoding 2.2.0]( https://github.com/servo/rust-url/ )
 * [plain 0.2.3]( https://github.com/randomites/plain )
 * [rustix 0.38.20]( https://github.com/bytecodealliance/rustix )
@@ -3647,7 +3647,7 @@ The following text applies to code linked from these dependencies:
 * [basic-toml 0.1.9]( https://github.com/dtolnay/basic-toml )
 * [inherent 1.0.9]( https://github.com/dtolnay/inherent )
 * [itoa 1.0.14]( https://github.com/dtolnay/itoa )
-* [libc 0.2.149]( https://github.com/rust-lang/libc )
+* [libc 0.2.176]( https://github.com/rust-lang/libc )
 * [miniz_oxide 0.8.2]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 * [proc-macro2 1.0.93]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.38]( https://github.com/dtolnay/quote )
@@ -4606,9 +4606,10 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-build 17.2.0]( https://github.com/mozilla/glean )
-* [glean 65.2.2]( https://github.com/mozilla/glean )
-* [zeitstempel 0.1.2]( https://github.com/badboy/zeitstempel )
+* [glean-core 66.0.0]( https://github.com/mozilla/glean )
+* [glean-build 18.0.2]( https://github.com/mozilla/glean )
+* [glean 66.0.0]( https://github.com/mozilla/glean )
+* [zeitstempel 0.2.0]( https://github.com/badboy/zeitstempel )
 
 ```
 Mozilla Public License Version 2.0
@@ -4991,7 +4992,6 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 65.2.2]( https://github.com/mozilla/glean )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )

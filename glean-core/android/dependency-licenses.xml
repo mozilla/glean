@@ -74,7 +74,7 @@ the details of which are reproduced below.
     <url>https://github.com/camino-rs/camino</url>
   </license>  <license>
     <name>Apache License 2.0: cfg-if</name>
-    <url>https://github.com/alexcrichton/cfg-if</url>
+    <url>https://github.com/rust-lang/cfg-if</url>
   </license>  <license>
     <name>Apache License 2.0: core-foundation-sys</name>
     <url>https://github.com/servo/core-foundation-rs</url>
@@ -328,6 +328,9 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -336,9 +339,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
