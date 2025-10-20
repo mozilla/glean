@@ -8,6 +8,8 @@ use crate::common::*;
 use std::fs;
 use std::path::Path;
 
+use rkv::Rkv;
+use rkv::StoreOptions;
 use uuid::Uuid;
 
 use glean_core::metrics::*;
@@ -82,4 +84,34 @@ fn restores_clientid_file_from_db() {
 
     let db_client_id2 = clientid_metric().get_value(&glean, None).unwrap();
     assert_eq!(db_client_id, db_client_id2);
+}
+
+#[test]
+fn clientid_regen_issue_with_existing_db() {
+    let (file_client_id, temp) = {
+        // Ensure we initialize once to get a client_id
+        let (glean, temp) = new_glean(None);
+        let file_client_id = clientid_from_file(temp.path()).unwrap();
+        drop(glean);
+
+        (file_client_id, temp)
+    };
+
+    // We modify the database and ONLY clear out the client id.
+    {
+        let path = temp.path().join("db");
+        let rkv = Rkv::new::<rkv::backend::SafeMode>(&path).unwrap();
+        let user_store = rkv.open_single("user", StoreOptions::create()).unwrap();
+
+        // We know this.
+        let client_id_key = "glean_client_info#client_id";
+
+        let mut writer = rkv.write().unwrap();
+        _ = user_store.delete(&mut writer, client_id_key);
+    }
+
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
 }
