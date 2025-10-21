@@ -137,3 +137,17 @@ fn db_client_id_prefered_over_file_client_id() {
     let file_client_id = clientid_from_file(temp.path()).unwrap();
     assert_eq!(file_client_id, db_client_id);
 }
+
+#[test]
+fn clientid_file_gets_deleted() {
+    let (mut glean, temp) = new_glean(None);
+
+    let path = temp.path().join("client_id.txt");
+    assert!(path.exists());
+
+    let file_client_id = clientid_from_file(temp.path());
+    assert!(file_client_id.is_some());
+
+    glean.set_upload_enabled(false);
+    assert!(!path.exists());
+}
