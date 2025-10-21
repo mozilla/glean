@@ -67,8 +67,8 @@ fn reused_clientid_from_file() {
     assert_eq!(1, pending.len());
     let payload = pending.pop().unwrap().1;
 
-    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str().unwrap();
-    assert_eq!("empty-db", state);
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str();
+    assert_eq!(Some("empty-db"), state);
 }
 
 #[test]
@@ -91,6 +91,14 @@ fn restores_clientid_file_from_db() {
 
     let db_client_id2 = clientid_metric().get_value(&glean, None).unwrap();
     assert_eq!(db_client_id, db_client_id2);
+
+    glean.submit_ping_by_name("health", Some("post_init"));
+    let mut pending = get_queued_pings(temp.path()).unwrap();
+    assert_eq!(1, pending.len());
+    let payload = pending.pop().unwrap().1;
+
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str();
+    assert_eq!(None, state);
 }
 
 #[test]
@@ -118,10 +126,18 @@ fn clientid_regen_issue_with_existing_db() {
         writer.commit().unwrap();
     }
 
-    let (glean, _temp) = new_glean(Some(temp));
+    let (glean, temp) = new_glean(Some(temp));
 
     let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
     assert_eq!(file_client_id, db_client_id);
+
+    glean.submit_ping_by_name("health", Some("post_init"));
+    let mut pending = get_queued_pings(temp.path()).unwrap();
+    assert_eq!(1, pending.len());
+    let payload = pending.pop().unwrap().1;
+
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str();
+    assert_eq!(Some("regen-db"), state);
 }
 
 #[test]
@@ -145,6 +161,55 @@ fn db_client_id_prefered_over_file_client_id() {
 
     let file_client_id = clientid_from_file(temp.path()).unwrap();
     assert_eq!(file_client_id, db_client_id);
+
+    glean.submit_ping_by_name("health", Some("post_init"));
+    let mut pending = get_queued_pings(temp.path()).unwrap();
+    assert_eq!(1, pending.len());
+    let payload = pending.pop().unwrap().1;
+
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str();
+    assert_eq!(Some("client-id-mismatch"), state);
+}
+
+#[test]
+fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
+    let (file_client_id, temp) = {
+        // Ensure we initialize once to get a client_id
+        let (glean, temp) = new_glean(None);
+        let file_client_id = clientid_from_file(temp.path()).unwrap();
+        drop(glean);
+
+        (file_client_id, temp)
+    };
+
+    // We modify the database and ONLY clear out the client id.
+    {
+        let path = temp.path().join("db");
+        let rkv = Rkv::new::<rkv::backend::SafeMode>(&path).unwrap();
+        let user_store = rkv.open_single("user", StoreOptions::create()).unwrap();
+
+        // We know this.
+        let client_id_key = "glean_client_info#client_id";
+
+        let mut writer = rkv.write().unwrap();
+        let encoded = bincode::serialize(&Metric::Uuid(String::from("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0"))).unwrap();
+        let known_client_id = rkv::Value::Blob(&encoded);
+        user_store.put(&mut writer, client_id_key, &known_client_id).unwrap();
+        writer.commit().unwrap();
+    }
+
+    let (glean, temp) = new_glean(Some(temp));
+
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
+
+    glean.submit_ping_by_name("health", Some("post_init"));
+    let mut pending = get_queued_pings(temp.path()).unwrap();
+    assert_eq!(1, pending.len());
+    let payload = pending.pop().unwrap().1;
+
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str();
+    assert_eq!(Some("c0ffee-in-db"), state);
 }
 
 #[test]

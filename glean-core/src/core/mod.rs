@@ -331,6 +331,7 @@ impl Glean {
                             log::error!(
                                 "got c0ffee client_id in DB, {stored_client_id} in file. REGEN!"
                             );
+                            glean.core_metrics.client_id.set_from_uuid_sync(&glean, stored_client_id);
                             glean.health_metrics.file_storage_exception_state.set_sync(&glean, "c0ffee-in-db");
                         }
                         Some(db_client_id) if db_client_id == stored_client_id => {
