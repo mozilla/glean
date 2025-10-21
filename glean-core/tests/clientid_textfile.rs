@@ -58,9 +58,17 @@ fn reused_clientid_from_file() {
 
     write_clientid_to_file(temp.path(), &new_uuid).unwrap();
 
-    let (glean, _temp) = new_glean(Some(temp));
+    let (glean, temp) = new_glean(Some(temp));
     let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
     assert_eq!(new_uuid, db_client_id);
+
+    glean.submit_ping_by_name("health", Some("post_init"));
+    let mut pending = get_queued_pings(temp.path()).unwrap();
+    assert_eq!(1, pending.len());
+    let payload = pending.pop().unwrap().1;
+
+    let state = payload["metrics"]["string"]["glean.file_storage.exception_state"].as_str().unwrap();
+    assert_eq!("empty-db", state);
 }
 
 #[test]
