@@ -131,7 +131,9 @@ impl TextMetric {
     }
 }
 
-impl TestGetValue<String> for TextMetric {
+impl TestGetValue for TextMetric {
+    type Output = String;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a string.

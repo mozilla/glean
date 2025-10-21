@@ -5,10 +5,10 @@
 
 [versions]
 # AGP
-android-plugin = "8.12.0"
+android-plugin = "8.13.0"
 
 # Kotlin
-kotlin-compiler = "2.2.10"
+kotlin-compiler = "2.2.20"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 
@@ -19,11 +19,11 @@ rust-android-gradle = "0.9.6"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
-androidx-lifecycle = "2.9.2"
-androidx-work = "2.10.3"
+androidx-lifecycle = "2.9.4"
+androidx-work = "2.10.5"
 
 # JNA
-jna = "5.14.0" # Don't update until Android 5/6 support is dropped
+jna = "5.18.1"
 
 # Linting and Static Analysis
 detekt = "1.23.8"
@@ -38,9 +38,9 @@ androidx-test-uiautomator = "2.3.0"
 
 # Third Party Testing
 junit = "4.13.2"
-mockito = "5.18.0"
+mockito = "5.20.0"
 mockwebserver = "5.1.0"
-robolectric = "4.15.1"
+robolectric = "4.16"
 
 # Miscellaneous Gradle plugins
 jacoco = "0.8.13"

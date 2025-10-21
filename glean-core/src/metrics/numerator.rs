@@ -76,7 +76,9 @@ impl NumeratorMetric {
     }
 }
 
-impl TestGetValue<Rate> for NumeratorMetric {
+impl TestGetValue for NumeratorMetric {
+    type Output = Rate;
+
     /// **Exported for test purposes.**
     ///
     /// Gets the currently stored value as a pair of integers.

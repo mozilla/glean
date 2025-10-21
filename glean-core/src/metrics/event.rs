@@ -212,7 +212,9 @@ impl EventMetric {
     }
 }
 
-impl TestGetValue<Vec<RecordedEvent>> for EventMetric {
+impl TestGetValue for EventMetric {
+    type Output = Vec<RecordedEvent>;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Get the vector of currently stored events for this event metric.

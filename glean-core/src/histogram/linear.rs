@@ -37,7 +37,7 @@ fn linear_range(min: u64, max: u64, count: usize) -> Vec<u64> {
 ///
 /// Buckets are pre-computed at instantiation with a linear  distribution from `min` to `max`
 /// and `bucket_count` buckets.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, MallocSizeOf)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, MallocSizeOf)]
 pub struct PrecomputedLinear {
     // Don't serialize the (potentially large) array of ranges, instead compute them on first
     // access.
@@ -46,6 +46,12 @@ pub struct PrecomputedLinear {
     pub(crate) min: u64,
     pub(crate) max: u64,
     pub(crate) bucket_count: usize,
+}
+
+impl PartialEq for PrecomputedLinear {
+    fn eq(&self, other: &Self) -> bool {
+        self.min == other.min && self.max == other.max && self.bucket_count == other.bucket_count
+    }
 }
 
 impl Bucketing for PrecomputedLinear {

@@ -1,6 +1,26 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.0.0...main)
+
+# v66.0.0 (2025-10-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...v66.0.0)
+
+* General
+  * BREAKING: Remove infill 0 buckets from custom distributions ([#3246](https://github.com/mozilla/glean/pull/3246))
+  * Add a new `oneOf` type to Glean's object metric type structure ([#3273](https://github.com/mozilla/glean/pull/3273))
+  * Updated to `glean_parser` v18.0.2 ([#3273](https://github.com/mozilla/glean/pull/3273), [#3289](https://github.com/mozilla/glean/pull/3289))
+  * For timestamps in timespan and timing distribution metrics we only consider awake time now ([#3279](https://github.com/mozilla/glean/issues/3279))
+* Rust
+  *  Use an associated type for `TestGetValue` ([#3259](https://github.com/mozilla/glean/pull/3259))
+* Swift
+  * Make `EventMetricType`, `ObjectMetricType`, `URLMetricType` and `Ping` `Sendable`  ([#3255](https://github.com/mozilla/glean/pull/3255))
+  * Glean for iOS is now being built with Xcode 16.4 ([#3270](https://github.com/mozilla/glean/pull/3270))
+* Android
+  * BREAKING CHANGE: Updated the minimum Android API level to 26 (Android 8) ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated Android Gradle Plugin to 8.13.0 ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated Kotlin to 2.2.20 ([#3287](https://github.com/mozilla/glean/pull/3287))
+  * Updated NDK to r29 ([#3290](https://github.com/mozilla/glean/pull/3290))
 
 # v65.2.2 (2025-10-02)
 
@@ -29,6 +49,7 @@
 # v65.1.1 (2025-09-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v65.1.0...v65.1.1)
+
 * General
   * Remove newly added call to set test-mode in `test_reset_glean`, instead setting test-mode only in necessary tests.
 

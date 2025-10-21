@@ -56,7 +56,7 @@ impl TimespanMetric {
     /// [`set_stop`](TimespanMetric::set_stop)): in that case the original start
     /// time will be preserved.
     pub fn start(&self) {
-        let start_time = zeitstempel::now();
+        let start_time = zeitstempel::now_awake();
 
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.set_start(glean, start_time));
@@ -88,7 +88,7 @@ impl TimespanMetric {
     ///
     /// This will record an error if no [`set_start`](TimespanMetric::set_start) was called.
     pub fn stop(&self) {
-        let stop_time = zeitstempel::now();
+        let stop_time = zeitstempel::now_awake();
 
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.set_stop(glean, stop_time));
@@ -285,7 +285,8 @@ impl TimespanMetric {
     }
 }
 
-impl TestGetValue<i64> for TimespanMetric {
+impl TestGetValue for TimespanMetric {
+    type Output = i64;
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.

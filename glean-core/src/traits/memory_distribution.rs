@@ -10,7 +10,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait MemoryDistribution: TestGetValue<DistributionData> {
+pub trait MemoryDistribution: TestGetValue<Output = DistributionData> {
     /// Accumulates the provided sample in the metric.
     ///
     /// # Arguments

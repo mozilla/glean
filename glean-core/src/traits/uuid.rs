@@ -8,7 +8,7 @@ use crate::{ErrorType, TestGetValue};
 ///
 /// When changing this trait, make sure all the operations are
 /// implemented in the related type in `../metrics/`.
-pub trait Uuid: TestGetValue<uuid::Uuid> {
+pub trait Uuid: TestGetValue<Output = uuid::Uuid> {
     /// Sets to the specified value.
     ///
     /// # Arguments

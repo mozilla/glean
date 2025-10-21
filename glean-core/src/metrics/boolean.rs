@@ -120,7 +120,8 @@ impl BooleanMetric {
     }
 }
 
-impl TestGetValue<bool> for BooleanMetric {
+impl TestGetValue for BooleanMetric {
+    type Output = bool;
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as a boolean.

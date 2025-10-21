@@ -132,6 +132,30 @@ fn main() {
     ]);
     glean_metrics::party::balloons.set(balloons);
 
+    use glean_metrics::party::{ChooserObject, ChooserObjectItem, ChooserObjectItemValueEnum};
+    let mut ch = ChooserObject::new();
+    let it = ChooserObjectItem {
+        key: Some("fortytwo".to_string()),
+        value: Some(ChooserObjectItemValueEnum::Number(42)),
+    };
+    ch.push(it);
+    let it = ChooserObjectItem {
+        key: Some("to-be".to_string()),
+        value: Some(ChooserObjectItemValueEnum::Boolean(false)),
+    };
+    ch.push(it);
+    glean_metrics::party::chooser.set(ch);
+
+    let exp_chooser = serde_json::json!([
+        { "key": "fortytwo", "value": 42 },
+        { "key": "to-be", "value": false },
+    ]);
+
+    assert_eq!(
+        Some(exp_chooser),
+        glean_metrics::party::chooser.test_get_value(None)
+    );
+
     glean_metrics::test_dual_labeled::static_static
         .get("key1", "category1")
         .add(1);

@@ -6,7 +6,7 @@
 ///
 /// For user-defined `EventMetricType`s every event with extras
 /// will get their own corresponding event extra data class.
-public protocol EventExtras {
+public protocol EventExtras: Sendable {
     /// Convert the event extras into 2 lists:
     ///
     /// 1. The list of extra key indices.
@@ -19,7 +19,7 @@ public protocol EventExtras {
 ///
 /// An empty class for convenient use as the default set of extra keys
 /// that an `EventMetricType` can accept.
-public class NoExtras: EventExtras {
+public final class NoExtras: EventExtras {
     public func toExtraRecord() -> [String: String] {
         return [String: String]()
     }
@@ -32,7 +32,7 @@ public class NoExtras: EventExtras {
 ///
 /// The Events API only exposes the `EventMetricType.record(extra:)` method, which takes care of validating the input
 /// data and making sure that limits are enforced.
-public final class EventMetricType<ExtraObject: EventExtras>: Sendable {
+public final class EventMetricType<ExtraObject: EventExtras & Sendable>: Sendable {
     let inner: EventMetric
 
     /// The public constructor used by automatically generated metrics.

@@ -192,6 +192,12 @@ fn block_on_dispatcher() {
     dispatcher::block_on_queue()
 }
 
+/// Returns a timestamp corresponding to "now" with millisecond precision, awake time only.
+pub fn get_awake_timestamp_ms() -> u64 {
+    const NANOS_PER_MILLI: u64 = 1_000_000;
+    zeitstempel::now_awake() / NANOS_PER_MILLI
+}
+
 /// Returns a timestamp corresponding to "now" with millisecond precision.
 pub fn get_timestamp_ms() -> u64 {
     const NANOS_PER_MILLI: u64 = 1_000_000;
@@ -649,7 +655,7 @@ fn uploader_shutdown() {
     //   * We don't know how long uploads take until we get data from bug 1814592.
     let result = rx.recv_timeout(Duration::from_secs(30));
 
-    let stop_time = zeitstempel::now();
+    let stop_time = zeitstempel::now_awake();
     core::with_glean(|glean| {
         glean
             .additional_metrics
@@ -725,7 +731,7 @@ pub fn shutdown() {
     let blocked = dispatcher::block_on_queue_timeout(Duration::from_secs(10));
 
     // Always record the dispatcher wait, regardless of the timeout.
-    let stop_time = zeitstempel::now();
+    let stop_time = zeitstempel::now_awake();
     core::with_glean(|glean| {
         glean
             .additional_metrics
@@ -748,7 +754,7 @@ pub fn shutdown() {
     // Be sure to call this _after_ draining the dispatcher
     core::with_glean(|glean| {
         if let Err(e) = glean.persist_ping_lifetime_data() {
-            log::error!("Can't persist ping lifetime data: {:?}", e);
+            log::info!("Can't persist ping lifetime data: {:?}", e);
         }
     });
 }

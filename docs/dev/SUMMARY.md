@@ -18,6 +18,7 @@
     - [Setup Build Environment](ios/setup-ios-build-environment.md)
     - [Debugging different versions of Glean](ios/debug-glean-on-ios.md)
     - [Upgrading the supported Xcode version](ios/upgrading-supported-ios-platform.md)
+    - [Substituting glean_parser](ios/glean-parser-substitution.md)
 - [Python bindings](python/index.md)
     - [Setup Build Environment](python/setting-up-python-build-environment.md)
 - [Rust Component](core/index.md)

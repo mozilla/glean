@@ -152,7 +152,9 @@ impl QuantityMetric {
     }
 }
 
-impl TestGetValue<i64> for QuantityMetric {
+impl TestGetValue for QuantityMetric {
+    type Output = i64;
+
     /// **Test-only API (exported for FFI purposes).**
     ///
     /// Gets the currently stored value as an integer.
