@@ -106,7 +106,8 @@ fn clientid_regen_issue_with_existing_db() {
         let client_id_key = "glean_client_info#client_id";
 
         let mut writer = rkv.write().unwrap();
-        _ = user_store.delete(&mut writer, client_id_key);
+        user_store.delete(&mut writer, client_id_key).unwrap();
+        writer.commit().unwrap();
     }
 
     let (glean, _temp) = new_glean(Some(temp));

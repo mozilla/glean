@@ -322,6 +322,7 @@ impl Glean {
                             log::error!(
                                 "got no client_id in DB, {stored_client_id} in file. REGEN!"
                             );
+                            glean.core_metrics.client_id.set_from_uuid_sync(&glean, stored_client_id);
                         }
                         Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
                             // c0ffee issue!
