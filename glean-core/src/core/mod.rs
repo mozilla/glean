@@ -310,6 +310,7 @@ impl Glean {
                         "got no database, but {stored_client_id} in file. OTHER regen issue?"
                     );
                     glean.core_metrics.client_id.set_from_uuid_sync(&glean, stored_client_id);
+                    glean.health_metrics.file_storage_exception_state.set_sync(&glean, "empty-db");
                 } else {
                     let db_client_id = glean
                         .core_metrics
@@ -323,15 +324,18 @@ impl Glean {
                                 "got no client_id in DB, {stored_client_id} in file. REGEN!"
                             );
                             glean.core_metrics.client_id.set_from_uuid_sync(&glean, stored_client_id);
+                            glean.health_metrics.file_storage_exception_state.set_sync(&glean, "regen-db");
                         }
                         Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
                             // c0ffee issue!
                             log::error!(
                                 "got c0ffee client_id in DB, {stored_client_id} in file. REGEN!"
                             );
+                            glean.health_metrics.file_storage_exception_state.set_sync(&glean, "c0ffee-in-db");
                         }
                         Some(db_client_id) if db_client_id == stored_client_id => {
                             // all valid. nothing to do
+                            log::debug!("db_client_id == stored_client_id: {db_client_id}");
                         }
                         Some(db_client_id) => {
                             // database differs from plain on-disk. report that!
@@ -339,6 +343,8 @@ impl Glean {
                                 "got {db_client_id} in DB, {stored_client_id} in file. MISMATCH!"
                             );
                             glean.store_client_id(db_client_id).ok();
+                            glean.health_metrics.file_storage_exception_state.set_sync(&glean, "client-id-mismatch");
+                            glean.health_metrics.file_storage_mismatched_client_id.set_from_uuid_sync(&glean, stored_client_id);
                         }
                     }
                 }
