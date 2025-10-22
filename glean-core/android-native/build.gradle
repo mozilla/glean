@@ -124,7 +124,8 @@ afterEvaluate {
 // into our own glean-native-desktopLibraries JAR.
 def extractLibJniDispatch = tasks.register("extractLibJniDispatch", Copy) {
     from zipTree(configurations.jna.singleFile).matching {
-        include "**/libjnidispatch.*"
+        include "**/libjnidispatch.so"
+        include "**/libjnidispatch.jnilib"
     }
     into layout.buildDirectory.dir("libjnidispatch").get()
 }
