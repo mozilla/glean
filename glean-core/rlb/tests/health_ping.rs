@@ -99,52 +99,43 @@ fn test_pre_post_init_health_pings_exist() {
     let preinits: Vec<_> = pings
         .iter()
         .filter(|(url, body, _)| {
-            url.contains("health")
-                && body.get("ping_info").unwrap().get("reason").unwrap() == "pre_init"
+            url.contains("health") && body["ping_info"]["reason"] == "pre_init"
         })
         .collect();
     assert_eq!(1, preinits.len());
+
+    let health_pings: Vec<_> = pings
+        .iter()
+        .filter(|(url, _, _)| url.contains("health"))
+        .collect();
     assert_eq!(
         1,
-        pings
+        health_pings
             .iter()
-            .filter(|(url, body, _)| url.contains("health")
-                && body.get("ping_info").unwrap().get("reason").unwrap() == "post_init")
+            .filter(|(_, body, _)| body["ping_info"]["reason"] == "post_init")
             .count()
     );
     // Ensure both "health" pings have the same init count.
     assert_eq!(
         2,
-        pings
+        health_pings
             .iter()
-            .filter(|(url, body, _)| url.contains("health")
-                && body
-                    .get("metrics")
-                    .unwrap()
-                    .get("counter")
-                    .unwrap()
-                    .get("glean.health.init_count")
-                    .unwrap()
-                    == 1)
+            .filter(|(_, body, _)| body["metrics"]["counter"]["glean.health.init_count"] == 1)
             .count()
     );
+
     // An initial preinit "health" ping will show no db file sizes
-    let load_sizes = preinits[0]
-        .1
-        .get("metrics")
-        .unwrap()
-        .get("object")
-        .unwrap()
-        .get("glean.database.load_sizes")
+    let load_sizes = preinits[0].1["metrics"]["object"]["glean.database.load_sizes"]
+        .as_object()
         .unwrap();
     assert_eq!(None, load_sizes.get("new"));
     assert_eq!(None, load_sizes.get("open"));
     assert_eq!(None, load_sizes.get("post_open"));
     assert_eq!(None, load_sizes.get("post_open_user"));
     assert_eq!(None, load_sizes.get("post_load_ping_lifetime_data"));
-    assert_eq!(0, *load_sizes.get("user_records").unwrap());
-    assert_eq!(0, *load_sizes.get("ping_records").unwrap());
-    assert_eq!(0, *load_sizes.get("application_records").unwrap());
+    assert_eq!(0, load_sizes["user_records"]);
+    assert_eq!(0, load_sizes["ping_records"]);
+    assert_eq!(0, load_sizes["application_records"]);
     assert_eq!(None, load_sizes.get("ping_memory_records"));
     assert_eq!(None, load_sizes.get("error"));
 
@@ -161,53 +152,29 @@ fn test_pre_post_init_health_pings_exist() {
         .iter()
         .filter(|(url, body, _)| {
             url.contains("health")
-                && body.get("ping_info").unwrap().get("reason").unwrap() == "pre_init"
-                && body.get("ping_info").unwrap().get("seq").unwrap() == 2
+                && body["ping_info"]["reason"] == "pre_init"
+                && body["ping_info"]["seq"] == 2
         })
         .collect();
 
     // We should have a second "pre_init"-reason "health" ping now.
     assert_eq!(1, second_preinit.len());
 
-    let load_sizes = second_preinit[0]
-        .1
-        .get("metrics")
-        .unwrap()
-        .get("object")
-        .unwrap()
-        .get("glean.database.load_sizes")
+    let load_sizes = second_preinit[0].1["metrics"]["object"]["glean.database.load_sizes"]
+        .as_object()
         .unwrap();
-    assert_ne!(0, load_sizes.get("new").unwrap().as_i64().unwrap());
-    assert_ne!(0, load_sizes.get("open").unwrap().as_i64().unwrap());
-    assert_ne!(0, load_sizes.get("post_open").unwrap().as_i64().unwrap());
-    assert_ne!(
-        0,
-        load_sizes.get("post_open_user").unwrap().as_i64().unwrap()
-    );
-    assert_ne!(
-        0,
-        load_sizes
-            .get("post_load_ping_lifetime_data")
-            .unwrap()
-            .as_i64()
-            .unwrap()
-    );
+    assert_ne!(0, load_sizes["new"]);
+    assert_ne!(0, load_sizes["open"]);
+    assert_ne!(0, load_sizes["post_open"]);
+    assert_ne!(0, load_sizes["post_open_user"].as_i64().unwrap());
+    assert_ne!(0, load_sizes["post_load_ping_lifetime_data"]);
     assert_eq!(
-        load_sizes.get("new").unwrap().as_i64(),
-        load_sizes
-            .get("post_load_ping_lifetime_data")
-            .unwrap()
-            .as_i64()
+        load_sizes["new"],
+        load_sizes["post_load_ping_lifetime_data"]
     );
-    assert!(0 < load_sizes.get("user_records").unwrap().as_i64().unwrap());
-    assert!(0 < load_sizes.get("ping_records").unwrap().as_i64().unwrap());
-    assert!(
-        0 < load_sizes
-            .get("application_records")
-            .unwrap()
-            .as_i64()
-            .unwrap()
-    );
+    assert!(0 < load_sizes["user_records"].as_i64().unwrap());
+    assert!(0 < load_sizes["ping_records"].as_i64().unwrap());
+    assert!(0 < load_sizes["application_records"].as_i64().unwrap());
     assert_eq!(None, load_sizes.get("ping_memory_records"));
     assert_eq!(None, load_sizes.get("error"));
 }
