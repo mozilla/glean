@@ -1,0 +1,9 @@
+* Tests!
+  Tests for the whole state graph. How to best test this?
+  External script to corrupt client_id.txt and database
+* Do we have the whole state graph covered?
+* Decisions on how to report issues
+  * event
+  * metric
+  * custom ping
+  * "custom ping" -> reuse the health ping!

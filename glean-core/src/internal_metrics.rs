@@ -394,6 +394,10 @@ pub struct HealthMetrics {
     pub data_directory_info: ObjectMetric,
     // A running count of the number of initializations.
     pub init_count: CounterMetric,
+
+    // TODO
+    pub file_storage_exception_state: StringMetric,
+    pub file_storage_mismatched_client_id: UuidMetric,
 }
 
 impl HealthMetrics {
@@ -414,6 +418,22 @@ impl HealthMetrics {
                 lifetime: Lifetime::User,
                 disabled: false,
                 dynamic_label: None,
+            }),
+            file_storage_exception_state: StringMetric::new(CommonMetricData {
+                name: "exception_state".into(),
+                category: "glean.file_storage".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None
+            }),
+            file_storage_mismatched_client_id: UuidMetric::new(CommonMetricData {
+                name: "mismatched_client_id".into(),
+                category: "glean.file_storage".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None
             }),
         }
     }
