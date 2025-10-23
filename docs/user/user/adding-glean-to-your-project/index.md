@@ -18,6 +18,8 @@ Products (applications or libraries) using a Glean SDK to collect telemetry **mu
 
 4. At least one week before releasing your product, [enable your product's application id and metrics](./enable-data-ingestion.md) to be ingested by the data platform (and, as a consequence, indexed by the [Glean Dictionary]).
 
+5. If the product owner requires data to be accessible in the Mozilla Looker instance, changes to the [lookml-generator config](https://github.com/mozilla/lookml-generator/blob/main/namespaces-disallowlist.yaml) may be required to ensure the right views and explores are available. Please file a bug for assistance if needed.
+
 > **Important consideration for libraries:** For libraries that are adding Glean, you will need to indicate which _applications_ use the library as a dependency so that the library metrics get correctly indexed and added to the products that consume the library. If the library is added to a new product later, then it is necessary to file a new [bug][dataeng-bug] to add it as a dependency to that product in order for the library metrics to be collected along with the data from the new product.
 
 Additionally, applications (but not libraries) **must**:
