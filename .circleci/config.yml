@@ -499,7 +499,7 @@ jobs:
   Check Swift formatting:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - run:
@@ -517,7 +517,7 @@ jobs:
   iOS build and test:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - run:
@@ -618,7 +618,7 @@ jobs:
   iOS integration test:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - skip-if-doc-only
@@ -663,7 +663,7 @@ jobs:
   iOS Framework release:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - attach_workspace:
@@ -902,7 +902,7 @@ jobs:
   pypi-macos-release:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - install-rustup
       - setup-rust-toolchain
