@@ -85,6 +85,12 @@ fn signaling_done() {
     // Sync up with the upload thread.
     barrier.wait();
 
+    // The uploader thread needs some CPU time to actually shut down.
+    // We yield and still wait to make the scheduler give it that time.
+    // Using just one of the ways wasn't reliable enough.
+    std::thread::yield_now();
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
     // Submit another ping and wait for it to do work.
     pings::custom_ping.submit(None);
 

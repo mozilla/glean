@@ -110,7 +110,7 @@ impl UploadManager {
 
     /// Signals Glean to upload pings at the next best opportunity.
     pub(crate) fn trigger_upload(&self) {
-        // If no other upload proces is running, we're the one starting it.
+        // If no other upload process is running, we're the one starting it.
         // Need atomic compare/exchange to avoid any further races
         // or we can end up with 2+ uploader threads.
         if self
