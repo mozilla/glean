@@ -405,7 +405,7 @@
 
     <span class="doccomment">/// Signals Glean to upload pings at the next best opportunity.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>trigger_upload(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="comment">// If no other upload proces is running, we're the one starting it.
+        <span class="comment">// If no other upload process is running, we're the one starting it.
         // Need atomic compare/exchange to avoid any further races
         // or we can end up with 2+ uploader threads.
         </span><span class="kw">if </span><span class="self">self
