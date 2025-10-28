@@ -67,7 +67,7 @@ fn reused_clientid_from_file() {
     write_clientid_to_file(temp.path(), &new_uuid).unwrap();
 
     let (glean, temp) = new_glean(Some(temp));
-    // We don't run the mitigation yet
+    // TODO(bug 1996862): We don't run the mitigation yet
     //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
     //assert_eq!(new_uuid, db_client_id);
 
@@ -137,7 +137,7 @@ fn clientid_regen_issue_with_existing_db() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // We don't run the mitigation yet
+    // TODO(bug 1996862): We don't run the mitigation yet
     _ = file_client_id;
     //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
     //assert_eq!(file_client_id, db_client_id);
@@ -216,7 +216,7 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // We don't run the mitigation yet
+    // TODO(bug 1996862): We don't run the mitigation yet
     _ = file_client_id;
     //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
     //assert_eq!(file_client_id, db_client_id);
