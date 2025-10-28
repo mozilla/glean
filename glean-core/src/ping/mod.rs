@@ -231,7 +231,6 @@ impl PingMaker {
     ///
     /// A map of header names to header values.
     /// Might be empty if there are no extra headers to send.
-    /// ```
     fn get_headers(&self, glean: &Glean) -> HeaderMap {
         let mut headers_map = HeaderMap::new();
 

@@ -123,7 +123,7 @@ impl CustomDistributionMetric {
     /// ## Notes
     ///
     /// Discards any negative value of `sample` and reports an
-    /// [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue).
+    /// [`ErrorType::InvalidValue`].
     pub fn accumulate_single_sample(&self, sample: i64) {
         let metric = self.clone();
         crate::launch_with_glean(move |glean| metric.accumulate_samples_sync(glean, &[sample]))

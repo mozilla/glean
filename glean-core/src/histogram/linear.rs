@@ -58,7 +58,7 @@ impl Bucketing for PrecomputedLinear {
     /// Get the bucket for the sample.
     ///
     /// This uses a binary search to locate the index `i` of the bucket such that:
-    /// bucket[i] <= sample < bucket[i+1]
+    /// `bucket[i] <= sample < bucket[i+1]`
     fn sample_to_bucket_minimum(&self, sample: u64) -> u64 {
         let limit = match self.ranges().binary_search(&sample) {
             // Found an exact match to fit it in

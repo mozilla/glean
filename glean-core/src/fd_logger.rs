@@ -23,7 +23,7 @@ use serde::Serialize;
 /// side) to filter the log messages based on their level.
 /// The JSON payload of each message in an object with the following keys:
 ///    - `level` (string): One of the logging levels defined here:
-///      https://docs.rs/log/0.4.11/log/enum.Level.html
+///      <https://docs.rs/log/0.4.11/log/enum.Level.html>
 ///    - `message` (string): The logging message.
 pub struct FdLogger {
     pub file: RwLock<File>,
