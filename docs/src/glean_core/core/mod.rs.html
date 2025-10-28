@@ -2116,7 +2116,7 @@
     <span class="doccomment">/// Return the value for the debug view tag or [`None`] if it hasn't been set.
     ///
     /// The `debug_view_tag` may be set from an environment variable
-    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the `set_debug_view_tag` function.
+    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the [`set_debug_view_tag`](Glean::set_debug_view_tag) function.
     </span><span class="kw">pub fn </span>debug_view_tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>String&gt; {
         <span class="self">self</span>.debug.debug_view_tag.get()
     }
@@ -2139,7 +2139,7 @@
     <span class="doccomment">/// Return the value for the source tags or [`None`] if it hasn't been set.
     ///
     /// The `source_tags` may be set from an environment variable (`GLEAN_SOURCE_TAGS`)
-    /// or through the [`set_source_tags`] function.
+    /// or through the [`set_source_tags`](Glean::set_source_tags) function.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>source_tags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Vec&lt;String&gt;&gt; {
         <span class="self">self</span>.debug.source_tags.get()
     }

@@ -295,7 +295,7 @@
     <span class="doccomment">/// Get the bucket for the sample.
     ///
     /// This uses a binary search to locate the index `i` of the bucket such that:
-    /// bucket[i] &lt;= sample &lt; bucket[i+1]
+    /// `bucket[i] &lt;= sample &lt; bucket[i+1]`
     </span><span class="kw">fn </span>sample_to_bucket_minimum(<span class="kw-2">&amp;</span><span class="self">self</span>, sample: u64) -&gt; u64 {
         <span class="kw">let </span>limit = <span class="kw">match </span><span class="self">self</span>.ranges().binary_search(<span class="kw-2">&amp;</span>sample) {
             <span class="comment">// Found an exact match to fit it in

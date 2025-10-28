@@ -706,7 +706,7 @@
 }
 
 <span class="doccomment">/// Construct and return a label from a given key and category with the RECORD_SEPARATOR
-/// characters in the format: &lt;RS&gt;&lt;key&gt;&lt;RS&gt;&lt;category&gt;
+/// characters in the format: `&lt;RS&gt;&lt;key&gt;&lt;RS&gt;&lt;category&gt;`
 </span><span class="kw">pub fn </span>make_label_from_key_and_category(key: <span class="kw-2">&amp;</span>str, category: <span class="kw-2">&amp;</span>str) -&gt; String {
     <span class="macro">format!</span>(
         <span class="string">"{}{}{}{}"</span>,

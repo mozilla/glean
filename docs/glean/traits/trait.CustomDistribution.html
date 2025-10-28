@@ -7,7 +7,7 @@
 <a href="../private/struct.CustomDistributionMetric.html" title="struct glean::private::CustomDistributionMetric"><code>CustomDistributionMetric</code></a> type.</p>
 <p>When changing this trait, make sure all the operations are
 implemented in the related type in <code>../metrics/</code>.</p>
-</div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.accumulate_samples_signed" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#29">source</a><h4 class="code-header">fn <a href="#tymethod.accumulate_samples_signed" class="fn">accumulate_samples_signed</a>(&amp;self, samples: <a class="struct" href="https://doc.rust-lang.org/1.82.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i64.html">i64</a>&gt;)</h4></section></summary><div class="docblock"><p>Accumulates the provided signed samples in the metric.</p>
+</div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.accumulate_samples_signed" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#28">source</a><h4 class="code-header">fn <a href="#tymethod.accumulate_samples_signed" class="fn">accumulate_samples_signed</a>(&amp;self, samples: <a class="struct" href="https://doc.rust-lang.org/1.82.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i64.html">i64</a>&gt;)</h4></section></summary><div class="docblock"><p>Accumulates the provided signed samples in the metric.</p>
 <p>This is required so that the platform-specific code can provide us with
 64 bit signed integers if no <code>u64</code> comparable type is available. This
 will take care of filtering and reporting errors for any provided negative
@@ -18,9 +18,8 @@ sample.</p>
 </ul>
 <h6 id="notes"><a class="doc-anchor" href="#notes">§</a>Notes</h6>
 <p>Discards any negative value in <code>samples</code> and report an
-<a href="../enum.ErrorType.html#variant.InvalidValue" title="variant glean::ErrorType::InvalidValue"><code>ErrorType::InvalidValue</code></a> for each of
-them.</p>
-</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.accumulate_single_sample_signed" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#45">source</a><h4 class="code-header">fn <a href="#tymethod.accumulate_single_sample_signed" class="fn">accumulate_single_sample_signed</a>(&amp;self, sample: <a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i64.html">i64</a>)</h4></section></summary><div class="docblock"><p>Accumulates precisely one signed sample in the metric.</p>
+<a href="../enum.ErrorType.html#variant.InvalidValue" title="variant glean::ErrorType::InvalidValue"><code>ErrorType::InvalidValue</code></a> for each of them.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.accumulate_single_sample_signed" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#44">source</a><h4 class="code-header">fn <a href="#tymethod.accumulate_single_sample_signed" class="fn">accumulate_single_sample_signed</a>(&amp;self, sample: <a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i64.html">i64</a>)</h4></section></summary><div class="docblock"><p>Accumulates precisely one signed sample in the metric.</p>
 <p>This is required so that the platform-specific code can provide us with a
 64 bit signed integer if no <code>u64</code> comparable type is available. This
 will take care of filtering and reporting errors.</p>
@@ -31,7 +30,7 @@ will take care of filtering and reporting errors.</p>
 <h6 id="notes-1"><a class="doc-anchor" href="#notes-1">§</a>Notes</h6>
 <p>Discards any negative value of <code>sample</code> and reports an
 <a href="../enum.ErrorType.html#variant.InvalidValue" title="variant glean::ErrorType::InvalidValue"><code>ErrorType::InvalidValue</code></a>.</p>
-</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.test_get_num_recorded_errors" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#58">source</a><h4 class="code-header">fn <a href="#tymethod.test_get_num_recorded_errors" class="fn">test_get_num_recorded_errors</a>(&amp;self, error: <a class="enum" href="../enum.ErrorType.html" title="enum glean::ErrorType">ErrorType</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i32.html">i32</a></h4></section></summary><div class="docblock"><p><strong>Exported for test purposes.</strong></p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.test_get_num_recorded_errors" class="method"><a class="src rightside" href="../../src/glean_core/traits/custom_distribution.rs.html#57">source</a><h4 class="code-header">fn <a href="#tymethod.test_get_num_recorded_errors" class="fn">test_get_num_recorded_errors</a>(&amp;self, error: <a class="enum" href="../enum.ErrorType.html" title="enum glean::ErrorType">ErrorType</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.82.0/std/primitive.i32.html">i32</a></h4></section></summary><div class="docblock"><p><strong>Exported for test purposes.</strong></p>
 <p>Gets the number of recorded errors for the given error type.</p>
 <h5 id="arguments-2"><a class="doc-anchor" href="#arguments-2">§</a>Arguments</h5>
 <ul>

@@ -508,7 +508,7 @@
     /// ## Notes
     ///
     /// Discards any negative value of `sample` and reports an
-    /// [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue).
+    /// [`ErrorType::InvalidValue`].
     </span><span class="kw">pub fn </span>accumulate_single_sample(<span class="kw-2">&amp;</span><span class="self">self</span>, sample: i64) {
         <span class="kw">let </span>metric = <span class="self">self</span>.clone();
         <span class="kw">crate</span>::launch_with_glean(<span class="kw">move </span>|glean| metric.accumulate_samples_sync(glean, <span class="kw-2">&amp;</span>[sample]))

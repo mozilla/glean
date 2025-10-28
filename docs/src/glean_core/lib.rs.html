@@ -2393,7 +2393,7 @@
     }
 }
 
-<span class="doccomment">/// Checks if [`initialize`] was ever called.
+<span class="doccomment">/// Checks if [`glean_initialize`] was ever called.
 ///
 /// # Returns
 ///
@@ -2526,7 +2526,7 @@
     }
 }
 
-<span class="doccomment">/// Register a new [`PingType`](PingType).
+<span class="doccomment">/// Register a new [`PingType`].
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>register_ping_type(ping: <span class="kw-2">&amp;</span>PingType) {
     <span class="comment">// If this happens after Glean.initialize is called (and returns),
     // we dispatch ping registration on the thread pool.

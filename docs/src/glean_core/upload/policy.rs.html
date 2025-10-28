@@ -140,8 +140,8 @@
     ///
     /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
     </span>max_recoverable_failures: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The maximum of [`PingUploadTask::Wait`] responses a user may get in a row
-    /// when calling [`get_upload_task`].
+    <span class="doccomment">/// The maximum of [`PingUploadTask::Wait`](crate::PingUploadTask::Wait) responses a user may get in a row
+    /// when calling [`get_upload_task`](crate::Glean::get_upload_task).
     ///
     /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
     </span>max_wait_attempts: <span class="prelude-ty">Option</span>&lt;u32&gt;,

@@ -56,7 +56,6 @@
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -83,8 +82,7 @@
     /// ## Notes
     ///
     /// Discards any negative value in `samples` and report an
-    /// [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue) for each of
-    /// them.
+    /// [`ErrorType::InvalidValue`] for each of them.
     </span><span class="kw">fn </span>accumulate_samples_signed(<span class="kw-2">&amp;</span><span class="self">self</span>, samples: Vec&lt;i64&gt;);
 
     <span class="doccomment">/// Accumulates precisely one signed sample in the metric.
@@ -100,7 +98,7 @@
     /// ## Notes
     ///
     /// Discards any negative value of `sample` and reports an
-    /// [`ErrorType::InvalidValue`](crate::ErrorType::InvalidValue).
+    /// [`ErrorType::InvalidValue`].
     </span><span class="kw">fn </span>accumulate_single_sample_signed(<span class="kw-2">&amp;</span><span class="self">self</span>, sample: i64);
 
     <span class="doccomment">/// **Exported for test purposes.**
