@@ -938,7 +938,7 @@ impl Glean {
     /// Return the value for the debug view tag or [`None`] if it hasn't been set.
     ///
     /// The `debug_view_tag` may be set from an environment variable
-    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the `set_debug_view_tag` function.
+    /// (`GLEAN_DEBUG_VIEW_TAG`) or through the [`set_debug_view_tag`](Glean::set_debug_view_tag) function.
     pub fn debug_view_tag(&self) -> Option<&String> {
         self.debug.debug_view_tag.get()
     }
@@ -961,7 +961,7 @@ impl Glean {
     /// Return the value for the source tags or [`None`] if it hasn't been set.
     ///
     /// The `source_tags` may be set from an environment variable (`GLEAN_SOURCE_TAGS`)
-    /// or through the [`set_source_tags`] function.
+    /// or through the [`set_source_tags`](Glean::set_source_tags) function.
     pub(crate) fn source_tags(&self) -> Option<&Vec<String>> {
         self.debug.source_tags.get()
     }
