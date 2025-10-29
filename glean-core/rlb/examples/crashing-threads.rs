@@ -57,11 +57,14 @@ mod unix {
         // thread 2 = ping directory processor
         // thread 3 = MPS
         // thread 4 = uploader for first metrics ping <- this is the one we want to fail
-        // thread 5 = uploader for prototype ping <- this is the one we want to fail
-        // thread 6 = post-init uploader <- this needs to fail, too
-        // thread 7 = shutdown wait thread
+        // thread 5 = uploader for health pings <- this is the one we want to fail
+        // thread 6 = uploader for prototype ping <- this is the one we want to fail
+        // thread 7 = post-init uploader <- this needs to fail, too
+        // thread 8 = shutdown wait thread
+        const TO_BLOCK: &[u32] = &[4, 5, 6, 7];
+
         let spawned = ALLOW_THREAD_SPAWNED.fetch_add(1, Ordering::SeqCst);
-        if spawned == 4 || spawned == 5 || spawned == 6 {
+        if TO_BLOCK.contains(&spawned) {
             return -1;
         }
 

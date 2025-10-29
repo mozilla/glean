@@ -23,14 +23,19 @@ cargo run -p glean --example crashing-threads -- "$datapath"
 ret=$?
 count=$(ls -1q "$datapath/pending_pings" | wc -l)
 
+# 2x "health", 1x "prototype"
+expect_count=3
+
 # We expect 1 `prototype` ping:
-if [[ $ret -eq 0 ]] && [[ "$count" -eq 3 ]]; then
+if [[ $ret -eq 0 ]] && [[ "$count" -eq $expect_count ]]; then
   echo "test result: ok."
   exit 0
 else
   echo "Assertions:"
   echo "  ret - expected: 0, was: $ret"
-  echo "  count - expected: 1, was: $count"
+  echo "  count - expected: $expect_count, was: $count"
+  echo "The following pings are pending:"
+  head -1 $datapath/pending_pings/* || true
   echo "test result: FAILED."
   exit 101
 fi
