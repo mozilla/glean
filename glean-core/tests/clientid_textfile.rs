@@ -180,6 +180,11 @@ fn db_client_id_prefered_over_file_client_id() {
 
     let state = payload["metrics"]["string"]["glean.health.exception_state"].as_str();
     assert_eq!(Some("client-id-mismatch"), state);
+
+    let exception_uuid = &payload["metrics"]["uuid"]["glean.health.recovered_client_id"].as_str();
+    let mut buffer = Uuid::encode_buffer();
+    let expected_uuid = &*new_uuid.hyphenated().encode_lower(&mut buffer);
+    assert_eq!(&Some(expected_uuid), exception_uuid);
 }
 
 #[test]
