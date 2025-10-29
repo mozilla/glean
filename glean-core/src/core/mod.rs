@@ -340,6 +340,12 @@ impl Glean {
                                 .health_metrics
                                 .exception_state
                                 .set_sync(&glean, ExceptionState::C0ffeeInDb);
+
+                            // If we have a recovered client ID we also overwrite the database.
+                            glean
+                                .core_metrics
+                                .client_id
+                                .set_from_uuid_sync(&glean, stored_client_id);
                         }
                         Some(db_client_id) if db_client_id == stored_client_id => {
                             // all valid. nothing to do

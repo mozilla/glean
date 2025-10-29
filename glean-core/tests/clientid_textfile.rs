@@ -233,6 +233,15 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
 
     let state = payload["metrics"]["string"]["glean.health.exception_state"].as_str();
     assert_eq!(Some("c0ffee-in-db"), state);
+
+    let mut buffer = Uuid::encode_buffer();
+    let file_client_id = &*file_client_id.hyphenated().encode_lower(&mut buffer);
+
+    let exception_uuid = &payload["metrics"]["uuid"]["glean.health.recovered_client_id"].as_str();
+    assert_eq!(&Some(file_client_id), exception_uuid);
+
+    let exception_uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(file_client_id), exception_uuid);
 }
 
 #[test]
