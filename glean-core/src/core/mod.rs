@@ -298,7 +298,6 @@ impl Glean {
         )?);
 
         {
-            // We just set it.
             let data_store = glean.data_store.as_ref().unwrap();
             let db_load_sizes = data_store.load_sizes.as_ref().unwrap();
             let new_size = db_load_sizes.new.unwrap_or(0);
