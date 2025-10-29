@@ -541,8 +541,10 @@ impl Glean {
     fn client_id_from_file(&self) -> Result<Uuid, ClientIdFileError> {
         let uuid_str = fs::read_to_string(self.client_id_file_path())?;
         // We don't write a newline, but we still trim it. Who knows who else touches that file by accident.
-        // We're also a bit more lenient in what we accept here: uppercase, lowercase, with or without dashes.
-        let uuid = Uuid::parse_str(uuid_str.trim_end())?;
+        // We're also a bit more lenient in what we accept here:
+        // uppercase, lowercase, with or without dashes, urn, braced (and whatever else `Uuid`
+        // parses by default).
+        let uuid = Uuid::try_parse(uuid_str.trim_end())?;
         Ok(uuid)
     }
 
