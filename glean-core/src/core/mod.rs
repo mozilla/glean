@@ -490,9 +490,7 @@ impl Glean {
     }
 
     fn client_id_file_path(&self) -> PathBuf {
-        let mut path = self.data_path.clone();
-        path.push(CLIENT_ID_PLAIN_FILENAME);
-        path
+        self.data_path.join(CLIENT_ID_PLAIN_FILENAME)
     }
 
     /// Write the client ID to a separate plain file on disk
