@@ -193,7 +193,7 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
         (file_client_id, temp)
     };
 
-    // We modify the database and ONLY clear out the client id.
+    // We modify the database and ONLY set the client id to c0ffee.
     {
         let path = temp.path().join("db");
         let rkv = Rkv::new::<rkv::backend::SafeMode>(&path).unwrap();
