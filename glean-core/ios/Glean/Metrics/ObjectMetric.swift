@@ -81,6 +81,7 @@ public final class ObjectMetricType<K: ObjectSerialize>: Sendable {
     public func testGetValue(_ pingName: String? = nil) -> K? {
         guard let data = self.inner.testGetValue(pingName) else { return nil }
         let jsonDecoder = JSONDecoder()
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
         return try! jsonDecoder.decode(K.self, from: Data(data.utf8))
     }
 

@@ -8,6 +8,7 @@ import XCTest
 struct BalloonsObjectItem: Decodable, Equatable, ObjectSerialize {
     var colour: String?
     var diameter: Int64?
+    var anotherValue: Bool?
 
     func intoSerializedObject() -> String {
         var data: [String] = []
@@ -18,6 +19,11 @@ struct BalloonsObjectItem: Decodable, Equatable, ObjectSerialize {
         }
         if let val = self.diameter {
             var elem = "\"diameter\":"
+            elem.append(val.intoSerializedObject())
+            data.append(elem)
+        }
+        if let val = self.anotherValue {
+            var elem = "\"another_value\":"
             elem.append(val.intoSerializedObject())
             data.append(elem)
         }
@@ -131,5 +137,33 @@ class ObjectMetricTypeTests: XCTestCase {
         snapshot = metric.testGetValue("store2")!
         XCTAssertEqual(2, snapshot.count)
         XCTAssertEqual(expected, snapshot)
+    }
+
+    func testObjectDecodesFromSnakeCase() {
+        let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
+            category: "test",
+            name: "balloon",
+            sendInPings: ["store1"],
+            lifetime: .ping,
+            disabled: false
+        ))
+
+        XCTAssertNil(metric.testGetValue())
+
+        var balloons: BalloonsObject = []
+        balloons.append(BalloonsObjectItem(colour: "red", diameter: 5, anotherValue: true))
+        balloons.append(BalloonsObjectItem(colour: "green", anotherValue: false))
+        metric.set(balloons)
+
+        let snapshot = metric.testGetValue()!
+        XCTAssertNotNil(snapshot)
+        XCTAssertEqual(2, snapshot.count)
+
+        XCTAssertEqual(snapshot[0].colour, "red")
+        XCTAssertEqual(snapshot[0].diameter, 5)
+        XCTAssertEqual(snapshot[0].anotherValue, true)
+        XCTAssertEqual(snapshot[1].colour, "green")
+        XCTAssertNil(snapshot[1].diameter)
+        XCTAssertEqual(snapshot[1].anotherValue, false)
     }
 }
