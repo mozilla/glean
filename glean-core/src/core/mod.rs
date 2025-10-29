@@ -347,7 +347,7 @@ impl Glean {
                         }
                         Some(db_client_id) => {
                             log::trace!(
-                                "client_id mismatch. db_client_id{db_client_id}, stored_client_id={stored_client_id}"
+                                "client_id mismatch. db_client_id{db_client_id}, stored_client_id={stored_client_id}. Overwriting file with db's client_id."
                             );
                             glean.store_client_id_with_reporting(
                                 db_client_id,
