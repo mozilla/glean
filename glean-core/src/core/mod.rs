@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -551,8 +551,14 @@ impl Glean {
     /// Remove the stored client ID from disk.
     /// Should only be called when the client ID is also removed from the database.
     fn remove_stored_client_id(&self) -> Result<(), ClientIdFileError> {
-        fs::remove_file(self.client_id_file_path())?;
-        Ok(())
+        match fs::remove_file(self.client_id_file_path()) {
+            Ok(()) => Ok(()),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                // File was already missing. No need to report that.
+                Ok(())
+            }
+            Err(e) => Err(e.into()),
+        }
     }
 
     /// Initializes the core metrics managed by Glean's Rust core.
