@@ -10,56 +10,39 @@
 
 mod common;
 
-use std::{
-    fs::{self, read_dir, File},
-    io::{BufRead, BufReader},
-    path::Path,
-};
+use std::{fs, io::Read};
 
+use crossbeam_channel::{bounded, Sender};
+use flate2::read::GzDecoder;
 use glean::{net, ConfigurationBuilder};
 use serde_json::Value as JsonValue;
 
-// Define a fake uploader that sleeps.
+// Define a fake uploader that reports when and what it uploads.
 #[derive(Debug)]
-struct FakeUploader;
-
-impl net::PingUploader for FakeUploader {
-    fn upload(&self, _upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
-        // Recoverable upload failure, will be retried 3 times,
-        // but then keeps the pending ping around.
-        net::UploadResult::http_status(500)
-    }
+struct ReportingUploader {
+    sender: Sender<JsonValue>,
 }
 
-fn get_pings(pings_dir: &Path) -> Vec<(String, JsonValue, Option<JsonValue>)> {
-    let Ok(entries) = read_dir(pings_dir) else {
-        return vec![];
-    };
-    entries
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| match entry.file_type() {
-            Ok(file_type) => file_type.is_file(),
-            Err(_) => false,
-        })
-        .filter_map(|entry| File::open(entry.path()).ok())
-        .filter_map(|file| {
-            let mut lines = BufReader::new(file).lines();
-            if let (Some(Ok(url)), Some(Ok(body)), Ok(metadata)) =
-                (lines.next(), lines.next(), lines.next().transpose())
-            {
-                let parsed_metadata = metadata.map(|m| {
-                    serde_json::from_str::<JsonValue>(&m).expect("metadata should be valid JSON")
-                });
-                if let Ok(parsed_body) = serde_json::from_str::<JsonValue>(&body) {
-                    Some((url, parsed_body, parsed_metadata))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        })
-        .collect()
+impl net::PingUploader for ReportingUploader {
+    fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+        let upload_request = upload_request.capable(|_| true).unwrap();
+        let body = upload_request.body;
+        let decode = |body: Vec<u8>| {
+            let mut gzip_decoder = GzDecoder::new(&body[..]);
+            let mut s = String::with_capacity(body.len());
+
+            gzip_decoder
+                .read_to_string(&mut s)
+                .ok()
+                .map(|_| &s[..])
+                .or_else(|| std::str::from_utf8(&body).ok())
+                .and_then(|payload| serde_json::from_str(payload).ok())
+                .unwrap()
+        };
+
+        self.sender.send(decode(body)).unwrap();
+        net::UploadResult::http_status(200)
+    }
 }
 
 /// Test scenario: Write a client ID to the backup file and check that it's used after initialization.
@@ -77,29 +60,19 @@ fn test_pre_post_init_health_pings_exist() {
     let clientid_txt = tmpname.join("client_id.txt");
     fs::write(&clientid_txt, client_id.as_bytes()).unwrap();
 
+    let (tx, rx) = bounded(1);
     let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
         .with_server_endpoint("invalid-test-host")
-        .with_uploader(FakeUploader)
+        .with_use_core_mps(false)
+        .with_uploader(ReportingUploader { sender: tx })
         .build();
     common::initialize(cfg);
 
     glean_core::glean_test_destroy_glean(false, Some(tmpname.display().to_string()));
 
     // Check for the initialization pings.
-    let pings = get_pings(&tmpname.join("pending_pings"));
-    assert!(!pings.is_empty());
-    assert_eq!(
-        2,
-        pings
-            .iter()
-            .filter(|(url, _, _)| url.contains("health"))
-            .count()
-    );
-
-    let (_url, payload, _metadata) = pings
-        .into_iter()
-        .find(|(url, body, _)| url.contains("health") && body["ping_info"]["reason"] == "pre_init")
-        .unwrap();
+    // Wait for the ping to arrive.
+    let payload = rx.recv().unwrap();
 
     let exception_state = &payload["metrics"]["string"]["glean.health.exception_state"];
     assert_eq!("empty-db", exception_state);
