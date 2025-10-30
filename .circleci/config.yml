@@ -438,6 +438,24 @@ jobs:
       - image: cimg/android:2025.10.1-browsers
     steps:
       - checkout
+      - run:
+          name: Check if Kotlin files have been touched
+          command: |
+            DEFAULT_BRANCH=main
+            COMMIT_RANGE="${DEFAULT_BRANCH}...${CIRCLE_SHA1}"
+            echo "commit range: ${COMMIT_RANGE}"
+            echo "Changed files:"
+            changed_files=$(git diff --name-only $COMMIT_RANGE)
+            echo "$changed_files"
+
+            if echo "$changed_files" | grep -E '.kt$'; then
+              changed_kotlin_count=$(echo "$changed_files" | grep -E '.kt$' -c)
+              echo "Count of changed kotlin files: $changed_kotlin_count"
+            else
+              echo "No Kotlin files touched. No need for linting."
+              circleci-agent step halt
+            fi
+
       - android-setup
       - run: ./gradlew --no-daemon lint
       - run: ./gradlew --no-daemon ktlint
@@ -499,7 +517,7 @@ jobs:
   Check Swift formatting:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - run:
@@ -517,7 +535,7 @@ jobs:
   iOS build and test:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - run:
@@ -618,7 +636,7 @@ jobs:
   iOS integration test:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - skip-if-doc-only
@@ -663,7 +681,7 @@ jobs:
   iOS Framework release:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - checkout
       - attach_workspace:
@@ -902,7 +920,7 @@ jobs:
   pypi-macos-release:
     macos:
       xcode: "16.4"
-    resource_class: "macos.m1.medium.gen1"
+    resource_class: "m4pro.medium"
     steps:
       - install-rustup
       - setup-rust-toolchain

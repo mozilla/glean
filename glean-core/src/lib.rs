@@ -802,7 +802,7 @@ fn initialize_core_metrics(glean: &Glean, client_info: &ClientInfoMetrics) {
     }
 }
 
-/// Checks if [`initialize`] was ever called.
+/// Checks if [`glean_initialize`] was ever called.
 ///
 /// # Returns
 ///
@@ -935,7 +935,7 @@ pub fn set_ping_enabled(ping: &PingType, enabled: bool) {
     }
 }
 
-/// Register a new [`PingType`](PingType).
+/// Register a new [`PingType`].
 pub(crate) fn register_ping_type(ping: &PingType) {
     // If this happens after Glean.initialize is called (and returns),
     // we dispatch ping registration on the thread pool.

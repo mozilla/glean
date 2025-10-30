@@ -241,3 +241,27 @@ party:
               - type: string
               - type: number
               - type: boolean
+
+  toplevel_object:
+    type: object
+    description: Top-level object
+    bugs:
+      - https://bugzilla.mozilla.org/11137353
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - sample
+    structure:
+      type: object
+      properties:
+        key1:
+          type: string
+        another_value:
+          type: number
+        sub_array:
+          type: array
+          items:
+            type: number

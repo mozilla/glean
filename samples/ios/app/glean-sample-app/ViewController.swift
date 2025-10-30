@@ -77,6 +77,9 @@ class ViewController: UIViewController {
         ch.append(f)
         Party.chooser.set(ch)
 
+        let tlObj = Party.ToplevelObjectObject(key1: "test", anotherValue: 3, subArray: [1, 2, 3])
+        Party.toplevelObject.set(tlObj)
+
         // This is referencing the event ping named 'click' from the metrics.yaml file. In
         // order to illustrate adding extra information to the event, it is also adding to the
         // 'extras' field a dictionary of values.  Note that the dictionary keys must be

@@ -26,8 +26,8 @@ pub struct Policy {
     ///
     /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
     max_recoverable_failures: Option<u32>,
-    /// The maximum of [`PingUploadTask::Wait`] responses a user may get in a row
-    /// when calling [`get_upload_task`].
+    /// The maximum of [`PingUploadTask::Wait`](crate::PingUploadTask::Wait) responses a user may get in a row
+    /// when calling [`get_upload_task`](crate::Glean::get_upload_task).
     ///
     /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
     max_wait_attempts: Option<u32>,

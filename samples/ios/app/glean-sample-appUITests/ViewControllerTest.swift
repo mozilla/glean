@@ -57,6 +57,14 @@ class ViewControllerTest: XCTestCase {
 
         let chooser = objects["party.chooser"] as! [[String: AnyHashable]]
         XCTAssertEqual(expectedChooser, chooser)
+
+        let obj = objects["party.toplevel_object"] as! [String: AnyHashable]
+        let expectedObj: [String: AnyHashable] = [
+            "key1": "test",
+            "another_value": 3,
+            "sub_array": [1, 2, 3]
+        ]
+        XCTAssertEqual(expectedObj, obj)
     }
 
     func testViewControllerInteraction() {

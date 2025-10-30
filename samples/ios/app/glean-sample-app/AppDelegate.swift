@@ -42,6 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             glean.initialize(uploadEnabled: true, buildInfo: GleanMetrics.GleanBuild.info)
         }
 
+        glean.setDebugViewTag("jer-ios")
+
         Test.timespan.start()
 
         // Set a sample value for a metric.
