@@ -3389,27 +3389,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/distiller/project/glean-core/ios/Glean/Metrics/ObjectMetric.swift",
-      "line": 29,
-      "symbol": "String.intoSerializedObject()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/distiller/project/glean-core/ios/Glean/Metrics/ObjectMetric.swift",
-      "line": 38,
-      "symbol": "Bool.intoSerializedObject()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/distiller/project/glean-core/ios/Glean/Metrics/ObjectMetric.swift",
-      "line": 44,
-      "symbol": "Int64.intoSerializedObject()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
       "line": 5,
       "symbol": "HeadersList",
