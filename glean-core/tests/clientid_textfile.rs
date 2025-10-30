@@ -34,10 +34,14 @@ fn clientid_from_file(data_path: &Path) -> Option<Uuid> {
 }
 
 fn write_clientid_to_file(data_path: &Path, uuid: &Uuid) -> Option<()> {
-    let path = data_path.join("client_id.txt");
     let mut buffer = Uuid::encode_buffer();
     let uuid_str = uuid.hyphenated().encode_lower(&mut buffer);
-    fs::write(path, uuid_str.as_bytes()).ok()?;
+    write_clientid_to_file_str(data_path, uuid_str)
+}
+
+fn write_clientid_to_file_str(data_path: &Path, s: &str) -> Option<()> {
+    let path = data_path.join("client_id.txt");
+    fs::write(path, s.as_bytes()).ok()?;
     Some(())
 }
 
@@ -270,10 +274,9 @@ fn clientid_file_casing_doesnt_matter() {
     };
 
     {
-        let path = temp.path().join("client_id.txt");
         let mut buffer = Uuid::encode_buffer();
         let uuid_str = file_client_id.hyphenated().encode_lower(&mut buffer);
-        fs::write(path, uuid_str.to_uppercase().as_bytes()).unwrap();
+        write_clientid_to_file_str(temp.path(), &uuid_str.to_uppercase());
     }
 
     let (glean, temp) = new_glean(Some(temp));
@@ -305,8 +308,7 @@ fn invalid_client_id_file_doesnt_crash() {
     ];
 
     for value in test_values {
-        let path = temp.path().join("client_id.txt");
-        fs::write(path, value.as_bytes()).unwrap();
+        write_clientid_to_file_str(temp.path(), value);
 
         let (glean, new_temp) = new_glean(Some(temp));
         drop(glean);
@@ -325,4 +327,180 @@ fn invalid_client_id_file_doesnt_crash() {
     }
 
     drop(temp);
+}
+
+mod read_errors {
+    use super::*;
+
+    #[test]
+    fn parse_error_is_reported() {
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+
+        write_clientid_to_file_str(temp.path(), "abc");
+
+        let (glean, temp) = new_glean(Some(temp));
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]["parse"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
+
+    #[test]
+    fn io_error_is_reported() {
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+
+        let p = temp.path().join("client_id.txt");
+        fs::remove_file(&p).unwrap();
+        fs::create_dir_all(&p).unwrap();
+
+        let (glean, temp) = new_glean(Some(temp));
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]["io"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn permission_error_is_reported() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+
+        let p = temp.path().join("client_id.txt");
+        // Remove write permissions on the file.
+        let attr = fs::metadata(&p).unwrap();
+        let original_permissions = attr.permissions();
+        let mut permissions = original_permissions.clone();
+        // No permissions at all, no read, no write, for anyone.
+        permissions.set_mode(0o0);
+        fs::set_permissions(&p, permissions).unwrap();
+
+        let (glean, temp) = new_glean(Some(temp));
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]
+            ["permission-denied"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
+}
+
+mod write_errors {
+    use super::*;
+
+    #[cfg(unix)]
+    #[test]
+    fn permission_error_is_reported() {
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+
+        // Force empty file, so that it will be written again later.
+        write_clientid_to_file_str(temp.path(), "");
+
+        let p = temp.path().join("client_id.txt");
+        // Remove write permissions on the file.
+        let attr = fs::metadata(&p).unwrap();
+        let original_permissions = attr.permissions();
+        let mut permissions = original_permissions.clone();
+        // No permissions at all, no read, no write, for anyone.
+        permissions.set_readonly(true);
+        fs::set_permissions(&p, permissions).unwrap();
+
+        let (glean, temp) = new_glean(Some(temp));
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]["parse"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_write_error"]
+            ["permission-denied"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn permission_error_on_later_regeneration() {
+        let (mut glean, temp) = new_glean(None);
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+
+        glean.set_upload_enabled(false);
+
+        let path = temp.path().join("client_id.txt");
+        assert!(!path.exists());
+
+        // Force empty file, so that it will be written again later.
+        write_clientid_to_file_str(temp.path(), "");
+
+        let p = temp.path().join("client_id.txt");
+        // Remove write permissions on the file.
+        let attr = fs::metadata(&p).unwrap();
+        let original_permissions = attr.permissions();
+        let mut permissions = original_permissions.clone();
+        // No permissions at all, no read, no write, for anyone.
+        permissions.set_readonly(true);
+        fs::set_permissions(&p, permissions).unwrap();
+
+        glean.set_upload_enabled(true);
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = &payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]["parse"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_write_error"]
+            ["permission-denied"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
 }

@@ -264,27 +264,6 @@ impl Glean {
     pub fn new(cfg: InternalConfiguration) -> Result<Self> {
         let mut glean = Self::new_for_subprocess(&cfg, false)?;
 
-        let stored_client_id = match glean.client_id_from_file() {
-            Ok(id) => Some(id),
-            Err(ClientIdFileError::NotFound) => {
-                // That's ok, the file might just not exist yet.
-                None
-            }
-            Err(ClientIdFileError::PermissionDenied) => {
-                // Uhm ... who removed our permission?
-                None
-            }
-            Err(ClientIdFileError::ParseError(e)) => {
-                log::trace!("reading cliend_id.txt. Could not parse into UUID: {e}");
-                None
-            }
-            Err(ClientIdFileError::IoError(e)) => {
-                // We can't handle other IO errors (most couldn't occur on this operation anyway)
-                log::trace!("reading client_id.txt. Unexpected io error: {e}");
-                None
-            }
-        };
-
         // Creating the data store creates the necessary path as well.
         // If that fails we bail out and don't initialize further.
         let data_path = Path::new(&cfg.data_path);
@@ -296,6 +275,44 @@ impl Glean {
             ping_lifetime_threshold,
             ping_lifetime_max_time,
         )?);
+
+        // We don't have the database yet when we first encounter the error,
+        // so we store it and apply it later.
+        let stored_client_id = match glean.client_id_from_file() {
+            Ok(id) => Some(id),
+            Err(ClientIdFileError::NotFound) => {
+                // That's ok, the file might just not exist yet.
+                None
+            }
+            Err(ClientIdFileError::PermissionDenied) => {
+                // Uhm ... who removed our permission?
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("permission-denied")
+                    .add_sync(&glean, 1);
+                None
+            }
+            Err(ClientIdFileError::ParseError(e)) => {
+                log::trace!("reading cliend_id.txt. Could not parse into UUID: {e}");
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("parse")
+                    .add_sync(&glean, 1);
+                None
+            }
+            Err(ClientIdFileError::IoError(e)) => {
+                // We can't handle other IO errors (most couldn't occur on this operation anyway)
+                log::trace!("reading client_id.txt. Unexpected io error: {e}");
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("io")
+                    .add_sync(&glean, 1);
+                None
+            }
+        };
 
         {
             let data_store = glean.data_store.as_ref().unwrap();
@@ -500,6 +517,8 @@ impl Glean {
     }
 
     /// Write the client ID to a separate plain file on disk
+    ///
+    /// Use `store_client_id_with_reporting` to handle the error cases.
     fn store_client_id(&self, client_id: Uuid) -> Result<(), ClientIdFileError> {
         let mut fp = File::create(self.client_id_file_path())?;
 
@@ -511,6 +530,9 @@ impl Glean {
         Ok(())
     }
 
+    /// Write the client ID to a separate plain file on disk
+    ///
+    /// When an error occurs an error message is logged and the error is counted in a metric.
     fn store_client_id_with_reporting(&self, client_id: Uuid, msg: &str) {
         if let Err(err) = self.store_client_id(client_id) {
             log::error!(

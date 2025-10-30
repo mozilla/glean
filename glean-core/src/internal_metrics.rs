@@ -423,6 +423,9 @@ pub struct HealthMetrics {
     pub exception_state: StringMetric,
     // A client_id recovered from a `client_id.txt` file on disk.
     pub recovered_client_id: UuidMetric,
+
+    pub file_read_error: LabeledCounter,
+    pub file_write_error: LabeledCounter,
 }
 
 impl HealthMetrics {
@@ -460,6 +463,40 @@ impl HealthMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+            file_read_error: LabeledMetric::<CounterMetric>::new(
+                LabeledMetricData::Common {
+                    cmd: CommonMetricData {
+                        category: "glean.health".into(),
+                        name: "file_read_error".into(),
+                        send_in_pings: vec!["health".into()],
+                        lifetime: Lifetime::Ping,
+                        disabled: false,
+                        dynamic_label: None,
+                    },
+                },
+                Some(vec![
+                    Cow::from("parse"),
+                    Cow::from("permission-denied"),
+                    Cow::from("io"),
+                ]),
+            ),
+            file_write_error: LabeledMetric::<CounterMetric>::new(
+                LabeledMetricData::Common {
+                    cmd: CommonMetricData {
+                        category: "glean.health".into(),
+                        name: "file_write_error".into(),
+                        send_in_pings: vec!["health".into()],
+                        lifetime: Lifetime::Ping,
+                        disabled: false,
+                        dynamic_label: None,
+                    },
+                },
+                Some(vec![
+                    Cow::from("not-found"),
+                    Cow::from("permission-denied"),
+                    Cow::from("io"),
+                ]),
+            ),
         }
     }
 }

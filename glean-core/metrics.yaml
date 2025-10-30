@@ -1202,3 +1202,47 @@ glean.health:
     expires: never
     send_in_pings:
       - health
+
+  file_read_error:
+    type: labeled_counter
+    lifetime: ping
+    description: |
+      Count of different errors that happened when trying to read the `client_id.txt` file from disk.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/1994757
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+    labels:
+      - parse
+      - permission-denied
+      - io
+
+  file_write_error:
+    type: labeled_counter
+    lifetime: ping
+    description: |
+      Count of different errors that happened when trying to write the `client_id.txt` file from disk.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/1994757
+    data_reviews:
+      - https://bugzilla.mozilla.org/1994757
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+    labels:
+      - permission-denied
+      - io
+      - not-found
