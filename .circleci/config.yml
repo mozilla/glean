@@ -445,7 +445,7 @@ jobs:
             COMMIT_RANGE="${DEFAULT_BRANCH}...${CIRCLE_SHA1}"
             echo "commit range: ${COMMIT_RANGE}"
             echo "Changed files:"
-            changed_files=$(git diff --name-only $COMMIT_RANGE | grep -v '*')
+            changed_files=$(git diff --name-only $COMMIT_RANGE)
             echo "$changed_files"
 
             if echo "$changed_files" | grep -E '.kt$'; then
