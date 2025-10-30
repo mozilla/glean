@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.0.1...main)
+
+# v66.0.1 (2025-10-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.0.0...v66.0.1)
 
 * Swift
   * Rely on `Codable` again for serialization of object metrics ([#3300](https://github.com/mozilla/glean/pull/3300))
