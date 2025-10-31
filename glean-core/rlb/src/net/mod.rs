@@ -124,6 +124,7 @@ impl UploadManager {
             )
             .is_err()
         {
+            log::trace!("glean.upload thread running. Not starting another one.");
             return;
         }
 

@@ -124,6 +124,11 @@ fn test_pre_post_init_health_pings_exist() {
             .count()
     );
 
+    let exception_state = &preinits[0].1["metrics"]["string"]["glean.health_exception_state"];
+    assert_eq!(&JsonValue::Null, exception_state);
+    let exception_uuid = &preinits[0].1["metrics"]["uuid"]["glean.health_recovered_client_id"];
+    assert_eq!(&JsonValue::Null, exception_uuid);
+
     // An initial preinit "health" ping will show no db file sizes
     let load_sizes = preinits[0].1["metrics"]["object"]["glean.database.load_sizes"]
         .as_object()
