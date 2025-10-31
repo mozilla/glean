@@ -1174,9 +1174,9 @@ glean.health:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
     data_reviews:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
     data_sensitivity:
       - technical
     expires: never
@@ -1194,9 +1194,9 @@ glean.health:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
     data_reviews:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
     data_sensitivity:
       - technical
     expires: never
@@ -1212,9 +1212,9 @@ glean.health:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
     data_reviews:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
     data_sensitivity:
       - technical
     expires: never
@@ -1234,9 +1234,9 @@ glean.health:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
     data_reviews:
-      - https://bugzilla.mozilla.org/1994757
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757#c2
     data_sensitivity:
       - technical
     expires: never
