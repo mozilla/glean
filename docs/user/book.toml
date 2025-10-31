@@ -8,8 +8,8 @@ build-dir = "book"
 create-missing = false
 
 [output.html]
-additional-css = ["../shared/glean.css", "../shared/mermaid.css"]
-additional-js = ["../shared/tabs.js", "../shared/mermaid.min.js", "../shared/mermaid-init.js", "chart.min.js", "chart-distributions.js", "chart-distributions-ui.js"]
+additional-css = ["../shared/glean.css"]
+additional-js = ["../shared/tabs.js", "chart.min.js", "chart-distributions.js", "chart-distributions-ui.js"]
 git-repository-url = "https://github.com/mozilla/glean"
 edit-url-template = "https://github.com/mozilla/glean/edit/main/docs/user/{path}"
 git-branch = "main"
