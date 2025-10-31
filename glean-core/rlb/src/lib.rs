@@ -162,7 +162,7 @@ pub fn set_collection_enabled(enabled: bool) {
 /// Note that this needs to be public in order for RLB consumers to
 /// use Glean debugging facilities.
 ///
-/// See [`glean_core::Glean.submit_ping_by_name`].
+/// See [`glean_core::Glean::submit_ping_by_name`].
 pub fn submit_ping_by_name(ping: &str, reason: Option<&str>) {
     let ping = ping.to_string();
     let reason = reason.map(|s| s.to_string());
