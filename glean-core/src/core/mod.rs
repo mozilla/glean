@@ -276,8 +276,12 @@ impl Glean {
             ping_lifetime_max_time,
         )?);
 
+        // This code references different states from the "Client ID recovery" flowchart.
+        // See https://mozilla.github.io/glean/dev/core/internal/client_id_recovery.html for details.
+
         // We don't have the database yet when we first encounter the error,
         // so we store it and apply it later.
+        // state (a)
         let stored_client_id = match glean.client_id_from_file() {
             Ok(id) => Some(id),
             Err(ClientIdFileError::NotFound) => {
@@ -285,6 +289,7 @@ impl Glean {
                 None
             }
             Err(ClientIdFileError::PermissionDenied) => {
+                // state (b)
                 // Uhm ... who removed our permission?
                 glean
                     .health_metrics
@@ -294,6 +299,7 @@ impl Glean {
                 None
             }
             Err(ClientIdFileError::ParseError(e)) => {
+                // state (b)
                 log::trace!("reading cliend_id.txt. Could not parse into UUID: {e}");
                 glean
                     .health_metrics
@@ -303,6 +309,7 @@ impl Glean {
                 None
             }
             Err(ClientIdFileError::IoError(e)) => {
+                // state (b)
                 // We can't handle other IO errors (most couldn't occur on this operation anyway)
                 log::trace!("reading client_id.txt. Unexpected io error: {e}");
                 glean
@@ -321,8 +328,10 @@ impl Glean {
 
             // If we have a client ID on disk, we check the database
             if let Some(stored_client_id) = stored_client_id {
+                // state (c)
                 if new_size <= 0 {
                     log::trace!("no database. database size={new_size}. stored_client_id={stored_client_id}");
+                    // state (d)
                     glean
                         .health_metrics
                         .recovered_client_id
@@ -331,6 +340,8 @@ impl Glean {
                         .health_metrics
                         .exception_state
                         .set_sync(&glean, ExceptionState::EmptyDb);
+
+                    // state (e) -- mitigation: store recovered client ID in DB
                 } else {
                     let db_client_id = glean
                         .core_metrics
@@ -339,13 +350,17 @@ impl Glean {
 
                     match db_client_id {
                         None => {
+                            // state (f)
                             log::trace!("no client_id in DB. stored_client_id={stored_client_id}");
                             glean
                                 .health_metrics
                                 .exception_state
                                 .set_sync(&glean, ExceptionState::RegenDb);
+
+                            // state (e) -- mitigation: store recovered client ID in DB
                         }
                         Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
+                            // state (i)
                             log::trace!(
                                 "c0ffee client_id in DB, stored_client_id={stored_client_id}"
                             );
@@ -359,6 +374,7 @@ impl Glean {
                                 .set_sync(&glean, ExceptionState::C0ffeeInDb);
 
                             // If we have a recovered client ID we also overwrite the database.
+                            // state (e)
                             glean
                                 .core_metrics
                                 .client_id
@@ -369,12 +385,9 @@ impl Glean {
                             log::trace!("database consistent. db_client_id == stored_client_id: {db_client_id}");
                         }
                         Some(db_client_id) => {
+                            // state (g)
                             log::trace!(
                                 "client_id mismatch. db_client_id{db_client_id}, stored_client_id={stored_client_id}. Overwriting file with db's client_id."
-                            );
-                            glean.store_client_id_with_reporting(
-                                db_client_id,
-                                "client_id mismatch will re-occur.",
                             );
                             glean
                                 .health_metrics
@@ -384,6 +397,12 @@ impl Glean {
                                 .health_metrics
                                 .exception_state
                                 .set_sync(&glean, ExceptionState::ClientIdMismatch);
+
+                            // state (h)
+                            glean.store_client_id_with_reporting(
+                                db_client_id,
+                                "client_id mismatch will re-occur.",
+                            );
                         }
                     }
                 }
@@ -395,6 +414,7 @@ impl Glean {
                     .client_id
                     .get_value(&glean, Some("glean_client_info"));
                 if let Some(db_client_id) = db_client_id {
+                    // state (h)
                     glean.store_client_id_with_reporting(
                         db_client_id,
                         "Might happen on next init then.",
