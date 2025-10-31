@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.0.1...main)
 
+* General
+  * Store the client ID in an additional plaintext file and report on regeneration ([#3292](https://github.com/mozilla/glean/pull/3292))
+
 # v66.0.1 (2025-10-30)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.0.0...v66.0.1)
