@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.0.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.0...main)
+
+# v66.1.0 (2025-11-03)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.0.1...v66.1.0)
 
 * General
   * Store the client ID in an additional plaintext file and report on regeneration ([#3292](https://github.com/mozilla/glean/pull/3292))
