@@ -142,7 +142,7 @@ Not yet implemented.
 
 ```js
 // testGetValue will throw a data error on invalid value.
-Assert.equal(
+Assert.deepEqual(
   [
     { colour: "red", diameter: 5 },
     { colour: "blue", diameter: 7 },

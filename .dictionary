@@ -1,4 +1,4 @@
-personal_ws-1.1 en 304 utf-8
+personal_ws-1.1 en 306 utf-8
 AAR
 AARs
 ABI
@@ -233,6 +233,7 @@ pdoc
 perrymcmanis
 pidcat
 pipenv
+plaintext
 polyfill
 pre
 prebuilt
@@ -240,6 +241,7 @@ preinit
 profiler
 py
 pytest
+regenerations
 rethrow
 retransmission
 rfloor

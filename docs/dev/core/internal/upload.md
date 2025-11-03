@@ -20,21 +20,17 @@ All language bindings implement ping uploading around a common API and protocol.
 
 ```mermaid
 classDiagram
-    class UploadResult {
-    }
+    class UploadResult { }
 
     class HttpResponse {
         int statusCode
     }
 
-    class UnrecoverableFailure {
-    }
+    class UnrecoverableFailure { }
 
-    class RecoverableFailure {
-    }
+    class RecoverableFailure { }
 
-    class Incapable {
-    }
+    class Incapable { }
 
     UploadResult <|-- HttpResponse
     UploadResult <|-- UnrecoverableFailure

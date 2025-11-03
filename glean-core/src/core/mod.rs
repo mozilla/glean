@@ -3,6 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::collections::HashMap;
+use std::fs::{self, File};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
@@ -11,11 +13,15 @@ use std::time::Duration;
 use chrono::{DateTime, FixedOffset};
 use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
+use uuid::Uuid;
 
 use crate::database::Database;
 use crate::debug::DebugOptions;
+use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
-use crate::internal_metrics::{AdditionalMetrics, CoreMetrics, DatabaseMetrics, HealthMetrics};
+use crate::internal_metrics::{
+    AdditionalMetrics, CoreMetrics, DatabaseMetrics, ExceptionState, HealthMetrics,
+};
 use crate::internal_pings::InternalPings;
 use crate::metrics::{
     self, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment, RemoteSettingsConfig,
@@ -30,6 +36,7 @@ use crate::{
     GLEAN_SCHEMA_VERSION, GLEAN_VERSION, KNOWN_CLIENT_ID,
 };
 
+const CLIENT_ID_PLAIN_FILENAME: &str = "client_id.txt";
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
 pub fn global_glean() -> Option<&'static Mutex<Glean>> {
@@ -269,6 +276,159 @@ impl Glean {
             ping_lifetime_max_time,
         )?);
 
+        // This code references different states from the "Client ID recovery" flowchart.
+        // See https://mozilla.github.io/glean/dev/core/internal/client_id_recovery.html for details.
+
+        // We don't have the database yet when we first encounter the error,
+        // so we store it and apply it later.
+        // state (a)
+        let stored_client_id = match glean.client_id_from_file() {
+            Ok(id) if id == *KNOWN_CLIENT_ID => {
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("c0ffee-in-file")
+                    .add_sync(&glean, 1);
+                None
+            }
+            Ok(id) => Some(id),
+            Err(ClientIdFileError::NotFound) => {
+                // That's ok, the file might just not exist yet.
+                None
+            }
+            Err(ClientIdFileError::PermissionDenied) => {
+                // state (b)
+                // Uhm ... who removed our permission?
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("permission-denied")
+                    .add_sync(&glean, 1);
+                None
+            }
+            Err(ClientIdFileError::ParseError(e)) => {
+                // state (b)
+                log::trace!("reading cliend_id.txt. Could not parse into UUID: {e}");
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("parse")
+                    .add_sync(&glean, 1);
+                None
+            }
+            Err(ClientIdFileError::IoError(e)) => {
+                // state (b)
+                // We can't handle other IO errors (most couldn't occur on this operation anyway)
+                log::trace!("reading client_id.txt. Unexpected io error: {e}");
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("io")
+                    .add_sync(&glean, 1);
+                None
+            }
+        };
+
+        {
+            let data_store = glean.data_store.as_ref().unwrap();
+            let db_load_sizes = data_store.load_sizes.as_ref().unwrap();
+            let new_size = db_load_sizes.new.unwrap_or(0);
+
+            // If we have a client ID on disk, we check the database
+            if let Some(stored_client_id) = stored_client_id {
+                // state (c)
+                if new_size <= 0 {
+                    log::trace!("no database. database size={new_size}. stored_client_id={stored_client_id}");
+                    // state (d)
+                    glean
+                        .health_metrics
+                        .recovered_client_id
+                        .set_from_uuid_sync(&glean, stored_client_id);
+                    glean
+                        .health_metrics
+                        .exception_state
+                        .set_sync(&glean, ExceptionState::EmptyDb);
+
+                    // state (e) -- mitigation: store recovered client ID in DB
+                } else {
+                    let db_client_id = glean
+                        .core_metrics
+                        .client_id
+                        .get_value(&glean, Some("glean_client_info"));
+
+                    match db_client_id {
+                        None => {
+                            // state (f)
+                            log::trace!("no client_id in DB. stored_client_id={stored_client_id}");
+                            glean
+                                .health_metrics
+                                .exception_state
+                                .set_sync(&glean, ExceptionState::RegenDb);
+
+                            // state (e) -- mitigation: store recovered client ID in DB
+                        }
+                        Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
+                            // state (i)
+                            log::trace!(
+                                "c0ffee client_id in DB, stored_client_id={stored_client_id}"
+                            );
+                            glean
+                                .health_metrics
+                                .recovered_client_id
+                                .set_from_uuid_sync(&glean, stored_client_id);
+                            glean
+                                .health_metrics
+                                .exception_state
+                                .set_sync(&glean, ExceptionState::C0ffeeInDb);
+
+                            // If we have a recovered client ID we also overwrite the database.
+                            // state (e)
+                        }
+                        Some(db_client_id) if db_client_id == stored_client_id => {
+                            // all valid. nothing to do
+                            log::trace!("database consistent. db_client_id == stored_client_id: {db_client_id}");
+                        }
+                        Some(db_client_id) => {
+                            // state (g)
+                            log::trace!(
+                                "client_id mismatch. db_client_id{db_client_id}, stored_client_id={stored_client_id}. Overwriting file with db's client_id."
+                            );
+                            glean
+                                .health_metrics
+                                .recovered_client_id
+                                .set_from_uuid_sync(&glean, stored_client_id);
+                            glean
+                                .health_metrics
+                                .exception_state
+                                .set_sync(&glean, ExceptionState::ClientIdMismatch);
+
+                            // state (h)
+                            glean.store_client_id_with_reporting(
+                                db_client_id,
+                                "client_id mismatch will re-occur.",
+                            );
+                        }
+                    }
+                }
+            } else {
+                log::trace!("No stored client ID. Database might have it.");
+
+                let db_client_id = glean
+                    .core_metrics
+                    .client_id
+                    .get_value(&glean, Some("glean_client_info"));
+                if let Some(db_client_id) = db_client_id {
+                    // state (h)
+                    glean.store_client_id_with_reporting(
+                        db_client_id,
+                        "Might happen on next init then.",
+                    );
+                } else {
+                    log::trace!("Database has no client ID either. We might be fresh!");
+                }
+            }
+        }
+
         // Set experimentation identifier (if any)
         if let Some(experimentation_id) = &cfg.experimentation_id {
             glean
@@ -296,6 +456,9 @@ impl Glean {
             {
                 None => glean.clear_metrics(),
                 Some(uuid) => {
+                    if let Err(e) = glean.remove_stored_client_id() {
+                        log::error!("Couldn't remove client ID on disk. This might lead to a resurrection of this client ID later. Error: {e}");
+                    }
                     if uuid == *KNOWN_CLIENT_ID {
                         // Previously Glean kept the KNOWN_CLIENT_ID stored.
                         // Let's ensure we erase it now.
@@ -373,6 +536,83 @@ impl Glean {
         self.data_store = None;
     }
 
+    fn client_id_file_path(&self) -> PathBuf {
+        self.data_path.join(CLIENT_ID_PLAIN_FILENAME)
+    }
+
+    /// Write the client ID to a separate plain file on disk
+    ///
+    /// Use `store_client_id_with_reporting` to handle the error cases.
+    fn store_client_id(&self, client_id: Uuid) -> Result<(), ClientIdFileError> {
+        let mut fp = File::create(self.client_id_file_path())?;
+
+        let mut buffer = Uuid::encode_buffer();
+        let uuid_str = client_id.hyphenated().encode_lower(&mut buffer);
+        fp.write_all(uuid_str.as_bytes())?;
+        fp.sync_all()?;
+
+        Ok(())
+    }
+
+    /// Write the client ID to a separate plain file on disk
+    ///
+    /// When an error occurs an error message is logged and the error is counted in a metric.
+    fn store_client_id_with_reporting(&self, client_id: Uuid, msg: &str) {
+        if let Err(err) = self.store_client_id(client_id) {
+            log::error!(
+                "Could not write {client_id} to state file. {} Error: {err}",
+                msg
+            );
+            match err {
+                ClientIdFileError::NotFound => {
+                    self.health_metrics
+                        .file_write_error
+                        .get("not-found")
+                        .add_sync(self, 1);
+                }
+                ClientIdFileError::PermissionDenied => {
+                    self.health_metrics
+                        .file_write_error
+                        .get("permission-denied")
+                        .add_sync(self, 1);
+                }
+                ClientIdFileError::IoError(..) => {
+                    self.health_metrics
+                        .file_write_error
+                        .get("io")
+                        .add_sync(self, 1);
+                }
+                ClientIdFileError::ParseError(..) => {
+                    log::error!("Parse error encountered on file write. This is impossible.");
+                }
+            }
+        }
+    }
+
+    /// Try to load a client ID from the plain file on disk.
+    fn client_id_from_file(&self) -> Result<Uuid, ClientIdFileError> {
+        let uuid_str = fs::read_to_string(self.client_id_file_path())?;
+        // We don't write a newline, but we still trim it. Who knows who else touches that file by accident.
+        // We're also a bit more lenient in what we accept here:
+        // uppercase, lowercase, with or without dashes, urn, braced (and whatever else `Uuid`
+        // parses by default).
+        let uuid = Uuid::try_parse(uuid_str.trim_end())?;
+        Ok(uuid)
+    }
+
+    /// Remove the stored client ID from disk.
+    /// Should only be called when the client ID is also removed from the database.
+    fn remove_stored_client_id(&self) -> Result<(), ClientIdFileError> {
+        match fs::remove_file(self.client_id_file_path()) {
+            Ok(()) => Ok(()),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                // File was already missing. No need to report that.
+                Ok(())
+            }
+            Err(e) => Err(e.into()),
+        }
+    }
+
     /// Initializes the core metrics managed by Glean's Rust core.
     fn initialize_core_metrics(&mut self) {
         let need_new_client_id = match self
@@ -384,7 +624,8 @@ impl Glean {
             Some(uuid) => uuid == *KNOWN_CLIENT_ID,
         };
         if need_new_client_id {
-            self.core_metrics.client_id.generate_and_set_sync(self);
+            let new_clientid = self.core_metrics.client_id.generate_and_set_sync(self);
+            self.store_client_id_with_reporting(new_clientid, "New client in database only.");
         }
 
         if self
@@ -617,6 +858,10 @@ impl Glean {
             .collect::<Vec<_>>();
         if let Err(err) = ping_maker.clear_pending_pings(self.get_data_path(), &disabled_pings) {
             log::warn!("Error clearing pending pings: {}", err);
+        }
+
+        if let Err(e) = self.remove_stored_client_id() {
+            log::error!("Couldn't remove client ID on disk. This might lead to a resurrection of this client ID later. Error: {e}");
         }
 
         // Delete all stored metrics.
