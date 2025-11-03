@@ -1589,6 +1589,11 @@
 <a href="#1589" id="1589">1589</a>
 <a href="#1590" id="1590">1590</a>
 <a href="#1591" id="1591">1591</a>
+<a href="#1592" id="1592">1592</a>
+<a href="#1593" id="1593">1593</a>
+<a href="#1594" id="1594">1594</a>
+<a href="#1595" id="1595">1595</a>
+<a href="#1596" id="1596">1596</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -2178,6 +2183,11 @@
             <span class="comment">// Now capture a post_init snapshot of the state of Glean's data directories after initialization to send
             // in a health ping with reason "post_init".
             </span>record_dir_info_and_submit_health_ping(collect_directory_info(data_path), <span class="string">"post_init"</span>);
+
+            <span class="kw">let </span>state = global_state().lock().unwrap();
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = state.callbacks.trigger_upload() {
+                <span class="macro">log::error!</span>(<span class="string">"Triggering upload failed. Error: {}"</span>, e);
+            }
         }
         <span class="kw">let </span>state = global_state().lock().unwrap();
         state.callbacks.initialize_finished();

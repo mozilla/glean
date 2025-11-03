@@ -293,6 +293,7 @@
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -419,6 +420,7 @@
             )
             .is_err()
         {
+            <span class="macro">log::trace!</span>(<span class="string">"glean.upload thread running. Not starting another one."</span>);
             <span class="kw">return</span>;
         }
 

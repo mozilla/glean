@@ -1814,7 +1814,7 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) write_timings: RefCell&lt;Vec&lt;i64&gt;&gt;,
 
     <span class="doccomment">/// The database size at various phases of loading.
-    </span>load_sizes: <span class="prelude-ty">Option</span>&lt;LoadSizesObject&gt;,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) load_sizes: <span class="prelude-ty">Option</span>&lt;LoadSizesObject&gt;,
 }
 
 <span class="kw">impl </span>MallocSizeOf <span class="kw">for </span>Database {
@@ -1854,7 +1854,7 @@
     }
 }
 
-<span class="doccomment">/// Calculate the  database size from all the files in the directory.
+<span class="doccomment">/// Calculate the database size from all the files in the directory.
 ///
 ///  # Arguments
 ///

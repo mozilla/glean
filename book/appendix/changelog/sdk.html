@@ -30,7 +30,6 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../../../shared/glean.css">
-        <link rel="stylesheet" href="../../../shared/mermaid.css">
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -185,6 +184,13 @@
                     <main>
                         <h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v66.0.1...main">Full changelog</a></p>
+<ul>
+<li>General
+<ul>
+<li>Store the client ID in an additional plaintext file and report on regeneration (<a href="https://github.com/mozilla/glean/pull/3292">#3292</a>)</li>
+</ul>
+</li>
+</ul>
 <h1 id="v6601-2025-10-30"><a class="header" href="#v6601-2025-10-30">v66.0.1 (2025-10-30)</a></h1>
 <p><a href="https://github.com/mozilla/glean/compare/v66.0.0...v66.0.1">Full changelog</a></p>
 <ul>
@@ -3520,8 +3526,6 @@ This is a major milestone in using a cross-platform implementation of Glean on t
 
         <!-- Custom JS scripts -->
         <script src="../../../shared/tabs.js"></script>
-        <script src="../../../shared/mermaid.min.js"></script>
-        <script src="../../../shared/mermaid-init.js"></script>
         <script src="../../chart.min.js"></script>
         <script src="../../chart-distributions.js"></script>
         <script src="../../chart-distributions-ui.js"></script>
