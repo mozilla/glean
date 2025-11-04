@@ -40,6 +40,10 @@ pub struct AdditionalMetrics {
     /// An experimentation identifier derived and provided by the application
     /// for the purpose of experimentation enrollment.
     pub experimentation_id: StringMetric,
+
+    /// The number of times we had to clamp an event timestamp
+    /// for exceeding the range of a signed 64-bit integer (9223372036854775807).
+    pub event_timestamp_clamped: CounterMetric,
 }
 
 impl CoreMetrics {
@@ -195,6 +199,15 @@ impl AdditionalMetrics {
                 category: "glean.client.annotation".into(),
                 send_in_pings: vec!["all-pings".into()],
                 lifetime: Lifetime::Application,
+                disabled: false,
+                dynamic_label: None,
+            }),
+
+            event_timestamp_clamped: CounterMetric::new(CommonMetricData {
+                name: "event_timestamp_clamped".into(),
+                category: "glean.error".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::Ping,
                 disabled: false,
                 dynamic_label: None,
             }),
