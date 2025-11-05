@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.1.0...main)
 
+* Kotlin
+  * BUGFIX: For `lateinit` metrics, check that the metric was instantiated before recording on it ([#3309](https://github.com/mozilla/glean/pull/3309))
+
 # v66.1.0 (2025-11-03)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.0.1...v66.1.0)

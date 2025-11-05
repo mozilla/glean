@@ -38,7 +38,9 @@ class StringMetricType {
      */
     fun set(value: String) {
         Dispatchers.Delayed.launch {
-            inner.set(value)
+            if (this::inner.isInitialized) {
+                inner.set(value)
+            }
         }
     }
 
