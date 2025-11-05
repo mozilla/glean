@@ -38,7 +38,9 @@ class CounterMetricType {
      */
     fun add(amount: Int = 1) {
         Dispatchers.Delayed.launch {
-            inner.add(amount)
+            if (this::inner.isInitialized) {
+                inner.add(amount)
+            }
         }
     }
 
