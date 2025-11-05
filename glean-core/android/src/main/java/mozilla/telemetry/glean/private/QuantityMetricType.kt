@@ -37,7 +37,9 @@ class QuantityMetricType {
      */
     fun set(value: Long) {
         Dispatchers.Delayed.launch {
-            inner.set(value)
+            if (this::inner.isInitialized) {
+                inner.set(value)
+            }
         }
     }
 
