@@ -37,7 +37,9 @@ class BooleanMetricType {
      */
     fun set(value: Boolean) {
         Dispatchers.Delayed.launch {
-            inner.set(value)
+            if (this::inner.isInitialized) {
+                inner.set(value)
+            }
         }
     }
 

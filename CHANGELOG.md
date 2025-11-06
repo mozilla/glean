@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.1...main)
+
+# v66.1.1 (2025-11-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.0...v66.1.1)
+
+* Kotlin
+  * BUGFIX: For `lateinit` metrics, check that the metric was instantiated before recording on it ([#3309](https://github.com/mozilla/glean/pull/3309))
 
 # v66.1.0 (2025-11-03)
 
@@ -35,6 +42,14 @@
   * Updated Android Gradle Plugin to 8.13.0 ([#3287](https://github.com/mozilla/glean/pull/3287))
   * Updated Kotlin to 2.2.20 ([#3287](https://github.com/mozilla/glean/pull/3287))
   * Updated NDK to r29 ([#3290](https://github.com/mozilla/glean/pull/3290))
+
+# v65.2.3 (2025-11-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...v65.2.3)
+
+* Kotlin
+  * BUGFIX: For `lateinit` metrics, check that the metric was instantiated before recording on it ([#3309](https://github.com/mozilla/glean/pull/3309))
+    (Backported changes)
 
 # v65.2.2 (2025-10-02)
 

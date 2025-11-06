@@ -727,6 +727,7 @@ jobs:
       - image: cimg/python:3.9
     steps:
       - checkout
+      - skip-if-doc-only
       - test-python
 
   Python 3_9 on Alpine tests:
@@ -741,6 +742,7 @@ jobs:
           command: |
             apk add curl git gcc musl-dev libffi-dev openssh-client make openssl-dev
       - checkout
+      - skip-if-doc-only
       - test-python
 
   Python 3_10 tests:
@@ -748,6 +750,7 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - checkout
+      - skip-if-doc-only
       - test-python
       - persist_to_workspace:
           root: .
@@ -758,6 +761,7 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
+      - skip-if-doc-only
       - test-python
 
   Python 3_12 tests:
@@ -765,6 +769,7 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
+      - skip-if-doc-only
       - test-python
 
   Python Windows x86_64 tests:
