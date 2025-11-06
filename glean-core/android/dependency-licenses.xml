@@ -328,6 +328,9 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -336,9 +339,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
-  </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>

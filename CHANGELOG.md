@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.3...main)
+
+# v65.2.3 (2025-11-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v65.2.2...v65.2.3)
 
 * Kotlin
   * BUGFIX: For `lateinit` metrics, check that the metric was instantiated before recording on it ([#3309](https://github.com/mozilla/glean/pull/3309))
