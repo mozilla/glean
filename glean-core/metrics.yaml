@@ -101,7 +101,8 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The manufacturer of the device the application is running on.
-      Not set if the device manufacturer can't be determined (e.g. on Desktop).
+      Not set if the device manufacturer can't be determined.
+      Currently only collected on Android and iOS.
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
@@ -121,7 +122,8 @@ glean.internal.metrics:
       The model of the device the application is running on.
       On Android, this is Build.MODEL, the user-visible marketing name,
       like "Pixel 2 XL".
-      Not set if the device model can't be determined (e.g. on Desktop).
+      Not set if the device model can't be determined.
+      Currently only collected on Android and iOS.
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
