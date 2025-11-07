@@ -79,7 +79,6 @@ fn test_pre_post_init_health_pings_exist() {
     let exception_uuid = &payload["metrics"]["uuid"]["glean.health_recovered_client_id"];
     assert_eq!(&JsonValue::Null, exception_uuid);
 
-    // TODO(bug 1996862): We don't run the mitigation yet.
-    //let ping_client_id = &payload["client_info"]["client_id"];
-    //assert_eq!(client_id, ping_client_id);
+    let ping_client_id = &payload["client_info"]["client_id"];
+    assert_eq!(client_id, ping_client_id);
 }
