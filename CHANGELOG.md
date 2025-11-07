@@ -6,6 +6,7 @@
   * Stop reporting db file sizes during init phase ([#3331](https://github.com/mozilla/glean/pull/3331))
   * Tiny performance improvement for putting tasks on the dispatcher ([#3318](https://github.com/mozilla/glean/pull/3318))
   * Instrument the case when the `client_id.txt` file does not exist yet ([#3339](https://github.com/mozilla/glean/pull/3339))
+  * When a missing client ID in the database is detected, Glean now restores the backup client ID ([#3334](https://github.com/mozilla/glean/pull/3334))
 
 # v66.1.2 (2025-11-25)
 
