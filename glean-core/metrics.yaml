@@ -1085,7 +1085,7 @@ glean.health:
         brief description of the error. If there was no error, this will be null.
       - `files`: An array of objects, each containing:
         - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
-          A uuid representing the doc-id of a pending ping.
+          A UUID representing the doc-id of a pending ping.
         - `file_created`: The creation time of the file, in seconds since the epoch. If the
           file does not exist, this will be `null` and if the time cannot be determined, it
           will default to `0`.
@@ -1165,13 +1165,14 @@ glean.health:
     type: string
     lifetime: ping
     description: |
-      An exceptional state was detected upon trying to laod the database.
+      An exceptional state was detected upon trying to load the database.
 
       Valid options are:
-        - empty-db
-        - regen-db
-        - c0ffee-in-db
-        - client-id-mismatch
+
+      - `empty-db`
+      - `regen-db`
+      - `c0ffee-in-db`
+      - `client-id-mismatch`
     notification_emails:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
