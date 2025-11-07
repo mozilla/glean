@@ -359,6 +359,10 @@ impl Glean {
                         .set_sync(&glean, ExceptionState::EmptyDb);
 
                     // state (e) -- mitigation: store recovered client ID in DB
+                    glean
+                        .core_metrics
+                        .client_id
+                        .set_from_uuid_sync(&glean, stored_client_id);
                 } else {
                     let db_client_id = glean
                         .core_metrics
@@ -375,6 +379,10 @@ impl Glean {
                                 .set_sync(&glean, ExceptionState::RegenDb);
 
                             // state (e) -- mitigation: store recovered client ID in DB
+                            glean
+                                .core_metrics
+                                .client_id
+                                .set_from_uuid_sync(&glean, stored_client_id);
                         }
                         Some(db_client_id) if db_client_id == *KNOWN_CLIENT_ID => {
                             // state (i)
@@ -392,6 +400,10 @@ impl Glean {
 
                             // If we have a recovered client ID we also overwrite the database.
                             // state (e)
+                            glean
+                                .core_metrics
+                                .client_id
+                                .set_from_uuid_sync(&glean, stored_client_id);
                         }
                         Some(db_client_id) if db_client_id == stored_client_id => {
                             // all valid. nothing to do
