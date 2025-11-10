@@ -588,6 +588,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../src/glean.udl",
+				"$(SRCROOT)/../../build-scripts/xc-cargo.sh",
 			);
 			name = "Run UniFFI bindgen";
 			outputFileListPaths = (
@@ -598,7 +599,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$ACTION\" = \"indexbuild\" ]; then\n  echo \"Skipping code generation in 'indexbuild' build. See https://bugzilla.mozilla.org/show_bug.cgi?id=1744504 for more info.\"\n  exit 0\nfi\nbash $PWD/../../build-scripts/xc-cargo.sh cargo run --package uniffi-bindgen -- generate $INPUT_FILE_PATH --language swift --out-dir $SRCROOT/Glean/Generated/uniffi --no-format $SCRIPT_INPUT_FILE_0\n";
+			shellScript = "if [ \"$ACTION\" = \"indexbuild\" ]; then\n  echo \"Skipping code generation in 'indexbuild' build. See https://bugzilla.mozilla.org/show_bug.cgi?id=1744504 for more info.\"\n  exit 0\nfi\nbash $PWD/../../build-scripts/xc-bindgen.sh glean_ffi $PWD/../.. $buildvariant\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

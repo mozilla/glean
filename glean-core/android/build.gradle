@@ -195,14 +195,25 @@ apply from: "$rootDir/publish.gradle"
 ext.configurePublish()
 
 def generateUniffiBindings = tasks.register("generateUniffiBindings") {
-    def udlFilePath = "../src/glean.udl"
+    def gleanNative = configurations.getByName("gleanNative")
     doFirst {
+        def libraryPath = gleanNative.asFileTree.matching {
+            include "${nativeRustTarget}/libxul.*"
+        }.singleFile
+
+        if (libraryPath == null) {
+            throw new GradleException("libglean_ffi dynamic library path not found")
+        }
+
         exec {
             workingDir project.rootDir
-            commandLine 'cargo', 'uniffi-bindgen', 'generate', '--no-format', "${project.projectDir}/${udlFilePath}", '--language', 'kotlin', '--out-dir', UNIFFI_OUT_DIR.get()
+            commandLine 'cargo', 'uniffi-bindgen', 'generate', '--no-format', '--library', libraryPath, '--language', 'kotlin', '--out-dir', UNIFFI_OUT_DIR.get()
         }
     }
+
     outputs.dir UNIFFI_OUT_DIR
+    // Re-generate if native changes
+    inputs.files gleanNative
     // Re-generate if the interface definition changes.
     inputs.file "${project.projectDir}/../src/glean.udl"
     // Re-generate if the uniffi config changes.

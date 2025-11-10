@@ -17,8 +17,9 @@ default-members = [
 ]
 
 [profile.release]
-opt-level = "s"
-debug = false
+opt-level = 2
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
 lto = true
 
 [profile.profiling]

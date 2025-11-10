@@ -57,16 +57,7 @@ build-python-sdist: setup-python ## Build a Python source distribution
 build-xcframework:
 	./bin/build-xcframework.sh
 
-bindgen-python: glean-core/python/glean/_uniffi/glean.py glean-core/python/glean/_uniffi/__init__.py # Generate the uniffi wrapper code manually
-
-glean-core/python/glean/_uniffi/glean.py: glean-core/src/glean.udl
-	cargo build -p glean-bundle
-	cargo uniffi-bindgen generate $< --language python --out-dir $(@D)
-
-glean-core/python/glean/_uniffi/__init__.py:
-	echo 'from .glean import *  # NOQA' > $@
-
-.PHONY: build build-rust build-kotlin build-swift build-apk build-python build-python-wheel build-python-sdist bindgen-python build-xcframework glean-core/python/glean/_uniffi/__init__.py
+.PHONY: build build-rust build-kotlin build-swift build-apk build-python build-python-wheel build-python-sdist build-xcframework glean-core/python/glean/_uniffi/__init__.py
 
 # All tests
 
@@ -125,7 +116,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-lint-python: setup-python ## Run ruff and mypy to lint Python code
+lint-python: build-python ## Run ruff and mypy to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m ruff format --diff glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m ruff check glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
