@@ -10,6 +10,7 @@ use std::mem;
 use std::sync::{Arc, Mutex};
 
 use malloc_size_of::MallocSizeOf;
+use rustc_hash::FxBuildHasher;
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
@@ -411,7 +412,7 @@ pub fn validate_dynamic_label(
         }
     }
 
-    let mut labels = HashSet::new();
+    let mut labels = HashSet::with_capacity_and_hasher(MAX_LABELS, FxBuildHasher);
     let prefix = &key[..=base_identifier.len()];
     let mut snapshotter = |metric_id: &[u8], _: &Metric| {
         labels.insert(metric_id.to_vec());

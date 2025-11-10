@@ -8,6 +8,8 @@ use std::collections::{HashMap, HashSet};
 use std::mem;
 use std::sync::{Arc, Mutex};
 
+use rustc_hash::FxBuildHasher;
+
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{CounterMetric, Metric, MetricType};
@@ -395,11 +397,16 @@ fn label_is_valid(label: &str, glean: &Glean, meta: &CommonMetricDataInternal) -
 fn get_seen_keys_and_categories(
     meta: &CommonMetricDataInternal,
     glean: &Glean,
-) -> (HashSet<String>, HashSet<String>) {
+) -> (
+    HashSet<String, FxBuildHasher>,
+    HashSet<String, FxBuildHasher>,
+) {
     let base_identifier = &meta.base_identifier();
     let prefix = format!("{base_identifier}{RECORD_SEPARATOR}");
-    let mut seen_keys: HashSet<String> = HashSet::new();
-    let mut seen_categories: HashSet<String> = HashSet::new();
+    let mut seen_keys: HashSet<String, _> =
+        HashSet::with_capacity_and_hasher(MAX_LABELS, FxBuildHasher);
+    let mut seen_categories: HashSet<String, _> =
+        HashSet::with_capacity_and_hasher(MAX_LABELS, FxBuildHasher);
     let mut snapshotter = |metric_id: &[u8], _: &Metric| {
         let metric_id_str = String::from_utf8_lossy(metric_id);
 

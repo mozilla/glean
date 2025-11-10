@@ -546,6 +546,7 @@ dependencies = [
  "once_cell",
  "oslog",
  "rkv",
+ "rustc-hash",
  "serde",
  "serde_json",
  "tempfile",
