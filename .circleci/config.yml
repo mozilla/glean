@@ -716,9 +716,6 @@ jobs:
       - checkout
       - install-rustup
       - run:
-          name: Run uniffi-bindgen
-          command: make bindgen-python
-      - run:
           name: Python lints
           command: make lint-python
 
