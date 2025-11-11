@@ -440,6 +440,12 @@ criteria = "safe-to-deploy"
 delta = "0.1.5 -> 0.1.6"
 notes = "Synced with the orginal crate, no new unsafe"
 
+[[audits.oorandom]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+version = "11.1.5"
+notes = "Small random number generator, explicitly not cryptographically secure, no use of unsafe code, no dependencies"
+
 [[audits.paste]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"

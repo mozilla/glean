@@ -56,6 +56,7 @@ env_logger = { version = "0.10.0", default-features = false, features = ["humant
 tempfile = "3.8.0"
 iso8601 = "0.4"
 ctor = "0.2.2"
+criterion = "0.7.0"
 
 [build-dependencies]
 uniffi = { version = "0.29.3", default-features = false, features = ["build"] }
@@ -65,3 +66,12 @@ uniffi = { version = "0.29.3", default-features = false, features = ["build"] }
 enable_env_logger = ["env_logger"]
 # Enable gecko-specific APIs
 gecko = []
+# Expose some internals for easier benchmarking
+benchmark = []
+
+[lib]
+bench = false
+
+[[bench]]
+name = "dispatcher"
+harness = false
