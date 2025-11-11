@@ -76,3 +76,7 @@ bench = false
 [[bench]]
 name = "dispatcher"
 harness = false
+
+[[bench]]
+name = "labeled_counter"
+harness = false
