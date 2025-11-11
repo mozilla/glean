@@ -41,4 +41,5 @@
     - [Upload mechanism](core/internal/upload.md)
     - [Implementations](core/internal/implementations.md)
     - [Client ID recovery](core/internal/client_id_recovery.md)
+    - [Benchmarks](core/internal/benchmarks.md)
 - [API Documentation](api/index.md)

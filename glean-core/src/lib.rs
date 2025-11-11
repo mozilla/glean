@@ -38,6 +38,10 @@ mod core_metrics;
 mod coverage;
 mod database;
 mod debug;
+#[cfg(feature = "benchmark")]
+#[doc(hidden)]
+pub mod dispatcher;
+#[cfg(not(feature = "benchmark"))]
 mod dispatcher;
 mod error;
 mod error_recording;
