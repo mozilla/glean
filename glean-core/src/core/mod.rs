@@ -39,6 +39,11 @@ use crate::{
 const CLIENT_ID_PLAIN_FILENAME: &str = "client_id.txt";
 static GLEAN: OnceCell<Mutex<Glean>> = OnceCell::new();
 
+/// Rate limiting defaults
+/// 15 pings every 60 seconds.
+pub const DEFAULT_SECONDS_PER_INTERVAL: u64 = 60;
+pub const DEFAULT_PINGS_PER_INTERVAL: u32 = 15;
+
 pub fn global_glean() -> Option<&'static Mutex<Glean>> {
     GLEAN.get()
 }
@@ -202,8 +207,8 @@ impl Glean {
         // Create an upload manager with rate limiting of 15 pings every 60 seconds.
         let mut upload_manager = PingUploadManager::new(&cfg.data_path, &cfg.language_binding_name);
         let rate_limit = cfg.rate_limit.as_ref().unwrap_or(&PingRateLimit {
-            seconds_per_interval: 60,
-            pings_per_interval: 15,
+            seconds_per_interval: DEFAULT_SECONDS_PER_INTERVAL,
+            pings_per_interval: DEFAULT_PINGS_PER_INTERVAL,
         });
         upload_manager.set_rate_limiter(
             rate_limit.seconds_per_interval,
