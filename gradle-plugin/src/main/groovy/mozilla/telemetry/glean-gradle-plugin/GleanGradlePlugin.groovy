@@ -176,7 +176,7 @@ except:
             def namespaceProvider = variant.getGenerateBuildConfigProvider().map({ p -> "namespace=${p.namespace.get()}.GleanMetrics" })
             def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
 
-            def generateKotlinAPI = project.task("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", type: Exec) {
+            TaskProvider<Exec> generateKotlinAPI = project.tasks.register("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", Exec) {
                 description = "Generate the Kotlin code for the Metrics API"
 
                 if (project.ext.has("allowMetricsFromAAR")) {
@@ -189,13 +189,9 @@ except:
                     }.files
                 }
 
-                // Add local registry files as input to this task. They will be turned
-                // into `arg`s later.
-                for (String item : getYamlFiles(project)) {
-                    if (project.file(item).exists()) {
-                        inputs.file item
-                    }
-                }
+                // Add local registry files as input to this task.
+                // They will be turned into `arg`s later.
+                inputs.files(getYamlFiles(project)).optional(true)
 
                 outputs.dir sourceOutputDir
 
@@ -248,13 +244,12 @@ except:
                 }
 
                 doFirst {
-
                     args "-s"
                     args namespaceProvider.get().toString()
 
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
-                    inputs.files.forEach { file ->
+                    inputs.files.filter { it.exists() }.forEach { file ->
                         logger.lifecycle("Glean SDK - generating API from ${file.path}")
                         args file.path
                     }
@@ -271,7 +266,7 @@ except:
                 }
             }
 
-            def generateGleanMetricsDocs = project.task("${TASK_NAME_PREFIX}DocsFor${variant.name.capitalize()}", type: Exec) {
+            TaskProvider<Exec> generateGleanMetricsDocs = project.tasks.register("${TASK_NAME_PREFIX}DocsFor${variant.name.capitalize()}", Exec) {
                 description = "Generate the Markdown docs for the collected metrics"
 
                 def gleanDocsDirectory = "${project.projectDir}/docs"
@@ -289,13 +284,9 @@ except:
                     }.files
                 }
 
-                // Add local registry files as input to this task. They will be turned
-                // into `arg`s later.
-                for (String item : getYamlFiles(project)) {
-                    if (project.file(item).exists()) {
-                        inputs.file item
-                    }
-                }
+                // Add local registry files as input to this task.
+                // They will be turned into `arg`s later.
+                inputs.files(getYamlFiles(project)).optional(true)
 
                 outputs.dir gleanDocsDirectory
                 workingDir project.rootDir
@@ -328,7 +319,7 @@ except:
                 doFirst {
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
-                    inputs.files.forEach{ file ->
+                    inputs.files.filter { it.exists() }.forEach{ file ->
                         project.logger.lifecycle("Glean SDK - generating docs for ${file.path} in $gleanDocsDirectory")
                         args file.path
                     }
@@ -345,31 +336,19 @@ except:
                 }
             }
 
-            // Only attach the generation task if the metrics file is available or we're requested
-            // to fetch them from AAR files. We don't need to fail hard otherwise, as some 3rd party
-            // project might just want metrics included in Glean and nothing more.
-            def yamlFileExists = false
-            for (String item : getYamlFiles(project)) {
-                if (project.file(item).exists()) {
-                    yamlFileExists = true
-                    break
+            // Generate the metrics docs, if requested
+            if (project.ext.has("gleanGenerateMarkdownDocs")) {
+                generateKotlinAPI.configure {
+                    dependsOn(generateGleanMetricsDocs)
                 }
             }
 
-            if (yamlFileExists
-                || project.ext.has("allowMetricsFromAAR")) {
-                // Generate the metrics docs, if requested
-                if (project.ext.has("gleanGenerateMarkdownDocs")) {
-                    generateKotlinAPI.dependsOn(generateGleanMetricsDocs)
-                }
-
-                // This is an Android-Gradle plugin 3+-ism.  Culted from reading the source,
-                // searching for "registerJavaGeneratingTask", and finding
-                // https://github.com/GoogleCloudPlatform/endpoints-framework-gradle-plugin/commit/2f2b91476fb1c6647791e2c6fe531a47615a1e85.
-                // The added directory doesn't appear in the paths listed by the
-                // `sourceSets` task, for reasons unknown.
-                variant.registerJavaGeneratingTask(generateKotlinAPI, new File(sourceOutputDir))
-            }
+            // This is an Android-Gradle plugin 3+-ism.  Culted from reading the source,
+            // searching for "registerJavaGeneratingTask", and finding
+            // https://github.com/GoogleCloudPlatform/endpoints-framework-gradle-plugin/commit/2f2b91476fb1c6647791e2c6fe531a47615a1e85.
+            // The added directory doesn't appear in the paths listed by the
+            // `sourceSets` task, for reasons unknown.
+            variant.registerJavaGeneratingTask(generateKotlinAPI, new File(sourceOutputDir))
         }
     }
 
@@ -392,48 +371,56 @@ except:
                 "glean/pythonenv"
             )
 
-            if (!envDir.exists()) {
-                Task createGleanPythonVirtualEnv = project.task("createGleanPythonVirtualEnv", type: Exec) {
-                    String pythonBinary = System.getenv("GLEAN_PYTHON")
-                    if (!pythonBinary) {
-                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                            pythonBinary = "python"
-                        } else {
-                            pythonBinary = "python3"
-                        }
-                    }
-
-                    project.logger.warn("Building in offline mode, therefore, Glean is using a supplied Python at ${pythonBinary}")
-                    project.logger.warn("The Python binary can be overridden with the GLEAN_PYTHON env var.")
-
-                    commandLine pythonBinary
-                    args "-m"
-                    args "venv"
-                    args envDir.toString()
+            TaskProvider<Exec> createGleanPythonVirtualEnv = project.tasks.register("createGleanPythonVirtualEnv", Exec) {
+                onlyIf {
+                    !envDir.exists()
                 }
 
-                Task installGleanParser = project.task("installGleanParser", type: Exec) {
-                    String pythonPackagesDir = System.getenv("GLEAN_PYTHON_WHEELS_DIR")
-                    if (!pythonPackagesDir) {
-                        pythonPackagesDir = "${project.rootDir}/glean-wheels"
+                String pythonBinary = System.getenv("GLEAN_PYTHON")
+                if (!pythonBinary) {
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        pythonBinary = "python"
+                    } else {
+                        pythonBinary = "python3"
                     }
-
-                    project.logger.warn("Installing glean_parser from cached Python packages in ${pythonPackagesDir}")
-                    project.logger.warn("This can be overridden with the GLEAN_PYTHON_WHEELS_DIR env var.")
-
-                    commandLine getPythonCommand(envDir, isOffline)
-                    args "-m"
-                    args "pip"
-                    args "install"
-                    args "glean_parser"
-                    args "--no-index"
-                    args "-f"
-                    args pythonPackagesDir
                 }
 
-                installGleanParser.dependsOn(createGleanPythonVirtualEnv)
-                project.preBuild.finalizedBy(installGleanParser)
+                project.logger.warn("Building in offline mode, therefore, Glean is using a supplied Python at ${pythonBinary}")
+                project.logger.warn("The Python binary can be overridden with the GLEAN_PYTHON env var.")
+
+                commandLine pythonBinary
+                args "-m"
+                args "venv"
+                args envDir.toString()
             }
+
+            TaskProvider<Exec> installGleanParser = project.tasks.register("installGleanParser", Exec) {
+                onlyIf {
+                    !envDir.exists()
+                }
+
+                String pythonPackagesDir = System.getenv("GLEAN_PYTHON_WHEELS_DIR")
+                if (!pythonPackagesDir) {
+                    pythonPackagesDir = "${project.rootDir}/glean-wheels"
+                }
+
+                project.logger.warn("Installing glean_parser from cached Python packages in ${pythonPackagesDir}")
+                project.logger.warn("This can be overridden with the GLEAN_PYTHON_WHEELS_DIR env var.")
+
+                commandLine getPythonCommand(envDir, isOffline)
+                args "-m"
+                args "pip"
+                args "install"
+                args "glean_parser"
+                args "--no-index"
+                args "-f"
+                args pythonPackagesDir
+            }
+
+            installGleanParser.configure {
+                dependsOn(createGleanPythonVirtualEnv)
+            }
+            project.preBuild.finalizedBy(installGleanParser)
 
             return envDir
         } else {
@@ -456,7 +443,7 @@ except:
             // The fix in the above is not actually sufficient -- we need to add createBuildDir
             // as a dependency of Bootstrap_CONDA (where conda is installed), as the preBuild
             // task alone isn't early enough.
-            Task createBuildDir = project.task("createBuildDir") {
+            TaskProvider createBuildDir = project.tasks.register("createBuildDir") {
                 description = "Make sure the build dir exists before creating the Python Environments"
                 onlyIf {
                     !project.file(project.buildDir).exists()
@@ -580,9 +567,9 @@ except:
         }
 
         if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.all(setupTasks(project, envDir, true, parserVersion))
+            project.android.applicationVariants.configureEach(setupTasks(project, envDir, true, parserVersion))
         } else {
-            project.android.libraryVariants.all(setupTasks(project, envDir, false, parserVersion))
+            project.android.libraryVariants.configureEach(setupTasks(project, envDir, false, parserVersion))
         }
     }
 }
