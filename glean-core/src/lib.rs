@@ -7,6 +7,7 @@
 #![allow(clippy::uninlined_format_args)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![deny(missing_docs)]
+#![cfg_attr(not(test), deny(clippy::unwrap_used))]
 
 //! Glean is a modern approach for recording and sending Telemetry data.
 //!
