@@ -1594,6 +1594,10 @@
 <a href="#1594" id="1594">1594</a>
 <a href="#1595" id="1595">1595</a>
 <a href="#1596" id="1596">1596</a>
+<a href="#1597" id="1597">1597</a>
+<a href="#1598" id="1598">1598</a>
+<a href="#1599" id="1599">1599</a>
+<a href="#1600" id="1600">1600</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1634,7 +1638,11 @@
 <span class="kw">mod </span>coverage;
 <span class="kw">mod </span>database;
 <span class="kw">mod </span>debug;
-<span class="kw">mod </span>dispatcher;
+<span class="attr">#[cfg(feature = <span class="string">"benchmark"</span>)]
+#[doc(hidden)]
+</span><span class="kw">pub mod </span>dispatcher;
+<span class="attr">#[cfg(not(feature = <span class="string">"benchmark"</span>))]
+</span><span class="kw">mod </span>dispatcher;
 <span class="kw">mod </span>error;
 <span class="kw">mod </span>error_recording;
 <span class="kw">mod </span>event_database;

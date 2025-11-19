@@ -356,7 +356,7 @@
 
 <span class="doccomment">/// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>reset_dispatcher() {
+</span><span class="kw">pub fn </span>reset_dispatcher() {
     <span class="comment">// We don't care about shutdown errors, since they will
     // definitely happen if this is run concurrently.
     // We will still replace the global dispatcher.
