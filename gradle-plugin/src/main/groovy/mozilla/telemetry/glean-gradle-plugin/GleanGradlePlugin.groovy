@@ -372,9 +372,9 @@ except:
             )
 
             TaskProvider<Exec> createGleanPythonVirtualEnv = project.tasks.register("createGleanPythonVirtualEnv", Exec) {
-                onlyIf {
-                    !envDir.exists()
-                }
+                description = "Create a Python virtual environment for Glean"
+
+                outputs.dir(envDir)
 
                 String pythonBinary = System.getenv("GLEAN_PYTHON")
                 if (!pythonBinary) {
@@ -395,9 +395,9 @@ except:
             }
 
             TaskProvider<Exec> installGleanParser = project.tasks.register("installGleanParser", Exec) {
-                onlyIf {
-                    !envDir.exists()
-                }
+                description = "Install glean_parser"
+
+                outputs.dir(envDir)
 
                 String pythonPackagesDir = System.getenv("GLEAN_PYTHON_WHEELS_DIR")
                 if (!pythonPackagesDir) {
@@ -445,9 +445,9 @@ except:
             // task alone isn't early enough.
             TaskProvider createBuildDir = project.tasks.register("createBuildDir") {
                 description = "Make sure the build dir exists before creating the Python Environments"
-                onlyIf {
-                    !project.file(project.buildDir).exists()
-                }
+
+                outputs.dir(project.buildDir)
+
                 doLast {
                     project.logger.lifecycle("Creating build directory:" + project.buildDir.getPath())
                     project.buildDir.mkdir()
