@@ -1421,6 +1421,11 @@
 <a href="#1421" id="1421">1421</a>
 <a href="#1422" id="1422">1422</a>
 <a href="#1423" id="1423">1423</a>
+<a href="#1424" id="1424">1424</a>
+<a href="#1425" id="1425">1425</a>
+<a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1461,6 +1466,11 @@
 
 <span class="kw">const </span>CLIENT_ID_PLAIN_FILENAME: <span class="kw-2">&amp;</span>str = <span class="string">"client_id.txt"</span>;
 <span class="kw">static </span>GLEAN: OnceCell&lt;Mutex&lt;Glean&gt;&gt; = OnceCell::new();
+
+<span class="doccomment">/// Rate limiting defaults
+/// 15 pings every 60 seconds.
+</span><span class="kw">pub const </span>DEFAULT_SECONDS_PER_INTERVAL: u64 = <span class="number">60</span>;
+<span class="kw">pub const </span>DEFAULT_PINGS_PER_INTERVAL: u32 = <span class="number">15</span>;
 
 <span class="kw">pub fn </span>global_glean() -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>Mutex&lt;Glean&gt;&gt; {
     GLEAN.get()
@@ -1625,8 +1635,8 @@
         <span class="comment">// Create an upload manager with rate limiting of 15 pings every 60 seconds.
         </span><span class="kw">let </span><span class="kw-2">mut </span>upload_manager = PingUploadManager::new(<span class="kw-2">&amp;</span>cfg.data_path, <span class="kw-2">&amp;</span>cfg.language_binding_name);
         <span class="kw">let </span>rate_limit = cfg.rate_limit.as_ref().unwrap_or(<span class="kw-2">&amp;</span>PingRateLimit {
-            seconds_per_interval: <span class="number">60</span>,
-            pings_per_interval: <span class="number">15</span>,
+            seconds_per_interval: DEFAULT_SECONDS_PER_INTERVAL,
+            pings_per_interval: DEFAULT_PINGS_PER_INTERVAL,
         });
         upload_manager.set_rate_limiter(
             rate_limit.seconds_per_interval,
