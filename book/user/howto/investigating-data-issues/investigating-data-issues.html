@@ -293,6 +293,30 @@
 </ul>
 </li>
 </ul>
+<h3 id="11-no-data"><a class="header" href="#11-no-data">11. No Data</a></h3>
+<ul>
+<li>Purpose: Determine why a metric isn't included in a ping in which it is expected to be found.</li>
+<li>Considerations:
+<ul>
+<li>Is the metric defined to be included in the ping/dataset via <code>send_in_pings</code>, or should it be on the ping by default?
+<ul>
+<li>Check the metric definition in the <code>metrics.yaml</code> file using the links provided in the <a href="https://dictionary.telemetry.mozilla.org/">Glean Dictionary</a>.</li>
+<li>Check to see that the specific metric API is being used in an active code path to ensure that the metric is being recorded (is <code>set</code>, <code>record</code>, <code>accumulateSamples</code>, etc. being called).</li>
+<li>Check <a href="https://experimenter.services.mozilla.com/">Experimenter</a> for any experiments or rollouts that might be using Server Knobs to sample the metric.</li>
+<li>Validate the recording locally using the <a href="../../debugging/index.html">Glean Debug tools</a>, checking for the metric to be included in the expected pings in either the logs or the Glean Debug View.</li>
+<li>Ensure you are filtering for only versions with the metric if this is a newly added instrumentation, this can help isolate other issues.</li>
+</ul>
+</li>
+<li>Is the metric recorded some of the time but missing or null at other times?
+<ul>
+<li>Ensure the metric definition has an appropriate metric lifetime. Should a metric be defined with a <code>ping</code> lifetime, but not be recorded before the next ping is submitted, it is expected to be missing. If you want Glean to cache the metric differently, refer to the lifetime information in the documentation for <a href="../../metrics/adding-new-metrics.html">metrics</a>.</li>
+<li>Check for <a href="../../metrics/error-reporting.html">Glean errors</a> related to the metric. It is possible that the instrumentation is attempting to record something that does not pass Glean validation which could cause intermittent missing values.</li>
+<li>Is this uniform across the population (using the slices suggested above)? If not, check for a feature not being available to certain populations, or an experiment or rollout which could be affecting the instrumentation.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/user/howto/investigating-data-issues/investigating-data-issues.md">Edit this page on GitHub.</a></footer>
                     </main>
 
