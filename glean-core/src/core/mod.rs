@@ -336,14 +336,13 @@ impl Glean {
 
         {
             let data_store = glean.data_store.as_ref().unwrap();
-            let db_load_sizes = data_store.load_sizes.as_ref().unwrap();
-            let new_size = db_load_sizes.new.unwrap_or(0);
+            let file_size = data_store.file_size.map(|n| n.get()).unwrap_or(0);
 
             // If we have a client ID on disk, we check the database
             if let Some(stored_client_id) = stored_client_id {
                 // state (c)
-                if new_size <= 0 {
-                    log::trace!("no database. database size={new_size}. stored_client_id={stored_client_id}");
+                if file_size == 0 {
+                    log::trace!("no database. database size={file_size}. stored_client_id={stored_client_id}");
                     // state (d)
                     glean
                         .health_metrics
@@ -672,17 +671,6 @@ impl Glean {
             self.database_metrics
                 .rkv_load_error
                 .set_sync(self, rkv_load_state)
-        }
-
-        if let Some(load_sizes) = self
-            .data_store
-            .as_mut()
-            .and_then(|database| database.load_sizes())
-        {
-            self.database_metrics.load_sizes.set_sync(
-                self,
-                serde_json::to_value(load_sizes).unwrap_or(serde_json::json!({})),
-            );
         }
     }
 

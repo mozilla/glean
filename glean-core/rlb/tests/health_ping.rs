@@ -129,21 +129,6 @@ fn test_pre_post_init_health_pings_exist() {
     let exception_uuid = &preinits[0].1["metrics"]["uuid"]["glean.health_recovered_client_id"];
     assert_eq!(&JsonValue::Null, exception_uuid);
 
-    // An initial preinit "health" ping will show no db file sizes
-    let load_sizes = preinits[0].1["metrics"]["object"]["glean.database.load_sizes"]
-        .as_object()
-        .unwrap();
-    assert_eq!(None, load_sizes.get("new"));
-    assert_eq!(None, load_sizes.get("open"));
-    assert_eq!(None, load_sizes.get("post_open"));
-    assert_eq!(None, load_sizes.get("post_open_user"));
-    assert_eq!(None, load_sizes.get("post_load_ping_lifetime_data"));
-    assert_eq!(0, load_sizes["user_records"]);
-    assert_eq!(0, load_sizes["ping_records"]);
-    assert_eq!(0, load_sizes["application_records"]);
-    assert_eq!(None, load_sizes.get("ping_memory_records"));
-    assert_eq!(None, load_sizes.get("error"));
-
     let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
         .with_server_endpoint("invalid-test-host")
         .with_uploader(FakeUploader)
@@ -164,22 +149,4 @@ fn test_pre_post_init_health_pings_exist() {
 
     // We should have a second "pre_init"-reason "health" ping now.
     assert_eq!(1, second_preinit.len());
-
-    let load_sizes = second_preinit[0].1["metrics"]["object"]["glean.database.load_sizes"]
-        .as_object()
-        .unwrap();
-    assert_ne!(0, load_sizes["new"]);
-    assert_ne!(0, load_sizes["open"]);
-    assert_ne!(0, load_sizes["post_open"]);
-    assert_ne!(0, load_sizes["post_open_user"].as_i64().unwrap());
-    assert_ne!(0, load_sizes["post_load_ping_lifetime_data"]);
-    assert_eq!(
-        load_sizes["new"],
-        load_sizes["post_load_ping_lifetime_data"]
-    );
-    assert!(0 < load_sizes["user_records"].as_i64().unwrap());
-    assert!(0 < load_sizes["ping_records"].as_i64().unwrap());
-    assert!(0 < load_sizes["application_records"].as_i64().unwrap());
-    assert_eq!(None, load_sizes.get("ping_memory_records"));
-    assert_eq!(None, load_sizes.get("error"));
 }
