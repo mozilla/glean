@@ -895,46 +895,6 @@ glean.database:
     expires: never
     disabled: true
 
-  load_sizes:
-    type: object
-    description: |
-      The size of the db file during specific phases of initialization.
-    bugs:
-      - https://bugzilla.mozilla.org/1990627
-    data_reviews:
-      - https://bugzilla.mozilla.org/1990627
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - glean-team@mozilla.com
-      - chutten@mozilla.com
-    expires: 2025-12-01
-    send_in_pings:
-      - health
-    structure:
-      type: object
-      properties:
-        new:
-          type: number
-        open:
-          type: number
-        post_open:
-          type: number
-        post_open_user:
-          type: number
-        post_load_ping_lifetime_data:
-          type: number
-        user_records:
-          type: number
-        ping_records:
-          type: number
-        application_records:
-          type: number
-        ping_memory_records:
-          type: number
-        error:
-          type: string
-
 glean.validation:
   foreground_count:
     type: counter
