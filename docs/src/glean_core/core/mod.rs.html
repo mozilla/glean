@@ -1414,18 +1414,6 @@
 <a href="#1414" id="1414">1414</a>
 <a href="#1415" id="1415">1415</a>
 <a href="#1416" id="1416">1416</a>
-<a href="#1417" id="1417">1417</a>
-<a href="#1418" id="1418">1418</a>
-<a href="#1419" id="1419">1419</a>
-<a href="#1420" id="1420">1420</a>
-<a href="#1421" id="1421">1421</a>
-<a href="#1422" id="1422">1422</a>
-<a href="#1423" id="1423">1423</a>
-<a href="#1424" id="1424">1424</a>
-<a href="#1425" id="1425">1425</a>
-<a href="#1426" id="1426">1426</a>
-<a href="#1427" id="1427">1427</a>
-<a href="#1428" id="1428">1428</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1764,14 +1752,13 @@
 
         {
             <span class="kw">let </span>data_store = glean.data_store.as_ref().unwrap();
-            <span class="kw">let </span>db_load_sizes = data_store.load_sizes.as_ref().unwrap();
-            <span class="kw">let </span>new_size = db_load_sizes.new.unwrap_or(<span class="number">0</span>);
+            <span class="kw">let </span>file_size = data_store.file_size.map(|n| n.get()).unwrap_or(<span class="number">0</span>);
 
             <span class="comment">// If we have a client ID on disk, we check the database
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>(stored_client_id) = stored_client_id {
                 <span class="comment">// state (c)
-                </span><span class="kw">if </span>new_size &lt;= <span class="number">0 </span>{
-                    <span class="macro">log::trace!</span>(<span class="string">"no database. database size={new_size}. stored_client_id={stored_client_id}"</span>);
+                </span><span class="kw">if </span>file_size == <span class="number">0 </span>{
+                    <span class="macro">log::trace!</span>(<span class="string">"no database. database size={file_size}. stored_client_id={stored_client_id}"</span>);
                     <span class="comment">// state (d)
                     </span>glean
                         .health_metrics
@@ -2100,17 +2087,6 @@
             <span class="self">self</span>.database_metrics
                 .rkv_load_error
                 .set_sync(<span class="self">self</span>, rkv_load_state)
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(load_sizes) = <span class="self">self
-            </span>.data_store
-            .as_mut()
-            .and_then(|database| database.load_sizes())
-        {
-            <span class="self">self</span>.database_metrics.load_sizes.set_sync(
-                <span class="self">self</span>,
-                serde_json::to_value(load_sizes).unwrap_or(<span class="macro">serde_json::json!</span>({})),
-            );
         }
     }
 
