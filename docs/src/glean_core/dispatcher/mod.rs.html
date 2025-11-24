@@ -585,6 +585,20 @@
 <a href="#585" id="585">585</a>
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -611,6 +625,7 @@
 
 </span><span class="kw">use </span>std::{
     mem,
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
@@ -679,11 +694,23 @@
 <span class="doccomment">/// A clonable guard for a dispatch queue.
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">struct </span>DispatchGuard {
+    inner: Arc&lt;DispatchGuardInner&gt;,
+}
+
+<span class="kw">impl </span>Deref <span class="kw">for </span>DispatchGuard {
+    <span class="kw">type </span>Target = DispatchGuardInner;
+
+    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.inner
+    }
+}
+
+<span class="kw">struct </span>DispatchGuardInner {
     <span class="doccomment">/// Whether to queue on the preinit buffer or on the unbounded queue
-    </span>queue_preinit: Arc&lt;AtomicBool&gt;,
+    </span>queue_preinit: AtomicBool,
 
     <span class="doccomment">/// The number of items that were added to the queue after it filled up.
-    </span>overflow_count: Arc&lt;AtomicUsize&gt;,
+    </span>overflow_count: AtomicUsize,
 
     <span class="doccomment">/// The maximum pre-init queue size
     </span>max_queue_size: usize,
@@ -849,8 +876,8 @@
         <span class="kw">let </span>(preinit_sender, preinit_receiver) = unbounded();
         <span class="kw">let </span>(sender, <span class="kw-2">mut </span>unbounded_receiver) = unbounded();
 
-        <span class="kw">let </span>queue_preinit = Arc::new(AtomicBool::new(<span class="bool-val">true</span>));
-        <span class="kw">let </span>overflow_count = Arc::new(AtomicUsize::new(<span class="number">0</span>));
+        <span class="kw">let </span>queue_preinit = AtomicBool::new(<span class="bool-val">true</span>);
+        <span class="kw">let </span>overflow_count = AtomicUsize::new(<span class="number">0</span>);
 
         <span class="kw">let </span>worker = <span class="kw">crate</span>::thread::spawn(<span class="string">"glean.dispatcher"</span>, <span class="kw">move </span>|| {
             <span class="kw">match </span>block_receiver.recv() {
@@ -909,14 +936,15 @@
         })
         .expect(<span class="string">"Failed to spawn Glean's dispatcher thread"</span>);
 
-        <span class="kw">let </span>guard = DispatchGuard {
+        <span class="kw">let </span>inner = Arc::new(DispatchGuardInner {
             queue_preinit,
             overflow_count,
             max_queue_size,
             block_sender,
             preinit_sender,
             sender,
-        };
+        });
+        <span class="kw">let </span>guard = DispatchGuard { inner };
 
         Dispatcher {
             guard,
