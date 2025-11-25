@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.1.1...main)
 
+* General
+  * Use an explicit match for the labeled metric ping sections ([#3335](https://github.com/mozilla/glean/pull/3335))
+
 # v66.1.1 (2025-11-06)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.1.0...v66.1.1)
