@@ -46,7 +46,7 @@ pub use crate::event_database::RecordedEvent;
 use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 pub use crate::metrics::datetime::Datetime;
 use crate::util::get_iso_time_string;
-use crate::Glean;
+use crate::{error_recording, Glean};
 
 pub use self::boolean::BooleanMetric;
 pub use self::counter::CounterMetric;
@@ -259,6 +259,14 @@ pub trait MetricType {
 
         // Return a boolean indicating whether or not the metric should be recorded
         current_disabled == 0
+    }
+
+    /// Record an error for this
+    fn record_error(&self, error: crate::ErrorType, count: i32) {
+        let meta = self.meta().clone();
+        crate::launch_with_glean(move |glean| {
+            error_recording::record_error(glean, &meta, error, "external error", count);
+        })
     }
 }
 
