@@ -311,6 +311,17 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -345,7 +356,18 @@
     metric_id: <span class="kw-2">&amp;</span>str,
     metric: <span class="kw-2">&amp;</span>Metric,
 ) {
-    <span class="kw">let </span>ping_section = <span class="macro">format!</span>(<span class="string">"labeled_{}"</span>, metric.ping_section());
+    <span class="comment">// Explicit match for supported labeled metrics, avoiding the formatting string
+    </span><span class="kw">let </span>ping_section = <span class="kw">match </span>metric.ping_section() {
+        <span class="string">"boolean" </span>=&gt; <span class="string">"labeled_boolean"</span>.to_string(),
+        <span class="string">"counter" </span>=&gt; <span class="string">"labeled_counter"</span>.to_string(),
+        <span class="string">"timing_distribution" </span>=&gt; <span class="string">"labeled_timing_distribution"</span>.to_string(),
+        <span class="string">"memory_distribution" </span>=&gt; <span class="string">"labeled_memory_distribution"</span>.to_string(),
+        <span class="string">"custom_distribution" </span>=&gt; <span class="string">"labeled_custom_distribution"</span>.to_string(),
+        <span class="string">"quantity" </span>=&gt; <span class="string">"labeled_quantity"</span>.to_string(),
+        <span class="comment">// This should never happen, we covered all cases.
+        // Should we ever extend it this would however at least catch it and do the right thing.
+        </span><span class="kw">_ </span>=&gt; <span class="macro">format!</span>(<span class="string">"labeled_{}"</span>, metric.ping_section()),
+    };
     <span class="kw">let </span>map = snapshot.entry(ping_section).or_default();
 
     <span class="comment">// Safe unwrap, the function is only called when the id does contain a '/'
