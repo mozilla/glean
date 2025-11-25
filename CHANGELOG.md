@@ -5,6 +5,7 @@
 * General
   * Stop reporting db file sizes during init phase ([#3331](https://github.com/mozilla/glean/pull/3331))
   * Tiny performance improvement for putting tasks on the dispatcher ([#3318](https://github.com/mozilla/glean/pull/3318))
+  * Use an explicit match for the labeled metric ping sections ([#3335](https://github.com/mozilla/glean/pull/3335))
 
 # v66.1.1 (2025-11-06)
 

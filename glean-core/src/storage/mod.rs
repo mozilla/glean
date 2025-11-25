@@ -32,7 +32,18 @@ fn snapshot_labeled_metrics(
     metric_id: &str,
     metric: &Metric,
 ) {
-    let ping_section = format!("labeled_{}", metric.ping_section());
+    // Explicit match for supported labeled metrics, avoiding the formatting string
+    let ping_section = match metric.ping_section() {
+        "boolean" => "labeled_boolean".to_string(),
+        "counter" => "labeled_counter".to_string(),
+        "timing_distribution" => "labeled_timing_distribution".to_string(),
+        "memory_distribution" => "labeled_memory_distribution".to_string(),
+        "custom_distribution" => "labeled_custom_distribution".to_string(),
+        "quantity" => "labeled_quantity".to_string(),
+        // This should never happen, we covered all cases.
+        // Should we ever extend it this would however at least catch it and do the right thing.
+        _ => format!("labeled_{}", metric.ping_section()),
+    };
     let map = snapshot.entry(ping_section).or_default();
 
     // Safe unwrap, the function is only called when the id does contain a '/'
