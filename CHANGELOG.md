@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.2...main)
+
+# v66.1.2 (2025-11-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.1...v66.1.2)
 
 * General
   * Use an explicit match for the labeled metric ping sections ([#3335](https://github.com/mozilla/glean/pull/3335))
