@@ -13401,8 +13401,21 @@ pings.search.submit(pings.searchReasonCodes.Performed);
 </div>
 </div>
 </div>
+<h4 id="unrecorded-errors"><a class="header" href="#unrecorded-errors">Unrecorded errors</a></h4>
+<ul>
+<li>If called with a ping reason not matching one present in the ping's <code>reasons</code> definition field,
+the ping is submitted with an empty reason and an error is logged.
+<ul>
+<li>See <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2000701">bug 2000701</a> for future developments.</li>
+</ul>
+</li>
+</ul>
 <h3 id="setenabled"><a class="header" href="#setenabled"><code>setEnabled</code></a></h3>
-<p>TODO</p>
+<p>Called with <code>true</code>: enables the ping to store data and be able to be submitted.
+Called with <code>false</code>: disables the ping, deletes stored data and refuses new data,
+and doesn't submit when <code>submit()</code> is called.</p>
+<p>You shouldn't need to call this unless your ping has <code>follows_collection_enabled: false</code>,
+as Glean will take care of it for you.</p>
 <div class="tabs">
 <div class="tabbar"></div>
 <div class="tabcontents">
