@@ -117,8 +117,14 @@ class PingUploadWorker(
                             UploadTaskAction.END -> break
                         }
                     }
-                    is PingUploadTask.Wait -> SystemClock.sleep(action.time.toLong())
-                    is PingUploadTask.Done -> break
+
+                    is PingUploadTask.Wait -> {
+                        SystemClock.sleep(action.time.toLong())
+                    }
+
+                    is PingUploadTask.Done -> {
+                        break
+                    }
                 }
             } while (true)
             // Limits are enforced by glean-core to avoid an inifinite loop here.

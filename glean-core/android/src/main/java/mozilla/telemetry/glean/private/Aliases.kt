@@ -2,9 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/**
- * Reexport of internal enums and classes for use in the public API.
- */
+// Reexport of internal enums and classes for use in the public API.
 
 package mozilla.telemetry.glean.private
 

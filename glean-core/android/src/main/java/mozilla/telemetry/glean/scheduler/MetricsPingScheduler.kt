@@ -163,11 +163,13 @@ internal class MetricsPingScheduler(
                 dueTime.add(Calendar.DAY_OF_MONTH, 1)
                 dueTime.timeInMillis - nowInMillis
             }
+
             delay >= 0 -> {
                 // The `dueHourOfTheDay` is in the current calendar day.
                 // Return the computed delay.
                 delay
             }
+
             else -> {
                 // We're overdue and don't want to wait until tomorrow.
                 0L
@@ -257,6 +259,7 @@ internal class MetricsPingScheduler(
                 schedulePingCollection(now, sendTheNextCalendarDay = true, reason = Pings.metricsReasonCodes.tomorrow)
                 return false
             }
+
             isAfterDueTime(now) -> {
                 // The ping wasn't already sent today. Are we overdue or just waiting for
                 // the right time?  This covers (2)
@@ -270,6 +273,7 @@ internal class MetricsPingScheduler(
                 collectPingAndReschedule(now, startupPing = true, reason = Pings.metricsReasonCodes.overdue)
                 return true
             }
+
             else -> {
                 // This covers (3).
                 Log.i(LOG_TAG, "The 'metrics' collection is scheduled for today, ${safeDateToString(now.time)}")
