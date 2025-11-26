@@ -3469,7 +3469,7 @@ across the database will use additional space to house this repeated information
 </ul>
 </li>
 </ul>
-<h3 id="9-hardware-details-manufacturerversion-mobile-platforms-only"><a class="header" href="#9-hardware-details-manufacturerversion-mobile-platforms-only">9. Hardware Details (Manufacturer/Version) (Mobile platforms only)</a></h3>
+<h3 id="9-hardware-details-manufacturermodel-mobile-platforms-only"><a class="header" href="#9-hardware-details-manufacturermodel-mobile-platforms-only">9. Hardware Details (Manufacturer/Model) (Mobile platforms only)</a></h3>
 <ul>
 <li>Purpose: Determine if the issue is hardware-specific.</li>
 <li>Column Names: <code>client_info.device_manufacturer</code>, <code>client_info.device_model</code></li>
@@ -3479,7 +3479,19 @@ across the database will use additional space to house this repeated information
 </ul>
 </li>
 </ul>
-<h3 id="10-ping-reason"><a class="header" href="#10-ping-reason">10. Ping reason</a></h3>
+<h3 id="10-build-details-architecture"><a class="header" href="#10-build-details-architecture">10. Build Details: Architecture</a></h3>
+<ul>
+<li>Purpose: Determine if the issue is specific to a class of hardware or build configuration.</li>
+<li>Column Name: <code>client_info.architecture</code></li>
+<li>Considerations:
+<ul>
+<li>Are affected clients only running builds built for a specific architecture?</li>
+<li>Are all clients running builds built for a specific architecture affected?</li>
+<li>Has the build configuration for this architecture changed recently?</li>
+</ul>
+</li>
+</ul>
+<h3 id="11-ping-reason"><a class="header" href="#11-ping-reason">11. Ping reason</a></h3>
 <ul>
 <li>Purpose: Determine the reason a ping was sent.</li>
 <li>Column Names: <code>ping_info.reason</code></li>
@@ -3496,7 +3508,7 @@ across the database will use additional space to house this repeated information
 </ul>
 </li>
 </ul>
-<h3 id="11-no-data"><a class="header" href="#11-no-data">11. No Data</a></h3>
+<h3 id="12-no-data"><a class="header" href="#12-no-data">12. No Data</a></h3>
 <ul>
 <li>Purpose: Determine why a metric isn't included in a ping in which it is expected to be found.</li>
 <li>Considerations:
