@@ -1188,6 +1188,7 @@ glean.health:
       - permission-denied
       - io
       - c0ffee-in-file
+      - file-not-found
 
   file_write_error:
     type: labeled_counter

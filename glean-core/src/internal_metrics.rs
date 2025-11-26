@@ -467,6 +467,7 @@ impl HealthMetrics {
                     Cow::from("permission-denied"),
                     Cow::from("io"),
                     Cow::from("c0ffee-in-file"),
+                    Cow::from("file-not-found"),
                 ]),
             ),
             file_write_error: LabeledMetric::<CounterMetric>::new(

@@ -441,6 +441,25 @@ mod read_errors {
             .unwrap();
         assert_eq!(1, state);
     }
+
+    #[test]
+    fn file_not_found_is_reported() {
+        let (glean, temp) = new_glean(None);
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]
+            ["file-not-found"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
 }
 
 mod write_errors {
