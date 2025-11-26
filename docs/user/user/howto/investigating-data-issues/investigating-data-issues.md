@@ -60,14 +60,23 @@ This document outlines several diagnostic categories and the insights they may o
 * Considerations:
   * Are there networking errors, ingestion issues, or other telemetry failures that could be related to the anomaly?
 
-### 9\. Hardware Details (Manufacturer/Version) (Mobile platforms only)
+### 9\. Hardware Details (Manufacturer/Model) (Mobile platforms only)
 
 * Purpose: Determine if the issue is hardware-specific.
 * Column Names: `client_info.device_manufacturer`, `client_info.device_model`
 * Considerations:
   * Does the anomaly occur primarily on older or newer hardware models?
 
-### 10\. Ping reason
+### 10\. Build Details: Architecture
+
+* Purpose: Determine if the issue is specific to a class of hardware or build configuration.
+* Column Name: `client_info.architecture`
+* Considerations:
+  * Are affected clients only running builds built for a specific architecture?
+  * Are all clients running builds built for a specific architecture affected?
+  * Has the build configuration for this architecture changed recently?
+
+### 11\. Ping reason
 
 * Purpose: Determine the reason a ping was sent.
 * Column Names: `ping_info.reason`
@@ -78,7 +87,7 @@ This document outlines several diagnostic categories and the insights they may o
     * [`metrics` ping schedule and reasons](../../pings/metrics.md#scheduling)
     * [`events` ping schedule and reasons](../../pings/events.md#scheduling)
 
-### 11\. No Data
+### 12\. No Data
 
 * Purpose: Determine why a metric isn't included in a ping in which it is expected to be found.
 * Considerations:
