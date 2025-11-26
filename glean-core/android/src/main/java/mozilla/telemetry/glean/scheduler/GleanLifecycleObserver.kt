@@ -25,6 +25,7 @@ internal class GleanLifecycleObserver : LifecycleEventObserver {
             Lifecycle.Event.ON_STOP -> {
                 Glean.handleBackgroundEvent()
             }
+
             Lifecycle.Event.ON_START -> {
                 // We use ON_START here because we don't want to incorrectly count metrics in
                 // ON_RESUME as pause/resume can happen when interacting with things like the
@@ -35,6 +36,7 @@ internal class GleanLifecycleObserver : LifecycleEventObserver {
 
                 Glean.handleForegroundEvent()
             }
+
             else -> {
                 // For other lifecycle events, do nothing
             }
