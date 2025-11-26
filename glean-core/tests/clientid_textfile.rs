@@ -71,9 +71,8 @@ fn reused_clientid_from_file() {
     write_clientid_to_file(temp.path(), &new_uuid).unwrap();
 
     let (glean, temp) = new_glean(Some(temp));
-    // TODO(bug 1996862): We don't run the mitigation yet
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(new_uuid, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(new_uuid, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -141,10 +140,8 @@ fn clientid_regen_issue_with_existing_db() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    _ = file_client_id;
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(file_client_id, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -225,10 +222,8 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    _ = file_client_id;
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(file_client_id, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -244,10 +239,9 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
     let exception_uuid = &payload["metrics"]["uuid"]["glean.health.recovered_client_id"].as_str();
     assert_eq!(&Some(file_client_id), exception_uuid);
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    //let exception_uuid = &payload["client_info"]["client_id"].as_str();
-    //assert_eq!(&Some(file_client_id), exception_uuid);
-    // instead we ensure we don't see the c0ffee ID either.
+    let exception_uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(file_client_id), exception_uuid);
+    // We ensure we don't see the c0ffee ID either.
     let client_id = payload["client_info"]["client_id"].as_str().unwrap();
     assert_ne!("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0", client_id);
 }
