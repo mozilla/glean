@@ -299,6 +299,11 @@ impl Glean {
             Ok(id) => Some(id),
             Err(ClientIdFileError::NotFound) => {
                 // That's ok, the file might just not exist yet.
+                glean
+                    .health_metrics
+                    .file_read_error
+                    .get("file-not-found")
+                    .add_sync(&glean, 1);
                 None
             }
             Err(ClientIdFileError::PermissionDenied) => {
