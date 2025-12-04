@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.1.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.1.2...main)
 
 * General
   * Stop reporting db file sizes during init phase ([#3331](https://github.com/mozilla/glean/pull/3331))
