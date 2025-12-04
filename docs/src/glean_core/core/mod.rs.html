@@ -1419,6 +1419,18 @@
 <a href="#1419" id="1419">1419</a>
 <a href="#1420" id="1420">1420</a>
 <a href="#1421" id="1421">1421</a>
+<a href="#1422" id="1422">1422</a>
+<a href="#1423" id="1423">1423</a>
+<a href="#1424" id="1424">1424</a>
+<a href="#1425" id="1425">1425</a>
+<a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
+<a href="#1429" id="1429">1429</a>
+<a href="#1430" id="1430">1430</a>
+<a href="#1431" id="1431">1431</a>
+<a href="#1432" id="1432">1432</a>
+<a href="#1433" id="1433">1433</a>
 </pre></div><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -1780,7 +1792,11 @@
                         .set_sync(<span class="kw-2">&amp;</span>glean, ExceptionState::EmptyDb);
 
                     <span class="comment">// state (e) -- mitigation: store recovered client ID in DB
-                </span>} <span class="kw">else </span>{
+                    </span>glean
+                        .core_metrics
+                        .client_id
+                        .set_from_uuid_sync(<span class="kw-2">&amp;</span>glean, stored_client_id);
+                } <span class="kw">else </span>{
                     <span class="kw">let </span>db_client_id = glean
                         .core_metrics
                         .client_id
@@ -1796,7 +1812,11 @@
                                 .set_sync(<span class="kw-2">&amp;</span>glean, ExceptionState::RegenDb);
 
                             <span class="comment">// state (e) -- mitigation: store recovered client ID in DB
-                        </span>}
+                            </span>glean
+                                .core_metrics
+                                .client_id
+                                .set_from_uuid_sync(<span class="kw-2">&amp;</span>glean, stored_client_id);
+                        }
                         <span class="prelude-val">Some</span>(db_client_id) <span class="kw">if </span>db_client_id == <span class="kw-2">*</span>KNOWN_CLIENT_ID =&gt; {
                             <span class="comment">// state (i)
                             </span><span class="macro">log::trace!</span>(
@@ -1813,7 +1833,11 @@
 
                             <span class="comment">// If we have a recovered client ID we also overwrite the database.
                             // state (e)
-                        </span>}
+                            </span>glean
+                                .core_metrics
+                                .client_id
+                                .set_from_uuid_sync(<span class="kw-2">&amp;</span>glean, stored_client_id);
+                        }
                         <span class="prelude-val">Some</span>(db_client_id) <span class="kw">if </span>db_client_id == stored_client_id =&gt; {
                             <span class="comment">// all valid. nothing to do
                             </span><span class="macro">log::trace!</span>(<span class="string">"database consistent. db_client_id == stored_client_id: {db_client_id}"</span>);

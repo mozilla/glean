@@ -14226,13 +14226,14 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li><a href="appendix/changelog/./js.html"><code>mozilla/glean.js</code></a></li>
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
-<p><a href="https://github.com/mozilla/glean/compare/v66.1.1...main">Full changelog</a></p>
+<p><a href="https://github.com/mozilla/glean/compare/v66.1.2...main">Full changelog</a></p>
 <ul>
 <li>General
 <ul>
 <li>Stop reporting db file sizes during init phase (<a href="https://github.com/mozilla/glean/pull/3331">#3331</a>)</li>
 <li>Tiny performance improvement for putting tasks on the dispatcher (<a href="https://github.com/mozilla/glean/pull/3318">#3318</a>)</li>
 <li>Instrument the case when the <code>client_id.txt</code> file does not exist yet (<a href="https://github.com/mozilla/glean/pull/3339">#3339</a>)</li>
+<li>When a missing client ID in the database is detected, Glean now restores the backup client ID (<a href="https://github.com/mozilla/glean/pull/3334">#3334</a>)</li>
 </ul>
 </li>
 </ul>
