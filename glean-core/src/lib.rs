@@ -588,10 +588,6 @@ fn initialize_inner(
             // a health ping with reason "pre_init".
             record_dir_info_and_submit_health_ping(dir_info, "pre_init");
 
-            // Now capture a post_init snapshot of the state of Glean's data directories after initialization to send
-            // in a health ping with reason "post_init".
-            record_dir_info_and_submit_health_ping(collect_directory_info(data_path), "post_init");
-
             let state = global_state().lock().unwrap();
             if let Err(e) = state.callbacks.trigger_upload() {
                 log::error!("Triggering upload failed. Error: {}", e);
