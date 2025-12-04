@@ -63,8 +63,8 @@ class DeletionRequestPingTests: XCTestCase {
         XCTAssert(Glean.shared.isInitialized(), "Glean should be initialized")
 
         // Set up the test stub based on the default telemetry endpoint
-        stubServerReceive { _, _ in
-            XCTFail("Should not have recieved any ping")
+        stubServerReceive { pingType, _ in
+            XCTFail("Should not have recieved any ping, got \(pingType)")
         }
 
         // Set up the expectation that will NOT be fulfilled by the stub above.  If it is
@@ -75,6 +75,11 @@ class DeletionRequestPingTests: XCTestCase {
         // expectation.  We want to assert if the ping is triggered and over fulfills it
         // from the stub above.
         expectation?.fulfill()
+
+        // We manually disable upload and we don't want the ID to be restored, or this will trigger another
+        // deletion-request ping.
+        let clientIdTxt = getGleanDirectory().appendingPathComponent("client_id.txt")
+        try! FileManager.default.removeItem(at: clientIdTxt)
 
         // Reset Glean with uploadEnabled = false
         Glean.shared.resetGlean(clearStores: true, uploadEnabled: false)
