@@ -327,6 +327,64 @@ fn invalid_client_id_file_doesnt_crash() {
     drop(temp);
 }
 
+#[test]
+fn single_deletion_request_ping_after_externally_disabling() {
+    let (client_id, temp) = {
+        let (glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+
+        drop(glean);
+        (client_id, temp)
+    };
+
+    let (_glean, temp) = new_glean_with_upload(Some(temp), false);
+
+    let mut pings = get_deletion_pings(temp.path()).unwrap();
+
+    // We should have only 1 deletion-request ping pending!
+    assert_eq!(1, pings.len());
+
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
+}
+
+#[test]
+fn extra_deletion_request_ping_is_sent() {
+    let (client_id, temp) = {
+        let (mut glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+
+        // Turning off upload removes the `client_id.txt` and deletes the database.
+        // This also triggers a deletion-request ping
+        glean.set_upload_enabled(false);
+
+        let pings = get_deletion_pings(temp.path()).unwrap();
+        assert_eq!(1, pings.len());
+
+        (client_id, temp)
+    };
+
+    // We restore the `client_id.txt` file as if previous removal failed.
+    write_clientid_to_file(temp.path(), &client_id).unwrap();
+
+    let (_glean, temp) = new_glean_with_upload(Some(temp), false);
+
+    let mut pings = get_deletion_pings(temp.path()).unwrap();
+
+    // We now have 2 deletion-request pings pending!
+    assert_eq!(2, pings.len());
+
+    // Test both pings. They should be equivalent!
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
+
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
+}
+
 mod read_errors {
     use super::*;
 
