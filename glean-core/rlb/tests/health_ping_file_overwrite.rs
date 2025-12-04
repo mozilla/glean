@@ -47,7 +47,7 @@ impl net::PingUploader for ReportingUploader {
 
 /// Test scenario: Write a client ID to the backup file and check that it's used after initialization.
 #[test]
-fn test_pre_post_init_health_pings_exist() {
+fn test_pre_init_health_ping_exist() {
     common::enable_test_logging();
 
     // Create a custom configuration to use a validating uploader.
