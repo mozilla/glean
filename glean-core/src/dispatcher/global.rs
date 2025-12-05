@@ -58,7 +58,7 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
             // TODO: Record this as an error.
         }
         Err(_) => {
-            log::info!("Failed to launch a task on the queue. Discarding task.");
+            log::debug!("Failed to launch a task on the queue. Discarding task.");
         }
     }
 
