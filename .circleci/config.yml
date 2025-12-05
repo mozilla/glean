@@ -516,7 +516,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "16.4"
+      xcode: "26.2"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -534,7 +534,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "16.4"
+      xcode: "26.2"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -548,16 +548,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v22
+          key: swift-docs-gems-v23
       - run:
           name: Install jazzy
           command: gem install --no-document jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v22
+          key: swift-docs-gems-v23
           paths:
-            - ~/.rbenv/versions/3.4.3/lib/ruby/gems/3.4.0
+            - ~/.rbenv/versions/3.4.7/lib/ruby/gems/3.4.0
       - run:
           name: Setup build environment
           command: |
@@ -573,7 +573,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 16 Simulator (18' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
             # Store build type for use in cache key
             if [ -z "${CIRCLE_TAG}" ]; then
@@ -635,7 +635,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "16.4"
+      xcode: "26.2"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -657,7 +657,7 @@ jobs:
             DEVICES=$(xcrun xctrace list devices 2>&1)
             echo "$DEVICES"
             # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 16 Simulator (18' | awk -F'[()]' '{print $4}')
+            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
             xcrun simctl boot "$UUID"
       - run:
           name: Build XCFramework archive
@@ -680,7 +680,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "16.4"
+      xcode: "26.2"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -923,7 +923,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "16.4"
+      xcode: "26.2"
     resource_class: "m4pro.medium"
     steps:
       - install-rustup

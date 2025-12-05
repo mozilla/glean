@@ -11,7 +11,7 @@ xcodebuild \
   -workspace ./glean-core/ios/Glean.xcodeproj/project.xcworkspace \
   -scheme Glean \
   -sdk iphonesimulator \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
   test | \
 tee raw_xcodetest.log | \
 xcpretty && exit "${PIPESTATUS[0]}"
