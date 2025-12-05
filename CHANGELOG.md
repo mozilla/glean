@@ -7,6 +7,8 @@
   * Tiny performance improvement for putting tasks on the dispatcher ([#3318](https://github.com/mozilla/glean/pull/3318))
   * Instrument the case when the `client_id.txt` file does not exist yet ([#3339](https://github.com/mozilla/glean/pull/3339))
   * When a missing client ID in the database is detected, Glean now restores the backup client ID ([#3334](https://github.com/mozilla/glean/pull/3334))
+* iOS
+  * Glean for iOS is now being built with Xcode 26.2 ([#3350](https://github.com/mozilla/glean/pull/3350))
 
 # v66.1.2 (2025-11-25)
 
