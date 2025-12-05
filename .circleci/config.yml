@@ -586,7 +586,7 @@ jobs:
             - v2-cargo-cache-{{arch}}-{{checksum "buildtype.txt"}}-{{checksum "Cargo.lock"}}
       - run:
           name: Run iOS build
-          command: bash bin/run-ios-build.sh
+          command: make build-swift
       - save_cache:
           paths:
             - /Users/distiller/.cargo/registry
@@ -598,14 +598,14 @@ jobs:
             if git log -1 "$CIRCLE_SHA1" | grep -q '\[doc only\]'; then
                 echo "Skipping this step. Last commit was tagged to not require tests."
             else
-                bash bin/run-ios-tests.sh
+                make test-swift
             fi
       - run:
           name: Generate Swift documentation
           command: |
             # Skip doc generation for pull requests.
             if [ "$CIRCLE_BRANCH" = "main" ]; then
-              bash bin/build-swift-docs.sh
+              make docs-swift
             else
               mkdir -p build/docs/swift
             fi
@@ -666,14 +666,14 @@ jobs:
       - run:
           name: Build sample app
           command: |
-            bash bin/run-ios-sample-app-build.sh
+            bin/iosbuild build sample
       - store_artifacts:
           path: raw_sample_xcodebuild.log
           destination: raw_sample_xcodebuild.log
       - run:
           name: Run sample app tests
           command: |
-            bash bin/run-ios-sample-app-test.sh
+            bin/iosbuild test sample
       - store_artifacts:
           path: raw_sample_xcodetest.log
           destination: raw_sample_xcodetest.log

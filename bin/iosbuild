@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+SDK_WORKSPACE="./glean-core/ios/Glean.xcodeproj/project.xcworkspace"
+SDK_SCHEME="Glean"
+
+SAMPLE_WORKSPACE="./samples/ios/app/glean-sample-app.xcodeproj/project.xcworkspace"
+SAMPLE_SCHEME="glean-sample-app"
+
+DESTINATION="platform=iOS Simulator,name=iPhone 17"
+
+cmd="${1:-}"
+target="${2:-sdk}"
+
+function help() {
+    echo "Usage: bin/iosbuild cmd [target]"
+    echo
+    echo "Commands: build test update-xcode"
+    echo "Targets: sdk sample xcframework"
+}
+
+function xbuild() {
+  local workspace="$1"
+  local scheme="$2"
+  local cmd="$3"
+  local tee_file="$4"
+
+  set -euvx
+  set -o pipefail && \
+    xcodebuild \
+    -workspace "$workspace" \
+    -scheme "$scheme" \
+    -sdk iphonesimulator \
+    -destination "$DESTINATION" \
+    "$cmd" | \
+    tee "$tee_file" | \
+    xcpretty && exit "${PIPESTATUS[0]}"
+}
+
+if [[ -z "$cmd" ]]; then
+  help
+  exit 2
+fi
+
+WORKSPACE_ROOT="$( cd "$(dirname "$0")/.." ; pwd -P )"
+cd "$WORKSPACE_ROOT"
+
+case "${cmd}-${target}" in
+  "build-sdk")
+    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" build "raw_xcodebuild.log"
+    ;;
+  "test-sdk")
+    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" test "raw_xcodetest.log"
+    ;;
+  "build-sample")
+    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" build "raw_sample_xcodebuild.log"
+    ;;
+  "test-sample")
+    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" test "raw_sample_xcodetest.log"
+    ;;
+  "build-xcframework")
+    ./bin/build-xcframework.sh
+    ;;
+  "build-docs")
+    set -eo pipefail
+
+    # Requires jazzy from https://github.com/realm/jazzy
+    jazzy --version
+    jazzy \
+      --clean \
+      --config "$WORKSPACE_ROOT/.circleci/jazzy.yml" \
+      --output "$WORKSPACE_ROOT/build/docs/swift"
+    ;;
+  update-xcode-*)
+    ./bin/update-xcode-version.sh "$target"
+    ;;
+  *)
+    echo "Unknown cmd/target combination."
+    echo
+    help
+    exit 2
+    ;;
+esac
