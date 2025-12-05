@@ -37,7 +37,7 @@ build-kotlin: ## Build all Kotlin code
 	./gradlew build -x test
 
 build-swift: ## Build all Swift code
-	bin/run-ios-build.sh
+	bin/iosbuild build sdk
 
 build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
@@ -83,13 +83,13 @@ test-kotlin: ## Run all Kotlin tests
 	./gradlew :glean:testDebugUnitTest
 
 test-swift: ## Run all Swift tests
-	bin/run-ios-tests.sh
+	bin/iosbuild test sdk
 
 test-android-sample: build-apk ## Run the Android UI tests on the sample app
 	./gradlew :glean-sample-app:connectedAndroidTest
 
 test-ios-sample: ## Run the iOS UI tests on the sample app
-	bin/run-ios-sample-app-test.sh
+	bin/iosbuild test sample
 
 test-python: build-python ## Run all Python tests
 	$(GLEAN_PYENV)/bin/py.test -v glean-core/python/tests $(PYTEST_ARGS)
@@ -147,7 +147,7 @@ docs-rust: ## Build the Rust documentation
 	bin/build-rust-docs.sh
 
 docs-swift: ## Build the Swift documentation
-	bin/build-swift-docs.sh
+	bin/iosbuild build docs
 
 docs-python: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True
