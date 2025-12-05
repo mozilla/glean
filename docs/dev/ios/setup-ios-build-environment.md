@@ -2,7 +2,7 @@
 
 ## Prepare your build environment
 
-1. Install Xcode 16.4 or higher.
+1. Install Xcode 26.2 or higher.
 2. Ensure you have Python 3 installed: `brew install python`
 3. Install linting and formatting tools: `brew install swiftlint`
 4. (Optional, only required for building on the CLI) Install [xcpretty](https://github.com/xcpretty/xcpretty): `gem install xcpretty`
