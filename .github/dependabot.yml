@@ -4,14 +4,18 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    cooldown:
+      default-days: 8
     versioning-strategy: lockfile-only
 
   # glean-python
   - package-ecosystem: "pip"
     directory: "/glean-core/python"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    cooldown:
+      default-days: 8
     ignore:
       # Updated in lockstep across all implementations
       - dependency-name: "glean_parser"
