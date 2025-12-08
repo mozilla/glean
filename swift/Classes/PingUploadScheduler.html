@@ -60,6 +60,9 @@
                 <a href="../Classes/DenominatorMetric.html">DenominatorMetric</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/Dispatchers.html">Dispatchers</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/DualLabeledCounterMetric.html">DualLabeledCounterMetric</a>
               </li>
               <li class="nav-group-task">
@@ -70,6 +73,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/Glean.html">Glean</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GleanUploadTaskProvider.html">GleanUploadTaskProvider</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/HttpPingUploader.html">HttpPingUploader</a>
@@ -210,6 +216,9 @@
               <li class="nav-group-task">
                 <a href="../Extensions/TimingDistributionMetricType.html">TimingDistributionMetricType</a>
               </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/c:objc(cs)UIApplication">UIApplication</a>
+              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -326,6 +335,9 @@
             <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Protocols/BackgroundTaskScheduler.html">BackgroundTaskScheduler</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Protocols/BooleanMetricProtocol.html">BooleanMetricProtocol</a>
               </li>
               <li class="nav-group-task">
@@ -351,6 +363,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/GleanEventListener.html">GleanEventListener</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/GleanUploadTaskProviderProtocol.html">GleanUploadTaskProviderProtocol</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Protocols/LabeledBooleanProtocol.html">LabeledBooleanProtocol</a>
@@ -551,9 +566,9 @@ uploader specified in the Glean <code><a href="../Structs/Configuration.html">Co
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5Glean19PingUploadSchedulerC13configurationAcA13ConfigurationV_tcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(configuration:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5Glean19PingUploadSchedulerC13configurationAcA13ConfigurationV_tcfc">init(configuration:<wbr>)</a>
+                    <a name="/s:5Glean19PingUploadSchedulerC13configuration014backgroundTaskD005gleancG8ProviderAcA13ConfigurationV_AA010BackgroundgD0_pAA0acgI8Protocol_ptcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(configuration:backgroundTaskScheduler:gleanUploadTaskProvider:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean19PingUploadSchedulerC13configuration014backgroundTaskD005gleancG8ProviderAcA13ConfigurationV_AA010BackgroundgD0_pAA0acgI8Protocol_ptcfc">init(configuration:<wbr>backgroundTaskScheduler:<wbr>gleanUploadTaskProvider:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -568,7 +583,11 @@ uploader specified in the Glean <code><a href="../Structs/Configuration.html">Co
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Structs/Configuration.html">Configuration</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span>
+    <span class="nv">configuration</span><span class="p">:</span> <span class="kt"><a href="../Structs/Configuration.html">Configuration</a></span><span class="p">,</span>
+    <span class="nv">backgroundTaskScheduler</span><span class="p">:</span> <span class="kt"><a href="../Protocols/BackgroundTaskScheduler.html">BackgroundTaskScheduler</a></span> <span class="o">=</span> <span class="kt">UIApplication</span><span class="o">.</span><span class="n">shared</span><span class="p">,</span>
+    <span class="nv">gleanUploadTaskProvider</span><span class="p">:</span> <span class="kt"><a href="../Protocols/GleanUploadTaskProviderProtocol.html">GleanUploadTaskProviderProtocol</a></span> <span class="o">=</span> <span class="kt"><a href="../Classes/GleanUploadTaskProvider.html">GleanUploadTaskProvider</a></span><span class="p">()</span>
+<span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -585,6 +604,30 @@ uploader specified in the Glean <code><a href="../Structs/Configuration.html">Co
                               <td>
                                 <div>
                                   <p>The Glean <code><a href="../Structs/Configuration.html">Configuration</a></code> to use which contains the endpoint and http uploader</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>backgroundTaskScheduler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The <code><a href="../Protocols/BackgroundTaskScheduler.html">BackgroundTaskScheduler</a></code> which starts and ends background tasks.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>gleanUploadTaskProvider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The <code><a href="../Protocols/GleanUploadTaskProviderProtocol.html">GleanUploadTaskProviderProtocol</a></code> wrapping the global <code>gleanGetUploadTask</code>.</p>
                                 </div>
                               </td>
                             </tr>

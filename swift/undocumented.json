@@ -3389,6 +3389,55 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/BackgroundTaskScheduler.swift",
+      "line": 7,
+      "symbol": "BackgroundTaskScheduler",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/BackgroundTaskScheduler.swift",
+      "line": 8,
+      "symbol": "BackgroundTaskScheduler.beginBackgroundTask(withName:expirationHandler:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/BackgroundTaskScheduler.swift",
+      "line": 13,
+      "symbol": "BackgroundTaskScheduler.endBackgroundTask(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/GleanUploadTaskProvider.swift",
+      "line": 7,
+      "symbol": "GleanUploadTaskProviderProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/GleanUploadTaskProvider.swift",
+      "line": 8,
+      "symbol": "GleanUploadTaskProviderProtocol.getUploadTask()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/GleanUploadTaskProvider.swift",
+      "line": 11,
+      "symbol": "GleanUploadTaskProvider",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/distiller/project/glean-core/ios/Glean/Net/GleanUploadTaskProvider.swift",
+      "line": 12,
+      "symbol": "GleanUploadTaskProvider.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/distiller/project/glean-core/ios/Glean/Net/PingUploader.swift",
       "line": 5,
       "symbol": "HeadersList",

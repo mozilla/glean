@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GleanUploadTaskProviderProtocol Protocol Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Protocol/GleanUploadTaskProviderProtocol" class="dashAnchor"></a>
+    <a title="GleanUploadTaskProviderProtocol Protocol Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Glean Docs</a> (22% documented)</p>
+        <p class="header-right"><a href="https://github.com/mozilla/glean"><img src="../img/gh.png" alt="GitHub"/>View on GitHub</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Glean</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        <a href="../Protocols.html">Protocols</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        GleanUploadTaskProviderProtocol Protocol Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/BooleanMetric.html">BooleanMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CounterMetric.html">CounterMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CustomDistributionMetric.html">CustomDistributionMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DatetimeMetric.html">DatetimeMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DatetimeMetricType.html">DatetimeMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DenominatorMetric.html">DenominatorMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Dispatchers.html">Dispatchers</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DualLabeledCounterMetric.html">DualLabeledCounterMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/EventMetric.html">EventMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/EventMetricType.html">EventMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Glean.html">Glean</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GleanUploadTaskProvider.html">GleanUploadTaskProvider</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/HttpPingUploader.html">HttpPingUploader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LabeledBoolean.html">LabeledBoolean</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LabeledCounter.html">LabeledCounter</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LabeledMetricType.html">LabeledMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LabeledQuantity.html">LabeledQuantity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LabeledString.html">LabeledString</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/MemoryDistributionMetric.html">MemoryDistributionMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/NoExtras.html">NoExtras</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/NumeratorMetric.html">NumeratorMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ObjectMetric.html">ObjectMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ObjectMetricType.html">ObjectMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ping.html">Ping</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PingType.html">PingType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PingUploadScheduler.html">PingUploadScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/QuantityMetric.html">QuantityMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RateMetric.html">RateMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/StringListMetric.html">StringListMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/StringMetric.html">StringMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/TextMetric.html">TextMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/TimespanMetric.html">TimespanMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/TimingDistributionMetric.html">TimingDistributionMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/UrlMetric.html">UrlMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/UrlMetricType.html">UrlMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/UuidMetric.html">UuidMetric</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/UuidMetricType.html">UuidMetricType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/CallbackError.html">CallbackError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/DynamicLabelType.html">DynamicLabelType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ErrorType.html">ErrorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:5Glean0A7MetricsO">GleanMetrics</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/HistogramType.html">HistogramType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/LabeledMetricData.html">LabeledMetricData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/LevelFilter.html">LevelFilter</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/Lifetime.html">Lifetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/MemoryUnit.html">MemoryUnit</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/NoReasonCodes.html">NoReasonCodes</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/PingUploadTask.html">PingUploadTask</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/TimeUnit.html">TimeUnit</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/UploadResult.html">UploadResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/UploadTaskAction.html">UploadTaskAction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/String.html">String</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/TimespanMetricType.html">TimespanMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/TimingDistributionMetricType.html">TimingDistributionMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/c:objc(cs)UIApplication">UIApplication</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean27gleanApplyServerKnobsConfigyySSF">gleanApplyServerKnobsConfig(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean18gleanEnableLoggingyyF">gleanEnableLogging()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean22gleanEnableLoggingToFdyys6UInt64VF">gleanEnableLoggingToFd(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean20gleanGetDebugViewTagSSSgyF">gleanGetDebugViewTag()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean16gleanGetLogPingsSbyF">gleanGetLogPings()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean27gleanGetRegisteredPingNamesSaySSGyF">gleanGetRegisteredPingNames()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean18gleanGetUploadTaskAA04PingdE0OyF">gleanGetUploadTask()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean23gleanHandleClientActiveyyF">gleanHandleClientActive()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean25gleanHandleClientInactiveyyF">gleanHandleClientInactive()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean15gleanInitializeyyAA21InternalConfigurationV_AA17ClientInfoMetricsVAA02OnA6Events_ptF">gleanInitialize(_:_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean28gleanInitializeForSubprocessySbAA21InternalConfigurationVF">gleanInitializeForSubprocess(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean28gleanPersistPingLifetimeDatayyF">gleanPersistPingLifetimeData()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean30gleanProcessPingUploadResponseyAA0E10TaskActionOSS_AA0E6ResultOtF">gleanProcessPingUploadResponse(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean26gleanRegisterEventListeneryySS_AA0adE0_ptF">gleanRegisterEventListener(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean20gleanSetDebugViewTagySbSSF">gleanSetDebugViewTag(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean17gleanSetDirtyFlagyySbF">gleanSetDirtyFlag(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean24gleanSetExperimentActiveyySS_SSSDyS2SGtF">gleanSetExperimentActive(_:_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean26gleanSetExperimentInactiveyySSF">gleanSetExperimentInactive(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean25gleanSetExperimentationIdyySSF">gleanSetExperimentationId(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean16gleanSetLogPingsyySbF">gleanSetLogPings(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean18gleanSetSourceTagsySbSaySSGF">gleanSetSourceTags(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean16gleanSetTestModeyySbF">gleanSetTestMode(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean21gleanSetUploadEnabledyySbF">gleanSetUploadEnabled(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean13gleanShutdownyyF">gleanShutdown()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean21gleanSubmitPingByNameyySS_SSSgtF">gleanSubmitPingByName(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean25gleanSubmitPingByNameSyncySbSS_SSSgtF">gleanSubmitPingByNameSync(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean016gleanTestDestroyA0yySb_SSSgtF">gleanTestDestroyGlean(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean23gleanTestGetAttributionAA0E7MetricsVyF">gleanTestGetAttribution()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean24gleanTestGetDistributionAA0E7MetricsVyF">gleanTestGetDistribution()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean26gleanTestGetExperimentDatayAA08RecordedE0VSgSSF">gleanTestGetExperimentData(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean29gleanTestGetExperimentationIdSSSgyF">gleanTestGetExperimentationId()</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean28gleanUnregisterEventListeneryySSF">gleanUnregisterEventListener(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean22gleanUpdateAttributionyyAA0D7MetricsVF">gleanUpdateAttribution(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean23gleanUpdateDistributionyyAA0D7MetricsVF">gleanUpdateDistribution(_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:5Glean012uniffiEnsureA15CoreInitializedyyF">uniffiEnsureGleanCoreInitialized()</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/BackgroundTaskScheduler.html">BackgroundTaskScheduler</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/BooleanMetricProtocol.html">BooleanMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CounterMetricProtocol.html">CounterMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CustomDistributionMetricProtocol.html">CustomDistributionMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/DatetimeMetricProtocol.html">DatetimeMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/DenominatorMetricProtocol.html">DenominatorMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/DualLabeledCounterMetricProtocol.html">DualLabeledCounterMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/EventExtras.html">EventExtras</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/EventMetricProtocol.html">EventMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/GleanEventListener.html">GleanEventListener</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/GleanUploadTaskProviderProtocol.html">GleanUploadTaskProviderProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LabeledBooleanProtocol.html">LabeledBooleanProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LabeledCounterProtocol.html">LabeledCounterProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LabeledQuantityProtocol.html">LabeledQuantityProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LabeledStringProtocol.html">LabeledStringProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/MemoryDistributionMetricProtocol.html">MemoryDistributionMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/NumeratorMetricProtocol.html">NumeratorMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ObjectMetricProtocol.html">ObjectMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ObjectSerialize.html">ObjectSerialize</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/OnGleanEvents.html">OnGleanEvents</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/PingTypeProtocol.html">PingTypeProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/PingUploader.html">PingUploader</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/QuantityMetricProtocol.html">QuantityMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/RateMetricProtocol.html">RateMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ReasonCodes.html">ReasonCodes</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StringListMetricProtocol.html">StringListMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/StringMetricProtocol.html">StringMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/TextMetricProtocol.html">TextMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/TimespanMetricProtocol.html">TimespanMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/TimingDistributionMetricProtocol.html">TimingDistributionMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/UrlMetricProtocol.html">UrlMetricProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/UuidMetricProtocol.html">UuidMetricProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/AttributionMetrics.html">AttributionMetrics</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/BuildInfo.html">BuildInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/CapablePingUploadRequest.html">CapablePingUploadRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ClientInfoMetrics.html">ClientInfoMetrics</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/CommonMetricData.html">CommonMetricData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Configuration.html">Configuration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Datetime.html">Datetime</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DistributionData.html">DistributionData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/DistributionMetrics.html">DistributionMetrics</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/InternalConfiguration.html">InternalConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PingRateLimit.html">PingRateLimit</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PingRequest.html">PingRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/PingUploadRequest.html">PingUploadRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Rate.html">Rate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RecordedEvent.html">RecordedEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RecordedExperiment.html">RecordedExperiment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/TimerId.html">TimerId</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean17BooleanMetricTypea">BooleanMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean17CounterMetricTypea">CounterMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean9CowStringa">CowString</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean21DenominatorMetricTypea">DenominatorMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean0A7TimerIda">GleanTimerId</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean11HeadersLista">HeadersList</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean9JsonValuea">JsonValue</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean28MemoryDistributionMetricTypea">MemoryDistributionMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean19NumeratorMetricTypea">NumeratorMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean18QuantityMetricTypea">QuantityMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean14RateMetricTypea">RateMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean20StringListMetricTypea">StringListMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean16StringMetricTypea">StringMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean14TextMetricTypea">TextMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean18TimespanMetricTypea">TimespanMetricType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Glean28TimingDistributionMetricTypea">TimingDistributionMetricType</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>GleanUploadTaskProviderProtocol</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">GleanUploadTaskProviderProtocol</span> <span class="p">:</span> <span class="kt">Sendable</span></code></pre>
+
+                </div>
+              </div>
+            <p>Undocumented</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Glean0A26UploadTaskProviderProtocolP03getbC0AA04PingbC0OyF"></a>
+                    <a name="//apple_ref/swift/Method/getUploadTask()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Glean0A26UploadTaskProviderProtocolP03getbC0AA04PingbC0OyF">getUploadTask()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">getUploadTask</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Enums/PingUploadTask.html">PingUploadTask</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2025 <a class="link" href="https://mozilla.github.com/glean" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-12-08)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>
