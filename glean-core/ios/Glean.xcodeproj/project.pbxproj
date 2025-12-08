@@ -76,6 +76,8 @@
 		CD9DA7852BC809BE00E18F31 /* ObjectMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */; };
 		CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */; };
 		CDD08C8627E21104007C8400 /* gleanFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD08C8427E21104007C8400 /* gleanFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EDC21C842EE213F10042D53E /* BackgroundTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC21C832EE213EF0042D53E /* BackgroundTaskScheduler.swift */; };
+		EDC21C8F2EE22CCB0042D53E /* GleanUploadTaskProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC21C8E2EE22CCA0042D53E /* GleanUploadTaskProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +164,8 @@
 		CDBFB4DB27C3FA520045CCB9 /* Dispatchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatchers.swift; sourceTree = "<group>"; };
 		CDD08C8427E21104007C8400 /* gleanFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gleanFFI.h; sourceTree = "<group>"; };
 		CDD08C8527E21104007C8400 /* glean.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = glean.swift; sourceTree = "<group>"; };
+		EDC21C832EE213EF0042D53E /* BackgroundTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskScheduler.swift; sourceTree = "<group>"; };
+		EDC21C8E2EE22CCA0042D53E /* GleanUploadTaskProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GleanUploadTaskProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +229,8 @@
 			children = (
 				60006D2A2E0DB174000C14E3 /* PingUploadScheduler.swift */,
 				6003AE242E0C6E9400BC8E07 /* PingUploader.swift */,
+				EDC21C832EE213EF0042D53E /* BackgroundTaskScheduler.swift */,
+				EDC21C8E2EE22CCA0042D53E /* GleanUploadTaskProvider.swift */,
 				1F605894231489AB00307A9F /* HttpPingUploader.swift */,
 			);
 			path = Net;
@@ -610,6 +616,7 @@
 			files = (
 				CD0CADA427E216810015A997 /* glean.swift in Sources */,
 				CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */,
+				EDC21C8F2EE22CCB0042D53E /* GleanUploadTaskProvider.swift in Sources */,
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
 				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
 				BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */,
@@ -627,6 +634,7 @@
 				1FB70AEF23301C1D00C7CF09 /* Logger.swift in Sources */,
 				CD062129284110970006370D /* TextMetric.swift in Sources */,
 				1F6A8FF0233C049D007837D5 /* BooleanMetric.swift in Sources */,
+				EDC21C842EE213F10042D53E /* BackgroundTaskScheduler.swift in Sources */,
 				1F6A8FF4233C0A91007837D5 /* DatetimeMetric.swift in Sources */,
 				AC06529C26E032E300D92D5E /* QuantityMetric.swift in Sources */,
 				BFFE18382350A5F50068D97B /* TimingDistributionMetric.swift in Sources */,
