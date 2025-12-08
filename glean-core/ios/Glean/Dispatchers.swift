@@ -5,9 +5,9 @@
 import Foundation
 
 /// This class manages a single background operation queue.
-class Dispatchers {
+public final class Dispatchers: Sendable {
     /// This is the shared singleton access to the Glean Dispatchers
-    static let shared = Dispatchers()
+    public static let shared = Dispatchers()
 
     // Don't let other instances be created, we only want singleton access through the static `shared`
     // property
@@ -17,14 +17,14 @@ class Dispatchers {
     // It is currently set to be a serial queue by setting the `maxConcurrentOperationsCount` to 1.
     // This queue is intended for API operations that are subject to the behavior and constraints of the
     // API.
-    lazy var serialOperationQueue: OperationQueue = {
+    let serialOperationQueue: OperationQueue = {
         var queue = OperationQueue()
         queue.name = "Glean serial dispatch queue"
         queue.maxConcurrentOperationCount = 1
         return queue
     }()
 
-    func launchAsync(block: @escaping () -> Void) {
+    func launchAsync(block: @escaping @Sendable () -> Void) {
         serialOperationQueue.addOperation(BlockOperation(block: block))
     }
 }
