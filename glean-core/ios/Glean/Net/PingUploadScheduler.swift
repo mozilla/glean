@@ -75,7 +75,7 @@ public class PingUploadScheduler {
                 }
             }
 
-            while true {
+            uploadTaskLoop: while true {
                 // Limits are enforced by glean-core to avoid an infinite loop here.
                 // Whenever a limit is reached, this binding will receive `.done` and step out.
                 switch gleanGetUploadTask() {
@@ -99,7 +99,7 @@ public class PingUploadScheduler {
                 case .wait(let time):
                     sleep(UInt32(time) / 1000)
                 case .done:
-                    return
+                    break uploadTaskLoop
                 }
             }
 
