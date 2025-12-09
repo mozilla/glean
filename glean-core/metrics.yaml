@@ -101,7 +101,8 @@ glean.internal.metrics:
       - glean_client_info
     description: |
       The manufacturer of the device the application is running on.
-      Not set if the device manufacturer can't be determined (e.g. on Desktop).
+      Not set if the device manufacturer can't be determined.
+      Currently only collected on Android and iOS.
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
@@ -121,7 +122,8 @@ glean.internal.metrics:
       The model of the device the application is running on.
       On Android, this is Build.MODEL, the user-visible marketing name,
       like "Pixel 2 XL".
-      Not set if the device model can't be determined (e.g. on Desktop).
+      Not set if the device model can't be determined.
+      Currently only collected on Android and iOS.
     bugs:
       - https://bugzilla.mozilla.org/1522552
     data_reviews:
@@ -893,46 +895,6 @@ glean.database:
     expires: never
     disabled: true
 
-  load_sizes:
-    type: object
-    description: |
-      The size of the db file during specific phases of initialization.
-    bugs:
-      - https://bugzilla.mozilla.org/1990627
-    data_reviews:
-      - https://bugzilla.mozilla.org/1990627
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - glean-team@mozilla.com
-      - chutten@mozilla.com
-    expires: 2025-12-01
-    send_in_pings:
-      - health
-    structure:
-      type: object
-      properties:
-        new:
-          type: number
-        open:
-          type: number
-        post_open:
-          type: number
-        post_open_user:
-          type: number
-        post_load_ping_lifetime_data:
-          type: number
-        user_records:
-          type: number
-        ping_records:
-          type: number
-        application_records:
-          type: number
-        ping_memory_records:
-          type: number
-        error:
-          type: string
-
 glean.validation:
   foreground_count:
     type: counter
@@ -1083,7 +1045,7 @@ glean.health:
         brief description of the error. If there was no error, this will be null.
       - `files`: An array of objects, each containing:
         - `file_name`: The name of the file. Could be `data.safe.bin`, `events.safe.bin`, or
-          A uuid representing the doc-id of a pending ping.
+          A UUID representing the doc-id of a pending ping.
         - `file_created`: The creation time of the file, in seconds since the epoch. If the
           file does not exist, this will be `null` and if the time cannot be determined, it
           will default to `0`.
@@ -1163,13 +1125,14 @@ glean.health:
     type: string
     lifetime: ping
     description: |
-      An exceptional state was detected upon trying to laod the database.
+      An exceptional state was detected upon trying to load the database.
 
       Valid options are:
-        - empty-db
-        - regen-db
-        - c0ffee-in-db
-        - client-id-mismatch
+
+      - `empty-db`
+      - `regen-db`
+      - `c0ffee-in-db`
+      - `client-id-mismatch`
     notification_emails:
       - glean-team@mozilla.org
       - jrediger@mozilla.com
@@ -1225,6 +1188,7 @@ glean.health:
       - permission-denied
       - io
       - c0ffee-in-file
+      - file-not-found
 
   file_write_error:
     type: labeled_counter

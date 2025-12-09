@@ -14,8 +14,7 @@ Any inconsistencies in that data compared to the database will be reported
 and, if applicable, the client ID restored.
 
 **Note:** Glean v66.1.0 will only report the inconsistency, but will not restore a recovered client ID.
-This allows us to measure the impact.
-The mitigation will be enabled in a later release ([bug 1996862](https://bugzilla.mozilla.org/show_bug.cgi?id=1996862)).
+From Glean v66.2.0 on we apply the mitigation and restore the client ID.
 
 The exact flow of decisions is depicted in the chart below.
 The implementation is in [`glean-core/src/core/mod.rs`](https://github.com/mozilla/glean/blob/HEAD/glean-core/src/core/mod.rs#L264)

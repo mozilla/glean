@@ -43,7 +43,10 @@ internal object Dispatchers {
                     }
                     null
                 }
-                else -> coroutineScope.launch(block = block)
+
+                else -> {
+                    coroutineScope.launch(block = block)
+                }
             }
     }
 

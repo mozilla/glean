@@ -42,9 +42,13 @@ pub fn tempdir() -> (tempfile::TempDir, String) {
 
 pub const GLOBAL_APPLICATION_ID: &str = "org.mozilla.glean.test.app";
 
-// Creates a new instance of Glean with a temporary directory.
-// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
-pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
+/// Creates a new instance of Glean with a temporary directory, with `upload_enabled` specified.
+///
+/// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
+pub fn new_glean_with_upload(
+    tempdir: Option<tempfile::TempDir>,
+    upload_enabled: bool,
+) -> (Glean, tempfile::TempDir) {
     let dir = match tempdir {
         Some(tempdir) => tempdir,
         None => tempfile::tempdir().unwrap(),
@@ -54,7 +58,7 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
         data_path: dir.path().display().to_string(),
         application_id: GLOBAL_APPLICATION_ID.into(),
         language_binding_name: "Rust".into(),
-        upload_enabled: true,
+        upload_enabled,
         max_events: None,
         delay_ping_lifetime_io: false,
         app_build: "Unknown".into(),
@@ -76,6 +80,13 @@ pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDi
     _ = new_test_ping(&mut glean, "store2");
 
     (glean, dir)
+}
+
+/// Creates a new instance of Glean with a temporary directory.
+///
+/// We need to keep the `TempDir` alive, so that it's not deleted before we stop using it.
+pub fn new_glean(tempdir: Option<tempfile::TempDir>) -> (Glean, tempfile::TempDir) {
+    new_glean_with_upload(tempdir, true)
 }
 
 pub fn new_test_ping(glean: &mut Glean, name: &str) -> PingType {

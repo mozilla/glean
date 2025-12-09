@@ -24,6 +24,7 @@
 
 use std::{
     mem,
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
@@ -92,11 +93,23 @@ impl<T> From<SendError<T>> for DispatchError {
 /// A clonable guard for a dispatch queue.
 #[derive(Clone)]
 struct DispatchGuard {
+    inner: Arc<DispatchGuardInner>,
+}
+
+impl Deref for DispatchGuard {
+    type Target = DispatchGuardInner;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+struct DispatchGuardInner {
     /// Whether to queue on the preinit buffer or on the unbounded queue
-    queue_preinit: Arc<AtomicBool>,
+    queue_preinit: AtomicBool,
 
     /// The number of items that were added to the queue after it filled up.
-    overflow_count: Arc<AtomicUsize>,
+    overflow_count: AtomicUsize,
 
     /// The maximum pre-init queue size
     max_queue_size: usize,
@@ -262,8 +275,8 @@ impl Dispatcher {
         let (preinit_sender, preinit_receiver) = unbounded();
         let (sender, mut unbounded_receiver) = unbounded();
 
-        let queue_preinit = Arc::new(AtomicBool::new(true));
-        let overflow_count = Arc::new(AtomicUsize::new(0));
+        let queue_preinit = AtomicBool::new(true);
+        let overflow_count = AtomicUsize::new(0);
 
         let worker = crate::thread::spawn("glean.dispatcher", move || {
             match block_receiver.recv() {
@@ -322,14 +335,15 @@ impl Dispatcher {
         })
         .expect("Failed to spawn Glean's dispatcher thread");
 
-        let guard = DispatchGuard {
+        let inner = Arc::new(DispatchGuardInner {
             queue_preinit,
             overflow_count,
             max_queue_size,
             block_sender,
             preinit_sender,
             sender,
-        };
+        });
+        let guard = DispatchGuard { inner };
 
         Dispatcher {
             guard,

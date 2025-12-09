@@ -24,13 +24,16 @@ You can customize which targets are built in `glean/local.properties`
 
 ```
 # For physical devices:
-rust.targets=arm
+rust.targets=arm64
 
 # For unit tests:
-# rust.targets=darwin # Or linux-*, windows-* (* = x86/x64)
+rust.targets=darwin-aarch64 # Or linux-*, windows-* (* = x86/x64)
 
 # For emulator only:
 rust.targets=x86
+
+# Combine multiple targets: physical devices + macOS Mx host
+rust.targets=arm64,darwin-aarch64
 ```
 
 ## Substituting projects

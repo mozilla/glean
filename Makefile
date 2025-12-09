@@ -37,7 +37,7 @@ build-kotlin: ## Build all Kotlin code
 	./gradlew build -x test
 
 build-swift: ## Build all Swift code
-	bin/run-ios-build.sh
+	bin/iosbuild build sdk
 
 build-apk: build-kotlin ## Build an apk of the Glean sample app
 	./gradlew glean-sample-app:build glean-sample-app:assembleAndroidTest
@@ -57,16 +57,7 @@ build-python-sdist: setup-python ## Build a Python source distribution
 build-xcframework:
 	./bin/build-xcframework.sh
 
-bindgen-python: glean-core/python/glean/_uniffi/glean.py glean-core/python/glean/_uniffi/__init__.py # Generate the uniffi wrapper code manually
-
-glean-core/python/glean/_uniffi/glean.py: glean-core/src/glean.udl
-	cargo build -p glean-bundle
-	cargo uniffi-bindgen generate $< --language python --out-dir $(@D)
-
-glean-core/python/glean/_uniffi/__init__.py:
-	echo 'from .glean import *  # NOQA' > $@
-
-.PHONY: build build-rust build-kotlin build-swift build-apk build-python build-python-wheel build-python-sdist bindgen-python build-xcframework glean-core/python/glean/_uniffi/__init__.py
+.PHONY: build build-rust build-kotlin build-swift build-apk build-python build-python-wheel build-python-sdist build-xcframework glean-core/python/glean/_uniffi/__init__.py
 
 # All tests
 
@@ -92,13 +83,13 @@ test-kotlin: ## Run all Kotlin tests
 	./gradlew :glean:testDebugUnitTest
 
 test-swift: ## Run all Swift tests
-	bin/run-ios-tests.sh
+	bin/iosbuild test sdk
 
 test-android-sample: build-apk ## Run the Android UI tests on the sample app
 	./gradlew :glean-sample-app:connectedAndroidTest
 
 test-ios-sample: ## Run the iOS UI tests on the sample app
-	bin/run-ios-sample-app-test.sh
+	bin/iosbuild test sample
 
 test-python: build-python ## Run all Python tests
 	$(GLEAN_PYENV)/bin/py.test -v glean-core/python/tests $(PYTEST_ARGS)
@@ -125,7 +116,7 @@ shellcheck: ## Run shellcheck against important shell scripts
 	shellcheck glean-core/ios/sdk_generator.sh
 	shellcheck bin/check-artifact.sh
 
-lint-python: setup-python ## Run ruff and mypy to lint Python code
+lint-python: build-python ## Run ruff and mypy to lint Python code
 	$(GLEAN_PYENV)/bin/python3 -m ruff format --diff glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m ruff check glean-core/python/glean glean-core/python/tests
 	$(GLEAN_PYENV)/bin/python3 -m mypy glean-core/python/glean
@@ -156,7 +147,7 @@ docs-rust: ## Build the Rust documentation
 	bin/build-rust-docs.sh
 
 docs-swift: ## Build the Swift documentation
-	bin/build-swift-docs.sh
+	bin/iosbuild build docs
 
 docs-python: build-python ## Build the Python documentation
 	$(GLEAN_PYENV)/bin/python3 -m pdoc --html glean --force -o build/docs/python --config show_type_annotations=True

@@ -108,9 +108,20 @@ GleanPings.search.submit("performed");
 
 {{#include ../../../shared/tab_footer.md}}
 
+#### Unrecorded errors
+
+* If called with a ping reason not matching one present in the ping's `reasons` definition field,
+  the ping is submitted with an empty reason and an error is logged.
+    * See [bug 2000701](https://bugzilla.mozilla.org/show_bug.cgi?id=2000701) for future developments.
+
 ### `setEnabled`
 
-TODO
+Called with `true`: enables the ping to store data and be able to be submitted.
+Called with `false`: disables the ping, deletes stored data and refuses new data,
+and doesn't submit when `submit()` is called.
+
+You shouldn't need to call this unless your ping has `follows_collection_enabled: false`,
+as Glean will take care of it for you.
 
 {{#include ../../../shared/tab_header.md}}
 

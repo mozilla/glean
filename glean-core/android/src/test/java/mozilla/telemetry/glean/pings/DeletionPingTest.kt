@@ -122,16 +122,21 @@ class DeletionPingTest {
         val pendingPingDir = File(Glean.getDataDir(), PENDING_PING_DIR)
         pendingPingDir.mkdirs()
 
+        // We manually disable upload and we don't want the ID to be restored, or this will trigger another
+        // deletion-request ping.
+        val clientIdTxt = File(Glean.getDataDir(), "client_id.txt")
+        assertTrue(clientIdTxt.delete())
+
         // Write a deletion-request ping file
-        var pingId = "775b6590-7f21-11ea-92e3-479998edf98c"
-        var submitPath = "/submit/org-mozilla-samples-gleancore/deletion-request/1/$pingId"
+        var deletionPingId = "775b6590-7f21-11ea-92e3-479998edf98c"
+        var submitPath = "/submit/org-mozilla-samples-gleancore/deletion-request/1/$deletionPingId"
         var content = "$submitPath\n{}"
-        var pingFile = File(pendingDeletionRequestDir, pingId)
+        var pingFile = File(pendingDeletionRequestDir, deletionPingId)
         assertTrue(pingFile.createNewFile())
         pingFile.writeText(content)
 
         // Write a baseline ping file
-        pingId = "899b0ab8-7f20-11ea-ac03-ff76f2a19f1c"
+        var pingId = "899b0ab8-7f20-11ea-ac03-ff76f2a19f1c"
         submitPath = "/submit/org-mozilla-samples-gleancore/baseline/1/$pingId"
         content = "$submitPath\n{}"
         pingFile = File(pendingPingDir, pingId)
@@ -153,7 +158,9 @@ class DeletionPingTest {
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
         var docType = request.path!!.split("/")[3]
+        var docId = request.path!!.split("/")[5]
         assertEquals("Should have received a deletion-request ping", "deletion-request", docType)
+        assertEquals("Should be the manually constructed ping", deletionPingId, docId)
 
         // deletion-request ping is gone
         assertEquals(0, pendingDeletionRequestDir.listFiles()?.size)

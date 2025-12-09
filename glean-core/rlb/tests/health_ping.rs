@@ -68,7 +68,7 @@ fn get_pings(pings_dir: &Path) -> Vec<(String, JsonValue, Option<JsonValue>)> {
 /// Some data is recorded (before and after initialization).
 /// And later the whole process is shutdown.
 #[test]
-fn test_pre_post_init_health_pings_exist() {
+fn test_pre_init_health_pings_exist() {
     common::enable_test_logging();
 
     // Create a custom configuration to use a validating uploader.
@@ -85,64 +85,23 @@ fn test_pre_post_init_health_pings_exist() {
 
     // Check for the initialization pings.
     let pings = get_pings(&tmpname.join("pending_pings"));
-    pings.iter().for_each(|(url, _, _)| {
-        println!("Ping URL: {}", url);
-    });
-    assert!(!pings.is_empty());
-    assert_eq!(
-        2,
-        pings
-            .iter()
-            .filter(|(url, _, _)| url.contains("health"))
-            .count()
-    );
-    let preinits: Vec<_> = pings
-        .iter()
-        .filter(|(url, body, _)| {
-            url.contains("health") && body["ping_info"]["reason"] == "pre_init"
-        })
-        .collect();
-    assert_eq!(1, preinits.len());
-
     let health_pings: Vec<_> = pings
         .iter()
-        .filter(|(url, _, _)| url.contains("health"))
+        .filter(|(url, _body, _)| url.contains("health"))
         .collect();
-    assert_eq!(
-        1,
-        health_pings
-            .iter()
-            .filter(|(_, body, _)| body["ping_info"]["reason"] == "post_init")
-            .count()
-    );
+    assert_eq!(1, health_pings.len());
+
+    let preinit = &health_pings[0];
     // Ensure both "health" pings have the same init count.
     assert_eq!(
-        2,
-        health_pings
-            .iter()
-            .filter(|(_, body, _)| body["metrics"]["counter"]["glean.health.init_count"] == 1)
-            .count()
+        1,
+        preinit.1["metrics"]["counter"]["glean.health.init_count"]
     );
 
-    let exception_state = &preinits[0].1["metrics"]["string"]["glean.health_exception_state"];
+    let exception_state = &preinit.1["metrics"]["string"]["glean.health_exception_state"];
     assert_eq!(&JsonValue::Null, exception_state);
-    let exception_uuid = &preinits[0].1["metrics"]["uuid"]["glean.health_recovered_client_id"];
+    let exception_uuid = &preinit.1["metrics"]["uuid"]["glean.health_recovered_client_id"];
     assert_eq!(&JsonValue::Null, exception_uuid);
-
-    // An initial preinit "health" ping will show no db file sizes
-    let load_sizes = preinits[0].1["metrics"]["object"]["glean.database.load_sizes"]
-        .as_object()
-        .unwrap();
-    assert_eq!(None, load_sizes.get("new"));
-    assert_eq!(None, load_sizes.get("open"));
-    assert_eq!(None, load_sizes.get("post_open"));
-    assert_eq!(None, load_sizes.get("post_open_user"));
-    assert_eq!(None, load_sizes.get("post_load_ping_lifetime_data"));
-    assert_eq!(0, load_sizes["user_records"]);
-    assert_eq!(0, load_sizes["ping_records"]);
-    assert_eq!(0, load_sizes["application_records"]);
-    assert_eq!(None, load_sizes.get("ping_memory_records"));
-    assert_eq!(None, load_sizes.get("error"));
 
     let cfg = ConfigurationBuilder::new(true, tmpname.clone(), "health-ping-test")
         .with_server_endpoint("invalid-test-host")
@@ -155,31 +114,9 @@ fn test_pre_post_init_health_pings_exist() {
     let pings = get_pings(&tmpname.join("pending_pings"));
     let second_preinit: Vec<_> = pings
         .iter()
-        .filter(|(url, body, _)| {
-            url.contains("health")
-                && body["ping_info"]["reason"] == "pre_init"
-                && body["ping_info"]["seq"] == 2
-        })
+        .filter(|(url, body, _)| url.contains("health") && body["ping_info"]["seq"] == 1)
         .collect();
 
     // We should have a second "pre_init"-reason "health" ping now.
     assert_eq!(1, second_preinit.len());
-
-    let load_sizes = second_preinit[0].1["metrics"]["object"]["glean.database.load_sizes"]
-        .as_object()
-        .unwrap();
-    assert_ne!(0, load_sizes["new"]);
-    assert_ne!(0, load_sizes["open"]);
-    assert_ne!(0, load_sizes["post_open"]);
-    assert_ne!(0, load_sizes["post_open_user"].as_i64().unwrap());
-    assert_ne!(0, load_sizes["post_load_ping_lifetime_data"]);
-    assert_eq!(
-        load_sizes["new"],
-        load_sizes["post_load_ping_lifetime_data"]
-    );
-    assert!(0 < load_sizes["user_records"].as_i64().unwrap());
-    assert!(0 < load_sizes["ping_records"].as_i64().unwrap());
-    assert!(0 < load_sizes["application_records"].as_i64().unwrap());
-    assert_eq!(None, load_sizes.get("ping_memory_records"));
-    assert_eq!(None, load_sizes.get("error"));
 }

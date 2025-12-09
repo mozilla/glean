@@ -71,9 +71,8 @@ fn reused_clientid_from_file() {
     write_clientid_to_file(temp.path(), &new_uuid).unwrap();
 
     let (glean, temp) = new_glean(Some(temp));
-    // TODO(bug 1996862): We don't run the mitigation yet
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(new_uuid, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(new_uuid, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -141,10 +140,8 @@ fn clientid_regen_issue_with_existing_db() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    _ = file_client_id;
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(file_client_id, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -225,10 +222,8 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
 
     let (glean, temp) = new_glean(Some(temp));
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    _ = file_client_id;
-    //let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
-    //assert_eq!(file_client_id, db_client_id);
+    let db_client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(file_client_id, db_client_id);
 
     glean.submit_ping_by_name("health", Some("pre_init"));
     let mut pending = get_queued_pings(temp.path()).unwrap();
@@ -244,10 +239,9 @@ fn c0ffee_in_db_gets_overwritten_by_stored_client_id() {
     let exception_uuid = &payload["metrics"]["uuid"]["glean.health.recovered_client_id"].as_str();
     assert_eq!(&Some(file_client_id), exception_uuid);
 
-    // TODO(bug 1996862): We don't run the mitigation yet
-    //let exception_uuid = &payload["client_info"]["client_id"].as_str();
-    //assert_eq!(&Some(file_client_id), exception_uuid);
-    // instead we ensure we don't see the c0ffee ID either.
+    let exception_uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(file_client_id), exception_uuid);
+    // We ensure we don't see the c0ffee ID either.
     let client_id = payload["client_info"]["client_id"].as_str().unwrap();
     assert_ne!("c0ffeec0-ffee-c0ff-eec0-ffeec0ffeec0", client_id);
 }
@@ -331,6 +325,64 @@ fn invalid_client_id_file_doesnt_crash() {
     }
 
     drop(temp);
+}
+
+#[test]
+fn single_deletion_request_ping_after_externally_disabling() {
+    let (client_id, temp) = {
+        let (glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+
+        drop(glean);
+        (client_id, temp)
+    };
+
+    let (_glean, temp) = new_glean_with_upload(Some(temp), false);
+
+    let mut pings = get_deletion_pings(temp.path()).unwrap();
+
+    // We should have only 1 deletion-request ping pending!
+    assert_eq!(1, pings.len());
+
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
+}
+
+#[test]
+fn extra_deletion_request_ping_is_sent() {
+    let (client_id, temp) = {
+        let (mut glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+
+        // Turning off upload removes the `client_id.txt` and deletes the database.
+        // This also triggers a deletion-request ping
+        glean.set_upload_enabled(false);
+
+        let pings = get_deletion_pings(temp.path()).unwrap();
+        assert_eq!(1, pings.len());
+
+        (client_id, temp)
+    };
+
+    // We restore the `client_id.txt` file as if previous removal failed.
+    write_clientid_to_file(temp.path(), &client_id).unwrap();
+
+    let (_glean, temp) = new_glean_with_upload(Some(temp), false);
+
+    let mut pings = get_deletion_pings(temp.path()).unwrap();
+
+    // We now have 2 deletion-request pings pending!
+    assert_eq!(2, pings.len());
+
+    // Test both pings. They should be equivalent!
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
+
+    let payload = pings.pop().unwrap().1;
+    let uuid = &payload["client_info"]["client_id"].as_str();
+    assert_eq!(&Some(&*client_id.to_string()), uuid);
 }
 
 mod read_errors {
@@ -437,6 +489,25 @@ mod read_errors {
 
         let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]
             ["c0ffee-in-file"]
+            .as_i64()
+            .unwrap();
+        assert_eq!(1, state);
+    }
+
+    #[test]
+    fn file_not_found_is_reported() {
+        let (glean, temp) = new_glean(None);
+
+        glean.submit_ping_by_name("health", Some("pre_init"));
+        let mut pending = get_queued_pings(temp.path()).unwrap();
+        assert_eq!(1, pending.len());
+        let payload = pending.pop().unwrap().1;
+
+        let state = &payload["metrics"]["string"]["glean.health.exception_state"];
+        assert_eq!(&serde_json::Value::Null, state);
+
+        let state = payload["metrics"]["labeled_counter"]["glean.health.file_read_error"]
+            ["file-not-found"]
             .as_i64()
             .unwrap();
         assert_eq!(1, state);

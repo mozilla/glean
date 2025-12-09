@@ -58,7 +58,7 @@ pub fn launch(task: impl FnOnce() + Send + 'static) {
             // TODO: Record this as an error.
         }
         Err(_) => {
-            log::info!("Failed to launch a task on the queue. Discarding task.");
+            log::debug!("Failed to launch a task on the queue. Discarding task.");
         }
     }
 
@@ -127,7 +127,7 @@ pub fn shutdown() -> Result<(), DispatchError> {
 
 /// TEST ONLY FUNCTION.
 /// Resets the Glean state and triggers init again.
-pub(crate) fn reset_dispatcher() {
+pub fn reset_dispatcher() {
     // We don't care about shutdown errors, since they will
     // definitely happen if this is run concurrently.
     // We will still replace the global dispatcher.

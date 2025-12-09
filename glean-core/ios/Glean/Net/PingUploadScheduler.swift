@@ -30,6 +30,9 @@ public class PingUploadScheduler {
     let httpUploader: PingUploader
     let httpEndpoint: String
 
+    let backgroundTaskScheduler: BackgroundTaskScheduler
+    let gleanUploadTaskProvider: GleanUploadTaskProviderProtocol
+
     // This struct is used for organizational purposes to keep the class constants in a single place
     struct Constants {
         // Since ping file names are UUIDs, this matches UUIDs for filtering purposes
@@ -46,9 +49,17 @@ public class PingUploadScheduler {
     ///
     /// - parameters:
     ///     * configuration: The Glean `Configuration` to use which contains the endpoint and http uploader
-    public init(configuration: Configuration) {
+    ///     * backgroundTaskScheduler: The `BackgroundTaskScheduler` which starts and ends background tasks.
+    ///     * gleanUploadTaskProvider: The `GleanUploadTaskProviderProtocol` wrapping the global `gleanGetUploadTask`.
+    public init(
+        configuration: Configuration,
+        backgroundTaskScheduler: BackgroundTaskScheduler = UIApplication.shared,
+        gleanUploadTaskProvider: GleanUploadTaskProviderProtocol = GleanUploadTaskProvider()
+    ) {
         self.httpUploader = configuration.httpClient
         self.httpEndpoint = configuration.serverEndpoint
+        self.backgroundTaskScheduler = backgroundTaskScheduler
+        self.gleanUploadTaskProvider = gleanUploadTaskProvider
     }
 
     /// This function gets an upload task from Glean and, if told so, uploads the data using the http uploader
@@ -65,7 +76,7 @@ public class PingUploadScheduler {
 
             // Begin the background task and save the id. We will reuse this same background task
             // for all the ping uploads
-            backgroundTaskId = UIApplication.shared.beginBackgroundTask(
+            backgroundTaskId = self.backgroundTaskScheduler.beginBackgroundTask(
                 withName: "Glean Upload Task"
             ) {
                 // End the background task if we run out of time
@@ -75,10 +86,10 @@ public class PingUploadScheduler {
                 }
             }
 
-            while true {
+            uploadTaskLoop: while true {
                 // Limits are enforced by glean-core to avoid an infinite loop here.
                 // Whenever a limit is reached, this binding will receive `.done` and step out.
-                switch gleanGetUploadTask() {
+                switch self.gleanUploadTaskProvider.getUploadTask() {
                 case let .upload(request):
                     var body = Data(capacity: request.body.count)
                     body.append(contentsOf: request.body)
@@ -99,12 +110,12 @@ public class PingUploadScheduler {
                 case .wait(let time):
                     sleep(UInt32(time) / 1000)
                 case .done:
-                    return
+                    break uploadTaskLoop
                 }
             }
 
             if backgroundTaskId != .invalid {
-                UIApplication.shared.endBackgroundTask(backgroundTaskId)
+                self.backgroundTaskScheduler.endBackgroundTask(backgroundTaskId)
                 backgroundTaskId = .invalid
             }
         }

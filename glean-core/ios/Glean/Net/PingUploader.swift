@@ -15,7 +15,7 @@ public protocol PingUploader {
      */
     func upload(
         request: CapablePingUploadRequest,
-        callback: @escaping (UploadResult) -> Void
+        callback: @escaping @Sendable (UploadResult) -> Void
     )
 }
 

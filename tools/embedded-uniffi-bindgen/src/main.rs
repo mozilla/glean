@@ -6,7 +6,6 @@ use std::env;
 
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
-use glob::glob;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 enum TargetLanguage {
@@ -24,92 +23,56 @@ fn parse_language(lang: &str) -> anyhow::Result<TargetLanguage> {
     }
 }
 
-fn find_library_file(crate_root: &camino::Utf8Path, library_name: &str) -> Utf8PathBuf {
-    let path = if let Ok(target_dir) = env::var("CARGO_TARGET_DIR") {
-        Utf8PathBuf::from(target_dir)
-    } else {
-        crate_root.join("target")
-    };
-
-    // Search for all viable patterns and pick the first one we can find.
-    let glob_patterns = [
-        format!("{path}/**/lib{library_name}.a"),
-        format!("{path}/**/lib{library_name}.so"),
-        format!("{path}/**/lib{library_name}.dylib"),
-        format!("{path}/**/{library_name}.dll"),
-    ];
-
-    for pattern in &glob_patterns {
-        if let Some(Ok(path)) = glob(pattern).unwrap().next() {
-            return Utf8PathBuf::from_path_buf(path).unwrap();
-        }
-    }
-
-    panic!("lib{library_name} could not be found in {path}")
-}
-
 fn gen_bindings(
-    udl_file: &camino::Utf8Path,
+    library_file: &camino::Utf8Path,
     config_file: Option<&camino::Utf8Path>,
     languages: Vec<TargetLanguage>,
-    out_dir: Option<&camino::Utf8Path>,
-    crate_name: Option<&str>,
+    out_dir: &camino::Utf8Path,
+    crate_name: Option<String>,
 ) -> anyhow::Result<()> {
-    use uniffi::generate_bindings;
+    use uniffi::generate_bindings_library_mode;
     use uniffi::{KotlinBindingGenerator, PythonBindingGenerator, SwiftBindingGenerator};
 
-    // 3 parents
-    // Should be `glean-core/src/glean.udl`,
-    // the one in `glean-core/bundle` is a symlink.
-    let canonical = udl_file.canonicalize().unwrap();
-    let crate_root = camino::Utf8Path::from_path(
-        canonical
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap(),
-    )
-    .unwrap();
+    use uniffi::CargoMetadataConfigSupplier;
+    let mut cmd = cargo_metadata::MetadataCommand::new();
+    cmd.no_deps();
+    let metadata = cmd.exec().context("error running cargo metadata")?;
+    let config_supplier = CargoMetadataConfigSupplier::from(metadata);
 
     for language in languages {
         match language {
             TargetLanguage::Kotlin => {
-                let library_file = find_library_file(crate_root, "xul");
-                generate_bindings(
-                    udl_file,
+                generate_bindings_library_mode(
+                    library_file,
+                    crate_name.clone(),
+                    &KotlinBindingGenerator,
+                    &config_supplier,
                     config_file,
-                    KotlinBindingGenerator,
                     out_dir,
-                    Some(&library_file),
-                    crate_name,
                     false,
-                )?
+                )?;
             }
             TargetLanguage::Python => {
-                let library_file = find_library_file(crate_root, "glean_ffi");
-                generate_bindings(
-                    udl_file,
+                generate_bindings_library_mode(
+                    library_file,
+                    crate_name.clone(),
+                    &PythonBindingGenerator,
+                    &config_supplier,
                     config_file,
-                    PythonBindingGenerator,
                     out_dir,
-                    Some(&library_file),
-                    crate_name,
                     false,
-                )?
+                )?;
             }
             TargetLanguage::Swift => {
-                let library_file = find_library_file(crate_root, "glean_ffi");
-                generate_bindings(
-                    udl_file,
+                generate_bindings_library_mode(
+                    library_file,
+                    crate_name.clone(),
+                    &SwiftBindingGenerator,
+                    &config_supplier,
                     config_file,
-                    SwiftBindingGenerator,
                     out_dir,
-                    Some(&library_file),
-                    crate_name,
                     false,
-                )?
+                )?;
             }
         };
     }
@@ -123,7 +86,7 @@ fn main() -> anyhow::Result<()> {
         bail!("Only the `generate` subcommand is supported.");
     }
 
-    let mut udl_file = None;
+    let mut library_file = None;
     let mut target_languages = vec![];
     let mut out_dir = None;
     let mut config = None;
@@ -143,20 +106,22 @@ fn main() -> anyhow::Result<()> {
                 "config" => {
                     config = Some(args.next().context("--config needs a parameter")?);
                 }
+                "library" => {
+                    library_file = Some(args.next().context("--library needs a parameter")?);
+                }
                 _ => bail!("Unsupported option: {arg}"),
             }
-        } else if udl_file.is_some() {
-            bail!("UDL file already set.");
         } else {
-            udl_file = Some(Utf8PathBuf::from(arg));
+            bail!("Unknown parameter {arg:?}");
         }
     }
 
+    let library_file = library_file.map(Utf8PathBuf::from);
     let out_dir = out_dir.map(Utf8PathBuf::from);
     let config = config.map(Utf8PathBuf::from);
 
-    if udl_file.is_none() {
-        bail!("Need UDL file.");
+    if library_file.is_none() {
+        bail!("Need path to library file.");
     }
 
     if target_languages.is_empty() {
@@ -168,11 +133,11 @@ fn main() -> anyhow::Result<()> {
     }
 
     gen_bindings(
-        &udl_file.unwrap(),
+        &library_file.unwrap(),
         config.as_deref(),
         target_languages,
-        out_dir.as_deref(),
-        Some("glean_core"),
+        &out_dir.unwrap(),
+        Some(String::from("glean_core")),
     )?;
 
     Ok(())

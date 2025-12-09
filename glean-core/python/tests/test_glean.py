@@ -1018,7 +1018,7 @@ def test_glean_shutdown(safe_httpserver):
 
     Glean.shutdown()
     wait_for_requests(safe_httpserver, n=10)
-    assert 12 == len(safe_httpserver.requests)
+    assert 11 == len(safe_httpserver.requests)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1979301: Windows failures")

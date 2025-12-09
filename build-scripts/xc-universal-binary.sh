@@ -11,7 +11,7 @@ fi
 
 # what to pass to cargo build -p, e.g. glean_ffi
 FFI_TARGET=$1
-# path to app services root
+# path to Glean root
 GLEAN_ROOT=$2
 # buildvariant from our xcconfigs
 BUILDVARIANT=$3

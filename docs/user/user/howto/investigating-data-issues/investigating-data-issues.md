@@ -60,14 +60,23 @@ This document outlines several diagnostic categories and the insights they may o
 * Considerations:
   * Are there networking errors, ingestion issues, or other telemetry failures that could be related to the anomaly?
 
-### 9\. Hardware Details (Manufacturer/Version) (Mobile platforms only)
+### 9\. Hardware Details (Manufacturer/Model) (Mobile platforms only)
 
 * Purpose: Determine if the issue is hardware-specific.
 * Column Names: `client_info.device_manufacturer`, `client_info.device_model`
 * Considerations:
   * Does the anomaly occur primarily on older or newer hardware models?
 
-### 10\. Ping reason
+### 10\. Build Details: Architecture
+
+* Purpose: Determine if the issue is specific to a class of hardware or build configuration.
+* Column Name: `client_info.architecture`
+* Considerations:
+  * Are affected clients only running builds built for a specific architecture?
+  * Are all clients running builds built for a specific architecture affected?
+  * Has the build configuration for this architecture changed recently?
+
+### 11\. Ping reason
 
 * Purpose: Determine the reason a ping was sent.
 * Column Names: `ping_info.reason`
@@ -77,3 +86,18 @@ This document outlines several diagnostic categories and the insights they may o
     * [`baseline` ping schedule and reasons](../../pings/baseline.md#scheduling)
     * [`metrics` ping schedule and reasons](../../pings/metrics.md#scheduling)
     * [`events` ping schedule and reasons](../../pings/events.md#scheduling)
+
+### 12\. No Data
+
+* Purpose: Determine why a metric isn't included in a ping in which it is expected to be found.
+* Considerations:
+  * Is the metric defined to be included in the ping/dataset via `send_in_pings`, or should it be on the ping by default?
+    * Check the metric definition in the `metrics.yaml` file using the links provided in the [Glean Dictionary](https://dictionary.telemetry.mozilla.org/).
+    * Check to see that the specific metric API is being used in an active code path to ensure that the metric is being recorded (is `set`, `record`, `accumulateSamples`, etc. being called).
+    * Check [Experimenter](https://experimenter.services.mozilla.com/) for any experiments or rollouts that might be using Server Knobs to sample the metric.
+    * Validate the recording locally using the [Glean Debug tools](../../debugging/index.md), checking for the metric to be included in the expected pings in either the logs or the Glean Debug View.
+    * Ensure you are filtering for only versions with the metric if this is a newly added instrumentation, this can help isolate other issues.
+  * Is the metric recorded some of the time but missing or null at other times?
+    * Ensure the metric definition has an appropriate metric lifetime. Should a metric be defined with a `ping` lifetime, but not be recorded before the next ping is submitted, it is expected to be missing. If you want Glean to cache the metric differently, refer to the lifetime information in the documentation for [metrics](../../metrics/adding-new-metrics.md).
+    * Check for [Glean errors](../../metrics/error-reporting.md) related to the metric. It is possible that the instrumentation is attempting to record something that does not pass Glean validation which could cause intermittent missing values.
+    * Is this uniform across the population (using the slices suggested above)? If not, check for a feature not being available to certain populations, or an experiment or rollout which could be affecting the instrumentation.
