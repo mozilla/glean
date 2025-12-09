@@ -287,7 +287,7 @@
             <span class="comment">// TODO: Record this as an error.
         </span>}
         <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-            <span class="macro">log::info!</span>(<span class="string">"Failed to launch a task on the queue. Discarding task."</span>);
+            <span class="macro">log::debug!</span>(<span class="string">"Failed to launch a task on the queue. Discarding task."</span>);
         }
     }
 
