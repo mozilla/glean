@@ -10,6 +10,12 @@
   * Disable the `post_init` health ping ([#3343](https://github.com/mozilla/glean/pull/3343))
 * iOS
   * Glean for iOS is now being built with Xcode 26.2 ([#3350](https://github.com/mozilla/glean/pull/3350))
+  * Fix strict concurrency warnings uncovered in Swift 6 ([#3325](https://github.com/mozilla/glean/pull/3325), [#3347](https://github.com/mozilla/glean/pull/3347))
+  * Correctly end background tasks ([#3347](https://github.com/mozilla/glean/pull/3347))
+* Android
+  *  Configuration-time performance optimizations for the Glean Gradle Plugin ([#3326](https://github.com/mozilla/glean/pull/3326))
+* Python
+  * Bindings are generated in library mode, enabling source install from PyPI ([#3317](https://github.com/mozilla/glean/pull/3317))
 
 # v66.1.2 (2025-11-25)
 
