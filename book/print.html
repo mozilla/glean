@@ -14218,7 +14218,9 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li><a href="appendix/changelog/./js.html"><code>mozilla/glean.js</code></a></li>
 </ul>
 <footer id="open-on-gh">Found a bug? <a href="https://github.com/mozilla/glean/edit/main/docs/user/appendix/changelog/index.md">Edit this page on GitHub.</a></footer><div style="break-before: page; page-break-before: always;"></div><h1 id="unreleased-changes"><a class="header" href="#unreleased-changes">Unreleased changes</a></h1>
-<p><a href="https://github.com/mozilla/glean/compare/v66.1.2...main">Full changelog</a></p>
+<p><a href="https://github.com/mozilla/glean/compare/v66.2.0...main">Full changelog</a></p>
+<h1 id="v6620-2025-12-09"><a class="header" href="#v6620-2025-12-09">v66.2.0 (2025-12-09)</a></h1>
+<p><a href="https://github.com/mozilla/glean/compare/v66.1.2...v66.2.0">Full changelog</a></p>
 <ul>
 <li>General
 <ul>
@@ -14232,6 +14234,18 @@ Each ping has its own schedule to gather all its locally saved metrics and creat
 <li>iOS
 <ul>
 <li>Glean for iOS is now being built with Xcode 26.2 (<a href="https://github.com/mozilla/glean/pull/3350">#3350</a>)</li>
+<li>Fix strict concurrency warnings uncovered in Swift 6 (<a href="https://github.com/mozilla/glean/pull/3325">#3325</a>, <a href="https://github.com/mozilla/glean/pull/3347">#3347</a>)</li>
+<li>Correctly end background tasks (<a href="https://github.com/mozilla/glean/pull/3347">#3347</a>)</li>
+</ul>
+</li>
+<li>Android
+<ul>
+<li>Configuration-time performance optimizations for the Glean Gradle Plugin (<a href="https://github.com/mozilla/glean/pull/3326">#3326</a>)</li>
+</ul>
+</li>
+<li>Python
+<ul>
+<li>Bindings are generated in library mode, enabling source install from PyPI (<a href="https://github.com/mozilla/glean/pull/3317">#3317</a>)</li>
 </ul>
 </li>
 </ul>
