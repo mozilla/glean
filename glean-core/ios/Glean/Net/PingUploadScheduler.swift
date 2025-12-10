@@ -53,13 +53,15 @@ public class PingUploadScheduler {
     ///     * gleanUploadTaskProvider: The `GleanUploadTaskProviderProtocol` wrapping the global `gleanGetUploadTask`.
     public init(
         configuration: Configuration,
-        backgroundTaskScheduler: BackgroundTaskScheduler = UIApplication.shared,
-        gleanUploadTaskProvider: GleanUploadTaskProviderProtocol = GleanUploadTaskProvider()
+        backgroundTaskScheduler: BackgroundTaskScheduler? = nil,
+        gleanUploadTaskProvider: GleanUploadTaskProviderProtocol? = nil
     ) {
         self.httpUploader = configuration.httpClient
         self.httpEndpoint = configuration.serverEndpoint
-        self.backgroundTaskScheduler = backgroundTaskScheduler
-        self.gleanUploadTaskProvider = gleanUploadTaskProvider
+        /// Note: `UIApplication.shared` can't be part of the public API for iOS app extensions; adding it as a default
+        /// argument is an error in Firefox for iOS.
+        self.backgroundTaskScheduler = backgroundTaskScheduler ?? UIApplication.shared
+        self.gleanUploadTaskProvider = gleanUploadTaskProvider ?? GleanUploadTaskProvider()
     }
 
     /// This function gets an upload task from Glean and, if told so, uploads the data using the http uploader
