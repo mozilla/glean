@@ -404,7 +404,7 @@ glean.internal.metrics.attribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional attribution source.
       Similar to or the same as UTM `source`.
@@ -422,7 +422,7 @@ glean.internal.metrics.attribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional attribution medium.
       Similar to or the same as UTM `medium`.
@@ -440,7 +440,7 @@ glean.internal.metrics.attribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional attribution campaign.
       Similar to or the same as UTM `campaign`.
@@ -458,7 +458,7 @@ glean.internal.metrics.attribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional attribution term.
       Similar to or the same as UTM `term`.
@@ -476,7 +476,7 @@ glean.internal.metrics.attribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional attribution `content`.
       Similar to or the same as UTM `content`.
@@ -496,7 +496,7 @@ glean.internal.metrics.distribution:
     type: string
     lifetime: user
     send_in_pings:
-      - glean_internal_info
+      - glean_client_info
     description: |
       The optional distribution name.
       Can be a partner name, or a distribution configuration preset.
