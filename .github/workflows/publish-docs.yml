@@ -1,0 +1,56 @@
+name: Publish Docs on GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-bin: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install mdbook-dtmo
+        run: |
+          .github/workflows/crate-ci.sh \
+            --git badboy/mdbook-dtmo \
+            --crate mdbook-dtmo \
+            --tag 0.15.2
+
+          ln -s $(which mdbook-dtmo) $(dirname $(which mdbook-dtmo))/mdbook
+          mdbook --version
+
+      - name: Build Rust Documentation
+        run: make docs-rust
+      - name: Build Python Documentation
+        run: make docs-python
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
