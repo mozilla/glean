@@ -26,6 +26,10 @@ func startUploader() {
 /// uploader specified in the Glean `Configuration`.
 ///
 /// This will typically be invoked by the appropriate scheduling mechanism to trigger uploading a ping to the server.
+///
+/// Note: The use of `UIApplication.shared` is not permitted in app extensions because app extensions run in a
+/// restricted environment and cannot access the `UIApplication`.
+@available(iOSApplicationExtension, unavailable)
 public class PingUploadScheduler {
     let httpUploader: PingUploader
     let httpEndpoint: String
