@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...main)
+
+# v66.3.0 (2025-12-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.2.0...v66.3.0)
 
 # v66.2.0 (2025-12-09)
 
