@@ -1,2 +1,3 @@
 [alias]
 uniffi-bindgen = ["run", "--package", "uniffi-bindgen", "--"]
+benchmark = ["bench", "--manifest-path", "glean-core/benchmark/Cargo.toml"]

@@ -1,0 +1,36 @@
+[workspace]
+# Its own workspace to keep its dependencies separate
+
+[package]
+name = "benchmark"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "MPL-2.0"
+# MSRV. Independent from what glean-core needs.
+# Note: We only test against latest stable on CI.
+rust-version = "1.87"
+
+[dependencies]
+glean-core = { path = "../", features = ["benchmark"] }
+criterion = "0.8.0"
+tempfile = "3.8.0"
+gungraun = { version = "0.17.0", features = ["cachegrind"], optional = true }
+
+[features]
+gungraun = ["dep:gungraun"]
+
+[lib]
+bench = false
+
+[[bench]]
+name = "dispatcher"
+harness = false
+
+[[bench]]
+name = "instruction-count"
+harness = false
+
+[profile.bench]
+debug = true
+strip = false

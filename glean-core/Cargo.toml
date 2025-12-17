@@ -13,7 +13,6 @@ include = [
   "/LICENSE",
   "/src",
   "/examples",
-  "/benches",
   "/tests",
   "/Cargo.toml",
   "/uniffi.toml",
@@ -68,10 +67,3 @@ enable_env_logger = ["env_logger"]
 gecko = []
 # Expose some internals for easier benchmarking
 benchmark = []
-
-[lib]
-bench = false
-
-[[bench]]
-name = "dispatcher"
-harness = false
