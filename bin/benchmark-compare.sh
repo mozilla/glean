@@ -33,14 +33,14 @@ BASELINE_NAME="bn-${END_COMMIT}"
 stash_commit=$(git stash create)
 
 run git checkout "$START_COMMIT"
-run cargo bench -p glean-core --features benchmark -- --save-baseline "$BASELINE_NAME"
+run cargo benchmark --bench dispatcher -- --save-baseline "$BASELINE_NAME"
 
 run git checkout "$END_COMMIT"
-run cargo bench -p glean-core --features benchmark -- --baseline "$BASELINE_NAME"
+run cargo benchmark --bench dispatcher -- --baseline "$BASELINE_NAME"
 
 if [[ -n "$stash_commit" ]]; then
   git stash apply "$stash_commit"
 fi
 
 run echo "You can rerun the benchmark against the baseline using:"
-run echo "cargo bench -p glean-core -- --baseline $BASELINE_NAME"
+run echo "cargo benchmark --bench dispatcher -- --baseline $BASELINE_NAME"
