@@ -13,6 +13,7 @@ include = [
   "/LICENSE",
   "/src",
   "/examples",
+  "/benches",
   "/tests",
   "/Cargo.toml",
   "/uniffi.toml",
