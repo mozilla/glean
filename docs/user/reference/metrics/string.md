@@ -354,4 +354,3 @@ N/A
 
 * [Python API docs](../../../python/glean/metrics/string.html)
 * [Rust API docs](../../../docs/glean/private/struct.StringMetric.html)
-* [Swift API docs](../../../swift/Classes/StringMetric.html)

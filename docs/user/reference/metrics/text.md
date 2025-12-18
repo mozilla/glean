@@ -296,4 +296,3 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.TextMetric)
 * [Rust API docs](../../../docs/glean/private/struct.TextMetric.html)
-* [Swift API docs](../../../swift/Classes/TextMetric.html)

@@ -176,7 +176,6 @@ linkcheck-raw:
     --file-ignore "python/.*" \
     --file-ignore "javadoc/.*" \
     --file-ignore "docs/.*" \
-    --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
     --url-ignore ".*/docs/glean_.*" \
