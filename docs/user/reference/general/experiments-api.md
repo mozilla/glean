@@ -373,6 +373,5 @@ assert_eq!(
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC19setExperimentActive_6branch5extraySS_SSSDyS2SGSgtF)
 * [Python API docs](../../../python/glean/index.html#glean.Glean.set_experiment_active)
 * [Rust API docs](../../../docs/glean/fn.set_experiment_active.html)

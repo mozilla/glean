@@ -326,4 +326,3 @@ Labeled Quantities have the required `unit` parameter, which is a free-form stri
 
 * Python API docs: [`LabeledQuantityMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledQuantityMetricType), [`QuantityMetricType`](../../../python/glean/metrics/index.html#glean.metrics.QuantityMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`QuantityMetric`](../../../docs/glean/private/struct.QuantityMetric.html)
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`QuantityMetric`](../../../swift/Classes/QuantityMetric.html)

@@ -288,4 +288,3 @@ N/A
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.BooleanMetric)
 * [Rust API docs](../../../docs/glean/private/struct.BooleanMetric.html)
-* [Swift API docs](../../../swift/Classes/BooleanMetric.html)

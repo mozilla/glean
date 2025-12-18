@@ -335,4 +335,3 @@ N/A
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.CounterMetric)
 * [Rust API docs](../../../docs/glean/private/struct.CounterMetric.html)
-* [Swift API docs](../../../swift/Classes/CounterMetric.html)

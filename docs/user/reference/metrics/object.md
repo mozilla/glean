@@ -268,4 +268,3 @@ refer to the [metrics YAML registry format](../yaml/metrics.md) reference page.
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.ObjectMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.ObjectMetric.html)
-* [Swift API docs](../../../swift/Classes/ObjectMetric.html)

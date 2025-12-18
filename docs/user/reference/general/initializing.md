@@ -300,8 +300,7 @@ for details on how to implement a custom upload on Kotlin.
 </div>
 <div data-lang="Swift" class="tab">
 
-See [`HttpPingUploader`](../../../swift/Classes/HttpPingUploader.html)
-for details on how to implement a custom upload on Swift.
+See documentation on the `HttpPingUploader` class for details on how to implement a custom upload on Swift.
 
 </div>
 <div data-lang="Python" class="tab">
@@ -511,7 +510,6 @@ describe("myTestSuite", () => {
 
 ## Reference
 
-- [Swift API docs](../../../swift/Classes/Glean.html#/s:5GleanAAC10initialize13uploadEnabled13configuration9buildInfoySb_AA13ConfigurationVAA05BuildG0VtF)
 - [Python API docs](../../../python/glean/index.html#glean.Glean.initialize)
 - [Rust API docs](../../../docs/glean/fn.initialize.html)
 - [JavaScript API docs](https://mozilla.github.io/glean.js/getting_started/setup/#initializing-gleanjs)

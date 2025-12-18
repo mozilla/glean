@@ -360,6 +360,5 @@ Otherwise, they are defined, recorded to, tested, and consumed like
 
 ## Reference
 
-* [Swift API docs](../../../swift/Classes/Glean.html)
 * [Python API docs](../../../python/glean/index.html#glean.Glean.update_attribution)
 * [Rust API docs](../../../docs/glean/fn.update_attribution.html)
