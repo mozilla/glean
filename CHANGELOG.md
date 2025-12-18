@@ -4,6 +4,8 @@
 
 * General
   * Updated to `glean_parser` v18.2.0 ([#3356](https://github.com/mozilla/glean/issues/3356))
+* Python
+  * Source wheel builds now build the SDK upon install correctly ([#3359](https://github.com/mozilla/glean/pull/3359))
 
 # v66.2.0 (2025-12-09)
 
