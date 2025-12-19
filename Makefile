@@ -155,7 +155,7 @@ docs-python: build-python ## Build the Python documentation
 .PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=18.0
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=18.2
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

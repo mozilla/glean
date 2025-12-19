@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...main)
+
+# v66.3.0 (2025-12-19)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.2.0...v66.3.0)
+
+* General
+  * Updated to `glean_parser` v18.2.0 ([#3356](https://github.com/mozilla/glean/issues/3356))
+* Python
+  * Source wheel builds now build the SDK upon install correctly ([#3359](https://github.com/mozilla/glean/pull/3359))
+* iOS
+  * Annotate the `PingUploadScheduler` as unavailable for iOS App extensions ([, as app extensions run in a restricted environment without access to UIApplication.shared.#3355](https://github.com/mozilla/glean/pull/3355))
 
 # v66.2.0 (2025-12-09)
 

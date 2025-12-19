@@ -93,23 +93,6 @@ internal fun checkPingSchema(content: JSONObject) {
 }
 
 /**
- * Checks ping content against the Glean ping schema.
- *
- * This uses the Python utility, glean_parser, to perform the actual checking.
- * This is installed in its own Miniconda environment as part of the build
- * configuration by glean-gradle-plugin.
- *
- * @param content The JSON content of the ping
- * @return the content string, parsed into a JSONObject
- * @throws AssertionError If the JSON content is not valid
- */
-internal fun checkPingSchema(content: String): JSONObject {
-    val jsonContent = JSONObject(content)
-    checkPingSchema(jsonContent)
-    return jsonContent
-}
-
-/**
  * Resets the Glean state and trigger init again.
  *
  * @param context the application context to init Glean with

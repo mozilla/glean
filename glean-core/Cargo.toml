@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "66.2.0"
+version = "66.3.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -13,6 +13,7 @@ include = [
   "/LICENSE",
   "/src",
   "/examples",
+  "/benches",
   "/tests",
   "/Cargo.toml",
   "/uniffi.toml",
@@ -21,7 +22,7 @@ include = [
 rust-version = "1.82"
 
 [package.metadata.glean]
-glean-parser = "18.0.6"
+glean-parser = "18.2.0"
 
 [badges]
 circle-ci = { repository = "mozilla/glean", branch = "main" }

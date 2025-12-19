@@ -18,6 +18,11 @@ definitions:
   - ci_filters: &ci-filters
       branches:
         ignore: release
+  - ci_only: &ci-only
+      branches:
+        ignore:
+          - main
+          - release
 
 ##########################################################################
 # COMMANDS
@@ -600,24 +605,12 @@ jobs:
             else
                 make test-swift
             fi
-      - run:
-          name: Generate Swift documentation
-          command: |
-            # Skip doc generation for pull requests.
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
-              make docs-swift
-            else
-              mkdir -p build/docs/swift
-            fi
       - store_artifacts:
           path: raw_xcodebuild.log
           destination: raw_xcodebuild.log
       - store_artifacts:
           path: raw_xcodetest.log
           destination: raw_xcodetest.log
-      - persist_to_workspace:
-          root: build/
-          paths: docs/swift
       - run:
           name: Build XCFramework archive
           no_output_timeout: 20m
@@ -1030,35 +1023,6 @@ jobs:
           name: Check documentation spelling
           command: bin/spellcheck.sh list
 
-  # via https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
-  docs-deploy:
-    docker:
-      - image: cimg/node:22.6
-    steps:
-      - checkout
-      - attach_workspace:
-          at: build/
-      - run:
-          name: Disable jekyll builds
-          command: touch build/docs/.nojekyll
-      - run:
-          name: Show contents
-          command: ls -R
-      # Needed for write access to the GitHub repository;
-      # see https://circleci.com/docs/2.0/gh-bb-integration/#deployment-keys-and-user-keys
-      - add_ssh_keys:
-          fingerprints:
-            - "52:a9:c6:64:9e:df:60:70:73:da:81:02:71:9e:00:1b"
-      # The gh-pages npm package can be used to push a directory to a git branch;
-      # see https://www.npmjs.com/package/gh-pages
-      - run:
-          name: Deploy docs to gh-pages branch
-          command: |
-            git config user.email "jrediger@mozilla.com"
-            git config user.name "CircleCI docs-deploy job"
-            npm install gh-pages@6.1.1
-            npx gh-pages --dotfiles --message "[skip ci] Updates" --dist build/docs
-
 ###########################################################################
 # Workflows
 
@@ -1116,27 +1080,18 @@ workflows:
           filters: *ci-filters
 
       - Generate Rust documentation:
-          requires:
-            - docs-spellcheck
-          filters: *ci-filters
+          filters: *ci-only
       - Generate Python documentation:
           requires:
             - Python 3_10 tests
-          filters: *ci-filters
+          filters: *ci-only
       - docs-linkcheck:
           requires:
             - Generate Rust documentation
             - Generate Python documentation
-          filters: *ci-filters
+          filters: *ci-only
       - docs-spellcheck:
-          filters: *ci-filters
-      - docs-deploy:
-          requires:
-            - docs-linkcheck
-            - iOS build and test
-          filters:
-            branches:
-              only: main
+          filters: *ci-only
 
   # iOS jobs require manual approval on PRs
   iOS:
