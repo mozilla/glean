@@ -19,16 +19,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2021-11-22"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -41,16 +41,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2021-11-22"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -63,16 +63,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2021-11-22"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -85,16 +85,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2023-11-20"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -107,16 +107,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2023-11-20"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_internal_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -136,16 +136,16 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2021-11-22"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2021-10-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -158,16 +158,24 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2023-11-20"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2022-09-13"
-end = "2026-01-13"
+end = "2027-01-08"
+
+[[wildcard-audits.uniffi_pipeline]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+user-id = 111105 # Mark Hammond (mhammond)
+start = "2025-10-08"
+end = "2027-01-14"
+notes = "Maintained by the Glean and Application Services teams"
 
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -180,30 +188,30 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2023-11-20"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-01-27"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_udl]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105
+user-id = 111105 # Mark Hammond (mhammond)
 start = "2023-11-20"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.uniffi_udl]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2023-10-18"
-end = "2026-01-13"
+end = "2027-01-08"
 
 [[wildcard-audits.weedle2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -239,11 +247,26 @@ criteria = "safe-to-deploy"
 delta = "0.11.1 -> 0.12.0"
 notes = "No new unsafe usage, mostly dependency updates and smaller API changes"
 
+[[audits.askama]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.13.1 -> 0.14.0"
+
 [[audits.askama_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.11.2 -> 0.12.1"
 notes = "Dependency updates, a new toml dependency and some API changes. No unsafe use."
+
+[[audits.askama_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.13.1 -> 0.14.0"
+
+[[audits.askama_parser]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.13.0 -> 0.14.0"
 
 [[audits.basic-toml]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -536,6 +559,16 @@ criteria = "safe-to-deploy"
 delta = "1.0.163 -> 1.0.179"
 notes = "Internal refactorings and some new trait implementations"
 
+[[audits.serde]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.227 -> 1.0.228"
+
+[[audits.serde_core]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.227 -> 1.0.228"
+
 [[audits.serde_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -548,10 +581,21 @@ criteria = "safe-to-deploy"
 delta = "1.0.163 -> 1.0.179"
 notes = "Internal refactorings and dependency updates"
 
+[[audits.serde_derive]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.227 -> 1.0.228"
+
 [[audits.serde_json]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.89 -> 1.0.138"
+
+[[audits.serde_spanned]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.3 -> 1.0.4"
+notes = "Unchanged"
 
 [[audits.siphasher]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -603,6 +647,17 @@ delta = "0.3.36 -> 0.3.41"
 who = "Lars Eggert <lars@eggert.org>"
 criteria = "safe-to-deploy"
 delta = "0.1.2 -> 0.1.4"
+
+[[audits.toml_datetime]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.7.5+spec-1.1.0"
+notes = "Pure data type crate with some datetime parsing. No unsafe."
+
+[[audits.toml_writer]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "1.0.6+spec-1.1.0"
 
 [[audits.unicase]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -726,6 +781,18 @@ criteria = "safe-to-deploy"
 user-id = 3618 # David Tolnay (dtolnay)
 start = "2019-10-09"
 end = "2026-06-10"
+
+[[trusted.toml]]
+criteria = "safe-to-deploy"
+user-id = 6743 # Ed Page (epage)
+start = "2022-12-14"
+end = "2027-01-08"
+
+[[trusted.toml_parser]]
+criteria = "safe-to-deploy"
+user-id = 6743 # Ed Page (epage)
+start = "2025-07-08"
+end = "2027-01-08"
 
 [[trusted.wasm-bindgen]]
 criteria = "safe-to-deploy"
