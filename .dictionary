@@ -1,4 +1,4 @@
-personal_ws-1.1 en 311 utf-8
+personal_ws-1.1 en 312 utf-8
 AAR
 AARs
 ABI
@@ -141,6 +141,7 @@ camelCase
 cancelled
 carthage
 changelog
+checkerboarding
 chutten
 ci
 circleci

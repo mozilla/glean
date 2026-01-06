@@ -1,4 +1,4 @@
-# Events
+# Event
 
 Events allow recording of e.g. individual occurrences of user actions,
 say every time a view was open and from where.
