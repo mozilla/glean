@@ -1,4 +1,4 @@
-# Strings
+# String
 
 String metrics allow recording a Unicode string value with arbitrary content.
 

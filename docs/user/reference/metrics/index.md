@@ -8,44 +8,52 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [Boolean](boolean.md): Records a single truth value, for example "is a11y enabled?"
 
-* [Labeled boolean](labeled_booleans.md): Records truth values for a set of labels, for example "which a11y features are enabled?"
+* [Labeled booleans](labeled_booleans.md): Records truth values for a set of labels, for example "which a11y features are enabled?"
 
-* [Counter](counter.md): Used to count how often something happens, for example, how often a certain button was pressed.
+* [Counter](counter.md): Counts how often something happens, for example "how often is the bookmarks button pressed?"
 
-* [Labeled counter](labeled_counters.md): Used to count how often something happens, for example which kind of crash occurred (`"uncaught_exception"` or `"native_code_crash"`).
+* [Labeled counters](labeled_counters.md): Counts how often something happens per label, for example "how many of which kinds of crashes occurred (`"uncaught_exception"` or `"native_code_crash"`)?"
 
-* [String](string.md): Records a single Unicode string value, for example the name of the OS.
+* [Dual-labeled counters](dual_labeled_counters.md): Counts how often something happens per key and category, for example "how often did pings fail to upload per ping ("baseline", "events", ...) and per error type ("recoverable", "4xx", ...)?"
 
-* [Labeled strings](labeled_strings.md): Records multiple Unicode string values, for example to record which kind of error occurred in different stages of a login process.
+* [Custom Distribution](custom_distribution.md): Records the distribution of a value that needs fine-grained control of how the histogram buckets are computed. For example, "What severity of checkerboarding did we show?"
 
-* [String List](string_list.md): Records a list of Unicode string values, for example the list of enabled search engines.
+* [Labeled custom distributions](labeled_custom_distributions.md): Records the distribution of a value that needs fine-grained control of how the histogram buckets are computed, per label. For example, "what percentage of a paint is spent in specific phases?"
 
-* [Timespan](timespan.md): Used to measure how much time is spent in a single task.
+* [Datetime](datetime.md): Records an absolute date and time, for example "what time did the user first run the application?"
 
-* [Timing Distribution](timing_distribution.md): Used to record the distribution of multiple time measurements.
+* [Event](event.md): Records individual occurrences of actions, for example "a view was opened."
 
-* [Memory Distribution](memory_distribution.md): Used to record the distribution of memory sizes.
+* [Memory Distribution](memory_distribution.md): Records the distribution of memory sizes, for example "how much memory was recovered during garbage collections?"
 
-* [UUID](uuid.md): Used to record universally unique identifiers (UUIDs), such as a client ID.
+* [Labeled memory distributions](labeled_memory_distributions.md): Records the distribution of memory sizes per label, for example "how big were network requests, per HTTP method ("GET", "POST", ...)?"
 
-* [URL](url.md): Used to record URL-like strings.
+* [Object](object.md): Records structured data, for example "stack traces of threads of a crashing process."
 
-* [Datetime](datetime.md): Used to record an absolute date and time, such as the time the user first ran the application.
+* [Quantity](quantity.md): Records a single non-negative integer value, for example "the width of the display in pixels."
 
-* [Events](event.md): Records events e.g. individual occurrences of user actions, say every time a view was open and from where.
+* [Labeled quantities](labeled_quantity.md): Records a non-negative integer values per label, for example "how many tabs are pinned, per tab bar ("sidebar", "horizontal_bar", ...)?"
 
-* [Custom Distribution](custom_distribution.md): Used to record the distribution of a value that needs fine-grained control of how the histogram buckets are computed.
+* [Rate](rate.md): Records the rate something happens relative to some other thing. For example, "the number of HTTP connections that experienced an error relative to the number of total HTTP connections made."
 
-* [Quantity](quantity.md): Used to record a single non-negative integer value. For example, the width of the display in pixels.
+* [String](string.md): Records a single Unicode string value, for example "the name of the OS."
 
-* [Labeled Quantity](labeled_quantity.md): Used to record multiple non-negative integer values. For example, the dimensions of the display in pixels.
+* [Labeled strings](labeled_strings.md): Records multiple Unicode string values, for example "which kind of errors occurred in different stages of a login process?"
 
-* [Rate](rate.md): Used to record the rate something happens relative to some other thing.
-  For example, the number of HTTP connections that experienced an error relative to the number of total HTTP connections made.
+* [String List](string_list.md): Records a list of Unicode string values, for example "the list of enabled search engines."
 
-* [Text](text.md): Records a single long Unicode text, used when the limits on `String` are too low.
+* [Text](text.md): Records a single long Unicode text, used when the limits on `String` are too low. For example, "user-supplied reason for submitting a broken site report."
 
-* [Object](object.md): Record structured data.
+* [Timespan](timespan.md): Records how much time is spent in a single task, for example "how long did app initialization take?"
+
+* [Timing Distribution](timing_distribution.md): Records the distribution of multiple time measurements, for example "how long does it take to open a new tab?"
+
+* [Labeled timing distributions](labeled_timing_distributions.md): Records the distribution of multiple time measurements per label, for example "how long does it take to initialize an addon, per addon id?"
+
+* [URL](url.md): Records URL-like strings, for example "what was the URL of the page with broken rendering?"
+
+* [UUID](uuid.md): Records universally unique identifiers (UUIDs), for example "what is this profile's client_id?"
+
 
 ## Labeled metrics
 
