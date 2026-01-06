@@ -231,7 +231,7 @@ public final class Glean: @unchecked Sendable {
             appBuild: AppInfo.buildId,
             appDisplayVersion: AppInfo.displayVersion,
             appBuildDate: Datetime(from: buildInfo.buildDate),
-            architecture: Sysctl.machine,
+            architecture: Sysctl.architecture,
             osVersion: UIDevice.current.systemVersion,
             channel: configuration.channel,
             locale: getLocaleTag(),

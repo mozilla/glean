@@ -144,9 +144,9 @@ struct Sysctl {
     /// Always the same on Apple hardware
     public static var manufacturer: String = "Apple"
 
-    /// e.g. "N71mAP"
-    public static var machine: String {
-        return (try? Sysctl.string(for: [CTL_HW, HW_MODEL])) ?? "Unknown"
+    /// e.g. "arm64"
+    public static var architecture: String {
+        return (try? Sysctl.string(for: [CTL_HW, HW_MACHINE_ARCH])) ?? "Unknown"
     }
 
     /// e.g. "iPhone8,1"
