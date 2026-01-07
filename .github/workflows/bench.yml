@@ -1,0 +1,27 @@
+name: bench
+on:
+  pull_request:
+  push:
+    branches:
+      main
+
+jobs:
+  bench:
+    name: Benchmarks
+    environment: ${{ github.ref_name == 'main' && 'production' || 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: Swatinem/rust-cache@v2
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind gdb libc6-dbg # Needed for gungraun
+    - name: Install gungraun-runner
+      run: |
+        cargo install gungraun-runner --version 0.17.0
+
+    - name: Benchmark
+      run: |
+        cargo benchmark --bench instruction-count --features gungraun
