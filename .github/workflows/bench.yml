@@ -24,4 +24,50 @@ jobs:
 
     - name: Benchmark
       run: |
+        set -x
         cargo benchmark --bench instruction-count --features gungraun
+        cargo benchmark --bench instruction-count --features gungraun -- --output-format=json > gungraun-output.json
+        cat gungraun-output.json
+
+    - uses: actions/upload-artifact@v6
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      with:
+        name: gungraun-output
+        path: gungraun-output.json
+
+    - name: Prepare devhub
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      run: |
+        cargo install tokei --version 14.0.0
+        cargo install ripgrep --version 15.1.0
+
+        wget https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64 -O jq
+        echo "020468de7539ce70ef1bceaf7cde2e8c4f2ca6c3afb84642aabc5c97d9fc2a0d  jq" | sha256sum -c
+        mv jq $HOME/.cargo/bin/jq
+        chmod +x $HOME/.cargo/bin/jq
+
+    - name: Show dependencies
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      run: |
+        set -x
+        rustc -vV
+        cargo -vV
+        valgrind --version
+        tokei --version
+        rg --version
+        jq --version
+
+    - name: Run devhub
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      run: |
+        echo "commit sha ${GITHUB_SHA}"
+        cargo devhub run
+        cat data.json
+
+    - name: Commit new devhub data
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      env:
+        DEVHUBDB_TOKEN: ${{ secrets.DEVHUBDB_PAT }}
+      run: |
+        git config --global user.name "Devhub Bot"
+        cargo devhub commit data.json
