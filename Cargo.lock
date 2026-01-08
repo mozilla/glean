@@ -540,7 +540,6 @@ dependencies = [
  "ctor",
  "env_logger",
  "flate2",
- "iso8601",
  "log",
  "malloc_size_of_derive",
  "once_cell",
@@ -676,15 +675,6 @@ name = "iri-string"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf071934ee7ee97e52fa1868a9540a7885eab75926bd70794030304a9797cea1"
-
-[[package]]
-name = "iso8601"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5b94fbeb759754d87e1daea745bc8efd3037cd16980331fe1d1524c9a79ce96"
-dependencies = [
- "nom",
-]
 
 [[package]]
 name = "itertools"

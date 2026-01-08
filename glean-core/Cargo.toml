@@ -55,7 +55,6 @@ oslog = { version = "0.1.0", default-features = false, features = ["logger"] }
 [dev-dependencies]
 env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
 tempfile = "3.8.0"
-iso8601 = "0.4"
 ctor = "0.2.2"
 criterion = "0.7.0"
 
