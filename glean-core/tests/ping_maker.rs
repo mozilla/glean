@@ -41,10 +41,10 @@ fn ping_info_must_contain_a_nonempty_start_and_end_time() {
     let ping_info = ping.content["ping_info"].as_object().unwrap();
 
     let start_time_str = ping_info["start_time"].as_str().unwrap();
-    let start_time_date = iso8601_to_chrono(&iso8601::datetime(start_time_str).unwrap());
+    let start_time_date = chrono::DateTime::parse_from_rfc3339(start_time_str).unwrap();
 
     let end_time_str = ping_info["end_time"].as_str().unwrap();
-    let end_time_date = iso8601_to_chrono(&iso8601::datetime(end_time_str).unwrap());
+    let end_time_date = chrono::DateTime::parse_from_rfc3339(end_time_str).unwrap();
 
     assert!(start_time_date <= end_time_date);
 }

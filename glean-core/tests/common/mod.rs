@@ -5,15 +5,12 @@
 // #[allow(dead_code)] is required on this module as a workaround for
 // https://github.com/rust-lang/rust/issues/46379
 #![allow(dead_code)]
-use chrono::Timelike;
 use glean_core::{Glean, PingType, Result};
 
 use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-use chrono::offset::TimeZone;
-use iso8601::Date::YMD;
 use serde_json::Value as JsonValue;
 
 use ctor::ctor;
@@ -168,26 +165,6 @@ impl PingBuilder {
         self.reason_codes = value;
         self
     }
-}
-
-/// Converts an iso8601::DateTime to a chrono::DateTime<FixedOffset>
-pub fn iso8601_to_chrono(datetime: &iso8601::DateTime) -> chrono::DateTime<chrono::FixedOffset> {
-    if let YMD { year, month, day } = datetime.date {
-        return chrono::FixedOffset::east_opt(datetime.time.tz_offset_hours * 3600)
-            .unwrap()
-            .with_ymd_and_hms(
-                year,
-                month,
-                day,
-                datetime.time.hour,
-                datetime.time.minute,
-                datetime.time.second,
-            )
-            .unwrap()
-            .with_nanosecond(datetime.time.millisecond * 1_000_000)
-            .unwrap();
-    };
-    panic!("Unsupported datetime format");
 }
 
 /// Gets a vector of the currently queued pings.
