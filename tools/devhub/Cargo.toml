@@ -1,0 +1,13 @@
+[workspace]
+# Its own workspace to keep its dependencies separate
+
+[package]
+name = "devhub"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive", "serde_derive"] }
+serde_json = "1.0.145"
+xflags = "0.3.2"
+xshell = "0.2.7"
