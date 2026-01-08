@@ -55,7 +55,7 @@ class DatetimeMetricType(
             val cal = Calendar.getInstance()
             cal.set(Calendar.ZONE_OFFSET, AndroidTimeUnit.SECONDS.toMillis(dt.offsetSeconds.toLong()).toInt())
             cal.set(Calendar.DST_OFFSET, 0) // we pretend its never DST. The zone offset will have that already.
-            cal.set(Calendar.YEAR, dt.year.toInt())
+            cal.set(Calendar.YEAR, dt.year)
             cal.set(Calendar.MONTH, dt.month.toInt() - 1) // java.util.calendar's month is 0-based for months
             cal.set(Calendar.DAY_OF_MONTH, dt.day.toInt())
             cal.set(Calendar.HOUR_OF_DAY, dt.hour.toInt())
