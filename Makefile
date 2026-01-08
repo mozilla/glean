@@ -208,6 +208,7 @@ clobber:  ## Clean up the object directories and build artifacts
 	# Rust
 	cargo clean
 	cargo clean --manifest-path glean-core/benchmark/Cargo.toml
+	cargo clean --manifest-path tools/devhub/Cargo.toml
 	# General build folder
 	rm -rf build
 	# Swift artifacts
