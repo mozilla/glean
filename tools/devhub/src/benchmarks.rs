@@ -35,11 +35,11 @@ impl MetricRecorder for Benchmark {
         let jq_script_path = temp.path().join("transform-gungraun.jq");
         sh.write_file(&jq_script_path, JQ_SCRIPT)?;
 
-        let dest = sh.current_dir().join("gungraun-output.json");
+        let input = sh.current_dir().join("gungraun-output.json");
 
         let mut metrics = Vec::new();
 
-        let benchmarks = cmd!(sh, "jq -cf {jq_script_path} {dest}").read()?;
+        let benchmarks = cmd!(sh, "jq -cf {jq_script_path} {input}").read()?;
         let benchmarks = benchmarks.lines();
         for line in benchmarks {
             let bench: Vec<Bench> = serde_json::from_str(line)?;
@@ -47,7 +47,6 @@ impl MetricRecorder for Benchmark {
             for b in bench {
                 metrics.push(Metric {
                     name: b.name,
-                    unit: String::from(""),
                     value: b.value,
                 })
             }

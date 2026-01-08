@@ -27,7 +27,7 @@ impl MetricRecorder for Codesize {
     fn record(&self, sh: &Shell) -> Result<Vec<Metric>> {
         let tokei_out = cmd!(
             sh,
-            "tokei -o json -e glean-core/android/build -t rust,kotlin,swift,python glean-core"
+            "tokei -o json -t rust,kotlin,swift,python glean-core"
         )
         .read()?;
         let tokei_json: Tokei = serde_json::from_str(&tokei_out)?;
@@ -36,7 +36,6 @@ impl MetricRecorder for Codesize {
         for (lang, stats) in tokei_json {
             let metric = Metric {
                 name: format!("Lines of code - {lang}"),
-                unit: String::from(""),
                 value: stats.code,
             };
             metrics.push(metric);
@@ -64,7 +63,6 @@ impl MetricRecorder for MetricCount {
             .parse()?;
         let metric = Metric {
             name: String::from("Number of built-in metrics"),
-            unit: String::from(""),
             value: metric_count,
         };
         Ok(vec![metric])
