@@ -30,7 +30,6 @@ impl MetricRecorder for Dependencies {
         let dep_count = dep_count.lines().collect::<HashSet<_>>().len() as u64;
         metrics.push(Metric {
             name: format!("Number of dependencies for {}", self.0),
-            unit: String::from(""),
             value: dep_count,
         });
 

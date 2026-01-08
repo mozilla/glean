@@ -139,9 +139,11 @@ impl flags::Commit {
         let token = env::var("DEVHUBDB_TOKEN")
             .map_err(|_| "Missing environment variable 'DEVHUBDB_TOKEN")?;
 
-        let url = format!("https://oauth2:{token}@github.com/mozilla/glean-devhubdb.git");
+        let repo = "github.com/mozilla/glean-devhubdb.git";
+        let url = format!("https://oauth2:{token}@{repo}");
         let mut clone_cmd = cmd!(sh, "git clone --single-branch --depth 1 {url} devhubdb");
         // Contains the token, should not be printed.
+        println!("$ git clone --single-branch --depth 1 https://oauth2:<hidden>@{repo} devhubdb");
         clone_cmd.set_secret(true);
         clone_cmd.run()?;
 
@@ -341,6 +343,5 @@ struct Attributes {
 #[derive(Serialize, Deserialize)]
 struct Metric {
     name: String,
-    unit: String,
     value: u64,
 }

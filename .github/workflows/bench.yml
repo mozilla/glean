@@ -22,12 +22,18 @@ jobs:
       run: |
         cargo install gungraun-runner --version 0.17.0
 
+    - name: Benchmark (machine-readable)
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      run: |
+        set -x
+        cargo benchmark --bench instruction-count --features gungraun -- --output-format=json > gungraun-output.json
+        cat gungraun-output.json
+
     - name: Benchmark
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         set -x
         cargo benchmark --bench instruction-count --features gungraun
-        cargo benchmark --bench instruction-count --features gungraun -- --output-format=json > gungraun-output.json
-        cat gungraun-output.json
 
     - uses: actions/upload-artifact@v6
       if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
@@ -67,7 +73,8 @@ jobs:
     - name: Commit new devhub data
       if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
       env:
-        DEVHUBDB_TOKEN: ${{ secrets.DEVHUBDB_PAT }}
+        DEVHUBDB_TOKEN: ${{ secrets.DEVHUBDB_TOKEN }}
       run: |
         git config --global user.name "Devhub Bot"
+        git config --global user.email devhub-bot@mozilla.com
         cargo devhub commit data.json
