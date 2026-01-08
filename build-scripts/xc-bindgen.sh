@@ -52,7 +52,7 @@ LIBRARY_PATH="${GLEAN_ROOT}/target/${TARGET}/${RELMODE}/lib${FFI_TARGET}.a"
 bash "${GLEAN_ROOT}/build-scripts/xc-cargo.sh" cargo run --package uniffi-bindgen -- \
   generate \
   --language swift \
-  --config "${GLEAN_ROOT}/../bundle/uniffi.toml" \
+  --config "${GLEAN_ROOT}/glean-core/bundle/uniffi.toml" \
   --out-dir "${GLEAN_ROOT}/glean-core/ios/Glean/Generated/uniffi" \
   --library "$LIBRARY_PATH" \
   --no-format
