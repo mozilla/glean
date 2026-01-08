@@ -7,6 +7,8 @@
   * Event timestamps are now always clamped to the range of a signed 64-bit integer.
     An overflow is recorded in the new metric `glean.error.event_timestamp_clamped` in case this happens ([#3308](https://github.com/mozilla/glean/pull/3308)).
   * BREAKING CHANGE: Updated to UniFFI 0.31.0 ([#3366](https://github.com/mozilla/glean/pull/3366))
+* Android
+  * Updated Kotlin to 2.3.0 ([#3379](https://github.com/mozilla/glean/pull/3379))
 
 # v66.3.0 (2025-12-19)
 
