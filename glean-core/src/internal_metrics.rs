@@ -241,7 +241,7 @@ impl UploadMetrics {
 
             discarded_exceeding_pings_size: MemoryDistributionMetric::new(
                 CommonMetricData {
-                    name: "discarded_exceeding_ping_size".into(),
+                    name: "discarded_exceeding_pings_size".into(),
                     category: "glean.upload".into(),
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
@@ -354,7 +354,7 @@ impl DatabaseMetrics {
 
             rkv_load_error: StringMetric::new(CommonMetricData {
                 name: "rkv_load_error".into(),
-                category: "glean.error".into(),
+                category: "glean.database".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

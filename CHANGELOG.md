@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...main)
 
+* General
+  * BUGFIX: Correct `glean.database.rkv_load_error`'s category and `glean.upload.discarded_exceeding_pings_size`'s name ([bug 2009475](https://bugzilla.mozilla.org/show_bug.cgi?id=2009475))
+
 # v66.3.0 (2025-12-19)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v66.2.0...v66.3.0)
