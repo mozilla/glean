@@ -548,7 +548,7 @@
 # v55.0.0 (2023-10-23)
 
 * Python
-  * BREAKING CHANGE: Dropped support for Python 3.7 ([#]())
+  * BREAKING CHANGE: Dropped support for Python 3.7 ([#2690](https://github.com/mozilla/glean/pull/2690))
 
 [Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...v55.0.0)
 
