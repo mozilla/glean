@@ -33,11 +33,18 @@ For all tasks you can always find the full log and generated artifacts by follow
 Due to the long runtime and costs iOS tests are not run by default on Pull Requests.
 Admins of the `mozilla/glean` repository can run them on demand.
 
-1. On the pull request scroll to the list of all checks running on that PR on the bottom.
-2. Find the job titled "ci/circleci: iOS/hold".
-3. Click "Details" to get to Circle CI.
-4. Click on the "hold" task, then approve it.
-5. The iOS tasks will now run.
+Admins can leave a comment with the following content on an open PR:
+
+```
+/run-ios
+```
+
+Alternatively:
+
+1. On an open pull request find the job titled "ci/circleci: iOS/hold".
+1. Click "Details" to get to Circle CI.
+1. Click on the "hold" task, then approve it.
+1. The iOS tasks will now run.
 
 ### Merge to `main`
 
