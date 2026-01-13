@@ -13,7 +13,7 @@ rust-version = "1.87"
 
 [dependencies]
 glean-core = { path = "../", features = ["benchmark"] }
-criterion = "0.8.0"
+criterion = { version = "0.8.0", features = ["html_reports"] }
 tempfile = "3.8.0"
 gungraun = { version = "0.17.0", features = ["cachegrind"], optional = true }
 
@@ -25,6 +25,10 @@ bench = false
 
 [[bench]]
 name = "dispatcher"
+harness = false
+
+[[bench]]
+name = "lifetime_buffering"
 harness = false
 
 [[bench]]
