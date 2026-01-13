@@ -54,7 +54,6 @@ There are different metrics to choose from, depending on what you want to achiev
 
 * [UUID](uuid.md): Records universally unique identifiers (UUIDs), for example "what is this profile's client_id?"
 
-
 ## Labeled metrics
 
 There are two types of metrics listed above - *labeled* and *unlabeled* metrics. If a metric is *labeled*, it means that for a single metric entry you define in `metrics.yaml`, you can record into multiple metrics under the same name, each of the same type and identified by a different string label.
