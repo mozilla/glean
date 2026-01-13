@@ -125,3 +125,7 @@ section#metrics {
         }
     }
 }
+
+input {
+  width: 500px;
+}

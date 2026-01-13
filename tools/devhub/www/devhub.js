@@ -5,6 +5,37 @@
 
 window.onload = () => {
   main_metrics();
+  setup_filter();
+}
+
+function debounce(ms, fn) {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), ms)
+  }
+}
+
+function setup_filter() {
+  const filterbox = document.getElementById("filter");
+
+  filterbox.onkeyup = debounce(100, () => {
+    const q = filterbox.value;
+    const re = new RegExp(q, "i");
+    document.querySelectorAll("#charts > div").forEach(e => {
+      if (!q) {
+        e.style.display = "block";
+        return;
+      }
+
+      const title = e.querySelector("text")?.innerHTML;
+      if (!q || title?.search(re) >= 0) {
+        e.style.display = "block";
+      } else {
+        e.style.display = "none";
+      }
+    });
+  });
 }
 
 async function main_metrics() {
