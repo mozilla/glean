@@ -23,6 +23,13 @@ definitions:
         ignore:
           - main
           - release
+  - msrv_image: &msrv-image
+      cimg/rust:1.87
+  - msrv: &msrv
+      "1.87"
+  # Used when running against latest stable Rust
+  - rust_image: &rust-image
+      cimg/rust:1.92
 
 ##########################################################################
 # COMMANDS
@@ -278,7 +285,7 @@ jobs:
 
   License check:
     docker:
-      - image: cimg/rust:1.82
+      - image: *rust-image
     steps:
       - checkout
       - run:
@@ -301,7 +308,7 @@ jobs:
 
   Check vendored schema:
     docker:
-      - image: cimg/rust:1.82
+      - image: *rust-image
     steps:
       - checkout
       - run:
@@ -331,7 +338,7 @@ jobs:
 
   Check Rust formatting:
     docker:
-      - image: cimg/rust:1.82
+      - image: *msrv-image
     steps:
       - checkout
       - run: rustup component add rustfmt
@@ -340,7 +347,7 @@ jobs:
 
   Lint Rust with clippy:
     docker:
-      - image: cimg/rust:1.82
+      - image: *msrv-image
     steps:
       - checkout
       - run: rustup component add clippy
@@ -357,7 +364,7 @@ jobs:
 
   Rust tests - stable:
     docker:
-      - image: cimg/rust:1.82
+      - image: *rust-image
     resource_class: "medium+"
     steps:
       - test-rust
@@ -370,22 +377,22 @@ jobs:
 
   Rust tests - beta:
     docker:
-      - image: cimg/rust:1.82
+      - image: *rust-image
     steps:
       - test-rust:
           rust-version: "beta"
 
   Rust tests - minimum version:
     docker:
-      - image: cimg/rust:1.82
+      - image: *msrv-image
     resource_class: "medium+"
     steps:
       - test-rust:
-          rust-version: "1.82.0"
+          rust-version: *msrv
 
   Generate Rust documentation:
     docker:
-      - image: cimg/rust:1.82
+      - image: *msrv-image
     steps:
       - checkout
       - run:
@@ -417,7 +424,7 @@ jobs:
 
   Publish Rust crates:
     docker:
-      - image: cimg/rust:1.82
+      - image: *msrv-image
     steps:
       - checkout
       - run:
@@ -687,7 +694,7 @@ jobs:
 
   glean-swift release:
     docker:
-      - image: cimg/rust:1.82
+      - image: *rust-image
     steps:
       - checkout
       - attach_workspace:
