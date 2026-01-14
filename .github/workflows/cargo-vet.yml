@@ -9,7 +9,7 @@ jobs:
     name: Vet Dependencies
     runs-on: ubuntu-latest
     env:
-      CARGO_VET_VERSION: 0.10.0
+      CARGO_VET_VERSION: 0.10.2
     steps:
     - uses: actions/checkout@master
     - name: Install Rust
@@ -22,7 +22,6 @@ jobs:
       run: echo "${{ runner.tool_cache }}/cargo-vet/bin" >> $GITHUB_PATH
     - name: Ensure that the tool cache is populated with the cargo-vet binary
       run: |
-        export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
         cargo install --root ${{ runner.tool_cache }}/cargo-vet --version ${{ env.CARGO_VET_VERSION }} cargo-vet
     - name: Invoke cargo-vet
       run: cargo vet --locked
