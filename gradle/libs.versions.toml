@@ -5,10 +5,10 @@
 
 [versions]
 # AGP
-android-plugin = "8.13.1"
+android-plugin = "8.13.2"
 
 # Kotlin
-kotlin-compiler = "2.2.21"
+kotlin-compiler = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 
