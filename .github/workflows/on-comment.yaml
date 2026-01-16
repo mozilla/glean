@@ -7,7 +7,7 @@ on:
     types: [created]
 
 jobs:
-  manual_invocation:
+  approve-ios:
     if: |
       github.event.issue.pull_request && startsWith(github.event.comment.body, '/run-ios')
     runs-on: ubuntu-latest
