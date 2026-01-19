@@ -36,8 +36,18 @@ network::http_upload_bandwidth
 ```c++
 #include "mozilla/glean/NetwerkMetrics.h"
 
-mozilla::network::http_upload_bandwidth
+mozilla::glean::network::http_upload_bandwidth
     .Get(httpVersion)
+    .Accumulate(this.mRequestSize * 8.0 / 1048576.0 / sendTime.AsSeconds());
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::network::http_upload_bandwidth
+    .EnumGet(mozilla::glean::network::HttpUploadBandwidthLabel::eH2)
+    .Accumulate(this.mRequestSize * 8.0 / 1048576.0 / sendTime.AsSeconds());
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::network::http_upload_bandwidth_by_process
+    .ProcessGet()
     .Accumulate(this.mRequestSize * 8.0 / 1048576.0 / sendTime.AsSeconds());
 ```
 

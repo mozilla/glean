@@ -47,6 +47,20 @@ mozilla::glean::network::http3_late_ack_ratio
 mozilla::glean::network::http3_late_ack_ratio
     .Get("pto")
     .AccumulateSamples({(stats.pto_ack * 10000) / stats.packets_tx});
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::network::http3_late_ack_ratio
+    .EnumGet(mozilla::glean::network::Http3LateAckRatioLabel::eAck)
+    .AccumulateSamples({(stats.late_ack * 10000) / stats.packets_tx});
+mozilla::glean::network::http3_late_ack_ratio
+    .EnumGet(mozilla::glean::network::Http3LateAckRatioLabel::ePto)
+    .AccumulateSamples({(stats.pto_ack * 10000) / stats.packets_tx});
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::network::http3_late_ack_ratio_by_process
+    .ProcessGet()
+    .AccumulateSamples({(stats.late_ack * 10000) / stats.packets_tx});
+
 ```
 
 **JavaScript**
@@ -102,6 +116,19 @@ mozilla::glean::network::http3_late_ack_ratio
 mozilla::glean::network::http3_late_ack_ratio
     .Get("pto")
     .AccumulateSingleSample((stats.pto_ack * 10000) / stats.packets_tx);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::network::http3_late_ack_ratio
+    .EnumGet(mozilla::glean::network::Http3LateAckRatioLabel::eAck)
+    .AccumulateSingleSample((stats.late_ack * 10000) / stats.packets_tx);
+mozilla::glean::network::http3_late_ack_ratio
+    .EnumGet(mozilla::glean::network::Http3LateAckRatioLabel::ePto)
+    .AccumulateSingleSample((stats.pto_ack * 10000) / stats.packets_tx);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::network::http3_late_ack_ratio_by_process
+    .ProcessGet()
+    .AccumulateSingleSample((stats.late_ack * 10000) / stats.packets_tx);
 ```
 
 **JavaScript**
@@ -159,7 +186,7 @@ assert_eq!(1, network::http3_late_ack_ratio.get("ack").test_get_value(None).unwr
 ```cpp
 #include "mozilla/glean/NetwerkMetrics.h"
 
-auto data = mozilla::glean::network::http3_late_ack_ratio.Get("ack").TestGetValue().value();
+auto data = mozilla::glean::network::http3_late_ack_ratio.Get("ack"_ns).TestGetValue().value();
 ASSERT_EQ(42UL, data.sum);
 ASSERT_EQ(1, data.count);
 ASSERT_EQ(1, data.values[41]);

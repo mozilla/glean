@@ -76,6 +76,16 @@ gfx::display.get("height").set(height);
 
 mozilla::glean::gfx::display.Get("width"_ns").Set(aWidth);
 mozilla::glean::gfx::display.Get("height"_ns").Set(aHeight);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::gfx::display.EnumGet(
+  mozilla::glean::gfx::DisplayLabel::eWidth).Set(aWidth);
+mozilla::glean::gfx::display.EnumGet(
+  mozilla::glean::gfx::DisplayLabel::eHeight).Set(aHeight);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::gfx::display_width_per_process.ProcessGet().Set(aWidth);
+
 ```
 
 **JavaScript**
