@@ -42,6 +42,16 @@ self.start = devtools::cold_toolbox_open_delay
 auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
     .Start();
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+    .Start();
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+auto timerId = mozilla::glean::devtools::cold_open_delay_per_process
+    .ProcessGet()
+    .Start();
 ```
 
 **JavaScript**
@@ -94,6 +104,16 @@ devtools::cold_toolbox_open_delay
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
     .StopAndAccumulate(std::move(timerId));
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+    .StopAndAccumulate(std::move(timerId));
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+auto timerId = mozilla::glean::devtools::cold_open_delay_per_process
+    .ProcessGet()
+    .StopAndAccumulate(std::move(timerId));
 ```
 
 **JavaScript**
@@ -142,6 +162,16 @@ devtools::cold_toolbox_open_delay
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
+    .Cancel(std::move(timerId));
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+    .Cancel(std::move(timerId));
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+auto timerId = mozilla::glean::devtools::cold_open_delay_per_process
+    .ProcessGet()
     .Cancel(std::move(timerId));
 ```
 
@@ -203,6 +233,16 @@ devtools::cold_toolbox_open_delay
 
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolbox_id)
+    .AccumulateRawSamples(samples);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+    .AccumulateRawSamples(samples);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+auto timerId = mozilla::glean::devtools::cold_open_delay_per_process
+    .ProcessGet()
     .AccumulateRawSamples(samples);
 ```
 
@@ -267,6 +307,16 @@ devtools::cold_toolbox_open_delay
 mozilla::glean::devtools::cold_toolbox_open_delay
     .Get(toolboxId)
     .AccumulateRawDuration(aDuration);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+auto timerId = mozilla::glean::devtools::cold_toolbox_open_delay
+    .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+    .AccumulateRawDuration(aDuration);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+auto timerId = mozilla::glean::devtools::cold_open_delay_per_process
+    .ProcessGet()
+    .AccumulateRawDuration(aDuration);
 ```
 
 **JavaScript**
@@ -308,6 +358,22 @@ For convenience one can measure the time of a function or block of code.
 { // Scope for RAII
   auto timer = mozilla::glean::devtools::cold_toolbox_open_delay
       .Get(toolboxId)
+      .Measure();
+  // Open the toolbox. Cold.
+}
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+{ // Scope for RAII
+  auto timer = mozilla::glean::devtools::cold_toolbox_open_delay
+      .EnumGet(mozilla::glean::devtools::ColdToolboxOpenDelayLabel::eNetwork)
+      .Measure();
+  // Open the toolbox. Cold.
+}
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+{ // Scope for RAII
+  auto timer = mozilla::glean::devtools::cold_open_delay_per_process
+      .ProcessGet()
       .Measure();
   // Open the toolbox. Cold.
 }

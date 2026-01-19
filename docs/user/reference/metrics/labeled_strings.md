@@ -70,6 +70,13 @@ login.errorsByStage["server_auth"].set("Invalid password");
 #include "mozilla/glean/DomWebauthnMetrics.h"
 
 mozilla::glean::login::errors_by_stage.Get("server_auth"_ns).Set("Invalid password"_ns);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::login::errors_by_stage.EnumGet(
+  mozilla::glean::login::ErrorsByStageLabel::eServerAuth).Set("Invalid password"_ns);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::login::errors_by_process.ProcessGet().Set("Invalid password"_ns);
 ```
 
 **JavaScript**
