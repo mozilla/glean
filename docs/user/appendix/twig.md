@@ -68,3 +68,4 @@ They could be release notes, documentation, hopes, dreams, or whatever: so long 
 * 2022-10-27: [Page Load Data, Three Ways (Or, How Expensive Are Events?)](https://blog.mozilla.org/data/2022/10/27/this-week-in-glean-page-load-data-three-ways-or-how-expensive-are-events/)
 * 2023-05-25: [Reading “The Manager’s Path” by Camille Fournier](https://blog.mozilla.org/data/2023/05/25/this-week-in-data-reading-the-managers-path-by-camille-fournier/)
 * 2024-06-27: [Cosmic Rays From Outer Space! (What Comes Next?)](https://blog.mozilla.org/data/2024/06/27/this-week-in-data-cosmic-rays-from-outer-space-what-comes-next/)
+* 2026-01-20: [There’s No Such Thing as a Normal Month](https://blog.mozilla.org/data/2026/01/20/464/)
