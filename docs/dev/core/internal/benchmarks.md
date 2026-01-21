@@ -20,16 +20,16 @@ We use [criterion] for micro-benchmarking of the Rust code directly.
 You can run all benchmarks using:
 
 ```
-cargo bench -p glean-core --features benchmark
+cargo benchmark
 ```
 
 To run an individual benchmark pass its name after `--bench`:
 
 ```
-cargo bench -p glean-core --features benchmark --bench dispatcher
+cargo benchmark --bench dispatcher
 ```
 
-To add a new benchmark create a file in `glean-core/benches`, then add a new entry to the `glean-core/Cargo.toml` file:
+To add a new benchmark create a file in `glean-core/benchmark/benches`, then add a new entry to the `glean-core/benchmark/Cargo.toml` file:
 
 ```toml
 [[bench]]
@@ -49,9 +49,10 @@ bin/benchmark-compare.sh main HEAD
 The output will be similar to this:
 
 ```
-   Compiling glean-core v66.1.1 (/home/jer/src/mozilla/glean/glean-core)
+   Compiling glean-core v66.3.0 (/home/user/src/glean/glean-core)
+   Compiling benchmark v0.1.0 (/home/user/jer/src/glean/glean-core/benchmark)
     Finished `bench` profile [optimized] target(s) in 18.62s
-     Running benches/dispatcher.rs (target/release/deps/dispatcher-b3ccfcc39ee552d0)
+     Running benches/dispatcher.rs (glean-core/benchmark/target/release/deps/dispatcher-a44e0c186f62af70)
 Gnuplot not found, using plotters backend
 empty fn                time:   [61.181 ns 61.231 ns 61.285 ns]
                         change: [−23.764% −23.575% −23.390%] (p = 0.00 < 0.05)

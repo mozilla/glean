@@ -14,9 +14,6 @@ allow = [
 multiple-versions = "deny"
 
 skip = [
-    # wasi 0.10 and 0.11 are allowed
-    # (m-c patches 0.10 to 0.11)
-    { name = "wasi", version = "0.11.0" },
     # bitflags 1.3.2 is a dependency of lmdb-rkv,
     # with bitflags in use by others.
     # This is overriden in m-c

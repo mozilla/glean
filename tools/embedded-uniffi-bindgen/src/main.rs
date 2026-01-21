@@ -6,13 +6,7 @@ use std::env;
 
 use anyhow::{bail, Context};
 use camino::Utf8PathBuf;
-
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
-enum TargetLanguage {
-    Kotlin,
-    Swift,
-    Python,
-}
+use uniffi::TargetLanguage;
 
 fn parse_language(lang: &str) -> anyhow::Result<TargetLanguage> {
     match lang {
@@ -24,59 +18,23 @@ fn parse_language(lang: &str) -> anyhow::Result<TargetLanguage> {
 }
 
 fn gen_bindings(
-    library_file: &camino::Utf8Path,
-    config_file: Option<&camino::Utf8Path>,
+    library_file: camino::Utf8PathBuf,
+    config_file: Option<camino::Utf8PathBuf>,
     languages: Vec<TargetLanguage>,
-    out_dir: &camino::Utf8Path,
+    out_dir: camino::Utf8PathBuf,
     crate_name: Option<String>,
 ) -> anyhow::Result<()> {
-    use uniffi::generate_bindings_library_mode;
-    use uniffi::{KotlinBindingGenerator, PythonBindingGenerator, SwiftBindingGenerator};
-
-    use uniffi::CargoMetadataConfigSupplier;
-    let mut cmd = cargo_metadata::MetadataCommand::new();
-    cmd.no_deps();
-    let metadata = cmd.exec().context("error running cargo metadata")?;
-    let config_supplier = CargoMetadataConfigSupplier::from(metadata);
-
-    for language in languages {
-        match language {
-            TargetLanguage::Kotlin => {
-                generate_bindings_library_mode(
-                    library_file,
-                    crate_name.clone(),
-                    &KotlinBindingGenerator,
-                    &config_supplier,
-                    config_file,
-                    out_dir,
-                    false,
-                )?;
-            }
-            TargetLanguage::Python => {
-                generate_bindings_library_mode(
-                    library_file,
-                    crate_name.clone(),
-                    &PythonBindingGenerator,
-                    &config_supplier,
-                    config_file,
-                    out_dir,
-                    false,
-                )?;
-            }
-            TargetLanguage::Swift => {
-                generate_bindings_library_mode(
-                    library_file,
-                    crate_name.clone(),
-                    &SwiftBindingGenerator,
-                    &config_supplier,
-                    config_file,
-                    out_dir,
-                    false,
-                )?;
-            }
-        };
-    }
-    Ok(())
+    use uniffi::{generate, GenerateOptions};
+    let opts = GenerateOptions {
+        languages,
+        source: library_file,
+        out_dir,
+        config_override: config_file,
+        format: false,
+        crate_filter: crate_name,
+        metadata_no_deps: false,
+    };
+    generate(opts)
 }
 
 fn main() -> anyhow::Result<()> {
@@ -120,23 +78,23 @@ fn main() -> anyhow::Result<()> {
     let out_dir = out_dir.map(Utf8PathBuf::from);
     let config = config.map(Utf8PathBuf::from);
 
-    if library_file.is_none() {
+    let Some(library_file) = library_file else {
         bail!("Need path to library file.");
-    }
+    };
 
     if target_languages.is_empty() {
         bail!("Need at least one language to generate code for.");
     }
 
-    if out_dir.is_none() {
+    let Some(out_dir) = out_dir else {
         bail!("Need output directory.")
-    }
+    };
 
     gen_bindings(
-        &library_file.unwrap(),
-        config.as_deref(),
+        library_file,
+        config,
         target_languages,
-        &out_dir.unwrap(),
+        out_dir,
         Some(String::from("glean_core")),
     )?;
 

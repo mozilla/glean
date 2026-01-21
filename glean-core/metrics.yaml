@@ -649,6 +649,24 @@ glean.error:
       - jrediger@mozilla.com
     expires: never
 
+  event_timestamp_clamped:
+    type: counter
+    description: |
+      The number of times we had to clamp an event timestamp
+      for exceeding the range of a signed 64-bit integer (9223372036854775807).
+    send_in_pings:
+      - health
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1873482
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1873482
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+      - jrediger@mozilla.com
+    expires: 2026-06-30
+
 glean.upload:
   ping_upload_failure:
     type: labeled_counter

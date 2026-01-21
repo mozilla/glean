@@ -560,6 +560,22 @@ impl EventDatabase {
                 // Let's fix cur_ec up and hope this isn't a sign something big is broken.
                 cur_ec = execution_counter;
             }
+
+            // event timestamp is a `u64`, but BigQuery uses `i64` (signed!) everywhere. Let's clamp the value to make
+            // sure we stay within bounds.
+            if event.event.timestamp > i64::MAX as u64 {
+                glean
+                    .additional_metrics
+                    .event_timestamp_clamped
+                    .add_sync(glean, 1);
+                log::warn!(
+                    "Calculated event timestamp was too high. Got: {}, max: {}",
+                    event.event.timestamp,
+                    i64::MAX,
+                );
+                event.event.timestamp = event.event.timestamp.clamp(0, i64::MAX as u64);
+            }
+
             if highest_ts > event.event.timestamp {
                 // Even though we sorted everything, something in the
                 // execution_counter or glean.startup.date math went awry.
@@ -1356,5 +1372,51 @@ mod test {
             ErrorType::InvalidValue
         )
         .is_err());
+    }
+
+    #[test]
+    fn normalize_store_clamps_timestamp() {
+        let (glean, _dir) = new_glean(None);
+
+        let store_name = "store-name";
+        let event = RecordedEvent {
+            category: "category".into(),
+            name: "name".into(),
+            ..Default::default()
+        };
+
+        let timestamps = [
+            0,
+            (i64::MAX / 2) as u64,
+            i64::MAX as _,
+            (i64::MAX as u64) + 1,
+        ];
+        let mut store = timestamps
+            .into_iter()
+            .map(|timestamp| StoredEvent {
+                event: RecordedEvent {
+                    timestamp,
+                    ..event.clone()
+                },
+                execution_counter: None,
+            })
+            .collect();
+
+        let glean_start_time = glean.start_time();
+        glean
+            .event_storage()
+            .normalize_store(&glean, store_name, &mut store, glean_start_time);
+        assert_eq!(4, store.len());
+
+        assert_eq!(0, store[0].event.timestamp);
+        assert_eq!((i64::MAX / 2) as u64, store[1].event.timestamp);
+        assert_eq!((i64::MAX as u64), store[2].event.timestamp);
+        assert_eq!((i64::MAX as u64), store[3].event.timestamp);
+
+        let error_count = glean
+            .additional_metrics
+            .event_timestamp_clamped
+            .get_value(&glean, "health");
+        assert_eq!(Some(1), error_count);
     }
 }

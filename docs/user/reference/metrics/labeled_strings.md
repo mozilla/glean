@@ -70,6 +70,13 @@ login.errorsByStage["server_auth"].set("Invalid password");
 #include "mozilla/glean/DomWebauthnMetrics.h"
 
 mozilla::glean::login::errors_by_stage.Get("server_auth"_ns).Set("Invalid password"_ns);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::login::errors_by_stage.EnumGet(
+  mozilla::glean::login::ErrorsByStageLabel::eServerAuth).Set("Invalid password"_ns);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::login::errors_by_process.ProcessGet().Set("Invalid password"_ns);
 ```
 
 **JavaScript**
@@ -312,4 +319,3 @@ login:
 
 * Python API docs: [`LabeledStringMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledStringMetricType), [`StringMetricType`](../../../python/glean/metrics/index.html#glean.metrics.StringMetricType)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`StringMetric`](../../../docs/glean/private/struct.StringMetric.html)
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`StringMetric`](../../../swift/Classes/StringMetric.html)

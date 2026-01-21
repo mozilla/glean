@@ -1,6 +1,18 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.0.0...main)
+
+# v67.0.0 (2026-01-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...v67.0.0)
+
+* General
+  * BUGFIX: Correct `glean.database.rkv_load_error`'s category and `glean.upload.discarded_exceeding_pings_size`'s name ([bug 2009475](https://bugzilla.mozilla.org/show_bug.cgi?id=2009475))
+  * Event timestamps are now always clamped to the range of a signed 64-bit integer.
+    An overflow is recorded in the new metric `glean.error.event_timestamp_clamped` in case this happens ([#3308](https://github.com/mozilla/glean/pull/3308)).
+  * BREAKING CHANGE: Updated to UniFFI 0.31.0 ([#3366](https://github.com/mozilla/glean/pull/3366))
+* Android
+  * Updated Kotlin to 2.3.0 ([#3379](https://github.com/mozilla/glean/pull/3379))
 
 # v66.3.0 (2025-12-19)
 
@@ -543,7 +555,7 @@
 # v55.0.0 (2023-10-23)
 
 * Python
-  * BREAKING CHANGE: Dropped support for Python 3.7 ([#]())
+  * BREAKING CHANGE: Dropped support for Python 3.7 ([#2690](https://github.com/mozilla/glean/pull/2690))
 
 [Full changelog](https://github.com/mozilla/glean/compare/v54.0.0...v55.0.0)
 

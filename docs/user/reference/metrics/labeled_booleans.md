@@ -77,6 +77,15 @@ acessibility.features["high_contrast"].set(this.isHighContrastEnabled());
 
 mozilla::glean::accessibility::features.Get("screen_reader"_ns).Set(true);
 mozilla::glean::accessibility::features.Get("high_contrast"_ns).Set(false);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::accessibility::features.EnumGet(
+  mozilla::glean::accessibility::FeaturesLabel::eScreenReader).Set(true);
+mozilla::glean::accessibility::features.EnumGet(
+  mozilla::glean::accessibility::FeaturesLabel::eHighContrast).Set(false);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::accessibility::enabled_by_process.ProcessGet().Set(true);
 ```
 
 **JavaScript**
@@ -324,4 +333,3 @@ accessibility:
 
 * Python API docs: [`LabeledBooleanMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledBooleanMetricType), [`BooleanMetricType`](../../../python/glean/metrics/index.html#glean.metrics.BooleanMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`BooleanMetric`](../../../docs/glean/private/struct.BooleanMetric.html)
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`BooleanMetric`](../../../swift/Classes/BooleanMetric.html)

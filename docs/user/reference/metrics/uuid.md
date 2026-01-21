@@ -421,4 +421,3 @@ N/A
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.UuidMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.UuidMetric.html)
-* [Swift API docs](../../../swift/Classes/UuidMetric.html)

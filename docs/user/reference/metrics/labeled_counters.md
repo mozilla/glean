@@ -86,6 +86,15 @@ stability.crashCount["native_code_crash"].add(3);
 
 mozilla::glean::stability::crash_count.Get("uncaught_exception"_ns).Add(1);
 mozilla::glean::stability::crash_count.Get("native_code_crash"_ns).Add(3);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::stability::crash_count.EnumGet(
+  mozilla::glean::stability::CrashCountLabel::eUncaughtException).Add(1);
+mozilla::glean::stability::crash_count.EnumGetGet(
+  mozilla::glean::stability::CrashCountLabel::eNativeCodeCrash).Add(3);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::stability::crash_count_by_process.ProcessGet().Add(1);
 ```
 
 **JavaScript**
@@ -340,4 +349,3 @@ accessibility:
 
 * Python API docs: [`LabeledCounterMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledCounterMetricType), [`CounterMetricType`](../../../python/glean/metrics/index.html#glean.metrics.CounterMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`CounterMetric`](../../../docs/glean/private/struct.CounterMetric.html)
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`CounterMetric`](../../../swift/Classes/CounterMetric.html)

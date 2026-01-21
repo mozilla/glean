@@ -1,0 +1,66 @@
+name: On comment
+
+on:
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
+
+jobs:
+  approve-ios:
+    if: |
+      github.event.issue.pull_request && startsWith(github.event.comment.body, '/run-ios')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      checks: read
+    steps:
+      - name: Run approval on comment
+        env:
+          CIRCLE_TOKEN: ${{ secrets.CIRCLE_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -x
+
+          permission=$(gh api /repos/mozilla/glean/collaborators/${ACTOR}/permission | jq -r .permission)
+          if [[ "$permission" = "admin" ]]; then
+            true
+          else
+            echo "Insufficient permission. Stopping."
+            exit 0
+          fi
+
+          pr_info=$(gh api "/repos/mozilla/glean/pulls/${PR_NUMBER}")
+          pr_state=$(echo "$pr_info" | jq -r .state)
+          if [[ "$pr_state" != "open" ]]; then
+            echo "PR is not open. State: ${pr_state}. Stopping."
+            exit 0
+          fi
+
+          statuses_url=$(echo "$pr_info" | jq -r .statuses_url)
+          curl --no-progress-meter --fail-with-body "${statuses_url}?per_page=100" > statuses.json
+
+          workflow_url=$(<statuses.json jq '.[] | select(.state=="pending" and .context=="ci/circleci: iOS/hold") | .target_url' -r | uniq)
+          workflow_id=$(echo "$workflow_url" | cut -d'/' -f 5)
+          echo "Workflow ID: $workflow_id"
+
+          if [[ -z "$workflow_id" ]]; then
+            echo "Error: workflow ID is missing. Stopping."
+            exit 0
+          fi
+
+          job_id=$(curl --no-progress-meter --fail-with-body --request GET \
+            --header "Circle-Token: $CIRCLE_TOKEN" \
+            "https://circleci.com/api/v2/workflow/$workflow_id/job" | jq -r '.items[] | select(.name=="hold" and .status=="on_hold") | .id')
+
+          if [[ -z "$job_id" ]]; then
+            echo "Error: job ID is missing. Stopping."
+            exit 0
+          fi
+
+          echo "Approving iOS/hold job. Job ID: $job_id"
+          curl --no-progress-meter --fail-with-body --request POST \
+            --header "Circle-Token: $CIRCLE_TOKEN" \
+            "https://circleci.com/api/v2/workflow/$workflow_id/approve/$job_id"

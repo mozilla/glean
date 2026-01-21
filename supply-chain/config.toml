@@ -148,6 +148,14 @@ criteria = "safe-to-run"
 version = "0.3.7"
 criteria = "safe-to-run"
 
+[[exemptions.pulldown-cmark]]
+version = "0.13.0"
+criteria = "safe-to-run"
+
+[[exemptions.pulldown-cmark-to-cmark]]
+version = "22.0.0"
+criteria = "safe-to-run"
+
 [[exemptions.redox_syscall]]
 version = "0.2.13"
 criteria = "safe-to-deploy"
@@ -176,9 +184,9 @@ criteria = "safe-to-deploy"
 version = "3.4.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.toml]]
-version = "0.5.10"
-criteria = "safe-to-deploy"
+[[exemptions.unicase]]
+version = "2.9.0"
+criteria = "safe-to-run"
 
 [[exemptions.uuid]]
 version = "1.3.0"
@@ -229,11 +237,11 @@ version = "0.48.5"
 criteria = "safe-to-deploy"
 
 [[exemptions.xshell]]
-version = "0.2.2"
+version = "0.2.7"
 criteria = "safe-to-deploy"
 
 [[exemptions.xshell-macros]]
-version = "0.2.2"
+version = "0.2.7"
 criteria = "safe-to-deploy"
 
 [[exemptions.xshell-venv]]

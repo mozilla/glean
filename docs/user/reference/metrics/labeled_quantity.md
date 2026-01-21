@@ -76,6 +76,16 @@ gfx::display.get("height").set(height);
 
 mozilla::glean::gfx::display.Get("width"_ns").Set(aWidth);
 mozilla::glean::gfx::display.Get("height"_ns").Set(aHeight);
+
+// If the labels are defined statically in metrics.yaml, you can use enum values instead of strings:
+mozilla::glean::gfx::display.EnumGet(
+  mozilla::glean::gfx::DisplayLabel::eWidth).Set(aWidth);
+mozilla::glean::gfx::display.EnumGet(
+  mozilla::glean::gfx::DisplayLabel::eHeight).Set(aHeight);
+
+// If you would like to use the process type name as a label, you can use ProcessGet():
+mozilla::glean::gfx::display_width_per_process.ProcessGet().Set(aWidth);
+
 ```
 
 **JavaScript**
@@ -326,4 +336,3 @@ Labeled Quantities have the required `unit` parameter, which is a free-form stri
 
 * Python API docs: [`LabeledQuantityMetricType`](../../../python/glean/metrics/labeled.html#glean.metrics.labeled.LabeledQuantityMetricType), [`QuantityMetricType`](../../../python/glean/metrics/index.html#glean.metrics.QuantityMetric)
 * Rust API docs: [`LabeledMetric`](../../../docs/glean/private/struct.LabeledMetric.html), [`QuantityMetric`](../../../docs/glean/private/struct.QuantityMetric.html)
-* Swift API docs: [`LabeledMetricType`](../../../swift/Classes/LabeledMetricType.html), [`QuantityMetric`](../../../swift/Classes/QuantityMetric.html)

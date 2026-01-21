@@ -1,4 +1,4 @@
-# Events
+# Event
 
 Events allow recording of e.g. individual occurrences of user actions,
 say every time a view was open and from where.
@@ -404,4 +404,3 @@ Each extra key contains additional metadata along with it:
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.EventMetricType)
 * [Rust API docs](../../../docs/glean/private/event/struct.EventMetric.html)
-* [Swift API docs](../../../swift/Classes/EventMetric.html)

@@ -40,6 +40,10 @@ pub struct AdditionalMetrics {
     /// An experimentation identifier derived and provided by the application
     /// for the purpose of experimentation enrollment.
     pub experimentation_id: StringMetric,
+
+    /// The number of times we had to clamp an event timestamp
+    /// for exceeding the range of a signed 64-bit integer (9223372036854775807).
+    pub event_timestamp_clamped: CounterMetric,
 }
 
 impl CoreMetrics {
@@ -198,6 +202,15 @@ impl AdditionalMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+
+            event_timestamp_clamped: CounterMetric::new(CommonMetricData {
+                name: "event_timestamp_clamped".into(),
+                category: "glean.error".into(),
+                send_in_pings: vec!["health".into()],
+                lifetime: Lifetime::Ping,
+                disabled: false,
+                dynamic_label: None,
+            }),
         }
     }
 }
@@ -241,7 +254,7 @@ impl UploadMetrics {
 
             discarded_exceeding_pings_size: MemoryDistributionMetric::new(
                 CommonMetricData {
-                    name: "discarded_exceeding_ping_size".into(),
+                    name: "discarded_exceeding_pings_size".into(),
                     category: "glean.upload".into(),
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
@@ -354,7 +367,7 @@ impl DatabaseMetrics {
 
             rkv_load_error: StringMetric::new(CommonMetricData {
                 name: "rkv_load_error".into(),
-                category: "glean.error".into(),
+                category: "glean.database".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

@@ -439,7 +439,6 @@ The allowed values for `memory_unit` are:
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.TimingDistributionMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.MemoryDistributionMetric.html)
-* [Swift API docs](../../../swift/Classes/MemoryDistributionMetric.html)
 
 ## Simulator
 

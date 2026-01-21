@@ -360,4 +360,3 @@ N/A
 
 * [Python API docs](../../../python/glean/metrics/index.html#glean.metrics.UrlMetricType)
 * [Rust API docs](../../../docs/glean/private/struct.UrlMetric.html)
-* [Swift API docs](../../../swift/Classes/UrlMetric.html)

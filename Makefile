@@ -176,7 +176,6 @@ linkcheck-raw:
     --file-ignore "python/.*" \
     --file-ignore "javadoc/.*" \
     --file-ignore "docs/.*" \
-    --url-ignore ".*/swift/.*" \
     --url-ignore ".*/python/.*" \
     --url-ignore ".*/javadoc/.*" \
     --url-ignore ".*/docs/glean_.*" \
@@ -203,3 +202,21 @@ upload-wheels: setup-python
 	VIRTUAL_ENV=$(GLEAN_PYENV) \
 		$(GLEAN_PYENV)/bin/python3 -m twine upload target/wheels/*
 .PHONY: upload-wheels
+
+clean: ## Clean up the object directories (alias for clobber)
+clobber:  ## Clean up the object directories
+	# Rust
+	cargo clean
+	cargo clean --manifest-path tools/devhub/Cargo.toml
+	cargo clean --manifest-path glean-core/benchmark/Cargo.toml
+	# General build folder
+	rm -rf build
+	# Swift artifacts
+	rm -f Glean.xcframework.zip raw_*.log 
+	# Kotlin artifacts
+	./gradlew --no-daemon clean
+	# Python artifacts
+	rm -rf glean-core/python/glean/_uniffi
+	# Python enviromnent
+	[ -n "$(GLEAN_PYENV)" ] && rm -rf ./$(GLEAN_PYENV)
+.PHONY: clobber clean
