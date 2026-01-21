@@ -873,6 +873,11 @@ The following text applies to code linked from these dependencies:
 
 * [crc32fast 1.3.2]( https://github.com/srijs/rust-crc32fast )
 * [humantime 2.1.0]( https://github.com/tailhook/humantime )
+* [serde_spanned 1.0.4]( https://github.com/toml-rs/toml )
+* [toml 0.9.6]( https://github.com/toml-rs/toml )
+* [toml_datetime 0.7.5+spec-1.1.0]( https://github.com/toml-rs/toml )
+* [toml_parser 1.0.2]( https://github.com/toml-rs/toml )
+* [toml_writer 1.0.6+spec-1.1.0]( https://github.com/toml-rs/toml )
 
 ```
                                  Apache License
@@ -1495,9 +1500,9 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [askama 0.13.1]( https://github.com/askama-rs/askama )
-* [askama_derive 0.13.1]( https://github.com/askama-rs/askama )
-* [askama_parser 0.13.0]( https://github.com/askama-rs/askama )
+* [askama 0.14.0]( https://github.com/askama-rs/askama )
+* [askama_derive 0.14.0]( https://github.com/askama-rs/askama )
+* [askama_parser 0.14.0]( https://github.com/askama-rs/askama )
 
 ```
                               Apache License
@@ -1948,7 +1953,6 @@ The following text applies to code linked from these dependencies:
 * [plain 0.2.3]( https://github.com/randomites/plain )
 * [rustix 0.38.20]( https://github.com/bytecodealliance/rustix )
 * [tempfile 3.8.0]( https://github.com/Stebalien/tempfile )
-* [toml 0.5.11]( https://github.com/toml-rs/toml )
 * [unicode-bidi 0.3.8]( https://github.com/servo/unicode-bidi )
 * [unicode-normalization 0.1.22]( https://github.com/unicode-rs/unicode-normalization )
 * [url 2.3.1]( https://github.com/servo/rust-url )
@@ -2375,7 +2379,7 @@ limitations under the License.
 
 The following text applies to code linked from these dependencies:
 
-* [xshell 0.2.2]( https://github.com/matklad/xshell )
+* [xshell 0.2.7]( https://github.com/matklad/xshell )
 
 ```
                               Apache License
@@ -3654,17 +3658,18 @@ The following text applies to code linked from these dependencies:
 * [rustc-hash 2.1.1]( https://github.com/rust-lang/rustc-hash )
 * [ryu 1.0.19]( https://github.com/dtolnay/ryu )
 * [semver 1.0.25]( https://github.com/dtolnay/semver )
-* [serde 1.0.217]( https://github.com/serde-rs/serde )
-* [serde_derive 1.0.217]( https://github.com/serde-rs/serde )
+* [serde 1.0.228]( https://github.com/serde-rs/serde )
+* [serde_core 1.0.228]( https://github.com/serde-rs/serde )
+* [serde_derive 1.0.228]( https://github.com/serde-rs/serde )
 * [serde_json 1.0.138]( https://github.com/serde-rs/json )
-* [siphasher 0.3.11]( https://github.com/jedisct1/rust-siphash )
+* [siphasher 1.0.1]( https://github.com/jedisct1/rust-siphash )
 * [syn 2.0.98]( https://github.com/dtolnay/syn )
 * [thiserror-impl 2.0.12]( https://github.com/dtolnay/thiserror )
 * [thiserror 2.0.12]( https://github.com/dtolnay/thiserror )
 * [tinyvec_macros 0.1.0]( https://github.com/Soveu/tinyvec_macros )
 * [unicode-ident 1.0.16]( https://github.com/dtolnay/unicode-ident )
 * [winapi-x86_64-pc-windows-gnu 0.4.0]( https://github.com/retep998/winapi-rs )
-* [xshell-macros 0.2.2]( https://github.com/matklad/xshell )
+* [xshell-macros 0.2.7]( https://github.com/matklad/xshell )
 
 ```
 Apache License
@@ -4606,9 +4611,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 66.3.0]( https://github.com/mozilla/glean )
+* [glean-core 67.0.0]( https://github.com/mozilla/glean )
 * [glean-build 18.2.0]( https://github.com/mozilla/glean )
-* [glean 66.3.0]( https://github.com/mozilla/glean )
+* [glean 67.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.0]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4995,14 +5000,14 @@ The following text applies to code linked from these dependencies:
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )
-* [uniffi 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_core 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_internal_macros 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_pipeline 0.29.4]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_udl 0.29.4]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_core 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_internal_macros 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_pipeline 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_udl 0.31.0]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0

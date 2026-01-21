@@ -49,6 +49,21 @@ the details of which are reproduced below.
     <name>Apache License 2.0: humantime</name>
     <url>https://github.com/tailhook/humantime</url>
   </license>  <license>
+    <name>Apache License 2.0: serde_spanned</name>
+    <url>https://github.com/toml-rs/toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: toml</name>
+    <url>https://github.com/toml-rs/toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: toml_datetime</name>
+    <url>https://github.com/toml-rs/toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: toml_parser</name>
+    <url>https://github.com/toml-rs/toml</url>
+  </license>  <license>
+    <name>Apache License 2.0: toml_writer</name>
+    <url>https://github.com/toml-rs/toml</url>
+  </license>  <license>
     <name>Apache License 2.0: fd-lock</name>
     <url>https://github.com/yoshuawuyts/fd-lock</url>
   </license>  <license>
@@ -154,9 +169,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
   </license>  <license>
-    <name>Apache License 2.0: toml</name>
-    <url>https://github.com/toml-rs/toml</url>
-  </license>  <license>
     <name>Apache License 2.0: unicode-bidi</name>
     <url>https://github.com/servo/unicode-bidi</url>
   </license>  <license>
@@ -233,6 +245,9 @@ the details of which are reproduced below.
     <url>https://github.com/dtolnay/semver</url>
   </license>  <license>
     <name>Apache License 2.0: serde</name>
+    <url>https://github.com/serde-rs/serde</url>
+  </license>  <license>
+    <name>Apache License 2.0: serde_core</name>
     <url>https://github.com/serde-rs/serde</url>
   </license>  <license>
     <name>Apache License 2.0: serde_derive</name>

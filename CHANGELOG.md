@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.0.0...main)
+
+# v67.0.0 (2026-01-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v66.3.0...v67.0.0)
 
 * General
   * BUGFIX: Correct `glean.database.rkv_load_error`'s category and `glean.upload.discarded_exceeding_pings_size`'s name ([bug 2009475](https://bugzilla.mozilla.org/show_bug.cgi?id=2009475))
