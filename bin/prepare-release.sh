@@ -95,6 +95,7 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 ### Update Cargo.lock
 
 cargo update -p glean-core -p glean
+cargo update --manifest-path glean-core/benchmark/Cargo.toml -p glean-core
 
 ### GLEAN-PYTHON ###
 
