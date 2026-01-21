@@ -118,6 +118,19 @@ fn main() {
     glean::initialize(cfg, client_info);
 
     glean_metrics::test_metrics::sample_boolean.set(true);
+    glean_metrics::test_metrics::sample_counter.add(1);
+    glean_metrics::test_metrics::sample_url.set("data:application/json");
+    glean_metrics::test_metrics::sample_labeled_counter
+        .get("test")
+        .add(1);
+    glean_metrics::test_metrics::sample_labeled_string
+        .get("test")
+        .set(String::from("foo"));
+
+    assert_eq!(
+        Some(1),
+        glean_metrics::test_metrics::sample_counter.test_get_value(None)
+    );
 
     use glean_metrics::party::{BalloonsObject, BalloonsObjectItem};
     let balloons = BalloonsObject::from([

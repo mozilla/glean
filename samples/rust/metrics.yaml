@@ -11,6 +11,36 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 test.metrics:
+  sample_counter:
+    type: counter
+    description: |
+      Just testing booleans
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+      - usage-reporting
+
+  sample_url:
+    type: url
+    description: |
+      Just testing booleans
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+      - usage-reporting
+
   sample_boolean:
     type: boolean
     description: |
@@ -30,6 +60,23 @@ test.metrics:
     type: labeled_counter
     description: |
       Just testing labeled_counter.
+    bugs:
+      - https://bugzilla.mozilla.org/1907991
+    data_reviews:
+      - N/A
+    notification_emails:
+      - nobody@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    no_lint:
+      - COMMON_PREFIX
+
+  sample_labeled_string:
+    <<: *defaults
+    type: labeled_string
+    description: |
+      Just testing labeled_string
     bugs:
       - https://bugzilla.mozilla.org/1907991
     data_reviews:
