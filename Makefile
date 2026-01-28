@@ -203,11 +203,10 @@ upload-wheels: setup-python
 		$(GLEAN_PYENV)/bin/python3 -m twine upload target/wheels/*
 .PHONY: upload-wheels
 
-clean: ## Clean up the object directories (alias for clobber)
-clobber:  ## Clean up the object directories
+clean: clobber  ## Clean up the object directories and build artifacts (alias for clobber)
+clobber:  ## Clean up the object directories and build artifacts
 	# Rust
 	cargo clean
-	cargo clean --manifest-path tools/devhub/Cargo.toml
 	cargo clean --manifest-path glean-core/benchmark/Cargo.toml
 	# General build folder
 	rm -rf build
