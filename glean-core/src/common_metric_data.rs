@@ -6,10 +6,11 @@ use std::ops::Deref;
 use std::sync::atomic::{AtomicU8, Ordering};
 
 use malloc_size_of_derive::MallocSizeOf;
+use rusqlite::Transaction;
 
 use crate::error::{Error, ErrorKind};
 use crate::metrics::dual_labeled_counter::validate_dynamic_key_and_or_category;
-use crate::metrics::labeled::validate_dynamic_label;
+use crate::metrics::labeled::{validate_dynamic_label, validate_dynamic_label_sqlite};
 use crate::Glean;
 use serde::{Deserialize, Serialize};
 
@@ -162,6 +163,25 @@ impl CommonMetricDataInternal {
             self.inner.name.clone()
         } else {
             format!("{}.{}", self.inner.category, self.inner.name)
+        }
+    }
+
+    /// TODO
+    ///
+    /// If `category` is empty, it's ommitted.
+    /// Otherwise, it's the combination of the metric's `category`, `name` and `label`.
+    pub(crate) fn check_labels(&self, tx: &mut Transaction<'_>) -> Option<String> {
+        let base_identifier = self.base_identifier();
+
+        if let Some(label) = &self.inner.dynamic_label {
+            match label {
+                DynamicLabelType::Label(label) => {
+                    validate_dynamic_label_sqlite(tx, &base_identifier, label)
+                }
+                _ => todo!(),
+            }
+        } else {
+            None
         }
     }
 
