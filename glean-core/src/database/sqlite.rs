@@ -17,6 +17,7 @@ use connection::Connection;
 use schema::Schema;
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::metrics::labeled::strip_label;
 use crate::metrics::Metric;
 use crate::Glean;
 use crate::Lifetime;
@@ -187,13 +188,24 @@ impl Database {
             return;
         }
 
-        let name = data.identifier(glean);
+        let base_identifer = data.base_identifier();
+        let name = strip_label(&base_identifer);
 
         _ = self.conn.write(|tx| {
+            let mut labels = String::from("");
+            if let Some(checked_labels) = data.check_labels(tx) {
+                labels = checked_labels;
+            }
+
             for ping_name in data.storage_names() {
-                if let Err(e) =
-                    self.record_per_lifetime(tx, data.inner.lifetime, ping_name, &name, value)
-                {
+                if let Err(e) = self.record_per_lifetime(
+                    tx,
+                    data.inner.lifetime,
+                    ping_name,
+                    &name,
+                    &labels,
+                    value,
+                ) {
                     log::error!(
                         "Failed to record metric '{}' into {}: {:?}",
                         data.base_identifier(),
@@ -224,21 +236,28 @@ impl Database {
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
+        labels: &str,
         metric: &Metric,
     ) -> Result<()> {
         let insert_sql = r#"
         INSERT INTO
-            telemetry (id, ping, lifetime, value)
+            telemetry (id, ping, lifetime, labels, value)
         VALUES
-            (?1, ?2, ?3, ?4)
-        ON CONFLICT(id, ping) DO UPDATE SET
+            (?1, ?2, ?3, ?4,  ?5)
+        ON CONFLICT(id, ping, labels) DO UPDATE SET
             lifetime = excluded.lifetime,
             value = excluded.value
         "#;
 
         let mut stmt = tx.prepare_cached(insert_sql)?;
         let encoded = rmp_serde::to_vec(&metric).expect("IMPOSSIBLE: Serializing metric failed");
-        stmt.execute(params![key, storage_name, lifetime.as_str(), encoded])?;
+        stmt.execute(params![
+            key,
+            storage_name,
+            lifetime.as_str(),
+            labels,
+            encoded
+        ])?;
 
         Ok(())
     }
@@ -254,14 +273,21 @@ impl Database {
             return;
         }
 
+        let base_identifer = data.base_identifier();
+        let name = strip_label(&base_identifer);
+
         _ = self.conn.write(|tx| {
-            let name = data.identifier(glean);
+            let mut labels = String::from("");
+            if let Some(checked_labels) = data.check_labels(tx) {
+                labels = checked_labels;
+            }
             for ping_name in data.storage_names() {
                 if let Err(e) = self.record_per_lifetime_with(
                     tx,
                     data.inner.lifetime,
                     ping_name,
                     &name,
+                    &labels,
                     &mut transform,
                 ) {
                     log::error!(
@@ -295,24 +321,31 @@ impl Database {
         lifetime: Lifetime,
         storage_name: &str,
         key: &str,
+        labels: &str,
         mut transform: F,
     ) -> Result<()>
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        let find_sql = r#"
+        let value_sql = r#"
         SELECT value
         FROM telemetry
         WHERE
-            lifetime = ?1
+            id = ?1
             AND ping = ?2
-            AND id = ?3
+            AND lifetime = ?3
+            AND labels = ?4
         LIMIT 1
         "#;
 
         let new_value = {
-            let mut stmt = tx.prepare_cached(&find_sql)?;
-            let mut rows = stmt.query(params![lifetime.as_str().to_string(), storage_name, key])?;
+            let mut stmt = tx.prepare_cached(value_sql)?;
+            let mut rows = stmt.query(params![
+                key,
+                storage_name,
+                lifetime.as_str().to_string(),
+                labels
+            ])?;
 
             if let Ok(Some(row)) = rows.next() {
                 let blob: Vec<u8> = row.get(0)?;
@@ -325,10 +358,10 @@ impl Database {
 
         let insert_sql = r#"
                     INSERT INTO
-                        telemetry (id, ping, lifetime, value)
+                        telemetry (id, ping, lifetime, labels, value)
                     VALUES
-                        (?1, ?2, ?3, ?4)
-                    ON CONFLICT(id, ping) DO UPDATE SET
+                        (?1, ?2, ?3, ?4, ?5)
+                    ON CONFLICT(id, ping, labels) DO UPDATE SET
                         lifetime = excluded.lifetime,
                         value = excluded.value
                     "#;
@@ -337,7 +370,13 @@ impl Database {
             let mut stmt = tx.prepare_cached(insert_sql)?;
             let encoded =
                 rmp_serde::to_vec(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
-            stmt.execute(params![key, storage_name, lifetime.as_str(), encoded])?;
+            stmt.execute(params![
+                key,
+                storage_name,
+                lifetime.as_str(),
+                labels,
+                encoded
+            ])?;
         }
 
         Ok(())
