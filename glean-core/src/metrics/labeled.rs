@@ -424,7 +424,7 @@ pub fn validate_dynamic_label(
 
     let mut labels = HashSet::new();
     let prefix = &key[..=base_identifier.len()];
-    let mut snapshotter = |metric_id: &[u8], _: &Metric| {
+    let mut snapshotter = |metric_id: &[u8], _labels: &[&str], _: &Metric| {
         labels.insert(metric_id.to_vec());
     };
 
