@@ -400,7 +400,7 @@ fn get_seen_keys_and_categories(
     let prefix = format!("{base_identifier}{RECORD_SEPARATOR}");
     let mut seen_keys: HashSet<String> = HashSet::new();
     let mut seen_categories: HashSet<String> = HashSet::new();
-    let mut snapshotter = |metric_id: &[u8], _: &Metric| {
+    let mut snapshotter = |metric_id: &[u8], labels: &[&str], _: &Metric| {
         let metric_id_str = String::from_utf8_lossy(metric_id);
 
         // Split full identifier on the ASCII Record Separator (\x1e)
