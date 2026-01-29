@@ -99,10 +99,13 @@ impl Database {
     /// This function will **not** panic on database errors.
     pub fn iter_store<F>(&self, lifetime: Lifetime, storage_name: &str, mut transaction_fn: F)
     where
-        F: FnMut(&[u8], &Metric),
+        F: FnMut(&[u8], &[&str], &Metric),
     {
         let iter_sql = r#"
-        SELECT id, value
+        SELECT
+            id,
+            value,
+            labels
         FROM telemetry
         WHERE
             lifetime = ?1
@@ -118,18 +121,20 @@ impl Database {
                         |row| {
                             let id: String = row.get(0)?;
                             let blob: Vec<u8> = row.get(1)?;
+                            let labels: String = row.get(2)?;
                             let blob: Metric = rmp_serde::from_slice(&blob)
                                 .map_err(|_| FromSqlError::InvalidType)?;
-                            Ok((id, blob))
+                            Ok((id, labels, blob))
                         },
                     )
                     .unwrap();
 
                 for row in rows {
-                    let Ok((metric_id, metric)) = row else {
+                    let Ok((metric_id, labels, metric)) = row else {
                         continue;
                     };
-                    transaction_fn(metric_id.as_bytes(), &metric);
+                    let labels = labels.split(',').collect::<Vec<_>>();
+                    transaction_fn(metric_id.as_bytes(), &labels, &metric);
                 }
 
                 Result::<(), ()>::Ok(())
