@@ -18,9 +18,9 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error::{Error, ErrorKind};
 use crate::metrics::labeled::{combine_base_identifier_and_label, strip_label};
 use crate::metrics::CounterMetric;
-use crate::CommonMetricData;
 use crate::Glean;
 use crate::Lifetime;
+use crate::{CommonMetricData, DynamicLabelType};
 
 /// The possible error types for metric recording.
 ///
@@ -103,10 +103,11 @@ fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType
     }
 
     CounterMetric::new(CommonMetricData {
-        name: combine_base_identifier_and_label(error.as_str(), name),
+        name: error.as_str().to_string(),
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
         send_in_pings,
+        dynamic_label: Some(DynamicLabelType::Label(name.to_string())),
         ..Default::default()
     })
 }
