@@ -30,6 +30,9 @@ mod schema;
 pub struct Database {
     /// The database connection.
     conn: connection::Connection,
+
+    /// Initial file size when opening the database.
+    pub(crate) file_size: Option<NonZeroU64>,
 }
 
 impl MallocSizeOf for Database {
@@ -49,6 +52,36 @@ impl std::fmt::Debug for Database {
 
 const DEFAULT_DATABASE_FILE_NAME: &str = "glean.sqlite";
 
+/// Calculate the database size from all the files in the directory.
+///
+///  # Arguments
+///
+///  *`path` - The path to the directory
+///
+///  # Returns
+///
+/// Returns the non-zero combined size of all files in a directory,
+/// or `None` on error or if the size is `0`.
+fn database_size(dir: &Path) -> Option<NonZeroU64> {
+    let mut total_size = 0;
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            if let Ok(file_type) = entry.file_type() {
+                if file_type.is_file() {
+                    let path = entry.path();
+                    if let Ok(metadata) = fs::metadata(path) {
+                        total_size += metadata.len();
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    NonZeroU64::new(total_size)
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -62,19 +95,20 @@ impl Database {
     ) -> Result<Self> {
         let path = data_path.join("db");
         log::debug!("Database path: {:?}", path.display());
+        let file_size = database_size(&path);
 
         fs::create_dir_all(&path)?;
         let store_path = path.join(DEFAULT_DATABASE_FILE_NAME);
         let conn = Connection::new::<Schema>(&store_path).unwrap();
 
-        let db = Self { conn };
+        let db = Self { conn, file_size };
 
         Ok(db)
     }
 
     /// Get the initial database file size.
     pub fn file_size(&self) -> Option<NonZeroU64> {
-        None
+        self.file_size
     }
 
     /// Get the rkv load state.
