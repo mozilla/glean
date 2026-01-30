@@ -170,7 +170,7 @@ impl CommonMetricDataInternal {
     ///
     /// Returns a label to use, which might be the fallback label `__other__`,
     /// or `None` if no label is set.
-    pub(crate) fn check_labels(&self, tx: &mut Transaction<'_>) -> Option<String> {
+    pub(crate) fn check_labels(&self, tx: &Transaction<'_>) -> Option<String> {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.inner.dynamic_label {
