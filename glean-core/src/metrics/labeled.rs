@@ -448,7 +448,7 @@ pub fn validate_dynamic_label(
 }
 
 pub fn validate_dynamic_label_sqlite(
-    tx: &mut Transaction,
+    tx: &Transaction,
     base_identifier: &str,
     label: &str,
 ) -> Option<String> {
