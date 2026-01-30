@@ -170,7 +170,7 @@ impl CommonMetricDataInternal {
     ///
     /// If `category` is empty, it's ommitted.
     /// Otherwise, it's the combination of the metric's `category`, `name` and `label`.
-    pub(crate) fn check_labels(&self, tx: &mut Transaction<'_>) -> Option<String> {
+    pub(crate) fn check_labels(&self, tx: &Transaction<'_>) -> Option<String> {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.inner.dynamic_label {
