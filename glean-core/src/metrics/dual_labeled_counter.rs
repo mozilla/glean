@@ -108,23 +108,20 @@ impl DualLabeledCounterMetric {
     /// the static or dynamic labels where needed.
     fn new_counter_metric(&self, key: &str, category: &str) -> CounterMetric {
         match (&self.keys, &self.categories) {
-            (None, None) => self
-                .counter
-                .with_dynamic_label(DynamicLabelType::KeyAndCategory(
-                    make_label_from_key_and_category(key, category),
-                )),
+            (None, None) => self.counter.with_label(DynamicLabelType::KeyAndCategory(
+                make_label_from_key_and_category(key, category),
+            )),
             (None, _) => {
                 let static_category = self.static_category(category);
-                self.counter.with_dynamic_label(DynamicLabelType::KeyOnly(
+                self.counter.with_label(DynamicLabelType::KeyOnly(
                     make_label_from_key_and_category(key, static_category),
                 ))
             }
             (_, None) => {
                 let static_key = self.static_key(key);
-                self.counter
-                    .with_dynamic_label(DynamicLabelType::CategoryOnly(
-                        make_label_from_key_and_category(static_key, category),
-                    ))
+                self.counter.with_label(DynamicLabelType::CategoryOnly(
+                    make_label_from_key_and_category(static_key, category),
+                ))
             }
             (_, _) => {
                 // Both labels are static and can be validated now
@@ -327,6 +324,7 @@ pub fn validate_dynamic_key_and_or_category(
         // one(s) to check based on the label variant.
         let (seen_keys, seen_categories) = get_seen_keys_and_categories(meta, glean);
         match label {
+            DynamicLabelType::Static(_) => todo!(),
             DynamicLabelType::Label(ref label) => {
                 record_error(
                     glean,
