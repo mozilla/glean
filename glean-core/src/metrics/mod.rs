@@ -196,7 +196,7 @@ pub trait MetricType {
     }
 
     /// Create a new metric from this with a specific label.
-    fn with_dynamic_label(&self, _label: DynamicLabelType) -> Self
+    fn with_label(&self, _label: DynamicLabelType) -> Self
     where
         Self: Sized,
     {
