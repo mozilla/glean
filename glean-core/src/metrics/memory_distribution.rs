@@ -64,7 +64,7 @@ impl MetricType for MemoryDistributionMetric {
         }
     }
 
-    fn with_dynamic_label(&self, label: DynamicLabelType) -> Self {
+    fn with_label(&self, label: DynamicLabelType) -> Self {
         let mut meta = (*self.meta).clone();
         meta.inner.dynamic_label = Some(label);
         Self {
