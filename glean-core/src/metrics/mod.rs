@@ -321,7 +321,8 @@ where
 {
     fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>) {
         let meta = &self.meta().inner;
-        (&meta.category, &meta.name, meta.dynamic_label.as_deref())
+        todo!()
+        //(&meta.category, &meta.name, meta.dynamic_label.as_deref())
     }
 }
 
