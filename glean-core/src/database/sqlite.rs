@@ -261,11 +261,6 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
-        // If upload is disabled we don't want to record.
-        if !glean.is_upload_enabled() {
-            return;
-        }
-
         let base_identifer = data.base_identifier();
         let name = strip_label(&base_identifer);
 
@@ -276,20 +271,22 @@ impl Database {
             }
 
             for ping_name in data.storage_names() {
-                if let Err(e) = self.record_per_lifetime(
-                    tx,
-                    data.inner.lifetime,
-                    ping_name,
-                    &name,
-                    &labels,
-                    value,
-                ) {
-                    log::error!(
-                        "Failed to record metric '{}' into {}: {:?}",
-                        data.base_identifier(),
+                if glean.is_ping_enabled(ping_name) {
+                    if let Err(e) = self.record_per_lifetime(
+                        tx,
+                        data.inner.lifetime,
                         ping_name,
-                        e
-                    );
+                        name,
+                        &labels,
+                        value,
+                    ) {
+                        log::error!(
+                            "Failed to record metric '{}' into {}: {:?}",
+                            data.base_identifier(),
+                            ping_name,
+                            e
+                        );
+                    }
                 }
             }
 
@@ -346,11 +343,6 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        // If upload is disabled we don't want to record.
-        if !glean.is_upload_enabled() {
-            return;
-        }
-
         let base_identifer = data.base_identifier();
         let name = strip_label(&base_identifer);
 
@@ -360,20 +352,22 @@ impl Database {
                 labels = checked_labels;
             }
             for ping_name in data.storage_names() {
-                if let Err(e) = self.record_per_lifetime_with(
-                    tx,
-                    data.inner.lifetime,
-                    ping_name,
-                    &name,
-                    &labels,
-                    &mut transform,
-                ) {
-                    log::error!(
-                        "Failed to record metric '{}' into {}: {:?}",
-                        data.base_identifier(),
+                if glean.is_ping_enabled(ping_name) {
+                    if let Err(e) = self.record_per_lifetime_with(
+                        tx,
+                        data.inner.lifetime,
                         ping_name,
-                        e
-                    );
+                        name,
+                        &labels,
+                        &mut transform,
+                    ) {
+                        log::error!(
+                            "Failed to record metric '{}' into {}: {:?}",
+                            data.base_identifier(),
+                            ping_name,
+                            e
+                        );
+                    }
                 }
             }
 
