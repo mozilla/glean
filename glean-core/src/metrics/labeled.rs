@@ -13,7 +13,9 @@ use malloc_size_of::MallocSizeOf;
 use rusqlite::{params, Transaction};
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
-use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
+use crate::error_recording::{
+    record_error, record_error_sqlite, test_get_num_recorded_errors, ErrorType,
+};
 use crate::histogram::HistogramType;
 use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
@@ -374,8 +376,8 @@ where
 }
 
 /// Combines a metric's base identifier and label
-pub fn combine_base_identifier_and_label(base_identifer: &str, label: &str) -> String {
-    format!("{}/{}", base_identifer, label)
+pub fn combine_base_identifier_and_label(base_identifier: &str, label: &str) -> String {
+    format!("{}/{}", base_identifier, label)
 }
 
 /// Strips the label off of a complete identifier
@@ -445,49 +447,54 @@ pub fn validate_dynamic_label(
 }
 
 pub fn validate_dynamic_label_sqlite(
-    tx: &Transaction,
+    tx: &mut Transaction,
     base_identifier: &str,
     label: &str,
+    send_in_pings: &[String],
 ) -> Option<String> {
     let existing_labels_sql = "SELECT DISTINCT labels FROM telemetry WHERE id = ?1";
 
-    let Ok(mut stmt) = tx.prepare_cached(&existing_labels_sql) else {
-        // If we can't fetch from the database, assume the label is ok to use
-        return Some(label.to_string());
-    };
-
-    let Ok(mut rows) = stmt.query(params![base_identifier]) else {
-        // If we can't fetch from the database, assume the label is ok to use
-        return Some(label.to_string());
-    };
-
     let mut label_already_used = false;
     let mut label_count = 0;
-    while let Ok(Some(row)) = rows.next() {
-        let existing_label: String = row.get(0).unwrap();
+    {
+        let Ok(mut stmt) = tx.prepare(existing_labels_sql) else {
+            // If we can't fetch from the database, assume the label is ok to use
+            return Some(label.to_string());
+        };
 
-        label_count += 1;
-        if existing_label == label {
-            label_already_used = true;
-            break;
+        let Ok(mut rows) = stmt.query(params![base_identifier]) else {
+            // If we can't fetch from the database, assume the label is ok to use
+            return Some(label.to_string());
+        };
+
+        while let Ok(Some(row)) = rows.next() {
+            let existing_label: String = row.get(0).unwrap();
+
+            label_count += 1;
+            if existing_label == label {
+                label_already_used = true;
+                break;
+            }
         }
     }
 
-    if label_already_used || label_count < MAX_LABELS {
-        return Some(label.to_string());
-    }
-
-    /*
+    if !label_already_used && label_count >= MAX_LABELS {
+        Some(String::from(OTHER_LABEL))
     } else if label.len() > MAX_LABEL_LENGTH {
-        let msg = format!(
+        log::warn!(
             "label length {} exceeds maximum of {}",
             label.len(),
             MAX_LABEL_LENGTH
         );
-        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
-        true
+        record_error_sqlite(
+            tx,
+            base_identifier,
+            send_in_pings,
+            ErrorType::InvalidLabel,
+            1,
+        );
+        Some(String::from(OTHER_LABEL))
     } else {
-    */
-
-    Some(String::from(OTHER_LABEL))
+        Some(label.to_string())
+    }
 }

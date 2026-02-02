@@ -18,6 +18,7 @@ use connection::Connection;
 use schema::Schema;
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::labeled::strip_label;
 use crate::metrics::Metric;
 use crate::Glean;
@@ -168,7 +169,7 @@ impl Database {
                     let Ok((metric_id, labels, metric)) = row else {
                         continue;
                     };
-                    let labels = labels.split(',').collect::<Vec<_>>();
+                    let labels = labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
                     transaction_fn(metric_id.as_bytes(), &labels, &metric);
                 }
 
@@ -261,8 +262,8 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
-        let base_identifer = data.base_identifier();
-        let name = strip_label(&base_identifer);
+        let base_identifier = data.base_identifier();
+        let name = strip_label(&base_identifier);
 
         _ = self.conn.write(|tx| {
             let mut labels = String::from("");
@@ -343,8 +344,8 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        let base_identifer = data.base_identifier();
-        let name = strip_label(&base_identifer);
+        let base_identifier = data.base_identifier();
+        let name = strip_label(&base_identifier);
 
         _ = self.conn.write(|tx| {
             let mut labels = String::from("");
