@@ -253,8 +253,8 @@ where
     /// Creates a new metric with a specific label.
     ///
     /// This is used for static labels where we can just set the name to be `name/label`.
-    fn new_metric_with_name(&self, name: String) -> T {
-        self.submetric.with_name(name)
+    fn new_metric_with_label(&self, label: DynamicLabelType) -> T {
+        self.submetric.with_label(label)
     }
 
     /// Creates a new metric with a specific label.
@@ -262,7 +262,7 @@ where
     /// This is used for dynamic labels where we have to actually validate and correct the
     /// label later when we have a Glean object.
     fn new_metric_with_dynamic_label(&self, label: DynamicLabelType) -> T {
-        self.submetric.with_dynamic_label(label)
+        self.submetric.with_label(label)
     }
 
     /// Creates a static label.
@@ -320,10 +320,7 @@ where
                 let metric = match self.labels {
                     Some(_) => {
                         let label = self.static_label(label);
-                        self.new_metric_with_name(combine_base_identifier_and_label(
-                            &self.submetric.meta().inner.name,
-                            label,
-                        ))
+                        self.new_metric_with_label(DynamicLabelType::Static(label.to_string()))
                     }
                     None => self
                         .new_metric_with_dynamic_label(DynamicLabelType::Label(label.to_string())),

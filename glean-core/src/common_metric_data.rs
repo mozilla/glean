@@ -82,6 +82,8 @@ pub struct CommonMetricData {
 /// the necessary validation to be performed.
 #[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf, uniffi::Enum)]
 pub enum DynamicLabelType {
+    /// Static Label -- no validation required
+    Static(String),
     /// A dynamic label applied from a `LabeledMetric`
     Label(String),
     /// A label applied by a `DualLabeledCounter` that contains a dynamic key
@@ -103,6 +105,7 @@ impl Deref for DynamicLabelType {
 
     fn deref(&self) -> &Self::Target {
         match self {
+            DynamicLabelType::Static(label) => todo!(),
             DynamicLabelType::Label(label) => label,
             DynamicLabelType::KeyOnly(key) => key,
             DynamicLabelType::CategoryOnly(category) => category,
@@ -175,6 +178,7 @@ impl CommonMetricDataInternal {
 
         if let Some(label) = &self.inner.dynamic_label {
             match label {
+                DynamicLabelType::Static(label) => Some(label.to_string()),
                 DynamicLabelType::Label(label) => {
                     validate_dynamic_label_sqlite(tx, &base_identifier, label)
                 }
