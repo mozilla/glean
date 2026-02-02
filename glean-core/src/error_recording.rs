@@ -14,10 +14,13 @@
 
 use std::fmt::Display;
 
+use rusqlite::params;
+use rusqlite::Transaction;
+
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error::{Error, ErrorKind};
 use crate::metrics::labeled::{combine_base_identifier_and_label, strip_label};
-use crate::metrics::CounterMetric;
+use crate::metrics::{CounterMetric, Metric};
 use crate::Glean;
 use crate::Lifetime;
 use crate::{CommonMetricData, DynamicLabelType};
@@ -141,6 +144,86 @@ pub fn record_error<O: Into<Option<i32>>>(
     let to_report = num_errors.into().unwrap_or(1);
     debug_assert!(to_report > 0);
     metric.add_sync(glean, to_report);
+}
+
+pub fn record_error_sqlite(
+    tx: &mut Transaction,
+    metric_name: &str,
+    send_in_pings: &[String],
+    error: ErrorType,
+    num_errors: i32,
+) {
+    assert!(num_errors > 0);
+
+    let ping_name = "metrics".to_string();
+    let need_metrics = !send_in_pings.contains(&ping_name);
+
+    let full_id = format!("glean.error.{}", error.as_str());
+    let lifetime = Lifetime::Ping;
+    let transform = |old_value| match old_value {
+        Some(Metric::Counter(old_value)) => Metric::Counter(old_value.saturating_add(num_errors)),
+        _ => Metric::Counter(num_errors),
+    };
+
+    let value_sql = r#"
+        SELECT value
+        FROM telemetry
+        WHERE
+            id = ?1
+            AND ping = ?2
+            AND lifetime = ?3
+            AND labels = ?4
+        LIMIT 1
+    "#;
+
+    let insert_sql = r#"
+        INSERT INTO
+            telemetry (id, ping, lifetime, labels, value)
+        VALUES
+            (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(id, ping, labels) DO UPDATE SET
+            lifetime = excluded.lifetime,
+            value = excluded.value
+    "#;
+
+    for ping in send_in_pings
+        .iter()
+        .chain(need_metrics.then_some(&ping_name))
+    {
+        let new_value = {
+            let mut stmt = tx.prepare_cached(value_sql).unwrap();
+            let mut rows = stmt
+                .query(params![
+                    full_id,
+                    ping,
+                    lifetime.as_str().to_string(),
+                    metric_name
+                ])
+                .unwrap();
+
+            if let Ok(Some(row)) = rows.next() {
+                let blob: Vec<u8> = row.get(0).unwrap();
+                let old_value = rmp_serde::from_slice(&blob).ok();
+                transform(old_value)
+            } else {
+                transform(None)
+            }
+        };
+
+        {
+            let mut stmt = tx.prepare_cached(insert_sql).unwrap();
+            let encoded =
+                rmp_serde::to_vec(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
+            stmt.execute(params![
+                full_id,
+                ping,
+                lifetime.as_str(),
+                metric_name,
+                encoded
+            ])
+            .unwrap();
+        }
+    }
 }
 
 /// Gets the number of recorded errors for the given metric and error type.
