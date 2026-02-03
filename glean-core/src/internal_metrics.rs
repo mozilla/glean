@@ -467,8 +467,8 @@ impl HealthMetrics {
             file_read_error: LabeledMetric::<CounterMetric>::new(
                 LabeledMetricData::Common {
                     cmd: CommonMetricData {
-                        category: "glean.health".into(),
                         name: "file_read_error".into(),
+                        category: "glean.health".into(),
                         send_in_pings: vec!["health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
@@ -486,8 +486,8 @@ impl HealthMetrics {
             file_write_error: LabeledMetric::<CounterMetric>::new(
                 LabeledMetricData::Common {
                     cmd: CommonMetricData {
-                        category: "glean.health".into(),
                         name: "file_write_error".into(),
+                        category: "glean.health".into(),
                         send_in_pings: vec!["health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
