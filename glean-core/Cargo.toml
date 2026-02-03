@@ -59,6 +59,7 @@ criterion = "0.7.0"
 pulldown-cmark = { version = "0.13.0", default-features = false }
 pulldown-cmark-to-cmark = "22.0.0"
 xshell = "0.2.7"
+yaml-rust2 = "0.10"
 
 [build-dependencies]
 uniffi = { version = "0.31.0", default-features = false, features = ["build"] }
