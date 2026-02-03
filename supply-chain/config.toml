@@ -37,7 +37,7 @@ version = "1.3.3"
 criteria = "safe-to-deploy"
 
 [[exemptions.bytes]]
-version = "1.3.0"
+version = "1.11.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.chrono]]
