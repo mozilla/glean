@@ -9,7 +9,6 @@ use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::{Bucketing, Histogram, HistogramType, LinearOrExponential};
 use crate::metrics::{DistributionData, Metric, MetricType};
-use crate::storage::StorageManager;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
 
@@ -218,13 +217,7 @@ impl CustomDistributionMetric {
             .into()
             .unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
-        match StorageManager.snapshot_metric(
-            glean.storage(),
-            queried_ping_name,
-            &self.meta.identifier(glean),
-            self.meta.inner.lifetime,
-        ) {
-            // Boxing the value, in order to return either of the possible buckets
+        match glean.storage().get_metric(self.meta(), queried_ping_name) {
             Some(Metric::CustomDistributionExponential(hist)) => Some(snapshot(&hist)),
             Some(Metric::CustomDistributionLinear(hist)) => Some(snapshot(&hist)),
             _ => None,
