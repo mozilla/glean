@@ -2,14 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::ops::Deref;
 use std::sync::atomic::{AtomicU8, Ordering};
 
 use malloc_size_of_derive::MallocSizeOf;
 use rusqlite::Transaction;
 
 use crate::error::{Error, ErrorKind};
-use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::dual_labeled_counter::{
     validate_dual_label_sqlite, validate_dynamic_key_and_or_category,
 };
