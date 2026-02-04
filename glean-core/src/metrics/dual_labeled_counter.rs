@@ -11,10 +11,8 @@ use std::sync::{Arc, Mutex};
 use rusqlite::{params, Transaction};
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
-use crate::error_recording::{
-    record_error, record_error_sqlite, test_get_num_recorded_errors, ErrorType,
-};
-use crate::metrics::{CounterMetric, Metric, MetricType};
+use crate::error_recording::{record_error_sqlite, test_get_num_recorded_errors, ErrorType};
+use crate::metrics::{CounterMetric, MetricType};
 use crate::{Glean, TestGetValue};
 
 const MAX_LABELS: usize = 16;
@@ -251,38 +249,6 @@ impl TestGetValue for DualLabeledCounterMetric {
     }
 }
 
-/// Combines a metric's base identifier and label
-pub fn combine_base_identifier_and_labels(
-    base_identifier: &str,
-    key: &str,
-    category: &str,
-) -> String {
-    format!(
-        "{}{}",
-        base_identifier,
-        make_label_from_key_and_category(key, category)
-    )
-}
-
-/// Separate label into key and category components.
-/// Must validate the label format before calling this to ensure it doesn't contain
-/// any ASCII record separator characters aside from the one's we put there.
-pub fn separate_label_into_key_and_category(label: &str) -> Option<(&str, &str)> {
-    label
-        .strip_prefix(RECORD_SEPARATOR)
-        .unwrap_or(label)
-        .split_once(RECORD_SEPARATOR)
-}
-
-/// Construct and return a label from a given key and category with the RECORD_SEPARATOR
-/// characters in the format: `<RS><key><RS><category>`
-pub fn make_label_from_key_and_category(key: &str, category: &str) -> String {
-    format!(
-        "{}{}{}{}",
-        RECORD_SEPARATOR, key, RECORD_SEPARATOR, category
-    )
-}
-
 /// Validates a dynamic label, changing it to `OTHER_LABEL` if it's invalid.
 ///
 /// Checks the requested label against limitations, such as the label length and allowed
@@ -410,56 +376,4 @@ fn label_is_valid_sqlite<'a>(
     } else {
         label
     }
-}
-
-fn label_is_valid(label: &str, glean: &Glean, meta: &CommonMetricDataInternal) -> bool {
-    if label.len() > MAX_LABEL_LENGTH {
-        let msg = format!(
-            "label length {} exceeds maximum of {}",
-            label.len(),
-            MAX_LABEL_LENGTH
-        );
-        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
-        false
-    } else {
-        true
-    }
-}
-
-fn get_seen_keys_and_categories(
-    meta: &CommonMetricDataInternal,
-    glean: &Glean,
-) -> (HashSet<String>, HashSet<String>) {
-    let base_identifier = &meta.base_identifier();
-    let prefix = format!("{base_identifier}{RECORD_SEPARATOR}");
-    let mut seen_keys: HashSet<String> = HashSet::new();
-    let mut seen_categories: HashSet<String> = HashSet::new();
-    let mut snapshotter = |metric_id: &[u8], _: &Metric| {
-        let metric_id_str = String::from_utf8_lossy(metric_id);
-
-        // Split full identifier on the ASCII Record Separator (\x1e)
-        let parts: Vec<&str> = metric_id_str.split(RECORD_SEPARATOR).collect();
-
-        if parts.len() == 2 {
-            seen_keys.insert(parts[0].into());
-            seen_categories.insert(parts[1].into());
-        } else {
-            record_error(
-                glean,
-                meta,
-                ErrorType::InvalidLabel,
-                "Dual Labeled Counter label doesn't contain exactly 2 parts".to_string(),
-                None,
-            );
-        }
-    };
-
-    let lifetime = meta.inner.lifetime;
-    for store in &meta.inner.send_in_pings {
-        glean
-            .storage()
-            .iter_store_from(lifetime, store, &prefix, &mut snapshotter);
-    }
-
-    (seen_keys, seen_categories)
 }

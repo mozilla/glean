@@ -11,7 +11,6 @@ use std::collections::HashMap;
 use serde_json::{json, Value as JsonValue};
 
 use crate::database::sqlite::Database;
-use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
@@ -184,7 +183,7 @@ impl StorageManager {
     ) -> Option<Metric> {
         let mut snapshot: Option<Metric> = None;
 
-        let mut snapshotter = |id: &[u8], labels: &[&str], metric: &Metric| {
+        let mut snapshotter = |id: &[u8], _labels: &[&str], metric: &Metric| {
             let id = String::from_utf8_lossy(id).into_owned();
             if id == metric_id {
                 snapshot = Some(metric.clone())
@@ -227,7 +226,7 @@ impl StorageManager {
     ) -> Option<JsonValue> {
         let mut snapshot: HashMap<String, JsonValue> = HashMap::new();
 
-        let mut snapshotter = |metric_id: &[u8], labels: &[&str], metric: &Metric| {
+        let mut snapshotter = |metric_id: &[u8], _labels: &[&str], metric: &Metric| {
             let metric_id = String::from_utf8_lossy(metric_id).into_owned();
             if metric_id.ends_with("#experiment") {
                 let (name, _) = metric_id.split_once('#').unwrap(); // safe unwrap, we ensured there's a `#` in the string

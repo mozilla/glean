@@ -4,7 +4,6 @@
 
 use std::any::Any;
 use std::borrow::Cow;
-use std::collections::HashSet;
 use std::collections::{hash_map::Entry, HashMap};
 use std::mem;
 use std::sync::{Arc, Mutex};
@@ -13,14 +12,11 @@ use malloc_size_of::MallocSizeOf;
 use rusqlite::{params, Transaction};
 
 use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
-use crate::error_recording::{
-    record_error, record_error_sqlite, test_get_num_recorded_errors, ErrorType,
-};
+use crate::error_recording::{record_error_sqlite, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
-    Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit,
-    TimingDistributionMetric,
+    MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit, TimingDistributionMetric,
 };
 use crate::Glean;
 
@@ -375,11 +371,6 @@ where
     }
 }
 
-/// Combines a metric's base identifier and label
-pub fn combine_base_identifier_and_label(base_identifier: &str, label: &str) -> String {
-    format!("{}/{}", base_identifier, label)
-}
-
 /// Strips the label off of a complete identifier
 pub fn strip_label(identifier: &str) -> &str {
     identifier.split_once('/').map_or(identifier, |s| s.0)
@@ -399,51 +390,12 @@ pub fn strip_label(identifier: &str) -> &str {
 /// The entire identifier for the metric, including the base identifier and the corrected label.
 /// The errors are logged.
 pub fn validate_dynamic_label(
-    glean: &Glean,
-    meta: &CommonMetricDataInternal,
-    base_identifier: &str,
-    label: &str,
+    _glean: &Glean,
+    _meta: &CommonMetricDataInternal,
+    _base_identifier: &str,
+    _label: &str,
 ) -> String {
-    let key = combine_base_identifier_and_label(base_identifier, label);
-    for store in &meta.inner.send_in_pings {
-        if glean.storage().has_metric(meta.inner.lifetime, store, &key) {
-            return key;
-        }
-    }
-
-    let mut labels = HashSet::new();
-    let prefix = &key[..=base_identifier.len()];
-    let mut snapshotter = |metric_id: &[u8], _: &Metric| {
-        labels.insert(metric_id.to_vec());
-    };
-
-    let lifetime = meta.inner.lifetime;
-    for store in &meta.inner.send_in_pings {
-        glean
-            .storage()
-            .iter_store_from(lifetime, store, prefix, &mut snapshotter);
-    }
-
-    let label_count = labels.len();
-    let error = if label_count >= MAX_LABELS {
-        true
-    } else if label.len() > MAX_LABEL_LENGTH {
-        let msg = format!(
-            "label length {} exceeds maximum of {}",
-            label.len(),
-            MAX_LABEL_LENGTH
-        );
-        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
-        true
-    } else {
-        false
-    };
-
-    if error {
-        combine_base_identifier_and_label(base_identifier, OTHER_LABEL)
-    } else {
-        key
-    }
+    panic!("not validating labels like this anymore");
 }
 
 pub fn validate_dynamic_label_sqlite(

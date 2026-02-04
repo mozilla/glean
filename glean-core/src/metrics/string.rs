@@ -8,7 +8,6 @@ use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
-use crate::storage::StorageManager;
 use crate::util::truncate_string_at_boundary_with_error;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
