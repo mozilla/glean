@@ -83,12 +83,7 @@ impl PingMaker {
             ..Default::default()
         });
 
-        let current_seq = match StorageManager.snapshot_metric(
-            glean.storage(),
-            INTERNAL_STORAGE,
-            &seq.meta().identifier(glean),
-            seq.meta().inner.lifetime,
-        ) {
+        let current_seq = match glean.storage().get_metric(seq.meta(), INTERNAL_STORAGE) {
             Some(Metric::Counter(i)) => i,
             _ => 0,
         };
