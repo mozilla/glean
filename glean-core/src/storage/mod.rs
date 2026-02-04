@@ -174,7 +174,7 @@ impl StorageManager {
     /// # Returns
     ///
     /// The decoded metric or `None` if no data is found.
-    pub fn snapshot_metric(
+    pub fn _snapshot_metric(
         &self,
         storage: &Database,
         store_name: &str,
