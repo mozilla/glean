@@ -9,7 +9,6 @@ use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
-use crate::storage::StorageManager;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
 
