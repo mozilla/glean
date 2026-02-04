@@ -10,7 +10,6 @@ use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorTy
 use crate::metrics::time_unit::TimeUnit;
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
-use crate::storage::StorageManager;
 use crate::util::{get_iso_time_string, local_now_with_offset};
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
@@ -218,12 +217,7 @@ impl DatetimeMetric {
     ) -> Option<(ChronoDatetime, TimeUnit)> {
         let queried_ping_name = ping_name.unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
-        match StorageManager.snapshot_metric(
-            glean.storage(),
-            queried_ping_name,
-            &self.meta.identifier(glean),
-            self.meta.inner.lifetime,
-        ) {
+        match glean.storage().get_metric(self.meta(), queried_ping_name) {
             Some(Metric::Datetime(d, tu)) => Some((d, tu)),
             _ => None,
         }

@@ -1278,12 +1278,10 @@ impl Glean {
     /// Checks the stored value of the "dirty flag".
     pub fn is_dirty_flag_set(&self) -> bool {
         let dirty_bit_metric = self.get_dirty_bit_metric();
-        match StorageManager.snapshot_metric(
-            self.storage(),
-            INTERNAL_STORAGE,
-            &dirty_bit_metric.meta().identifier(self),
-            dirty_bit_metric.meta().inner.lifetime,
-        ) {
+        match self
+            .storage()
+            .get_metric(dirty_bit_metric.meta(), INTERNAL_STORAGE)
+        {
             Some(Metric::Boolean(b)) => b,
             _ => false,
         }

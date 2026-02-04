@@ -11,14 +11,13 @@ use std::sync::{Arc, Mutex};
 use malloc_size_of::MallocSizeOf;
 use rusqlite::{params, Transaction};
 
-use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
+use crate::common_metric_data::{CommonMetricData, DynamicLabelType};
 use crate::error_recording::{record_error_sqlite, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
     MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit, TimingDistributionMetric,
 };
-use crate::Glean;
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -374,28 +373,6 @@ where
 /// Strips the label off of a complete identifier
 pub fn strip_label(identifier: &str) -> &str {
     identifier.split_once('/').map_or(identifier, |s| s.0)
-}
-
-/// Validates a dynamic label, changing it to `OTHER_LABEL` if it's invalid.
-///
-/// Checks the requested label against limitations, such as the label length and allowed
-/// characters.
-///
-/// # Arguments
-///
-/// * `label` - The requested label
-///
-/// # Returns
-///
-/// The entire identifier for the metric, including the base identifier and the corrected label.
-/// The errors are logged.
-pub fn validate_dynamic_label(
-    _glean: &Glean,
-    _meta: &CommonMetricDataInternal,
-    _base_identifier: &str,
-    _label: &str,
-) -> String {
-    panic!("not validating labels like this anymore");
 }
 
 pub fn validate_dynamic_label_sqlite(
