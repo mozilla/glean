@@ -19,7 +19,6 @@ use rusqlite::Transaction;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error::{Error, ErrorKind};
-use crate::metrics::labeled::{combine_base_identifier_and_label, strip_label};
 use crate::metrics::{CounterMetric, Metric};
 use crate::Glean;
 use crate::Lifetime;
@@ -95,8 +94,7 @@ impl TryFrom<i32> for ErrorType {
 fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType) -> CounterMetric {
     // Can't use meta.identifier here, since that might cause infinite recursion
     // if the label on this metric needs to report an error.
-    let identifier = meta.base_identifier();
-    let name = strip_label(&identifier);
+    let name = meta.base_identifier();
 
     // Record errors in the pings the metric is in, as well as the metrics ping.
     let mut send_in_pings = meta.inner.send_in_pings.clone();
