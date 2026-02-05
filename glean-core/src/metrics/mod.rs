@@ -233,17 +233,13 @@ pub trait MetricType {
         let remote_settings_config = &glean.remote_settings_config.lock().unwrap();
         // Get the value from the remote configuration if it is there, otherwise return the default value.
         let current_disabled = {
-            let base_id = self.meta().base_identifier();
-            let identifier = base_id
-                .split_once('/')
-                .map(|split| split.0)
-                .unwrap_or(&base_id);
+            let identifier = self.meta().base_identifier();
             // NOTE: The `!` preceding the `*is_enabled` is important for inverting the logic since the
             // underlying property in the metrics.yaml is `disabled` and the outward API is treating it as
             // if it were `enabled` to make it easier to understand.
 
             if !remote_settings_config.metrics_enabled.is_empty() {
-                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(identifier) {
+                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(&identifier) {
                     u8::from(!*is_enabled)
                 } else {
                     u8::from(self.meta().inner.disabled)
