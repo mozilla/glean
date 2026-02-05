@@ -10,8 +10,10 @@ use std::sync::{Arc, Mutex};
 
 use rusqlite::{params, Transaction};
 
-use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, DynamicLabelType};
-use crate::error_recording::{record_error_sqlite, test_get_num_recorded_errors, ErrorType};
+use crate::common_metric_data::{
+    CommonMetricData, CommonMetricDataInternal, DynamicLabelType, LabelCheck,
+};
+use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{CounterMetric, MetricType};
 use crate::TestGetValue;
 
@@ -250,28 +252,19 @@ impl TestGetValue for DualLabeledCounterMetric {
 }
 
 pub fn validate_dual_label_sqlite(
-    tx: &mut Transaction,
+    tx: &Transaction,
     base_identifier: &str,
     key: &str,
     category: &str,
-    send_in_pings: &[String],
-) -> Option<String> {
+) -> LabelCheck {
     let existing_labels_sql = "SELECT DISTINCT labels FROM telemetry WHERE id = ?1";
 
     // TODO: We can now detect if _either_ key or category contains `RECORD_SEPARATOR` and thus keep
     // the other potentially valid label.
     // This needs adjustement of the test `labels_containing_a_record_separator_record_an_error`.
     if key.contains(RECORD_SEPARATOR) || category.contains(RECORD_SEPARATOR) {
-        let msg = "Label cannot contain the ASCII record separator character (0x1E)".to_string();
-        record_error_sqlite(
-            tx,
-            base_identifier,
-            send_in_pings,
-            ErrorType::InvalidLabel,
-            msg,
-            1,
-        );
-        return Some(format!("{OTHER_LABEL}{RECORD_SEPARATOR}{OTHER_LABEL}"));
+        log::warn!("Label cannot contain the ASCII record separator character (0x1E)");
+        return LabelCheck::Error(format!("{OTHER_LABEL}{RECORD_SEPARATOR}{OTHER_LABEL}"), 1);
     }
 
     let mut existing_keys = HashSet::new();
@@ -303,55 +296,46 @@ pub fn validate_dual_label_sqlite(
         break 'checkdb;
     }
 
-    let new_key = if existing_keys.contains(key) || existing_keys.len() < MAX_LABELS {
-        label_is_valid_sqlite(key, tx, base_identifier, send_in_pings)
+    let mut errors = 0;
+    let new_key = if (existing_keys.contains(key) || existing_keys.len() < MAX_LABELS)
+        && label_is_valid(key)
+    {
+        key
     } else {
+        errors += 1;
         OTHER_LABEL
     };
 
-    let new_category =
-        if existing_categories.contains(category) || existing_categories.len() < MAX_LABELS {
-            label_is_valid_sqlite(category, tx, base_identifier, send_in_pings)
-        } else {
-            OTHER_LABEL
-        };
+    let new_category = if (existing_categories.contains(category)
+        || existing_categories.len() < MAX_LABELS)
+        && label_is_valid(category)
+    {
+        category
+    } else {
+        errors += 1;
+        OTHER_LABEL
+    };
 
-    Some(format!("{new_key}{RECORD_SEPARATOR}{new_category}"))
+    let label = format!("{new_key}{RECORD_SEPARATOR}{new_category}");
+    if errors == 0 {
+        LabelCheck::Label(label)
+    } else {
+        LabelCheck::Error(label, errors)
+    }
 }
 
-fn label_is_valid_sqlite<'a>(
-    label: &'a str,
-    tx: &mut Transaction,
-    base_identifier: &str,
-    send_in_pings: &[String],
-) -> &'a str {
+fn label_is_valid(label: &str) -> bool {
     if label.len() > MAX_LABEL_LENGTH {
-        let msg = format!(
+        log::warn!(
             "label length {} exceeds maximum of {}",
             label.len(),
             MAX_LABEL_LENGTH
         );
-        record_error_sqlite(
-            tx,
-            base_identifier,
-            send_in_pings,
-            ErrorType::InvalidLabel,
-            msg,
-            1,
-        );
-        OTHER_LABEL
+        false
     } else if label.contains(RECORD_SEPARATOR) {
-        let msg = "Label cannot contain the ASCII record separator character (0x1E)".to_string();
-        record_error_sqlite(
-            tx,
-            base_identifier,
-            send_in_pings,
-            ErrorType::InvalidLabel,
-            msg,
-            1,
-        );
-        OTHER_LABEL
+        log::warn!("Label cannot contain the ASCII record separator character (0x1E)");
+        false
     } else {
-        label
+        true
     }
 }

@@ -11,8 +11,8 @@ use std::sync::{Arc, Mutex};
 use malloc_size_of::MallocSizeOf;
 use rusqlite::{params, Transaction};
 
-use crate::common_metric_data::{CommonMetricData, DynamicLabelType};
-use crate::error_recording::{record_error_sqlite, test_get_num_recorded_errors, ErrorType};
+use crate::common_metric_data::{CommonMetricData, DynamicLabelType, LabelCheck};
+use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
     BooleanMetric, CounterMetric, CustomDistributionMetric, MemoryDistributionMetric, MemoryUnit,
@@ -376,11 +376,10 @@ pub fn strip_label(identifier: &str) -> &str {
 }
 
 pub fn validate_dynamic_label_sqlite(
-    tx: &mut Transaction,
+    tx: &Transaction,
     base_identifier: &str,
     label: &str,
-    send_in_pings: &[String],
-) -> Option<String> {
+) -> LabelCheck {
     let existing_labels_sql = "SELECT DISTINCT labels FROM telemetry WHERE id = ?1";
 
     let mut label_already_used = false;
@@ -388,12 +387,12 @@ pub fn validate_dynamic_label_sqlite(
     {
         let Ok(mut stmt) = tx.prepare(existing_labels_sql) else {
             // If we can't fetch from the database, assume the label is ok to use
-            return Some(label.to_string());
+            return LabelCheck::Label(label.to_string());
         };
 
         let Ok(mut rows) = stmt.query(params![base_identifier]) else {
             // If we can't fetch from the database, assume the label is ok to use
-            return Some(label.to_string());
+            return LabelCheck::Label(label.to_string());
         };
 
         while let Ok(Some(row)) = rows.next() {
@@ -408,22 +407,15 @@ pub fn validate_dynamic_label_sqlite(
     }
 
     if !label_already_used && label_count >= MAX_LABELS {
-        Some(String::from(OTHER_LABEL))
+        LabelCheck::Label(String::from(OTHER_LABEL))
     } else if label.len() > MAX_LABEL_LENGTH {
         log::warn!(
             "label length {} exceeds maximum of {}",
             label.len(),
             MAX_LABEL_LENGTH
         );
-        record_error_sqlite(
-            tx,
-            base_identifier,
-            send_in_pings,
-            ErrorType::InvalidLabel,
-            1,
-        );
-        Some(String::from(OTHER_LABEL))
+        LabelCheck::Error(String::from(OTHER_LABEL), 1)
     } else {
-        Some(label.to_string())
+        LabelCheck::Label(label.to_string())
     }
 }
