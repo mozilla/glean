@@ -370,11 +370,6 @@ where
     }
 }
 
-/// Strips the label off of a complete identifier
-pub fn strip_label(identifier: &str) -> &str {
-    identifier.split_once('/').map_or(identifier, |s| s.0)
-}
-
 pub fn validate_dynamic_label_sqlite(
     tx: &Transaction,
     base_identifier: &str,
