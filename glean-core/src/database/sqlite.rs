@@ -19,7 +19,6 @@ use schema::Schema;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
-use crate::metrics::labeled::strip_label;
 use crate::metrics::Metric;
 use crate::Glean;
 use crate::Lifetime;
@@ -259,12 +258,11 @@ impl Database {
 
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
-        let base_identifier = data.base_identifier();
-        let name = strip_label(&base_identifier);
+        let name = data.base_identifier();
 
         _ = self.conn.write(|tx| {
             let labels = data.check_labels(tx);
-            labels.record_error(tx, name, data.storage_names());
+            labels.record_error(tx, &name, data.storage_names());
 
             for ping_name in data.storage_names() {
                 if glean.is_ping_enabled(ping_name) {
@@ -272,7 +270,7 @@ impl Database {
                         tx,
                         data.inner.lifetime,
                         ping_name,
-                        name,
+                        &name,
                         labels.label(),
                         value,
                     ) {
@@ -339,12 +337,11 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        let base_identifier = data.base_identifier();
-        let name = strip_label(&base_identifier);
+        let name = data.base_identifier();
 
         _ = self.conn.write(|tx| {
             let labels = data.check_labels(tx);
-            labels.record_error(tx, name, data.storage_names());
+            labels.record_error(tx, &name, data.storage_names());
 
             for ping_name in data.storage_names() {
                 if glean.is_ping_enabled(ping_name) {
@@ -352,7 +349,7 @@ impl Database {
                         tx,
                         data.inner.lifetime,
                         ping_name,
-                        name,
+                        &name,
                         labels.label(),
                         &mut transform,
                     ) {
