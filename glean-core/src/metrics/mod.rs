@@ -262,7 +262,7 @@ pub trait MetricType {
 /// identifier (category, name, label) for a metric
 pub trait MetricIdentifier<'a> {
     /// Retrieve the category, name and (maybe) label of the metric
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>);
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>);
 }
 
 /// [`TestGetValue`] describes an interface for retrieving the value for a given metric
@@ -293,9 +293,13 @@ impl<'a, T> MetricIdentifier<'a> for T
 where
     T: MetricType,
 {
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>) {
-        todo!()
-        //(&meta.category, &meta.name, meta.dynamic_label.as_deref())
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>) {
+        let meta = &self.meta().inner;
+        (
+            &meta.category,
+            &meta.name,
+            meta.dynamic_label.as_ref().map(|label| label.to_string()),
+        )
     }
 }
 
