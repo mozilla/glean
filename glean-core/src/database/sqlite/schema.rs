@@ -23,6 +23,7 @@ impl ConnectionOpener for Schema {
     fn setup(conn: &mut rusqlite::Connection) -> Result<(), Self::Error> {
         conn.execute_batch(
             "PRAGMA journal_mode = WAL;
+             PRAGMA synchronous = NORMAL;
              PRAGMA journal_size_limit = 512000; -- 512 KB.
              PRAGMA temp_store = MEMORY;
              PRAGMA auto_vacuum = INCREMENTAL;
