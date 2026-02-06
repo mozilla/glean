@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::fmt::Display;
 use std::sync::atomic::{AtomicU8, Ordering};
 
 use malloc_size_of_derive::MallocSizeOf;
@@ -97,6 +98,25 @@ pub enum DynamicLabelType {
 impl Default for DynamicLabelType {
     fn default() -> Self {
         Self::Label(String::new())
+    }
+}
+
+impl Display for DynamicLabelType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
+        match self {
+            DynamicLabelType::Static(label) => write!(f, "{label}"),
+            DynamicLabelType::Label(label) => write!(f, "{label}"),
+            DynamicLabelType::KeyOnly(key, category) => {
+                write!(f, "{key}{RECORD_SEPARATOR}{category}")
+            }
+            DynamicLabelType::CategoryOnly(key, category) => {
+                write!(f, "{key}{RECORD_SEPARATOR}{category}")
+            }
+            DynamicLabelType::KeyAndCategory(key, category) => {
+                write!(f, "{key}{RECORD_SEPARATOR}{category}")
+            }
+        }
     }
 }
 
