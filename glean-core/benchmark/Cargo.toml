@@ -35,6 +35,10 @@ harness = false
 name = "instruction-count"
 harness = false
 
+[[bench]]
+name = "bin-bench"
+harness = false
+
 [profile.bench]
 debug = true
 strip = false
