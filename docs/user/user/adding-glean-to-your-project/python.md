@@ -9,7 +9,7 @@ Nevertheless this is just one of the required steps for integrating Glean succes
 
 We recommend using a virtual environment for your work to isolate the dependencies for your project. There are many popular abstractions on top of virtual environments in the Python ecosystem which can help manage your project dependencies.
 
-The Glean Python SDK currently has [prebuilt wheels on PyPI for Windows (i686 and x86_64), Linux/glibc (x86_64) and macOS (x86_64)](https://pypi.org/project/glean-sdk/#files).
+The Glean Python SDK currently has [prebuilt wheels on PyPI for Windows (x86_64, arm64), Linux/glibc (x86_64, arm64) and macOS (x86_64, arm64)](https://pypi.org/project/glean-sdk/#files).
 For other platforms, including BSD or Linux distributions that don't use glibc, such as Alpine Linux, the `glean_sdk` package will be built from source on your machine.
 This requires that Cargo and Rust are already installed.
 The easiest way to do this is through [rustup](https://rustup.rs/).
@@ -67,7 +67,7 @@ metrics.your_category.your_metric.set("value")
 
 #### Documentation
 
-The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`. 
+The documentation for your application or library's metrics and pings are written in `metrics.yaml` and `pings.yaml`.
 
 For Mozilla projects, this SDK documentation is automatically published on the [Glean Dictionary](https://dictionary.telemetry.mozilla.org). For non-Mozilla products, it is recommended to generate markdown-based documentation of your metrics and pings into the repository. For most languages and platforms, this transformation can be done automatically as part of the build. However, for some SDKs the integration to automatically generate docs is an additional step.
 

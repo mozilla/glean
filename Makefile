@@ -23,7 +23,7 @@ setup-python: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
 
 $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
-	$(GLEAN_PYENV)/bin/pip install --upgrade pip wheel setuptools
+	$(GLEAN_PYENV)/bin/pip install --upgrade pip
 	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
 
 # All builds

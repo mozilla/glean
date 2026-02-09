@@ -115,8 +115,6 @@ impl Builder {
             let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
             let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
-            // TODO: Remove after we switched glean_parser away from legacy setup.py
-            venv.pip_install("setuptools")?;
             venv.pip_install(&glean_parser)?;
             venv
         };
