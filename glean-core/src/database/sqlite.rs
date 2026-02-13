@@ -18,6 +18,7 @@ use connection::Connection;
 use schema::Schema;
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::database::migration;
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
 use crate::Glean;
@@ -29,7 +30,7 @@ mod schema;
 
 pub struct Database {
     /// The database connection.
-    conn: connection::Connection,
+    pub(crate) conn: connection::Connection,
 
     /// Initial file size when opening the database.
     pub(crate) file_size: Option<NonZeroU64>,
@@ -99,9 +100,16 @@ impl Database {
 
         fs::create_dir_all(&path)?;
         let store_path = path.join(DEFAULT_DATABASE_FILE_NAME);
+        let sqlite_exists = store_path.exists();
         let conn = Connection::new::<Schema>(&store_path).unwrap();
 
         let db = Self { conn, file_size };
+
+        if sqlite_exists {
+            log::debug!("SQLite database already exists. Not trying to migrate Rkv");
+        } else {
+            _ = migration::try_migrate(&path, &db);
+        }
 
         Ok(db)
     }
@@ -299,7 +307,7 @@ impl Database {
     /// # Panics
     ///
     /// This function will **not** panic on database errors.
-    fn record_per_lifetime(
+    pub(crate) fn record_per_lifetime(
         &self,
         tx: &mut Transaction,
         lifetime: Lifetime,
