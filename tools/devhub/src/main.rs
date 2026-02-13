@@ -6,7 +6,7 @@ use std::{fs::OpenOptions, path::PathBuf};
 
 use deps::Dependencies;
 use serde::{Deserialize, Serialize};
-use xshell::{Shell, cmd};
+use xshell::{cmd, Shell};
 
 mod benchmarks;
 mod build_metrics;
@@ -293,6 +293,7 @@ fn run_on_commit(
         .unwrap_or_default()
         .as_secs();
 
+    let git_commit = cmd!(sh, "git rev-parse {commit}").read()?;
     let timestamp = cmd!(sh, "git log --pretty=format:%ct -1 {commit}")
         .read()?
         .parse()?;
@@ -301,7 +302,7 @@ fn run_on_commit(
         timestamp,
         metrics: vec![],
         attributes: Attributes {
-            git_commit: commit.to_string(),
+            git_commit,
             wall_clock_timestamp,
         },
     };
