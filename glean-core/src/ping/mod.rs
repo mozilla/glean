@@ -163,8 +163,11 @@ impl PingMaker {
         };
 
         // Get the Server Knobs configuration, if available.
-        let server_knobs_metric = crate::Glean::server_knobs_metric();
-        if let Some(config_json) = server_knobs_metric.get_value(glean, INTERNAL_STORAGE) {
+        if let Some(config_json) = glean
+            .additional_metrics
+            .server_knobs_config
+            .get_value(glean, INTERNAL_STORAGE)
+        {
             let server_knobs_config = serde_json::from_str(&config_json).unwrap();
             map.as_object_mut()
                 .unwrap() // safe unwrap, we created the object above
@@ -605,7 +608,13 @@ mod test {
         let ping_info1 = ping_maker.get_ping_info(&glean, "store1", None, TimeUnit::Minute);
         let ping_info2 = ping_maker.get_ping_info(&glean, "store2", None, TimeUnit::Minute);
 
-        assert_eq!(ping_info1["server_knobs_config"]["metrics_enabled"]["test.counter"], true);
-        assert_eq!(ping_info2["server_knobs_config"]["metrics_enabled"]["test.counter"], true);
+        assert_eq!(
+            ping_info1["server_knobs_config"]["metrics_enabled"]["test.counter"],
+            true
+        );
+        assert_eq!(
+            ping_info2["server_knobs_config"]["metrics_enabled"]["test.counter"],
+            true
+        );
     }
 }

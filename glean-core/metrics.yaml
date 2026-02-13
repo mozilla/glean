@@ -425,13 +425,23 @@ glean.internal.metrics:
           description: |
             Map of metric identifiers (category.name) to boolean values
             indicating whether the metric is enabled.
+          properties:
+            key:
+              type: string
+            value:
+              type: boolean
         pings_enabled:
           type: object
           description: |
             Map of ping names to boolean values indicating whether
             the ping is enabled.
+          properties:
+            key:
+              type: string
+            value:
+              type: boolean
         event_threshold:
-          type: integer
+          type: number
           description: |
             Optional threshold for event buffering before an events
             ping is collected and submitted. Can be null if not set.

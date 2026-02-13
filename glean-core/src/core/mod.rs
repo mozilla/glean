@@ -1113,17 +1113,6 @@ impl Glean {
             .get_value(self, None)
     }
 
-    /// Returns the ObjectMetric used to store Server Knobs configuration.
-    pub(crate) fn server_knobs_metric() -> metrics::ObjectMetric {
-        metrics::ObjectMetric::new(CommonMetricData {
-            name: "server_knobs_config".into(),
-            category: "glean.internal".into(),
-            send_in_pings: vec![INTERNAL_STORAGE.into()],
-            lifetime: Lifetime::Application,
-            ..Default::default()
-        })
-    }
-
     /// Set configuration to override the default state, typically initiated from a
     /// remote_settings experiment or rollout
     ///
@@ -1153,8 +1142,9 @@ impl Glean {
         drop(remote_settings_config); // Release lock before storage operation
 
         // Store the configuration using the server knobs ObjectMetric
-        let server_knobs_metric = Self::server_knobs_metric();
-        server_knobs_metric.set_sync(self, serde_json::to_value(&config_clone).unwrap());
+        self.additional_metrics
+            .server_knobs_config
+            .set_sync(self, serde_json::to_value(&config_clone).unwrap());
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
