@@ -46,7 +46,7 @@ def test_the_api_records_to_its_storage_engine():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id", "other"],
     )
@@ -84,7 +84,7 @@ def test_the_api_records_to_its_storage_engine_when_category_is_empty():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id"],
     )
@@ -117,7 +117,7 @@ def test_disabled_events_must_not_record_data():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id", "other"],
     )
@@ -137,7 +137,7 @@ def test_test_get_value_throws_valueerror_if_nothing_is_stored():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id", "other"],
     )
@@ -153,7 +153,7 @@ def test_the_api_records_to_secondary_pings():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id"],
     )
@@ -191,7 +191,7 @@ def test_events_should_not_record_when_upload_is_disabled():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["test_name"],
     )
@@ -226,7 +226,7 @@ def test_flush_queued_events_on_startup(safe_httpserver):
             lifetime=Lifetime.PING,
             name="test_event",
             send_in_pings=["events"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["some_extra"],
     )
@@ -255,7 +255,7 @@ def test_long_extra_values_record_an_error():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id", "other"],
     )
@@ -304,7 +304,7 @@ def test_the_convenient_extrakeys_api():
             lifetime=Lifetime.PING,
             name="click",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         allowed_extra_keys=["object_id", "other"],
     )

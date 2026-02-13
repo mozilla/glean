@@ -23,7 +23,7 @@ fn clientid_metric() -> UuidMetric {
         send_in_pings: vec!["glean_client_info".into()],
         lifetime: Lifetime::User,
         disabled: false,
-        dynamic_label: None,
+        label: None,
     })
 }
 

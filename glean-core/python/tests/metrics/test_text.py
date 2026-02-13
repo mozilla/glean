@@ -19,7 +19,7 @@ def test_text_smoke():
             name="text",
             lifetime=Lifetime.PING,
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
             disabled=False,
         ),
     )
@@ -37,7 +37,7 @@ def test_text_truncation():
             name="text",
             lifetime=Lifetime.PING,
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
             disabled=False,
         ),
     )
