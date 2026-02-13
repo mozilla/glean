@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
+use crate::common_metric_data::{CommonMetricDataInternal, MetricLabel};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -32,9 +32,9 @@ impl MetricType for QuantityMetric {
         }
     }
 
-    fn with_label(&self, label: DynamicLabelType) -> Self {
+    fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();
-        meta.inner.dynamic_label = Some(label);
+        meta.inner.label = Some(label);
         Self {
             meta: Arc::new(meta),
         }

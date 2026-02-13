@@ -56,7 +56,7 @@ def test_pings_with_follows_false_follow_their_own_setting(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="counter",
             send_in_pings=["nofollows"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -93,7 +93,7 @@ def test_loader_sets_flags(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="counter",
             send_in_pings=["nofollows-defined"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
