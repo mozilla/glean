@@ -41,7 +41,7 @@ mod url;
 mod uuid;
 
 use crate::common_metric_data::CommonMetricDataInternal;
-pub use crate::common_metric_data::DynamicLabelType;
+pub use crate::common_metric_data::MetricLabel;
 pub use crate::event_database::RecordedEvent;
 use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 pub use crate::metrics::datetime::Datetime;
@@ -196,7 +196,7 @@ pub trait MetricType {
     }
 
     /// Create a new metric from this with a specific label.
-    fn with_label(&self, _label: DynamicLabelType) -> Self
+    fn with_label(&self, _label: MetricLabel) -> Self
     where
         Self: Sized,
     {
@@ -298,7 +298,7 @@ where
         (
             &meta.category,
             &meta.name,
-            meta.dynamic_label.as_ref().map(|label| label.to_string()),
+            meta.label.as_ref().map(|label| label.to_string()),
         )
     }
 }

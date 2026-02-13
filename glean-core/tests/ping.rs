@@ -136,7 +136,7 @@ fn test_pings_submitted_metric() {
                 send_in_pings: vec!["metrics".into(), "baseline".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             },
         },
         None,

@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
+use crate::common_metric_data::{CommonMetricDataInternal, MetricLabel};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
@@ -36,9 +36,9 @@ impl MetricType for StringMetric {
         }
     }
 
-    fn with_label(&self, label: DynamicLabelType) -> Self {
+    fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();
-        meta.inner.dynamic_label = Some(label);
+        meta.inner.label = Some(label);
         Self {
             meta: Arc::new(meta),
         }
@@ -161,7 +161,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
         });
 
         let sample_string = "0123456789".repeat(26);

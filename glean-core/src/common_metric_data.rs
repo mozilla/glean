@@ -70,50 +70,51 @@ pub struct CommonMetricData {
     ///
     /// Disabled metrics are never recorded.
     pub disabled: bool,
-    /// Dynamic label.
+    /// Label for this metric.
     ///
-    /// When a [`LabeledMetric<T>`](crate::metrics::LabeledMetric) factory creates the specific
-    /// metric to be recorded to, dynamic labels are stored in the specific
-    /// label so that we can validate them when the Glean singleton is
-    /// available.
-    pub dynamic_label: Option<DynamicLabelType>,
+    /// When a [`LabeledMetric<T>`](crate::metrics::LabeledMetric) factory
+    /// or [`DualLabeledCounterMetric`](crate::metrics::DualLabeledCounterMetric)
+    /// creates the specific metric to be recorded to,
+    /// labels are stored in the metric data
+    /// so that it can validated against the database later.
+    pub label: Option<MetricLabel>,
 }
 
 /// The type of dynamic label applied to a base metric. Used to help identify
 /// the necessary validation to be performed.
 #[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf, uniffi::Enum)]
-pub enum DynamicLabelType {
+pub enum MetricLabel {
     /// Static Label -- no validation required
     Static(String),
     /// A dynamic label applied from a `LabeledMetric`
     Label(String),
-    /// A label applied by a `DualLabeledCounter` that contains a dynamic key
+    /// A label applied by a `DualLabeledCounter` that contains a dynamic key and static category
     KeyOnly(String, String),
-    /// A label applied by a `DualLabeledCounter` that contains a dynamic category
+    /// A label applied by a `DualLabeledCounter` that contains a static key and dynamic category
     CategoryOnly(String, String),
     /// A label applied by a `DualLabeledCounter` that contains a dynamic key and category
     KeyAndCategory(String, String),
 }
 
-impl Default for DynamicLabelType {
+impl Default for MetricLabel {
     fn default() -> Self {
         Self::Label(String::new())
     }
 }
 
-impl Display for DynamicLabelType {
+impl Display for MetricLabel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
         match self {
-            DynamicLabelType::Static(label) => write!(f, "{label}"),
-            DynamicLabelType::Label(label) => write!(f, "{label}"),
-            DynamicLabelType::KeyOnly(key, category) => {
+            MetricLabel::Static(label) => write!(f, "{label}"),
+            MetricLabel::Label(label) => write!(f, "{label}"),
+            MetricLabel::KeyOnly(key, category) => {
                 write!(f, "{key}{RECORD_SEPARATOR}{category}")
             }
-            DynamicLabelType::CategoryOnly(key, category) => {
+            MetricLabel::CategoryOnly(key, category) => {
                 write!(f, "{key}{RECORD_SEPARATOR}{category}")
             }
-            DynamicLabelType::KeyAndCategory(key, category) => {
+            MetricLabel::KeyAndCategory(key, category) => {
                 write!(f, "{key}{RECORD_SEPARATOR}{category}")
             }
         }
@@ -223,21 +224,21 @@ impl CommonMetricDataInternal {
     pub(crate) fn check_labels(&self, tx: &Transaction<'_>) -> LabelCheck {
         let base_identifier = self.base_identifier();
 
-        if let Some(label) = &self.inner.dynamic_label {
+        if let Some(label) = &self.inner.label {
             match label {
-                DynamicLabelType::Static(label) => LabelCheck::Label(label.to_string()),
-                DynamicLabelType::Label(label) => {
+                MetricLabel::Static(label) => LabelCheck::Label(label.to_string()),
+                MetricLabel::Label(label) => {
                     validate_dynamic_label_sqlite(tx, &base_identifier, label)
                 }
-                DynamicLabelType::KeyOnly(key, static_category) => {
+                MetricLabel::KeyOnly(key, static_category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, key, "")
                         .map(|key| format!("{key}{static_category}"))
                 }
-                DynamicLabelType::CategoryOnly(static_key, category) => {
+                MetricLabel::CategoryOnly(static_key, category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, "", category)
                         .map(|category| format!("{static_key}{category}"))
                 }
-                DynamicLabelType::KeyAndCategory(key, category) => {
+                MetricLabel::KeyAndCategory(key, category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, key, category)
                 }
             }

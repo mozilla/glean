@@ -24,7 +24,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="uuid_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -52,7 +52,7 @@ def test_disabled_uuids_must_not_record_data():
             lifetime=Lifetime.PING,
             name="uuid_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -68,7 +68,7 @@ def test_test_get_value_throws_exception_if_nothing_is_stored():
             lifetime=Lifetime.PING,
             name="uuid_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -83,7 +83,7 @@ def test_the_api_saves_to_secondary_pings():
             lifetime=Lifetime.PING,
             name="uuid_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -107,7 +107,7 @@ def test_invalid_uuid_must_not_crash():
             lifetime=Lifetime.PING,
             name="uuid_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -126,7 +126,7 @@ def test_invalid_uuid_string():
             lifetime=Lifetime.PING,
             name="uuid_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -163,7 +163,7 @@ def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="chksum",
             send_in_pings=["metrics"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -174,7 +174,7 @@ def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="random",
             send_in_pings=["metrics"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -185,7 +185,7 @@ def test_what_looks_like_it_might_be_uuid(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="valid",
             send_in_pings=["metrics"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
