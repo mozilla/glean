@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 use malloc_size_of::MallocSizeOf;
 use rusqlite::{params, Transaction};
 
-use crate::common_metric_data::{CommonMetricData, DynamicLabelType, LabelCheck};
+use crate::common_metric_data::{CommonMetricData, LabelCheck, MetricLabel};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
@@ -250,7 +250,7 @@ where
     /// Creates a new metric with a specific label.
     ///
     /// This is used for static labels where we can just set the name to be `name/label`.
-    fn new_metric_with_label(&self, label: DynamicLabelType) -> T {
+    fn new_metric_with_label(&self, label: MetricLabel) -> T {
         self.submetric.with_label(label)
     }
 
@@ -258,7 +258,7 @@ where
     ///
     /// This is used for dynamic labels where we have to actually validate and correct the
     /// label later when we have a Glean object.
-    fn new_metric_with_dynamic_label(&self, label: DynamicLabelType) -> T {
+    fn new_metric_with_dynamic_label(&self, label: MetricLabel) -> T {
         self.submetric.with_label(label)
     }
 
@@ -317,10 +317,11 @@ where
                 let metric = match self.labels {
                     Some(_) => {
                         let label = self.static_label(label);
-                        self.new_metric_with_label(DynamicLabelType::Static(label.to_string()))
+                        self.new_metric_with_label(MetricLabel::Static(label.to_string()))
                     }
-                    None => self
-                        .new_metric_with_dynamic_label(DynamicLabelType::Label(label.to_string())),
+                    None => {
+                        self.new_metric_with_dynamic_label(MetricLabel::Label(label.to_string()))
+                    }
                 };
                 let metric = Arc::new(metric);
                 entry.insert(Arc::clone(&metric));

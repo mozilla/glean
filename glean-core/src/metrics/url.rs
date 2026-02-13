@@ -179,7 +179,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
         });
 
         let sample_url = "glean://test".to_string();
@@ -197,7 +197,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
         });
 
         // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
@@ -235,7 +235,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
         });
 
         let test_url = "data:application/json";
@@ -259,7 +259,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
         });
 
         let incorrects = vec![

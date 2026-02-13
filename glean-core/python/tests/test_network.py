@@ -35,7 +35,7 @@ def get_upload_failure_metric():
                 name="ping_upload_failure",
                 category="glean.upload",
                 lifetime=metrics.Lifetime.PING,
-                dynamic_label=None,
+                label=None,
             )
         ),
         labels=[
@@ -90,7 +90,7 @@ def test_recording_upload_errors_doesnt_clobber_database(tmpdir, safe_httpserver
             lifetime=Lifetime.PING,
             name="counter_metric",
             send_in_pings=["baseline"],
-            dynamic_label=None,
+            label=None,
         )
     )
     counter_metric.add(10)
