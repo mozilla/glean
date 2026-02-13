@@ -178,9 +178,7 @@ mod test {
             category: "test".into(),
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
-            disabled: false,
-            dynamic_label: None,
-            in_session: false,
+            ..Default::default()
         });
 
         let sample_url = "glean://test".to_string();
@@ -197,9 +195,7 @@ mod test {
             category: "test".into(),
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
-            disabled: false,
-            dynamic_label: None,
-            in_session: false,
+            ..Default::default()
         });
 
         // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
@@ -237,7 +233,7 @@ mod test {
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,
-            dynamic_label: None,
+            label: None,
             in_session: false,
         });
 
@@ -261,9 +257,7 @@ mod test {
             category: "test".into(),
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
-            disabled: false,
-            dynamic_label: None,
-            in_session: false,
+            ..Default::default()
         });
 
         let incorrects = vec![

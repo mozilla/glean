@@ -22,7 +22,7 @@ use crate::error::{Error, ErrorKind};
 use crate::metrics::{CounterMetric, Metric};
 use crate::Glean;
 use crate::Lifetime;
-use crate::{CommonMetricData, DynamicLabelType};
+use crate::{CommonMetricData, MetricLabel};
 
 /// The possible error types for metric recording.
 ///
@@ -108,7 +108,7 @@ fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
         send_in_pings,
-        dynamic_label: Some(DynamicLabelType::Label(name.to_string())),
+        label: Some(MetricLabel::Label(name.to_string())),
         ..Default::default()
     })
 }
