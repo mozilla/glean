@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 use rusqlite::{params, Transaction};
 
 use crate::common_metric_data::{
-    CommonMetricData, CommonMetricDataInternal, DynamicLabelType, LabelCheck,
+    CommonMetricData, CommonMetricDataInternal, LabelCheck, MetricLabel,
 };
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{CounterMetric, MetricType};
@@ -112,20 +112,17 @@ impl DualLabeledCounterMetric {
     /// the static or dynamic labels where needed.
     fn new_counter_metric(&self, key: &str, category: &str) -> CounterMetric {
         match (&self.keys, &self.categories) {
-            (None, None) => self.counter.with_label(DynamicLabelType::KeyAndCategory(
-                key.into(),
-                category.into(),
-            )),
+            (None, None) => self
+                .counter
+                .with_label(MetricLabel::KeyAndCategory(key.into(), category.into())),
             (None, _) => {
                 let static_category = self.static_category(category);
-                self.counter.with_label(DynamicLabelType::KeyOnly(
-                    key.into(),
-                    static_category.into(),
-                ))
+                self.counter
+                    .with_label(MetricLabel::KeyOnly(key.into(), static_category.into()))
             }
             (_, None) => {
                 let static_key = self.static_key(key);
-                self.counter.with_label(DynamicLabelType::CategoryOnly(
+                self.counter.with_label(MetricLabel::CategoryOnly(
                     static_key.into(),
                     category.into(),
                 ))
@@ -135,7 +132,7 @@ impl DualLabeledCounterMetric {
                 let static_key = self.static_key(key);
                 let static_category = self.static_category(category);
                 let label = format!("{static_key}{RECORD_SEPARATOR}{static_category}");
-                self.counter.with_label(DynamicLabelType::Static(label))
+                self.counter.with_label(MetricLabel::Static(label))
             }
         }
     }

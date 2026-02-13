@@ -217,8 +217,6 @@ impl AdditionalMetrics {
                 category: "glean.internal.metrics".into(),
                 send_in_pings: vec!["glean_internal_info".into()],
                 lifetime: Lifetime::Application,
-                disabled: false,
-                dynamic_label: None,
                 ..Default::default()
             }),
         }
@@ -300,7 +298,6 @@ impl UploadMetrics {
                         send_in_pings: vec!["health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
-                        dynamic_label: None,
                         ..Default::default()
                     },
                 },
