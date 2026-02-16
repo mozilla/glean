@@ -270,7 +270,7 @@ impl Database {
 
         _ = self.conn.write(|tx| {
             let labels = data.check_labels(tx);
-            labels.record_error(tx, &name, data.storage_names());
+            labels.record_error(glean, tx, &name, data.storage_names());
 
             for ping_name in data.storage_names() {
                 if glean.is_ping_enabled(ping_name) {
@@ -341,38 +341,51 @@ impl Database {
 
     /// Records the provided value, with the given lifetime,
     /// after applying a transformation function.
-    pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricDataInternal, mut transform: F)
+    pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricDataInternal, transform: F)
+    where
+        F: FnMut(Option<Metric>) -> Metric,
+    {
+        _ = self
+            .conn
+            .write(|tx| self.record_with_transaction(glean, tx, data, transform));
+    }
+
+    pub fn record_with_transaction<F>(
+        &self,
+        glean: &Glean,
+        tx: &mut Transaction,
+        data: &CommonMetricDataInternal,
+        mut transform: F,
+    ) -> Result<()>
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
         let name = data.base_identifier();
 
-        _ = self.conn.write(|tx| {
-            let labels = data.check_labels(tx);
-            labels.record_error(tx, &name, data.storage_names());
+        let labels = data.check_labels(tx);
+        labels.record_error(glean, tx, &name, data.storage_names());
 
-            for ping_name in data.storage_names() {
-                if glean.is_ping_enabled(ping_name) {
-                    if let Err(e) = self.record_per_lifetime_with(
-                        tx,
-                        data.inner.lifetime,
+        for ping_name in data.storage_names() {
+            if glean.is_ping_enabled(ping_name) {
+                if let Err(e) = self.record_per_lifetime_with(
+                    tx,
+                    data.inner.lifetime,
+                    ping_name,
+                    &name,
+                    labels.label(),
+                    &mut transform,
+                ) {
+                    log::error!(
+                        "Failed to record metric '{}' into {}: {:?}",
+                        data.base_identifier(),
                         ping_name,
-                        &name,
-                        labels.label(),
-                        &mut transform,
-                    ) {
-                        log::error!(
-                            "Failed to record metric '{}' into {}: {:?}",
-                            data.base_identifier(),
-                            ping_name,
-                            e
-                        );
-                    }
+                        e
+                    );
                 }
             }
+        }
 
-            Result::<(), rusqlite::Error>::Ok(())
-        });
+        Ok(())
     }
 
     /// Records a metric in the underlying storage system,

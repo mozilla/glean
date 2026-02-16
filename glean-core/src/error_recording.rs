@@ -13,8 +13,8 @@
 //! not some constant value that we could define in `metrics.yaml`.
 
 use std::fmt::Display;
+use std::sync::atomic::AtomicU8;
 
-use rusqlite::params;
 use rusqlite::Transaction;
 
 use crate::common_metric_data::CommonMetricDataInternal;
@@ -145,6 +145,7 @@ pub fn record_error<O: Into<Option<i32>>>(
 }
 
 pub fn record_error_sqlite(
+    glean: &Glean,
     tx: &mut Transaction,
     metric_name: &str,
     send_in_pings: &[String],
@@ -153,75 +154,39 @@ pub fn record_error_sqlite(
 ) {
     assert!(num_errors > 0);
 
-    let ping_name = "metrics".to_string();
-    let need_metrics = !send_in_pings.contains(&ping_name);
+    // We explicitly don't use the `Counter` metric directly here.
+    //
+    // * This is called from within the recording functions in `sqlite.rs`
+    // * That means a transaction is already opened. We can't open a new one.
+    // * We can avoid some allocations by constructing only what we need and what we already have
 
-    let full_id = format!("glean.error.{}", error.as_str());
+    let ping_name = String::from("metrics");
+    let mut send_in_pings = send_in_pings.to_vec();
+    if !send_in_pings.contains(&ping_name) {
+        send_in_pings.push(ping_name);
+    }
+
     let lifetime = Lifetime::Ping;
     let transform = |old_value| match old_value {
         Some(Metric::Counter(old_value)) => Metric::Counter(old_value.saturating_add(num_errors)),
         _ => Metric::Counter(num_errors),
     };
 
-    let value_sql = r#"
-        SELECT value
-        FROM telemetry
-        WHERE
-            id = ?1
-            AND ping = ?2
-            AND lifetime = ?3
-            AND labels = ?4
-        LIMIT 1
-    "#;
-
-    let insert_sql = r#"
-        INSERT INTO
-            telemetry (id, ping, lifetime, labels, value)
-        VALUES
-            (?1, ?2, ?3, ?4, ?5)
-        ON CONFLICT(id, ping, labels) DO UPDATE SET
-            lifetime = excluded.lifetime,
-            value = excluded.value
-    "#;
-
-    for ping in send_in_pings
-        .iter()
-        .chain(need_metrics.then_some(&ping_name))
-    {
-        let new_value = {
-            let mut stmt = tx.prepare_cached(value_sql).unwrap();
-            let mut rows = stmt
-                .query(params![
-                    full_id,
-                    ping,
-                    lifetime.as_str().to_string(),
-                    metric_name
-                ])
-                .unwrap();
-
-            if let Ok(Some(row)) = rows.next() {
-                let blob: Vec<u8> = row.get(0).unwrap();
-                let old_value = rmp_serde::from_slice(&blob).ok();
-                transform(old_value)
-            } else {
-                transform(None)
-            }
-        };
-
-        {
-            let mut stmt = tx.prepare_cached(insert_sql).unwrap();
-            let encoded =
-                rmp_serde::to_vec(&new_value).expect("IMPOSSIBLE: Serializing metric failed");
-            stmt.execute(params![
-                full_id,
-                ping,
-                lifetime.as_str(),
-                metric_name,
-                encoded
-            ])
-            .unwrap();
-        }
-    }
+    let inner = CommonMetricData {
+        category: String::from("glean.error"),
+        name: String::from(error.as_str()),
+        send_in_pings,
+        lifetime,
+        label: Some(MetricLabel::Static(String::from(metric_name))),
+        ..Default::default()
+    };
+    let cmd = CommonMetricDataInternal {
+        inner,
+        disabled: AtomicU8::new(0),
+    };
+    _ = glean
+        .storage()
+        .record_with_transaction(glean, tx, &cmd, transform);
 }
 
 /// Gets the number of recorded errors for the given metric and error type.
