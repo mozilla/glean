@@ -12,7 +12,7 @@ use crate::error::{Error, ErrorKind};
 use crate::error_recording::record_error_sqlite;
 use crate::metrics::dual_labeled_counter::validate_dual_label_sqlite;
 use crate::metrics::labeled::validate_dynamic_label_sqlite;
-use crate::ErrorType;
+use crate::{ErrorType, Glean};
 use serde::{Deserialize, Serialize};
 
 /// The supported metrics' lifetimes.
@@ -161,12 +161,19 @@ impl LabelCheck {
         }
     }
 
-    pub fn record_error(&self, tx: &mut Transaction, metric_name: &str, send_in_pings: &[String]) {
+    pub fn record_error(
+        &self,
+        glean: &Glean,
+        tx: &mut Transaction,
+        metric_name: &str,
+        send_in_pings: &[String],
+    ) {
         let LabelCheck::Error(_, count) = self else {
             return;
         };
 
         record_error_sqlite(
+            glean,
             tx,
             metric_name,
             send_in_pings,
