@@ -680,14 +680,12 @@ impl Glean {
                 .accumulate_sync(self, size.get() as i64)
         }
 
-        if let Some(rkv_load_state) = self
+        if let Some(load_state) = self
             .data_store
             .as_ref()
-            .and_then(|database| database.rkv_load_state())
+            .and_then(|database| database.load_state())
         {
-            self.database_metrics
-                .rkv_load_error
-                .set_sync(self, rkv_load_state)
+            self.database_metrics.load_error.set_sync(self, load_state)
         }
     }
 
