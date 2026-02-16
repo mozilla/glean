@@ -76,6 +76,10 @@ impl net::PingUploader for ReportingUploader {
     }
 }
 
+/// This test ensures that coming from an old Glean, which did store a c0ffee client_id and cleared out old data,
+/// the newer Glean correctly resets all client_info (but client_id)
+/// and sends out that data along with a `follows_collection_enabled=false` ping.
+///
 /// Test scenario:
 ///
 /// * Glean has _some_ data already stored.
