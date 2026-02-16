@@ -13,14 +13,17 @@ use rusqlite::params;
 use rusqlite::types::FromSqlError;
 use rusqlite::OptionalExtension;
 use rusqlite::Transaction;
+use rusqlite::{Error as SqlError, ErrorCode};
 
 use connection::Connection;
 use schema::Schema;
+pub use schema::SchemaError;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration;
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
+use crate::Error;
 use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
@@ -28,12 +31,21 @@ use crate::Result;
 mod connection;
 mod schema;
 
+#[derive(Debug)]
+pub enum LoadState {
+    Ok,
+    Err(Error),
+}
+
 pub struct Database {
     /// The database connection.
     pub(crate) conn: connection::Connection,
 
     /// Initial file size when opening the database.
     pub(crate) file_size: Option<NonZeroU64>,
+
+    /// Load state
+    load_state: LoadState,
 }
 
 impl MallocSizeOf for Database {
@@ -83,6 +95,45 @@ fn database_size(dir: &Path) -> Option<NonZeroU64> {
     NonZeroU64::new(total_size)
 }
 
+pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), Error> {
+    // TODO: Make this more robust, use the correct errors and see how we can test all the branches
+    // properly.
+    match Connection::new::<Schema>(path) {
+        Err(e @ SchemaError::UnsupportedSchemaVersion(_)) => Err(e.into()),
+        Err(e @ SchemaError::Sqlite(SqlError::SqliteFailure(err, _))) => {
+            match err.code {
+                ErrorCode::PermissionDenied => Err(e.into()),
+                ErrorCode::NotADatabase => {
+                    log::debug!("sqlite failed: not a database. starting from scratch.");
+                    fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+                    // Now try again, we only handle that error once.
+                    let conn = Connection::new::<Schema>(path)?;
+                    Ok((conn, LoadState::Err(e.into())))
+                }
+                ErrorCode::CannotOpen => {
+                    log::debug!("sqlite failed: cannot open. starting from scratch.");
+                    fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+                    // Now try again, we only handle that error once.
+                    let conn = Connection::new::<Schema>(path)?;
+                    Ok((conn, LoadState::Err(e.into())))
+                }
+                _ => Err(e.into()),
+            }
+        }
+        Err(err @ SchemaError::Sqlite(SqlError::SqlInputError { .. })) => {
+            log::debug!("sqlite failed: schema migration failed. starting from scratch.");
+            fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+            // Now try again, we only handle that error once.
+            let conn = Connection::new::<Schema>(path)?;
+            Ok((conn, LoadState::Err(err.into())))
+        }
+        other => {
+            let conn = other?;
+            Ok((conn, LoadState::Ok))
+        }
+    }
+}
+
 impl Database {
     /// Initializes the data store.
     ///
@@ -101,9 +152,13 @@ impl Database {
         fs::create_dir_all(&path)?;
         let store_path = path.join(DEFAULT_DATABASE_FILE_NAME);
         let sqlite_exists = store_path.exists();
-        let conn = Connection::new::<Schema>(&store_path).unwrap();
+        let (conn, load_state) = sqlite_open(&store_path)?;
 
-        let db = Self { conn, file_size };
+        let db = Self {
+            conn,
+            file_size,
+            load_state,
+        };
 
         if sqlite_exists {
             log::debug!("SQLite database already exists. Not trying to migrate Rkv");
@@ -119,9 +174,13 @@ impl Database {
         self.file_size
     }
 
-    /// Get the rkv load state.
-    pub fn rkv_load_state(&self) -> Option<String> {
-        None
+    /// Get the load state.
+    pub fn load_state(&self) -> Option<String> {
+        if let LoadState::Err(e) = &self.load_state {
+            Some(e.to_string())
+        } else {
+            None
+        }
     }
 
     /// Iterates with the provided transaction function

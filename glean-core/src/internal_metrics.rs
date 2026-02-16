@@ -343,8 +343,8 @@ impl UploadMetrics {
 pub struct DatabaseMetrics {
     pub size: MemoryDistributionMetric,
 
-    /// RKV's load result, indicating success or relaying the detected error.
-    pub rkv_load_error: StringMetric,
+    /// sqlite's load result, indicating success or relaying the detected error.
+    pub load_error: StringMetric,
 
     /// The time it takes for a write-commit for the Glean database.
     pub write_time: TimingDistributionMetric,
@@ -365,8 +365,8 @@ impl DatabaseMetrics {
                 MemoryUnit::Byte,
             ),
 
-            rkv_load_error: StringMetric::new(CommonMetricData {
-                name: "rkv_load_error".into(),
+            load_error: StringMetric::new(CommonMetricData {
+                name: "load_error".into(),
                 category: "glean.database".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
