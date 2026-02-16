@@ -9,6 +9,7 @@ use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 use glean_core::Glean;
 use glean_core::Lifetime;
+use glean_core::{test_get_num_recorded_errors, ErrorType};
 
 fn nofollows_ping(glean: &mut Glean) -> PingType {
     // When `follows_collection_enabled=false` then by default `enabled=false`
@@ -197,4 +198,40 @@ fn queued_nofollows_pings_are_not_removed() {
     // Ping is still there after a Glean restart
     let (glean, _t) = new_glean(Some(t));
     assert_eq!(1, get_queued_pings(glean.get_data_path()).unwrap().len());
+}
+
+#[test]
+fn label_errors_when_collection_disabled() {
+    let (mut glean, _t) = new_glean(None);
+
+    let manual_ping = manual_ping(&mut glean);
+    glean.set_ping_enabled(&manual_ping, false);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_metric".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["manual".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    let long_label = "a".repeat(112);
+    let metric = labeled.get(&long_label);
+
+    // Attempt to increment the counter with zero
+    metric.add_sync(&glean, 1);
+    // Check that nothing was recorded.
+    assert!(metric.get_value(&glean, Some("manual")).is_none());
+
+    // Make sure that the error has been recorded
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidLabel)
+    );
 }
