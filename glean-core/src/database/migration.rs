@@ -188,8 +188,8 @@ fn split_key(key: &str) -> Option<MetricKey<'_>> {
 /// Migrate the `rkv` database to SQL.
 ///
 /// Returns the number of migrated metrics.
-fn migrate(rkv: &RkvDatabase, sql_db: &sqlite::Database, tx: &mut Transaction) -> usize {
-    let mut migrated_metrics = 0;
+fn migrate(rkv: &RkvDatabase, sql_db: &sqlite::Database, tx: &mut Transaction) -> MigrationState {
+    let mut state = MigrationState::default();
     let mut migrate_metric = |lifetime: Lifetime, key: String, metric: &Metric| {
         let Some(metric_id) = split_key(&key) else {
             log::debug!("Invalid metric key: {key:?}");
