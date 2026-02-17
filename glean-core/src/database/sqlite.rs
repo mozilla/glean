@@ -276,7 +276,7 @@ impl Database {
                 })
                 .optional()
             })
-            .unwrap_or(None)
+            .unwrap_or(None) // TODO: Should we handle the error here properly?
     }
 
     /// Determines if the storage has the given metric.
