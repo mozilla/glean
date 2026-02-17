@@ -11,6 +11,7 @@ use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 use glean_core::Lifetime;
 use rusqlite::params;
+use rusqlite::TransactionBehavior;
 use uuid::uuid;
 
 fn clientid_metric() -> UuidMetric {
@@ -182,4 +183,25 @@ mod unix {
         let glean = Glean::new(cfg);
         assert!(glean.is_err());
     }
+}
+
+#[test]
+#[ignore]
+fn database_externally_locked() {
+    let temp = {
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+        temp
+    };
+
+    let path = temp.path().join("db").join("glean.sqlite");
+    let mut conn = rusqlite::Connection::open(path).unwrap();
+    let _tx = conn
+        .transaction_with_behavior(TransactionBehavior::Immediate)
+        .unwrap();
+
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let client_id = clientid_metric().get_value(&glean, None);
+    assert!(client_id.is_some());
 }
