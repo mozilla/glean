@@ -218,7 +218,7 @@ impl Database {
                 })
                 .optional()
             })
-            .unwrap_or(None) // TODO: Should we handle the error here properly?
+            .unwrap_or(None) // TODO(bug 2047617): Should we handle the error here properly?
     }
 
     /// Determines if the storage has the given metric.
