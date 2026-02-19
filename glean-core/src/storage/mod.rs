@@ -141,13 +141,21 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store(Lifetime::Ping, store_name, &mut snapshotter);
-        storage.iter_store(Lifetime::Application, store_name, &mut snapshotter);
-        storage.iter_store(Lifetime::User, store_name, &mut snapshotter);
+        if let Err(e) = storage.iter_store(Lifetime::Ping, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
+        if let Err(e) = storage.iter_store(Lifetime::Application, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
+        if let Err(e) = storage.iter_store(Lifetime::User, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
 
         // Add send in all pings client.annotations
         if store_name != "glean_client_info" {
-            storage.iter_store(Lifetime::Application, "all-pings", snapshotter);
+            if let Err(e) = storage.iter_store(Lifetime::Application, "all-pings", snapshotter) {
+                log::debug!("could not snapshot metrics for 'all-pings': {e:?}");
+            }
         }
 
         if clear_store {
@@ -190,8 +198,9 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store(metric_lifetime, store_name, &mut snapshotter);
-
+        storage
+            .iter_store(metric_lifetime, store_name, &mut snapshotter)
+            .ok()?;
         snapshot
     }
 
@@ -234,7 +243,9 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store(Lifetime::Application, store_name, &mut snapshotter);
+        storage
+            .iter_store(Lifetime::Application, store_name, &mut snapshotter)
+            .ok()?;
 
         if snapshot.is_empty() {
             None
