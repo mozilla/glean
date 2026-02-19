@@ -199,7 +199,12 @@ impl Database {
     /// # Panics
     ///
     /// This function will **not** panic on database errors.
-    pub fn iter_store<F>(&self, lifetime: Lifetime, storage_name: &str, mut transaction_fn: F)
+    pub fn iter_store<F>(
+        &self,
+        lifetime: Lifetime,
+        storage_name: &str,
+        mut transaction_fn: F,
+    ) -> Result<()>
     where
         F: FnMut(&[u8], &[&str], &Metric),
     {
@@ -214,34 +219,30 @@ impl Database {
             AND ping = ?2
         "#;
 
-        self.conn
-            .read(|conn| {
-                let mut stmt = conn.prepare_cached(iter_sql).unwrap();
-                let rows = stmt
-                    .query_map(
-                        params![lifetime.as_str().to_string(), storage_name],
-                        |row| {
-                            let id: String = row.get(0)?;
-                            let blob: Vec<u8> = row.get(1)?;
-                            let labels: String = row.get(2)?;
-                            let blob: Metric = rmp_serde::from_slice(&blob)
-                                .map_err(|_| FromSqlError::InvalidType)?;
-                            Ok((id, labels, blob))
-                        },
-                    )
-                    .unwrap();
+        self.conn.read(|conn| {
+            let mut stmt = conn.prepare_cached(iter_sql)?;
+            let rows = stmt.query_map(
+                params![lifetime.as_str().to_string(), storage_name],
+                |row| {
+                    let id: String = row.get(0)?;
+                    let blob: Vec<u8> = row.get(1)?;
+                    let labels: String = row.get(2)?;
+                    let blob: Metric =
+                        rmp_serde::from_slice(&blob).map_err(|_| FromSqlError::InvalidType)?;
+                    Ok((id, labels, blob))
+                },
+            )?;
 
-                for row in rows {
-                    let Ok((metric_id, labels, metric)) = row else {
-                        continue;
-                    };
-                    let labels = labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
-                    transaction_fn(metric_id.as_bytes(), &labels, &metric);
-                }
+            for row in rows {
+                let Ok((metric_id, labels, metric)) = row else {
+                    continue;
+                };
+                let labels = labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
+                transaction_fn(metric_id.as_bytes(), &labels, &metric);
+            }
 
-                Result::<(), ()>::Ok(())
-            })
-            .unwrap()
+            Ok(())
+        })
     }
 
     /// TODO
