@@ -73,7 +73,7 @@ endif
 test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
 	@for file in $^; do \
 		echo "=== $${file} ==="; \
-		./$$file || exit $?; \
+		./$$file || exit 1; \
 	done
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
