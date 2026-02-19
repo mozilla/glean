@@ -640,6 +640,7 @@ dependencies = [
  "env_logger",
  "flate2",
  "glean",
+ "glean-build",
  "libc",
  "log",
  "once_cell",
