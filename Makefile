@@ -70,12 +70,6 @@ else
 	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 endif
 
-test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
-	@for file in $^; do \
-		echo "=== $${file} ==="; \
-		./$$file || exit 1; \
-	done
-
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
 	RUST_LOG=glean,glean_core cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 

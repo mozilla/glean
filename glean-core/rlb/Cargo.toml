@@ -37,7 +37,6 @@ malloc_size_of = { version = "0.2.1", package = "wr_malloc_size_of", default-fea
 env_logger = { version = "0.10.0", default-features = false, features = ["humantime"] }
 flate2 = "1.0.19"
 jsonschema-valid = "0.5.0"
-libc = "0.2"
 serde_json = "1.0.44"
 tempfile = "3.1.0"
 

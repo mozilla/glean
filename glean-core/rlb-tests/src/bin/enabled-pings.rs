@@ -16,8 +16,7 @@ use glean::{ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
 /// A timing_distribution
 mod metrics {
     use glean::private::*;
-    use glean::Lifetime;
-    use glean_core::CommonMetricData;
+    use glean::{CommonMetricData, Lifetime};
     use once_cell::sync::Lazy;
 
     #[allow(non_upper_case_globals)]
@@ -200,9 +199,11 @@ fn main() {
     }
 
     pings::one.submit(None);
-    assert!(metrics::boo
-        .test_get_value(Some("one".to_string()))
-        .is_none());
+    assert!(
+        metrics::boo
+            .test_get_value(Some("one".to_string()))
+            .is_none()
+    );
 
     if matches!(state, State::Two | State::Both) {
         assert_eq!(
@@ -213,14 +214,18 @@ fn main() {
 
     pings::two.submit(None);
     if matches!(state, State::One | State::Both) {
-        assert!(metrics::boo
-            .test_get_value(Some("one".to_string()))
-            .is_none());
+        assert!(
+            metrics::boo
+                .test_get_value(Some("one".to_string()))
+                .is_none()
+        );
     }
     if matches!(state, State::Two | State::Both) {
-        assert!(metrics::boo
-            .test_get_value(Some("two".to_string()))
-            .is_none());
+        assert!(
+            metrics::boo
+                .test_get_value(Some("two".to_string()))
+                .is_none()
+        );
     }
 
     // Wait just a bit to let the ping machinery kick in and
