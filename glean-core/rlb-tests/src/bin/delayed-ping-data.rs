@@ -2,39 +2,31 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Test that the metrics ping is correctly scheduled and not repeated.
-//! Driven by `test-mps-delay.sh` which sets a timezone and fakes the system time.
-//!
-//! Note: `libfaketime` behavior on macOS seems to be incorrect for the condvar wakeups.
-
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
-use std::time::Duration;
-use std::{env, thread};
+use std::{env, process};
+
+use once_cell::sync::Lazy;
 
 use flate2::read::GzDecoder;
-use glean::net;
-use glean::{ClientInfoMetrics, ConfigurationBuilder};
+use glean::{ClientInfoMetrics, ConfigurationBuilder, net, private::PingType};
 
-/// A timing_distribution
-mod metrics {
-    use glean::private::*;
-    use glean::Lifetime;
-    use glean_core::CommonMetricData;
-    use once_cell::sync::Lazy;
+pub mod glean_metrics {
+    use glean::{CommonMetricData, Lifetime, private::CounterMetric};
 
     #[allow(non_upper_case_globals)]
-    pub static boo: Lazy<CounterMetric> = Lazy::new(|| {
-        CounterMetric::new(CommonMetricData {
-            name: "boo".into(),
-            category: "sample".into(),
-            send_in_pings: vec!["metrics".into()],
-            lifetime: Lifetime::Ping,
-            disabled: false,
-            ..Default::default()
-        })
-    });
+    pub static sample_counter: once_cell::sync::Lazy<CounterMetric> =
+        once_cell::sync::Lazy::new(|| {
+            CounterMetric::new(CommonMetricData {
+                name: "sample_counter".into(),
+                category: "test.metrics".into(),
+                send_in_pings: vec!["prototype".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            })
+        });
 }
 
 #[derive(Debug)]
@@ -52,7 +44,7 @@ impl net::PingUploader for MovingUploader {
     fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
         let upload_request = upload_request.capable(|_| true).unwrap();
         // Filter out uninteristing pings.
-        if upload_request.ping_name != "metrics" {
+        if upload_request.ping_name != "prototype" {
             return net::UploadResult::http_status(200);
         }
         let net::PingUploadRequest {
@@ -85,25 +77,21 @@ impl net::PingUploader for MovingUploader {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-enum State {
-    Init,
-    Second,
-    Third,
-}
-
-impl From<&str> for State {
-    fn from(state: &str) -> Self {
-        match state {
-            "init" => State::Init,
-            "second" => State::Second,
-            "third" => State::Third,
-            _ => {
-                panic!("unknown argument: {state}");
-            }
-        }
-    }
-}
+#[allow(non_upper_case_globals)]
+pub static PrototypePing: Lazy<PingType> = Lazy::new(|| {
+    PingType::new(
+        "prototype",
+        true,
+        true,
+        false,
+        true,
+        true,
+        vec![],
+        vec![],
+        true,
+        vec![],
+    )
+});
 
 fn main() {
     env_logger::init();
@@ -112,14 +100,14 @@ fn main() {
 
     let data_path = PathBuf::from(args.next().expect("need data path"));
     let state = args.next().unwrap_or_default();
-    let state = State::from(&*state);
-    log::info!("Runing state {state:?}");
 
+    _ = &*PrototypePing;
     let uploader = MovingUploader::new(data_path.clone());
-    let cfg = ConfigurationBuilder::new(true, data_path, "glean.mps-delay")
+    let cfg = ConfigurationBuilder::new(true, data_path, "glean.pingflush")
         .with_server_endpoint("invalid-test-host")
-        .with_use_core_mps(true)
+        .with_use_core_mps(false)
         .with_uploader(uploader)
+        .with_delay_ping_lifetime_io(true)
         .build();
 
     let client_info = ClientInfoMetrics {
@@ -131,11 +119,27 @@ fn main() {
 
     glean::initialize(cfg, client_info);
 
-    metrics::boo.add(1);
-
-    // Wait for init to finish, otherwise the metrics increment above might be lost
-    // before we call `shutdown`.
-    thread::sleep(Duration::from_millis(100));
-
-    glean::shutdown(); // Cleanly shut down at the end of the test.
+    match &*state {
+        "accumulate_one_and_pretend_crash" => {
+            log::debug!("incrementing by 1. exiting without shutdown.");
+            glean_metrics::sample_counter.add(1)
+        }
+        "accumulate_ten_and_orderly_shutdown" => {
+            log::debug!("incrementing by 10, waiting, shutdown. should trigger a flush.");
+            glean_metrics::sample_counter.add(10);
+            glean::shutdown();
+        }
+        "submit_ping" => {
+            log::info!("submitting PrototypePing");
+            PrototypePing.submit(None);
+            // Wait just a bit to let the ping machinery kick in and
+            // ensure the ping is uploaded before we exit.
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            glean::shutdown();
+        }
+        _ => {
+            eprintln!("unknown argument: {state}");
+            process::exit(1);
+        }
+    }
 }
