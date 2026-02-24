@@ -398,6 +398,54 @@ glean.internal.metrics:
       - glean-team@mozilla.com
     expires: never
 
+  server_knobs_config:
+    type: object
+    lifetime: application
+    send_in_pings:
+      - glean_internal_info
+    description: |
+      The Server Knobs configuration applied via applyServerKnobsConfig.
+      This contains the complete configuration including metrics_enabled,
+      pings_enabled, and event_threshold settings that control metric
+      recording behavior through remote configuration.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2007406
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2007406
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    structure:
+      type: object
+      properties:
+        metrics_enabled:
+          type: object
+          description: |
+            Map of metric identifiers (category.name) to boolean values
+            indicating whether the metric is enabled.
+          properties:
+            key:
+              type: string
+            value:
+              type: boolean
+        pings_enabled:
+          type: object
+          description: |
+            Map of ping names to boolean values indicating whether
+            the ping is enabled.
+          properties:
+            key:
+              type: string
+            value:
+              type: boolean
+        event_threshold:
+          type: number
+          description: |
+            Optional threshold for event buffering before an events
+            ping is collected and submitted. Can be null if not set.
+
 
 glean.internal.metrics.attribution:
   source:
