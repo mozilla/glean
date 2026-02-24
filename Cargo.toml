@@ -4,6 +4,7 @@ resolver = "2"
 members = [
   "glean-core",
   "glean-core/rlb",
+  "glean-core/rlb-tests",
   "glean-core/bundle",
   "glean-core/bundle-android",
   "glean-core/build",
