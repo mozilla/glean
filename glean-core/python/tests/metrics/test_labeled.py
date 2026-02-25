@@ -18,7 +18,7 @@ def test_labeled_counter_type():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -40,7 +40,7 @@ def test_labeled_counter_type_test_get_metrics():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -64,7 +64,7 @@ def test_labeled_boolean_type():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_boolean_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -86,7 +86,7 @@ def test_labeled_string_type():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_string_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -108,7 +108,7 @@ def test_labeled_quantity_type():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_quantity_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -129,7 +129,7 @@ def test_other_label_with_predefined_labels():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         ),
         labels=["foo", "bar", "baz"],
@@ -157,7 +157,7 @@ def test_other_label_without_predefined_labels():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -182,7 +182,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -214,7 +214,7 @@ def test_invalid_labels_go_to_other():
                 lifetime=Lifetime.APPLICATION,
                 name="labeled_counter_metric",
                 send_in_pings=["metrics"],
-                dynamic_label=None,
+                label=None,
             )
         )
     )
@@ -251,7 +251,7 @@ def test_rapidly_recreating_labeled_metrics_does_not_crash():
                 send_in_pings=["metrics"],
                 lifetime=Lifetime.APPLICATION,
                 disabled=False,
-                dynamic_label=None,
+                label=None,
             )
         ),
         labels=["foo"],

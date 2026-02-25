@@ -41,7 +41,7 @@ mod url;
 mod uuid;
 
 use crate::common_metric_data::CommonMetricDataInternal;
-pub use crate::common_metric_data::DynamicLabelType;
+pub use crate::common_metric_data::MetricLabel;
 pub use crate::event_database::RecordedEvent;
 use crate::histogram::{Functional, Histogram, PrecomputedExponential, PrecomputedLinear};
 pub use crate::metrics::datetime::Datetime;
@@ -196,7 +196,7 @@ pub trait MetricType {
     }
 
     /// Create a new metric from this with a specific label.
-    fn with_dynamic_label(&self, _label: DynamicLabelType) -> Self
+    fn with_label(&self, _label: MetricLabel) -> Self
     where
         Self: Sized,
     {
@@ -233,17 +233,13 @@ pub trait MetricType {
         let remote_settings_config = &glean.remote_settings_config.lock().unwrap();
         // Get the value from the remote configuration if it is there, otherwise return the default value.
         let current_disabled = {
-            let base_id = self.meta().base_identifier();
-            let identifier = base_id
-                .split_once('/')
-                .map(|split| split.0)
-                .unwrap_or(&base_id);
+            let identifier = self.meta().base_identifier();
             // NOTE: The `!` preceding the `*is_enabled` is important for inverting the logic since the
             // underlying property in the metrics.yaml is `disabled` and the outward API is treating it as
             // if it were `enabled` to make it easier to understand.
 
             if !remote_settings_config.metrics_enabled.is_empty() {
-                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(identifier) {
+                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(&identifier) {
                     u8::from(!*is_enabled)
                 } else {
                     u8::from(self.meta().inner.disabled)
@@ -266,7 +262,7 @@ pub trait MetricType {
 /// identifier (category, name, label) for a metric
 pub trait MetricIdentifier<'a> {
     /// Retrieve the category, name and (maybe) label of the metric
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>);
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>);
 }
 
 /// [`TestGetValue`] describes an interface for retrieving the value for a given metric
@@ -297,9 +293,13 @@ impl<'a, T> MetricIdentifier<'a> for T
 where
     T: MetricType,
 {
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>) {
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>) {
         let meta = &self.meta().inner;
-        (&meta.category, &meta.name, meta.dynamic_label.as_deref())
+        (
+            &meta.category,
+            &meta.name,
+            meta.label.as_ref().map(|label| label.to_string()),
+        )
     }
 }
 

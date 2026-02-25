@@ -16,7 +16,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="url_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -37,7 +37,7 @@ def test_disabled_urls_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="url_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -54,7 +54,7 @@ def test_the_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="url_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -75,7 +75,7 @@ def test_setting_a_long_url_records_an_error():
             lifetime=Lifetime.APPLICATION,
             name="url_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -108,7 +108,7 @@ def test_setting_a_url_as_none():
             lifetime=Lifetime.APPLICATION,
             name="url_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 

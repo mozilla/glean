@@ -22,7 +22,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -41,7 +41,7 @@ def test_disabled_timespans_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -60,7 +60,7 @@ def test_the_api_must_correctly_cancel():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -81,7 +81,7 @@ def test_get_value_throws_if_nothing_is_stored():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -97,7 +97,7 @@ def test_the_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -116,7 +116,7 @@ def test_records_an_error_if_started_twice():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -137,7 +137,7 @@ def test_value_unchanged_if_stopped_twice():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.MILLISECOND,
     )
@@ -163,7 +163,7 @@ def test_set_raw_nanos():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.SECOND,
     )
@@ -182,7 +182,7 @@ def test_set_raw_nanos_followed_by_other_api():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.SECOND,
     )
@@ -205,7 +205,7 @@ def test_set_raw_nanos_does_not_overwrite_value():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.SECOND,
     )
@@ -228,7 +228,7 @@ def test_set_raw_nanos_does_nothing_when_timer_is_running():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.SECOND,
     )
@@ -248,7 +248,7 @@ def test_measure():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -267,7 +267,7 @@ def test_measure_exception():
             lifetime=Lifetime.APPLICATION,
             name="timespan_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )

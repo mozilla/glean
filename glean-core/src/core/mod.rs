@@ -15,7 +15,7 @@ use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 use uuid::Uuid;
 
-use crate::database::Database;
+use crate::database::sqlite::Database;
 use crate::debug::DebugOptions;
 use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
@@ -341,7 +341,7 @@ impl Glean {
 
         {
             let data_store = glean.data_store.as_ref().unwrap();
-            let file_size = data_store.file_size.map(|n| n.get()).unwrap_or(0);
+            let file_size = data_store.file_size().map(|n| n.get()).unwrap_or(0);
 
             // If we have a client ID on disk, we check the database
             if let Some(stored_client_id) = stored_client_id {
@@ -680,14 +680,12 @@ impl Glean {
                 .accumulate_sync(self, size.get() as i64)
         }
 
-        if let Some(rkv_load_state) = self
+        if let Some(load_state) = self
             .data_store
             .as_ref()
-            .and_then(|database| database.rkv_load_state())
+            .and_then(|database| database.load_state())
         {
-            self.database_metrics
-                .rkv_load_error
-                .set_sync(self, rkv_load_state)
+            self.database_metrics.load_error.set_sync(self, load_state)
         }
     }
 
@@ -1278,12 +1276,10 @@ impl Glean {
     /// Checks the stored value of the "dirty flag".
     pub fn is_dirty_flag_set(&self) -> bool {
         let dirty_bit_metric = self.get_dirty_bit_metric();
-        match StorageManager.snapshot_metric(
-            self.storage(),
-            INTERNAL_STORAGE,
-            &dirty_bit_metric.meta().identifier(self),
-            dirty_bit_metric.meta().inner.lifetime,
-        ) {
+        match self
+            .storage()
+            .get_metric(dirty_bit_metric.meta(), INTERNAL_STORAGE)
+        {
             Some(Metric::Boolean(b)) => b,
             _ => false,
         }

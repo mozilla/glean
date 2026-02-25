@@ -10,8 +10,7 @@ use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
 
-use crate::database::Database;
-use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
+use crate::database::sqlite::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
@@ -29,6 +28,7 @@ pub struct StorageManager;
 fn snapshot_labeled_metrics(
     snapshot: &mut HashMap<String, HashMap<String, JsonValue>>,
     metric_id: &str,
+    label: &str,
     metric: &Metric,
 ) {
     // Explicit match for supported labeled metrics, avoiding the formatting string
@@ -45,9 +45,6 @@ fn snapshot_labeled_metrics(
     };
     let map = snapshot.entry(ping_section).or_default();
 
-    // Safe unwrap, the function is only called when the id does contain a '/'
-    let (metric_id, label) = metric_id.split_once('/').unwrap();
-
     let obj = map.entry(metric_id.into()).or_insert_with(|| json!({}));
     let obj = obj.as_object_mut().unwrap(); // safe unwrap, we constructed the object above
     obj.insert(label.into(), metric.as_json());
@@ -61,20 +58,21 @@ fn snapshot_labeled_metrics(
 fn snapshot_dual_labeled_metrics(
     snapshot: &mut HashMap<String, HashMap<String, JsonValue>>,
     metric_id: &str,
+    label1: &str,
+    label2: &str,
     metric: &Metric,
 ) {
     let ping_section = format!("dual_labeled_{}", metric.ping_section());
     let map = snapshot.entry(ping_section).or_default();
-    let parts = metric_id.split(RECORD_SEPARATOR).collect::<Vec<&str>>();
 
     let obj = map
-        .entry(parts[0].into())
+        .entry(metric_id.into())
         .or_insert_with(|| json!({}))
         .as_object_mut()
         .unwrap(); // safe unwrap, we constructed the object above
-    let key_obj = obj.entry(parts[1].to_string()).or_insert_with(|| json!({}));
+    let key_obj = obj.entry(label1).or_insert_with(|| json!({}));
     let key_obj = key_obj.as_object_mut().unwrap();
-    key_obj.insert(parts[2].into(), metric.as_json());
+    key_obj.insert(label2.into(), metric.as_json());
 }
 
 impl StorageManager {
@@ -120,25 +118,44 @@ impl StorageManager {
     ) -> Option<JsonValue> {
         let mut snapshot: HashMap<String, HashMap<String, JsonValue>> = HashMap::new();
 
-        let mut snapshotter = |metric_id: &[u8], metric: &Metric| {
+        let mut snapshotter = |metric_id: &[u8], labels: &[&str], metric: &Metric| {
             let metric_id = String::from_utf8_lossy(metric_id).into_owned();
-            if metric_id.contains('/') {
-                snapshot_labeled_metrics(&mut snapshot, &metric_id, metric);
-            } else if metric_id.split(RECORD_SEPARATOR).count() == 3 {
-                snapshot_dual_labeled_metrics(&mut snapshot, &metric_id, metric);
-            } else {
-                let map = snapshot.entry(metric.ping_section().into()).or_default();
-                map.insert(metric_id, metric.as_json());
+            match labels {
+                [] | [""] => {
+                    let map = snapshot.entry(metric.ping_section().into()).or_default();
+                    map.insert(metric_id, metric.as_json());
+                }
+                [label] => {
+                    snapshot_labeled_metrics(&mut snapshot, &metric_id, label, metric);
+                }
+                [label1, label2] => {
+                    snapshot_dual_labeled_metrics(
+                        &mut snapshot,
+                        &metric_id,
+                        label1,
+                        label2,
+                        metric,
+                    );
+                }
+                _ => panic!("uh wat?"),
             }
         };
 
-        storage.iter_store_from(Lifetime::Ping, store_name, None, &mut snapshotter);
-        storage.iter_store_from(Lifetime::Application, store_name, None, &mut snapshotter);
-        storage.iter_store_from(Lifetime::User, store_name, None, &mut snapshotter);
+        if let Err(e) = storage.iter_store(Lifetime::Ping, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
+        if let Err(e) = storage.iter_store(Lifetime::Application, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
+        if let Err(e) = storage.iter_store(Lifetime::User, store_name, &mut snapshotter) {
+            log::debug!("could not snapshot ping lifetime store: {e:?}");
+        }
 
         // Add send in all pings client.annotations
         if store_name != "glean_client_info" {
-            storage.iter_store_from(Lifetime::Application, "all-pings", None, snapshotter);
+            if let Err(e) = storage.iter_store(Lifetime::Application, "all-pings", snapshotter) {
+                log::debug!("could not snapshot metrics for 'all-pings': {e:?}");
+            }
         }
 
         if clear_store {
@@ -165,7 +182,7 @@ impl StorageManager {
     /// # Returns
     ///
     /// The decoded metric or `None` if no data is found.
-    pub fn snapshot_metric(
+    pub fn _snapshot_metric(
         &self,
         storage: &Database,
         store_name: &str,
@@ -174,15 +191,16 @@ impl StorageManager {
     ) -> Option<Metric> {
         let mut snapshot: Option<Metric> = None;
 
-        let mut snapshotter = |id: &[u8], metric: &Metric| {
+        let mut snapshotter = |id: &[u8], _labels: &[&str], metric: &Metric| {
             let id = String::from_utf8_lossy(id).into_owned();
             if id == metric_id {
                 snapshot = Some(metric.clone())
             }
         };
 
-        storage.iter_store_from(metric_lifetime, store_name, None, &mut snapshotter);
-
+        storage
+            .iter_store(metric_lifetime, store_name, &mut snapshotter)
+            .ok()?;
         snapshot
     }
 
@@ -217,7 +235,7 @@ impl StorageManager {
     ) -> Option<JsonValue> {
         let mut snapshot: HashMap<String, JsonValue> = HashMap::new();
 
-        let mut snapshotter = |metric_id: &[u8], metric: &Metric| {
+        let mut snapshotter = |metric_id: &[u8], _labels: &[&str], metric: &Metric| {
             let metric_id = String::from_utf8_lossy(metric_id).into_owned();
             if metric_id.ends_with("#experiment") {
                 let (name, _) = metric_id.split_once('#').unwrap(); // safe unwrap, we ensured there's a `#` in the string
@@ -225,7 +243,9 @@ impl StorageManager {
             }
         };
 
-        storage.iter_store_from(Lifetime::Application, store_name, None, &mut snapshotter);
+        storage
+            .iter_store(Lifetime::Application, store_name, &mut snapshotter)
+            .ok()?;
 
         if snapshot.is_empty() {
             None

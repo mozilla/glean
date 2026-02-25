@@ -18,9 +18,8 @@ use std::env;
 use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
-use tempfile::Builder;
 
-use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder};
+use glean::{ClientInfoMetrics, ConfigurationBuilder, private::PingType};
 
 #[cfg(unix)]
 mod unix {
@@ -38,42 +37,44 @@ mod unix {
         value: *mut c_void,
     ) -> c_int;
 
-    #[no_mangle]
+    #[unsafe(no_mangle)]
     pub unsafe extern "C" fn pthread_create(
         native: *mut libc::pthread_t,
         attr: *const libc::pthread_attr_t,
         f: extern "C" fn(*mut c_void) -> *mut c_void,
         value: *mut c_void,
     ) -> c_int {
-        let name = c"pthread_create".as_ptr();
-        let symbol = libc::dlsym(libc::RTLD_NEXT, name);
-        if symbol.is_null() {
-            panic!("dlsym failed to load `pthread_create` name. Nothing we can do, we abort.");
+        unsafe {
+            let name = c"pthread_create".as_ptr();
+            let symbol = libc::dlsym(libc::RTLD_NEXT, name);
+            if symbol.is_null() {
+                panic!("dlsym failed to load `pthread_create` name. Nothing we can do, we abort.");
+            }
+
+            let real_pthread_create = *(&symbol as *const *mut _ as *const pthread_ft);
+
+            // thread 1 = glean.initialize
+            // thread 2 = ping directory processor
+            // thread 3 = MPS
+            // thread 4 = uploader for first metrics ping <- this is the one we want to fail
+            // thread 5 = uploader for health pings <- this is the one we want to fail
+            // thread 6 = uploader for prototype ping <- this is the one we want to fail
+            // thread 7 = post-init uploader <- this needs to fail, too
+            // thread 8 = shutdown wait thread
+            const TO_BLOCK: &[u32] = &[4, 5, 6, 7];
+
+            let spawned = ALLOW_THREAD_SPAWNED.fetch_add(1, Ordering::SeqCst);
+            if TO_BLOCK.contains(&spawned) {
+                return -1;
+            }
+
+            real_pthread_create(native, attr, f, value)
         }
-
-        let real_pthread_create = *(&symbol as *const *mut _ as *const pthread_ft);
-
-        // thread 1 = glean.initialize
-        // thread 2 = ping directory processor
-        // thread 3 = MPS
-        // thread 4 = uploader for first metrics ping <- this is the one we want to fail
-        // thread 5 = uploader for health pings <- this is the one we want to fail
-        // thread 6 = uploader for prototype ping <- this is the one we want to fail
-        // thread 7 = post-init uploader <- this needs to fail, too
-        // thread 8 = shutdown wait thread
-        const TO_BLOCK: &[u32] = &[4, 5, 6, 7];
-
-        let spawned = ALLOW_THREAD_SPAWNED.fetch_add(1, Ordering::SeqCst);
-        if TO_BLOCK.contains(&spawned) {
-            return -1;
-        }
-
-        real_pthread_create(native, attr, f, value)
     }
 }
 
 pub mod glean_metrics {
-    use glean::{private::BooleanMetric, CommonMetricData, Lifetime};
+    use glean::{CommonMetricData, Lifetime, private::BooleanMetric};
 
     #[allow(non_upper_case_globals)]
     pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
@@ -109,16 +110,10 @@ fn main() {
     env_logger::init();
 
     let mut args = env::args().skip(1);
-
-    let data_path = if let Some(path) = args.next() {
-        PathBuf::from(path)
-    } else {
-        let root = Builder::new().prefix("simple-db").tempdir().unwrap();
-        root.path().to_path_buf()
-    };
+    let data_path = PathBuf::from(args.next().expect("need data path"));
 
     _ = &*PrototypePing;
-    let cfg = ConfigurationBuilder::new(true, data_path, "org.mozilla.glean_core.example")
+    let cfg = ConfigurationBuilder::new(true, data_path, "crashing.threads")
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)
         .build();

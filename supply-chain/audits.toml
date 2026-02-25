@@ -268,6 +268,11 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.13.0 -> 0.14.0"
 
+[[audits.assert_cmd]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+version = "2.1.2"
+
 [[audits.basic-toml]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -284,6 +289,16 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "2.4.0 -> 2.4.1"
 notes = "Only allowing new clippy lints"
+
+[[audits.bitflags]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "2.9.4 -> 2.10.0"
+
+[[audits.bstr]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "1.11.3 -> 1.12.1"
 
 [[audits.bytes]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -305,6 +320,11 @@ delta = "0.1.2 -> 0.1.3"
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.78 -> 1.0.83"
+
+[[audits.cc]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.2.41 -> 1.2.53"
 
 [[audits.chrono]]
 who = "Lars Eggert <lars@eggert.org>"
@@ -366,11 +386,26 @@ who = "Lars Eggert <lars@eggert.org>"
 criteria = "safe-to-deploy"
 delta = "0.3.11 -> 0.4.0"
 
+[[audits.fallible-iterator]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.2.0"
+
+[[audits.fallible-streaming-iterator]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.1.9"
+
 [[audits.fd-lock]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "3.0.12 -> 3.0.13"
 notes = "Dependency updates only"
+
+[[audits.find-msvc-tools]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.1.4 -> 0.1.8"
 
 [[audits.flate2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -474,6 +509,21 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.0.10 -> 1.0.15"
 
+[[audits.predicates]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "3.0.4 -> 3.1.4"
+
+[[audits.predicates-core]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "1.0.6 -> 1.0.10"
+
+[[audits.predicates-tree]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "1.0.9 -> 1.0.13"
+
 [[audits.proc-macro2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -514,6 +564,16 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.19.0 -> 0.20.0"
 notes = "Removed all LMDB-specific code, added malloc_size_of integration"
+
+[[audits.rmp]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.8.14 -> 0.8.15"
+
+[[audits.rmp-serde]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.3.0 -> 1.3.1"
 
 [[audits.rustversion]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -623,6 +683,11 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "3.4.0 -> 3.5.0"
 
+[[audits.termtree]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.4.1 -> 0.5.1"
+
 [[audits.textwrap]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -682,6 +747,11 @@ criteria = "safe-to-deploy"
 delta = "1.3.0 -> 1.4.1"
 notes = "Internal refactoring, new target support"
 
+[[audits.wait-timeout]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.2.0 -> 0.2.1"
+
 [[audits.wasm-bindgen]]
 who = "Lars Eggert <lars@eggert.org>"
 criteria = "safe-to-deploy"
@@ -713,6 +783,18 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "1.1.0 -> 1.2.0"
 notes = "Added a file lock on the created directory"
+
+[[trusted.cc]]
+criteria = "safe-to-deploy"
+user-id = 55123 # rust-lang-owner
+start = "2022-10-29"
+end = "2027-02-20"
+
+[[trusted.find-msvc-tools]]
+criteria = "safe-to-deploy"
+user-id = 539 # Josh Stone (cuviper)
+start = "2025-08-29"
+end = "2027-02-20"
 
 [[trusted.hashbrown]]
 criteria = "safe-to-deploy"

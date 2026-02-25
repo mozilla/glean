@@ -13,14 +13,16 @@
 //! not some constant value that we could define in `metrics.yaml`.
 
 use std::fmt::Display;
+use std::sync::atomic::AtomicU8;
+
+use rusqlite::Transaction;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error::{Error, ErrorKind};
-use crate::metrics::labeled::{combine_base_identifier_and_label, strip_label};
-use crate::metrics::CounterMetric;
-use crate::CommonMetricData;
+use crate::metrics::{CounterMetric, Metric};
 use crate::Glean;
 use crate::Lifetime;
+use crate::{CommonMetricData, MetricLabel};
 
 /// The possible error types for metric recording.
 ///
@@ -92,8 +94,7 @@ impl TryFrom<i32> for ErrorType {
 fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType) -> CounterMetric {
     // Can't use meta.identifier here, since that might cause infinite recursion
     // if the label on this metric needs to report an error.
-    let identifier = meta.base_identifier();
-    let name = strip_label(&identifier);
+    let name = meta.base_identifier();
 
     // Record errors in the pings the metric is in, as well as the metrics ping.
     let mut send_in_pings = meta.inner.send_in_pings.clone();
@@ -103,10 +104,11 @@ fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType
     }
 
     CounterMetric::new(CommonMetricData {
-        name: combine_base_identifier_and_label(error.as_str(), name),
+        name: error.as_str().to_string(),
         category: "glean.error".into(),
         lifetime: Lifetime::Ping,
         send_in_pings,
+        label: Some(MetricLabel::Label(name.to_string())),
         ..Default::default()
     })
 }
@@ -140,6 +142,51 @@ pub fn record_error<O: Into<Option<i32>>>(
     let to_report = num_errors.into().unwrap_or(1);
     debug_assert!(to_report > 0);
     metric.add_sync(glean, to_report);
+}
+
+pub fn record_error_sqlite(
+    glean: &Glean,
+    tx: &mut Transaction,
+    metric_name: &str,
+    send_in_pings: &[String],
+    error: ErrorType,
+    num_errors: i32,
+) {
+    assert!(num_errors > 0);
+
+    // We explicitly don't use the `Counter` metric directly here.
+    //
+    // * This is called from within the recording functions in `sqlite.rs`
+    // * That means a transaction is already opened. We can't open a new one.
+    // * We can avoid some allocations by constructing only what we need and what we already have
+
+    let ping_name = String::from("metrics");
+    let mut send_in_pings = send_in_pings.to_vec();
+    if !send_in_pings.contains(&ping_name) {
+        send_in_pings.push(ping_name);
+    }
+
+    let lifetime = Lifetime::Ping;
+    let transform = |old_value| match old_value {
+        Some(Metric::Counter(old_value)) => Metric::Counter(old_value.saturating_add(num_errors)),
+        _ => Metric::Counter(num_errors),
+    };
+
+    let inner = CommonMetricData {
+        category: String::from("glean.error"),
+        name: String::from(error.as_str()),
+        send_in_pings,
+        lifetime,
+        label: Some(MetricLabel::Static(String::from(metric_name))),
+        ..Default::default()
+    };
+    let cmd = CommonMetricDataInternal {
+        inner,
+        disabled: AtomicU8::new(0),
+    };
+    _ = glean
+        .storage()
+        .record_with_transaction(glean, tx, &cmd, transform);
 }
 
 /// Gets the number of recorded errors for the given metric and error type.
