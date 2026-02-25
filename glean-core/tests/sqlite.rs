@@ -9,7 +9,9 @@ use crate::common::*;
 
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
+use glean_core::Glean;
 use glean_core::Lifetime;
+use glean_core::SessionMode;
 use rusqlite::params;
 use rusqlite::TransactionBehavior;
 use uuid::uuid;
@@ -52,6 +54,9 @@ fn database_file_is_not_sqlite() {
 
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
+
+    let load_error = load_error_metric().get_value(&glean, None).unwrap();
+    assert_eq!("database file corrupt", load_error);
 }
 
 #[test]
@@ -75,12 +80,11 @@ fn database_contains_wrong_table() {
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
 
-    let load_error = load_error_metric().get_value(&glean, None);
-    assert!(load_error.is_some());
+    let load_error = load_error_metric().get_value(&glean, None).unwrap();
+    assert!(load_error.starts_with("sql error:"));
 }
 
 #[test]
-#[ignore]
 fn database_contains_correct_user_version_but_wrong_table() {
     let temp = {
         let (glean, temp) = new_glean(None);
@@ -100,8 +104,8 @@ fn database_contains_correct_user_version_but_wrong_table() {
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
 
-    let load_error = load_error_metric().get_value(&glean, None);
-    assert!(load_error.is_some());
+    let load_error = load_error_metric().get_value(&glean, None).unwrap();
+    assert!(load_error.starts_with("sql error:"));
 }
 
 #[test]
@@ -153,13 +157,14 @@ fn higher_user_version_upgrade_does_not_crash() {
 
     let client_id = clientid_metric().get_value(&glean, None).unwrap();
     assert_eq!(first_client_id, client_id);
+
+    let load_error = load_error_metric().get_value(&glean, None);
+    assert!(load_error.is_none());
 }
 
 // Permissions only really work on Unix systems, definitely not on Windows
 #[cfg(unix)]
 mod unix {
-    use glean_core::Glean;
-
     use super::*;
 
     #[test]
@@ -205,14 +210,12 @@ mod unix {
     }
 }
 
-// TODO(bug 2049295):
-// This currently fails.
-// The database is locked, so Glean can't access it.
-// It's unclear how we should handle that.
-// It's not a particular likely case to happen in practice.
 #[test]
-#[ignore]
 fn database_externally_locked() {
+    // This is NOT the usual case.
+    // But if the database is already locked, there's little we can do.
+    // This behavior is the same as if we don't have permissions to access the database file.
+
     let temp = {
         let (glean, temp) = new_glean(None);
         drop(glean);
@@ -220,13 +223,35 @@ fn database_externally_locked() {
     };
 
     let path = temp.path().join("db").join("glean.sqlite");
-    let mut conn = rusqlite::Connection::open(path).unwrap();
+    let mut conn = rusqlite::Connection::open(&path).unwrap();
     let _tx = conn
         .transaction_with_behavior(TransactionBehavior::Immediate)
         .unwrap();
 
-    let (glean, _temp) = new_glean(Some(temp));
-
-    let client_id = clientid_metric().get_value(&glean, None);
-    assert!(client_id.is_some());
+    let cfg = glean_core::InternalConfiguration {
+        data_path: path.display().to_string(),
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: false,
+        experimentation_id: None,
+        enable_internal_pings: true,
+        ping_schedule: Default::default(),
+        ping_lifetime_threshold: 0,
+        ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
+        session_inactivity_timeout_ms: 0,
+        session_mode: SessionMode::Auto,
+        session_sample_rate: 1.0,
+    };
+    let glean = Glean::new(cfg);
+    assert!(glean.is_err());
 }

@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::fmt::{self, Display};
 use std::fs;
 use std::num::NonZeroU64;
 use std::path::Path;
@@ -23,7 +24,6 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
-use crate::Error;
 use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
@@ -34,7 +34,7 @@ mod schema;
 #[derive(Debug)]
 pub enum LoadState {
     Ok,
-    Err(Error),
+    Err(OpenError),
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -102,7 +102,54 @@ fn database_size(dir: &Path) -> Option<NonZeroU64> {
     NonZeroU64::new(total_size)
 }
 
-pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), Error> {
+#[derive(Debug)]
+pub enum OpenError {
+    IncompatibleVersion(u32),
+    Corrupt,
+    SqlError(rusqlite::Error),
+    RecoveryError(std::io::Error),
+}
+
+impl std::error::Error for OpenError {}
+
+impl Display for OpenError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use OpenError::*;
+        match self {
+            IncompatibleVersion(v) => write!(f, "Incompatible database version: {v}"),
+            Corrupt => write!(f, "Database is corrupt"),
+            SqlError(err) => write!(f, "Error executing SQL: {err}"),
+            RecoveryError(err) => write!(
+                f,
+                "Failed to recover a corrupt database due to an error deleting the file: {err}"
+            ),
+        }
+    }
+}
+
+impl From<rusqlite::Error> for OpenError {
+    fn from(value: rusqlite::Error) -> Self {
+        match value {
+            rusqlite::Error::SqliteFailure(e, _)
+                if matches!(e.code, ErrorCode::DatabaseCorrupt | ErrorCode::NotADatabase) =>
+            {
+                Self::Corrupt
+            }
+            _ => Self::SqlError(value),
+        }
+    }
+}
+
+impl From<SchemaError> for OpenError {
+    fn from(value: SchemaError) -> Self {
+        match value {
+            SchemaError::Sqlite(err) => OpenError::SqlError(err),
+            SchemaError::UnsupportedSchemaVersion(v) => OpenError::IncompatibleVersion(v),
+        }
+    }
+}
+
+pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), OpenError> {
     // TODO(bug 2049292): Make this more robust, use the correct errors and see how we can test all the branches
     // properly.
     match Connection::new::<Schema>(path) {
@@ -112,24 +159,24 @@ pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), 
                 ErrorCode::PermissionDenied => Err(e.into()),
                 ErrorCode::NotADatabase => {
                     log::debug!("sqlite failed: not a database. starting from scratch.");
-                    fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+                    fs::remove_file(path).map_err(OpenError::RecoveryError)?;
                     // Now try again, we only handle that error once.
                     let conn = Connection::new::<Schema>(path)?;
-                    Ok((conn, LoadState::Err(e.into())))
+                    Ok((conn, LoadState::Err(OpenError::Corrupt)))
                 }
                 ErrorCode::CannotOpen => {
                     log::debug!("sqlite failed: cannot open. starting from scratch.");
-                    fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+                    fs::remove_file(path).map_err(OpenError::RecoveryError)?;
                     // Now try again, we only handle that error once.
                     let conn = Connection::new::<Schema>(path)?;
-                    Ok((conn, LoadState::Err(e.into())))
+                    Ok((conn, LoadState::Err(OpenError::Corrupt)))
                 }
                 _ => Err(e.into()),
             }
         }
         Err(err @ SchemaError::Sqlite(SqlError::SqlInputError { .. })) => {
             log::debug!("sqlite failed: schema migration failed. starting from scratch.");
-            fs::remove_file(path).map_err(|_| rkv::StoreError::FileInvalid)?;
+            fs::remove_file(path).map_err(OpenError::RecoveryError)?;
             // Now try again, we only handle that error once.
             let conn = Connection::new::<Schema>(path)?;
             Ok((conn, LoadState::Err(err.into())))
@@ -198,7 +245,12 @@ impl Database {
     /// Get the load state.
     pub fn load_state(&self) -> Option<String> {
         if let LoadState::Err(e) = &self.load_state {
-            Some(e.to_string())
+            Some(match e {
+                OpenError::IncompatibleVersion(v) => format!("incompatible version: {v}"),
+                OpenError::Corrupt => "database file corrupt".to_string(),
+                OpenError::SqlError(error) => format!("sql error: {error:?}"),
+                OpenError::RecoveryError(error) => format!("recovery error: {error:?}"),
+            })
         } else {
             None
         }
