@@ -34,6 +34,8 @@ impl ConnectionOpener for Schema {
              PRAGMA temp_store = MEMORY;
              -- allows adding incremental cleanup later
              PRAGMA auto_vacuum = INCREMENTAL;
+             -- How long to wait for a lock before returning SQLITE_BUSY (in ms)
+             PRAGMA busy_timeout = 5000;
             ",
         )?;
 
@@ -64,6 +66,12 @@ impl ConnectionOpener for Schema {
 
     fn upgrade(_: &mut Transaction<'_>, to_version: NonZeroU32) -> Result<(), Self::Error> {
         Err(SchemaError::UnsupportedSchemaVersion(to_version.get()))
+    }
+
+    fn validate(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
+        // A query selecting every field, it doesn't need to return anything.
+        tx.execute_batch("SELECT id, ping, lifetime, labels, value FROM telemetry WHERE 1 = 0")?;
+        Ok(())
     }
 }
 
