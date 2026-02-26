@@ -2,6 +2,7 @@
 
 “This Week in Glean” is a series of blog posts that the Glean Team at Mozilla is using to try to communicate better about our work.
 They could be release notes, documentation, hopes, dreams, or whatever: so long as it is inspired by Glean.
+https://www.youtube.com/@Earnvipmoney
 
 ## Blog posts
 
