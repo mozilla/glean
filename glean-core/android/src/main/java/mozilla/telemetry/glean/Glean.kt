@@ -14,7 +14,10 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.GleanMetrics.GleanValidation
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.internal.*
@@ -375,7 +378,8 @@ open class GleanInternalAPI internal constructor() {
      * @return true if the experiment is active and reported in pings, otherwise false
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testIsExperimentActive(experimentId: String): Boolean = gleanTestGetExperimentData(experimentId) != null
+    fun testIsExperimentActive(experimentId: String): Boolean =
+        Dispatchers.Delayed.launchBlocking { gleanTestGetExperimentData(experimentId) } != null
 
     /**
      * Returns the stored data for the requested active experiment, for testing purposes only.
@@ -467,7 +471,9 @@ open class GleanInternalAPI internal constructor() {
         // Note that this is sending the length of the last foreground session
         // because it belongs to the baseline ping and that ping is sent every
         // time the app goes to background.
-        gleanHandleClientActive()
+        Dispatchers.Delayed.launchBlocking {
+            gleanHandleClientActive()
+        }
 
         GleanValidation.foregroundCount.add(1)
     }
@@ -477,9 +483,11 @@ open class GleanInternalAPI internal constructor() {
      */
     internal fun handleBackgroundEvent() {
         // Persist data on backgrounding the app
-        persistPingLifetimeData()
+        Dispatchers.Delayed.launchBlocking {
+            persistPingLifetimeData()
 
-        gleanHandleClientInactive()
+            gleanHandleClientInactive()
+        }
     }
 
     /**
@@ -503,7 +511,9 @@ open class GleanInternalAPI internal constructor() {
         pingName: String,
         reason: String? = null,
     ) {
-        gleanSubmitPingByName(pingName, reason)
+        Dispatchers.Delayed.launchBlocking {
+            gleanSubmitPingByName(pingName, reason)
+        }
     }
 
     /** Gets a `Set` of the currently registered ping names.
@@ -606,6 +616,7 @@ open class GleanInternalAPI internal constructor() {
         this.testingMode = enabled
         gleanSetTestMode(enabled)
         Dispatchers.API.setTestingMode(enabled)
+        Dispatchers.Delayed.setTestingMode(enabled)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

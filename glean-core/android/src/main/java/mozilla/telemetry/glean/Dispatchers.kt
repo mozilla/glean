@@ -4,15 +4,16 @@
 
 package mozilla.telemetry.glean
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal object Dispatchers {
     class WaitableCoroutineScope(
@@ -50,31 +51,68 @@ internal object Dispatchers {
             }
     }
 
-    class DelayedTaskQueue {
-        // When true, jobs will be queued and not ran until triggered by calling
-        // flushQueuedInitialTasks()
-        private var queueInitialTasks = AtomicBoolean(true)
+    class DelayedTaskQueue(
+        private val coroutineScope: CoroutineScope,
+    ) {
+        internal val channel = Channel<Int>()
 
-        // Use a [ConcurrentLinkedQueue] to take advantage of its thread safety and no locking
-        internal val taskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
+        // When true, jobs will be run synchronously
+        internal var testingMode = false
+
+        init {
+            // We put a first task on it that waits to receive something.
+            // We close that channel in `flushQueuedInitialTasks` which will unblock this task.
+            //
+            // Receiving/Closing the channel is the signal the task is unblocked
+            @Suppress("SwallowedException")
+            this.executeTask {
+                try {
+                    runBlocking { channel.receive() }
+                } catch (e: ClosedSendChannelException) {
+                    // intentionally left empty.
+                    // The channel is closed by `flushQueuedInitialTasks`
+                }
+            }
+        }
 
         /**
-         * Launch a block of work synchronously or queue it if not yet unblocked.
+         * Enable testing mode, which makes all of the Glean SDK public API
+         * synchronous.
          *
-         * If [queueInitialTasks] true
-         * then the work will be queued and executed when [flushQueuedInitialTasks] is called.
-         * If [queueInitialTasks] is false the block is executed synchronously.
+         * @param enabled whether or not to enable the testing mode
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        fun setTestingMode(enabled: Boolean) {
+            testingMode = enabled
+        }
+
+        /**
+         * Launch a block of work asynchronously.
+         *
+         * If the queue is still blocked, this will run at a later point.
          */
         fun launch(block: () -> Unit) {
-            val queueTasks = synchronized(this) {
-                queueInitialTasks.get()
-            }
-
-            if (queueTasks) {
-                addTaskToQueue(block)
-            } else {
+            coroutineScope.launch {
                 block()
             }
+
+            if (this.testingMode) {
+                this.launchBlocking { }
+            }
+        }
+
+        /**
+         * Launch a block of work, wait and return its result
+         */
+        fun <T> launchBlocking(block: () -> T): T {
+            val channel = Channel<T>()
+            coroutineScope.launch {
+                runBlocking {
+                    channel.send(block())
+                }
+            }
+
+            return runBlocking { channel.receive() }
         }
 
         /**
@@ -85,29 +123,17 @@ internal object Dispatchers {
          * Since [queueInitialTasks] is set to false prior to processing the queue,
          * newly launched tasks should be executed immediately rather than added to the queue.
          */
-        internal fun flushQueuedInitialTasks() {
-            val dispatcherObject = this
-
-            val queueCopy: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
-            synchronized(dispatcherObject) {
-                queueCopy.addAll(taskQueue)
-                taskQueue.clear()
-
-                queueCopy.forEach { task ->
-                    task()
+        @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+        fun flushQueuedInitialTasks() {
+            if (!this.channel.isClosedForSend) {
+                runBlocking {
+                    this@DelayedTaskQueue.channel.send(1)
                 }
-
-                queueInitialTasks.set(false)
+                this.channel.close()
             }
         }
 
-        /**
-         * Helper function to add task to queue.
-         */
-        @Synchronized
-        private fun addTaskToQueue(block: () -> Unit) {
-            taskQueue.add(block)
-        }
+        internal fun executeTask(block: suspend CoroutineScope.() -> Unit): Job? = coroutineScope.launch(block = block)
     }
 
     // This job is used to make sure the API `CoroutineContext` does not cancel
@@ -128,5 +154,9 @@ internal object Dispatchers {
 
     @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     @Suppress("ktlint:standard:property-naming")
-    var Delayed = DelayedTaskQueue()
+    var Delayed = DelayedTaskQueue(
+        CoroutineScope(
+            newSingleThreadContext("GleanMetricPool") + supervisorJob,
+        ),
+    )
 }

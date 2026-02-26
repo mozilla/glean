@@ -935,6 +935,7 @@ class GleanTest {
         val buildDate = Calendar
             .getInstance(TimeZone.getTimeZone("GMT+0"))
             .also { cal -> cal.set(2020, 10, 6, 11, 30, 50) }
+        Glean.setTestingMode(true)
         Glean.initialize(
             context,
             true,
