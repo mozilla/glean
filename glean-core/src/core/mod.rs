@@ -281,6 +281,29 @@ impl Glean {
             ping_lifetime_max_time,
         )?);
 
+        if let Some(state) = glean.data_store.as_mut().unwrap().migration_state.take() {
+            glean
+                .database_metrics
+                .migrated_metrics
+                .add_sync(&glean, state.migrated_metrics);
+            glean
+                .database_metrics
+                .metrics_in_sqlite
+                .add_sync(&glean, state.metrics_in_sql);
+            glean
+                .database_metrics
+                .failed_metrics
+                .add_sync(&glean, state.failed_metrics);
+            glean
+                .database_metrics
+                .migration_duration
+                .set_raw_sync(&glean, state.duration);
+        }
+
+        if let Some(()) = glean.data_store.as_mut().unwrap().migration_error.take() {
+            glean.database_metrics.migration_error.add_sync(&glean, 1);
+        }
+
         // This code references different states from the "Client ID recovery" flowchart.
         // See https://mozilla.github.io/glean/dev/core/internal/client_id_recovery.html for details.
 

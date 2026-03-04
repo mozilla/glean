@@ -1277,3 +1277,97 @@ glean.health:
       - permission-denied
       - io
       - not-found
+
+glean.migration:
+  failed_metrics:
+    type: counter
+    lifetime: ping
+    description: |
+      Number of metrics that failed to deserialize from storage
+      while iterating the Rkv database for migration.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - metrics
+      - health
+  metrics_in_sqlite:
+    type: counter
+    lifetime: ping
+    description: |
+      The number of metrics stored in SQLite after a migration run.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - metrics
+      - health
+  migrated_metrics:
+    type: counter
+    lifetime: ping
+    description: |
+      The number of metrics migrated from Rkv storage to SQLite storage.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - metrics
+      - health
+  migration_duration:
+    type: timespan
+    lifetime: ping
+    time_unit: millisecond
+    description: |
+      The duration for one full migration run at startup.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - metrics
+      - health
+  error:
+    type: counter
+    lifetime: ping
+    description: |
+      The number of times a migration was attempted and failed.
+    notification_emails:
+      - glean-team@mozilla.org
+      - jrediger@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - metrics
+      - health
