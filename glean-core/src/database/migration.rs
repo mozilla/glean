@@ -5,6 +5,8 @@
 use std::fs;
 use std::path::Path;
 use std::str;
+use std::time::Duration;
+use std::time::Instant;
 
 use crate::metrics::Metric;
 use crate::Error;
@@ -106,16 +108,23 @@ impl RkvDatabase {
     /// * `lifetime` - The metric lifetime to iterate over.
     /// * `transaction_fn` - Called for each entry being iterated over.
     ///                      It is passed two arguments: `(key: String, metric: &Metric)`.
-    pub fn iter_store<F>(&self, lifetime: Lifetime, mut transaction_fn: F)
+    ///
+    /// # Returns
+    ///
+    /// The number of metrics that failed to deserialize from the stored data.
+    pub fn iter_store<F>(&self, lifetime: Lifetime, mut transaction_fn: F) -> i32
     where
         F: FnMut(String, &Metric),
     {
-        let Ok(reader) = self.rkv.read() else { return };
+        let Ok(reader) = self.rkv.read() else {
+            return 0;
+        };
         let Ok(mut iter) = self.get_store(lifetime).iter_start(&reader) else {
             log::debug!("No store for {lifetime:?}");
-            return;
+            return 0;
         };
 
+        let mut failed = 0;
         while let Some(Ok((key, value))) = iter.next() {
             let Ok(key) = String::from_utf8(key.to_vec()) else {
                 log::debug!("Key is not valid UTF-8: {key:?}");
@@ -125,17 +134,21 @@ impl RkvDatabase {
                 rkv::Value::Blob(blob) => {
                     let Ok(value) = bincode::deserialize(blob) else {
                         log::debug!("Value for key {key:?} could not be deserialized");
+                        failed += 1;
                         continue;
                     };
                     value
                 }
                 _ => {
+                    failed += 1;
                     log::debug!("Blob for key {key:?} is not a valid blob");
                     continue;
                 }
             };
             transaction_fn(key, &metric);
         }
+
+        failed
     }
 }
 
@@ -185,6 +198,19 @@ fn split_key(key: &str) -> Option<MetricKey<'_>> {
     Some(MetricKey { ping, id, label })
 }
 
+#[derive(Debug, Default)]
+pub struct MigrationState {
+    /// The number of metrics migrated from Rkv storage to SQLite storage
+    pub migrated_metrics: i32,
+    /// Number of metrics that failed to deserialize from storage
+    /// while iterating the Rkv database for migration.
+    pub failed_metrics: i32,
+    /// The number of metrics stored in SQLite after a migration run
+    pub metrics_in_sql: i32,
+    /// The duration for one full migration run at startup
+    pub duration: Duration,
+}
+
 /// Migrate the `rkv` database to SQL.
 ///
 /// Returns numbers about the full migration.
@@ -193,29 +219,39 @@ fn migrate(rkv: &RkvDatabase, sql_db: &sqlite::Database, tx: &mut Transaction) -
     let mut migrate_metric = |lifetime: Lifetime, key: String, metric: &Metric| {
         let Some(metric_id) = split_key(&key) else {
             log::debug!("Invalid metric key: {key:?}");
+            state.failed_metrics += 1;
             return;
         };
         let label = metric_id.label.as_deref().unwrap_or("");
         _ = sql_db.record_per_lifetime(tx, lifetime, metric_id.ping, metric_id.id, label, metric);
-        migrated_metrics += 1;
+        state.migrated_metrics += 1;
     };
 
+    let mut failed_metrics = 0;
+
+    let migration_start = Instant::now();
     let snapshotter_user =
         |key: String, metric: &Metric| migrate_metric(Lifetime::User, key, metric);
-    rkv.iter_store(Lifetime::User, snapshotter_user);
+    failed_metrics += rkv.iter_store(Lifetime::User, snapshotter_user);
 
     let snapshotter_app =
         |key: String, metric: &Metric| migrate_metric(Lifetime::Application, key, metric);
-    rkv.iter_store(Lifetime::Application, snapshotter_app);
+    failed_metrics += rkv.iter_store(Lifetime::Application, snapshotter_app);
 
     let snapshotter_ping =
         |key: String, metric: &Metric| migrate_metric(Lifetime::Ping, key, metric);
-    rkv.iter_store(Lifetime::Ping, snapshotter_ping);
+    failed_metrics += rkv.iter_store(Lifetime::Ping, snapshotter_ping);
 
-    migrated_metrics
+    state.failed_metrics = failed_metrics;
+    state.metrics_in_sql = tx
+        .query_one("SELECT COUNT(*) FROM telemetry", [], |row| row.get(0))
+        .unwrap_or(0);
+    state.duration = migration_start.elapsed();
+
+    state
 }
 
-pub fn try_migrate(data_path: &Path, db: &sqlite::Database) -> Result<()> {
+pub fn try_migrate(data_path: &Path, db: &sqlite::Database) -> Result<Option<MigrationState>> {
     let rkv_file = data_path.join("data.safe.bin");
     log::debug!(
         "Trying to migrate. Data path: {}, expected file: {}",
@@ -225,24 +261,22 @@ pub fn try_migrate(data_path: &Path, db: &sqlite::Database) -> Result<()> {
 
     if !rkv_file.exists() {
         log::debug!("No rkv file. No migration.");
-        return Ok(());
+        return Ok(None);
     }
 
     let rkv = RkvDatabase::new(data_path)?;
 
-    let count = db.conn.write(|tx| {
-        let count = migrate(&rkv, db, tx);
-        Ok::<_, Error>(count)
+    let state = db.conn.write(|tx| {
+        let state = migrate(&rkv, db, tx);
+        Ok::<_, Error>(state)
     })?;
-
-    log::info!("{count} metrics migrated to sqlite");
 
     log::debug!(
         "Data migrated. Would be removing Rkv database at {}",
         rkv_file.display()
     );
 
-    Ok(())
+    Ok(Some(state))
 }
 
 #[cfg(test)]
