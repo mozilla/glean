@@ -1,0 +1,8 @@
+[package]
+name = "glean-sys"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+glean-core = { path = "../" }
+uniffi = "0.31.0"
