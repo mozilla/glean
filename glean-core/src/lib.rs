@@ -1586,6 +1586,76 @@ mod ffi {
         lower: |s| serde_json::to_string(&s).unwrap(),
         try_lift: |s| Ok(serde_json::from_str(&s)?)
     });
+
+    unsafe impl uniffi::FfiConverter<UniFfiTag> for std::option::Option<std::string::String> {
+        type FfiType = uniffi::RustBuffer;
+
+        fn lower(obj: Self) -> Self::FfiType {
+            todo!()
+        }
+
+        fn try_lift(v: Self::FfiType) -> uniffi::Result<Self> {
+            todo!()
+        }
+
+        fn write(obj: Self, buf: &mut Vec<u8>) {
+            todo!()
+        }
+
+        fn try_read(buf: &mut &[u8]) -> uniffi::Result<Self> {
+            todo!()
+        }
+
+        // Not used.
+        const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
+    }
+
+    unsafe impl uniffi::FfiConverter<UniFfiTag> for std::option::Option<i32> {
+        type FfiType = uniffi::RustBuffer;
+
+        fn lower(obj: Self) -> Self::FfiType {
+            todo!()
+        }
+
+        fn try_lift(v: Self::FfiType) -> uniffi::Result<Self> {
+            todo!()
+        }
+
+        fn write(obj: Self, buf: &mut Vec<u8>) {
+            todo!()
+        }
+
+        fn try_read(buf: &mut &[u8]) -> uniffi::Result<Self> {
+            todo!()
+        }
+
+        // Not used.
+        const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
+    }
+
+    unsafe impl uniffi::FfiConverter<UniFfiTag> for () {
+        type FfiType = uniffi::RustBuffer;
+
+        fn lower(obj: Self) -> Self::FfiType {
+            todo!()
+        }
+
+        fn try_lift(v: Self::FfiType) -> uniffi::Result<Self> {
+            Ok(())
+        }
+
+        fn write(obj: Self, buf: &mut Vec<u8>) {
+            todo!()
+        }
+
+        fn try_read(buf: &mut &[u8]) -> uniffi::Result<Self> {
+            todo!()
+        }
+
+        // Not used.
+        const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
+    }
+
 }
 pub use ffi::*;
 
