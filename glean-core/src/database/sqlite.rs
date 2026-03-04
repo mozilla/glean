@@ -20,7 +20,7 @@ use schema::Schema;
 pub use schema::SchemaError;
 
 use crate::common_metric_data::CommonMetricDataInternal;
-use crate::database::migration;
+use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
 use crate::Error;
@@ -46,6 +46,12 @@ pub struct Database {
 
     /// Load state
     load_state: LoadState,
+
+    /// Migration state, counts migrated metrics and the time it took.
+    pub(crate) migration_state: Option<MigrationState>,
+
+    /// Set when a database migration attempt failed.
+    pub(crate) migration_error: Option<()>,
 }
 
 impl MallocSizeOf for Database {
@@ -154,17 +160,30 @@ impl Database {
         let sqlite_exists = store_path.exists();
         let (conn, load_state) = sqlite_open(&store_path)?;
 
-        let db = Self {
+        let mut db = Self {
             conn,
             file_size,
             load_state,
+            migration_state: None,
+            migration_error: None,
         };
 
         if sqlite_exists {
             log::debug!("SQLite database already exists. Not trying to migrate Rkv");
         } else {
-            // TODO: Handle error and record metrics.
-            _ = migration::try_migrate(&path, &db);
+            match migration::try_migrate(&path, &db) {
+                Ok(Some(state)) => {
+                    log::debug!("Migration done. state={state:?}");
+                    db.migration_state = Some(state);
+                }
+                Ok(None) => {
+                    log::debug!("No migration.");
+                }
+                Err(e) => {
+                    db.migration_error = Some(());
+                    log::warn!("Migration failed! Continuing with SQLite backend without migrated data. Error: {e:?}")
+                }
+            }
         }
 
         Ok(db)

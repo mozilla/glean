@@ -363,6 +363,22 @@ pub struct DatabaseMetrics {
 
     /// The time it takes for a write-commit for the Glean database.
     pub write_time: TimingDistributionMetric,
+
+    /// The number of metrics migrated from Rkv storage to SQLite storage
+    pub migrated_metrics: CounterMetric,
+
+    /// The number of metrics stored in SQLite after a migration run
+    pub metrics_in_sqlite: CounterMetric,
+
+    /// Number of metrics that failed to deserialize from storage
+    /// while iterating the Rkv database for migration.
+    pub failed_metrics: CounterMetric,
+
+    /// The duration for one full migration run at startup
+    pub migration_duration: TimespanMetric,
+
+    /// Number of times a migration was attempted and failed
+    pub migration_error: CounterMetric,
 }
 
 impl DatabaseMetrics {
@@ -398,6 +414,49 @@ impl DatabaseMetrics {
                 },
                 TimeUnit::Microsecond,
             ),
+
+            migrated_metrics: CounterMetric::new(CommonMetricData {
+                name: "migrated_metrics".into(),
+                category: "glean.migration".into(),
+                send_in_pings: vec!["metrics".into(), "health".into()],
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            }),
+
+            metrics_in_sqlite: CounterMetric::new(CommonMetricData {
+                name: "metrics_in_sqlite".into(),
+                category: "glean.migration".into(),
+                send_in_pings: vec!["metrics".into(), "health".into()],
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            }),
+
+            failed_metrics: CounterMetric::new(CommonMetricData {
+                name: "failed_metrics".into(),
+                category: "glean.migration".into(),
+                send_in_pings: vec!["metrics".into(), "health".into()],
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            }),
+
+            migration_duration: TimespanMetric::new(
+                CommonMetricData {
+                    name: "migration_duration".into(),
+                    category: "glean.migration".into(),
+                    send_in_pings: vec!["metrics".into(), "health".into()],
+                    lifetime: Lifetime::Ping,
+                    ..Default::default()
+                },
+                TimeUnit::Millisecond,
+            ),
+
+            migration_error: CounterMetric::new(CommonMetricData {
+                name: "error".into(),
+                category: "glean.migration".into(),
+                send_in_pings: vec!["metrics".into(), "health".into()],
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            }),
         }
     }
 }
