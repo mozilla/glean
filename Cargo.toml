@@ -11,6 +11,7 @@ members = [
   "samples/rapid-metrics",
   "tools/embedded-uniffi-bindgen",
   "tools/glean-sys-parser",
+  "glean-core/glean-sys",
 ]
 
 default-members = [

@@ -581,6 +581,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "glean-sys"
+version = "0.1.0"
+dependencies = [
+ "glean-core",
+ "uniffi",
+]
+
+[[package]]
 name = "glean-sys-parser"
 version = "0.1.0"
 dependencies = [
