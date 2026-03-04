@@ -23,6 +23,11 @@ unsafe extern "C" {
         > as ::uniffi::Lift<glean_core::UniFfiTag>>::FfiType,
         call_status: &mut ::uniffi::RustCallStatus,
     ) -> <::std::option::Option<i32> as ::uniffi::LowerReturn<glean_core::UniFfiTag>>::ReturnType;
+
+    unsafe fn uniffi_glean_core_fn_clone_countermetric(
+        handle: ::uniffi::ffi::Handle,
+        call_status: &mut ::uniffi::RustCallStatus,
+    ) -> ::uniffi::ffi::Handle;
 }
 
 struct Rate {
@@ -73,23 +78,25 @@ impl CounterMetric {
     fn new() -> Self {
         todo!()
     }
+    unsafe fn clone_handle(&self) -> uniffi::Handle {
+        let mut call_status = uniffi::RustCallStatus::default();
+        uniffi_glean_core_fn_clone_countermetric(std::mem::transmute(self.handle), &mut call_status)
+    }
     fn add(&self, amount: i32) -> () {
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
-            let handle = std::mem::transmute(self.handle);
             let amount = FfiConverter::<glean_core::UniFfiTag>::lower(amount);
 
-            uniffi_glean_core_fn_method_countermetric_add(handle, amount, &mut call_status)
+            uniffi_glean_core_fn_method_countermetric_add(self.clone_handle(), amount, &mut call_status)
         }
     }
     fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
-            let handle = std::mem::transmute(self.handle);
             let ping_name = FfiConverter::<glean_core::UniFfiTag>::lower(ping_name);
 
             FfiConverter::<glean_core::UniFfiTag>::try_lift(
-                uniffi_glean_core_fn_method_countermetric_test_get_value(handle, ping_name, &mut call_status)
+                uniffi_glean_core_fn_method_countermetric_test_get_value(self.clone_handle(), ping_name, &mut call_status)
             ).unwrap()
         }
     }
