@@ -7,4 +7,6 @@ help:
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 run: ## Run the sample app
+	cargo build -p glean-sys
+	DYLD_LIBRARY_PATH=$$(pwd)/../../target/debug \
 	uv run python3 -m glean-sample
