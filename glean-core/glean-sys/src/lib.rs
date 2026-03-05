@@ -59,9 +59,9 @@ macro_rules! library_binding {
     }
 }
 
+mod metrics;
 mod types;
 mod util;
-mod metrics;
 use metrics::*;
 use types::*;
 
@@ -77,9 +77,7 @@ const GLEAN_LIB_NAMES: &[&str] = if cfg!(target_os = "linux") {
     &[]
 };
 
-static GLEAN: LazyLock<GleanSys> = LazyLock::new(|| {
-    metrics::GleanSys::load().unwrap()
-});
+static GLEAN: LazyLock<GleanSys> = LazyLock::new(|| metrics::GleanSys::load().unwrap());
 
 #[unsafe(no_mangle)]
 extern "C" fn record_cat_name() {
