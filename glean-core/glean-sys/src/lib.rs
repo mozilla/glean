@@ -1,4 +1,4 @@
-use std::sync::LazyLock;
+use std::{collections::HashMap, sync::LazyLock, thread, time::Duration};
 
 macro_rules! library_binding {
     ( $localname:ident members[$($members:tt)*] load[$($load:tt)*] fn $name:ident $args:tt $( -> $ret:ty )? ; $($rest:tt)* ) => {
@@ -59,7 +59,7 @@ macro_rules! library_binding {
     }
 }
 
-mod metrics;
+pub mod metrics;
 mod types;
 mod util;
 use metrics::*;
@@ -87,13 +87,46 @@ extern "C" fn record_cat_name() {
     let cmd = CommonMetricData {
         category: "cat".to_string(),
         name: "name".to_string(),
-        send_in_pings: vec!["metrics".to_string()],
+        send_in_pings: vec!["prototype".to_string()],
         lifetime: Lifetime::Ping,
         disabled: false,
         dynamic_label: None,
     };
     let metric = CounterMetric::new(cmd);
     metric.add(31);
+    let value = metric.test_get_value(None);
+    dbg!(value);
+
+    let cmd = CommonMetricData {
+        category: "cat".to_string(),
+        name: "duration".to_string(),
+        send_in_pings: vec!["prototype".to_string()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+        dynamic_label: None,
+    };
+    let metric = TimespanMetric::new(cmd, types::TimeUnit::Microsecond);
+    metric.start();
+    thread::sleep(Duration::from_millis(100));
+    metric.stop();
+    let value = metric.test_get_value(None);
+    dbg!(value);
+
+    let cmd = CommonMetricData {
+        category: "cat".to_string(),
+        name: "event".to_string(),
+        send_in_pings: vec!["prototype".to_string()],
+        lifetime: Lifetime::Ping,
+        disabled: false,
+        dynamic_label: None,
+    };
+    let metric = EventMetric::new(cmd, vec!["some".to_string(), "extra".to_string()]);
+    let extra = HashMap::from([
+        ("some".to_string(), "value".to_string()),
+        ("extra".to_string(), "byte".to_string()),
+    ]);
+    metric.record(extra);
+
     let value = metric.test_get_value(None);
     dbg!(value);
 }
