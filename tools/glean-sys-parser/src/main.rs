@@ -329,13 +329,13 @@ fn main() {
             fn #extern_fn_ident(handle: u64, call_status: &mut ::uniffi::RustCallStatus) -> u64;
         });
 
-
         let mut fns = vec![];
         let members = iface.members;
         for member in members.body {
             match member {
                 InterfaceMember::Constructor(_ctor) => {
-                    let extern_fn_ident = format_ident!("uniffi_glean_core_fn_constructor_{}_new", structname);
+                    let extern_fn_ident =
+                        format_ident!("uniffi_glean_core_fn_constructor_{}_new", structname);
                     fns.push(quote! {
                         pub fn new(meta: CommonMetricData) -> Self {
                             unsafe {
@@ -355,7 +355,8 @@ fn main() {
                         panic!("no identifier for op!")
                     };
                     let fn_ident = format_ident!("{}", ident.0);
-                    let extern_fn_ident = format_ident!("uniffi_glean_core_fn_method_{}_{}", structname, ident.0);
+                    let extern_fn_ident =
+                        format_ident!("uniffi_glean_core_fn_method_{}_{}", structname, ident.0);
                     let ret_type = return_type(&op.return_type);
                     let extern_fn_ret_type = return_type_ffi(&op.return_type);
 

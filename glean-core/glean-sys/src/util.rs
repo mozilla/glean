@@ -28,7 +28,7 @@ macro_rules! forward_ffi_converter {
 
             const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
         }
-    }
+    };
 }
 
 unsafe impl FfiConverter<crate::UniFfiTag> for () {
