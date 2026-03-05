@@ -70,3 +70,45 @@ pub enum ErrorType {
     InvalidState,
     InvalidOverflow,
 }
+
+#[derive(uniffi::Enum)]
+#[repr(i32)]
+pub enum TimeUnit {
+    /// Truncate to nanosecond precision.
+    Nanosecond,
+    /// Truncate to microsecond precision.
+    Microsecond,
+    /// Truncate to millisecond precision.
+    Millisecond,
+    /// Truncate to second precision.
+    Second,
+    /// Truncate to minute precision.
+    Minute,
+    /// Truncate to hour precision.
+    Hour,
+    /// Truncate to day precision.
+    Day,
+}
+
+#[derive(uniffi::Enum)]
+#[repr(i32)] // use i32 to be compatible with our JNA definition
+pub enum MemoryUnit {
+    /// 1 byte
+    Byte,
+    /// 2^10 bytes
+    Kilobyte,
+    /// 2^20 bytes
+    Megabyte,
+    /// 2^30 bytes
+    Gigabyte,
+}
+
+#[derive(uniffi::Enum)]
+pub enum HistogramType {
+    /// A histogram with linear distributed buckets.
+    Linear,
+    /// A histogram with exponential distributed buckets.
+    Exponential,
+}
+
+pub type CowString = std::borrow::Cow<'static, str>;
