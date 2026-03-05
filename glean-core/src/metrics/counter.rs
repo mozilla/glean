@@ -51,7 +51,6 @@ impl MetricType for CounterMetric {
 impl CounterMetric {
     /// Creates a new counter metric.
     pub fn new(meta: CommonMetricData) -> Self {
-        dbg!("new counter", &meta);
         Self {
             meta: Arc::new(meta.into()),
         }

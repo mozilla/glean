@@ -98,6 +98,4 @@ extern "C" fn record_cat_name() {
     metric.add(31);
     let value = metric.test_get_value(None);
     dbg!(value);
-
-    println!("Hello, world!");
 }
