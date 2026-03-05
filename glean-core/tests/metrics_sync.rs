@@ -128,9 +128,10 @@ fn extract_metrics_from_code(map: &mut HashMap<String, Metric>, file_path: &str)
             assert!(line.contains("lifetime:"));
             metric.lifetime = extract_lifetime(line);
 
+            let id = metric.id();
             assert!(
                 map.insert(metric.id(), metric).is_none(),
-                "duplicated metric in code"
+                "duplicated metric in code: {id}"
             );
         }
     }
