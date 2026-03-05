@@ -53,19 +53,44 @@ unsafe impl FfiConverter<crate::UniFfiTag> for () {
     const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
 }
 
+unsafe impl FfiConverter<crate::UniFfiTag> for types::CowString {
+    type FfiType = <String as ::uniffi::Lower<crate::UniFfiTag>>::FfiType;
+    fn lower(s: types::CowString) -> Self::FfiType {
+        <String as ::uniffi::Lower<crate::UniFfiTag>>::lower(s.into_owned())
+    }
+    fn try_lift(v: Self::FfiType) -> ::uniffi::Result<types::CowString> {
+        let s = <String as ::uniffi::Lift<crate::UniFfiTag>>::try_lift(v)?;
+        Ok(types::CowString::from(s))
+    }
+
+    fn write(s: types::CowString, buf: &mut Vec<u8>) {
+        <String as ::uniffi::Lower<crate::UniFfiTag>>::write(s.into_owned(), buf);
+    }
+
+    fn try_read(buf: &mut &[u8]) -> ::uniffi::Result<types::CowString> {
+        let s = <String as ::uniffi::Lift<crate::UniFfiTag>>::try_read(buf)?;
+        Ok(types::CowString::from(s))
+    }
+
+    const TYPE_ID_META: uniffi::MetadataBuffer = uniffi::MetadataBuffer::from_code(0);
+}
+
 forward_ffi_converter!(Option<String>);
 forward_ffi_converter!(Vec<String>);
 forward_ffi_converter!(Vec<i64>);
+forward_ffi_converter!(Vec<types::CommonMetricData>);
 forward_ffi_converter!(Option<types::DistributionData>);
 forward_ffi_converter!(Option<types::Datetime>);
 forward_ffi_converter!(Option<Vec<String>>);
 forward_ffi_converter!(Option<Vec<types::RecordedEvent>>);
 forward_ffi_converter!(Option<types::Rate>);
+forward_ffi_converter!(Option<Vec<types::CowString>>);
 forward_ffi_converter!(HashMap<String, String>);
 forward_ffi_converter!(Option<HashMap<String, HashMap<String, i32>>>);
 forward_ffi_converter!(Option<i8>);
 forward_ffi_converter!(Option<i32>);
 forward_ffi_converter!(Option<i64>);
+uniffi::derive_ffi_traits!(local types::CowString);
 
 pub trait CloneFfiArg<T> {
     fn clone_for_ffi(&self) -> T;
