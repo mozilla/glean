@@ -31,7 +31,7 @@ pub struct Rate {
 
 pub type JsonValue = String;
 
-#[derive(uniffi::Record)]
+#[derive(uniffi::Record, Debug)]
 pub struct RecordedEvent {
     timestamp: u64,
     category: String,

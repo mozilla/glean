@@ -23,8 +23,8 @@ Glean.initialize(
 )
 
 #metrics = load_metrics("metrics.yaml")
-#pings = load_pings("pings.yaml")
-#
+pings = load_pings("pings.yaml")
+
 #metrics.test.metrics.sample_boolean.set(True)
 #
 #balloons = metrics.party.BalloonsObject()
@@ -45,9 +45,10 @@ Glean.initialize(
 #ch.append(f)
 #metrics.party.chooser.set(ch)
 #
-#pings.prototype.submit()
 
 lib = CDLL('libglean_sys.dylib')
 lib.record_cat_name()
+
+pings.prototype.submit()
 
 Glean.shutdown()
