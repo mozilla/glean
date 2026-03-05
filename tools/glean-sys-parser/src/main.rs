@@ -333,21 +333,36 @@ fn main() {
         let members = iface.members;
         for member in members.body {
             match member {
-                InterfaceMember::Constructor(_ctor) => {
+                InterfaceMember::Constructor(ctor) => {
                     let extern_fn_ident =
                         format_ident!("uniffi_glean_core_fn_constructor_{}_new", structname);
+                    let args = ctor.args.body.list;
+                    let mut fn_args = Vec::with_capacity(args.len());
+                    let mut arg_names = Vec::with_capacity(args.len());
+                    let mut extern_fn_args = Vec::with_capacity(args.len());
+                    for arg in args {
+                        let Single(arg) = arg else { continue };
+                        let arg_name = format_ident!("{}", arg.identifier.0);
+                        let arg_type = arg.type_.type_.resolve();
+                        let extern_arg_type = arg.type_.type_.resolve_ffi();
+                        fn_args.push(quote! { #arg_name: #arg_type });
+                        extern_fn_args.push(quote! { #arg_name: #extern_arg_type });
+                        arg_names.push(quote! { #arg_name });
+                    }
                     fns.push(quote! {
-                        pub fn new(meta: CommonMetricData) -> Self {
+                        pub fn new(#(#fn_args,)*) -> Self {
                             unsafe {
-                                let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
+                                #(
+                                    let #arg_names = uniffi::FfiConverter::<crate::UniFfiTag>::lower(#arg_names);
+                                )*
                                 let mut call_status = uniffi::RustCallStatus::default();
-                                let handle = (crate::GLEAN.#extern_fn_ident)(meta.clone_for_ffi(), &mut call_status);
+                                let handle = (crate::GLEAN.#extern_fn_ident)(#(#arg_names.clone_for_ffi(),)* &mut call_status);
                                 Self { handle }
                             }
                         }
                     });
                     bindings.push(quote! {
-                        fn #extern_fn_ident(meta: uniffi::RustBuffer, call_status: &mut ::uniffi::RustCallStatus) -> u64;
+                        fn #extern_fn_ident(#(#extern_fn_args,)* call_status: &mut ::uniffi::RustCallStatus) -> u64;
                     });
                 }
                 InterfaceMember::Operation(op) => {
