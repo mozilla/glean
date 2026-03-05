@@ -4,13 +4,14 @@
 
 import logging
 import os
+from ctypes import CDLL
 
 from glean import Configuration, Glean, load_metrics, load_pings
 
 if not os.environ.get("GLEAN_DEBUG_VIEW_TAG"):
     os.environ["GLEAN_DEBUG_VIEW_TAG"] = "gleanpy-sample"
 
-config = Configuration()
+config = Configuration(allow_multiprocessing=False)
 
 Glean.initialize(
     application_id="glean-sample-app",
@@ -21,29 +22,32 @@ Glean.initialize(
     configuration=config,
 )
 
-metrics = load_metrics("metrics.yaml")
-pings = load_pings("pings.yaml")
+#metrics = load_metrics("metrics.yaml")
+#pings = load_pings("pings.yaml")
+#
+#metrics.test.metrics.sample_boolean.set(True)
+#
+#balloons = metrics.party.BalloonsObject()
+#balloons.append(metrics.party.BalloonsObjectItem(colour="red", diameter=5))
+#balloons.append(metrics.party.BalloonsObjectItem(colour="green"))
+#metrics.party.balloons.set(balloons)
+#
+## Set some invalid object.
+## Does not throw an exception, but will record an error
+#metrics.party.balloons.set([])
+#
+#ch = metrics.party.ChooserObject()
+#f = metrics.party.ChooserObjectItem(key="fortywo", value=42)
+#ch.append(f)
+#f = metrics.party.ChooserObjectItem(key="to-be", value=False)
+#ch.append(f)
+#f = metrics.party.ChooserObjectItem(key="to-be", value=["string"])
+#ch.append(f)
+#metrics.party.chooser.set(ch)
+#
+#pings.prototype.submit()
 
-metrics.test.metrics.sample_boolean.set(True)
-
-balloons = metrics.party.BalloonsObject()
-balloons.append(metrics.party.BalloonsObjectItem(colour="red", diameter=5))
-balloons.append(metrics.party.BalloonsObjectItem(colour="green"))
-metrics.party.balloons.set(balloons)
-
-# Set some invalid object.
-# Does not throw an exception, but will record an error
-metrics.party.balloons.set([])
-
-ch = metrics.party.ChooserObject()
-f = metrics.party.ChooserObjectItem(key="fortywo", value=42)
-ch.append(f)
-f = metrics.party.ChooserObjectItem(key="to-be", value=False)
-ch.append(f)
-f = metrics.party.ChooserObjectItem(key="to-be", value=["string"])
-ch.append(f)
-metrics.party.chooser.set(ch)
-
-pings.prototype.submit()
+lib = CDLL('libglean_sys.dylib')
+lib.record_cat_name()
 
 Glean.shutdown()
