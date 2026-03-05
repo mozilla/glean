@@ -81,7 +81,8 @@ static GLEAN: LazyLock<GleanSys> = LazyLock::new(|| {
     metrics::GleanSys::load().unwrap()
 });
 
-fn main() {
+#[unsafe(no_mangle)]
+extern "C" fn record_cat_name() {
     env_logger::init();
     _ = &*GLEAN;
 
@@ -94,9 +95,9 @@ fn main() {
         dynamic_label: None,
     };
     let metric = CounterMetric::new(cmd);
-    metric.add(1);
+    metric.add(31);
     let value = metric.test_get_value(None);
-    //dbg!(value);
+    dbg!(value);
 
     println!("Hello, world!");
 }
