@@ -142,6 +142,7 @@ fn main() {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
         channel: None,
         locale: None,
+        os_version: None,
     };
 
     // Ensure this ping is always registered early.

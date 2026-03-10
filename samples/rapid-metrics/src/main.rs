@@ -78,6 +78,7 @@ fn main() {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
         channel: None,
         locale: None,
+        os_version: None,
     };
 
     _ = &*glean_metrics::prototype;
