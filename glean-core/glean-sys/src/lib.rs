@@ -24,31 +24,20 @@ macro_rules! library_binding {
     ( $localname:ident members[$($members:tt)*] load[$($load:tt)*] ) => {
         pub struct GleanSys {
             $($members)*
-            _library: libloading::Library
+            _library: libloading::os::unix::Library,
         }
 
         impl GleanSys {
+            #[cfg(unix)]
             pub fn load() -> std::io::Result<Self> {
                 // Try each of the libraries, debug-logging load failures.
-                let library = crate::GLEAN_LIB_NAMES.iter().find_map(|&name| {
-                    log::debug!("attempting to load {name}");
-                    match unsafe { libloading::Library::new(name) } {
-                        Ok(lib) => {
-                            log::info!("loaded {name}");
-                            Some(lib)
-                        }
-                        Err(e) => {
-                            log::debug!("error when loading {name}: {e}");
-                            None
-                        }
-                    }
-                });
-
-                let $localname = library.ok_or_else(|| {
-                    std::io::Error::new(std::io::ErrorKind::NotFound, "failed to find glean library")
-                })?;
-
+                let $localname = libloading::os::unix::Library::this();
                 Ok(GleanSys { $($load)* _library: $localname })
+            }
+
+            #[cfg(not(unix))]
+            pub fn load() -> std::io::Result<Self> {
+                compile_error!("This crate is not implemented for Windows");
             }
         }
     };
@@ -66,16 +55,6 @@ use metrics::*;
 use types::*;
 
 struct UniFfiTag;
-
-const GLEAN_LIB_NAMES: &[&str] = if cfg!(target_os = "linux") {
-    &["libglean_ffi.so"]
-} else if cfg!(target_os = "macos") {
-    &["libglean_ffi.dylib"]
-} else if cfg!(target_os = "windows") {
-    &["libglean_ffi.dll"]
-} else {
-    &[]
-};
 
 static GLEAN: LazyLock<GleanSys> = LazyLock::new(|| metrics::GleanSys::load().unwrap());
 
