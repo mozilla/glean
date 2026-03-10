@@ -4,6 +4,8 @@
 
 * General
   * Updated to `glean_parser` v19.0.0 ([#3421](https://github.com/mozilla/glean/issues/3421))
+* Rust
+  * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))
 
 # v67.1.0 (2026-03-12)
 
