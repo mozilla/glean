@@ -251,6 +251,7 @@ let client_info = ClientInfoMetrics {
     app_display_version: env!("CARGO_PKG_VERSION").to_string(),
     channel: None,
     locale: None,
+    os_version: None, // auto-detected
 };
 
 glean::initialize(cfg, client_info);

@@ -11,6 +11,7 @@
   * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
+  * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))
 * Android
   * Updated Kotlin to 2.3.21 ([#3456](https://github.com/mozilla/glean/pull/3456))
   * The Gradle plugin now uses the modern AGP variant API, making it compatible with AGP 9 (maintaining AGP 8 compatibility) ([#3472](https://github.com/mozilla/glean/pull/3472)).
