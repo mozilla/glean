@@ -4,6 +4,7 @@
 
 * Rust
   * Add support for determining `client_info.os_version` for Android binaries ([#3434](https://github.com/mozilla/glean/pull/3434))
+  * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))
 
 # v67.2.0 (2026-04-06)
 
