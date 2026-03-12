@@ -35,7 +35,6 @@ use metrics::RemoteSettingsConfig;
 mod common_metric_data;
 mod core;
 mod core_metrics;
-mod coverage;
 mod database;
 mod debug;
 #[cfg(feature = "benchmark")]

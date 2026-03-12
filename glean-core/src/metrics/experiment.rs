@@ -205,7 +205,7 @@ impl ExperimentMetric {
     ///
     /// The stored value or `None` if nothing stored.
     pub fn test_get_value(&self, glean: &Glean) -> Option<RecordedExperiment> {
-        match StorageManager.snapshot_metric_for_test(
+        match StorageManager.snapshot_metric(
             glean.storage(),
             INTERNAL_STORAGE,
             &self.meta.identifier(glean),

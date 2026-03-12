@@ -21,7 +21,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 
 use crate::common_metric_data::CommonMetricDataInternal;
-use crate::coverage::record_coverage;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{DatetimeMetric, TimeUnit};
 use crate::storage::INTERNAL_STORAGE;
@@ -684,8 +683,6 @@ impl EventDatabase {
         meta: &'a CommonMetricDataInternal,
         store_name: &str,
     ) -> Option<Vec<RecordedEvent>> {
-        record_coverage(&meta.base_identifier());
-
         let value: Vec<RecordedEvent> = self
             .event_stores
             .read()

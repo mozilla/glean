@@ -5,7 +5,7 @@
 > which suggests it has a lower chance of containing undetected software bugs compared to a program with low test coverage.
 > ([Wikipedia](https://en.wikipedia.org/wiki/Code_coverage))
 
-This chapter describes how to generate a traditional code coverage report over the Kotlin, Swift and Python code in the Glean SDK repository. To learn how to generate a coverage report about what metrics your project is testing, see the user documentation on [generating testing coverage reports](https://mozilla.github.io/glean/book/user/testing-metrics.html#generating-testing-coverage-reports).
+This chapter describes how to generate a traditional code coverage report over the Kotlin, Swift and Python code in the Glean SDK repository.
 
 ## Generating Kotlin reports locally
 

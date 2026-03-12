@@ -60,6 +60,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
 
 [[package]]
+name = "arraydeque"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d902e3d592a523def97af8f317b08ce16b7ab854c1985a0c671e6f15cebc236"
+
+[[package]]
 name = "arrayref"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -154,9 +160,9 @@ checksum = "793db76d6187cd04dff33004d8e6c9cc4e05cd330500379d2394209271b4aeee"
 
 [[package]]
 name = "bytes"
-version = "1.9.0"
+version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
+checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 
 [[package]]
 name = "camino"
@@ -394,6 +400,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
+name = "encoding_rs"
+version = "0.8.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -432,9 +447,9 @@ dependencies = [
 
 [[package]]
 name = "fastrand"
-version = "2.0.0"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6999dc1837253364c2ebb0704ba97994bd874e8f195d665c50b7548f6ea92764"
+checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
 name = "fd-lock"
@@ -456,6 +471,12 @@ dependencies = [
  "crc32fast",
  "miniz_oxide",
 ]
+
+[[package]]
+name = "foldhash"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
 
 [[package]]
 name = "form_urlencoded"
@@ -488,7 +509,7 @@ dependencies = [
 
 [[package]]
 name = "glean"
-version = "67.0.0"
+version = "67.1.0"
 dependencies = [
  "crossbeam-channel",
  "env_logger",
@@ -530,7 +551,7 @@ dependencies = [
 
 [[package]]
 name = "glean-core"
-version = "67.0.0"
+version = "67.1.0"
 dependencies = [
  "android_logger",
  "bincode",
@@ -555,6 +576,7 @@ dependencies = [
  "uuid",
  "wr_malloc_size_of",
  "xshell",
+ "yaml-rust2",
  "zeitstempel",
 ]
 
@@ -590,6 +612,18 @@ name = "hashbrown"
 version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
+dependencies = [
+ "foldhash",
+]
+
+[[package]]
+name = "hashlink"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7382cf6263419f2d8df38c55d7da83da5c18aef87fc7a7fc1fb1e344edfe14c1"
+dependencies = [
+ "hashbrown",
+]
 
 [[package]]
 name = "heck"
@@ -761,9 +795,9 @@ checksum = "da2479e8c062e40bf0066ffa0bc823de0a9368974af99c9f6df941d2c231e03f"
 
 [[package]]
 name = "log"
-version = "0.4.25"
+version = "0.4.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
+checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
 
 [[package]]
 name = "malloc_size_of_derive"
@@ -934,6 +968,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e4dccaaaf89514f546c693ddc140f729f958c247918a13380cccc6078391acc"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "rapid-metrics"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "fastrand",
+ "glean",
+ "glean-build",
+ "log",
+ "serde_json",
+ "tempfile",
+ "xflags",
 ]
 
 [[package]]
@@ -1747,6 +1795,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "xflags"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d9e15fbb3de55454b0106e314b28e671279009b363e6f1d8e39fdc3bf048944"
+dependencies = [
+ "xflags-macros",
+]
+
+[[package]]
+name = "xflags-macros"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "672423d4fea7ffa2f6c25ba60031ea13dc6258070556f125cc4d790007d4a155"
+
+[[package]]
 name = "xshell"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1769,6 +1832,17 @@ checksum = "64b35c51b31637878412ae8c4107f260f3fe0a40b6cc6bddf47d868403d77d4c"
 dependencies = [
  "fd-lock",
  "xshell",
+]
+
+[[package]]
+name = "yaml-rust2"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ce2a4ff45552406d02501cea6c18d8a7e50228e7736a872951fe2fe75c91be7"
+dependencies = [
+ "arraydeque",
+ "encoding_rs",
+ "hashlink",
 ]
 
 [[package]]

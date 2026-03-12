@@ -123,7 +123,7 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 user-id = 127697 # bendk
 start = "2025-02-06"
-end = "2026-03-14"
+end = "2027-02-20"
 
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
@@ -697,6 +697,16 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 delta = "0.3.1 -> 0.3.2"
 notes = "Maintained by me. I have written or reviewed all of the code."
+
+[[audits.xflags]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.3.2"
+
+[[audits.xflags-macros]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.3.2"
 
 [[audits.xshell-venv]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"

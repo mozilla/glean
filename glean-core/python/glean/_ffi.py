@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import sys
 import threading
 
 
@@ -26,7 +27,16 @@ def setup_logging():
     Must be called after the Glean core has been dlopen'd.
     """
     r, w = os.pipe()
-    glean_enable_logging_to_fd(w)
+
+    if sys.platform == "win32":
+        # On Windows, os.pipe() returns C runtime file descriptors, but the
+        # Rust FdLogger expects a native Windows HANDLE (via FromRawHandle).
+        # Convert to a proper HANDLE with msvcrt.get_osfhandle().
+        import msvcrt
+
+        glean_enable_logging_to_fd(msvcrt.get_osfhandle(w))
+    else:
+        glean_enable_logging_to_fd(w)
 
     reader = os.fdopen(r, encoding="utf-8")
 

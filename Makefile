@@ -73,7 +73,7 @@ endif
 test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
 	@for file in $^; do \
 		echo "=== $${file} ==="; \
-		./$$file || exit $?; \
+		./$$file || exit 1; \
 	done
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
@@ -203,12 +203,12 @@ upload-wheels: setup-python
 		$(GLEAN_PYENV)/bin/python3 -m twine upload target/wheels/*
 .PHONY: upload-wheels
 
-clean: ## Clean up the object directories (alias for clobber)
-clobber:  ## Clean up the object directories
+clean: clobber  ## Clean up the object directories and build artifacts (alias for clobber)
+clobber:  ## Clean up the object directories and build artifacts
 	# Rust
 	cargo clean
-	cargo clean --manifest-path tools/devhub/Cargo.toml
 	cargo clean --manifest-path glean-core/benchmark/Cargo.toml
+	cargo clean --manifest-path tools/devhub/Cargo.toml
 	# General build folder
 	rm -rf build
 	# Swift artifacts

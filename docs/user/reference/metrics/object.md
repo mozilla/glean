@@ -2,6 +2,15 @@
 
 Record structured data.
 
+{{#include ../../../shared/blockquote-warning.html}}
+
+## Important
+
+> This metric type allows for more free-form data than other metric types.
+> This can make analysis harder and less automated.
+> Consider using another metric type if appropriate.
+> If in doubt, reach out to the Glean team before using this.
+
 ## Recording API
 
 ### `set`

@@ -8,11 +8,13 @@ members = [
   "glean-core/bundle-android",
   "glean-core/build",
   "samples/rust",
+  "samples/rapid-metrics",
   "tools/embedded-uniffi-bindgen",
 ]
 
 default-members = [
   "glean-core",
+  "glean-core/rlb",
   "tools/embedded-uniffi-bindgen",
 ]
 
