@@ -1137,14 +1137,13 @@ impl Glean {
         remote_settings_config.event_threshold = cfg.event_threshold;
 
         // Store the Server Knobs configuration as an ObjectMetric
-        // This allows it to be included in pings automatically
-        let config_clone = remote_settings_config.clone();
-        drop(remote_settings_config); // Release lock before storage operation
-
-        // Store the configuration using the server knobs ObjectMetric
+        // Since RemoteSettingsConfig only contains maps with string keys and primitives,
+        // serialization via the derived Serialize impl cannot fail so it is safe to unwrap.
+        let config_value = serde_json::to_value(&*remote_settings_config).unwrap();
+        drop(remote_settings_config);
         self.additional_metrics
             .server_knobs_config
-            .set_sync(self, serde_json::to_value(&config_clone).unwrap());
+            .set_sync(self, config_value);
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
