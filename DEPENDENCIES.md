@@ -1933,7 +1933,7 @@ The following text applies to code linked from these dependencies:
 * [env_logger 0.10.0]( https://github.com/rust-cli/env_logger/ )
 * [equivalent 1.0.2]( https://github.com/indexmap-rs/equivalent )
 * [errno 0.3.3]( https://github.com/lambda-fairy/rust-errno )
-* [fastrand 2.0.0]( https://github.com/smol-rs/fastrand )
+* [fastrand 2.3.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.35]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
 * [glob 0.3.2]( https://github.com/rust-lang/glob )
@@ -1944,7 +1944,7 @@ The following text applies to code linked from these dependencies:
 * [indexmap 2.9.0]( https://github.com/indexmap-rs/indexmap )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [linux-raw-sys 0.4.10]( https://github.com/sunfishcode/linux-raw-sys )
-* [log 0.4.25]( https://github.com/rust-lang/log )
+* [log 0.4.28]( https://github.com/rust-lang/log )
 * [malloc_size_of_derive 0.1.3]( https://github.com/bholley/malloc_size_of_derive )
 * [num-traits 0.2.15]( https://github.com/rust-num/num-traits )
 * [num_cpus 1.15.0]( https://github.com/seanmonstar/num_cpus )
@@ -3669,6 +3669,8 @@ The following text applies to code linked from these dependencies:
 * [tinyvec_macros 0.1.0]( https://github.com/Soveu/tinyvec_macros )
 * [unicode-ident 1.0.16]( https://github.com/dtolnay/unicode-ident )
 * [winapi-x86_64-pc-windows-gnu 0.4.0]( https://github.com/retep998/winapi-rs )
+* [xflags-macros 0.3.2]( https://github.com/matklad/xflags )
+* [xflags 0.3.2]( https://github.com/matklad/xflags )
 * [xshell-macros 0.2.7]( https://github.com/matklad/xshell )
 
 ```
@@ -4103,7 +4105,7 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [bytes 1.9.0]( https://github.com/tokio-rs/bytes )
+* [bytes 1.11.1]( https://github.com/tokio-rs/bytes )
 
 ```
 Copyright (c) 2018 Carl Lerche
@@ -4336,6 +4338,7 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
+* [rapid-metrics 0.1.0]( https://crates.io/crates/rapid-metrics )
 * [sample 0.1.0]( https://crates.io/crates/sample )
 
 ```
@@ -4611,9 +4614,8 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 67.0.0]( https://github.com/mozilla/glean )
 * [glean-build 18.2.0]( https://github.com/mozilla/glean )
-* [glean 67.0.0]( https://github.com/mozilla/glean )
+* [glean 67.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.0]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4997,6 +4999,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
+* [glean-core 67.1.0]( https://github.com/mozilla/glean )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )

@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.1.0...main)
+
+# v67.1.0 (2026-03-12)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.0.0...v67.1.0)
 
 * General
   * Remove support for generating metric testing coverage ([#3397](https://github.com/mozilla/glean/pull/3397))

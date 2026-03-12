@@ -277,6 +277,12 @@ the details of which are reproduced below.
     <name>Apache License 2.0: winapi-x86_64-pc-windows-gnu</name>
     <url>https://github.com/retep998/winapi-rs</url>
   </license>  <license>
+    <name>Apache License 2.0: xflags-macros</name>
+    <url>https://github.com/matklad/xflags</url>
+  </license>  <license>
+    <name>Apache License 2.0: xflags</name>
+    <url>https://github.com/matklad/xflags</url>
+  </license>  <license>
     <name>Apache License 2.0: xshell-macros</name>
     <url>https://github.com/matklad/xshell</url>
   </license>  <license>
@@ -316,6 +322,9 @@ the details of which are reproduced below.
     <name>MIT License: oslog</name>
     <url>https://github.com/steven-joruk/oslog</url>
   </license>  <license>
+    <name>MIT License: rapid-metrics</name>
+    <url>https://crates.io/crates/rapid-metrics</url>
+  </license>  <license>
     <name>MIT License: sample</name>
     <url>https://crates.io/crates/sample</url>
   </license>  <license>
@@ -343,9 +352,6 @@ the details of which are reproduced below.
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
   </license>  <license>
-    <name>Mozilla Public License 2.0: glean-core</name>
-    <url>https://github.com/mozilla/glean</url>
-  </license>  <license>
     <name>Mozilla Public License 2.0: glean-build</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
@@ -354,6 +360,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Mozilla Public License 2.0: zeitstempel</name>
     <url>https://github.com/badboy/zeitstempel</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-bundle</name>
     <url>https://github.com/mozilla/glean</url>
