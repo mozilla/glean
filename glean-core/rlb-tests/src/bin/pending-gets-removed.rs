@@ -5,18 +5,17 @@
 //! Test that pings can be enabled/disabled at runtime.
 
 use std::env;
-use std::fs::{read_dir, File};
+use std::fs::{File, read_dir};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
-use glean::{net, ClientInfoMetrics, Configuration, ConfigurationBuilder, TestGetValue};
+use glean::{ClientInfoMetrics, Configuration, ConfigurationBuilder, TestGetValue, net};
 use serde_json::Value as JsonValue;
 
 /// A timing_distribution
 mod metrics {
     use glean::private::*;
-    use glean::Lifetime;
-    use glean_core::CommonMetricData;
+    use glean::{CommonMetricData, Lifetime};
     use once_cell::sync::Lazy;
 
     #[allow(non_upper_case_globals)]

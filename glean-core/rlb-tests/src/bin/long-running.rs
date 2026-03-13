@@ -9,10 +9,10 @@ use std::{thread, time};
 use once_cell::sync::Lazy;
 
 use glean::net;
-use glean::{private::PingType, ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
+use glean::{ClientInfoMetrics, ConfigurationBuilder, TestGetValue, private::PingType};
 
 pub mod glean_metrics {
-    use glean::{private::BooleanMetric, CommonMetricData, Lifetime};
+    use glean::{CommonMetricData, Lifetime, private::BooleanMetric};
 
     #[allow(non_upper_case_globals)]
     pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =

@@ -80,7 +80,8 @@ commands:
             sudo apt update
             sudo apt install --yes --no-install-recommends \
               python3-pip \
-              python3.10-venv
+              python3.10-venv \
+              faketime
 
       - run:
           name: Install nextest
@@ -117,39 +118,6 @@ commands:
           name: Run Rust sample
           command: |
             cargo run -p sample
-      - run:
-          name: Run Rust RLB test
-          command: |
-            glean-core/rlb/tests/test-shutdown-blocking.sh
-      - run:
-          name: Run Rust RLB crash test
-          command: |
-            glean-core/rlb/tests/test-thread-crashing.sh
-      - run:
-          name: Run Rust RLB delayed ping data test
-          command: |
-            glean-core/rlb/tests/test-delayed-ping-data.sh
-      - run:
-          name: Run Rust RLB flush test
-          command: |
-            glean-core/rlb/tests/test-ping-lifetime-flush.sh
-      - run:
-          name: Run Rust RLB enabled-pings test
-          command: |
-            glean-core/rlb/tests/test-enabled-pings.sh
-      - run:
-          name: Run Rust RLB pending-gets-removed test
-          command: |
-            glean-core/rlb/tests/test-pending-gets-removed.sh
-      - run:
-          name: Run Rust RLB mps-delay test
-          command: |
-            sudo apt install -y faketime
-            glean-core/rlb/tests/test-mps-delay.sh
-      - run:
-          name: Run Rust Rkv open test
-          command: |
-            glean-core/tests/test-rkv-cases.sh
 
   install-rustup:
     steps:
