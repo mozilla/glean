@@ -1136,6 +1136,16 @@ impl Glean {
 
         remote_settings_config.event_threshold = cfg.event_threshold;
 
+        // Store the Server Knobs configuration as an ObjectMetric
+        // This allows it to be included in pings automatically
+        let config_clone = remote_settings_config.clone();
+        drop(remote_settings_config); // Release lock before storage operation
+
+        // Store the configuration using the server knobs ObjectMetric
+        self.additional_metrics
+            .server_knobs_config
+            .set_sync(self, serde_json::to_value(&config_clone).unwrap());
+
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
     }
