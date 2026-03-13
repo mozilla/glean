@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.1.0...main)
 
+* Rust
+  * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))
+
 # v67.1.0 (2026-03-12)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.0.0...v67.1.0)
