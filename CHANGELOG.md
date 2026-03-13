@@ -11,6 +11,7 @@
 
 * General
   * Remove support for generating metric testing coverage ([#3397](https://github.com/mozilla/glean/pull/3397))
+  * Fix log pipe corruption on Windows ([#3413](https://github.com/mozilla/glean/issues/3413))
 
 # v67.0.0 (2026-01-21)
 
