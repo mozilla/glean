@@ -33,7 +33,7 @@ pub trait MemoryDistribution: TestGetValue<Output = DistributionData> {
     ///
     /// Please note that this assumes that the provided samples are already in
     /// the "unit" declared by the instance of the metric type (e.g. if the the
-    /// instance this method was called on is using [`MemoryUnit::Kilobyte`], then
+    /// instance this method was called on is using [`crate::MemoryUnit::Kilobyte`], then
     /// `samples` are assumed to be in that unit).
     ///
     /// # Arguments
