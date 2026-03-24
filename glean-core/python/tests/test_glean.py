@@ -827,7 +827,10 @@ def test_client_activity_api(tmpdir, monkeypatch, helpers):
     # real-world async behaviour of this.
 
     configuration = Glean._configuration
-    configuration.ping_uploader = _RecordingUploader(info_path)
+    # Filter events pings: session_start events are now recorded on
+    # handle_client_active(), causing an events ping on handle_client_inactive()
+    # which would overwrite the baseline ping in the single-file recorder.
+    configuration.ping_uploader = _RecordingUploader(info_path, filter_string=["health", "events"])
 
     Glean._testing_mode = False
     glean_set_test_mode(False)
@@ -844,8 +847,8 @@ def test_client_activity_api(tmpdir, monkeypatch, helpers):
     url_path, payload = helpers.wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
-    # It's an empty ping.
-    assert "metrics" not in payload
+    # No duration is recorded on an active ping.
+    assert "timespan" not in payload.get("metrics", {})
 
     # The upload process is fast, but not fast enough to communicate its status.
     # We give it just a blink of an eye to wind down.
@@ -867,7 +870,7 @@ def test_client_activity_api(tmpdir, monkeypatch, helpers):
     url_path, payload = helpers.wait_for_ping(info_path)
     assert "baseline" == url_path.split("/")[3]
     assert payload["ping_info"]["reason"] == "active"
-    assert "timespan" not in payload["metrics"]
+    assert "timespan" not in payload.get("metrics", {})
 
 
 def test_sending_of_custom_pings(safe_httpserver):

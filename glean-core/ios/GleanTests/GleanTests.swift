@@ -239,8 +239,9 @@ class GleanTests: XCTestCase {
 
         // We expect only a single ping later
         stubServerReceive { pingType, _ in
-            if pingType == "baseline" {
-                // Ignore initial "active" baseline ping
+            if pingType == "baseline" || pingType == "events" {
+                // Ignore initial "active" baseline ping and events pings
+                // (session boundary events are now flushed on startup).
                 return
             }
 
@@ -381,8 +382,9 @@ class GleanTests: XCTestCase {
 
         // We expect 10 pings later
         stubServerReceive { pingType, _ in
-            if pingType == "baseline" {
-                // Ignore initial "active" baseline ping
+            if pingType == "baseline" || pingType == "events" {
+                // Ignore initial "active" baseline ping and events pings
+                // (session boundary events are now flushed on startup).
                 return
             }
 

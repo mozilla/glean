@@ -16,7 +16,7 @@ from .._uniffi import (
     glean_initialize_for_subprocess,
     glean_process_ping_upload_response,
 )
-from .._uniffi import InternalConfiguration, UploadTaskAction, PingUploadTask, PingRequest
+from .._uniffi import InternalConfiguration, SessionMode, UploadTaskAction, PingUploadTask, PingRequest
 from .._process_dispatcher import ProcessDispatcher
 
 
@@ -122,6 +122,9 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             ping_schedule={},
             ping_lifetime_threshold=0,
             ping_lifetime_max_time=0,
+            session_mode=SessionMode.AUTO,
+            session_sample_rate=1.0,
+            session_inactivity_timeout_ms=1800000,
         )
         if not glean_initialize_for_subprocess(cfg):
             log.error("Couldn't initialize Glean in subprocess")

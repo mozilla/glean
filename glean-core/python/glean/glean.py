@@ -238,6 +238,9 @@ class Glean:
             ping_schedule={},
             ping_lifetime_threshold=0,
             ping_lifetime_max_time=0,
+            session_mode=_uniffi.SessionMode.AUTO,
+            session_sample_rate=1.0,
+            session_inactivity_timeout_ms=1800000,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)

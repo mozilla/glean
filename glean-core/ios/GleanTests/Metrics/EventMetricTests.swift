@@ -255,6 +255,12 @@ class EventMetricTypeTests: XCTestCase {
         XCTAssertEqual(1, snapshot3.count)
     }
 
+    /// Filters out internal Glean session boundary events (category == "glean")
+    /// so tests can check only user-recorded events.
+    private func userEvents(from events: [Any]?) -> [[String: Any]] {
+        return (events as? [[String: Any]])?.filter { ($0["category"] as? String) != "glean" } ?? []
+    }
+
     func testFlushQueuedEventsOnStartup() {
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
@@ -277,7 +283,10 @@ class EventMetricTypeTests: XCTestCase {
 
         let events = lastPingJson?["events"] as? [Any]
         XCTAssertNotNil(events)
-        XCTAssertEqual(1, events?.count)
+        // Session boundary events (glean.session_start/session_end) are also
+        // flushed on startup; filter to user-recorded events only.
+        let userEvts = userEvents(from: events)
+        XCTAssertEqual(1, userEvts.count)
     }
 
     private func getExtraValue(from event: Any?, for key: String) -> String {
@@ -314,8 +323,10 @@ class EventMetricTypeTests: XCTestCase {
 
         let events = lastPingJson?["events"] as? [Any]
         XCTAssertNotNil(events)
-        XCTAssertEqual(1, events?.count)
-        XCTAssertEqual("run1", getExtraValue(from: events![0], for: "some_extra"))
+        // Session boundary events are also flushed on startup; filter to user events.
+        let userEvts = userEvents(from: events)
+        XCTAssertEqual(1, userEvts.count)
+        XCTAssertEqual("run1", getExtraValue(from: userEvts[0], for: "some_extra"))
 
         setupHttpResponseStub()
         expectation = expectation(description: "Completed upload")
@@ -328,9 +339,11 @@ class EventMetricTypeTests: XCTestCase {
 
         let events2 = lastPingJson?["events"] as? [Any]
         XCTAssertNotNil(events2)
-        XCTAssertEqual(2, events2?.count)
-        XCTAssertEqual("pre-init", getExtraValue(from: events2![0], for: "some_extra"))
-        XCTAssertEqual("post-init", getExtraValue(from: events2![1], for: "some_extra"))
+        // Session boundary events are also present; filter to user events.
+        let userEvts2 = userEvents(from: events2)
+        XCTAssertEqual(2, userEvts2.count)
+        XCTAssertEqual("pre-init", getExtraValue(from: userEvts2[0], for: "some_extra"))
+        XCTAssertEqual("post-init", getExtraValue(from: userEvts2[1], for: "some_extra"))
     }
 
     func testEventLongExtraRecordsError() {
