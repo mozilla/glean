@@ -232,6 +232,9 @@ fn experimentation_id_is_set_correctly() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        session_mode: crate::session::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
     })
     .unwrap();
 
@@ -1359,4 +1362,162 @@ fn pings_are_controllable_from_remote_settings_config() {
 
     assert!(disabled_ping.submit_sync(&glean, None));
     assert!(!enabled_ping.submit_sync(&glean, None));
+}
+
+// ---------------------------------------------------------------------------
+// Session crash recovery (requires pub(crate) access)
+// ---------------------------------------------------------------------------
+
+/// Helper: create an EventMetric that matches glean.session_end boundary events.
+fn session_end_metric_internal() -> metrics::EventMetric {
+    metrics::EventMetric::new(
+        CommonMetricData {
+            name: "session_end".into(),
+            category: "glean".into(),
+            send_in_pings: vec!["events".into()],
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec![],
+    )
+}
+
+/// When the dirty flag is set and a session_id is persisted, restarting and
+/// calling `recover_session_on_dirty_flag` emits a synthetic session_end
+/// with reason="abnormal".
+#[test]
+fn crash_recovery_emits_abnormal_session_end() {
+    let dir = tempfile::tempdir().unwrap();
+    let data_path = dir.path().display().to_string();
+
+    {
+        let mut glean = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+        // handle_client_active: starts session (persists session_id) and sets dirty flag.
+        glean.handle_client_active();
+        // Drop without calling handle_client_inactive — simulates crash.
+    }
+
+    // Simulate restart on the same data path.
+    let mut glean2 = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+    assert!(
+        glean2.is_dirty_flag_set(),
+        "dirty flag must still be set after crash"
+    );
+
+    glean2.recover_session_on_dirty_flag();
+
+    let events = session_end_metric_internal()
+        .get_value(&glean2, "events")
+        .expect("expected synthetic session_end after crash recovery");
+    assert_eq!(1, events.len());
+    let extra = events[0].extra.as_ref().expect("expected extras on session_end");
+    assert_eq!(
+        "abnormal",
+        extra.get("reason").expect("reason missing from synthetic session_end"),
+        "crashed active session must produce reason='abnormal'"
+    );
+    assert!(
+        extra.contains_key("session_id"),
+        "synthetic session_end must carry the crashed session's session_id"
+    );
+
+    // After recovery, session state must be fully cleared.
+    assert!(
+        glean2.session_manager().session_id().is_none(),
+        "session_id must be cleared after crash recovery"
+    );
+    assert!(
+        !glean2.session_manager().is_active(),
+        "session must be inactive after crash recovery"
+    );
+}
+
+/// After crash recovery, the next session must have session_seq incremented
+/// from the crashed session's seq.
+#[test]
+fn crash_recovery_next_session_increments_seq() {
+    let dir = tempfile::tempdir().unwrap();
+    let data_path = dir.path().display().to_string();
+
+    let crashed_seq;
+    {
+        let mut glean = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+        glean.handle_client_active();
+        crashed_seq = glean.session_manager().session_seq;
+        // Drop without handle_client_inactive — simulates crash.
+    }
+
+    let mut glean2 = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+    glean2.recover_session_on_dirty_flag();
+
+    // Start a new session after recovery.
+    glean2.handle_client_active();
+
+    assert_eq!(
+        crashed_seq + 1,
+        glean2.session_manager().session_seq,
+        "new session after crash recovery must have session_seq = crashed_seq + 1"
+    );
+}
+
+/// When the dirty flag is set, a session_id is persisted, AND an inactive_since
+/// timestamp is persisted, crash recovery emits session_end with reason="abnormal_inactive".
+#[test]
+fn crash_recovery_emits_abnormal_inactive_session_end() {
+    let dir = tempfile::tempdir().unwrap();
+    let data_path = dir.path().display().to_string();
+
+    {
+        let mut glean = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+        glean.handle_client_active(); // dirty=true, session persisted
+        // Manually persist inactive_since to simulate a crash while inactive
+        // (dirty flag was set before backgrounding, then the app crashed
+        // mid-shutdown before clearing it).
+        let now = chrono::Local::now().fixed_offset();
+        crate::session::persist_inactive_since(&glean, now);
+        // Drop without clearing dirty flag.
+    }
+
+    let mut glean2 = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+    assert!(glean2.is_dirty_flag_set());
+
+    glean2.recover_session_on_dirty_flag();
+
+    let events = session_end_metric_internal()
+        .get_value(&glean2, "events")
+        .expect("expected synthetic session_end after crash recovery");
+    assert_eq!(1, events.len());
+    let extra = events[0].extra.as_ref().expect("expected extras");
+    assert_eq!(
+        "abnormal_inactive",
+        extra.get("reason").expect("reason missing"),
+        "crashed inactive session must produce reason='abnormal_inactive'"
+    );
+}
+
+/// When the dirty flag is set but no session_id is persisted, crash recovery
+/// is a no-op (no synthetic session_end emitted).
+#[test]
+fn crash_recovery_no_session_is_noop() {
+    let dir = tempfile::tempdir().unwrap();
+    let data_path = dir.path().display().to_string();
+
+    {
+        let glean = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+        // Set dirty flag without starting a session.
+        glean.set_dirty_flag(true);
+        // Drop.
+    }
+
+    let mut glean2 = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
+    assert!(glean2.is_dirty_flag_set());
+
+    glean2.recover_session_on_dirty_flag();
+
+    assert!(
+        session_end_metric_internal()
+            .get_value(&glean2, "events")
+            .is_none(),
+        "crash recovery without a persisted session must not emit any event"
+    );
 }
