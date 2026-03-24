@@ -176,6 +176,12 @@ impl PingMaker {
                 .insert("server_knobs_config".to_string(), server_knobs_config);
         }
 
+        // Session metadata lives on individual event records (RecordedEvent.session),
+        // not in ping_info. The ping_info schema has additionalProperties: false, so
+        // adding a session field here would break schema validation. Per-event session
+        // metadata is the authoritative source per the spec; ping-level session fields
+        // would require a schema change coordinated across the Glean ecosystem.
+
         map
     }
 
