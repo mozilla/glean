@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, FixedOffset, SecondsFormat};
 use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 use uuid::Uuid;
@@ -27,6 +27,7 @@ use crate::metrics::{
     self, ExperimentMetric, Metric, MetricType, PingType, RecordedExperiment, RemoteSettingsConfig,
 };
 use crate::ping::PingMaker;
+use crate::session::{self, EventSessionContext, SessionManager, SessionMode, SessionState};
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult, UploadTaskAction};
 use crate::util::{local_now_with_offset, sanitize_application_id};
@@ -139,6 +140,9 @@ where
 ///     ping_schedule: Default::default(),
 ///     ping_lifetime_threshold: 1000,
 ///     ping_lifetime_max_time: 2000,
+///     session_mode: glean_core::SessionMode::Auto,
+///     session_sample_rate: 1.0,
+///     session_inactivity_timeout_ms: 1_800_000,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -186,6 +190,8 @@ pub struct Glean {
     pub(crate) remote_settings_config: Arc<Mutex<RemoteSettingsConfig>>,
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
+    #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 1960592)"]
+    pub(crate) session_manager: SessionManager,
 }
 
 impl Glean {
@@ -248,6 +254,18 @@ impl Glean {
             remote_settings_config: Arc::new(Mutex::new(RemoteSettingsConfig::new())),
             with_timestamps: cfg.enable_event_timestamps,
             ping_schedule: cfg.ping_schedule.clone(),
+            // The SessionManager is deliberately left in its default (hollow)
+            // state for subprocesses.  `restore_session_state_from_storage()`
+            // is only called in `Glean::new()`, not here, so the subprocess
+            // never loads or mutates the main process's persisted session
+            // state.  This prevents subprocesses from interfering with the
+            // main process's session lifecycle (seq counters, dirty flags,
+            // boundary events, etc.).
+            session_manager: SessionManager::new(
+                cfg.session_mode,
+                cfg.session_sample_rate,
+                std::time::Duration::from_millis(cfg.session_inactivity_timeout_ms),
+            ),
         };
 
         // Ensuring these pings are registered.
@@ -280,6 +298,8 @@ impl Glean {
             ping_lifetime_threshold,
             ping_lifetime_max_time,
         )?);
+
+        glean.restore_session_state_from_storage();
 
         // This code references different states from the "Client ID recovery" flowchart.
         // See https://mozilla.github.io/glean/dev/core/internal/client_id_recovery.html for details.
@@ -540,6 +560,9 @@ impl Glean {
             ping_schedule: Default::default(),
             ping_lifetime_threshold: 0,
             ping_lifetime_max_time: 0,
+            session_mode: SessionMode::Auto,
+            session_sample_rate: 1.0,
+            session_inactivity_timeout_ms: 1_800_000,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -924,6 +947,11 @@ impl Glean {
         &self.event_data_store
     }
 
+    /// Gets a reference to the session manager.
+    pub fn session_manager(&self) -> &SessionManager {
+        &self.session_manager
+    }
+
     pub(crate) fn with_timestamps(&self) -> bool {
         self.with_timestamps
     }
@@ -1147,6 +1175,24 @@ impl Glean {
             .server_knobs_config
             .set_sync(self, config_value);
 
+        // Clamp to [0.0, 1.0] so callers can't accidentally set an invalid rate.
+        //
+        // NOTE: `session_sample_rate` is intentionally NOT applied to any
+        // currently-active session.  The override is picked up at the next
+        // `session_start()` call.  This "sticky per session" design means:
+        //   - A mid-session RS rollout does not change sampling mid-flight,
+        //     which would otherwise cause partial session data.
+        //   - To clear the override and revert to the configured rate, set
+        //     `session_sample_rate` to `null` in the RS payload.  The next
+        //     session will use `configured_sample_rate` as the fallback.
+        //
+        // This override is intentionally NOT persisted to storage.  Remote
+        // Settings configuration is refreshed on every app startup, so the
+        // override will be re-applied before the next session begins.
+        // Persisting it would risk making a stale value sticky if the RS
+        // payload changes or is removed between restarts.
+        remote_settings_config.session_sample_rate = cfg.session_sample_rate.map(|r| r.clamp(0.0, 1.0));
+
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
     }
@@ -1300,11 +1346,406 @@ impl Glean {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // Session lifecycle methods
+    // -----------------------------------------------------------------------
+
+    /// Restores session state from persistent storage at startup.
+    ///
+    /// Must be called after `data_store` is initialized (i.e. after
+    /// `Database::new` succeeds) so that the storage reads are valid.
+    ///
+    /// **Sequence counter**: `session_seq` is always restored so it is
+    /// monotonically increasing across restarts.  Note that if a crash occurs
+    /// between `store_session_seq` and `persist_session_id` inside
+    /// `session_start`, the sequence number will have been incremented but no
+    /// session ID will be persisted.  On the next restart this method will
+    /// restore the incremented seq and the next session will be assigned
+    /// seq+1, leaving a one-element gap.  This is acceptable — downstream
+    /// analysts should treat sequence numbers as monotonically non-decreasing,
+    /// not strictly contiguous.
+    ///
+    /// **AUTO mode resumption**: requires both a persisted `session_id` **and**
+    /// an `inactive_since` timestamp.  If either is absent the previous session
+    /// is considered abandoned and the next `handle_client_active` call will
+    /// start a fresh session via `session_start()`.  On a crash restart,
+    /// `recover_session_on_dirty_flag()` overwrites whatever this method
+    /// restores, so the dirty-flag path is always authoritative.
+    fn restore_session_state_from_storage(&mut self) {
+        // Always restore seq so new sessions increment from the last known value.
+        self.session_manager.session_seq = session::read_session_seq(self);
+
+        // Check for an orphaned session from a previous build that used a
+        // different SessionMode.  If the current mode would not restore the
+        // persisted session, emit a synthetic session_end("abandoned") and
+        // clear all persisted session state so it doesn't leak across builds.
+        if self.session_manager.mode != SessionMode::Auto {
+            if let Some(id_str) = session::read_session_id(self) {
+                log::info!(
+                    "Orphaned session {} found from a previous Auto-mode build; \
+                     emitting session_end(\"abandoned\") and clearing storage",
+                    id_str
+                );
+                let seq = self.session_manager.session_seq;
+                self.record_session_end_event(&id_str, seq, Some("abandoned"));
+                session::clear_session_id(self);
+                session::clear_inactive_since(self);
+                session::clear_session_start_time(self);
+                session::clear_session_event_seq(self);
+            }
+            return;
+        }
+
+        // AUTO mode: restore inactive session state so inactivity timeout
+        // evaluation can happen lazily on the next handle_client_active call.
+        if let Some(inactive_since) = session::read_inactive_since(self) {
+            if let Some(id_str) = session::read_session_id(self) {
+                if let Ok(id) = Uuid::parse_str(&id_str) {
+                    // Recompute sampled_in deterministically from the UUID so
+                    // the sampling decision is consistent across the resumed session.
+                    let sampled_in = session::uuid_to_sample_value(&id)
+                        < self.session_manager.configured_sample_rate;
+                    self.session_manager.session_id = Some(id);
+                    self.session_manager.inactive_since = Some(inactive_since);
+                    self.session_manager.sampled_in = sampled_in;
+                    self.session_manager.session_start_time =
+                        session::read_session_start_time(self);
+                    if self.session_manager.session_start_time.is_none() {
+                        log::warn!(
+                            "Resumed session {} has no persisted session_start_time; \
+                             events in this session will carry session_start_time: null",
+                            id
+                        );
+                    }
+                    // Restore event_seq so the resumed session issues
+                    // monotonically increasing sequence numbers even across
+                    // a clean restart.
+                    self.session_manager.event_seq.store(
+                        session::read_session_event_seq(self),
+                        Ordering::Relaxed,
+                    );
+                    self.session_manager.state = SessionState::Inactive;
+                }
+            }
+        }
+    }
+
+    /// Injects a `glean_timestamp` key into `extra` when event timestamps are enabled.
+    ///
+    /// Takes the already-computed `timestamp_ms` so the glean_timestamp extra and
+    /// the event's main timestamp are both derived from the same clock sample.
+    fn maybe_inject_glean_timestamp(
+        &self,
+        extra: &mut std::collections::HashMap<String, String>,
+        timestamp_ms: u64,
+    ) {
+        if self.with_timestamps {
+            extra.insert("glean_timestamp".to_string(), timestamp_ms.to_string());
+        }
+    }
+
+    /// Records a `glean.session_start` boundary event (always, regardless of sampling).
+    fn record_session_start_event(
+        &self,
+        session_id: &str,
+        seq: u64,
+        start_time: DateTime<FixedOffset>,
+        sampled_in: bool,
+    ) {
+        let meta = CommonMetricData {
+            name: "session_start".into(),
+            category: "glean".into(),
+            send_in_pings: vec!["events".into()],
+            lifetime: Lifetime::Ping,
+            out_of_session: true,
+            ..Default::default()
+        };
+        let timestamp = crate::get_timestamp_ms();
+        let mut extra = std::collections::HashMap::new();
+        extra.insert("session_id".to_string(), session_id.to_string());
+        extra.insert("session_seq".to_string(), seq.to_string());
+        extra.insert("session_start_time".to_string(), start_time.to_rfc3339_opts(SecondsFormat::Millis, true));
+        extra.insert("sampled_in".to_string(), sampled_in.to_string());
+        self.maybe_inject_glean_timestamp(&mut extra, timestamp);
+        self.event_data_store.record(
+            self,
+            &meta.into(),
+            timestamp,
+            Some(extra),
+            EventSessionContext::OutOfSession,
+        );
+    }
+
+    /// Records a `glean.session_end` boundary event (always, regardless of sampling).
+    fn record_session_end_event(&self, session_id: &str, seq: u64, reason: Option<&str>) {
+        let meta = CommonMetricData {
+            name: "session_end".into(),
+            category: "glean".into(),
+            send_in_pings: vec!["events".into()],
+            lifetime: Lifetime::Ping,
+            out_of_session: true,
+            ..Default::default()
+        };
+        let timestamp = crate::get_timestamp_ms();
+        let mut extra = std::collections::HashMap::new();
+        extra.insert("session_id".to_string(), session_id.to_string());
+        extra.insert("session_seq".to_string(), seq.to_string());
+        if let Some(r) = reason {
+            extra.insert("reason".to_string(), r.to_string());
+        }
+        self.maybe_inject_glean_timestamp(&mut extra, timestamp);
+        self.event_data_store.record(
+            self,
+            &meta.into(),
+            timestamp,
+            Some(extra),
+            EventSessionContext::OutOfSession,
+        );
+    }
+
+    /// Starts a new session, persists state, and records a boundary event.
+    ///
+    /// If a session is already active it is ended cleanly before the new one
+    /// starts, preventing orphaned sessions with no corresponding `session_end`.
+    pub fn session_start(&mut self) {
+        // End any already-active session so we never orphan a session_end event.
+        if self.session_manager.is_active() {
+            self.session_end(Some("replaced"));
+        }
+
+        // 1. Compute new seq from in-memory value (authoritative after init).
+        let new_seq = self.session_manager.session_seq + 1;
+
+        // 2. Generate new session_id and compute sampling.
+        //    Prefer a remote-settings override if one has been set, falling back
+        //    to the immutable configured_sample_rate (never the last effective
+        //    rate) so RS overrides can be fully cleared without residual effects.
+        //    The rate is sampled once here and is sticky for the entire session;
+        //    any RS update received mid-session takes effect at the next session_start.
+        let session_id = uuid::Uuid::new_v4();
+        let sample_rate = {
+            let remote = self.remote_settings_config.lock().unwrap();
+            remote
+                .session_sample_rate
+                .unwrap_or(self.session_manager.configured_sample_rate)
+        };
+        let sampled_in = session::uuid_to_sample_value(&session_id) < sample_rate;
+
+        // 3. Update in-memory state.
+        self.session_manager.sample_rate = sample_rate;
+        // Truncate to millisecond precision so that in-memory and persisted
+        // (RFC 3339 millis) representations are identical after a round-trip.
+        let start_time = {
+            let now = local_now_with_offset();
+            let millis = now.timestamp_millis();
+            DateTime::from_timestamp_millis(millis)
+                .expect("valid timestamp")
+                .with_timezone(now.offset())
+        };
+        self.session_manager.session_start_time = Some(start_time);
+        self.session_manager.session_id = Some(session_id);
+        self.session_manager.session_seq = new_seq;
+        self.session_manager.event_seq.store(0, Ordering::Relaxed);
+        self.session_manager.sampled_in = sampled_in;
+        self.session_manager.state = SessionState::Active;
+        self.session_manager.inactive_since = None;
+
+        // 4. Persist to storage.
+        session::store_session_seq(self, new_seq);
+        session::persist_session_id(self, &session_id.to_string());
+        session::persist_session_start_time(self, start_time);
+        session::clear_inactive_since(self);
+
+        // 5. Increment diagnostic counter.
+        self.additional_metrics.sessions_seen.add_sync(self, 1);
+
+        // 6. Record boundary event.
+        self.record_session_start_event(&session_id.to_string(), new_seq, start_time, sampled_in);
+    }
+
+    /// Ends the current session, persists state, and records a boundary event.
+    ///
+    /// Returns the ended session's metadata, or `None` if no session was active.
+    pub fn session_end(&mut self, reason: Option<&str>) -> Option<crate::session::SessionMetadata> {
+        if self.session_manager.state != SessionState::Active {
+            return None;
+        }
+
+        let session_id = self.session_manager.session_id?;
+        let seq = self.session_manager.session_seq;
+        let event_seq = self.session_manager.event_seq.load(Ordering::Relaxed);
+        let sample_rate = self.session_manager.sample_rate;
+        let start_time = self.session_manager.session_start_time;
+
+        // Update in-memory state.
+        self.session_manager.state = SessionState::Inactive;
+        self.session_manager.session_id = None;
+        self.session_manager.inactive_since = None;
+        self.session_manager.session_start_time = None;
+
+        // Clear persistence.
+        session::clear_session_id(self);
+        session::clear_inactive_since(self);
+        session::clear_session_start_time(self);
+        session::clear_session_event_seq(self);
+
+        // Record boundary event.
+        self.record_session_end_event(&session_id.to_string(), seq, reason);
+
+        Some(crate::session::SessionMetadata {
+            session_id: session_id.to_string(),
+            session_seq: seq,
+            event_seq,
+            session_sample_rate: sample_rate,
+            session_start_time: start_time.map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
+        })
+    }
+
+    /// Transitions the current session to inactive (AUTO mode).
+    ///
+    /// Records the `inactive_since` timestamp for timeout evaluation on next activation.
+    /// Does NOT end the session — that happens lazily on next `handle_client_active`.
+    pub(crate) fn session_transition_to_inactive(&mut self) {
+        if self.session_manager.state != SessionState::Active {
+            return;
+        }
+
+        let now = local_now_with_offset();
+        // Snapshot event_seq before changing state so the value is stable.
+        let event_seq = self.session_manager.event_seq.load(Ordering::Relaxed);
+        self.session_manager.state = SessionState::Inactive;
+        self.session_manager.inactive_since = Some(now);
+
+        // Persist for crash recovery and clean-restart resumption.
+        // event_seq is persisted here (rather than on every increment) because
+        // this is the only point where events stop being recorded mid-session;
+        // if the app crashes before the next activation, the recovered session
+        // will at least have the correct seq baseline from the last inactive
+        // transition.
+        session::persist_inactive_since(self, now);
+        session::store_session_event_seq(self, event_seq);
+    }
+
+    /// Handles transitioning from inactive to active (AUTO mode).
+    ///
+    /// Evaluates the inactivity timeout:
+    /// - If the timeout has NOT expired: resume the existing session.
+    /// - If the timeout HAS expired: end the old session and start a new one.
+    ///
+    /// Returns `true` if a new session was started.
+    pub(crate) fn session_transition_to_active(&mut self) -> bool {
+        match self.session_manager.inactive_since {
+            None => {
+                // No inactive_since recorded: treat as a cold activation and start
+                // a fresh session.  The call site in handle_client_active guards
+                // with `inactive_since.is_some()` so this is normally unreachable,
+                // but we handle it safely rather than leaving state inconsistent.
+                self.session_start();
+                true
+            }
+            Some(inactive_since) => {
+                let now = local_now_with_offset();
+                let elapsed = (now - inactive_since).to_std().unwrap_or_default();
+
+                // A timeout of zero means "never time out" (session always resumes).
+                if !self.session_manager.inactivity_timeout.is_zero()
+                    && elapsed >= self.session_manager.inactivity_timeout
+                {
+                    // Timeout expired → end old session (emits boundary event), start new one.
+                    // The session state was set to Inactive by session_transition_to_inactive(),
+                    // but session_id is still set. Restore Active so session_end() can proceed.
+                    self.session_manager.state = SessionState::Active;
+                    self.session_end(Some("timeout"));
+                    self.session_start();
+                    true
+                } else {
+                    // Timeout has NOT expired → resume existing session.
+                    self.session_manager.state = SessionState::Active;
+                    self.session_manager.inactive_since = None;
+                    session::clear_inactive_since(self);
+                    false
+                }
+            }
+        }
+    }
+
+    /// Called during initialization to recover an abnormally terminated session.
+    ///
+    /// If the dirty flag was set and a session ID is persisted, emits a synthetic
+    /// `session_end` event with reason "abnormal" and clears session state.
+    pub(crate) fn recover_session_on_dirty_flag(&mut self) {
+        let persisted_id = match session::read_session_id(self) {
+            Some(id) => id,
+            None => return, // No previous session to recover.
+        };
+
+        let persisted_seq = self.session_manager.session_seq;
+        let inactive_since = session::read_inactive_since(self);
+
+        // Determine if the session ended while inactive (timeout may have expired).
+        let reason = if inactive_since.is_some() {
+            "abnormal_inactive"
+        } else {
+            "abnormal"
+        };
+
+        log::info!(
+            "Recovering abnormally terminated session: {} (seq={})",
+            persisted_id,
+            persisted_seq
+        );
+
+        // Emit synthetic session_end.
+        self.record_session_end_event(&persisted_id, persisted_seq, Some(reason));
+
+        // Clear persisted session state so the recovered session won't be replayed.
+        session::clear_session_id(self);
+        session::clear_inactive_since(self);
+        session::clear_session_start_time(self);
+        session::clear_session_event_seq(self);
+
+        // Reset in-memory state so the next session_start gets a clean slate.
+        self.session_manager.state = SessionState::Inactive;
+        self.session_manager.session_id = None;
+        self.session_manager.inactive_since = None;
+        self.session_manager.session_start_time = None;
+    }
+
+    // -----------------------------------------------------------------------
+    // Client lifecycle methods
+    // -----------------------------------------------------------------------
+
     /// Performs the collection/cleanup operations required by becoming active.
     ///
     /// This functions generates a baseline ping with reason `active`
     /// and then sets the dirty bit.
     pub fn handle_client_active(&mut self) {
+        // Session lifecycle (mode-dependent).
+        match self.session_manager.mode {
+            SessionMode::Auto => {
+                if !self.session_manager.is_active() {
+                    if self.session_manager.inactive_since.is_some() {
+                        // Was inactive — evaluate timeout.
+                        self.session_transition_to_active();
+                    } else {
+                        // First activation — start initial session.
+                        self.session_start();
+                    }
+                }
+            }
+            SessionMode::Lifecycle => {
+                // Only start a session on the first activation following an inactive
+                // transition. Guard against duplicate handle_client_active calls which
+                // are not a real lifecycle transition.
+                if !self.session_manager.is_active() {
+                    self.session_start();
+                }
+            }
+            SessionMode::Manual => {
+                // No automatic session management.
+            }
+        }
+
         if !self
             .internal_pings
             .baseline
@@ -1321,6 +1762,22 @@ impl Glean {
     /// This functions generates a baseline and an events ping with reason
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
+        // Session lifecycle (mode-dependent).
+        match self.session_manager.mode {
+            SessionMode::Auto => {
+                // In AUTO mode, don't end the session immediately. Instead record
+                // inactive_since for lazy timeout evaluation on next activation.
+                self.session_transition_to_inactive();
+            }
+            SessionMode::Lifecycle => {
+                // End session immediately on going inactive.
+                self.session_end(Some("inactive"));
+            }
+            SessionMode::Manual => {
+                // No automatic session management.
+            }
+        }
+
         if !self
             .internal_pings
             .baseline

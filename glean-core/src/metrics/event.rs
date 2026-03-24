@@ -8,6 +8,7 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::event_database::RecordedEvent;
 use crate::metrics::MetricType;
+use crate::session::EventSessionContext;
 use crate::util::truncate_string_at_boundary_with_error;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
@@ -157,9 +158,21 @@ impl EventMetric {
             map.insert("glean_timestamp".to_string(), precise_timestamp.to_string());
         }
 
+        // Determine the session context for this event.
+        //
+        // Sampling suppression has already been handled by `should_record()` above,
+        // which gates all metric types uniformly.  This call is concerned only with
+        // what metadata to attach: `OutOfSession` for out-of-session metrics and
+        // between-session events, `InSession(meta)` for events in a sampled-in session.
+        let ctx = if self.meta().inner.out_of_session {
+            EventSessionContext::OutOfSession
+        } else {
+            glean.session_manager().compute_event_context()
+        };
+
         glean
             .event_storage()
-            .record(glean, &self.meta, timestamp, extra_strings)
+            .record(glean, &self.meta, timestamp, extra_strings, ctx)
     }
 
     /// **Test-only API (exported for FFI purposes).**

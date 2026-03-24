@@ -52,6 +52,7 @@ mod internal_pings;
 pub mod metrics;
 pub mod ping;
 mod scheduler;
+pub(crate) mod session;
 pub mod storage;
 mod system;
 #[doc(hidden)]
@@ -64,6 +65,7 @@ mod util;
 mod fd_logger;
 
 pub use crate::common_metric_data::{CommonMetricData, DynamicLabelType, Lifetime};
+pub use crate::session::{SessionManager, SessionMetadata, SessionMode};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 use crate::dispatcher::is_test_mode;
@@ -166,6 +168,13 @@ pub struct InternalConfiguration {
     pub ping_lifetime_threshold: u64,
     /// After what time to auto-flush. 0 disables it.
     pub ping_lifetime_max_time: u64,
+    /// Session management mode. Default: `Auto`.
+    pub session_mode: session::SessionMode,
+    /// The fraction of sessions to sample (0.0–1.0). Default: `1.0` (all sessions).
+    pub session_sample_rate: f64,
+    /// Inactivity timeout in milliseconds for AUTO mode before a new session starts.
+    /// Default: 1 800 000 ms (30 minutes).
+    pub session_inactivity_timeout_ms: u64,
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
@@ -468,6 +477,13 @@ fn initialize_inner(
             // initialization does not complete successfully.
             dirty_flag = glean.is_dirty_flag_set();
             glean.set_dirty_flag(false);
+
+            // Session crash recovery: if the dirty flag was set, the previous
+            // run ended abnormally. Emit a synthetic session_end for any
+            // persisted session.
+            if dirty_flag {
+                glean.recover_session_on_dirty_flag();
+            }
 
             // Perform registration of pings that were attempted to be
             // registered before init.
@@ -1194,6 +1210,33 @@ pub fn glean_handle_client_inactive() {
             log::error!("Triggering upload failed. Error: {}", e);
         }
     })
+}
+
+/// Starts a session manually.
+///
+/// Only has effect in `SessionMode::Manual`. Calling this in `Auto` or
+/// `Lifecycle` mode is a no-op to prevent corrupting automatic session state.
+pub fn glean_session_start() {
+    launch_with_glean_mut(|glean| {
+        if glean.session_manager.mode == session::SessionMode::Manual {
+            glean.session_start();
+        }
+    });
+}
+
+/// Ends a session manually.
+///
+/// Only has effect in `SessionMode::Manual`. Calling this in `Auto` or
+/// `Lifecycle` mode is a no-op to prevent corrupting automatic session state.
+///
+/// `reason` is an optional application-provided string attached to the
+/// `glean.session_end` boundary event for downstream analysis.
+pub fn glean_session_end(reason: Option<String>) {
+    launch_with_glean_mut(move |glean| {
+        if glean.session_manager.mode == session::SessionMode::Manual {
+            glean.session_end(reason.as_deref());
+        }
+    });
 }
 
 /// Collect and submit a ping for eventual upload by name.
