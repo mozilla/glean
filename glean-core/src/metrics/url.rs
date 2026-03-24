@@ -186,6 +186,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            out_of_session: true,
         });
 
         let sample_url = "glean://test".to_string();
@@ -204,6 +205,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            out_of_session: true,
         });
 
         // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
@@ -242,6 +244,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            out_of_session: true,
         });
 
         let test_url = "data:application/json";
@@ -266,6 +269,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            out_of_session: true,
         });
 
         let incorrects = vec![

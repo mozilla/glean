@@ -111,6 +111,43 @@
           "timestamp": {
             "minimum": 0,
             "type": "integer"
+          },
+          "session": {
+            "type": "object",
+            "description": "Session metadata attached to this event. Absent for out-of-session events and events from before sessions were introduced.",
+            "additionalProperties": false,
+            "required": [
+              "session_id",
+              "session_seq",
+              "event_seq",
+              "session_sample_rate"
+            ],
+            "properties": {
+              "session_id": {
+                "type": "string",
+                "description": "The unique UUID for this session."
+              },
+              "session_seq": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Monotonically increasing session counter, persisted across restarts."
+              },
+              "event_seq": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Per-session event counter, reset at each new session."
+              },
+              "session_sample_rate": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "description": "The sampling rate in effect for this session."
+              },
+              "session_start_time": {
+                "type": "string",
+                "description": "Wall-clock timestamp at session start (RFC 3339). Absent on events from before this field was introduced."
+              }
+            }
           }
         },
         "required": [
