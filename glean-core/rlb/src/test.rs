@@ -143,6 +143,7 @@ fn disabling_upload_disables_metrics_recording() {
         lifetime: Lifetime::Application,
         disabled: false,
         dynamic_label: None,
+        out_of_session: true,
     });
 
     crate::set_upload_enabled(false);
@@ -438,6 +439,7 @@ fn queued_recorded_metrics_correctly_record_during_init() {
         lifetime: Lifetime::Application,
         disabled: false,
         dynamic_label: None,
+        out_of_session: true,
     });
 
     // This will queue 3 tasks that will add to the metric value once Glean is initialized
@@ -1259,6 +1261,7 @@ fn test_a_ping_before_submission() {
         lifetime: Lifetime::Application,
         disabled: false,
         dynamic_label: None,
+        out_of_session: true,
     });
 
     metric.add(1);
@@ -1289,6 +1292,7 @@ fn test_boolean_get_num_errors() {
         lifetime: Lifetime::Application,
         disabled: false,
         dynamic_label: Some(DynamicLabelType::Label(str::to_string("asdf"))),
+        out_of_session: true,
     });
 
     // Check specifically for an invalid label
@@ -1375,6 +1379,7 @@ fn test_text_can_hold_long_string() {
         lifetime: Lifetime::Application,
         disabled: false,
         dynamic_label: Some(DynamicLabelType::Label(str::to_string("text"))),
+        out_of_session: true,
     });
 
     // 216 characters, which would overflow StringMetric
