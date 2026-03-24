@@ -46,6 +46,7 @@ pub fn initialize(cfg: Configuration) {
         app_display_version: "1.0.0".to_string(),
         channel: Some("testing".to_string()),
         locale: Some("xx-XX".to_string()),
+        os_version: None,
     };
 
     _ = PingBuilder::new("store1").with_send_if_empty(true).build();
