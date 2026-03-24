@@ -259,8 +259,9 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Set up the interception of the ping for inspection
         stubServerReceive { pingType, json in
-            if pingType == "baseline" {
-                // Ignore initial "active" baseline ping
+            if pingType == "baseline" || pingType == "events" {
+                // Ignore initial "active" baseline ping and events pings
+                // (session boundary events are now flushed on startup).
                 return
             }
 

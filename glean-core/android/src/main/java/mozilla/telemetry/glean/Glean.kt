@@ -270,6 +270,9 @@ open class GleanInternalAPI internal constructor() {
                 pingSchedule = configuration.pingSchedule,
                 pingLifetimeThreshold = configuration.pingLifetimeThreshold.toULong(),
                 pingLifetimeMaxTime = configuration.pingLifetimeMaxTime.toULong(),
+                sessionMode = SessionMode.AUTO,
+                sessionSampleRate = 1.0,
+                sessionInactivityTimeoutMs = 1800000UL,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
