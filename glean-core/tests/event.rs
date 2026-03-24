@@ -555,6 +555,9 @@ fn with_event_timestamps() {
         ping_lifetime_max_time: 0,
         max_pending_pings_count: None,
         max_pending_pings_directory_size: None,
+        session_mode: glean_core::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping = PingBuilder::new("store1").build();

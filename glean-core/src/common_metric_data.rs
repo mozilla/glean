@@ -53,8 +53,21 @@ impl TryFrom<i32> for Lifetime {
     }
 }
 
+/// Returns `true`, used as the serde default for `out_of_session`.
+///
+/// Kept separate from the `Default` impl so that deserialization of
+/// `CommonMetricData` structs that omit the field also defaults to `true`,
+/// matching the Rust `Default` impl.
+///
+/// NOTE FOR GLEAN-PARSER: When generating metric bindings, event metrics must
+/// emit `out_of_session: false` (or the platform equivalent) explicitly.
+/// All other metric types should rely on this default of `true`.
+fn default_out_of_session() -> bool {
+    true
+}
+
 /// The common set of data shared across all different metric types.
-#[derive(Default, Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
+#[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
 pub struct CommonMetricData {
     /// The metric's name.
     pub name: String,
@@ -75,6 +88,34 @@ pub struct CommonMetricData {
     /// label so that we can validate them when the Glean singleton is
     /// available.
     pub dynamic_label: Option<DynamicLabelType>,
+    /// Whether this metric is outside of the session scope.
+    ///
+    /// `true` (the default) means this metric bypasses session sampling and
+    /// does not carry session metadata. Non-event metrics should always use
+    /// the default. Event metrics that participate in session tracking must
+    /// explicitly set this to `false`.
+    ///
+    /// Note: the naming is an inversion of the spec's `in_session` field.
+    /// `out_of_session: false` ↔ `in_session: true`.
+    #[serde(default = "default_out_of_session")]
+    pub out_of_session: bool,
+}
+
+impl Default for CommonMetricData {
+    fn default() -> Self {
+        Self {
+            name: Default::default(),
+            category: Default::default(),
+            send_in_pings: Default::default(),
+            lifetime: Default::default(),
+            disabled: Default::default(),
+            dynamic_label: Default::default(),
+            // Non-event metrics are out-of-session by default per the spec:
+            // "By default, all non-event metrics will be in_session: false."
+            // Event metrics must explicitly set `out_of_session: false`.
+            out_of_session: true,
+        }
+    }
 }
 
 /// The type of dynamic label applied to a base metric. Used to help identify
