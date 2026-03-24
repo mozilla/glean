@@ -51,6 +51,9 @@ fn main() {
         ping_schedule: HashMap::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        session_mode: glean_core::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
     };
 
     let client_info = ClientInfoMetrics::unknown();
