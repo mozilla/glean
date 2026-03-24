@@ -240,6 +240,9 @@ class Glean:
             ping_lifetime_max_time=0,
             max_pending_pings_count=configuration.max_pending_pings_count,
             max_pending_pings_directory_size=configuration.max_pending_pings_directory_size,
+            session_mode=_uniffi.SessionMode.AUTO,
+            session_sample_rate=1.0,
+            session_inactivity_timeout_ms=1800000,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)

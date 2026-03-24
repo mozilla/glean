@@ -215,6 +215,9 @@ public final class Glean: @unchecked Sendable {
             pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime),
             maxPendingPingsCount: configuration.maxPendingPingsCount,
             maxPendingPingsDirectorySize: configuration.maxPendingPingsDirectorySize
+            sessionMode: .auto,
+            sessionSampleRate: 1.0,
+            sessionInactivityTimeoutMs: 1_800_000
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)

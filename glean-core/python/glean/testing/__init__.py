@@ -100,7 +100,8 @@ class _RecordingUploader(base_uploader.BaseUploader):
 
         uncompressed_data = gzip.decompress(data) if is_gzipped else data
 
-        if self.filter_string in path:
+        filters = self.filter_string if isinstance(self.filter_string, list) else [self.filter_string]
+        if any(f in path for f in filters):
             self._filtered_pings.append((str(path), uncompressed_data.decode("utf-8")))
             return UploadResult.HTTP_STATUS(200)
 

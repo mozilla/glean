@@ -131,6 +131,9 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         ping_lifetime_max_time: cfg.ping_lifetime_max_time.as_millis() as u64,
         max_pending_pings_count: None,
         max_pending_pings_directory_size: None,
+        session_mode: cfg.session_mode,
+        session_sample_rate: cfg.session_sample_rate,
+        session_inactivity_timeout_ms: cfg.session_inactivity_timeout.as_millis() as u64,
     };
 
     glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);
@@ -140,6 +143,22 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
 /// Shuts down Glean in an orderly fashion.
 pub fn shutdown() {
     glean_core::shutdown()
+}
+
+/// Starts a session manually (MANUAL mode only).
+///
+/// In `SessionMode::Manual`, the application is responsible for calling
+/// `session_start` and `session_end` to manage session boundaries.
+pub fn session_start() {
+    glean_core::glean_session_start();
+}
+
+/// Ends a session manually (MANUAL mode only).
+///
+/// `reason` is an optional application-provided string attached to the
+/// `glean.session_end` boundary event for downstream analysis.
+pub fn session_end(reason: Option<String>) {
+    glean_core::glean_session_end(reason);
 }
 
 /// **DEPRECATED** Sets whether upload is enabled or not.
