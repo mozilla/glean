@@ -6,7 +6,7 @@ macro_rules! library_binding {
             $localname
             members[
                 $($members)*
-                $name: libloading::Symbol<'static, unsafe extern "C" fn $args $(->$ret)?>,
+                pub(crate) $name: libloading::Symbol<'static, unsafe extern "C" fn $args $(->$ret)?>,
             ]
             load[
                 $($load)*
@@ -24,14 +24,25 @@ macro_rules! library_binding {
     ( $localname:ident members[$($members:tt)*] load[$($load:tt)*] ) => {
         pub struct GleanSys {
             $($members)*
-            _library: libloading::os::unix::Library,
+            _library: libloading::Library,
         }
 
         impl GleanSys {
             #[cfg(unix)]
             pub fn load() -> std::io::Result<Self> {
+                let name = "libxul.so";
+                let library = match unsafe { libloading::Library::new(name) } {
+                        Ok(lib) => {
+                            Some(lib)
+                        }
+                        Err(e) => {
+                            None
+                        }
+                };
                 // Try each of the libraries, debug-logging load failures.
-                let $localname = libloading::os::unix::Library::this();
+                let $localname = library.ok_or_else(|| {
+                    std::io::Error::new(std::io::ErrorKind::NotFound, "failed to find glean library")
+                })?;
                 Ok(GleanSys { $($load)* _library: $localname })
             }
 
@@ -49,7 +60,7 @@ macro_rules! library_binding {
 }
 
 pub mod metrics;
-mod types;
+pub mod types;
 mod util;
 use metrics::*;
 use types::*;
@@ -60,7 +71,6 @@ static GLEAN: LazyLock<GleanSys> = LazyLock::new(|| metrics::GleanSys::load().un
 
 #[unsafe(no_mangle)]
 extern "C" fn record_cat_name() {
-    env_logger::init();
     _ = &*GLEAN;
 
     let cmd = CommonMetricData {

@@ -96,6 +96,10 @@ pub trait CloneFfiArg<T> {
     fn clone_for_ffi(&self) -> T;
 }
 
+pub trait DestroyFfiArg {
+    fn destroy(self);
+}
+
 macro_rules! impl_clone_ffi_arg_primitive {
     ($($ty:ty),+) => {
         $(
@@ -104,34 +108,35 @@ macro_rules! impl_clone_ffi_arg_primitive {
                 *self
             }
         }
+
+        impl DestroyFfiArg for $ty {
+            fn destroy(self) {
+                /* left empty */
+            }
+        }
         )*
     }
 }
 
 impl_clone_ffi_arg_primitive!(i8, i32, i64);
 
-#[repr(C)]
-#[derive(Debug)]
-struct LocalRustBuffer {
-    /// The allocated capacity of the underlying `Vec<u8>`.
-    /// In Rust this is a `usize`, but we use an `u64` to keep the foreign binding code simple.
-    pub(crate) capacity: u64,
-    /// The occupied length of the underlying `Vec<u8>`.
-    /// In Rust this is a `usize`, but we use an `u64` to keep the foreign binding code simple.
-    pub(crate) len: u64,
-    /// The pointer to the allocated buffer of the `Vec<u8>`.
-    pub(crate) data: *mut u8,
-}
-
 impl CloneFfiArg<RustBuffer> for RustBuffer {
     fn clone_for_ffi(&self) -> RustBuffer {
-        // SAFETY: Same layout.
+        // SAFETY: trust me, bro.
         unsafe {
-            std::mem::transmute(LocalRustBuffer {
-                capacity: self.capacity() as _,
-                len: self.len() as _,
-                data: self.data_pointer() as _,
-            })
+            let bytes = uniffi::ForeignBytes::from_raw_parts(self.data_pointer(), self.len().try_into().unwrap());
+            let mut call_status = uniffi::RustCallStatus::default();
+            let buffer = (crate::GLEAN.ffi_glean_core_rustbuffer_from_bytes)(
+                bytes,
+                &mut call_status,
+            );
+            buffer
         }
+    }
+}
+
+impl DestroyFfiArg for RustBuffer {
+    fn destroy(self) {
+        _ = self.destroy_into_vec();
     }
 }

@@ -5,9 +5,7 @@ edition = "2024"
 
 [dependencies]
 bytes = "1.11.1"
-env_logger = "0.10.0"
 libloading = "0.9.0"
-log = "0.4.29"
 uniffi = "0.31.0"
 
 # [lib]

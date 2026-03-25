@@ -357,6 +357,9 @@ fn main() {
                                 )*
                                 let mut call_status = uniffi::RustCallStatus::default();
                                 let handle = (crate::GLEAN.#extern_fn_ident)(#(#arg_names.clone_for_ffi(),)* &mut call_status);
+                                #(
+                                    #arg_names.destroy();
+                                )*
                                 Self { handle }
                             }
                         }
@@ -424,6 +427,7 @@ fn main() {
 
     tokens.push(quote! {
         library_binding! {
+            fn ffi_glean_core_rustbuffer_from_bytes(bytes: ::uniffi::ForeignBytes, call_status: &mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer;
             #(#bindings)*
         }
     });
