@@ -44,6 +44,7 @@ impl CounterMetric {
                 amount.clone_for_ffi(),
                 &mut call_status,
             );
+            amount.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -57,6 +58,7 @@ impl CounterMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -71,6 +73,7 @@ impl CounterMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -149,6 +152,7 @@ impl TimespanMetric {
                 elapsed.clone_for_ffi(),
                 &mut call_status,
             );
+            elapsed.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -162,6 +166,7 @@ impl TimespanMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -176,6 +181,7 @@ impl TimespanMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -218,6 +224,7 @@ impl BooleanMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -231,6 +238,7 @@ impl BooleanMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -245,6 +253,7 @@ impl BooleanMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -287,6 +296,7 @@ impl StringMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -300,6 +310,7 @@ impl StringMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -314,6 +325,7 @@ impl StringMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -356,6 +368,7 @@ impl StringListMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -369,6 +382,7 @@ impl StringListMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -382,6 +396,7 @@ impl StringListMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -396,6 +411,7 @@ impl StringListMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -438,6 +454,7 @@ impl UrlMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -451,6 +468,7 @@ impl UrlMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -465,6 +483,7 @@ impl UrlMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -507,6 +526,7 @@ impl UuidMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -531,6 +551,7 @@ impl UuidMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -545,6 +566,7 @@ impl UuidMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -587,6 +609,7 @@ impl QuantityMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -600,6 +623,7 @@ impl QuantityMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -614,6 +638,7 @@ impl QuantityMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -673,6 +698,7 @@ impl TimingDistributionMetric {
                 timer_id.clone_for_ffi(),
                 &mut call_status,
             );
+            timer_id.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -686,6 +712,7 @@ impl TimingDistributionMetric {
                 timer_id.clone_for_ffi(),
                 &mut call_status,
             );
+            timer_id.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -700,6 +727,7 @@ impl TimingDistributionMetric {
                 samples.clone_for_ffi(),
                 &mut call_status,
             );
+            samples.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -714,6 +742,7 @@ impl TimingDistributionMetric {
                 sample.clone_for_ffi(),
                 &mut call_status,
             );
+            sample.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -728,6 +757,7 @@ impl TimingDistributionMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -742,6 +772,7 @@ impl TimingDistributionMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -790,6 +821,7 @@ impl MemoryDistributionMetric {
                 sample.clone_for_ffi(),
                 &mut call_status,
             );
+            sample.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -804,6 +836,7 @@ impl MemoryDistributionMetric {
                 samples.clone_for_ffi(),
                 &mut call_status,
             );
+            samples.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -818,6 +851,7 @@ impl MemoryDistributionMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -832,6 +866,7 @@ impl MemoryDistributionMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -895,6 +930,7 @@ impl CustomDistributionMetric {
                 samples.clone_for_ffi(),
                 &mut call_status,
             );
+            samples.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -909,6 +945,7 @@ impl CustomDistributionMetric {
                 sample.clone_for_ffi(),
                 &mut call_status,
             );
+            sample.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -923,6 +960,7 @@ impl CustomDistributionMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -937,6 +975,7 @@ impl CustomDistributionMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -982,6 +1021,7 @@ impl DatetimeMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -995,6 +1035,7 @@ impl DatetimeMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1009,6 +1050,7 @@ impl DatetimeMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1023,6 +1065,7 @@ impl DatetimeMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1069,6 +1112,7 @@ impl EventMetric {
                 extra.clone_for_ffi(),
                 &mut call_status,
             );
+            extra.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1082,6 +1126,7 @@ impl EventMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1096,6 +1141,7 @@ impl EventMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1138,6 +1184,7 @@ impl RateMetric {
                 amount.clone_for_ffi(),
                 &mut call_status,
             );
+            amount.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1151,6 +1198,7 @@ impl RateMetric {
                 amount.clone_for_ffi(),
                 &mut call_status,
             );
+            amount.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1164,6 +1212,7 @@ impl RateMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1178,6 +1227,7 @@ impl RateMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1223,6 +1273,7 @@ impl DenominatorMetric {
                 amount.clone_for_ffi(),
                 &mut call_status,
             );
+            amount.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1236,6 +1287,7 @@ impl DenominatorMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1250,6 +1302,7 @@ impl DenominatorMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1292,6 +1345,7 @@ impl NumeratorMetric {
                 amount.clone_for_ffi(),
                 &mut call_status,
             );
+            amount.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1305,6 +1359,7 @@ impl NumeratorMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1319,6 +1374,7 @@ impl NumeratorMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1361,6 +1417,7 @@ impl TextMetric {
                 value.clone_for_ffi(),
                 &mut call_status,
             );
+            value.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1374,6 +1431,7 @@ impl TextMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1388,6 +1446,7 @@ impl TextMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1430,6 +1489,7 @@ impl ObjectMetric {
                 object.clone_for_ffi(),
                 &mut call_status,
             );
+            object.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1443,6 +1503,7 @@ impl ObjectMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1457,6 +1518,7 @@ impl ObjectMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1524,6 +1586,8 @@ impl DualLabeledCounterMetric {
                 category.clone_for_ffi(),
                 &mut call_status,
             );
+            key.destroy();
+            category.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1541,6 +1605,7 @@ impl DualLabeledCounterMetric {
                 ping_name.clone_for_ffi(),
                 &mut call_status,
             );
+            ping_name.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
@@ -1555,6 +1620,7 @@ impl DualLabeledCounterMetric {
                 error.clone_for_ffi(),
                 &mut call_status,
             );
+            error.destroy();
             uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
         }
     }
