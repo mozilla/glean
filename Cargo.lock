@@ -616,8 +616,10 @@ name = "glean-sys"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "glean-sys-parser",
  "libloading",
  "uniffi",
+ "xshell",
 ]
 
 [[package]]

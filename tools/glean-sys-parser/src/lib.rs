@@ -292,9 +292,7 @@ fn return_type_ffi(typ: &ReturnType) -> TokenStream {
     quote! { -> #ret }
 }
 
-fn main() {
-    let file = std::env::args().skip(1).next().unwrap();
-    let content = std::fs::read_to_string(&file).unwrap();
+pub fn generate(content: &str) -> String {
     let parsed = weedle::parse(&content).unwrap();
 
     let mut tokens = vec![];
@@ -406,6 +404,9 @@ fn main() {
                                 )*
                                 let mut call_status = uniffi::RustCallStatus::default();
                                 let res = (crate::GLEAN.#extern_fn_ident)(this, #(#arg_names.clone_for_ffi(),)* &mut call_status);
+                                #(
+                                    #arg_names.destroy();
+                                )*
                                 uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
                             }
                         }
@@ -437,7 +438,10 @@ fn main() {
         writeln!(&mut code, "{token}").unwrap();
     }
 
-    println!("{PREAMBLE}");
+    let mut output = String::new();
+    writeln!(&mut output, "{PREAMBLE}").unwrap();
     let code = RustFmt::default().format_str(code).unwrap();
-    println!("{code}");
+    writeln!(&mut output, "{code}").unwrap();
+
+    output
 }
