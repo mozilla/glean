@@ -30,14 +30,16 @@ macro_rules! library_binding {
         impl GleanSys {
             #[cfg(unix)]
             pub fn load() -> std::io::Result<Self> {
+                #[cfg(any(target_os = "ios", target_os = "macos"))]
+                let name = "libxul.dylib";
+                #[cfg(target_os = "windows")]
+                let name = "libxul.dll";
+                #[cfg(not(any(target_os = "ios", target_os = "macos", target_os = "windows")))]
                 let name = "libxul.so";
+
                 let library = match unsafe { libloading::Library::new(name) } {
-                        Ok(lib) => {
-                            Some(lib)
-                        }
-                        Err(e) => {
-                            None
-                        }
+                        Ok(lib) => Some(lib),
+                        Err(e) => None,
                 };
                 // Try each of the libraries, debug-logging load failures.
                 let $localname = library.ok_or_else(|| {
@@ -129,12 +131,12 @@ pub struct UniFfiTag;
 
 /// The namespace glean-sys FFI items are placed in.
 /// Required by UniFFI to match up items.
-const UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS: ::uniffi::MetadataBuffer = ::uniffi::MetadataBuffer::from_code(
-        ::uniffi::metadata::codes::NAMESPACE,
-    )
-    .concat_str("glean_sys")
-    .concat_str("glean_sys");
+const UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS: ::uniffi::MetadataBuffer =
+    ::uniffi::MetadataBuffer::from_code(::uniffi::metadata::codes::NAMESPACE)
+        .concat_str("glean_sys")
+        .concat_str("glean_sys");
 #[doc(hidden)]
 #[unsafe(no_mangle)]
-pub static UNIFFI_META_NAMESPACE_GLEAN_SYS: [::std::primitive::u8; UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS
-    .size] = UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS.into_array();
+pub static UNIFFI_META_NAMESPACE_GLEAN_SYS: [::std::primitive::u8;
+    UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS.size] =
+    UNIFFI_META_CONST_NAMESPACE_GLEAN_SYS.into_array();
