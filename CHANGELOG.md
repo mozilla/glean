@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...main)
 
+* Rust
+  * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
+
 # v67.3.1 (2026-05-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...v67.3.1)
