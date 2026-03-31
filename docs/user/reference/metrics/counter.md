@@ -317,7 +317,7 @@ controls:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=000000#c3
     notification_emails:
       - me@mozilla.com
-    expires: 2020-10-01
+    expires: 147
 ```
 
 For a full reference on metrics parameters common to all metric types,
