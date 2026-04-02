@@ -29,6 +29,40 @@ mod metrics {
             None,
         )
     });
+
+    #[allow(non_upper_case_globals)]
+    pub static labeled_boolean_static_labels: Lazy<LabeledBoolean> = Lazy::new(|| {
+        LabeledBoolean::new(
+            LabeledMetricData::Common {
+                cmd: CommonMetricData {
+                    name: "labeled_boolean_static_labels".into(),
+                    category: "sample".into(),
+                    send_in_pings: vec!["validation".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    ..Default::default()
+                },
+            },
+            Some(vec!["label_1".into(), "label_2".into()]),
+        )
+    });
+
+    #[allow(non_upper_case_globals)]
+    pub static labeled_boolean_static_labels_clone: Lazy<LabeledBoolean> = Lazy::new(|| {
+        LabeledBoolean::new(
+            LabeledMetricData::Common {
+                cmd: CommonMetricData {
+                    name: "labeled_boolean_static_labels".into(),
+                    category: "sample".into(),
+                    send_in_pings: vec!["validation".into()],
+                    lifetime: Lifetime::Ping,
+                    disabled: false,
+                    ..Default::default()
+                },
+            },
+            Some(vec!["label_1".into(), "label_2".into()]),
+        )
+    });
 }
 
 mod pings {
@@ -48,7 +82,21 @@ mod pings {
 fn test_labeled_metrics_test_get_value_functions_appropriately() {
     common::enable_test_logging();
 
-    metrics::labeled_boolean.get("label1").set(true);
+    // Definitely overrun the 16-label limit.
+    for i in 1..=20 {
+        metrics::labeled_boolean.get(format!("label{i}")).set(true);
+    }
+
+    metrics::labeled_boolean_static_labels
+        .get("label_1")
+        .set(true);
+    metrics::labeled_boolean_static_labels
+        .get("invalid_1")
+        .set(true);
+    // Overwrite the __other__ value using a second invalid label.
+    metrics::labeled_boolean_static_labels
+        .get("invalid_2")
+        .set(false);
 
     // Create a custom configuration to use a validating uploader.
     let dir = tempfile::tempdir().unwrap();
@@ -61,13 +109,32 @@ fn test_labeled_metrics_test_get_value_functions_appropriately() {
     common::initialize(cfg);
 
     let map = metrics::labeled_boolean.test_get_value(None).unwrap();
-    assert_eq!(map.len(), 1);
+    assert_eq!(map.len(), 17);
     assert_eq!(map.get("label1").unwrap(), &true);
+    assert_eq!(map.get("__other__").unwrap(), &true);
+
+    // Use the clone metric to make sure we're not reading in-memory data.
+    let mut map = metrics::labeled_boolean_static_labels_clone
+        .test_get_value(None)
+        .unwrap();
+    let mut entries: Vec<_> = map.drain().collect();
+    entries.sort_unstable();
+    assert_eq!(
+        vec![
+            ("__other__".to_string(), false),
+            ("label_1".to_string(), true),
+        ],
+        entries
+    );
 
     pings::validation.submit(None);
     let map = metrics::labeled_boolean.test_get_value(None).unwrap();
     assert_eq!(map.len(), 0);
-    assert!(!map.contains_key("label1"));
+
+    let map = metrics::labeled_boolean_static_labels
+        .test_get_value(None)
+        .unwrap();
+    assert_eq!(map.len(), 0);
 
     glean::shutdown();
 }
