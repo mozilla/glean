@@ -162,6 +162,20 @@ impl PingMaker {
                 .insert("experiments".to_string(), experiment_data);
         };
 
+        // Get the Server Knobs configuration, if available.
+        if let Some(config_json) = glean
+            .additional_metrics
+            .server_knobs_config
+            .get_value(glean, INTERNAL_STORAGE)
+        {
+            // Object metrics always hold a string produced by serde_json::to_string,
+            // so deserializing it back into a JsonValue cannot fail.
+            let server_knobs_config = serde_json::from_str(&config_json).unwrap();
+            map.as_object_mut()
+                .unwrap() // safe unwrap, we created the object above
+                .insert("server_knobs_config".to_string(), server_knobs_config);
+        }
+
         map
     }
 
@@ -532,5 +546,105 @@ mod test {
         glean.set_upload_enabled(true);
         assert_eq!(0, ping_maker.get_ping_seq(&glean, "store1"));
         assert_eq!(1, ping_maker.get_ping_seq(&glean, "store1"));
+    }
+
+    #[test]
+    fn test_server_knobs_config_appears_in_ping_info() {
+        use crate::metrics::RemoteSettingsConfig;
+        use std::collections::HashMap;
+
+        let (glean, _t) = new_glean(None);
+
+        // Apply complete Server Knobs config with all three fields
+        let mut metrics_enabled = HashMap::new();
+        metrics_enabled.insert("test.counter".to_string(), true);
+
+        let mut pings_enabled = HashMap::new();
+        pings_enabled.insert("custom".to_string(), false);
+
+        let config = RemoteSettingsConfig {
+            metrics_enabled,
+            pings_enabled,
+            event_threshold: Some(41),
+        };
+        glean.apply_server_knobs_config(config);
+
+        // Verify complete config structure appears in ping_info
+        let ping_maker = PingMaker::new();
+        let ping_info = ping_maker.get_ping_info(&glean, "store1", None, TimeUnit::Minute);
+
+        let server_knobs = &ping_info["server_knobs_config"];
+        assert_eq!(server_knobs["metrics_enabled"]["test.counter"], true);
+        assert_eq!(server_knobs["pings_enabled"]["custom"], false);
+        assert_eq!(server_knobs["event_threshold"], 41);
+    }
+
+    #[test]
+    fn test_server_knobs_not_included_when_no_config() {
+        let (glean, _t) = new_glean(None);
+
+        let ping_maker = PingMaker::new();
+        let ping_info = ping_maker.get_ping_info(&glean, "store1", None, TimeUnit::Minute);
+
+        assert!(ping_info.get("server_knobs_config").is_none());
+    }
+
+    #[test]
+    fn test_server_knobs_appears_in_all_pings() {
+        use crate::metrics::RemoteSettingsConfig;
+        use std::collections::HashMap;
+
+        let (glean, _t) = new_glean(None);
+
+        let mut metrics_enabled = HashMap::new();
+        metrics_enabled.insert("test.counter".to_string(), true);
+
+        let config = RemoteSettingsConfig {
+            metrics_enabled,
+            ..Default::default()
+        };
+        glean.apply_server_knobs_config(config);
+
+        // Verify config appears in multiple different pings
+        let ping_maker = PingMaker::new();
+        let ping_info1 = ping_maker.get_ping_info(&glean, "store1", None, TimeUnit::Minute);
+        let ping_info2 = ping_maker.get_ping_info(&glean, "store2", None, TimeUnit::Minute);
+
+        assert_eq!(
+            ping_info1["server_knobs_config"]["metrics_enabled"]["test.counter"],
+            true
+        );
+        assert_eq!(
+            ping_info2["server_knobs_config"]["metrics_enabled"]["test.counter"],
+            true
+        );
+    }
+
+    #[test]
+    fn test_server_knobs_config_omits_empty_fields() {
+        use crate::metrics::RemoteSettingsConfig;
+        use std::collections::HashMap;
+
+        let (glean, _t) = new_glean(None);
+
+        // Apply config with only metrics_enabled set; pings_enabled and event_threshold are empty/None
+        let mut metrics_enabled = HashMap::new();
+        metrics_enabled.insert("test.counter".to_string(), true);
+
+        let config = RemoteSettingsConfig {
+            metrics_enabled,
+            ..Default::default()
+        };
+        glean.apply_server_knobs_config(config);
+
+        let ping_maker = PingMaker::new();
+        let ping_info = ping_maker.get_ping_info(&glean, "store1", None, TimeUnit::Minute);
+
+        let server_knobs = &ping_info["server_knobs_config"];
+        // metrics_enabled should be present
+        assert_eq!(server_knobs["metrics_enabled"]["test.counter"], true);
+        // pings_enabled and event_threshold should be absent (not empty object / null)
+        assert!(server_knobs.get("pings_enabled").is_none());
+        assert!(server_knobs.get("event_threshold").is_none());
     }
 }
