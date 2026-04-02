@@ -4,6 +4,7 @@
 
 * General
   * Updated to `glean_parser` v19.0.0 ([#3421](https://github.com/mozilla/glean/issues/3421))
+  * Add server knobs config to `ping_info` ([#3396](https://github.com/mozilla/glean/pull/3396))
 
 # v67.1.0 (2026-03-12)
 
