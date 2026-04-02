@@ -4,6 +4,7 @@
 
 * General
   * Updated to `glean_parser` v19.0.0 ([#3421](https://github.com/mozilla/glean/issues/3421))
+  * Fix `test_get_value` on `labeled_` metrics to ask the db for the list of labels ([bug 2028892](https://bugzilla.mozilla.org/show_bug.cgi?id=2028892))
 
 # v67.1.0 (2026-03-12)
 
