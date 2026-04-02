@@ -14,3 +14,5 @@ For instance, if you wanted to disable batching in order to transmit an events p
   }
 }
 ```
+
+{{#include ../../../_includes/server-knobs-config-in-pings.md}}

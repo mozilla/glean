@@ -1120,21 +1120,32 @@ impl Glean {
     ///
     /// * `cfg` - The stringified JSON representation of a `RemoteSettingsConfig` object
     pub fn apply_server_knobs_config(&self, cfg: RemoteSettingsConfig) {
-        // Set the current RemoteSettingsConfig, keeping the lock until the epoch is
-        // updated to prevent against reading a "new" config but an "old" epoch
-        let mut remote_settings_config = self.remote_settings_config.lock().unwrap();
+        let config_value = {
+            // Hold the lock while merging config and serializing, then release
+            // before performing IO in set_sync.
+            let mut remote_settings_config = self.remote_settings_config.lock().unwrap();
 
-        // Merge the exising metrics configuration with the supplied one
-        remote_settings_config
-            .metrics_enabled
-            .extend(cfg.metrics_enabled);
+            // Merge the exising metrics configuration with the supplied one
+            remote_settings_config
+                .metrics_enabled
+                .extend(cfg.metrics_enabled);
 
-        // Merge the exising ping configuration with the supplied one
-        remote_settings_config
-            .pings_enabled
-            .extend(cfg.pings_enabled);
+            // Merge the exising ping configuration with the supplied one
+            remote_settings_config
+                .pings_enabled
+                .extend(cfg.pings_enabled);
 
-        remote_settings_config.event_threshold = cfg.event_threshold;
+            remote_settings_config.event_threshold = cfg.event_threshold;
+
+            // Store the Server Knobs configuration as an ObjectMetric
+            // Since RemoteSettingsConfig only contains maps with string keys and primitives,
+            // serialization via the derived Serialize impl cannot fail so it is safe to unwrap.
+            serde_json::to_value(&*remote_settings_config).unwrap()
+        };
+
+        self.additional_metrics
+            .server_knobs_config
+            .set_sync(self, config_value);
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
