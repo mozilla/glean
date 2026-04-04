@@ -1,0 +1,17 @@
+[package]
+name = "glean-sys"
+version = "0.1.0"
+authors = ["The Glean Team <glean-team@mozilla.com>"]
+description = "A Rust API on top of the Glean UniFFI C FFI"
+repository = "https://github.com/mozilla/glean"
+license = "MPL-2.0"
+edition = "2024"
+
+[dependencies]
+bytes = "1.11.1"
+libloading = "0.9.0"
+uniffi = "0.31.0"
+
+[dev-dependencies]
+xshell = "0.2.7"
+glean-sys-parser = { path = "../../tools/glean-sys-parser" }
