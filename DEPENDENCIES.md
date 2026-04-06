@@ -4614,8 +4614,8 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-build 18.2.0]( https://github.com/mozilla/glean )
-* [glean 67.1.0]( https://github.com/mozilla/glean )
+* [glean-build 19.0.0]( https://github.com/mozilla/glean )
+* [glean 67.2.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.0]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4999,9 +4999,10 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 67.1.0]( https://github.com/mozilla/glean )
+* [glean-core 67.2.0]( https://github.com/mozilla/glean )
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
+* [glean-tests 0.1.0]( https://crates.io/crates/glean-tests )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )
 * [uniffi 0.31.0]( https://github.com/mozilla/uniffi-rs )
 * [uniffi_bindgen 0.31.0]( https://github.com/mozilla/uniffi-rs )
