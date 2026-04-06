@@ -370,6 +370,9 @@ the details of which are reproduced below.
     <name>Mozilla Public License 2.0: glean-bundle-android</name>
     <url>https://github.com/mozilla/glean</url>
   </license>  <license>
+    <name>Mozilla Public License 2.0: glean-tests</name>
+    <url>https://crates.io/crates/glean-tests</url>
+  </license>  <license>
     <name>Mozilla Public License 2.0: uniffi-bindgen</name>
     <url>https://crates.io/crates/uniffi-bindgen</url>
   </license>  <license>
