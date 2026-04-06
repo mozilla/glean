@@ -8,7 +8,9 @@ on:
 jobs:
   bench:
     name: Benchmarks
-    environment: ${{ github.ref_name == 'main' && 'production' || 'pull_request' }}
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'pull_request' }}
+      deployment: false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master

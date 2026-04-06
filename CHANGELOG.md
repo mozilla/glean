@@ -1,6 +1,15 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.2.0...main)
+
+# v67.2.0 (2026-04-06)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.1.0...v67.2.0)
+
+* General
+  * Updated to `glean_parser` v19.0.0 ([#3421](https://github.com/mozilla/glean/issues/3421))
+  * Add server knobs config to `ping_info` ([#3396](https://github.com/mozilla/glean/pull/3396))
+  * Fix `test_get_value` on `labeled_` metrics to ask the db for the list of labels ([bug 2028892](https://bugzilla.mozilla.org/show_bug.cgi?id=2028892))
 
 # v67.1.0 (2026-03-12)
 
@@ -8,6 +17,7 @@
 
 * General
   * Remove support for generating metric testing coverage ([#3397](https://github.com/mozilla/glean/pull/3397))
+  * Fix log pipe corruption on Windows ([#3413](https://github.com/mozilla/glean/issues/3413))
 
 # v67.0.0 (2026-01-21)
 

@@ -186,6 +186,41 @@ impl StorageManager {
         snapshot
     }
 
+    /// Gets the list of currently-stored labels for a single labeled metric.
+    ///
+    /// # Arguments
+    ///
+    /// * `storage` - The database to get data from.
+    /// * `store_name` - The store name to look into.
+    /// * `metric_id` - The full metric identifier.
+    /// * `metric_lifetime` - The metric's lifetime.
+    ///
+    /// # Returns
+    ///
+    /// The list of all labels with values in the db. Empty if none.
+    pub fn snapshot_labels(
+        &self,
+        storage: &Database,
+        store_name: &str,
+        metric_id: &str,
+        metric_lifetime: Lifetime,
+    ) -> Vec<String> {
+        let mut labels = Vec::new();
+
+        let mut snapshotter = |id: &[u8], _metric: &Metric| {
+            let id = String::from_utf8_lossy(id).into_owned();
+            if let Some((base_id, label)) = id.split_once('/') {
+                if base_id == metric_id {
+                    labels.push(label.to_owned());
+                }
+            }
+        };
+
+        storage.iter_store_from(metric_lifetime, store_name, None, &mut snapshotter);
+
+        labels
+    }
+
     ///  Snapshots the experiments.
     ///
     /// # Arguments

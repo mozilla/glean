@@ -70,12 +70,6 @@ else
 	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 endif
 
-test-rust-examples: glean-core/rlb/tests/*.sh ## Run Rust example tests
-	@for file in $^; do \
-		echo "=== $${file} ==="; \
-		./$$file || exit 1; \
-	done
-
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
 	RUST_LOG=glean,glean_core cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
 
@@ -155,7 +149,7 @@ docs-python: build-python ## Build the Python documentation
 .PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=18.2
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=19.0
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

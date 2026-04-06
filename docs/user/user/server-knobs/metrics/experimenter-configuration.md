@@ -21,3 +21,5 @@ This configuration would be what is entered into the branch configuration setup 
   }
 }
 ```
+
+{{#include ../../../_includes/server-knobs-config-in-pings.md}}

@@ -19,6 +19,7 @@ use crate::metrics::{
     Metric, MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit,
     TimingDistributionMetric,
 };
+use crate::storage::StorageManager;
 use crate::Glean;
 
 const MAX_LABELS: usize = 16;
@@ -355,20 +356,29 @@ where
 
 impl<T, S> TestGetValue for LabeledMetric<T>
 where
-    T: AllowLabeled + TestGetValue<Output = S>,
+    T: AllowLabeled + TestGetValue<Output = S> + Clone,
     S: Any,
 {
     type Output = HashMap<String, S>;
 
     fn test_get_value(&self, ping_name: Option<String>) -> Option<HashMap<String, S>> {
+        // We get the labels from the db because our in-memory cache is not guaranteed to be complete.
+        crate::block_on_dispatcher();
+        let labels = crate::core::with_glean(|glean| {
+            let queried_ping_name = ping_name
+                .as_ref()
+                .unwrap_or_else(|| &self.submetric.meta().inner.send_in_pings[0]);
+            StorageManager.snapshot_labels(
+                glean.storage(),
+                queried_ping_name,
+                &self.submetric.meta().identifier(glean),
+                self.submetric.meta().inner.lifetime,
+            )
+        });
         let mut out = HashMap::new();
-        let map = self.label_map.lock().unwrap();
-        map.iter().for_each(|(label, submetric)| {
-            if let Some(v) = submetric.test_get_value(ping_name.clone()) {
-                out.insert(
-                    label.replace(&format!("{}/", self.submetric.meta().base_identifier()), ""),
-                    v,
-                );
+        labels.iter().for_each(|label| {
+            if let Some(v) = self.get(label).test_get_value(ping_name.clone()) {
+                out.insert(label.to_owned(), v);
             }
         });
         Some(out)

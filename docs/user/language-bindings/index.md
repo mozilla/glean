@@ -25,6 +25,17 @@ The code for the Rust Core-based SDKs is available on the
 > These group of SDKs were previously referred to as "language bindings" i.e.
 > "the Kotlin language bindings" or "the Python language bindings".
 
+#### Threading and Process Model
+
+The Rust Core-based SDKs are process-unaware.
+This means that to support instrumentation APIs being called on non-main processes,
+you must develop an IPC mechanism outside of the SDK.
+e.g. [FOG IPC for Firefox Desktop](https://firefox-source-docs.mozilla.org/toolkit/components/glean/dev/ipc.html).
+
+The Rust Core-based SDKs are thread-safe.
+You may call instrumentation APIs on any thread.
+The Glean SDK uses internal dispatch and other mechanisms to ensure the calling thread spends as little time inside the instrumentation APIs as possible.
+
 ### Rust
 
 The Glean Rust SDK can be used with any Rust application.
