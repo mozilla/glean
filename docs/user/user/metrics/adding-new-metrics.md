@@ -195,6 +195,9 @@ toolbar:
 Refer to the [metrics YAML registry format](../../reference/yaml/metrics.md) for a full reference
 on the `metrics.yaml` file structure.
 
+Note that if you are adding a new metric definition file, the file needs to be registered with probe-scraper service.
+See [Adding new definition files in the future](../adding-glean-to-your-project/enable-data-ingestion.html#adding-new-definition-files-in-the-future).
+
 ## Using the metric from your code
 
 The [reference documentation for each metric type](../../reference/metrics/index.html) goes into detail about using each metric type from your code.
