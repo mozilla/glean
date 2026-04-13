@@ -87,9 +87,9 @@ fn mps_delay() {
     // On dev machines check for `faketime` and skip the test if it is missing.
     // On CI hard-fail if `faketime is missing.
     if std::env::var("CI").is_err() {
-        let mut cmd = Command::new("command");
-        cmd.args(["-v", "faketime"]);
-        let result = cmd.assert().try_success();
+        let mut cmd = Command::new("faketime");
+        cmd.arg("--version");
+        let result = cmd.ok();
         if result.is_err() {
             // Unfortunately Rust's test harness doesn't have a way to mark a test as skipped.
             eprintln!("SKIPPING. faketime is missing.");
