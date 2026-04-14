@@ -86,7 +86,44 @@ pub fn get_os_version() -> String {
     whatsys::kernel_version().unwrap_or_else(|| "Unknown".to_owned())
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
+#[cfg(target_os = "android")]
+mod android {
+    use std::ffi::{c_char, c_int, CStr, CString};
+
+    const PROP_VALUE_MAX: usize = 92;
+
+    extern "C" {
+        fn __system_property_get(name: *const c_char, value: *mut c_char) -> c_int;
+    }
+
+    pub fn get_os_version() -> String {
+        let mut value: [c_char; PROP_VALUE_MAX] = [0; PROP_VALUE_MAX];
+        let prop_key = CString::new("ro.build.version.release").unwrap();
+        let length =
+            unsafe { __system_property_get(prop_key.as_ptr(), value.as_mut_slice().as_mut_ptr()) };
+        if length > 0 {
+            // SAFETY: the value is guaranteed to be nul-terminated, and valid until this is converted to an owned
+            // String (within this scope).
+            unsafe { CStr::from_ptr(value.as_slice().as_ptr()) }
+                .to_str()
+                .ok()
+        } else {
+            None
+        }
+        .unwrap_or("Unknown")
+        .to_owned()
+    }
+}
+
+#[cfg(target_os = "android")]
+pub use android::get_os_version;
+
+#[cfg(not(any(
+    target_os = "android",
+    target_os = "linux",
+    target_os = "macos",
+    target_os = "windows"
+)))]
 /// Returns "Unknown" for platforms other than Linux, MacOS or Windows
 pub fn get_os_version() -> String {
     "Unknown".to_owned()
