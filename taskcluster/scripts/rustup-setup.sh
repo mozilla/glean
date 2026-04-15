@@ -15,8 +15,8 @@ export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 # Rust
 RUSTUP_PLATFORM='x86_64-unknown-linux-gnu'
-RUSTUP_VERSION='1.21.1'
-RUSTUP_SHA256='ad1f8b5199b3b9e231472ed7aa08d2e5d1d539198a15c5b1e53c746aad81d27b'
+RUSTUP_VERSION='1.28.2'
+RUSTUP_SHA256='20a06e644b0d9bd2fbdbfd52d42540bdde820ea7df86e92e533c073da0cdd43c'
 curl -sfSL --retry 5 --retry-delay 10 -O "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/${RUSTUP_PLATFORM}/rustup-init"
 echo "${RUSTUP_SHA256} *rustup-init" | sha256sum -c -
 chmod +x rustup-init
