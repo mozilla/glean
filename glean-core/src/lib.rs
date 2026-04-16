@@ -65,7 +65,6 @@ mod util;
 mod fd_logger;
 
 pub use crate::common_metric_data::{CommonMetricData, DynamicLabelType, Lifetime};
-pub use crate::session::{SessionManager, SessionMetadata, SessionMode};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 use crate::dispatcher::is_test_mode;
@@ -87,6 +86,7 @@ pub use crate::metrics::{
     TestGetValue, TextMetric, TimeUnit, TimerId, TimespanMetric, TimingDistributionMetric,
     UrlMetric, UuidMetric,
 };
+pub use crate::session::{SessionManager, SessionMetadata, SessionMode};
 pub use crate::upload::{PingRequest, PingUploadTask, UploadResult, UploadTaskAction};
 
 const GLEAN_VERSION: &str = env!("CARGO_PKG_VERSION");

@@ -13,7 +13,6 @@ use glean_core::{
     metrics::EventMetric, CommonMetricData, Glean, InternalConfiguration, Lifetime, SessionMode,
 };
 
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -101,7 +100,10 @@ fn auto_mode_starts_session_on_first_active() {
     assert_eq!("glean", events[0].category);
     assert_eq!("session_start", events[0].name);
     let extra = events[0].extra.as_ref().expect("expected extras");
-    assert!(extra.contains_key("session_id"), "session_id missing from extras");
+    assert!(
+        extra.contains_key("session_id"),
+        "session_id missing from extras"
+    );
     assert_eq!("1", extra.get("session_seq").expect("session_seq missing"));
 }
 
@@ -193,7 +195,9 @@ fn auto_mode_starts_new_session_after_timeout() {
         .expect("expected extras on session_end");
     assert_eq!(
         "timeout",
-        end_extra.get("reason").expect("reason missing from session_end")
+        end_extra
+            .get("reason")
+            .expect("reason missing from session_end")
     );
 
     // A new session_start should also be present.
@@ -233,7 +237,12 @@ fn lifecycle_mode_new_session_per_activation() {
     assert_eq!(1, starts.len());
     assert_eq!(
         "1",
-        starts[0].extra.as_ref().unwrap().get("session_seq").unwrap()
+        starts[0]
+            .extra
+            .as_ref()
+            .unwrap()
+            .get("session_seq")
+            .unwrap()
     );
 
     // Deactivate — session_end is recorded, events ping submitted (clears store).
@@ -618,7 +627,10 @@ fn session_metadata_attached_to_in_session_events() {
         !session.session_id.is_empty(),
         "session_id must not be empty"
     );
-    assert_eq!(1, session.session_seq, "session_seq must be 1 for first session");
+    assert_eq!(
+        1, session.session_seq,
+        "session_seq must be 1 for first session"
+    );
     assert_eq!(0, session.event_seq, "event_seq of first event must be 0");
     assert!(
         (session.session_sample_rate - 1.0).abs() < f64::EPSILON,
@@ -694,7 +706,11 @@ fn event_seq_increments_within_session() {
                 .event_seq
         })
         .collect();
-    assert_eq!(vec![0, 1, 2], seqs, "event_seq must increment with each event");
+    assert_eq!(
+        vec![0, 1, 2],
+        seqs,
+        "event_seq must increment with each event"
+    );
 }
 
 /// event_seq resets to 0 when a new session starts.
@@ -730,7 +746,11 @@ fn event_seq_resets_on_new_session() {
     let events = user_event
         .get_value(&glean, "events")
         .expect("expected event in second session");
-    assert_eq!(1, events.len(), "only event from second session should be present");
+    assert_eq!(
+        1,
+        events.len(),
+        "only event from second session should be present"
+    );
     let session = events[0]
         .session
         .as_ref()
@@ -768,7 +788,11 @@ fn manual_mode_explicit_session_start_end() {
         .expect("expected session_start event after manual start");
     assert_eq!(1, starts.len());
     let extra = starts[0].extra.as_ref().unwrap();
-    assert_eq!("1", extra.get("session_seq").unwrap(), "first manual session must have seq=1");
+    assert_eq!(
+        "1",
+        extra.get("session_seq").unwrap(),
+        "first manual session must have seq=1"
+    );
     assert!(
         uuid::Uuid::parse_str(extra.get("session_id").unwrap()).is_ok(),
         "session_id must be a valid UUID"
@@ -787,7 +811,9 @@ fn manual_mode_explicit_session_start_end() {
         vec![],
     );
     user_event.record_sync(&glean, 1000, HashMap::new(), 0);
-    let events = user_event.get_value(&glean, "events").expect("expected event");
+    let events = user_event
+        .get_value(&glean, "events")
+        .expect("expected event");
     assert!(
         events[0].session.is_some(),
         "in-session event must have session metadata in Manual mode"
@@ -851,7 +877,7 @@ fn auto_mode_session_resumed_on_restart_before_timeout() {
         glean.handle_client_active(); // starts session, persists state
         original_session_id = glean.session_manager().session_id().unwrap().to_string();
         glean.handle_client_inactive(); // records inactive_since, submits events ping
-        // Drop glean — simulates a clean process exit.
+                                        // Drop glean — simulates a clean process exit.
     }
 
     // Restart on the same data path.
@@ -863,7 +889,9 @@ fn auto_mode_session_resumed_on_restart_before_timeout() {
 
     // No new boundary events should be in the store (session was resumed).
     assert!(
-        session_start_metric().get_value(&glean2, "events").is_none(),
+        session_start_metric()
+            .get_value(&glean2, "events")
+            .is_none(),
         "no new session_start expected when session is resumed after restart"
     );
     assert!(
@@ -922,7 +950,10 @@ fn auto_mode_event_seq_continuous_across_restart() {
             .as_ref()
             .expect("session metadata missing")
             .event_seq;
-        assert_eq!(2, pre_restart_seq, "last pre-restart event must have event_seq=2");
+        assert_eq!(
+            2, pre_restart_seq,
+            "last pre-restart event must have event_seq=2"
+        );
 
         // Go inactive to persist event_seq before the simulated restart.
         glean.handle_client_inactive();
@@ -982,7 +1013,7 @@ fn auto_mode_new_session_on_restart_after_timeout() {
         glean.handle_client_active();
         original_session_id = glean.session_manager().session_id().unwrap().to_string();
         glean.handle_client_inactive(); // records inactive_since, clears store
-        // Drop — clean exit.
+                                        // Drop — clean exit.
     }
 
     thread::sleep(Duration::from_millis(20)); // ensure timeout has expired
@@ -1003,7 +1034,10 @@ fn auto_mode_new_session_on_restart_after_timeout() {
 
     // The new session must have a different session_id.
     let new_id = glean2.session_manager().session_id().unwrap().to_string();
-    assert_ne!(original_session_id, new_id, "new session must have a fresh session_id");
+    assert_ne!(
+        original_session_id, new_id,
+        "new session must have a fresh session_id"
+    );
 
     // New session must have seq=2.
     let start_events = session_start_metric()
@@ -1011,7 +1045,12 @@ fn auto_mode_new_session_on_restart_after_timeout() {
         .expect("expected session_start for new session after timeout");
     assert_eq!(
         "2",
-        start_events[0].extra.as_ref().unwrap().get("session_seq").unwrap()
+        start_events[0]
+            .extra
+            .as_ref()
+            .unwrap()
+            .get("session_seq")
+            .unwrap()
     );
 
     drop(t);
@@ -1029,7 +1068,10 @@ fn auto_mode_sampled_out_session_stays_sampled_out_after_restart() {
         let cfg = session_cfg(&data_path, SessionMode::Auto, 0.0, 1_800_000);
         let mut glean = Glean::new(cfg).unwrap();
         glean.handle_client_active(); // session starts, sampled_in=false
-        assert!(!glean.session_manager().sampled_in(), "session must be sampled-out at rate=0.0");
+        assert!(
+            !glean.session_manager().sampled_in(),
+            "session must be sampled-out at rate=0.0"
+        );
         glean.handle_client_inactive(); // records inactive_since
     }
 
