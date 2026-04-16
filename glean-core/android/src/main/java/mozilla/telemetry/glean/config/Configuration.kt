@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.config
 
 import mozilla.telemetry.glean.internal.LevelFilter
+import mozilla.telemetry.glean.internal.SessionMode
 import mozilla.telemetry.glean.net.HttpURLConnectionUploader
 import mozilla.telemetry.glean.net.PingUploader
 
@@ -34,6 +35,10 @@ import mozilla.telemetry.glean.net.PingUploader
  *           When this limit is exceeded, the oldest pings are deleted. Defaults to 500.
  * @property maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
  *           When this limit is exceeded, the oldest pings are deleted. Defaults to 50 MB.
+ * @property sessionMode How Glean manages session boundaries. Default: [SessionMode.AUTO].
+ * @property sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
+ * @property sessionInactivityTimeoutMs Inactivity timeout (milliseconds) before AUTO-mode
+ *           sessions expire. Default: 30 minutes.
  */
 data class Configuration
     @JvmOverloads
@@ -56,11 +61,19 @@ data class Configuration
         val pingSchedule: Map<String, List<String>> = emptyMap(),
         val maxPendingPingsCount: Long? = null,
         val maxPendingPingsDirectorySize: Long? = null,
+        val sessionMode: SessionMode = SessionMode.AUTO,
+        val sessionSampleRate: Double = 1.0,
+        val sessionInactivityTimeoutMs: Long = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
     ) {
         companion object {
             /**
              * The default server pings are sent to.
              */
             const val DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
+
+            /**
+             * The default AUTO-mode session inactivity timeout: 30 minutes.
+             */
+            const val DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS: Long = 1_800_000L
         }
     }
