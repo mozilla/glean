@@ -201,8 +201,8 @@ impl Display for ClientIdFileError {
                 f,
                 "The operation lacked the necessary privileges to complete."
             ),
-            IoError(e) => write!(f, "IO error occured: {e}"),
-            ParseError(e) => write!(f, "Parse error occured: {e}"),
+            IoError(e) => write!(f, "IO error occurred: {e}"),
+            ParseError(e) => write!(f, "Parse error occurred: {e}"),
         }
     }
 }
