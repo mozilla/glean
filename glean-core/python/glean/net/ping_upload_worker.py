@@ -16,7 +16,13 @@ from .._uniffi import (
     glean_initialize_for_subprocess,
     glean_process_ping_upload_response,
 )
-from .._uniffi import InternalConfiguration, SessionMode, UploadTaskAction, PingUploadTask, PingRequest
+from .._uniffi import (
+    InternalConfiguration,
+    SessionMode,
+    UploadTaskAction,
+    PingUploadTask,
+    PingRequest,
+)
 from .._process_dispatcher import ProcessDispatcher
 
 
