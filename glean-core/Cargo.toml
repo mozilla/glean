@@ -18,7 +18,7 @@ include = [
   "/uniffi.toml",
   "/build.rs",
 ]
-rust-version = "1.87"
+rust-version = "1.90"
 
 [package.metadata.glean]
 glean-parser = "19.0.0"

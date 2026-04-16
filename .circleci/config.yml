@@ -24,12 +24,12 @@ definitions:
           - main
           - release
   - msrv_image: &msrv-image
-      cimg/rust:1.87
+      cimg/rust:1.90
   - msrv: &msrv
-      "1.87"
+      "1.90"
   # Used when running against latest stable Rust
   - rust_image: &rust-image
-      cimg/rust:1.92
+      cimg/rust:1.94.1
 
 ##########################################################################
 # COMMANDS
