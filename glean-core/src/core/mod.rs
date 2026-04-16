@@ -1165,6 +1165,25 @@ impl Glean {
 
             remote_settings_config.event_threshold = cfg.event_threshold;
 
+            // Clamp to [0.0, 1.0] so callers can't accidentally set an invalid rate.
+            //
+            // NOTE: `session_sample_rate` is intentionally NOT applied to any
+            // currently-active session.  The override is picked up at the next
+            // `session_start()` call.  This "sticky per session" design means:
+            //   - A mid-session RS rollout does not change sampling mid-flight,
+            //     which would otherwise cause partial session data.
+            //   - To clear the override and revert to the configured rate, set
+            //     `session_sample_rate` to `null` in the RS payload.  The next
+            //     session will use `configured_sample_rate` as the fallback.
+            //
+            // This override is intentionally NOT persisted to storage.  Remote
+            // Settings configuration is refreshed on every app startup, so the
+            // override will be re-applied before the next session begins.
+            // Persisting it would risk making a stale value sticky if the RS
+            // payload changes or is removed between restarts.
+            remote_settings_config.session_sample_rate =
+                cfg.session_sample_rate.map(|r| r.clamp(0.0, 1.0));
+
             // Store the Server Knobs configuration as an ObjectMetric
             // Since RemoteSettingsConfig only contains maps with string keys and primitives,
             // serialization via the derived Serialize impl cannot fail so it is safe to unwrap.
@@ -1174,24 +1193,6 @@ impl Glean {
         self.additional_metrics
             .server_knobs_config
             .set_sync(self, config_value);
-
-        // Clamp to [0.0, 1.0] so callers can't accidentally set an invalid rate.
-        //
-        // NOTE: `session_sample_rate` is intentionally NOT applied to any
-        // currently-active session.  The override is picked up at the next
-        // `session_start()` call.  This "sticky per session" design means:
-        //   - A mid-session RS rollout does not change sampling mid-flight,
-        //     which would otherwise cause partial session data.
-        //   - To clear the override and revert to the configured rate, set
-        //     `session_sample_rate` to `null` in the RS payload.  The next
-        //     session will use `configured_sample_rate` as the fallback.
-        //
-        // This override is intentionally NOT persisted to storage.  Remote
-        // Settings configuration is refreshed on every app startup, so the
-        // override will be re-applied before the next session begins.
-        // Persisting it would risk making a stale value sticky if the RS
-        // payload changes or is removed between restarts.
-        remote_settings_config.session_sample_rate = cfg.session_sample_rate.map(|r| r.clamp(0.0, 1.0));
 
         // Update remote_settings epoch
         self.remote_settings_epoch.fetch_add(1, Ordering::SeqCst);
@@ -1420,10 +1421,9 @@ impl Glean {
                     // Restore event_seq so the resumed session issues
                     // monotonically increasing sequence numbers even across
                     // a clean restart.
-                    self.session_manager.event_seq.store(
-                        session::read_session_event_seq(self),
-                        Ordering::Relaxed,
-                    );
+                    self.session_manager
+                        .event_seq
+                        .store(session::read_session_event_seq(self), Ordering::Relaxed);
                     self.session_manager.state = SessionState::Inactive;
                 }
             }
@@ -1464,7 +1464,10 @@ impl Glean {
         let mut extra = std::collections::HashMap::new();
         extra.insert("session_id".to_string(), session_id.to_string());
         extra.insert("session_seq".to_string(), seq.to_string());
-        extra.insert("session_start_time".to_string(), start_time.to_rfc3339_opts(SecondsFormat::Millis, true));
+        extra.insert(
+            "session_start_time".to_string(),
+            start_time.to_rfc3339_opts(SecondsFormat::Millis, true),
+        );
         extra.insert("sampled_in".to_string(), sampled_in.to_string());
         self.maybe_inject_glean_timestamp(&mut extra, timestamp);
         self.event_data_store.record(

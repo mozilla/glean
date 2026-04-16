@@ -216,7 +216,9 @@ impl SessionManager {
             session_seq: self.session_seq,
             event_seq: self.event_seq.load(Ordering::Relaxed),
             session_sample_rate: self.sample_rate,
-            session_start_time: self.session_start_time.map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
+            session_start_time: self
+                .session_start_time
+                .map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
         })
     }
 
@@ -261,7 +263,9 @@ impl SessionManager {
             session_seq: self.session_seq,
             event_seq: seq,
             session_sample_rate: self.sample_rate,
-            session_start_time: self.session_start_time.map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
+            session_start_time: self
+                .session_start_time
+                .map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
         })
     }
 }
@@ -367,7 +371,10 @@ pub(crate) fn read_session_id(glean: &Glean) -> Option<String> {
 
 /// Persists the inactive-since timestamp as an RFC 3339 string.
 pub(crate) fn persist_inactive_since(glean: &Glean, ts: DateTime<FixedOffset>) {
-    make_inactive_since_metric().set_sync(glean, ts.to_rfc3339_opts(SecondsFormat::Millis, true).as_str());
+    make_inactive_since_metric().set_sync(
+        glean,
+        ts.to_rfc3339_opts(SecondsFormat::Millis, true).as_str(),
+    );
 }
 
 /// Reads the persisted inactive-since timestamp, if any.
@@ -402,7 +409,10 @@ fn make_session_start_time_metric() -> StringMetric {
 
 /// Persists the session start timestamp as an RFC 3339 string.
 pub(crate) fn persist_session_start_time(glean: &Glean, ts: DateTime<FixedOffset>) {
-    make_session_start_time_metric().set_sync(glean, ts.to_rfc3339_opts(SecondsFormat::Millis, true).as_str());
+    make_session_start_time_metric().set_sync(
+        glean,
+        ts.to_rfc3339_opts(SecondsFormat::Millis, true).as_str(),
+    );
 }
 
 /// Reads the persisted session start timestamp, if any.

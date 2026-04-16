@@ -1410,10 +1410,15 @@ fn crash_recovery_emits_abnormal_session_end() {
         .get_value(&glean2, "events")
         .expect("expected synthetic session_end after crash recovery");
     assert_eq!(1, events.len());
-    let extra = events[0].extra.as_ref().expect("expected extras on session_end");
+    let extra = events[0]
+        .extra
+        .as_ref()
+        .expect("expected extras on session_end");
     assert_eq!(
         "abnormal",
-        extra.get("reason").expect("reason missing from synthetic session_end"),
+        extra
+            .get("reason")
+            .expect("reason missing from synthetic session_end"),
         "crashed active session must produce reason='abnormal'"
     );
     assert!(
@@ -1470,9 +1475,9 @@ fn crash_recovery_emits_abnormal_inactive_session_end() {
     {
         let mut glean = Glean::with_options(&data_path, GLOBAL_APPLICATION_ID, true, true);
         glean.handle_client_active(); // dirty=true, session persisted
-        // Manually persist inactive_since to simulate a crash while inactive
-        // (dirty flag was set before backgrounding, then the app crashed
-        // mid-shutdown before clearing it).
+                                      // Manually persist inactive_since to simulate a crash while inactive
+                                      // (dirty flag was set before backgrounding, then the app crashed
+                                      // mid-shutdown before clearing it).
         let now = chrono::Local::now().fixed_offset();
         crate::session::persist_inactive_since(&glean, now);
         // Drop without clearing dirty flag.

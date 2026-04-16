@@ -219,6 +219,7 @@ impl AdditionalMetrics {
                 lifetime: Lifetime::Application,
                 disabled: false,
                 dynamic_label: None,
+                out_of_session: true,
             }),
         }
     }
