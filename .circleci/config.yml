@@ -118,6 +118,11 @@ commands:
           name: Run Rust sample
           command: |
             cargo run -p sample
+      - run:
+          name: Run glean-sym sample
+          command: |
+            cd samples/glean-sym-test
+            make run
 
   install-rustup:
     steps:
