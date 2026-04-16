@@ -213,9 +213,9 @@ public final class Glean: @unchecked Sendable {
             pingSchedule: configuration.pingSchedule,
             pingLifetimeThreshold: UInt64(configuration.pingLifetimeThreshold),
             pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime),
-            sessionMode: .auto,
-            sessionSampleRate: 1.0,
-            sessionInactivityTimeoutMs: 1_800_000
+            sessionMode: configuration.sessionMode,
+            sessionSampleRate: configuration.sessionSampleRate,
+            sessionInactivityTimeoutMs: configuration.sessionInactivityTimeoutMs
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
@@ -351,6 +351,26 @@ public final class Glean: @unchecked Sendable {
     /// Returns true if the Glean SDK has been initialized.
     func isInitialized() -> Bool {
         return self.initialized
+    }
+
+    /// Starts a session manually.
+    ///
+    /// Only has an effect when Glean is configured with `SessionMode.manual`.
+    /// In `.auto` or `.lifecycle` mode this is a no-op so automatic session
+    /// state isn't corrupted.
+    public func sessionStart() {
+        gleanSessionStart()
+    }
+
+    /// Ends a session manually.
+    ///
+    /// Only has an effect when Glean is configured with `SessionMode.manual`.
+    ///
+    /// - parameters:
+    ///     * reason: An optional application-provided string attached to the
+    ///       `glean.session_end` boundary event for downstream analysis.
+    public func sessionEnd(reason: String? = nil) {
+        gleanSessionEnd(reason)
     }
 
     /// Handle foreground event and submit appropriate pings
