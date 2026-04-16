@@ -864,7 +864,13 @@ mod test {
 
         // Upload is not yet disabled,
         // so let's check that everything is getting recorded as expected.
-        db.record(&glean, &test_meta, 2, None, EventSessionContext::OutOfSession);
+        db.record(
+            &glean,
+            &test_meta,
+            2,
+            None,
+            EventSessionContext::OutOfSession,
+        );
         {
             let event_stores = db.event_stores.read().unwrap();
             assert_eq!(
@@ -880,7 +886,13 @@ mod test {
         glean.set_upload_enabled(false);
 
         // Now that upload is disabled, let's check nothing is recorded.
-        db.record(&glean, &test_meta, 2, None, EventSessionContext::OutOfSession);
+        db.record(
+            &glean,
+            &test_meta,
+            2,
+            None,
+            EventSessionContext::OutOfSession,
+        );
         {
             let event_stores = db.event_stores.read().unwrap();
             assert_eq!(event_stores.get(test_storage).unwrap().len(), 1);
