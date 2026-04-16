@@ -44,6 +44,8 @@ At the top-level, this ping contains the following keys:
 - `ping_info`: The information [common to all pings](index.md#the-ping_info-section).
 
 - `events`: An array of all of the events that have occurred since the last time the `events` ping was sent.
+  Glean also emits internal `glean.session_start` and `glean.session_end` boundary events into this array to delimit
+  sessions; these appear alongside application-recorded events.
 
 Each entry in the `events` array is an object with the following properties:
 

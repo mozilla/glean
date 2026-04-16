@@ -270,9 +270,9 @@ open class GleanInternalAPI internal constructor() {
                 pingSchedule = configuration.pingSchedule,
                 pingLifetimeThreshold = configuration.pingLifetimeThreshold.toULong(),
                 pingLifetimeMaxTime = configuration.pingLifetimeMaxTime.toULong(),
-                sessionMode = SessionMode.AUTO,
-                sessionSampleRate = 1.0,
-                sessionInactivityTimeoutMs = 1800000UL,
+                sessionMode = configuration.sessionMode,
+                sessionSampleRate = configuration.sessionSampleRate,
+                sessionInactivityTimeoutMs = configuration.sessionInactivityTimeoutMs.toULong(),
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
@@ -462,6 +462,30 @@ open class GleanInternalAPI internal constructor() {
      * Get the data directory for Glean.
      */
     internal fun getDataDir(): File = this.gleanDataDir
+
+    /**
+     * Starts a session manually.
+     *
+     * Only has an effect when Glean is configured with [SessionMode.MANUAL].
+     * In `AUTO` or `LIFECYCLE` mode this is a no-op so automatic session
+     * state isn't corrupted.
+     */
+    fun sessionStart() {
+        gleanSessionStart()
+    }
+
+    /**
+     * Ends a session manually.
+     *
+     * Only has an effect when Glean is configured with [SessionMode.MANUAL].
+     *
+     * @param reason An optional application-provided string attached to the
+     *   `glean.session_end` boundary event for downstream analysis.
+     */
+    @JvmOverloads
+    fun sessionEnd(reason: String? = null) {
+        gleanSessionEnd(reason)
+    }
 
     /**
      * Handle the foreground event and send the appropriate pings.

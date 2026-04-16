@@ -10,6 +10,7 @@ from typing import Optional
 
 
 from . import net
+from ._uniffi import SessionMode
 
 
 # The default server pings are sent to
@@ -18,6 +19,10 @@ DEFAULT_TELEMETRY_ENDPOINT = "https://incoming.telemetry.mozilla.org"
 
 # The default number of events to store before sending
 DEFAULT_MAX_EVENTS = 500
+
+
+# The default inactivity timeout (milliseconds) for AUTO-mode sessions: 30 minutes.
+DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS = 1_800_000
 
 
 class Configuration:
@@ -35,6 +40,9 @@ class Configuration:
         enable_event_timestamps: bool = True,
         experimentation_id: Optional[str] = None,
         enable_internal_pings: bool = True,
+        session_mode: SessionMode = SessionMode.AUTO,
+        session_sample_rate: float = 1.0,
+        session_inactivity_timeout_ms: int = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
     ):
         """
         Args:
@@ -53,6 +61,12 @@ class Configuration:
             experimentation_id (string): An experimentation identifier derived
                 by the application to be sent with all pings. Default: None.
             enable_internal_pings (bool): Whether to enable internal pings. Default: `True`.
+            session_mode (SessionMode): How Glean manages session boundaries.
+                Default: `SessionMode.AUTO`.
+            session_sample_rate (float): Session sampling rate (0.0–1.0).
+                Default: `1.0`.
+            session_inactivity_timeout_ms (int): Inactivity timeout (milliseconds)
+                before AUTO-mode sessions expire. Default: 30 minutes.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
@@ -66,6 +80,9 @@ class Configuration:
         self._enable_event_timestamps = enable_event_timestamps
         self._experimentation_id = experimentation_id
         self._enable_internal_pings = enable_internal_pings
+        self._session_mode = session_mode
+        self._session_sample_rate = session_sample_rate
+        self._session_inactivity_timeout_ms = session_inactivity_timeout_ms
 
     @property
     def server_endpoint(self) -> str:
@@ -119,6 +136,21 @@ class Configuration:
     @ping_uploader.setter
     def ping_uploader(self, value: net.BaseUploader):
         self._ping_uploader = value
+
+    @property
+    def session_mode(self) -> SessionMode:
+        """How Glean manages session boundaries."""
+        return self._session_mode
+
+    @property
+    def session_sample_rate(self) -> float:
+        """Session sampling rate (0.0–1.0)."""
+        return self._session_sample_rate
+
+    @property
+    def session_inactivity_timeout_ms(self) -> int:
+        """Inactivity timeout (milliseconds) before AUTO-mode sessions expire."""
+        return self._session_inactivity_timeout_ms
 
 
 __all__ = ["Configuration"]
