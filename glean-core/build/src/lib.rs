@@ -46,6 +46,7 @@ pub struct Builder {
     files: Vec<String>,
     out_dir: String,
     env_dir: Option<PathBuf>,
+    format: String,
 }
 
 impl Default for Builder {
@@ -59,6 +60,7 @@ impl Default for Builder {
             files: vec![],
             out_dir,
             env_dir: None,
+            format: String::from("rust"),
         }
     }
 }
@@ -73,6 +75,7 @@ impl Builder {
             files: vec![],
             out_dir: out_dir.into(),
             env_dir: None,
+            format: String::from("rust"),
         }
     }
 
@@ -81,6 +84,12 @@ impl Builder {
     /// Can be called multiple times to add more files.
     pub fn file<S: Into<String>>(&mut self, file: S) -> &mut Self {
         self.files.push(file.into());
+        self
+    }
+
+    /// Change output format. Defaults to `rust`.
+    pub fn format<S: Into<String>>(&mut self, format: S) -> &mut Self {
+        self.format = format.into();
         self
     }
 
@@ -139,7 +148,8 @@ impl Builder {
             println!("cargo:rerun-if-changed={file}");
         }
 
-        let mut args = vec!["translate", "--format", "rust", "--output", out_dir];
+        let mut args = vec!["translate", "--output", out_dir];
+        args.extend(["--format", &self.format]);
         args.extend(self.files.iter().map(|s| s.as_str()));
         venv.run_module("glean_parser", &args)?;
 
