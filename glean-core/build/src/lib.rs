@@ -45,6 +45,7 @@ const GLEAN_PARSER_VERSION: &str = "19.0.0";
 pub struct Builder {
     files: Vec<String>,
     out_dir: String,
+    env_dir: Option<PathBuf>,
 }
 
 impl Default for Builder {
@@ -57,6 +58,7 @@ impl Default for Builder {
         Self {
             files: vec![],
             out_dir,
+            env_dir: None,
         }
     }
 }
@@ -70,6 +72,7 @@ impl Builder {
         Self {
             files: vec![],
             out_dir: out_dir.into(),
+            env_dir: None,
         }
     }
 
@@ -93,6 +96,15 @@ impl Builder {
         self
     }
 
+    /// Set environment path to use.
+    pub fn env_dir<P>(&mut self, path: P) -> &mut Self
+    where
+        P: Into<PathBuf>,
+    {
+        self.env_dir = Some(path.into());
+        self
+    }
+
     /// Generate the Rust bindings.
     ///
     /// The consumer must include the generated `glean_metrics.rs` file, e.g.:
@@ -111,6 +123,8 @@ impl Builder {
             eprintln!("got env dir: {env_dir}");
             let env_path = PathBuf::from(env_dir);
             VirtualEnv::with_path(&sh, &env_path)?
+        } else if let Some(env_dir) = &self.env_dir {
+            VirtualEnv::with_path(&sh, env_dir)?
         } else {
             let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
