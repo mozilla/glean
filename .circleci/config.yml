@@ -122,6 +122,9 @@ commands:
           name: Run glean-sym sample
           command: |
             cd samples/glean-sym-test
+            python3 -m venv ${PWD}/venv
+            venv/bin/pip install "git+ssh://git@github.com/mozilla/glean_parser@push-lskqopuplvts#egg=glean-parser"
+            export GLEAN_PYTHON_VENV_DIR=${PWD}/venv
             make run
 
   install-rustup:
