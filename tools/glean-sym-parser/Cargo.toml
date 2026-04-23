@@ -1,0 +1,15 @@
+[package]
+name = "glean-sym-parser"
+version = "0.1.0"
+authors = ["The Glean Team <glean-team@mozilla.com>"]
+description = "A parser & compiler to generate the bare minimum to call UniFFI-generated code over FFI"
+repository = "https://github.com/mozilla/glean"
+license = "MPL-2.0"
+edition = "2024"
+
+[dependencies]
+prettyplease = "0.2.37"
+proc-macro2 = "1.0.106"
+quote = "1.0.45"
+syn = "2.0.117"
+weedle2 = "5.0.0"

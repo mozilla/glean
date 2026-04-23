@@ -11,6 +11,8 @@ members = [
   "samples/rust",
   "samples/rapid-metrics",
   "tools/embedded-uniffi-bindgen",
+  "tools/glean-sym-parser",
+  "glean-core/glean-sym",
 ]
 
 default-members = [
