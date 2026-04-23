@@ -96,6 +96,9 @@ fn test_metrics_must_report_experimentation_id() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        session_mode: glean_core::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
     })
     .unwrap();
     let ping_maker = PingMaker::new();
@@ -151,6 +154,9 @@ fn experimentation_id_is_removed_if_send_if_empty_is_false() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        session_mode: glean_core::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
     })
     .unwrap();
     let ping_maker = PingMaker::new();

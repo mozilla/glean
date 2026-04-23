@@ -168,6 +168,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            out_of_session: true,
         });
 
         let sample_string = "0123456789".repeat(26);

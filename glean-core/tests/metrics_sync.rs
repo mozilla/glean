@@ -23,8 +23,10 @@ static DEFINITION_ONLY: &[&str] = &[
     "glean.internal.metrics.telemetry_sdk_build",
     /* adhoc in src/ping/mod.rs */
     "glean.ping.uploader_capabilities",
-    /* adhoc event */
+    /* adhoc events */
     "glean.restarted",
+    "glean.session_end",
+    "glean.session_start",
     /* in foreign language wrapper */
     "glean.validation.foreground_count",
 ];

@@ -143,6 +143,12 @@ final class BaselinePingTests: XCTestCase {
 
         // Set up the test stub based on the default telemetry endpoint
         stubServerReceive { pingType, json in
+            // Skip events pings: session boundary events (session_start/session_end)
+            // are now recorded to the "events" ping and may be flushed on startup.
+            if pingType == "events" {
+                return
+            }
+
             XCTAssertEqual("baseline", pingType)
             XCTAssert(json != nil)
 
