@@ -58,7 +58,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             first_run_date: DatetimeMetric::new(
@@ -68,7 +68,7 @@ impl CoreMetrics {
                     send_in_pings: vec!["glean_client_info".into()],
                     lifetime: Lifetime::User,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Day,
             ),
@@ -79,7 +79,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             attribution_source: StringMetric::new(CommonMetricData {
@@ -88,7 +88,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             attribution_medium: StringMetric::new(CommonMetricData {
@@ -97,7 +97,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             attribution_campaign: StringMetric::new(CommonMetricData {
@@ -106,7 +106,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             attribution_term: StringMetric::new(CommonMetricData {
@@ -115,7 +115,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             attribution_content: StringMetric::new(CommonMetricData {
@@ -124,7 +124,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             distribution_name: StringMetric::new(CommonMetricData {
@@ -133,7 +133,7 @@ impl CoreMetrics {
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
         }
     }
@@ -148,7 +148,7 @@ impl AdditionalMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             pings_submitted: LabeledMetric::<CounterMetric>::new(
@@ -159,7 +159,7 @@ impl AdditionalMetrics {
                         send_in_pings: vec!["metrics".into(), "baseline".into(), "health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
-                        dynamic_label: None,
+                        label: None,
                     },
                 },
                 None,
@@ -172,7 +172,7 @@ impl AdditionalMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Millisecond,
             ),
@@ -184,7 +184,7 @@ impl AdditionalMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Millisecond,
             ),
@@ -203,7 +203,7 @@ impl AdditionalMetrics {
                 send_in_pings: vec!["all-pings".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             event_timestamp_clamped: CounterMetric::new(CommonMetricData {
@@ -212,7 +212,7 @@ impl AdditionalMetrics {
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             server_knobs_config: ObjectMetric::new(CommonMetricData {
@@ -221,7 +221,7 @@ impl AdditionalMetrics {
                 send_in_pings: vec!["glean_internal_info".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
         }
     }
@@ -251,7 +251,7 @@ impl UploadMetrics {
                         send_in_pings: vec!["metrics".into(), "health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
-                        dynamic_label: None,
+                        label: None,
                     },
                 },
                 Some(vec![
@@ -271,7 +271,7 @@ impl UploadMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 MemoryUnit::Kilobyte,
             ),
@@ -283,7 +283,7 @@ impl UploadMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 MemoryUnit::Kilobyte,
             ),
@@ -294,7 +294,7 @@ impl UploadMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             pending_pings: CounterMetric::new(CommonMetricData {
@@ -303,7 +303,7 @@ impl UploadMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             send_success: TimingDistributionMetric::new(
@@ -313,7 +313,7 @@ impl UploadMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Millisecond,
             ),
@@ -325,7 +325,7 @@ impl UploadMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Millisecond,
             ),
@@ -336,7 +336,7 @@ impl UploadMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             missing_send_ids: CounterMetric::new(CommonMetricData {
@@ -345,7 +345,7 @@ impl UploadMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
         }
     }
@@ -355,8 +355,8 @@ impl UploadMetrics {
 pub struct DatabaseMetrics {
     pub size: MemoryDistributionMetric,
 
-    /// RKV's load result, indicating success or relaying the detected error.
-    pub rkv_load_error: StringMetric,
+    /// sqlite's load result, indicating success or relaying the detected error.
+    pub load_error: StringMetric,
 
     /// The time it takes for a write-commit for the Glean database.
     pub write_time: TimingDistributionMetric,
@@ -372,18 +372,18 @@ impl DatabaseMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                 },
                 MemoryUnit::Byte,
             ),
 
-            rkv_load_error: StringMetric::new(CommonMetricData {
-                name: "rkv_load_error".into(),
+            load_error: StringMetric::new(CommonMetricData {
+                name: "load_error".into(),
                 category: "glean.database".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
 
             write_time: TimingDistributionMetric::new(
@@ -393,7 +393,7 @@ impl DatabaseMetrics {
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     disabled: true,
-                    dynamic_label: None,
+                    label: None,
                 },
                 TimeUnit::Microsecond,
             ),
@@ -450,7 +450,7 @@ impl HealthMetrics {
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
             init_count: CounterMetric::new(CommonMetricData {
                 name: "init_count".into(),
@@ -458,7 +458,7 @@ impl HealthMetrics {
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::User,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
             exception_state: StringMetric::new(CommonMetricData {
                 name: "exception_state".into(),
@@ -466,7 +466,7 @@ impl HealthMetrics {
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
             recovered_client_id: UuidMetric::new(CommonMetricData {
                 name: "recovered_client_id".into(),
@@ -474,7 +474,7 @@ impl HealthMetrics {
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
-                dynamic_label: None,
+                label: None,
             }),
             file_read_error: LabeledMetric::<CounterMetric>::new(
                 LabeledMetricData::Common {
@@ -484,7 +484,7 @@ impl HealthMetrics {
                         send_in_pings: vec!["health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
-                        dynamic_label: None,
+                        label: None,
                     },
                 },
                 Some(vec![
@@ -503,7 +503,7 @@ impl HealthMetrics {
                         send_in_pings: vec!["health".into()],
                         lifetime: Lifetime::Ping,
                         disabled: false,
-                        dynamic_label: None,
+                        label: None,
                     },
                 },
                 Some(vec![

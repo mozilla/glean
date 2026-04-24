@@ -17,7 +17,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="datetime_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=metrics.TimeUnit.MINUTE,
     )
@@ -69,7 +69,7 @@ def test_disabled_datetimes_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="datetime_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=metrics.TimeUnit.MINUTE,
     )

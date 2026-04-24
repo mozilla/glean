@@ -15,7 +15,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="memory_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         memory_unit=MemoryUnit.KILOBYTE,
     )
@@ -40,7 +40,7 @@ def test_values_are_truncated_to_1tb():
             lifetime=Lifetime.APPLICATION,
             name="memory_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         memory_unit=MemoryUnit.GIGABYTE,
     )
@@ -61,7 +61,7 @@ def test_disabled_memory_distributions_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="memory_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         memory_unit=MemoryUnit.KILOBYTE,
     )
@@ -79,7 +79,7 @@ def test_get_value_throws_if_nothing_is_stored():
             lifetime=Lifetime.APPLICATION,
             name="memory_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         memory_unit=MemoryUnit.KILOBYTE,
     )
@@ -95,7 +95,7 @@ def test_the_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="memory_distribution",
             send_in_pings=["store1", "store2", "store3"],
-            dynamic_label=None,
+            label=None,
         ),
         memory_unit=MemoryUnit.KILOBYTE,
     )

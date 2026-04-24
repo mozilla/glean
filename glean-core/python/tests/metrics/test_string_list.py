@@ -15,7 +15,7 @@ def test_the_api_saves_to_its_storage_engine_by_first_adding_then_setting():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -40,7 +40,7 @@ def test_the_api_saves_to_its_storage_engine_by_first_setting_then_adding():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -63,7 +63,7 @@ def test_disabled_lists_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -84,7 +84,7 @@ def test_test_get_value_throws():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -99,7 +99,7 @@ def test_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -124,7 +124,7 @@ def test_long_string_lists_are_truncated():
             lifetime=Lifetime.APPLICATION,
             name="string_list_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
