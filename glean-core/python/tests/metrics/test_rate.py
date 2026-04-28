@@ -19,7 +19,7 @@ def test_rate_smoke():
             name="rate",
             lifetime=Lifetime.PING,
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
             disabled=False,
         ),
     )
@@ -55,7 +55,7 @@ def test_numerator_smoke():
             name="numerator",
             lifetime=Lifetime.PING,
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
             disabled=False,
         ),
     )
@@ -87,7 +87,7 @@ def test_denominator_smoke():
         name="rate1",
         lifetime=Lifetime.PING,
         send_in_pings=["store1"],
-        dynamic_label=None,
+        label=None,
         disabled=False,
     )
 
@@ -96,7 +96,7 @@ def test_denominator_smoke():
         name="rate2",
         lifetime=Lifetime.PING,
         send_in_pings=["store1"],
-        dynamic_label=None,
+        label=None,
         disabled=False,
     )
 
@@ -107,7 +107,7 @@ def test_denominator_smoke():
             name="counter",
             lifetime=Lifetime.PING,
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
             disabled=False,
         ),
         [meta1, meta2],

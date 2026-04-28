@@ -295,3 +295,19 @@ fn enabled_pings() {
     let payload = fs::read_to_string(&entries[0]).unwrap();
     assert!(payload.contains("/two/"), "Payload: {payload}");
 }
+
+#[test]
+fn rkv_sqlite_migration() {
+    let tempdir = tempfile::tempdir().unwrap();
+
+    let db_dir = tempdir.path().join("db");
+    fs::create_dir_all(&db_dir).unwrap();
+    let rkv_db = db_dir.join("data.safe.bin");
+    fs::write(&rkv_db, include_bytes!("rkv-database.safe.bin")).unwrap();
+
+    cargo_bin_cmd!("verify-data")
+        .arg(tempdir.path())
+        .arg("verify")
+        .assert()
+        .success();
+}
