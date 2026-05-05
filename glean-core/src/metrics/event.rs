@@ -164,7 +164,7 @@ impl EventMetric {
         // which gates all metric types uniformly.  This call is concerned only with
         // what metadata to attach: `OutOfSession` for out-of-session metrics and
         // between-session events, `InSession(meta)` for events in a sampled-in session.
-        let ctx = if self.meta().inner.out_of_session {
+        let ctx = if !self.meta().inner.in_session {
             EventSessionContext::OutOfSession
         } else {
             glean.session_manager().compute_event_context()

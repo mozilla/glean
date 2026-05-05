@@ -55,7 +55,6 @@ fn session_start_metric() -> EventMetric {
             category: "glean".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         },
         vec![],
@@ -70,7 +69,6 @@ fn session_end_metric() -> EventMetric {
             category: "glean".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         },
         vec![],
@@ -429,7 +427,7 @@ fn sampling_rate_zero_blocks_user_events_within_session() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -440,10 +438,10 @@ fn sampling_rate_zero_blocks_user_events_within_session() {
         user_event.get_value(&glean, "events").is_none(),
         "sample_rate=0.0: user event must be suppressed inside a sampled-out session"
     );
-    // Boundary event (out_of_session=true) must still be recorded.
+    // Boundary event (in_session=false) must still be recorded.
     assert!(
         session_start_metric().get_value(&glean, "events").is_some(),
-        "session_start (out_of_session=true) must not be suppressed by the sampling gate"
+        "session_start (in_session=false) must not be suppressed by the sampling gate"
     );
 }
 
@@ -462,7 +460,7 @@ fn sampling_rate_one_passes_all_user_events() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -491,7 +489,7 @@ fn events_outside_session_bypass_sampling_gate() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -505,7 +503,7 @@ fn events_outside_session_bypass_sampling_gate() {
     );
 }
 
-/// Metrics with out_of_session=true bypass the sampling gate even inside a
+/// Metrics with in_session=false bypass the sampling gate even inside a
 /// sampled-out session.
 #[test]
 fn out_of_session_events_bypass_sampling_gate() {
@@ -521,7 +519,6 @@ fn out_of_session_events_bypass_sampling_gate() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         },
         vec![],
@@ -530,7 +527,7 @@ fn out_of_session_events_bypass_sampling_gate() {
 
     assert!(
         oos_event.get_value(&glean, "events").is_some(),
-        "out_of_session=true event must bypass the sampling gate"
+        "in_session=false event must bypass the sampling gate"
     );
 }
 
@@ -549,7 +546,7 @@ fn sample_rate_below_zero_clamped_to_zero() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -577,7 +574,7 @@ fn sample_rate_above_one_clamped_to_one() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -609,7 +606,7 @@ fn session_metadata_attached_to_in_session_events() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -653,7 +650,6 @@ fn out_of_session_events_have_no_session_metadata() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         },
         vec![],
@@ -665,7 +661,7 @@ fn out_of_session_events_have_no_session_metadata() {
         .expect("expected event");
     assert!(
         events[0].session.is_none(),
-        "out_of_session=true event must have no session metadata"
+        "in_session=false event must have no session metadata"
     );
 }
 
@@ -684,7 +680,7 @@ fn event_seq_increments_within_session() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -726,7 +722,7 @@ fn event_seq_resets_on_new_session() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -805,7 +801,7 @@ fn manual_mode_explicit_session_start_end() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -929,7 +925,7 @@ fn auto_mode_event_seq_continuous_across_restart() {
                 category: "test".into(),
                 send_in_pings: vec!["events".into()],
                 lifetime: Lifetime::Ping,
-                out_of_session: false,
+                in_session: true,
                 ..Default::default()
             },
             vec![],
@@ -973,7 +969,7 @@ fn auto_mode_event_seq_continuous_across_restart() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -1092,7 +1088,7 @@ fn auto_mode_sampled_out_session_stays_sampled_out_after_restart() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],
@@ -1160,7 +1156,7 @@ fn sessions_seen_increments_regardless_of_sampling() {
         category: "glean".into(),
         send_in_pings: vec!["health".into()],
         lifetime: Lifetime::Ping,
-        out_of_session: true,
+        in_session: false,
         ..Default::default()
     });
 
@@ -1200,7 +1196,7 @@ fn sessions_seen_is_out_of_session() {
         category: "glean".into(),
         send_in_pings: vec!["health".into()],
         lifetime: Lifetime::Ping,
-        out_of_session: true,
+        in_session: false,
         ..Default::default()
     });
 
@@ -1227,7 +1223,7 @@ fn in_session_events_share_session_id() {
             category: "test".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: false,
+            in_session: true,
             ..Default::default()
         },
         vec![],

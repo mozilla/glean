@@ -1467,7 +1467,6 @@ impl Glean {
             category: "glean".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         };
         let timestamp = crate::get_timestamp_ms();
@@ -1496,7 +1495,6 @@ impl Glean {
             category: "glean".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
-            out_of_session: true,
             ..Default::default()
         };
         let timestamp = crate::get_timestamp_ms();
