@@ -208,7 +208,6 @@ impl AdditionalMetrics {
                 category: "glean".into(),
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::Ping,
-                out_of_session: true,
                 ..Default::default()
             }),
 
@@ -219,7 +218,7 @@ impl AdditionalMetrics {
                 lifetime: Lifetime::Application,
                 disabled: false,
                 dynamic_label: None,
-                out_of_session: true,
+                ..Default::default()
             }),
         }
     }

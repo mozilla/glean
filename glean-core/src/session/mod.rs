@@ -97,7 +97,7 @@ pub enum EventSessionContext {
     /// The event is out-of-session (always recorded; no session metadata attached).
     ///
     /// Covers two cases:
-    /// - The metric was declared `out_of_session = true`.
+    /// - The metric was declared `in_session = false`.
     /// - The metric is session-scoped but no session is currently active
     ///   (between sessions).
     OutOfSession,
@@ -299,7 +299,6 @@ fn make_session_seq_metric() -> QuantityMetric {
         category: String::new(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
-        out_of_session: true,
         ..Default::default()
     })
 }
@@ -310,7 +309,6 @@ fn make_session_id_metric() -> StringMetric {
         category: String::new(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
-        out_of_session: true,
         ..Default::default()
     })
 }
@@ -323,7 +321,6 @@ fn make_inactive_since_metric() -> StringMetric {
         category: String::new(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
-        out_of_session: true,
         ..Default::default()
     })
 }
@@ -402,7 +399,6 @@ fn make_session_start_time_metric() -> StringMetric {
         category: String::new(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
-        out_of_session: true,
         ..Default::default()
     })
 }
@@ -440,7 +436,6 @@ fn make_session_event_seq_metric() -> QuantityMetric {
         category: String::new(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
-        out_of_session: true,
         ..Default::default()
     })
 }

@@ -1147,8 +1147,8 @@ glean:
     description: |
       The total number of sessions started during this period.
       Incremented for every session start, regardless of sampling.
-      This metric is marked out-of-session so it is never suppressed by
-      session sampling; analysts can therefore use it to validate sampling
+      This metric is out-of-session so it is never suppressed by any
+      session sampling so that it can be used to validate sampling
       rates against the events-ping session_start count.
     send_in_pings:
       - health

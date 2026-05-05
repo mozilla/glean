@@ -24,7 +24,7 @@ fn clientid_metric() -> UuidMetric {
         lifetime: Lifetime::User,
         disabled: false,
         dynamic_label: None,
-        out_of_session: false,
+        in_session: false,
     })
 }
 
