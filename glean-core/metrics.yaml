@@ -1078,9 +1078,10 @@ glean:
     send_in_pings:
       - events
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_sensitivity:
       - technical
     notification_emails:
@@ -1117,9 +1118,10 @@ glean:
     send_in_pings:
       - events
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_sensitivity:
       - technical
     notification_emails:
@@ -1134,7 +1136,9 @@ glean:
         type: quantity
       reason:
         description: |
-          Why the session ended. Possible values:
+          Why the session ended. When in MANUAL mode, the reason can optionally
+          be set by the application. Possible values set by Glean in AUTO or
+          LIFECYCLE session management modes include:
           - "inactive": client went to background (LIFECYCLE mode)
           - "replaced": a new session was started while one was already active
           - "timeout": AUTO mode inactivity timeout expired
@@ -1145,17 +1149,19 @@ glean:
   sessions_seen:
     type: counter
     description: |
-      The total number of sessions started during this period.
+      The total number of sessions started since the last metrics ping.
       Incremented for every session start, regardless of sampling.
-      This metric is out-of-session so it is never suppressed by any
-      session sampling so that it can be used to validate sampling
-      rates against the events-ping session_start count.
+      This metric is a counter and is out-of-session by default, so it
+      is never suppressed by any session sampling which means it can be
+      used to validate sampling rates against the events-ping session_start
+      count.
     send_in_pings:
-      - health
+      - metrics
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1960592
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
     data_sensitivity:
       - technical
     notification_emails:

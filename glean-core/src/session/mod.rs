@@ -238,7 +238,12 @@ impl SessionManager {
         match self.state {
             SessionState::Inactive => EventSessionContext::OutOfSession,
             SessionState::Active => {
-                // should_record() has already ensured sampled_in is true.
+                // should_record() has already ensured sampled_in is true, the debug_assert
+                // is for additional safety.
+                debug_assert!(
+                    self.sampled_in,
+                    "compute_event_context called for unsampled session"
+                );
                 // current_metadata_with_next_seq increments event_seq atomically.
                 match self.current_metadata_with_next_seq() {
                     Some(meta) => EventSessionContext::InSession(meta),
@@ -267,6 +272,15 @@ impl SessionManager {
                 .session_start_time
                 .map(|t| t.to_rfc3339_opts(SecondsFormat::Millis, true)),
         })
+    }
+
+    /// Used to reset the in-memory state of the session manager when a session ends.
+    pub fn reset_state(&mut self) {
+        // Update in-memory state.
+        self.state = SessionState::Inactive;
+        self.session_id = None;
+        self.inactive_since = None;
+        self.session_start_time = None;
     }
 }
 
@@ -334,11 +348,20 @@ pub(crate) fn read_session_seq(glean: &Glean) -> u64 {
         .unwrap_or(0)
 }
 
+/// Clears all persisted session state (session ID, inactive_since, session
+/// start time, event sequence).
+pub(crate) fn clear(glean: &Glean) {
+    clear_session_id(glean);
+    clear_inactive_since(glean);
+    clear_session_start_time(glean);
+    clear_session_event_seq(glean);
+}
+
 /// Persists the given session sequence number.
 ///
 /// `QuantityMetric` stores `i64`; the cast from `u64` is lossless for any
 /// value below `i64::MAX` (~9.2 × 10^18).  Values at or above that threshold
-/// (unreachable in practice) would silently truncate, which is preferable to
+/// (unreachable in practice) would silently wrap, which is preferable to
 /// a panic or corrupted sequence.
 pub(crate) fn store_session_seq(glean: &Glean, seq: u64) {
     make_session_seq_metric().set_sync(glean, seq as i64);

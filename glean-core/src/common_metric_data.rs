@@ -196,6 +196,15 @@ impl CommonMetricDataInternal {
         }
     }
 
+    /// Whether or not the metric is `in_session`.
+    ///
+    /// Metrics that are `in_session` participate in session tracking and carry session metadata.
+    /// This is mostly relevant for event metrics, other metric types should generally not be `in_session`
+    /// and default to `false`.
+    pub fn in_session(&self) -> bool {
+        self.inner.in_session
+    }
+
     /// The list of storages this metric should be recorded into.
     pub fn storage_names(&self) -> &[String] {
         &self.inner.send_in_pings

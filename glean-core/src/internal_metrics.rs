@@ -48,7 +48,8 @@ pub struct AdditionalMetrics {
     /// Server knobs configuration received from remote settings.
     pub server_knobs_config: ObjectMetric,
 
-    /// The total number of sessions started, regardless of sampling outcome.
+    /// The total number of sessions started during the current metrics ping
+    /// window, regardless of sampling outcome.
     pub sessions_seen: CounterMetric,
 }
 
@@ -206,7 +207,7 @@ impl AdditionalMetrics {
             sessions_seen: CounterMetric::new(CommonMetricData {
                 name: "sessions_seen".into(),
                 category: "glean".into(),
-                send_in_pings: vec!["health".into()],
+                send_in_pings: vec!["metrics".into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()
             }),

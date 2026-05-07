@@ -1154,7 +1154,7 @@ fn sessions_seen_increments_regardless_of_sampling() {
     let sessions_seen = CounterMetric::new(CommonMetricData {
         name: "sessions_seen".into(),
         category: "glean".into(),
-        send_in_pings: vec!["health".into()],
+        send_in_pings: vec!["metrics".into()],
         lifetime: Lifetime::Ping,
         in_session: false,
         ..Default::default()
@@ -1162,7 +1162,7 @@ fn sessions_seen_increments_regardless_of_sampling() {
 
     // No sessions started yet.
     assert!(
-        sessions_seen.get_value(&glean, "health").is_none(),
+        sessions_seen.get_value(&glean, "metrics").is_none(),
         "sessions_seen must be 0 before any session starts"
     );
 
@@ -1174,7 +1174,7 @@ fn sessions_seen_increments_regardless_of_sampling() {
 
     assert_eq!(
         3,
-        sessions_seen.get_value(&glean, "health").unwrap_or(0),
+        sessions_seen.get_value(&glean, "metrics").unwrap_or(0),
         "sessions_seen must equal the number of sessions started, even when all are sampled-out"
     );
 }
@@ -1194,7 +1194,7 @@ fn sessions_seen_is_out_of_session() {
     let sessions_seen = CounterMetric::new(CommonMetricData {
         name: "sessions_seen".into(),
         category: "glean".into(),
-        send_in_pings: vec!["health".into()],
+        send_in_pings: vec!["metrics".into()],
         lifetime: Lifetime::Ping,
         in_session: false,
         ..Default::default()
@@ -1203,7 +1203,7 @@ fn sessions_seen_is_out_of_session() {
     // Even with rate=0.0 the counter must have been recorded.
     assert_eq!(
         1,
-        sessions_seen.get_value(&glean, "health").unwrap_or(0),
+        sessions_seen.get_value(&glean, "metrics").unwrap_or(0),
         "sessions_seen must be recorded even when the session is sampled-out"
     );
 }

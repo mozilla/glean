@@ -1389,10 +1389,7 @@ impl Glean {
                 );
                 let seq = self.session_manager.session_seq;
                 self.record_session_end_event(&id_str, seq, Some("abandoned"));
-                session::clear_session_id(self);
-                session::clear_inactive_since(self);
-                session::clear_session_start_time(self);
-                session::clear_session_event_seq(self);
+                session::clear(self);
             }
             return;
         }
@@ -1578,17 +1575,11 @@ impl Glean {
         let sample_rate = self.session_manager.sample_rate;
         let start_time = self.session_manager.session_start_time;
 
-        // Update in-memory state.
-        self.session_manager.state = SessionState::Inactive;
-        self.session_manager.session_id = None;
-        self.session_manager.inactive_since = None;
-        self.session_manager.session_start_time = None;
-
         // Clear persistence.
-        session::clear_session_id(self);
-        session::clear_inactive_since(self);
-        session::clear_session_start_time(self);
-        session::clear_session_event_seq(self);
+        session::clear(self);
+
+        // Reset in-memory state so the next session_start gets a clean slate.
+        self.session_manager.reset_state();
 
         // Record boundary event.
         self.record_session_end_event(&session_id.to_string(), seq, reason);
@@ -1700,16 +1691,10 @@ impl Glean {
         self.record_session_end_event(&persisted_id, persisted_seq, Some(reason));
 
         // Clear persisted session state so the recovered session won't be replayed.
-        session::clear_session_id(self);
-        session::clear_inactive_since(self);
-        session::clear_session_start_time(self);
-        session::clear_session_event_seq(self);
+        session::clear(self);
 
         // Reset in-memory state so the next session_start gets a clean slate.
-        self.session_manager.state = SessionState::Inactive;
-        self.session_manager.session_id = None;
-        self.session_manager.inactive_since = None;
-        self.session_manager.session_start_time = None;
+        self.session_manager.reset_state();
     }
 
     // -----------------------------------------------------------------------
@@ -1721,7 +1706,6 @@ impl Glean {
     /// This functions generates a baseline ping with reason `active`
     /// and then sets the dirty bit.
     pub fn handle_client_active(&mut self) {
-        // Session lifecycle (mode-dependent).
         match self.session_manager.mode {
             SessionMode::Auto => {
                 if !self.session_manager.is_active() {
@@ -1763,7 +1747,6 @@ impl Glean {
     /// This functions generates a baseline and an events ping with reason
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
-        // Session lifecycle (mode-dependent).
         match self.session_manager.mode {
             SessionMode::Auto => {
                 // In AUTO mode, don't end the session immediately. Instead record
