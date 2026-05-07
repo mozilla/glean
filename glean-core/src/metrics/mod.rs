@@ -233,7 +233,7 @@ pub trait MetricType {
         and it may be called from other metric types in future if they also need per-event session
         context.
         */
-        if self.meta().inner.in_session && !glean.session_manager().is_sampled_in() {
+        if self.meta().in_session() && !glean.session_manager().is_sampled_in() {
             return false;
         }
 
@@ -279,11 +279,8 @@ pub trait MetricType {
         let new_disabled = (remote_settings_epoch << 4) | (current_disabled & 0xF);
         self.meta().disabled.store(new_disabled, Ordering::Relaxed);
 
-        if current_disabled != 0 {
-            return false;
-        }
-
-        true
+        // Return a boolean indicating whether or not the metric should be recorded
+        current_disabled == 0
     }
 }
 
