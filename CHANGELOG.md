@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...main)
+
+# v67.3.1 (2026-05-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...v67.3.1)
+
+* Rust
+  * Avoid unsafety and count the allocation for the underlying atomic bool directly ([#3450](https://github.com/mozilla/glean/pull/3450))
 
 # v67.3.0 (2026-05-08)
 
