@@ -9,7 +9,7 @@ publish = false
 license = "MPL-2.0"
 # MSRV. Independent from what glean-core needs.
 # Note: We only test against latest stable on CI.
-rust-version = "1.87"
+rust-version = "1.90"
 
 [dependencies]
 glean-core = { path = "../", features = ["benchmark"] }

@@ -1,6 +1,6 @@
 [package]
 name = "glean-core"
-version = "67.2.0"
+version = "67.3.0"
 authors = ["Jan-Erik Rediger <jrediger@mozilla.com>", "The Glean Team <glean-team@mozilla.com>"]
 description = "A modern Telemetry library"
 repository = "https://github.com/mozilla/glean"
@@ -18,7 +18,7 @@ include = [
   "/uniffi.toml",
   "/build.rs",
 ]
-rust-version = "1.87"
+rust-version = "1.90"
 
 [package.metadata.glean]
 glean-parser = "19.0.0"

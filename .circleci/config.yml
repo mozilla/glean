@@ -24,12 +24,12 @@ definitions:
           - main
           - release
   - msrv_image: &msrv-image
-      cimg/rust:1.87
+      cimg/rust:1.90
   - msrv: &msrv
-      "1.87"
+      "1.90"
   # Used when running against latest stable Rust
   - rust_image: &rust-image
-      cimg/rust:1.92
+      cimg/rust:1.94.1
 
 ##########################################################################
 # COMMANDS
@@ -194,7 +194,7 @@ commands:
           name: Set up dependencies for Python for Windows
           command: |
             echo "export WINEDEBUG=-all" >> $BASH_ENV
-            wget https://bootstrap.pypa.io/get-pip.py
+            wget https://bootstrap.pypa.io/pip/3.9/get-pip.py
             $WINPYTHON get-pip.py
             echo "import site" >> winpython/python39._pth
             echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
