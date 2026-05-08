@@ -861,7 +861,7 @@ jobs:
           name: Setup Python env
           command: |
             make setup-python
-            .venv3.13/bin/pip install ziglang
+            .venv3.13/bin/pip install ziglang==0.15.2
       - run:
           name: Install additional targets
           command: |
@@ -876,6 +876,13 @@ jobs:
             for target in $TARGETS; do
               make build-python-wheel GLEAN_BUILD_TARGET="$target" GLEAN_BUILD_EXTRA="--zig"
             done
+      - run:
+          name: Halt unless release
+          command: |
+            if [ -z "${CIRCLE_TAG}" ]; then
+              # Don't upload anything unless we're doing a release
+              circleci-agent step halt
+            fi
       - run:
           name: Upload wheels
           command: |
@@ -1052,6 +1059,8 @@ workflows:
       - Python 3_12 tests:
           filters: *ci-filters
       - Python Windows x86_64 tests:
+          filters: *ci-filters
+      - pypi-linux-additional-releases:
           filters: *ci-filters
 
       - Generate Rust documentation:
