@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...main)
+
+# v67.3.0 (2026-05-08)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.2.0...v67.3.0)
 
 * Rust
   * Add support for determining `client_info.os_version` for Android binaries ([#3434](https://github.com/mozilla/glean/pull/3434))
