@@ -112,6 +112,7 @@ fn nofollows_contains_client_info_when_collection_disabled() {
         app_display_version: "1.0.0".to_string(),
         channel: Some("testing".to_string()),
         locale: Some("xx-XX".to_string()),
+        os_version: None,
     };
     glean::test_reset_glean(cfg, client_info, false);
 
