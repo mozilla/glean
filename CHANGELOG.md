@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...main)
 
+* General
+  * Updated to `glean_parser` v19.1.0 ([#3426](https://github.com/mozilla/glean/issues/3426))
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
 
