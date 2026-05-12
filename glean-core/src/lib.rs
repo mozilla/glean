@@ -63,7 +63,7 @@ mod util;
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 mod fd_logger;
 
-pub use crate::common_metric_data::{CommonMetricData, DynamicLabelType, Lifetime};
+pub use crate::common_metric_data::{CommonMetricData, Lifetime, MetricLabel};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 use crate::dispatcher::is_test_mode;
