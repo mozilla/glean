@@ -6,6 +6,7 @@
   * Updated to `glean_parser` v19.1.0 ([#3426](https://github.com/mozilla/glean/issues/3426))
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
+  * BUGFIX: Don't crash when `alloc_size()` is called before Glean is initialized ([#3455](https://github.com/mozilla/glean/pull/3455))
 
 # v67.3.1 (2026-05-08)
 
