@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...main)
 
+* General
+  * BUGFIX: Don't crash when `alloc_size()` is called before Glean is initialized ([#3455](https://github.com/mozilla/glean/pull/3455))
+
 # v67.3.1 (2026-05-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...v67.3.1)
