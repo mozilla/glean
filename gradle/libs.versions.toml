@@ -10,7 +10,7 @@ android-plugin = "8.13.2"
 # Kotlin
 kotlin-compiler = "2.3.21"
 kotlinx-coroutines = "1.11.0"
-kotlinx-serialization = "1.9.0"
+kotlinx-serialization = "1.11.0"
 
 # Mozilla
 rust-android-gradle = "0.9.6"
