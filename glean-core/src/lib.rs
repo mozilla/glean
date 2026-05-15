@@ -616,7 +616,7 @@ fn initialize_inner(
 /// Value is in bytes.
 pub fn alloc_size(ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
     use malloc_size_of::MallocSizeOf;
-    core::with_glean(|glean| glean.size_of(ops))
+    core::with_opt_glean(|glean| glean.size_of(ops)).unwrap_or(0)
 }
 
 /// TEST ONLY FUNCTION

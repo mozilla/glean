@@ -1,6 +1,13 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.2...main)
+
+# v67.3.2 (2026-05-15)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.1...v67.3.2)
+
+* General
+  * BUGFIX: Don't crash when `alloc_size()` is called before Glean is initialized ([#3455](https://github.com/mozilla/glean/pull/3455))
 
 # v67.3.1 (2026-05-08)
 
