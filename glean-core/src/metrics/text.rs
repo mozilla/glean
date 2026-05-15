@@ -172,6 +172,7 @@ mod test {
             lifetime: Lifetime::Application,
             disabled: false,
             dynamic_label: None,
+            in_session: false,
         });
 
         let sample_string = "0123456789".repeat(200 * 1024);

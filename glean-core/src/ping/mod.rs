@@ -566,6 +566,7 @@ mod test {
             metrics_enabled,
             pings_enabled,
             event_threshold: Some(41),
+            session_sample_rate: None,
         };
         glean.apply_server_knobs_config(config);
 

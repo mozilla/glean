@@ -215,6 +215,28 @@ pub trait MetricType {
         // at worst we would see that metric enabled/disabled wrongly once.
         // But since everything is tunneled through the dispatcher, this should never ever happen.
 
+        /*
+        Session sampling gate: suppress in-session telemetry for sampled-out sessions.
+
+        This check applies to ALL metric types, not just events because the `in_session` property
+        is shared through CommonMetricData. We might want to add session metadata to non-event
+        metrics in the future, and if we do, they should be suppressed by session sampling just
+        like events are.
+
+        In-session metrics (`in_session = true`) are suppressed here when the active session is
+        sampled out.
+
+        Out-of-session metrics (`in_session = false`) bypass this gate entirely and always record.
+
+        EventMetric additionally uses `compute_event_context()` after this check to determine
+        which session metadata to attach — that function is purely about metadata, not suppression,
+        and it may be called from other metric types in future if they also need per-event session
+        context.
+        */
+        if self.meta().in_session() && !glean.session_manager().is_sampled_in() {
+            return false;
+        }
+
         // Get the current disabled field from the metric metadata, including
         // the encoded remote_settings epoch
         let disabled_field = self.meta().disabled.load(Ordering::Relaxed);

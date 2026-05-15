@@ -1068,6 +1068,106 @@ glean:
       - glean-team@mozilla.com
     expires: never
 
+  session_start:
+    type: event
+    description: |
+      Recorded when a new session starts.
+
+      Always emitted regardless of session sampling so analysts can
+      observe all session boundaries and validate sampling rates.
+    send_in_pings:
+      - events
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_reviews:
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    extra_keys:
+      session_id:
+        description: The unique UUID of the started session.
+        type: string
+      session_seq:
+        description: The session sequence number (monotonically increasing across restarts).
+        type: quantity
+      session_start_time:
+        description: |
+          Wall-clock timestamp at session start (RFC 3339).
+          Auxiliary only; per-event timestamps remain authoritative for
+          time-based analysis.
+        type: string
+      sampled_in:
+        description: |
+          Whether this session is sampled in (true) or sampled out (false).
+          Events from sampled-out sessions are suppressed; this field lets
+          analysts validate that the observed sampling rate matches the
+          configured rate.
+        type: boolean
+
+  session_end:
+    type: event
+    description: |
+      Recorded when a session ends.
+
+      Always emitted regardless of session sampling. The `reason` extra key
+      describes why the session ended.
+    send_in_pings:
+      - events
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_reviews:
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    extra_keys:
+      session_id:
+        description: The unique UUID of the ended session.
+        type: string
+      session_seq:
+        description: The session sequence number (monotonically increasing across restarts).
+        type: quantity
+      reason:
+        description: |
+          Why the session ended. When in MANUAL mode, the reason can optionally
+          be set by the application. Possible values set by Glean in AUTO or
+          LIFECYCLE session management modes include:
+          - "inactive": client went to background (LIFECYCLE mode)
+          - "replaced": a new session was started while one was already active
+          - "timeout": AUTO mode inactivity timeout expired
+          - "abnormal": session ended due to app crash/force-close
+          - "abnormal_inactive": session was inactive at time of crash
+        type: string
+
+  sessions_seen:
+    type: counter
+    description: |
+      The total number of sessions started since the last metrics ping.
+      Incremented for every session start, regardless of sampling.
+      This metric is a counter and is out-of-session by default, so it
+      is never suppressed by any session sampling which means it can be
+      used to validate sampling rates against the events-ping session_start
+      count.
+    send_in_pings:
+      - metrics
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_reviews:
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2020962
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.ping:
   uploader_capabilities:
     type: string_list

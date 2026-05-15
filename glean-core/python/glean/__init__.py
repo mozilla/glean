@@ -17,6 +17,7 @@ import glean_parser  # type: ignore
 from .glean import Glean
 from .config import Configuration
 from ._loader import load_metrics, load_pings
+from ._uniffi import SessionMode
 
 
 __version__: str = "unknown"
@@ -52,6 +53,7 @@ __all__ = [
     "__version__",
     "Glean",
     "Configuration",
+    "SessionMode",
     "load_metrics",
     "load_pings",
 ]

@@ -27,6 +27,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.2.0...v67.3.0)
 
+* General
+  * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
 * Rust
   * Add support for determining `client_info.os_version` for Android binaries ([#3434](https://github.com/mozilla/glean/pull/3434))
 

@@ -238,6 +238,9 @@ class Glean:
             ping_schedule={},
             ping_lifetime_threshold=0,
             ping_lifetime_max_time=0,
+            session_mode=configuration.session_mode,
+            session_sample_rate=configuration.session_sample_rate,
+            session_inactivity_timeout_ms=configuration.session_inactivity_timeout_ms,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
@@ -481,6 +484,30 @@ class Glean:
         getting to background).
         """
         _uniffi.glean_handle_client_inactive()
+
+    @classmethod
+    def session_start(cls):
+        """
+        Starts a session manually.
+
+        Only has an effect when Glean is configured with `SessionMode.MANUAL`.
+        In `AUTO` or `LIFECYCLE` mode this is a no-op so automatic session
+        state isn't corrupted.
+        """
+        _uniffi.glean_session_start()
+
+    @classmethod
+    def session_end(cls, reason: Optional[str] = None):
+        """
+        Ends a session manually.
+
+        Only has an effect when Glean is configured with `SessionMode.MANUAL`.
+
+        Args:
+            reason (str): Optional application-provided string attached to the
+                `glean.session_end` boundary event for downstream analysis.
+        """
+        _uniffi.glean_session_end(reason)
 
     @classmethod
     def shutdown(cls):

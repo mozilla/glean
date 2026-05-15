@@ -54,7 +54,7 @@ impl TryFrom<i32> for Lifetime {
 }
 
 /// The common set of data shared across all different metric types.
-#[derive(Default, Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
+#[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf, Default)]
 pub struct CommonMetricData {
     /// The metric's name.
     pub name: String,
@@ -75,6 +75,13 @@ pub struct CommonMetricData {
     /// label so that we can validate them when the Glean singleton is
     /// available.
     pub dynamic_label: Option<DynamicLabelType>,
+    /// Whether this metric is inside of the session scope.
+    ///
+    /// `false` (the default) means this metric bypasses session sampling and
+    /// does not carry session metadata. Non-event metrics should use the default
+    /// for now. Event metrics that participate in session tracking must
+    /// explicitly set this to `true`.
+    pub in_session: bool,
 }
 
 /// The type of dynamic label applied to a base metric. Used to help identify
@@ -187,6 +194,15 @@ impl CommonMetricDataInternal {
         } else {
             base_identifier
         }
+    }
+
+    /// Whether or not the metric is `in_session`.
+    ///
+    /// Metrics that are `in_session` participate in session tracking and carry session metadata.
+    /// This is mostly relevant for event metrics, other metric types should generally not be `in_session`
+    /// and default to `false`.
+    pub fn in_session(&self) -> bool {
+        self.inner.in_session
     }
 
     /// The list of storages this metric should be recorded into.
