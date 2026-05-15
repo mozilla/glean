@@ -6,6 +6,8 @@
   * Updated to `glean_parser` v19.1.0 ([#3426](https://github.com/mozilla/glean/issues/3426))
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
+* Android
+  * Updated Kotlin to 2.3.21 ([#3456](https://github.com/mozilla/glean/pull/3456))
 
 # v67.3.2 (2026-05-15)
 
