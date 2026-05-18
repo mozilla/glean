@@ -1977,9 +1977,9 @@ dependencies = [
 
 [[package]]
 name = "zeitstempel"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f523a0d9326c4f3242ad3a9d306baa7fe4572fd532cc891cabecfb714c786c1e"
+checksum = "3347afac8523417112bc46e087add86d639eb76c84a16209d34aa5c6e8d16edd"
 dependencies = [
  "cfg-if",
  "libc",
