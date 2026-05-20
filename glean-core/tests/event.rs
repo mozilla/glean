@@ -553,6 +553,8 @@ fn with_event_timestamps() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping = PingBuilder::new("store1").build();

@@ -478,6 +478,7 @@ impl PingUploadManager {
             let mut pending_pings_directory_size: u64 = 0;
             let mut pending_pings_count = 0;
             let mut deleting = false;
+            let mut delete_reason: Option<&'static str> = None;
 
             let total = cached_pings.pending_pings.len() as u64;
             self.upload_metrics
@@ -503,25 +504,35 @@ impl PingUploadManager {
                 pending_pings_directory_size += file_size;
 
                 // We don't want to spam the log for every ping over the quota.
+                // Size is checked first; if both limits are exceeded simultaneously,
+                // size_quota takes precedence as the recorded reason.
                 if !deleting && pending_pings_directory_size > self.policy.max_pending_pings_directory_size() {
                     log::warn!(
                         "Pending pings directory has reached the size quota of {} bytes, outstanding pings will be deleted.",
                         self.policy.max_pending_pings_directory_size()
                     );
                     deleting = true;
+                    delete_reason = Some("size_quota");
                 }
 
                 // Once we reach the number of allowed pings we start deleting,
                 // no matter what size.
                 // We already log this before the loop.
-                if pending_pings_count > self.policy.max_pending_pings_count() {
+                if !deleting && pending_pings_count > self.policy.max_pending_pings_count() {
                     deleting = true;
+                    delete_reason = Some("count_quota");
                 }
 
                 if deleting && self.directory_manager.delete_file(document_id) {
                     self.upload_metrics
                         .deleted_pings_after_quota_hit
                         .add_sync(glean, 1);
+                    if let Some(reason) = delete_reason {
+                        self.upload_metrics
+                            .pending_pings_deleted
+                            .get(reason)
+                            .add_sync(glean, 1);
+                    }
                     return false;
                 }
 
@@ -564,6 +575,14 @@ impl PingUploadManager {
             Duration::from_secs(interval),
             max_tasks,
         )));
+    }
+
+    pub(crate) fn set_max_pending_pings_count(&mut self, n: u64) {
+        self.policy.set_max_pending_pings_count(Some(n));
+    }
+
+    pub(crate) fn set_max_pending_pings_directory_size(&mut self, n: u64) {
+        self.policy.set_max_pending_pings_directory_size(Some(n));
     }
 
     /// Reads a ping file, creates a `PingRequest` and adds it to the queue.
@@ -1786,6 +1805,22 @@ mod test {
                 .get_value(&glean, Some("metrics"))
                 .unwrap()
         );
+        // Verify the labeled deletion counter attributes deletions to size_quota
+        assert_eq!(
+            (n - expected_number_of_pings) as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings_deleted
+                .get("size_quota")
+                .get_value(&glean, Some("health"))
+                .unwrap()
+        );
+        assert!(upload_manager
+            .upload_metrics
+            .pending_pings_deleted
+            .get("count_quota")
+            .get_value(&glean, Some("health"))
+            .is_none());
     }
 
     #[test]
@@ -1830,11 +1865,10 @@ mod test {
         // Create a new upload manager pointing to the same data_path as the glean instance.
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
 
-        // From manual testing we figured out an empty ping file is 324bytes,
-        // so this allows 3 pings.
+        // Set a large enough size quota so it never triggers before the count quota does.
         upload_manager
             .policy
-            .set_max_pending_pings_directory_size(Some(1000));
+            .set_max_pending_pings_directory_size(Some(100_000));
         upload_manager.policy.set_max_pending_pings_count(Some(2));
 
         // Get a task once
@@ -1870,6 +1904,88 @@ mod test {
                 .pending_pings
                 .get_value(&glean, Some("metrics"))
                 .unwrap()
+        );
+        // Verify the labeled deletion counter attributes deletions to count_quota
+        assert_eq!(
+            (n - expected_number_of_pings) as i32,
+            upload_manager
+                .upload_metrics
+                .pending_pings_deleted
+                .get("count_quota")
+                .get_value(&glean, Some("health"))
+                .unwrap()
+        );
+        assert!(upload_manager
+            .upload_metrics
+            .pending_pings_deleted
+            .get("size_quota")
+            .get_value(&glean, Some("health"))
+            .is_none());
+    }
+
+    #[test]
+    fn pending_pings_deleted_is_not_recorded_when_quota_not_hit() {
+        let (mut glean, dir) = new_glean(None);
+
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            true,
+            vec![],
+            vec![],
+            true,
+            vec![],
+        );
+        glean.register_ping_type(&ping_type);
+
+        // Submit fewer pings than any quota.
+        for _ in 0..3 {
+            ping_type.submit_sync(&glean, None);
+        }
+
+        let mut upload_manager = PingUploadManager::no_policy(dir.path());
+        upload_manager.policy.set_max_pending_pings_count(Some(10));
+        upload_manager
+            .policy
+            .set_max_pending_pings_directory_size(Some(1024 * 1024));
+
+        upload_manager.get_upload_task(&glean, false);
+
+        assert!(upload_manager
+            .upload_metrics
+            .pending_pings_deleted
+            .get("count_quota")
+            .get_value(&glean, Some("health"))
+            .is_none());
+        assert!(upload_manager
+            .upload_metrics
+            .pending_pings_deleted
+            .get("size_quota")
+            .get_value(&glean, Some("health"))
+            .is_none());
+    }
+
+    #[test]
+    fn pending_pings_config_overrides_are_applied() {
+        let (_, dir) = new_glean(None);
+
+        let mut upload_manager = PingUploadManager::new(dir.path(), "test");
+
+        let custom_count: u64 = 42;
+        let custom_size: u64 = 999_999;
+        upload_manager.set_max_pending_pings_count(custom_count);
+        upload_manager.set_max_pending_pings_directory_size(custom_size);
+
+        assert_eq!(
+            custom_count,
+            upload_manager.policy.max_pending_pings_count()
+        );
+        assert_eq!(
+            custom_size,
+            upload_manager.policy.max_pending_pings_directory_size()
         );
     }
 

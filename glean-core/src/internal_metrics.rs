@@ -233,6 +233,7 @@ pub struct UploadMetrics {
     pub discarded_exceeding_pings_size: MemoryDistributionMetric,
     pub pending_pings_directory_size: MemoryDistributionMetric,
     pub deleted_pings_after_quota_hit: CounterMetric,
+    pub pending_pings_deleted: LabeledMetric<CounterMetric>,
     pub pending_pings: CounterMetric,
     pub send_success: TimingDistributionMetric,
     pub send_failure: TimingDistributionMetric,
@@ -296,6 +297,20 @@ impl UploadMetrics {
                 disabled: false,
                 dynamic_label: None,
             }),
+
+            pending_pings_deleted: LabeledMetric::<CounterMetric>::new(
+                LabeledMetricData::Common {
+                    cmd: CommonMetricData {
+                        name: "pending_pings_deleted".into(),
+                        category: "glean.upload".into(),
+                        send_in_pings: vec!["health".into()],
+                        lifetime: Lifetime::Ping,
+                        disabled: false,
+                        dynamic_label: None,
+                    },
+                },
+                Some(vec![Cow::from("count_quota"), Cow::from("size_quota")]),
+            ),
 
             pending_pings: CounterMetric::new(CommonMetricData {
                 name: "pending_pings".into(),

@@ -35,6 +35,8 @@ class Configuration:
         enable_event_timestamps: bool = True,
         experimentation_id: Optional[str] = None,
         enable_internal_pings: bool = True,
+        max_pending_pings_count: Optional[int] = None,
+        max_pending_pings_directory_size: Optional[int] = None,
     ):
         """
         Args:
@@ -53,6 +55,12 @@ class Configuration:
             experimentation_id (string): An experimentation identifier derived
                 by the application to be sent with all pings. Default: None.
             enable_internal_pings (bool): Whether to enable internal pings. Default: `True`.
+            max_pending_pings_count (int): Optional. The maximum number of pending
+                pings stored on disk. When exceeded, the oldest pings are deleted.
+                Defaults to 500.
+            max_pending_pings_directory_size (int): Optional. The maximum size in
+                bytes of the pending pings directory. When exceeded, the oldest pings
+                are deleted. Defaults to 50 MB.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
@@ -66,6 +74,8 @@ class Configuration:
         self._enable_event_timestamps = enable_event_timestamps
         self._experimentation_id = experimentation_id
         self._enable_internal_pings = enable_internal_pings
+        self._max_pending_pings_count = max_pending_pings_count
+        self._max_pending_pings_directory_size = max_pending_pings_directory_size
 
     @property
     def server_endpoint(self) -> str:
@@ -110,6 +120,16 @@ class Configuration:
     def enable_internal_pings(self) -> bool:
         """Whether to enable internal pings."""
         return self._enable_internal_pings
+
+    @property
+    def max_pending_pings_count(self) -> Optional[int]:
+        """The maximum number of pending pings stored on disk."""
+        return self._max_pending_pings_count
+
+    @property
+    def max_pending_pings_directory_size(self) -> Optional[int]:
+        """The maximum size in bytes of the pending pings directory."""
+        return self._max_pending_pings_directory_size
 
     @property
     def ping_uploader(self) -> net.BaseUploader:

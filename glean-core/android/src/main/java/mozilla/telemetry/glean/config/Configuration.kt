@@ -30,6 +30,10 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property pingSchedule A ping schedule map.
  *           Maps a ping name to a list of pings to schedule along with it.
  *           Only used if the ping's own ping schedule list is empty.
+ * @property maxPendingPingsCount The maximum number of pending pings stored on disk.
+ *           When this limit is exceeded, the oldest pings are deleted. Defaults to 500.
+ * @property maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
+ *           When this limit is exceeded, the oldest pings are deleted. Defaults to 50 MB.
  */
 data class Configuration
     @JvmOverloads
@@ -50,6 +54,8 @@ data class Configuration
         val pingLifetimeThreshold: Int = 1000,
         val pingLifetimeMaxTime: Int = 0,
         val pingSchedule: Map<String, List<String>> = emptyMap(),
+        val maxPendingPingsCount: Long? = null,
+        val maxPendingPingsDirectorySize: Long? = null,
     ) {
         companion object {
             /**

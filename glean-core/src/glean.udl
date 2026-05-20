@@ -111,6 +111,8 @@ dictionary InternalConfiguration {
     record<string, sequence<string>> ping_schedule;
     u64 ping_lifetime_threshold;
     u64 ping_lifetime_max_time; // in millis
+    u64? max_pending_pings_count;
+    u64? max_pending_pings_directory_size;
 };
 
 // How to specify the rate pings may be uploaded before they are throttled.

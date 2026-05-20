@@ -83,6 +83,8 @@ pub fn metric_dispatcher_benchmark(c: &mut Criterion) {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
     };
     let client_info = ClientInfoMetrics::unknown();
 

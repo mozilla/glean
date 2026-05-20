@@ -238,6 +238,8 @@ class Glean:
             ping_schedule={},
             ping_lifetime_threshold=0,
             ping_lifetime_max_time=0,
+            max_pending_pings_count=configuration.max_pending_pings_count,
+            max_pending_pings_directory_size=configuration.max_pending_pings_directory_size,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)
