@@ -41,6 +41,8 @@ fn session_cfg(
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
         session_mode: mode,
         session_sample_rate: sample_rate,
         session_inactivity_timeout_ms: timeout_ms,

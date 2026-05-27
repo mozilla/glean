@@ -47,15 +47,15 @@ public struct Configuration {
     ///   * pingSchedule A ping schedule map.
     ///   Maps a ping name to a list of pings to schedule along with it.
     ///   Only used if the ping's own ping schedule list is empty.
+    ///   * maxPendingPingsCount The maximum number of pending pings stored on disk.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 500.
+    ///   * maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 50 MB.
     ///   * sessionMode How Glean manages session boundaries. Default: `.auto`.
     ///   * sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
     ///   * sessionInactivityTimeoutMs Inactivity timeout (ms) before AUTO-mode
     ///   sessions expire. Default: 30 minutes (1,800,000 ms).
     ///   * httpClient An http uploader that supports the `PingUploader` protocol
-    ///   * maxPendingPingsCount The maximum number of pending pings stored on disk.
-    ///   When exceeded, the oldest pings are deleted. Defaults to 500.
-    ///   * maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
-    ///   When exceeded, the oldest pings are deleted. Defaults to 50 MB.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -69,7 +69,7 @@ public struct Configuration {
         pingLifetimeMaxTime: Int = 0,
         pingSchedule: [String: [String]] = [:],
         maxPendingPingsCount: UInt64? = nil,
-        maxPendingPingsDirectorySize: UInt64? = nil
+        maxPendingPingsDirectorySize: UInt64? = nil,
         sessionMode: SessionMode = .auto,
         sessionSampleRate: Double = 1.0,
         sessionInactivityTimeoutMs: UInt64 = 1_800_000,
