@@ -166,6 +166,10 @@ pub struct InternalConfiguration {
     pub ping_lifetime_threshold: u64,
     /// After what time to auto-flush. 0 disables it.
     pub ping_lifetime_max_time: u64,
+    /// Maximum number of pending pings on disk. Overrides the default when set.
+    pub max_pending_pings_count: Option<u64>,
+    /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
+    pub max_pending_pings_directory_size: Option<u64>,
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.

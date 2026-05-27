@@ -139,6 +139,8 @@ where
 ///     ping_schedule: Default::default(),
 ///     ping_lifetime_threshold: 1000,
 ///     ping_lifetime_max_time: 2000,
+///     max_pending_pings_count: None,
+///     max_pending_pings_directory_size: None,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -214,6 +216,12 @@ impl Glean {
             rate_limit.seconds_per_interval,
             rate_limit.pings_per_interval,
         );
+        if let Some(n) = cfg.max_pending_pings_count {
+            upload_manager.set_max_pending_pings_count(n);
+        }
+        if let Some(n) = cfg.max_pending_pings_directory_size {
+            upload_manager.set_max_pending_pings_directory_size(n);
+        }
 
         // We only scan the pending ping directories when calling this from a subprocess,
         // when calling this from ::new we need to scan the directories after dealing with the upload state.
@@ -540,6 +548,8 @@ impl Glean {
             ping_schedule: Default::default(),
             ping_lifetime_threshold: 0,
             ping_lifetime_max_time: 0,
+            max_pending_pings_count: None,
+            max_pending_pings_directory_size: None,
         };
 
         let mut glean = Self::new(cfg).unwrap();

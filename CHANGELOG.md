@@ -16,6 +16,12 @@
 * General
   * BUGFIX: Don't crash when `alloc_size()` is called before Glean is initialized ([#3455](https://github.com/mozilla/glean/pull/3455))
 
+* General
+  * Increase pending ping limits to better support long network outages ([bug 2040030](https://bugzilla.mozilla.org/show_bug.cgi?id=2040030))
+    * New `glean.upload.pending_pings_deleted` metric added to differentiate between deletions due to pending ping count or directory size limitations
+    * Default pending pings allowed before deletion raised from 250 to 500, and the directory size before deletion increased from 10MB to 50MB.
+    * New configuration fields added to allow integrating applications to override the maximum pending pings count and directory size limits.
+
 # v67.3.1 (2026-05-08)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.0...v67.3.1)

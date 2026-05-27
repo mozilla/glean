@@ -212,7 +212,9 @@ public final class Glean: @unchecked Sendable {
             enableInternalPings: configuration.enableInternalPings,
             pingSchedule: configuration.pingSchedule,
             pingLifetimeThreshold: UInt64(configuration.pingLifetimeThreshold),
-            pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime)
+            pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime),
+            maxPendingPingsCount: configuration.maxPendingPingsCount,
+            maxPendingPingsDirectorySize: configuration.maxPendingPingsDirectorySize
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)

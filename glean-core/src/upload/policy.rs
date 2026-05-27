@@ -9,15 +9,14 @@ use malloc_size_of_derive::MallocSizeOf;
 const MAX_RECOVERABLE_FAILURES: u32 = 3;
 const MAX_WAIT_ATTEMPTS: u32 = 3;
 const MAX_PING_BODY_SIZE: usize = 1024 * 1024; // 1 MB
-const MAX_PENDING_PINGS_DIRECTORY_SIZE: u64 = 10 * 1024 * 1024; // 10MB
 
-// The average number of baseline pings per client (on Fenix) is at 15 pings a day.
-// The P99 value is ~110.
-// With a maximum of (a nice round) 250 we can store about 2 days worth of pings.
-// A baseline ping file averages about 600 bytes, so that's a total of just 144 kB we store.
-// With the default rate limit of 15 pings per 60s it would take roughly 16 minutes to send out all pending
-// pings.
-const MAX_PENDING_PINGS_COUNT: u64 = 250;
+// Directory safety limit for managing pending pings, along with `MAX_PENDING_PINGS_COUNT`.
+// The default of 50MB is sized more for outage survival than normal day-to-day ping volumes.
+const MAX_PENDING_PINGS_DIRECTORY_SIZE: u64 = 50 * 1024 * 1024;
+// Current Android P80 baseline ping volume for release is around 28 pings/client/day. (May 2026 data)
+// A limit of 500 should allow a P99 client to buffer roughly 5 days of mixed-type pings before pings
+// are deleted. Integrating apps may override this via Configuration if needed.
+const MAX_PENDING_PINGS_COUNT: u64 = 500;
 
 /// A struct holding the values for all the policies related to ping storage, uploading and requests.
 #[derive(Debug, MallocSizeOf)]
@@ -102,12 +101,10 @@ impl Policy {
         }
     }
 
-    #[cfg(test)]
     pub fn set_max_pending_pings_directory_size(&mut self, v: Option<u64>) {
         self.max_pending_pings_directory_size = v;
     }
 
-    #[cfg(test)]
     pub fn set_max_pending_pings_count(&mut self, v: Option<u64>) {
         self.max_pending_pings_count = v;
     }

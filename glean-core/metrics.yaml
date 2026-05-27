@@ -808,6 +808,34 @@ glean.upload:
     no_lint:
       - COMMON_PREFIX
 
+  pending_pings_deleted:
+    type: labeled_counter
+    labels:
+      - count_quota
+      - size_quota
+    description: |
+      The number of pings deleted because a pending pings quota was exceeded,
+      labeled by which quota triggered the deletion.
+
+      * `count_quota`: the maximum number of pending pings was reached.
+      * `size_quota`: the maximum size of the pending pings directory was reached.
+
+      Sent on the health ping only; use this metric to verify whether
+      the configured limits are sufficient to survive connectivity outages.
+    send_in_pings:
+      - health
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2040030
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2040030
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    no_lint:
+      - COMMON_PREFIX
+
   pending_pings:
     type: counter
     description: |

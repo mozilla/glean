@@ -17,6 +17,8 @@ public struct Configuration {
     let pingLifetimeMaxTime: Int
     let pingSchedule: [String: [String]]
     let httpClient: PingUploader
+    let maxPendingPingsCount: UInt64?
+    let maxPendingPingsDirectorySize: UInt64?
 
     struct Constants {
         static let defaultTelemetryEndpoint =
@@ -43,6 +45,10 @@ public struct Configuration {
     ///   Maps a ping name to a list of pings to schedule along with it.
     ///   Only used if the ping's own ping schedule list is empty.
     ///   * httpClient An http uploader that supports the `PingUploader` protocol
+    ///   * maxPendingPingsCount The maximum number of pending pings stored on disk.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 500.
+    ///   * maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 50 MB.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -55,7 +61,9 @@ public struct Configuration {
         pingLifetimeThreshold: Int = 0,
         pingLifetimeMaxTime: Int = 0,
         pingSchedule: [String: [String]] = [:],
-        httpClient: PingUploader = HttpPingUploader()
+        httpClient: PingUploader = HttpPingUploader(),
+        maxPendingPingsCount: UInt64? = nil,
+        maxPendingPingsDirectorySize: UInt64? = nil
     ) {
         self.serverEndpoint =
             serverEndpoint ?? Constants.defaultTelemetryEndpoint
@@ -70,5 +78,7 @@ public struct Configuration {
         self.pingLifetimeMaxTime = pingLifetimeMaxTime
         self.pingSchedule = pingSchedule
         self.httpClient = httpClient
+        self.maxPendingPingsCount = maxPendingPingsCount
+        self.maxPendingPingsDirectorySize = maxPendingPingsDirectorySize
     }
 }

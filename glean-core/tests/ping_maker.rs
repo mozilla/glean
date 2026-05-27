@@ -96,6 +96,8 @@ fn test_metrics_must_report_experimentation_id() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
     })
     .unwrap();
     let ping_maker = PingMaker::new();
@@ -151,6 +153,8 @@ fn experimentation_id_is_removed_if_send_if_empty_is_false() {
         ping_schedule: Default::default(),
         ping_lifetime_threshold: 0,
         ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
     })
     .unwrap();
     let ping_maker = PingMaker::new();
