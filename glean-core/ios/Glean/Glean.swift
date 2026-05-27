@@ -214,7 +214,7 @@ public final class Glean: @unchecked Sendable {
             pingLifetimeThreshold: UInt64(configuration.pingLifetimeThreshold),
             pingLifetimeMaxTime: UInt64(configuration.pingLifetimeMaxTime),
             maxPendingPingsCount: configuration.maxPendingPingsCount,
-            maxPendingPingsDirectorySize: configuration.maxPendingPingsDirectorySize
+            maxPendingPingsDirectorySize: configuration.maxPendingPingsDirectorySize,
             sessionMode: configuration.sessionMode,
             sessionSampleRate: configuration.sessionSampleRate,
             sessionInactivityTimeoutMs: configuration.sessionInactivityTimeoutMs

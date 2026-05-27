@@ -33,6 +33,7 @@ pub struct CommonMetricData {
     pub lifetime: Lifetime,
     pub disabled: bool,
     pub dynamic_label: Option<DynamicLabelType>,
+    pub in_session: bool,
 }
 
 #[derive(uniffi::Record)]
@@ -49,6 +50,16 @@ pub struct RecordedEvent {
     category: String,
     name: String,
     extra: Option<::std::collections::HashMap<String, String>>,
+    session_metadata: Option<SessionMetadata>,
+}
+
+#[derive(uniffi::Record, Debug)]
+pub struct SessionMetadata {
+    pub session_id: String,
+    pub session_seq: u64,
+    pub event_seq: u64,
+    pub session_sample_rate: f64,
+    pub session_start_time: Option<String>,
 }
 
 #[derive(uniffi::Record)]

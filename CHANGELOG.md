@@ -8,6 +8,7 @@
     * New `glean.upload.pending_pings_deleted` metric added to differentiate between deletions due to pending ping count or directory size limitations
     * Default pending pings allowed before deletion raised from 250 to 500, and the directory size before deletion increased from 10MB to 50MB.
     * New configuration fields added to allow integrating applications to override the maximum pending pings count and directory size limits.
+  * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
 * Android
@@ -32,8 +33,6 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.2.0...v67.3.0)
 
-* General
-  * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
 * Rust
   * Add support for determining `client_info.os_version` for Android binaries ([#3434](https://github.com/mozilla/glean/pull/3434))
 

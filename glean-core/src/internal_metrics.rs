@@ -301,6 +301,7 @@ impl UploadMetrics {
                         lifetime: Lifetime::Ping,
                         disabled: false,
                         dynamic_label: None,
+                        ..Default::default()
                     },
                 },
                 Some(vec![Cow::from("count_quota"), Cow::from("size_quota")]),
