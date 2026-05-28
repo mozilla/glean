@@ -6,6 +6,7 @@
   * Disable the `glean.error.event_timestamp_clamped` metric ([#3500](https://github.com/mozilla/glean/pull/3500)).
 * Rust
   * Make `rate_limit` configurable in the configuration builder ([#3495](https://github.com/mozilla/glean/pull/3495))
+  * **Experimental**: Enable `glean-sym` on iOS ([#3471](https://github.com/mozilla/glean/pull/3471))
 
 # v67.5.0 (2026-06-09)
 
