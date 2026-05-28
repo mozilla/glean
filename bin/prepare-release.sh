@@ -97,6 +97,11 @@ run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 cargo update -p glean-core -p glean
 cargo update --manifest-path glean-core/benchmark/Cargo.toml -p glean-core
 
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p xul --precise glean-bundle
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p xul --precise glean
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p services --precise glean-bundle
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p services --precise glean
+
 ### GLEAN-PYTHON ###
 
 FILE=pyproject.toml

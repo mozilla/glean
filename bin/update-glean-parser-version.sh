@@ -85,3 +85,8 @@ run $SED -i.bak -E \
     -e "s/glean_parser~=[0-9.]+/glean_parser~=${NEW_VERSION_MAJOR_MINOR}/" \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p xul --precise glean-bundle
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p xul --precise glean
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p services --precise glean-bundle
+run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p services --precise glean
