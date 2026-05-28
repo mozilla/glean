@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v67.3.2...main)
 
 * General
-  * Updated to `glean_parser` v19.1.0 ([#3426](https://github.com/mozilla/glean/issues/3426))
+  * Updated to `glean_parser` v19.1.1 ([#3426](https://github.com/mozilla/glean/issues/3426), [#3470](https://github.com/mozilla/glean/issues/3470))
   * Increase pending ping limits to better support long network outages ([bug 2040030](https://bugzilla.mozilla.org/show_bug.cgi?id=2040030))
     * New `glean.upload.pending_pings_deleted` metric added to differentiate between deletions due to pending ping count or directory size limitations
     * Default pending pings allowed before deletion raised from 250 to 500, and the directory size before deletion increased from 10MB to 50MB.
