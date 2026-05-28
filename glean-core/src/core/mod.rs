@@ -192,7 +192,7 @@ pub struct Glean {
     pub(crate) remote_settings_config: Arc<Mutex<RemoteSettingsConfig>>,
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
-    #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 1960592)"]
+    #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
 }
 
@@ -263,10 +263,10 @@ impl Glean {
             with_timestamps: cfg.enable_event_timestamps,
             ping_schedule: cfg.ping_schedule.clone(),
             // The SessionManager is deliberately left in its default (hollow)
-            // state for subprocesses.  `restore_session_state_from_storage()`
+            // state for subprocesses. `restore_session_state_from_storage()`
             // is only called in `Glean::new()`, not here, so the subprocess
             // never loads or mutates the main process's persisted session
-            // state.  This prevents subprocesses from interfering with the
+            // state. This prevents subprocesses from interfering with the
             // main process's session lifecycle (seq counters, dirty flags,
             // boundary events, etc.).
             session_manager: SessionManager::new(
@@ -1191,8 +1191,17 @@ impl Glean {
             // override will be re-applied before the next session begins.
             // Persisting it would risk making a stale value sticky if the RS
             // payload changes or is removed between restarts.
-            remote_settings_config.session_sample_rate =
-                cfg.session_sample_rate.map(|r| r.clamp(0.0, 1.0));
+            remote_settings_config.session_sample_rate = cfg.session_sample_rate.map(|r| {
+                let clamped = r.clamp(0.0, 1.0);
+                if clamped != r {
+                    log::warn!(
+                        "session_sample_rate {} out of range, clamped to {}",
+                        r,
+                        clamped
+                    );
+                }
+                clamped
+            });
 
             // Store the Server Knobs configuration as an ObjectMetric
             // Since RemoteSettingsConfig only contains maps with string keys and primitives,

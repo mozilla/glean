@@ -132,7 +132,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             max_pending_pings_directory_size=configuration.max_pending_pings_directory_size,
             session_mode=SessionMode.AUTO,
             session_sample_rate=1.0,
-            session_inactivity_timeout_ms=1800000,
+            session_inactivity_timeout_ms=1_800_000,
         )
         if not glean_initialize_for_subprocess(cfg):
             log.error("Couldn't initialize Glean in subprocess")
