@@ -57,14 +57,13 @@ macro_rules! library_binding {
         }
 
         impl GleanSym {
-            #[cfg(unix)]
+            #[cfg(all(unix, not(target_os = "ios")))]
             pub fn load() -> std::io::Result<Self> {
                 let name = libloading::library_filename("xul");
                 let library = match unsafe { libloading::Library::new(name) } {
                         Ok(lib) => Some(lib),
                         Err(_e) => None,
                 };
-                // Try each of the libraries, debug-logging load failures.
                 let $localname = library.ok_or_else(|| {
                     std::io::Error::new(std::io::ErrorKind::NotFound, "failed to find glean library")
                 })?;
@@ -72,6 +71,13 @@ macro_rules! library_binding {
                 let handle = GleanSym { $($load)* _library: $localname };
                 handle.check()?;
                 Ok(handle)
+            }
+
+            #[cfg(target_os = "ios")]
+            pub fn load() -> std::io::Result<Self> {
+                // On iOS we compile it all together and can look up symbols without loading a library
+                let $localname: libloading::Library = libloading::os::unix::Library::this().into();
+                Ok(GleanSym { $($load)* _library: $localname })
             }
 
             #[cfg(not(unix))]
