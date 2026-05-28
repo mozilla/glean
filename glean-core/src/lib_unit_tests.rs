@@ -1366,11 +1366,10 @@ fn pings_are_controllable_from_remote_settings_config() {
     assert!(!enabled_ping.submit_sync(&glean, None));
 }
 
-// ---------------------------------------------------------------------------
-// Session crash recovery (requires pub(crate) access)
-// ---------------------------------------------------------------------------
-
 /// Helper: create an EventMetric that matches glean.session_end boundary events.
+/// The source of truth for this is found in glean_core/src/core/mod.rs
+/// `record_session_end_event` and the `session_end` metric definition in glean-core's
+/// `metrics.yaml`. If those definitions change, this helper must be updated to match.
 fn session_end_metric_internal() -> metrics::EventMetric {
     metrics::EventMetric::new(
         CommonMetricData {

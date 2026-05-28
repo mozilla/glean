@@ -305,6 +305,9 @@ pub(crate) fn uuid_to_sample_value(uuid: &Uuid) -> f64 {
 
 // ---------------------------------------------------------------------------
 // Persistence helpers
+//
+// TODO: consider refactoring these to avoid repeated construction of the same metric instances on every read/write.
+// See Bug 2043357
 // ---------------------------------------------------------------------------
 
 fn make_session_seq_metric() -> QuantityMetric {

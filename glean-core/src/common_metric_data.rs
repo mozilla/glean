@@ -54,7 +54,7 @@ impl TryFrom<i32> for Lifetime {
 }
 
 /// The common set of data shared across all different metric types.
-#[derive(Debug, Clone, Deserialize, Serialize, MallocSizeOf, Default)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
 pub struct CommonMetricData {
     /// The metric's name.
     pub name: String,
