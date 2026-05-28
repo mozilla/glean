@@ -35,6 +35,7 @@ raw_xcode*log
 *.egg-info
 dist/
 .venv*/
+/uv.lock
 
 # Wine stuff
 winpython/
