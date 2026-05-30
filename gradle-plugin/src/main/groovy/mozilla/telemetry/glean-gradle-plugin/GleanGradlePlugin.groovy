@@ -18,7 +18,9 @@ import org.gradle.api.artifacts.ComponentMetadataContext
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.file.DirectoryProperty
 
 import groovy.transform.CompileStatic
 
@@ -28,6 +30,13 @@ import java.util.concurrent.Semaphore
 // a package name, but adding one causes the build to fail with:
 //    "'.../GleanGradlePlugin.groovy' should not contain a package statement"
 // due to how this file is included directly in the local build.
+
+// Exec task with a wired output dir, required to register it via addGeneratedSourceDirectory.
+@SuppressWarnings("GrPackage")
+abstract class GenerateGleanMetricsAPITask extends Exec {
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+}
 
 /*
  * A helper class to extract metrics.yaml files from AAR files.
@@ -173,10 +182,9 @@ except:
             // files. This is required since applications can define different application ids
             // depending on the variant type: the generated API definitions don't need to be
             // different due to that.
-            def namespaceProvider = variant.getGenerateBuildConfigProvider().map({ p -> "namespace=${p.namespace.get()}.GleanMetrics" })
-            def sourceOutputDir = "${project.buildDir}/generated/source/glean/${variant.dirName}/kotlin"
+            def namespaceProvider = variant.namespace.map({ ns -> "namespace=${ns}.GleanMetrics" })
 
-            TaskProvider<Exec> generateKotlinAPI = project.tasks.register("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", Exec) {
+            def generateKotlinAPI = project.tasks.register("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", GenerateGleanMetricsAPITask) {
                 description = "Generate the Kotlin code for the Metrics API"
 
                 if (project.ext.has("allowMetricsFromAAR")) {
@@ -192,8 +200,6 @@ except:
                 // Add local registry files as input to this task.
                 // They will be turned into `arg`s later.
                 inputs.files(getYamlFiles(project)).optional(true)
-
-                outputs.dir sourceOutputDir
 
                 workingDir project.rootDir
                 commandLine getPythonCommand(envDir, isOffline)
@@ -212,8 +218,6 @@ except:
                 args "--allow-missing-files"
                 args "-f"
                 args "kotlin"
-                args "-o"
-                args "$sourceOutputDir"
                 args "-s"
                 args "glean_namespace=$gleanNamespace"
 
@@ -244,6 +248,8 @@ except:
                 }
 
                 doFirst {
+                    args "-o"
+                    args outputDir.get().asFile.toString()
                     args "-s"
                     args namespaceProvider.get().toString()
 
@@ -343,12 +349,9 @@ except:
                 }
             }
 
-            // This is an Android-Gradle plugin 3+-ism.  Culted from reading the source,
-            // searching for "registerJavaGeneratingTask", and finding
-            // https://github.com/GoogleCloudPlatform/endpoints-framework-gradle-plugin/commit/2f2b91476fb1c6647791e2c6fe531a47615a1e85.
-            // The added directory doesn't appear in the paths listed by the
-            // `sourceSets` task, for reasons unknown.
-            variant.registerJavaGeneratingTask(generateKotlinAPI, new File(sourceOutputDir))
+            // Use `java`, not `kotlin`: AGP wires generated java dirs into both javac and
+            // kotlinc, while `kotlin` is only consumed by AGP's built-in Kotlin support.
+            variant.sources.java.addGeneratedSourceDirectory(generateKotlinAPI) { task -> task.outputDir }
         }
     }
 
@@ -566,11 +569,9 @@ except:
             }
         }
 
-        if (project.android.hasProperty('applicationVariants')) {
-            project.android.applicationVariants.configureEach(setupTasks(project, envDir, true, parserVersion))
-        } else {
-            project.android.libraryVariants.configureEach(setupTasks(project, envDir, false, parserVersion))
-        }
+        def isApplication = project.plugins.hasPlugin('com.android.application')
+        def androidComponents = project.extensions.getByName('androidComponents')
+        androidComponents.onVariants(androidComponents.selector().all(), setupTasks(project, envDir, isApplication, parserVersion))
     }
 }
 
