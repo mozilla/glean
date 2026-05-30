@@ -12,6 +12,7 @@
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
 * Android
   * Updated Kotlin to 2.3.21 ([#3456](https://github.com/mozilla/glean/pull/3456))
+  * The Gradle plugin now uses the modern AGP variant API, making it compatible with AGP 9 (maintaining AGP 8 compatibility) ([#3472](https://github.com/mozilla/glean/pull/3472)).
 
 # v67.3.2 (2026-05-15)
 
