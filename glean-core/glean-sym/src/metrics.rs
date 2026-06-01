@@ -717,7 +717,7 @@ impl TimingDistributionMetric {
             );
             let ptr = res.data_pointer();
             let reslen = res.len();
-            eprintln!("START. ptr={ptr:p} len={reslen}");
+            //eprintln!("START. ptr={ptr:p} len={reslen}");
             let mut newvec = Vec::with_capacity(reslen);
             let dst = newvec.as_mut_ptr();
             std::ptr::copy_nonoverlapping(ptr, dst, reslen);

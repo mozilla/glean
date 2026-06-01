@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#![allow(static_mut_refs)]
 
 use std::ffi::{CStr, c_char};
 use std::fs::File;
@@ -32,6 +33,10 @@ macro_rules! eprintln {
     }};
 }
 
+use std::sync::atomic::{AtomicUsize, Ordering};
+static mut ALLOC_MAP: [usize; 2048] = [0; 2048];
+static ALLOC_MAP_IDX: AtomicUsize = AtomicUsize::new(0);
+
 use std::alloc::{Layout, GlobalAlloc, System};
 
 #[global_allocator]
@@ -43,15 +48,35 @@ unsafe impl GlobalAlloc for LogAlloc {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         unsafe {
             let ptr = System.alloc(layout);
-            eprintln!("xul.alloc=%p", ptr);
+            //eprintln!("xul.alloc=%p", ptr);
+            {
+                let idx = ALLOC_MAP_IDX.fetch_add(1, Ordering::SeqCst);
+                assert!(idx < ALLOC_MAP.len());
+                ALLOC_MAP[idx] = ptr as usize;
+            }
             ptr
         }
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
         unsafe {
-            eprintln!("xul.dealloc=%p", ptr);
-            System.dealloc(ptr, layout)
+            //eprintln!("xul.dealloc=%p", ptr);
+            //System.dealloc(ptr, layout)
+            {
+                let max_idx = ALLOC_MAP_IDX.load(Ordering::SeqCst);
+                let mut found = false;
+                for idx in 0..max_idx {
+                    let val = ALLOC_MAP[idx];
+                    if val == ptr as usize {
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    eprintln!("Trying to dealloc=%p. Pointer wasn't allocated here.", ptr);
+                    std::process::abort();
+                }
+            }
         }
     }
 }
