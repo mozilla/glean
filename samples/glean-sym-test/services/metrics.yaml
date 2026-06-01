@@ -20,3 +20,17 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+
+  timing:
+    type: timing_distribution
+    description: |
+      Just testing timing distributions
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype

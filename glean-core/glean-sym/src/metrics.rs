@@ -715,7 +715,18 @@ impl TimingDistributionMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            let ptr = res.data_pointer();
+            let reslen = res.len();
+            eprintln!("START. ptr={ptr:p} len={reslen}");
+            let mut newvec = Vec::with_capacity(reslen);
+            let dst = newvec.as_mut_ptr();
+            std::ptr::copy_nonoverlapping(ptr, dst, reslen);
+            newvec.set_len(reslen);
+
+            (crate::GLEAN.ffi_glean_core_rustbuffer_free)(res, &mut call_status);
+
+            let newbuf = uniffi::RustBuffer::from_vec(newvec);
+            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(newbuf).unwrap()
         }
     }
     pub fn stop_and_accumulate(&self, timer_id: TimerId) -> () {
@@ -1689,6 +1700,7 @@ impl DualLabeledCounterMetric {
     }
 }
 library_binding! {
+    fn ffi_glean_core_rustbuffer_free(bytes : ::uniffi::RustBuffer, call_status : & mut ::uniffi::RustCallStatus) ;
     fn ffi_glean_core_rustbuffer_from_bytes(bytes : ::uniffi::ForeignBytes, call_status :
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
     uniffi_glean_core_fn_clone_countermetric(handle : u64, call_status : & mut
