@@ -53,7 +53,7 @@ impl CounterMetric {
                 &mut call_status,
             );
             amount.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
@@ -68,7 +68,7 @@ impl CounterMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -83,7 +83,7 @@ impl CounterMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -129,7 +129,7 @@ impl TimespanMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn stop(&self) -> () {
@@ -141,7 +141,7 @@ impl TimespanMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn cancel(&self) -> () {
@@ -153,7 +153,7 @@ impl TimespanMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn set_raw_nanos(&self, elapsed: i64) -> () {
@@ -168,7 +168,7 @@ impl TimespanMetric {
                 &mut call_status,
             );
             elapsed.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
@@ -183,7 +183,7 @@ impl TimespanMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -198,7 +198,7 @@ impl TimespanMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -241,7 +241,7 @@ impl BooleanMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<bool> {
@@ -256,7 +256,7 @@ impl BooleanMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -271,7 +271,7 @@ impl BooleanMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -314,7 +314,7 @@ impl StringMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
@@ -329,7 +329,7 @@ impl StringMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -344,7 +344,7 @@ impl StringMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -390,7 +390,7 @@ impl StringListMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn set(&self, value: Vec<String>) -> () {
@@ -405,7 +405,7 @@ impl StringListMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<String>> {
@@ -420,7 +420,7 @@ impl StringListMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -435,7 +435,7 @@ impl StringListMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -478,7 +478,7 @@ impl UrlMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
@@ -493,7 +493,7 @@ impl UrlMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -508,7 +508,7 @@ impl UrlMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -551,7 +551,7 @@ impl UuidMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn generate_and_set(&self) -> String {
@@ -563,7 +563,7 @@ impl UuidMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
@@ -578,7 +578,7 @@ impl UuidMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -593,7 +593,7 @@ impl UuidMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -639,7 +639,7 @@ impl QuantityMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
@@ -654,7 +654,7 @@ impl QuantityMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -669,7 +669,7 @@ impl QuantityMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -715,7 +715,7 @@ impl TimingDistributionMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn stop_and_accumulate(&self, timer_id: TimerId) -> () {
@@ -730,7 +730,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             timer_id.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn cancel(&self, timer_id: TimerId) -> () {
@@ -745,7 +745,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             timer_id.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
@@ -760,7 +760,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             samples.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
@@ -775,7 +775,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             sample.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
@@ -790,7 +790,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -805,7 +805,7 @@ impl TimingDistributionMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -856,7 +856,7 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             );
             sample.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
@@ -871,7 +871,7 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             );
             samples.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
@@ -886,7 +886,7 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -901,7 +901,7 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -969,7 +969,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             );
             samples.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
@@ -984,7 +984,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             );
             sample.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
@@ -999,7 +999,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1014,7 +1014,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1063,7 +1063,7 @@ impl DatetimeMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Datetime> {
@@ -1078,7 +1078,7 @@ impl DatetimeMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value_as_string(&self, ping_name: Option<String>) -> Option<String> {
@@ -1093,7 +1093,7 @@ impl DatetimeMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1108,7 +1108,7 @@ impl DatetimeMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1156,7 +1156,7 @@ impl EventMetric {
                 &mut call_status,
             );
             extra.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(
@@ -1174,7 +1174,7 @@ impl EventMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1189,7 +1189,7 @@ impl EventMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1232,7 +1232,7 @@ impl RateMetric {
                 &mut call_status,
             );
             amount.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn add_to_denominator(&self, amount: i32) -> () {
@@ -1247,7 +1247,7 @@ impl RateMetric {
                 &mut call_status,
             );
             amount.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
@@ -1262,7 +1262,7 @@ impl RateMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1277,7 +1277,7 @@ impl RateMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1326,7 +1326,7 @@ impl DenominatorMetric {
                 &mut call_status,
             );
             amount.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
@@ -1341,7 +1341,7 @@ impl DenominatorMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1356,7 +1356,7 @@ impl DenominatorMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1402,7 +1402,7 @@ impl NumeratorMetric {
                 &mut call_status,
             );
             amount.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
@@ -1417,7 +1417,7 @@ impl NumeratorMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1432,7 +1432,7 @@ impl NumeratorMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1475,7 +1475,7 @@ impl TextMetric {
                 &mut call_status,
             );
             value.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
@@ -1490,7 +1490,7 @@ impl TextMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1505,7 +1505,7 @@ impl TextMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1548,7 +1548,7 @@ impl ObjectMetric {
                 &mut call_status,
             );
             object.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
@@ -1563,7 +1563,7 @@ impl ObjectMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1578,7 +1578,7 @@ impl ObjectMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn record_schema_error(&self) -> () {
@@ -1590,7 +1590,7 @@ impl ObjectMetric {
                 this,
                 &mut call_status,
             );
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1649,7 +1649,7 @@ impl DualLabeledCounterMetric {
             );
             category.destroy();
             key.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_value(
@@ -1669,7 +1669,7 @@ impl DualLabeledCounterMetric {
                 &mut call_status,
             );
             ping_name.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
@@ -1684,7 +1684,7 @@ impl DualLabeledCounterMetric {
                 &mut call_status,
             );
             error.destroy();
-            uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+            crate::util::LocalTryLift::try_lift(res).unwrap()
         }
     }
 }
@@ -1692,8 +1692,9 @@ library_binding! {
     fn ffi_glean_core_rustbuffer_from_bytes(bytes : ::uniffi::ForeignBytes, call_status :
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
     ffi_glean_core_uniffi_contract_version() -> u32; fn
-    uniffi_glean_core_fn_clone_countermetric(handle : u64, call_status : & mut
-    ::uniffi::RustCallStatus) -> u64; fn
+    ffi_glean_core_rustbuffer_free(bytes : ::uniffi::RustBuffer, call_status : & mut
+    ::uniffi::RustCallStatus); fn uniffi_glean_core_fn_clone_countermetric(handle : u64,
+    call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_constructor_countermetric_new(meta : uniffi::RustBuffer,
     call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_method_countermetric_add(handle : u64, amount : i32, call_status
