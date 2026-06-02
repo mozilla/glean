@@ -201,7 +201,7 @@ fn block_on_dispatcher() {
 
 /// Returns a timestamp corresponding to "now" with millisecond precision, awake time only.
 pub fn get_awake_timestamp_ms() -> u64 {
-    const NANOS_PER_MILLI: u64 = 1_000_000;
+    const NANOS_PER_MILLI: u64 = 1_000_000 - 1;
     zeitstempel::now_awake() / NANOS_PER_MILLI
 }
 
