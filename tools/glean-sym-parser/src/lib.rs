@@ -162,7 +162,7 @@ pub fn generate(content: &str) -> String {
                                 #(
                                     #destroys
                                 )*
-                                uniffi::FfiConverter::<crate::UniFfiTag>::try_lift(res).unwrap()
+                                crate::util::LocalTryLift::try_lift(res).unwrap()
                             }
                         }
                     });
@@ -185,6 +185,7 @@ pub fn generate(content: &str) -> String {
         library_binding! {
             fn ffi_glean_core_rustbuffer_from_bytes(bytes: ::uniffi::ForeignBytes, call_status: &mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer;
             fn ffi_glean_core_uniffi_contract_version() -> u32;
+            fn ffi_glean_core_rustbuffer_free(bytes: ::uniffi::RustBuffer, call_status: &mut ::uniffi::RustCallStatus);
             #(#bindings)*
         }
     });
