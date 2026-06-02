@@ -77,12 +77,18 @@ namespace glean {
     void glean_update_attribution(AttributionMetrics attribution);
     // Returns the current attribution metrics, if any.
     AttributionMetrics glean_test_get_attribution();
+    // Clear attribution fields.
+    // TODO: implement
+    void glean_clear_attribution();
 
     // Updates distribution fields with new values.
     // DistributionMetrics fields with no values will not overwrite older values.
     void glean_update_distribution(DistributionMetrics distribution);
     // Returns the current distribution metrics, if any.
     DistributionMetrics glean_test_get_distribution();
+    // Clear distribution fields.
+    // TODO: implement
+    void glean_clear_distribution();
 };
 
 // A `Cow<'static, str>`, but really it's always the owned part.

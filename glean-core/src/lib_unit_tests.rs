@@ -258,30 +258,38 @@ fn client_id_and_first_run_date_must_be_regenerated() {
 
         glean.data_store.as_ref().unwrap().clear_all();
 
-        assert!(glean
-            .core_metrics
-            .client_id
-            .get_value(&glean, "glean_client_info")
-            .is_none());
-        assert!(glean
-            .core_metrics
-            .first_run_date
-            .get_value(&glean, "glean_client_info")
-            .is_none());
+        assert!(
+            glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+                .is_none()
+        );
+        assert!(
+            glean
+                .core_metrics
+                .first_run_date
+                .get_value(&glean, "glean_client_info")
+                .is_none()
+        );
     }
 
     {
         let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true, true);
-        assert!(glean
-            .core_metrics
-            .client_id
-            .get_value(&glean, "glean_client_info")
-            .is_some());
-        assert!(glean
-            .core_metrics
-            .first_run_date
-            .get_value(&glean, "glean_client_info")
-            .is_some());
+        assert!(
+            glean
+                .core_metrics
+                .client_id
+                .get_value(&glean, "glean_client_info")
+                .is_some()
+        );
+        assert!(
+            glean
+                .core_metrics
+                .first_run_date
+                .get_value(&glean, "glean_client_info")
+                .is_some()
+        );
     }
 }
 
@@ -448,6 +456,51 @@ fn attribution_and_distribution_are_correctly_stored() {
     attribution.campaign = Some("new campaign".into());
     assert_eq!(attribution, glean.test_get_attribution());
     assert_eq!(distribution_update, glean.test_get_distribution());
+}
+
+#[test]
+fn attribution_and_distribution_can_be_cleared() {
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().display().to_string();
+    let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true, true);
+
+    // On a fresh Glean, no attribution or distribution information is set.
+    assert_eq!(
+        <AttributionMetrics as Default>::default(),
+        glean.test_get_attribution()
+    );
+    assert_eq!(
+        <DistributionMetrics as Default>::default(),
+        glean.test_get_distribution()
+    );
+
+    let attribution = AttributionMetrics {
+        source: Some("source".into()),
+        medium: Some("medium".into()),
+        campaign: Some("campaign".into()),
+        term: Some("term".into()),
+        content: Some("content".into()),
+    };
+    let distribution = DistributionMetrics {
+        name: Some("name".into()),
+    };
+
+    // Set them all at once.
+    glean.update_attribution(attribution.clone());
+    glean.update_distribution(distribution.clone());
+
+    assert_eq!(attribution, glean.test_get_attribution());
+    assert_eq!(distribution, glean.test_get_distribution());
+
+    // Clear them.
+    glean.clear_attribution();
+    glean.clear_distribution();
+
+    assert_eq!(AttributionMetrics::default(), glean.test_get_attribution());
+    assert_eq!(
+        DistributionMetrics::default(),
+        glean.test_get_distribution()
+    );
 }
 
 #[test]

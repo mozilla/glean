@@ -85,6 +85,18 @@ impl StringMetric {
         glean.storage().record(glean, &self.meta, &value)
     }
 
+    /// Clear the stored value
+    pub(crate) fn clear(&self, glean: &Glean) {
+        if !self.should_record(glean) {
+            return;
+        }
+
+        let meta = self.meta();
+        for ping in &meta.inner.send_in_pings {
+            glean.storage().remove_single_metric(meta.inner.lifetime, ping, &meta.base_identifier()).ok();
+        }
+    }
+
     /// Gets the current-stored value as a string, or None if there is no value.
     #[doc(hidden)]
     pub fn get_value<'a, S: Into<Option<&'a str>>>(

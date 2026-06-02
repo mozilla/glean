@@ -1404,6 +1404,15 @@ impl Glean {
         }
     }
 
+    /// Clear attribution fields.
+    pub fn clear_attribution(&self) {
+        self.core_metrics.attribution_source.clear(self);
+        self.core_metrics.attribution_medium.clear(self);
+        self.core_metrics.attribution_campaign.clear(self);
+        self.core_metrics.attribution_term.clear(self);
+        self.core_metrics.attribution_content.clear(self);
+    }
+
     /// **TEST-ONLY Method**
     ///
     /// Returns the current attribution metrics.
@@ -1438,6 +1447,11 @@ impl Glean {
         if let Some(name) = distribution.name {
             self.core_metrics.distribution_name.set_sync(self, name);
         }
+    }
+
+    /// Clear distribution fields.
+    pub fn clear_distribution(&self) {
+        self.core_metrics.distribution_name.clear(self);
     }
 
     /// **TEST-ONLY Method**
