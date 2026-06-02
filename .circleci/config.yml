@@ -64,13 +64,74 @@ commands:
             rustup default <<parameters.rust-version>>
             rustc --version
 
+  setup-sccache:
+    steps:
+      - run:
+          name: Install sccache
+          command: |
+            SCCACHE_VERSION=v0.2.15
+            if [ "$(uname)" == "Darwin" ]; then
+              SCCACHE="sccache-${SCCACHE_VERSION}-aarch64-apple-darwin"
+            else
+              SCCACHE="sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl"
+            fi
+            SCCACHE_ARCHIVE="${SCCACHE}.tar.gz"
+            SCCACHE_URL="https://github.com/mozilla/sccache/releases/download/${SCCACHE_VERSION}/${SCCACHE_ARCHIVE}"
+            curl -sfSL --retry 5 --retry-delay 10 "${SCCACHE_URL}" | sudo tar -xz --strip-components=1 -C /usr/local/bin/ "${SCCACHE}/sccache"
+            sudo chmod +x /usr/local/bin/sccache
+            # Do not forget to re-export these variables in xc-universal-binary.sh!
+            echo 'export "RUSTC_WRAPPER"="sccache"' >> $BASH_ENV
+            echo 'export "SCCACHE_IDLE_TIMEOUT"="1200"' >> $BASH_ENV
+            echo 'export "SCCACHE_CACHE_SIZE"="2G"' >> $BASH_ENV
+            echo 'export "SCCACHE_ERROR_LOG"="/tmp/sccache.log"' >> $BASH_ENV
+            echo 'export "RUST_LOG"="sccache=info"' >> $BASH_ENV
+            # Incremental compilation isn't supported by sccache.
+            echo 'export "CARGO_INCREMENTAL"="0"' >> $BASH_ENV
+      # Run in a different shell to source $BASH_ENV modified above.
+      - run: |
+          sccache --version
+          sccache --zero-stats
+  restore-sccache-cache:
+    steps:
+      - restore_cache:
+          name: Restore sccache cache
+          keys:
+            # We have multiple keys to increase the chance of a cache hit
+            # in case the Cargo.lock is updated, we still want to retrieve
+            # some cache
+            # Increase the version (`v1`) to start a new cache.
+            - sccache-cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Cargo.lock" }}
+            - sccache-cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}
+            - sccache-cache-v1-{{ arch }}
+
+  save-sccache-cache:
+    parameters:
+      path:
+        type: string
+        default: "~/.cache/sccache"
+    steps:
+      - save_cache:
+          name: Save sccache cache
+          # We only upload a new cache if our Cargo.lock changed
+          # otherwise, we update the exact same key
+          # Increase the version (`v1`) to start a new cache.
+          key: sccache-cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - <<parameters.path>>
+      - sccache-stats-and-logs
+  sccache-stats-and-logs:
+    steps:
+      - run: sccache --show-stats
+      - store_artifacts:
+          path: /tmp/sccache.log
+          destination: logs/sccache.log
+
   test-rust:
     parameters:
       rust-version:
         type: string
         default: "stable"
     steps:
-      - checkout
       - skip-if-doc-only
       - setup-rust-toolchain:
           rust-version: <<parameters.rust-version>>
@@ -323,6 +384,8 @@ jobs:
       - image: *msrv-image
     steps:
       - checkout
+      - restore-sccache-cache
+      - setup-sccache
       - run: rustup component add clippy
       - run: cargo clippy --version
       - run:
@@ -334,12 +397,16 @@ jobs:
       - run:
           name: Clippy
           command: make lint-rust
+      - save-sccache-cache
 
   Rust tests - stable:
     docker:
       - image: *rust-image
     resource_class: "medium+"
     steps:
+      - checkout
+      - restore-sccache-cache
+      - setup-sccache
       - test-rust
       # RLB Windows compile test
       - install-mingw
@@ -347,21 +414,30 @@ jobs:
           name: Check RLB on Windows x86_64
           command: |
             cargo check -p glean --examples --tests --target x86_64-pc-windows-gnu
+      - save-sccache-cache
 
   Rust tests - beta:
     docker:
       - image: *rust-image
     steps:
+      - checkout
+      - restore-sccache-cache
+      - setup-sccache
       - test-rust:
           rust-version: "beta"
+      - save-sccache-cache
 
   Rust tests - minimum version:
     docker:
       - image: *msrv-image
     resource_class: "medium+"
     steps:
+      - checkout
+      - restore-sccache-cache
+      - setup-sccache
       - test-rust:
           rust-version: *msrv
+      - save-sccache-cache
 
   Generate Rust documentation:
     docker:
