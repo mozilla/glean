@@ -10,6 +10,12 @@ use std::path::PathBuf;
 use flate2::read::GzDecoder;
 use glean::{ClientInfoMetrics, ConfigurationBuilder, net};
 
+/// 2048 allocations should be more than enough for us.
+/// Chosen empirically.
+/// If this crashes with `oom` increase it.
+#[global_allocator]
+static ALLOCATOR: local_allocator::Allocator::<2048> = local_allocator::Allocator::new("xul");
+
 #[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
