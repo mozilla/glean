@@ -16,3 +16,4 @@ uniffi = "0.31.0"
 [dev-dependencies]
 xshell = "0.2.7"
 glean-sym-parser = { path = "../../tools/glean-sym-parser" }
+glean-core = { path = "../" }
