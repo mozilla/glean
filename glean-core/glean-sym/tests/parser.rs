@@ -31,3 +31,28 @@ fn generated_metrics_code_up_to_date() {
         .run()
         .unwrap();
 }
+
+/// Test that the embedded contract version of glean-sym matches what glean-core sets.
+#[test]
+fn contract_version_matches() {
+    let glean_core_version = glean_core::ffi_glean_core_uniffi_contract_version();
+
+    // Relative to `glean-sym`
+    let embedded_version = "src/contract_version.txt";
+    let version_str =
+        fs::read_to_string(embedded_version).expect("unable to read contract_version.txt");
+    let version = version_str
+        .trim_end()
+        .parse::<u32>()
+        .expect("can't parse content of contract_version.txt");
+
+    if glean_core_version != version {
+        let version = format!("{glean_core_version}\n");
+        fs::write(embedded_version, version).unwrap();
+    }
+
+    assert_eq!(
+        glean_core_version, version,
+        "Wrong contract version in contract_version.txt. File has been automatically updated. Please commit it."
+    );
+}
