@@ -1691,6 +1691,7 @@ impl DualLabeledCounterMetric {
 library_binding! {
     fn ffi_glean_core_rustbuffer_from_bytes(bytes : ::uniffi::ForeignBytes, call_status :
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
+    ffi_glean_core_uniffi_contract_version() -> u32; fn
     uniffi_glean_core_fn_clone_countermetric(handle : u64, call_status : & mut
     ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_constructor_countermetric_new(meta : uniffi::RustBuffer,

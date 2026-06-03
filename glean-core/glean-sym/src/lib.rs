@@ -26,6 +26,8 @@ pub mod __export {
     pub use once_cell::sync::Lazy;
 }
 
+const FFI_CONTRACT_VERSION: u32 = include!("contract_version.txt");
+
 // Based on https://searchfox.org/firefox-main/rev/6193f8fd1172486e3ce941b8de251b9d1a4dfa0b/toolkit/crashreporter/client/app/src/net/libcurl.rs#84
 macro_rules! library_binding {
     ( $localname:ident members[$($members:tt)*] load[$($load:tt)*] fn $name:ident $args:tt $( -> $ret:ty )? ; $($rest:tt)* ) => {
@@ -66,12 +68,24 @@ macro_rules! library_binding {
                 let $localname = library.ok_or_else(|| {
                     std::io::Error::new(std::io::ErrorKind::NotFound, "failed to find glean library")
                 })?;
-                Ok(GleanSym { $($load)* _library: $localname })
+
+                let handle = GleanSym { $($load)* _library: $localname };
+                handle.check()?;
+                Ok(handle)
             }
 
             #[cfg(not(unix))]
             pub fn load() -> std::io::Result<Self> {
                 compile_error!("This crate is not implemented for Windows");
+            }
+
+            fn check(&self) -> std::io::Result<()> {
+                let ffi_contract_version = unsafe { (self.ffi_glean_core_uniffi_contract_version)() };
+                if crate::FFI_CONTRACT_VERSION == ffi_contract_version {
+                    Ok(())
+                } else {
+                    Err(std::io::Error::other("contract version mismatch"))
+                }
             }
         }
     };

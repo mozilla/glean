@@ -184,6 +184,7 @@ pub fn generate(content: &str) -> String {
     tokens.push(quote! {
         library_binding! {
             fn ffi_glean_core_rustbuffer_from_bytes(bytes: ::uniffi::ForeignBytes, call_status: &mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer;
+            fn ffi_glean_core_uniffi_contract_version() -> u32;
             #(#bindings)*
         }
     });
