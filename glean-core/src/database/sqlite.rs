@@ -358,7 +358,7 @@ impl Database {
     ///
     /// This function will **not** panic on database errors.
     pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
-        let clear_sql = "DELETE FROM telemetry WHERE lifetime = 'ping' AND ping = ?2";
+        let clear_sql = "DELETE FROM telemetry WHERE lifetime = 'ping' AND ping = ?1";
         self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
             stmt.execute([storage_name])?;
