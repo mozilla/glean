@@ -3,6 +3,9 @@
   "$schema": "http://json-schema.org/draft-06/schema#",
   "additionalProperties": false,
   "description": "Schema for the ping content sent by Mozilla's glean telemetry SDK\n",
+  "mozPipelineMetadata": {
+    "json_object_path_regex": "metrics\\.object\\..*"
+  },
   "properties": {
     "$schema": {
       "enum": [
@@ -33,6 +36,32 @@
           "description": "The architecture of the device, (e.g. \"arm\", \"x86\").",
           "type": "string"
         },
+        "attribution": {
+          "additionalProperties": false,
+          "properties": {
+            "campaign": {
+              "description": "The attribution campaign (e.g. 'mozilla-org').",
+              "type": "string"
+            },
+            "content": {
+              "description": "The attribution content (e.g. 'firefoxview').",
+              "type": "string"
+            },
+            "medium": {
+              "description": "The attribution medium (e.g. 'organic' for a search engine).",
+              "type": "string"
+            },
+            "source": {
+              "description": "The attribution source (e.g. 'google-play').",
+              "type": "string"
+            },
+            "term": {
+              "description": "The attribution term (e.g. 'browser with developer tools for android').",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "build_date": {
           "description": "The date & time the application was built",
           "format": "datetime",
@@ -51,6 +80,16 @@
           "description": "The model of the device the application is running on. On Android, this is Build.MODEL, the user-visible marketing name, like \"Pixel 2 XL\". Not set if the device model can't be determined (e.g. on Desktop).",
           "type": "string"
         },
+        "distribution": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "description": "The distribution name (e.g. 'MozillaOnline').",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "first_run_date": {
           "description": "The date of the first run of the application.",
           "format": "datetime",
@@ -66,6 +105,14 @@
         },
         "os_version": {
           "description": "The user-visible version of the operating system (e.g. \"1.2.3\"). If the version detection fails, this metric gets set to `Unknown`.",
+          "type": "string"
+        },
+        "session_count": {
+          "description": "An optional running counter of the number of sessions for a client.",
+          "type": "integer"
+        },
+        "session_id": {
+          "description": "An optional UUID uniquely identifying the client's current session.",
           "type": "string"
         },
         "telemetry_sdk_build": {
@@ -108,46 +155,46 @@
           "name": {
             "type": "string"
           },
-          "timestamp": {
-            "minimum": 0,
-            "type": "integer"
-          },
           "session": {
-            "type": "object",
-            "description": "Session metadata attached to this event. Absent for out-of-session events and events from before sessions were introduced.",
             "additionalProperties": false,
+            "description": "Session metadata attached to this event. Absent for out-of-session events and events from before sessions were introduced.",
+            "properties": {
+              "event_seq": {
+                "description": "Per-session event counter, reset at each new session.",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "session_id": {
+                "description": "The unique UUID for this session.",
+                "type": "string"
+              },
+              "session_sample_rate": {
+                "description": "The sampling rate in effect for this session.",
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "session_seq": {
+                "description": "Monotonically increasing session counter, persisted across restarts.",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "session_start_time": {
+                "description": "Wall-clock timestamp at session start (RFC 3339). Absent on events from before this field was introduced.",
+                "type": "string"
+              }
+            },
             "required": [
               "session_id",
               "session_seq",
               "event_seq",
               "session_sample_rate"
             ],
-            "properties": {
-              "session_id": {
-                "type": "string",
-                "description": "The unique UUID for this session."
-              },
-              "session_seq": {
-                "type": "integer",
-                "minimum": 0,
-                "description": "Monotonically increasing session counter, persisted across restarts."
-              },
-              "event_seq": {
-                "type": "integer",
-                "minimum": 0,
-                "description": "Per-session event counter, reset at each new session."
-              },
-              "session_sample_rate": {
-                "type": "number",
-                "minimum": 0.0,
-                "maximum": 1.0,
-                "description": "The sampling rate in effect for this session."
-              },
-              "session_start_time": {
-                "type": "string",
-                "description": "Wall-clock timestamp at session start (RFC 3339). Absent on events from before this field was introduced."
-              }
-            }
+            "type": "object"
+          },
+          "timestamp": {
+            "minimum": 0,
+            "type": "integer"
           }
         },
         "required": [
@@ -167,8 +214,8 @@
             "type": "boolean"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -178,8 +225,8 @@
             "type": "integer"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -188,6 +235,7 @@
           "additionalProperties": {
             "properties": {
               "count": {
+                "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
                 "type": "integer"
               },
               "sum": {
@@ -210,8 +258,8 @@
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -222,8 +270,35 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "dual_labeled_counter": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "propertyNames": {
+                "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+                "maxLength": 111,
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 111,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -233,8 +308,8 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -246,14 +321,14 @@
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
+              "maxLength": 111,
               "type": "string"
             },
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -265,14 +340,114 @@
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
+              "maxLength": 111,
               "type": "string"
             },
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_custom_distribution": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "properties": {
+                "count": {
+                  "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
+                  "type": "integer"
+                },
+                "sum": {
+                  "type": "integer"
+                },
+                "values": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[0-9]+$"
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "sum",
+                "values"
+              ],
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 111,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_memory_distribution": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "properties": {
+                "count": {
+                  "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
+                  "type": "integer"
+                },
+                "sum": {
+                  "type": "integer"
+                },
+                "values": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[0-9]+$"
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "values"
+              ],
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 111,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_quantity": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 111,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -299,14 +474,14 @@
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
+              "maxLength": 111,
               "type": "string"
             },
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -318,14 +493,90 @@
             },
             "propertyNames": {
               "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
-              "maxLength": 61,
+              "maxLength": 111,
               "type": "string"
             },
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "labeled_timing_distribution": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "properties": {
+                "bucket_count": {
+                  "type": "integer"
+                },
+                "count": {
+                  "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
+                  "type": "integer"
+                },
+                "histogram_type": {
+                  "enum": [
+                    "linear",
+                    "exponential"
+                  ],
+                  "type": "string"
+                },
+                "overflow": {
+                  "type": "integer"
+                },
+                "range": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                "sum": {
+                  "type": "integer"
+                },
+                "time_unit": {
+                  "enum": [
+                    "nanosecond",
+                    "microsecond",
+                    "millisecond",
+                    "second",
+                    "minute",
+                    "hour",
+                    "day"
+                  ],
+                  "type": "string"
+                },
+                "underflow": {
+                  "type": "integer"
+                },
+                "values": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[0-9]+$"
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "values"
+              ],
+              "type": "object"
+            },
+            "propertyNames": {
+              "comment": "This must be at least the length of 'category.name' metric names to support error reporting",
+              "maxLength": 111,
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -334,6 +585,7 @@
           "additionalProperties": {
             "properties": {
               "count": {
+                "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
                 "type": "integer"
               },
               "sum": {
@@ -355,8 +607,25 @@
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "object": {
+          "additionalProperties": {
+            "items": {
+              "format": "json"
+            },
+            "type": [
+              "object",
+              "array"
+            ]
+          },
+          "propertyNames": {
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -366,8 +635,8 @@
             "type": "integer"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -392,8 +661,8 @@
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -403,8 +672,8 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -417,8 +686,8 @@
             "type": "array"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -429,8 +698,8 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -461,8 +730,8 @@
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -474,6 +743,7 @@
                 "type": "integer"
               },
               "count": {
+                "description": "This was accidentally sent in the past and is now deprecated. See https://bugzilla.mozilla.org/show_bug.cgi?id=1799509#c5",
                 "type": "integer"
               },
               "histogram_type": {
@@ -528,8 +798,8 @@
             "type": "object"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -540,8 +810,8 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -552,8 +822,8 @@
             "type": "string"
           },
           "propertyNames": {
-            "maxLength": 61,
-            "pattern": "^[a-z_][a-z0-9_]{0,29}(\\.[a-z_][a-z0-9_]{0,29})+$",
+            "maxLength": 111,
+            "pattern": "^[a-z_][a-z0-9_\\.]+$",
             "type": "string"
           },
           "type": "object"
@@ -583,6 +853,9 @@
                   },
                   {
                     "properties": {
+                      "enrollment_id": {
+                        "type": "string"
+                      },
                       "type": {
                         "type": "string"
                       }
@@ -614,6 +887,45 @@
         },
         "seq": {
           "type": "integer"
+        },
+        "server_knobs_config": {
+          "additionalProperties": false,
+          "description": "The Server Knobs configuration applied via applyServerKnobsConfig. Contains the complete configuration including metrics_enabled, pings_enabled, and event_threshold settings.",
+          "properties": {
+            "event_threshold": {
+              "description": "Optional threshold for event buffering before an events ping is collected and submitted",
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "metrics_enabled": {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "description": "Map of metric identifiers (category.name) to boolean values indicating whether the metric is enabled",
+              "propertyNames": {
+                "maxLength": 111,
+                "pattern": "^[a-z_][a-z0-9_\\.]+$",
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "pings_enabled": {
+              "additionalProperties": {
+                "type": "boolean"
+              },
+              "description": "Map of ping names to boolean values indicating whether the ping is enabled",
+              "propertyNames": {
+                "maxLength": 30,
+                "pattern": "^[a-z-_][a-z0-9-_]*$",
+                "type": "string"
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
         },
         "start_time": {
           "format": "datetime",
