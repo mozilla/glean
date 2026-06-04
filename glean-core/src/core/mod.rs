@@ -911,13 +911,34 @@ impl Glean {
         // Note that this also includes the ping sequence numbers, so it has
         // the effect of resetting those to their initial values.
         if let Some(data) = self.data_store.as_ref() {
-            _ = data.clear_lifetime_storage(Lifetime::User, "glean_internal_info");
-            _ = data.remove_single_metric(Lifetime::User, "glean_client_info", "client_id");
+            let warn_on_error = |result, msg| {
+                if let Err(e) = result {
+                    log::warn!("{msg}: {e}");
+                }
+            };
+
+            warn_on_error(
+                data.clear_lifetime_storage(Lifetime::User, INTERNAL_STORAGE),
+                "failed to clear internal storage",
+            );
+            warn_on_error(
+                data.remove_single_metric(Lifetime::User, "glean_client_info", "client_id"),
+                "failed to clear internal client info storage",
+            );
             for (ping_name, ping) in &self.ping_registry {
                 if ping.follows_collection_enabled() {
-                    _ = data.clear_ping_lifetime_storage(ping_name);
-                    _ = data.clear_lifetime_storage(Lifetime::User, ping_name);
-                    _ = data.clear_lifetime_storage(Lifetime::Application, ping_name);
+                    warn_on_error(
+                        data.clear_ping_lifetime_storage(ping_name),
+                        "failed to clear ping lifetime storage",
+                    );
+                    warn_on_error(
+                        data.clear_lifetime_storage(Lifetime::User, ping_name),
+                        "failed to clear user lifetime storage",
+                    );
+                    warn_on_error(
+                        data.clear_lifetime_storage(Lifetime::Application, ping_name),
+                        "failed to clear application lifetime storage",
+                    );
                 }
             }
         }
