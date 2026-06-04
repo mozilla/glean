@@ -13,7 +13,7 @@ jobs:
       deployment: false
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v6
     - uses: dtolnay/rust-toolchain@stable
     - uses: Swatinem/rust-cache@v2
     - name: Set up dependencies
@@ -37,7 +37,7 @@ jobs:
         set -x
         cargo benchmark --bench instruction-count --features gungraun
 
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
       with:
         name: gungraun-output
