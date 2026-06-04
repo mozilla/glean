@@ -382,4 +382,16 @@ fn attribution_and_distribution_appear_in_client_info() {
         }),
         client_info["attribution"]
     );
+
+    // Now let's test clearing.
+    glean.clear_attribution();
+    glean.clear_distribution();
+
+    let ping = ping_maker
+        .collect(&glean, &ping_type, None, "", "")
+        .unwrap();
+    let client_info = ping.content["client_info"].as_object().unwrap();
+
+    assert_eq!(None, client_info.get("distribution"));
+    assert_eq!(None, client_info.get("attribution"));
 }

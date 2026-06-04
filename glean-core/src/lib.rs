@@ -116,6 +116,8 @@ static PRE_INIT_PING_ENABLED: Mutex<Vec<(metrics::PingType, bool)>> = Mutex::new
 /// Keep track of attribution and distribution supplied before Glean is initialized.
 static PRE_INIT_ATTRIBUTION: Mutex<Option<AttributionMetrics>> = Mutex::new(None);
 static PRE_INIT_DISTRIBUTION: Mutex<Option<DistributionMetrics>> = Mutex::new(None);
+static PRE_INIT_ATTRIBUTION_CLEARED: AtomicBool = AtomicBool::new(false);
+static PRE_INIT_DISTRIBUTION_CLEARED: AtomicBool = AtomicBool::new(false);
 
 /// Global singleton of the handles of the glean.init threads.
 /// For joining. For tests.
@@ -500,8 +502,16 @@ fn initialize_inner(
                 glean.set_ping_enabled(ping, *enabled);
             }
 
-            // The attribution and distribution might have been set before initialize,
-            // take the cached values and set them.
+            // The attribution and distribution might have been cleared or set before initialize,
+            // clear if necessary, and then take the cached values and set them.
+            let clear_attribution = PRE_INIT_ATTRIBUTION_CLEARED.load(Ordering::SeqCst);
+            if clear_attribution {
+                glean.clear_attribution();
+            }
+            let clear_distribution = PRE_INIT_DISTRIBUTION_CLEARED.load(Ordering::SeqCst);
+            if clear_distribution {
+                glean.clear_distribution();
+            }
             if let Some(attribution) = PRE_INIT_ATTRIBUTION.lock().unwrap().take() {
                 glean.update_attribution(attribution);
             }
@@ -1359,6 +1369,17 @@ pub fn glean_set_dirty_flag(new_value: bool) {
     core::with_glean(|glean| glean.set_dirty_flag(new_value))
 }
 
+/// Clears the core attribution data.
+/// Does not clear glean.attribution.ext (if present).
+pub fn glean_clear_attribution() {
+    if was_initialize_called() && core::global_glean().is_some() {
+        core::with_glean(|glean| glean.clear_attribution());
+    } else {
+        PRE_INIT_ATTRIBUTION_CLEARED.store(true, Ordering::SeqCst);
+        _ = PRE_INIT_ATTRIBUTION.lock().unwrap().take()
+    }
+}
+
 /// Updates attribution fields with new values.
 /// AttributionMetrics fields with `None` values will not overwrite older values.
 pub fn glean_update_attribution(attribution: AttributionMetrics) {
@@ -1380,6 +1401,17 @@ pub fn glean_update_attribution(attribution: AttributionMetrics) {
 pub fn glean_test_get_attribution() -> AttributionMetrics {
     join_init();
     core::with_glean(|glean| glean.test_get_attribution())
+}
+
+/// Clears the core distribution data.
+/// Does not clear glean.distribution.ext (if present).
+pub fn glean_clear_distribution() {
+    if was_initialize_called() && core::global_glean().is_some() {
+        core::with_glean(|glean| glean.clear_distribution());
+    } else {
+        PRE_INIT_DISTRIBUTION_CLEARED.store(true, Ordering::SeqCst);
+        _ = PRE_INIT_DISTRIBUTION.lock().unwrap().take()
+    }
 }
 
 /// Updates distribution fields with new values.

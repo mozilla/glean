@@ -9,6 +9,7 @@
     * Default pending pings allowed before deletion raised from 250 to 500, and the directory size before deletion increased from 10MB to 50MB.
     * New configuration fields added to allow integrating applications to override the maximum pending pings count and directory size limits.
   * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
+  * Add clear_attribution_data and clear_distribution_data General APIs to clear core attribution and distribution data ([bug 2043535](https://bugzilla.mozilla.org/show_bug.cgi?id=2043535)).
 * Rust
   * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
   * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))

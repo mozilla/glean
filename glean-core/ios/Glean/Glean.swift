@@ -645,6 +645,12 @@ public final class Glean: @unchecked Sendable {
         )
     }
 
+    /// Clears the core attribution data.
+    /// Does not clear glean.attribution.ext (if present).
+    public func clearAttribution() {
+        gleanClearAttribution()
+    }
+
     /// Updates attribution fields with new values.
     /// AttributionMetrics fields with `null` values will not overwrite older values.
     public func updateAttribution(attribution: AttributionMetrics) {
@@ -656,6 +662,12 @@ public final class Glean: @unchecked Sendable {
     /// Returns the current attribution metrics.
     public func testGetAttribution() -> AttributionMetrics {
         gleanTestGetAttribution()
+    }
+
+    /// Clears the core distribution data.
+    /// Does not clear glean.distribution.ext (if present).
+    public func clearDistribution() {
+        gleanClearDistribution()
     }
 
     /// Updates distribution fields with new values.
