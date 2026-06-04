@@ -523,6 +523,14 @@ class Glean:
         ProcessDispatcher._wait_for_last_process()
 
     @classmethod
+    def clear_attribution(cls) -> None:
+        """
+        Clears the core attribution data.
+        Does not clear glean.attribution.ext (if present).
+        """
+        _uniffi.glean_clear_attribution()
+
+    @classmethod
     def update_attribution(cls, attribution: "AttributionMetrics") -> None:
         """
         Updates attribution fields with new values.
@@ -536,6 +544,14 @@ class Glean:
         Test-only method for getting the current attribution metrics.
         """
         return _uniffi.glean_test_get_attribution()
+
+    @classmethod
+    def clear_distribution(cls) -> None:
+        """
+        Clears the core distribution data.
+        Does not clear glean.distribution.ext (if present).
+        """
+        _uniffi.glean_clear_distribution()
 
     @classmethod
     def update_distribution(cls, distribution: "DistributionMetrics") -> None:

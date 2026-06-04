@@ -451,6 +451,20 @@ fn attribution_and_distribution_are_correctly_stored() {
     attribution.campaign = Some("new campaign".into());
     assert_eq!(attribution, glean.test_get_attribution());
     assert_eq!(distribution_update, glean.test_get_distribution());
+
+    // Now, clear 'em.
+    glean.clear_attribution();
+    glean.clear_distribution();
+
+    // Ensure they're clear.
+    assert_eq!(
+        <AttributionMetrics as Default>::default(),
+        glean.test_get_attribution()
+    );
+    assert_eq!(
+        <DistributionMetrics as Default>::default(),
+        glean.test_get_distribution()
+    );
 }
 
 #[test]

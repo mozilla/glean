@@ -1830,6 +1830,29 @@ impl Glean {
         }
     }
 
+    /// Clears the core attribution data.
+    /// Does not clear glean.attribution.ext.
+    pub fn clear_attribution(&self) {
+        if let Some(data) = self.data_store.as_ref() {
+            [
+                &self.core_metrics.attribution_source,
+                &self.core_metrics.attribution_medium,
+                &self.core_metrics.attribution_campaign,
+                &self.core_metrics.attribution_term,
+                &self.core_metrics.attribution_content,
+            ]
+            .iter()
+            .for_each(|metric| {
+                let meta = metric.meta();
+                _ = data.remove_single_metric(
+                    meta.inner.lifetime,
+                    &meta.storage_names()[0],
+                    &meta.identifier(self),
+                );
+            });
+        }
+    }
+
     /// Updates attribution fields with new values.
     /// AttributionMetrics fields with `None` values will not overwrite older values.
     pub fn update_attribution(&self, attribution: AttributionMetrics) {
@@ -1879,6 +1902,19 @@ impl Glean {
                 .core_metrics
                 .attribution_content
                 .get_value(self, Some("glean_client_info")),
+        }
+    }
+
+    /// Clears the core distribution data.
+    /// Does not clear glean.distribution.ext.
+    pub fn clear_distribution(&self) {
+        if let Some(data) = self.data_store.as_ref() {
+            let meta = self.core_metrics.distribution_name.meta();
+            _ = data.remove_single_metric(
+                meta.inner.lifetime,
+                &meta.storage_names()[0],
+                &meta.identifier(self),
+            );
         }
     }
 
