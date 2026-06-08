@@ -344,6 +344,11 @@ jobs:
       # RLB Windows compile test
       - install-mingw
       - run:
+          name: Compile benchmarks
+          command: |
+            # Only compile them, don't run them
+            cargo benchmark --no-run
+      - run:
           name: Check RLB on Windows x86_64
           command: |
             cargo check -p glean --examples --tests --target x86_64-pc-windows-gnu
