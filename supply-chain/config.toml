@@ -108,6 +108,10 @@ criteria = "safe-to-run"
 version = "0.2.139"
 criteria = "safe-to-deploy"
 
+[[exemptions.libloading]]
+version = "0.8.6"
+criteria = "safe-to-deploy"
+
 [[exemptions.memchr]]
 version = "2.5.0"
 criteria = "safe-to-deploy"
