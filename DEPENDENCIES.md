@@ -3831,7 +3831,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following text applies to code linked from these dependencies:
 
-* [libloading 0.9.0]( https://github.com/nagisa/rust_libloading/ )
+* [libloading 0.8.6]( https://github.com/nagisa/rust_libloading/ )
 
 ```
 Copyright © 2015, Simonas Kazlauskas
@@ -4398,10 +4398,10 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 67.3.2]( https://github.com/mozilla/glean )
-* [glean-build 19.1.0]( https://github.com/mozilla/glean )
-* [glean 67.3.2]( https://github.com/mozilla/glean )
-* [zeitstempel 0.2.0]( https://github.com/badboy/zeitstempel )
+* [glean-core 67.4.0]( https://github.com/mozilla/glean )
+* [glean-build 20.0.0]( https://github.com/mozilla/glean )
+* [glean 67.4.0]( https://github.com/mozilla/glean )
+* [zeitstempel 0.2.1]( https://github.com/badboy/zeitstempel )
 
 ```
 Mozilla Public License Version 2.0
