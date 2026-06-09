@@ -1,6 +1,24 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.3.2...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.4.0...main)
+
+# v67.4.0 (2026-06-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.3.2...v67.4.0)
+
+* General
+  * Updated to `glean_parser` v19.1.1 ([#3426](https://github.com/mozilla/glean/issues/3426), [#3470](https://github.com/mozilla/glean/issues/3470))
+  * Increase pending ping limits to better support long network outages ([bug 2040030](https://bugzilla.mozilla.org/show_bug.cgi?id=2040030))
+    * New `glean.upload.pending_pings_deleted` metric added to differentiate between deletions due to pending ping count or directory size limitations
+    * Default pending pings allowed before deletion raised from 250 to 500, and the directory size before deletion increased from 10MB to 50MB.
+    * New configuration fields added to allow integrating applications to override the maximum pending pings count and directory size limits.
+  * Add first-class Sessions support: configurable session management (`Auto`, `Lifecycle`, `Manual` modes), session-level sampling, `glean.session_start`/`glean.session_end` boundary events in the `events` ping, and per-event session metadata for downstream analysis ([bug 2020962](https://bugzilla.mozilla.org/show_bug.cgi?id=2020962))
+* Rust
+  * **Experimental**: Introduce `glean-sym`, a Rust API built on top of the Glean UniFFI C FFI ([#3426](https://github.com/mozilla/glean/issues/3426))
+  * `client_info.os_version` can now be set by the application. If unset Glean still uses the auto-detection ([#3419](https://github.com/mozilla/glean/pull/3419))
+* Android
+  * Updated Kotlin to 2.3.21 ([#3456](https://github.com/mozilla/glean/pull/3456))
+  * The Gradle plugin now uses the modern AGP variant API, making it compatible with AGP 9 (maintaining AGP 8 compatibility) ([#3472](https://github.com/mozilla/glean/pull/3472)).
 
 # v67.3.2 (2026-05-15)
 
@@ -22,7 +40,6 @@
 
 * Rust
   * Add support for determining `client_info.os_version` for Android binaries ([#3434](https://github.com/mozilla/glean/pull/3434))
-  * Avoid unsafety and count the allocation for the underlying atomic bool directly ([#3450](https://github.com/mozilla/glean/pull/3450))
 
 # v67.2.0 (2026-04-06)
 

@@ -8,19 +8,19 @@
 android-plugin = "8.13.2"
 
 # Kotlin
-kotlin-compiler = "2.3.0"
-kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.9.0"
+kotlin-compiler = "2.3.21"
+kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.11.0"
 
 # Mozilla
 rust-android-gradle = "0.9.6"
 
 # AndroidX
-androidx-annotation = "1.9.1"
+androidx-annotation = "1.10.0"
 androidx-appcompat = "1.7.1"
-androidx-browser = "1.9.0"
+androidx-browser = "1.10.0"
 androidx-lifecycle = "2.10.0"
-androidx-work = "2.11.0"
+androidx-work = "2.11.2"
 
 # JNA
 jna = "5.18.1"

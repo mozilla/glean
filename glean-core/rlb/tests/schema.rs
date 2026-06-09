@@ -83,6 +83,7 @@ fn validate_against_schema() {
         app_display_version: env!("CARGO_PKG_VERSION").to_string(),
         channel: Some("testing".to_string()),
         locale: Some("xx-XX".to_string()),
+        os_version: None,
     };
 
     glean::initialize(cfg, client_info);

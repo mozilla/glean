@@ -137,6 +137,7 @@ fn test_pings_submitted_metric() {
                 lifetime: Lifetime::Ping,
                 disabled: false,
                 dynamic_label: None,
+                ..Default::default()
             },
         },
         None,

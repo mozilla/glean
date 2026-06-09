@@ -250,7 +250,8 @@ class GleanTest {
                 checkPingSchema(json)
                 if (docType == "events") {
                     assertEquals("inactive", json.getJSONObject("ping_info").getString("reason"))
-                    assertEquals(1, json.getJSONArray("events").length())
+                    // 2 events: glean.session_start (on foreground) + ui.click (recorded explicitly)
+                    assertEquals(2, json.getJSONArray("events").length())
                 } else if (docType == "baseline") {
                     val seq = json.getJSONObject("ping_info").getInt("seq")
 
@@ -314,8 +315,14 @@ class GleanTest {
             // Trigger worker task to upload the pings in the background
             triggerWorkManager(context)
 
+            // Session recovery emits a session_end event for the previous abnormal session,
+            // which is flushed as an events ping before the dirty_startup baseline ping.
             var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
             var docType = request.path!!.split("/")[3]
+            assertEquals("The first ping must be the session-recovery 'events' ping", "events", docType)
+
+            request = server.takeRequest(20L, TimeUnit.SECONDS)!!
+            docType = request.path!!.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             var baselineJson = JSONObject(request.getPlainBody())

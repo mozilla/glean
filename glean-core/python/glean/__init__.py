@@ -17,6 +17,7 @@ import glean_parser  # type: ignore
 from .glean import Glean
 from .config import Configuration
 from ._loader import load_metrics, load_pings
+from ._uniffi import SessionMode
 
 
 __version__: str = "unknown"
@@ -30,7 +31,7 @@ __author__ = "The Glean Team"
 __email__ = "glean-team@mozilla.com"
 
 
-GLEAN_PARSER_VERSION = "19.0.0"
+GLEAN_PARSER_VERSION = "20.0.0"
 parser_version = VersionInfo.parse(GLEAN_PARSER_VERSION)
 parser_version_next_major = parser_version.bump_major()
 
@@ -52,6 +53,7 @@ __all__ = [
     "__version__",
     "Glean",
     "Configuration",
+    "SessionMode",
     "load_metrics",
     "load_pings",
 ]

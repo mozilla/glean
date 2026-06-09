@@ -27,10 +27,24 @@ class EventPingTest: XCTestCase {
 
     func setupServer(expectPingType: String) -> HttpServer {
         return mockServer(expectPingType: expectPingType) { json in
+            let pingInfo = json!["ping_info"] as! [String: Any]
+            let reason = pingInfo["reason"] as! String
+            // Skip the "startup" events ping (which carries leftover events and
+            // the session_start boundary event from a previous run). We're waiting
+            // for the "inactive" events ping triggered by backgrounding.
+            if reason != "inactive" {
+                return
+            }
             self.lastPingJson = json
             // Fulfill test's expectation once we parsed the incoming data.
             self.expectation?.fulfill()
         }
+    }
+
+    /// Filters out internal Glean session boundary events (category == "glean")
+    /// so tests can check only user-recorded events.
+    private func userEvents(from events: [[String: Any]]) -> [[String: Any]] {
+        return events.filter { ($0["category"] as? String) != "glean" }
     }
 
     // We launch the app, tap the record button a couple of times,
@@ -69,13 +83,13 @@ class EventPingTest: XCTestCase {
         let reason = pingInfo["reason"] as! String
         XCTAssertEqual("inactive", reason, "Should have gotten a inactive events ping")
 
-        let events = lastPingJson!["events"] as! [[String: Any]]
+        let allEvents = lastPingJson!["events"] as! [[String: Any]]
+        // Session boundary events (glean.session_start/session_end) share the
+        // events ping; filter to the events recorded by the sample app.
+        let events = userEvents(from: allEvents)
         // 4 taps total, per button tap we record 2 events.
         let expectedCount = 4 * 2
         XCTAssertEqual(expectedCount, events.count, "Events ping should have all button-tap events")
-
-        let firstEvent = events[0]
-        XCTAssertEqual(0, firstEvent["timestamp"] as! Int, "First event should be at timestamp 0")
 
         for i in 1...(expectedCount-1) {
             let earlier = events[i-1]["timestamp"] as! Int

@@ -16,7 +16,12 @@ public struct Configuration {
     let pingLifetimeThreshold: Int
     let pingLifetimeMaxTime: Int
     let pingSchedule: [String: [String]]
+    let sessionMode: SessionMode
+    let sessionSampleRate: Double
+    let sessionInactivityTimeoutMs: UInt64
     let httpClient: PingUploader
+    let maxPendingPingsCount: UInt64?
+    let maxPendingPingsDirectorySize: UInt64?
 
     struct Constants {
         static let defaultTelemetryEndpoint =
@@ -42,6 +47,14 @@ public struct Configuration {
     ///   * pingSchedule A ping schedule map.
     ///   Maps a ping name to a list of pings to schedule along with it.
     ///   Only used if the ping's own ping schedule list is empty.
+    ///   * maxPendingPingsCount The maximum number of pending pings stored on disk.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 500.
+    ///   * maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
+    ///   When exceeded, the oldest pings are deleted. Defaults to 50 MB.
+    ///   * sessionMode How Glean manages session boundaries. Default: `.auto`.
+    ///   * sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
+    ///   * sessionInactivityTimeoutMs Inactivity timeout (ms) before AUTO-mode
+    ///   sessions expire. Default: 30 minutes (1,800,000 ms).
     ///   * httpClient An http uploader that supports the `PingUploader` protocol
     public init(
         maxEvents: Int32? = nil,
@@ -55,6 +68,11 @@ public struct Configuration {
         pingLifetimeThreshold: Int = 0,
         pingLifetimeMaxTime: Int = 0,
         pingSchedule: [String: [String]] = [:],
+        maxPendingPingsCount: UInt64? = nil,
+        maxPendingPingsDirectorySize: UInt64? = nil,
+        sessionMode: SessionMode = .auto,
+        sessionSampleRate: Double = 1.0,
+        sessionInactivityTimeoutMs: UInt64 = 1_800_000,
         httpClient: PingUploader = HttpPingUploader()
     ) {
         self.serverEndpoint =
@@ -69,6 +87,11 @@ public struct Configuration {
         self.pingLifetimeThreshold = pingLifetimeThreshold
         self.pingLifetimeMaxTime = pingLifetimeMaxTime
         self.pingSchedule = pingSchedule
+        self.maxPendingPingsCount = maxPendingPingsCount
+        self.maxPendingPingsDirectorySize = maxPendingPingsDirectorySize
+        self.sessionMode = sessionMode
+        self.sessionSampleRate = sessionSampleRate
+        self.sessionInactivityTimeoutMs = sessionInactivityTimeoutMs
         self.httpClient = httpClient
     }
 }
