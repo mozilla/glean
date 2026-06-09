@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.4.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...main)
+
+# v67.5.0 (2026-06-09)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.4.0...v67.5.0)
 
 * General
   * Add clear_attribution_data and clear_distribution_data General APIs to clear core attribution and distribution data ([bug 2043535](https://bugzilla.mozilla.org/show_bug.cgi?id=2043535)).
