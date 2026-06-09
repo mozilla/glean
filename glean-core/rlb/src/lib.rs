@@ -377,6 +377,12 @@ pub fn get_registered_ping_names() -> Vec<String> {
     glean_core::glean_get_registered_ping_names()
 }
 
+/// Clears the core attribution data.
+/// Does not clear glean.attribution.ext (if present).
+pub fn clear_attribution() {
+    glean_core::glean_clear_attribution();
+}
+
 /// Updates attribution fields with new values.
 /// AttributionMetrics fields with `None` values will not overwrite older values.
 pub fn update_attribution(attribution: AttributionMetrics) {
@@ -388,6 +394,12 @@ pub fn update_attribution(attribution: AttributionMetrics) {
 /// Returns the current attribution metrics.
 pub fn test_get_attribution() -> AttributionMetrics {
     glean_core::glean_test_get_attribution()
+}
+
+/// Clears the core distribution data.
+/// Does not clear glean.distribution.ext (if present).
+pub fn clear_distribution() {
+    glean_core::glean_clear_distribution();
 }
 
 /// Updates distribution fields with new values.

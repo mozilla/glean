@@ -10,6 +10,61 @@ so it relies on products setting and keeping these values up-to-date via general
 
 ## Recording API
 
+### `clearAttribution`
+
+Clears the values sent in the `client_info.attribution` section.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+Glean.clearAttribution()
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Glean.shared.clearAttribution()
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+Glean.clear_attribution()
+```
+</div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+glean::clear_attribution();
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+Services.fog.clearAttribution();
+```
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ### `updateAttribution`
 
 Updates the values sent in the `client_info.attribution` section.
@@ -105,6 +160,61 @@ Services.fog.updateAttribution(
 * Each `AttributionMetrics` field may report errors like `string` metrics do.
 {{#include ../../_includes/string-errors.md}}
 
+### `clearDistribution`
+
+Clears the values sent in the `client_info.distribution` section.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+Glean.clearDistribution()
+```
+</div>
+
+<div data-lang="Java" class="tab"></div>
+
+<div data-lang="Swift" class="tab">
+
+```Swift
+Glean.shared.clearDistribution()
+```
+</div>
+
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import Glean
+
+Glean.clear_distribution()
+```
+</div>
+
+<div data-lang="JavaScript" class="tab"></div>
+
+<div data-lang="Rust" class="tab">
+
+```Rust
+glean::clear_distribution();
+```
+</div>
+
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+C++ is not presently supported.
+
+**JavaScript**
+
+```js
+Services.fog.clearDistribution();
+```
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ### `updateDistribution`
 
 Updates the value sent in the `client_info.distribution` section.
@@ -137,7 +247,7 @@ Glean.shared.updateDistribution(DistributionMetrics(
 from glean import Glean
 from glean.metrics import DistributionMetrics
 
-Glean.update_attribution(DistributionMetrics(
+Glean.update_distribution(DistributionMetrics(
   name="MozillaOnline",
 ))
 ```
@@ -148,7 +258,7 @@ Glean.update_attribution(DistributionMetrics(
 <div data-lang="Rust" class="tab">
 
 ```Rust
-glean::update_attribution(DistributionMetrics {
+glean::update_distribution(DistributionMetrics {
   name: Some("MozillaOnline".into()),
 });
 ```

@@ -764,6 +764,12 @@ open class GleanInternalAPI internal constructor() {
     }
 
     /**
+     * Clears the core attribution data.
+     * Does not clear glean.attribution.ext (if present).
+     */
+    fun clearAttribution() = gleanClearAttribution()
+
+    /**
      * Updates attribution fields with new values.
      * AttributionMetrics fields with `null` values will not overwrite older values.
      */
@@ -776,6 +782,12 @@ open class GleanInternalAPI internal constructor() {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun testGetAttribution(): AttributionMetrics = gleanTestGetAttribution()
+
+    /**
+     * Clears the core distribution data.
+     * Does not clear glean.distribution.ext (if present).
+     */
+    fun clearDistribution() = gleanClearDistribution()
 
     /**
      * Updates distribution fields with new values.
