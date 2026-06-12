@@ -41,6 +41,7 @@ pub use glean_core::{
     },
     traits, AttributionMetrics, CommonMetricData, DistributionMetrics, Error, ErrorType, Glean,
     HistogramType, LabeledMetricData, Lifetime, PingRateLimit, RecordedExperiment, Result,
+    SessionMode,
 };
 
 mod configuration;

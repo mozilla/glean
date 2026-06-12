@@ -5,7 +5,7 @@
 use log::LevelFilter;
 
 use crate::net::PingUploader;
-use glean_core::SessionMode;
+use crate::SessionMode;
 
 use std::collections::HashMap;
 use std::path::PathBuf;
