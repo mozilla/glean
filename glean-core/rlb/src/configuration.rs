@@ -240,6 +240,12 @@ impl Builder {
         self
     }
 
+    /// Set the rate pings may be uploaded before they are throttled.
+    pub fn with_rate_limit(mut self, limit: crate::PingRateLimit) -> Self {
+        self.rate_limit = Some(limit);
+        self
+    }
+
     /// Set whether to add a wallclock timestamp to all events (experimental).
     pub fn with_event_timestamps(mut self, value: bool) -> Self {
         self.enable_event_timestamps = value;

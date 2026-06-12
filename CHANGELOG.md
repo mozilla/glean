@@ -8,6 +8,8 @@
 
 * General
   * Add clear_attribution_data and clear_distribution_data General APIs to clear core attribution and distribution data ([bug 2043535](https://bugzilla.mozilla.org/show_bug.cgi?id=2043535)).
+* Rust
+  * Make `rate_limit` configurable in the configuration builder ([#3495](https://github.com/mozilla/glean/pull/3495))
 
 # v67.4.0 (2026-06-09)
 
