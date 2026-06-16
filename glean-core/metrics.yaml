@@ -960,9 +960,9 @@ glean.database:
       - metrics
       - health
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     notification_emails:
@@ -1417,9 +1417,9 @@ glean.migration:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     expires: never
@@ -1435,9 +1435,9 @@ glean.migration:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     expires: never
@@ -1453,9 +1453,9 @@ glean.migration:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     expires: never
@@ -1472,9 +1472,9 @@ glean.migration:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     expires: never
@@ -1490,9 +1490,9 @@ glean.migration:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=TODO
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2034605
     data_sensitivity:
       - technical
     expires: never
