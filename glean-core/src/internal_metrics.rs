@@ -201,6 +201,7 @@ impl AdditionalMetrics {
                 category: "glean.error".into(),
                 send_in_pings: vec!["health".into()],
                 lifetime: Lifetime::Ping,
+                disabled: true,
                 ..Default::default()
             }),
 

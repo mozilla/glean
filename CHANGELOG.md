@@ -2,14 +2,17 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...main)
 
+* General
+  * Disable the `glean.error.event_timestamp_clamped` metric ([#3500](https://github.com/mozilla/glean/pull/3500)).
+* Rust
+  * Make `rate_limit` configurable in the configuration builder ([#3495](https://github.com/mozilla/glean/pull/3495))
+
 # v67.5.0 (2026-06-09)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.4.0...v67.5.0)
 
 * General
   * Add clear_attribution_data and clear_distribution_data General APIs to clear core attribution and distribution data ([bug 2043535](https://bugzilla.mozilla.org/show_bug.cgi?id=2043535)).
-* Rust
-  * Make `rate_limit` configurable in the configuration builder ([#3495](https://github.com/mozilla/glean/pull/3495))
 
 # v67.4.0 (2026-06-09)
 

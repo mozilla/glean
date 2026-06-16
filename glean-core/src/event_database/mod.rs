@@ -724,6 +724,7 @@ impl EventDatabase {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::metrics::RemoteSettingsConfig;
     use crate::test_get_num_recorded_errors;
     use crate::tests::new_glean;
     use chrono::{TimeZone, Timelike};
@@ -1454,6 +1455,44 @@ mod test {
         assert_eq!((i64::MAX / 2) as u64, store[1].event.timestamp);
         assert_eq!((i64::MAX as u64), store[2].event.timestamp);
         assert_eq!((i64::MAX as u64), store[3].event.timestamp);
+    }
+
+    #[test]
+    fn normalize_store_clamps_timestamp_metric_enabled() {
+        let (glean, _dir) = new_glean(None);
+
+        let mut cfg = RemoteSettingsConfig::default();
+        cfg.metrics_enabled
+            .insert("glean.error.event_timestamp_clamped".to_string(), true);
+        glean.apply_server_knobs_config(cfg);
+
+        let store_name = "store-name";
+        let event = RecordedEvent {
+            category: "category".into(),
+            name: "name".into(),
+            ..Default::default()
+        };
+
+        let timestamps = [0, (i64::MAX as u64) + 1];
+        let mut store = timestamps
+            .into_iter()
+            .map(|timestamp| StoredEvent {
+                event: RecordedEvent {
+                    timestamp,
+                    ..event.clone()
+                },
+                execution_counter: None,
+            })
+            .collect();
+
+        let glean_start_time = glean.start_time();
+        glean
+            .event_storage()
+            .normalize_store(&glean, store_name, &mut store, glean_start_time);
+        assert_eq!(2, store.len());
+
+        assert_eq!(0, store[0].event.timestamp);
+        assert_eq!((i64::MAX as u64), store[1].event.timestamp);
 
         let error_count = glean
             .additional_metrics
