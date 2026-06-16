@@ -245,14 +245,6 @@ criteria = "safe-to-deploy"
 version = "0.48.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.xshell]]
-version = "0.2.7"
-criteria = "safe-to-deploy"
-
-[[exemptions.xshell-macros]]
-version = "0.2.7"
-criteria = "safe-to-deploy"
-
 [[exemptions.xshell-venv]]
 version = "1.1.0"
 criteria = "safe-to-deploy"
