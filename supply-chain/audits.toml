@@ -387,6 +387,11 @@ criteria = "safe-to-deploy"
 delta = "3.0.12 -> 3.0.13"
 notes = "Dependency updates only"
 
+[[audits.fd-lock]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "3.0.13 -> 4.0.4"
+
 [[audits.flate2]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -768,6 +773,23 @@ version = "0.3.2"
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
 version = "0.3.2"
+
+[[audits.xshell]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.2.7"
+
+[[audits.xshell-macros]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "0.2.7"
+notes = "Straight-forward token stream parsing, no unsafe code"
+
+[[audits.xshell-venv]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+version = "1.3.0"
+notes = "Maintained by me. I have written or reviewed all of the code."
 
 [[audits.xshell-venv]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
