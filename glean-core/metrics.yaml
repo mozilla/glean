@@ -706,14 +706,17 @@ glean.error:
       - health
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1873482
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2047890
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1873482
+      - https://github.com/mozilla/glean/pull/3500
     data_sensitivity:
       - technical
     notification_emails:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
-    expires: 2026-06-30
+    expires: 2027-06-30
+    disabled: true
 
 glean.upload:
   ping_upload_failure:
