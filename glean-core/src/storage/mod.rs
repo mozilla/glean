@@ -58,8 +58,8 @@ fn snapshot_labeled_metrics(
 fn snapshot_dual_labeled_metrics(
     snapshot: &mut HashMap<String, HashMap<String, JsonValue>>,
     metric_id: &str,
-    label1: &str,
-    label2: &str,
+    key: &str,
+    category: &str,
     metric: &Metric,
 ) {
     let ping_section = format!("dual_labeled_{}", metric.ping_section());
@@ -70,9 +70,9 @@ fn snapshot_dual_labeled_metrics(
         .or_insert_with(|| json!({}))
         .as_object_mut()
         .unwrap(); // safe unwrap, we constructed the object above
-    let key_obj = obj.entry(label1).or_insert_with(|| json!({}));
+    let key_obj = obj.entry(key).or_insert_with(|| json!({}));
     let key_obj = key_obj.as_object_mut().unwrap();
-    key_obj.insert(label2.into(), metric.as_json());
+    key_obj.insert(category.into(), metric.as_json());
 }
 
 impl StorageManager {
@@ -128,12 +128,12 @@ impl StorageManager {
                 [label] => {
                     snapshot_labeled_metrics(&mut snapshot, &metric_id, label, metric);
                 }
-                [label1, label2] => {
+                [key, category] => {
                     snapshot_dual_labeled_metrics(
                         &mut snapshot,
                         &metric_id,
-                        label1,
-                        label2,
+                        key,
+                        category,
                         metric,
                     );
                 }
