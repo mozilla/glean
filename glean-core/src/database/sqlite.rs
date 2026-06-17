@@ -271,6 +271,7 @@ impl Database {
         data: &CommonMetricDataInternal,
         storage_name: &str,
     ) -> Option<Metric> {
+        // TODO(bug 2048194): Remove the `LIMIT 1` and error out when more than 1 row is returned.
         let get_metric_sql = r#"
         SELECT
             value
@@ -492,7 +493,7 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        // FIXME(jer): Remove the `LIMIT 1` and error out when more than 1 row is returned.
+        // TODO(bug 2048194): Remove the `LIMIT 1` and error out when more than 1 row is returned.
         let value_sql = r#"
         SELECT value
         FROM telemetry
