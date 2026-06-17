@@ -256,7 +256,7 @@ pub fn validate_dual_label_sqlite(
 ) -> LabelCheck {
     let existing_labels_sql = "SELECT DISTINCT labels FROM telemetry WHERE id = ?1";
 
-    // TODO: We can now detect if _either_ key or category contains `RECORD_SEPARATOR` and thus keep
+    // TODO(bug 2048193): We can now detect if _either_ key or category contains `RECORD_SEPARATOR` and thus keep
     // the other potentially valid label.
     // This needs adjustement of the test `labels_containing_a_record_separator_record_an_error`.
     if key.contains(RECORD_SEPARATOR) || category.contains(RECORD_SEPARATOR) {
@@ -282,6 +282,7 @@ pub fn validate_dual_label_sqlite(
             let Some((existing_key, existing_category)) =
                 existing_labels.split_once(RECORD_SEPARATOR)
             else {
+                // TODO(bug 2048195): Instrument this.
                 log::debug!("Database contains invalid dual-label: {existing_labels:?}");
                 continue;
             };

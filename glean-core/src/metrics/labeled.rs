@@ -259,6 +259,8 @@ where
     ///
     /// This is used for dynamic labels where we have to actually validate and correct the
     /// label later when we have a Glean object.
+    ///
+    /// TODO: Consolidate with `new_metric_with_label` above.
     fn new_metric_with_dynamic_label(&self, label: MetricLabel) -> T {
         self.submetric.with_label(label)
     }
