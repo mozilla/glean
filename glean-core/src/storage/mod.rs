@@ -129,15 +129,13 @@ impl StorageManager {
                     snapshot_labeled_metrics(&mut snapshot, &metric_id, label, metric);
                 }
                 [key, category] => {
-                    snapshot_dual_labeled_metrics(
-                        &mut snapshot,
-                        &metric_id,
-                        key,
-                        category,
-                        metric,
+                    snapshot_dual_labeled_metrics(&mut snapshot, &metric_id, key, category, metric);
+                }
+                other => {
+                    log::error!(
+                        "Unsupported list of labels encountered for metric {metric_id:?}: {other:?}. Metric will be ignored."
                     );
                 }
-                _ => panic!("uh wat?"),
             }
         };
 
