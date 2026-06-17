@@ -260,7 +260,7 @@ pub fn validate_dual_label_sqlite(
     // the other potentially valid label.
     // This needs adjustement of the test `labels_containing_a_record_separator_record_an_error`.
     if key.contains(RECORD_SEPARATOR) || category.contains(RECORD_SEPARATOR) {
-        log::warn!("Label cannot contain the ASCII record separator character (0x1E)");
+        log::warn!("Metric {base_identifier:?}: Label cannot contain the ASCII record separator character (0x1E)");
         return LabelCheck::Error(format!("{OTHER_LABEL}{RECORD_SEPARATOR}{OTHER_LABEL}"), 1);
     }
 
@@ -283,7 +283,7 @@ pub fn validate_dual_label_sqlite(
                 existing_labels.split_once(RECORD_SEPARATOR)
             else {
                 // TODO(bug 2048195): Instrument this.
-                log::debug!("Database contains invalid dual-label: {existing_labels:?}");
+                log::debug!("Metric {base_identifier:?}: Database contains invalid dual-label: {existing_labels:?}");
                 continue;
             };
 
@@ -294,7 +294,7 @@ pub fn validate_dual_label_sqlite(
 
     let mut errors = 0;
     let new_key = if (existing_keys.contains(key) || existing_keys.len() < MAX_LABELS)
-        && label_is_valid(key)
+        && label_is_valid(key, base_identifier)
     {
         key
     } else {
@@ -304,7 +304,7 @@ pub fn validate_dual_label_sqlite(
 
     let new_category = if (existing_categories.contains(category)
         || existing_categories.len() < MAX_LABELS)
-        && label_is_valid(category)
+        && label_is_valid(category, base_identifier)
     {
         category
     } else {
@@ -320,16 +320,17 @@ pub fn validate_dual_label_sqlite(
     }
 }
 
-fn label_is_valid(label: &str) -> bool {
+fn label_is_valid(label: &str, metric_id: &str) -> bool {
     if label.len() > MAX_LABEL_LENGTH {
         log::warn!(
-            "label length {} exceeds maximum of {}",
+            "Metric {:?}: label length {} exceeds maximum of {}",
+            metric_id,
             label.len(),
             MAX_LABEL_LENGTH
         );
         false
     } else if label.contains(RECORD_SEPARATOR) {
-        log::warn!("Label cannot contain the ASCII record separator character (0x1E)");
+        log::warn!("Metric {metric_id:?}: Label cannot contain the ASCII record separator character (0x1E)");
         false
     } else {
         true
