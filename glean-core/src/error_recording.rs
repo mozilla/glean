@@ -152,7 +152,11 @@ pub fn record_error_sqlite(
     error: ErrorType,
     num_errors: i32,
 ) {
-    assert!(num_errors > 0);
+    debug_assert!(num_errors > 0);
+    if num_errors == 0 {
+        log::warn!("Trying to record 0 errors for {metric_name:?}. Bailing out.");
+        return;
+    }
 
     // We explicitly don't use the `Counter` metric directly here.
     //
