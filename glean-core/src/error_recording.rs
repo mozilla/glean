@@ -153,8 +153,8 @@ pub fn record_error_sqlite(
     num_errors: i32,
 ) {
     debug_assert!(num_errors > 0);
-    if num_errors == 0 {
-        log::warn!("Trying to record 0 errors for {metric_name:?}. Bailing out.");
+    if num_errors <= 0 {
+        log::warn!("Trying to record {num_errors} errors for {metric_name:?} (<= 0). Bailing out.");
         return;
     }
 

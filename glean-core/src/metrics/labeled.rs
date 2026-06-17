@@ -418,7 +418,8 @@ pub fn validate_dynamic_label_sqlite(
         LabelCheck::Label(String::from(OTHER_LABEL))
     } else if label.len() > MAX_LABEL_LENGTH {
         log::warn!(
-            "label length {} exceeds maximum of {}",
+            "Metric {:?}: label length {} exceeds maximum of {}",
+            base_identifier,
             label.len(),
             MAX_LABEL_LENGTH
         );
