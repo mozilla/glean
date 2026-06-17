@@ -1254,7 +1254,7 @@ glean.health:
         - `error_message`: If there was an error accessing the file, this will contain a brief
           description of the error. If there was no error, this will be null.
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - tlong@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/1667815
@@ -1306,7 +1306,7 @@ glean.health:
     description: |
       A running count of how many times the Glean SDK has been initialized.
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - chutten@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/1990624
@@ -1331,7 +1331,7 @@ glean.health:
       - `c0ffee-in-db`
       - `client-id-mismatch`
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
@@ -1351,7 +1351,7 @@ glean.health:
       Only expected to have a value for the exception states `empty-db`, `c0ffee-in-db` and `client-id-mismatch`.
       See `exception_state` for different exception states when this can happen.
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
@@ -1369,7 +1369,7 @@ glean.health:
     description: |
       Count of different errors that happened when trying to read the `client_id.txt` file from disk.
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
@@ -1393,7 +1393,7 @@ glean.health:
     description: |
       Count of different errors that happened when trying to write the `client_id.txt` file to disk.
     notification_emails:
-      - glean-team@mozilla.org
+      - glean-team@mozilla.com
       - jrediger@mozilla.com
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1994757
