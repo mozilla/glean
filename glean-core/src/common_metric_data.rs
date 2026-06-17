@@ -198,13 +198,15 @@ impl LabelCheck {
     }
 
     /// Maps a `LabelCheck` by applying a function to the contained label (if any).
+    ///
+    /// This only maps over the already checked label.
+    /// No further label check is done.
     fn map(self, mut f: impl FnMut(String) -> String) -> Self {
         use LabelCheck::*;
 
         match self {
             NoLabel => NoLabel,
             Label(s) => Label(f(s)),
-            // shoud use `MAX_LABEL_LENGTH`, but we can't const-format this
             Error(s, cnt) => Error(f(s), cnt),
         }
     }
