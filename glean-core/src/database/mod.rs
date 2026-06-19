@@ -19,6 +19,8 @@ use crate::ErrorKind;
 use malloc_size_of::MallocSizeOf;
 use rkv::{StoreError, StoreOptions};
 
+const SQLITE_DATABASE_FILES: &[&str] = &["glean.sqlite", "glean.sqlite-wal", "glean.sqlite-shm"];
+
 /// Unwrap a `Result`s `Ok` value or do the specified action.
 ///
 /// This is an alternative to the question-mark operator (`?`),
@@ -264,6 +266,14 @@ impl Database {
         };
 
         db.load_ping_lifetime_data();
+
+        // SQLite storage cleanup -- removing potential left-over files from previous migration.
+        for file in SQLITE_DATABASE_FILES {
+            let path = path.join(file);
+            if fs::remove_file(&path).is_ok() {
+                log::debug!("Removed SQLite file: {}", path.display());
+            }
+        }
 
         Ok(db)
     }
@@ -1618,6 +1628,34 @@ mod test {
                 matches!(db.rkv_load_state, RkvLoadState::Err(_)),
                 "Load error recorded"
             );
+        }
+
+        #[test]
+        fn deletes_leftover_sqlite_files() {
+            let dir = tempdir().unwrap();
+
+            // Create database directory structure.
+            let database_dir = dir.path().join("db");
+            fs::create_dir_all(&database_dir).expect("create database dir");
+
+            // Create left-over SQLite files.
+            for &file in SQLITE_DATABASE_FILES {
+                let path = database_dir.join(file);
+                fs::write(path, "<empty>").expect("write to database file");
+            }
+
+            let _db = Database::new(dir.path(), false, 0, Duration::ZERO).unwrap();
+
+            assert!(dir.path().exists());
+            for &file in SQLITE_DATABASE_FILES {
+                let path = database_dir.join(file);
+                assert!(
+                    !path.exists(),
+                    "{} should have been removed when opening the database",
+                    path.display()
+                );
+                fs::write(path, "<empty>").expect("write to database file");
+            }
         }
     }
 }
