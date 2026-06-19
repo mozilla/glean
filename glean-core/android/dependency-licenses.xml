@@ -64,9 +64,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: toml_writer</name>
     <url>https://github.com/toml-rs/toml</url>
   </license>  <license>
-    <name>Apache License 2.0: fd-lock</name>
-    <url>https://github.com/yoshuawuyts/fd-lock</url>
-  </license>  <license>
     <name>Apache License 2.0: askama</name>
     <url>https://github.com/askama-rs/askama</url>
   </license>  <license>

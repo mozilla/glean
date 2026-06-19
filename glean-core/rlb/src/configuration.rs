@@ -5,7 +5,7 @@
 use log::LevelFilter;
 
 use crate::net::PingUploader;
-use glean_core::SessionMode;
+use crate::SessionMode;
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -237,6 +237,12 @@ impl Builder {
     /// Set whether Glean should limit its storage to only that of registered pings.
     pub fn with_trim_data_to_registered_pings(mut self, value: bool) -> Self {
         self.trim_data_to_registered_pings = value;
+        self
+    }
+
+    /// Set the rate pings may be uploaded before they are throttled.
+    pub fn with_rate_limit(mut self, limit: crate::PingRateLimit) -> Self {
+        self.rate_limit = Some(limit);
         self
     }
 
