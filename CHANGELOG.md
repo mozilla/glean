@@ -1,6 +1,12 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...main)
+
+# v68.0.0 (2026-06-19)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...v68.0.0)
+
+Note: No changes in this release are actually breaking. We're doing this to have a clear cut before we merge the new SQLite-powered storage backend.
 
 * General
   * Disable the `glean.error.event_timestamp_clamped` metric ([#3500](https://github.com/mozilla/glean/pull/3500)).
