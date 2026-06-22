@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...main)
+
+# v69.0.0 (2026-06-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...v69.0.0)
 
 * General
   * BREAKING CHANGE: Replaced the client-side storage backend with a SQLite-powered one.
