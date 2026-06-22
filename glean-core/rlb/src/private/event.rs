@@ -34,7 +34,7 @@ impl<K> MallocSizeOf for EventMetric<K> {
 }
 
 impl<'a, K> MetricIdentifier<'a> for EventMetric<K> {
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>) {
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>) {
         self.inner.get_identifiers()
     }
 }

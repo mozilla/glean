@@ -284,8 +284,8 @@ def _get_metric_objects(
         glean_metric = metrics.ObjectMetricType(metrics.CommonMetricData(**args), obj_cls)  # type: ignore
     else:
         # Hack for the time being.
-        if "label" not in args:
-            args["label"] = None
+        if "dynamic_label" not in args:
+            args["dynamic_label"] = None
         meta_args, rest = _split_ctor_args(args)
         if getattr(metric, "labeled", False):
             glean_metric = metric_type(

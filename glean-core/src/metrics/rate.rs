@@ -6,6 +6,7 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::metrics::Metric;
 use crate::metrics::MetricType;
+use crate::storage::StorageManager;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
 
@@ -146,7 +147,12 @@ impl RateMetric {
             .into()
             .unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
-        match glean.storage().get_metric(self.meta(), queried_ping_name) {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            queried_ping_name,
+            &self.meta.identifier(glean),
+            self.meta.inner.lifetime,
+        ) {
             Some(Metric::Rate(n, d)) => Some((n, d).into()),
             _ => None,
         }

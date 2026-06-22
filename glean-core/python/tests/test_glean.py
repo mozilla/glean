@@ -76,7 +76,7 @@ def test_submit_a_ping(safe_httpserver):
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["baseline"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -105,7 +105,7 @@ def test_disabling_upload_should_disable_metrics_recording():
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -198,7 +198,7 @@ def test_queued_recorded_metrics_correctly_during_init():
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -236,7 +236,7 @@ def test_dont_schedule_pings_if_metrics_disabled(safe_httpserver):
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -331,7 +331,7 @@ def test_ping_collection_must_happen_after_currently_scheduled_metrics_recording
             lifetime=Lifetime.PING,
             name="string_metric",
             send_in_pings=[ping_name],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -368,7 +368,7 @@ def test_basic_metrics_should_be_cleared_when_disabling_uploading():
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -503,7 +503,7 @@ def test_configuration_property(safe_httpserver):
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["baseline"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -676,7 +676,7 @@ def test_clear_application_lifetime_metrics(tmpdir):
             lifetime=Lifetime.APPLICATION,
             name="lifetime_reset",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -884,7 +884,7 @@ def test_sending_of_custom_pings(safe_httpserver):
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -955,7 +955,7 @@ def test_max_events_overflow(tmpdir, helpers):
             lifetime=Lifetime.APPLICATION,
             name="event",
             send_in_pings=["events"],
-            label=None,
+            dynamic_label=None,
         ),
         allowed_extra_keys=[],
     )
@@ -1004,7 +1004,7 @@ def test_glean_shutdown(safe_httpserver):
             send_in_pings=["custom"],
             lifetime=Lifetime.APPLICATION,
             disabled=False,
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -1059,7 +1059,7 @@ def test_uploader_capabilities_reported(tmpdir, helpers):
             lifetime=Lifetime.APPLICATION,
             name="counter_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -1110,7 +1110,7 @@ def test_uploader_capabilities_empty_not_reported(tmpdir, helpers):
             lifetime=Lifetime.PING,
             name="stringlist_metric",
             send_in_pings=["store1"],
-            label=None,
+            dynamic_label=None,
         )
     )
 
@@ -1246,7 +1246,7 @@ def test_uploader_capabilities_in_events_ping(tmpdir, helpers):
             name="custom",
             lifetime=Lifetime.PING,
             send_in_pings=["custom-events"],
-            label=None,
+            dynamic_label=None,
         ),
         allowed_extra_keys=[],
     )

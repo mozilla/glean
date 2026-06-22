@@ -83,7 +83,12 @@ impl PingMaker {
             ..Default::default()
         });
 
-        let current_seq = match glean.storage().get_metric(seq.meta(), INTERNAL_STORAGE) {
+        let current_seq = match StorageManager.snapshot_metric(
+            glean.storage(),
+            INTERNAL_STORAGE,
+            &seq.meta().identifier(glean),
+            seq.meta().inner.lifetime,
+        ) {
             Some(Metric::Counter(i)) => i,
             _ => 0,
         };
@@ -278,6 +283,16 @@ impl PingMaker {
     ) -> Option<Ping<'a>> {
         info!("Collecting {}", ping.name());
         let database = glean.storage();
+
+        // HACK: Only for metrics pings we add the ping timings.
+        // But we want that to persist until the next metrics ping is actually sent.
+        let write_samples = database.write_timings.replace(Vec::with_capacity(64));
+        if !write_samples.is_empty() {
+            glean
+                .database_metrics
+                .write_time
+                .accumulate_samples_sync(glean, &write_samples);
+        }
 
         let mut metrics_data = StorageManager.snapshot_as_json(database, ping.name(), true);
 
