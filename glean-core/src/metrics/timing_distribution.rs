@@ -484,6 +484,7 @@ impl TimingDistributionMetric {
     /// Use [`accumulate_raw_samples_nanos`](Self::accumulate_raw_samples_nanos) instead.
     #[doc(hidden)]
     pub fn accumulate_raw_samples_nanos_sync(&self, glean: &Glean, samples: &[u64]) {
+        log::debug!("logging samples: {samples:?}");
         if !self.should_record(glean) {
             return;
         }

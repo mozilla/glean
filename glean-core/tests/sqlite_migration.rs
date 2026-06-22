@@ -26,7 +26,7 @@ struct MigrationMetrics {
     metrics_in_sqlite: CounterMetric,
     migrated_metrics: CounterMetric,
     failed_metrics: CounterMetric,
-    migration_duration: TimespanMetric,
+    migration_duration: TimingDistributionMetric,
     migration_error: CounterMetric,
 }
 
@@ -57,7 +57,7 @@ impl MigrationMetrics {
                 ..Default::default()
             }),
 
-            migration_duration: TimespanMetric::new(
+            migration_duration: TimingDistributionMetric::new(
                 CommonMetricData {
                     name: "migration_duration".into(),
                     category: "glean.migration".into(),

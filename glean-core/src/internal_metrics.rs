@@ -375,7 +375,7 @@ pub struct DatabaseMetrics {
     pub failed_metrics: CounterMetric,
 
     /// The duration for one full migration run at startup
-    pub migration_duration: TimespanMetric,
+    pub migration_duration: TimingDistributionMetric,
 
     /// Number of times a migration was attempted and failed
     pub migration_error: CounterMetric,
@@ -439,7 +439,7 @@ impl DatabaseMetrics {
                 ..Default::default()
             }),
 
-            migration_duration: TimespanMetric::new(
+            migration_duration: TimingDistributionMetric::new(
                 CommonMetricData {
                     name: "migration_duration".into(),
                     category: "glean.migration".into(),

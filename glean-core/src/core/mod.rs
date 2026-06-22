@@ -320,10 +320,13 @@ impl Glean {
                 .database_metrics
                 .failed_metrics
                 .add_sync(&glean, state.failed_metrics);
+
+            let duration_ns = state.duration.as_nanos().try_into().unwrap_or(u64::MAX);
+            log::error!("set duration: {duration_ns:?}");
             glean
                 .database_metrics
                 .migration_duration
-                .set_raw_sync(&glean, state.duration);
+                .accumulate_raw_samples_nanos_sync(&glean, &[duration_ns]);
         }
 
         if glean.data_store.as_mut().unwrap().migration_error == MigrationResult::Error {
