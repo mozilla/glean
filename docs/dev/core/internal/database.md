@@ -1,46 +1,45 @@
 # Database format
 
-The Glean SDK stores all recorded data in a database for persistence.
+The Glean SDK stores all recorded data in an [SQLite] database for persistence.
 This data is read, written and transformed by the core implementation.
 
-Some internal metrics are stored similar to user-defined metrics,
-but encode additional implementation-defined information in the key or value of the entry.
+Internal metrics are stored similar to user-defined metrics.
 
 We guarantee backwards-compatibility of already stored data.
 If necessary an old database will be converted to the new format.
 
-## Database stores
+## Database tables
 
-The Glean SDK will use one store per metric lifetime:
-`user`, `application` and `ping`.
-This allows to separately read and clear metrics based on their respective lifetimes.
-
-## Key
-
-The key of a database entry uniquely identifies the stored metric data.
-It encodes additional information about the stored data in the key name using special characters.
-The full list of special characters in use is:
-
-`. # / +`
-
-These characters cannot be used in a user-defined ping name, metric category,  metric name or label.
-
-A key will usually look like:
+The Glean SDK will store all metric data in a table called `telemetry`.
+This table has the following schema:
 
 ```
-ping#category.name[/label]
+CREATE TABLE telemetry(
+  id TEXT NOT NULL,
+  ping TEXT NOT NULL,
+  lifetime TEXT NOT NULL,
+  labels TEXT NOT NULL,
+  value BLOB,
+  UNIQUE(id, ping, labels)
+);",
 ```
 
-where:
+| Column | Type | Description |
+| ------ | ---- | ----------- |
+| `id`   | `TEXT` | A full metric identifier: `category.name`. |
+| `ping` | `TEXT` | The ping this value is recorded for. |
+| `lifetime` | `TEXT` | The lifetime of the stored value, one of `ping`, `app` or `user`. |
+| `labels` | `TEXT` | The label or labels for this value. Multiple labels are separated by the record separator (`\x1E`). Empty string when no labels are specified. |
+| `value` | `BLOB` | The encoded value. |
 
-| Field | Description | Allowed characters | Maximum length\* | Note |
-| ----- | ----------- | ------ | ----- | ----- |
-| `ping` | The ping name this data is stored for | `[a-z0-9-]` | 30 |
-| `category` | The metric's category | `[a-z0-9._]` | 40 | Empty string possible. |
-| `name` | The metric's name | `[a-z0-9._#]` | 70 |
-| `label` | The label (optional) | `[a-z0-9._-]` | 111 |
+### Indices
 
-_\* The maximum length is not enforced for internal metrics, but is enforced for user metrics as per schema definition._
+`UNIQUE(id, ping, labels)`
+
+Every row is unique by the id, ping and associated labels.
+This allows for efficient fetching and updating of those values.
+Recorded values for a specific `id` can go into multiple pings.
+For a specific `id` values can be recorded for different labels.
 
 {{#include ../../../shared/blockquote-info.html}}
 
@@ -55,4 +54,5 @@ _\* The maximum length is not enforced for internal metrics, but is enforced for
 The value is stored in an implementation-defined format to encode the value's data.
 It can be read, modified and serialized into the [Payload format].
 
+[SQLite]: https://sqlite.org/
 [Payload format]: payload.md
