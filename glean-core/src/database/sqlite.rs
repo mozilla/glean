@@ -87,7 +87,7 @@ const DEFAULT_DATABASE_FILE_NAME: &str = "glean.sqlite";
 ///
 ///  # Returns
 ///
-/// Returns the non-zero combined size of all files in a directory,
+/// Returns the non-zero combined size in bytes of all files in a directory,
 /// or `None` on error or if the size is `0`.
 fn database_size(dir: &Path) -> Option<NonZeroU64> {
     let mut total_size = 0;
@@ -110,7 +110,7 @@ fn database_size(dir: &Path) -> Option<NonZeroU64> {
 }
 
 pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), Error> {
-    // TODO: Make this more robust, use the correct errors and see how we can test all the branches
+    // TODO(bug 2049292): Make this more robust, use the correct errors and see how we can test all the branches
     // properly.
     match Connection::new::<Schema>(path) {
         Err(e @ SchemaError::UnsupportedSchemaVersion(_)) => Err(e.into()),

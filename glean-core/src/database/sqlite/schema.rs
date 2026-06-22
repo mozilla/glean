@@ -27,7 +27,8 @@ impl ConnectionOpener for Schema {
              PRAGMA journal_mode = WAL;
              -- Sync at the most criticial moments, but not with every write
              PRAGMA synchronous = NORMAL;
-             -- limit size of the journal. value currently arbitrary. needs refinement.
+             -- limit size of the journal. TODO(bug 2049290): value currently arbitrary.
+             -- needs refinement.
              PRAGMA journal_size_limit = 512000; -- 512 KB.
              -- We don't care about temp tables being persisted to disk
              PRAGMA temp_store = MEMORY;

@@ -189,7 +189,7 @@ mod unix {
     }
 }
 
-// TODO:
+// TODO(bug 2049295):
 // This currently fails.
 // The database is locked, so Glean can't access it.
 // It's unclear how we should handle that.
