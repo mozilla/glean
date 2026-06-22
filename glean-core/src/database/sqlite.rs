@@ -37,6 +37,14 @@ pub enum LoadState {
     Err(Error),
 }
 
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub enum MigrationResult {
+    /// Migration did not happen yet
+    Unknown,
+    /// Migration failed
+    Error,
+}
+
 pub struct Database {
     /// The database connection.
     pub(crate) conn: connection::Connection,
@@ -51,7 +59,7 @@ pub struct Database {
     pub(crate) migration_state: Option<MigrationState>,
 
     /// Set when a database migration attempt failed.
-    pub(crate) migration_error: Option<()>,
+    pub(crate) migration_error: MigrationResult,
 }
 
 impl MallocSizeOf for Database {
@@ -165,7 +173,7 @@ impl Database {
             file_size,
             load_state,
             migration_state: None,
-            migration_error: None,
+            migration_error: MigrationResult::Unknown,
         };
 
         if sqlite_exists {
@@ -180,7 +188,7 @@ impl Database {
                     log::debug!("No migration.");
                 }
                 Err(e) => {
-                    db.migration_error = Some(());
+                    db.migration_error = MigrationResult::Error;
                     log::warn!("Migration failed! Continuing with SQLite backend without migrated data. Error: {e:?}")
                 }
             }

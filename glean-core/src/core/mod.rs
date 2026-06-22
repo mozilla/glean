@@ -15,7 +15,7 @@ use malloc_size_of_derive::MallocSizeOf;
 use once_cell::sync::OnceCell;
 use uuid::Uuid;
 
-use crate::database::sqlite::Database;
+use crate::database::sqlite::{Database, MigrationResult};
 use crate::debug::DebugOptions;
 use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
@@ -326,7 +326,7 @@ impl Glean {
                 .set_raw_sync(&glean, state.duration);
         }
 
-        if let Some(()) = glean.data_store.as_mut().unwrap().migration_error.take() {
+        if glean.data_store.as_mut().unwrap().migration_error == MigrationResult::Error {
             glean.database_metrics.migration_error.add_sync(&glean, 1);
         }
 
