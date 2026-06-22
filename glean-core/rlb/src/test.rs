@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 
 use crossbeam_channel::RecvTimeoutError;
 use flate2::read::GzDecoder;
-use glean_core::{glean_test_get_experimentation_id, DynamicLabelType, LabeledCounter};
+use glean_core::{glean_test_get_experimentation_id, LabeledCounter, MetricLabel};
 use serde_json::Value as JsonValue;
 
 use crate::private::PingType;
@@ -142,7 +142,7 @@ fn disabling_upload_disables_metrics_recording() {
         send_in_pings: vec!["store1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: None,
+        label: None,
         ..Default::default()
     });
 
@@ -438,7 +438,7 @@ fn queued_recorded_metrics_correctly_record_during_init() {
         send_in_pings: vec!["store1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: None,
+        label: None,
         ..Default::default()
     });
 
@@ -1260,7 +1260,7 @@ fn test_a_ping_before_submission() {
         send_in_pings: vec!["custom1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: None,
+        label: None,
         ..Default::default()
     });
 
@@ -1291,7 +1291,7 @@ fn test_boolean_get_num_errors() {
         send_in_pings: vec!["custom1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: Some(DynamicLabelType::Label(str::to_string("asdf"))),
+        label: Some(MetricLabel::Label(str::to_string("asdf"))),
         ..Default::default()
     });
 
@@ -1378,7 +1378,7 @@ fn test_text_can_hold_long_string() {
         send_in_pings: vec!["custom1".into()],
         lifetime: Lifetime::Application,
         disabled: false,
-        dynamic_label: Some(DynamicLabelType::Label(str::to_string("text"))),
+        label: Some(MetricLabel::Label(str::to_string("text"))),
         ..Default::default()
     });
 

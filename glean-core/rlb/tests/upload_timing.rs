@@ -55,7 +55,7 @@ pub mod metrics {
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                     ..Default::default()
                 },
                 TimeUnit::Millisecond,
@@ -71,7 +71,7 @@ pub mod metrics {
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                     ..Default::default()
                 },
                 TimeUnit::Millisecond,
@@ -87,7 +87,7 @@ pub mod metrics {
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
-                    dynamic_label: None,
+                    label: None,
                     ..Default::default()
                 },
                 TimeUnit::Millisecond,

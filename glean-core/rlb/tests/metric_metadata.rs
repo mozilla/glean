@@ -15,7 +15,7 @@ mod metrics {
     use glean::private::*;
     use glean::traits;
     use glean::CommonMetricData;
-    use glean_core::DynamicLabelType;
+    use glean_core::MetricLabel;
     use once_cell::sync::Lazy;
     use std::collections::HashMap;
 
@@ -45,7 +45,7 @@ mod metrics {
             name: "count_von_count".into(),
             category: "sesame".into(),
             send_in_pings: vec!["validation".into()],
-            dynamic_label: Some(DynamicLabelType::Label("ah_ah_ah".into())),
+            label: Some(MetricLabel::Label("ah_ah_ah".into())),
             ..Default::default()
         })
     });
@@ -56,7 +56,7 @@ mod metrics {
             name: "birthday".into(),
             category: "shire".into(),
             send_in_pings: vec!["validation".into()],
-            dynamic_label: Some(DynamicLabelType::Label("111th".into())),
+            label: Some(MetricLabel::Label("111th".into())),
             ..Default::default()
         })
     });
@@ -87,14 +87,14 @@ fn check_metadata() {
     let (category, name, label) = metrics::countit.get_identifiers();
     assert_eq!(category, "sesame");
     assert_eq!(name, "count_von_count");
-    assert_eq!(label, Some("ah_ah_ah"));
+    assert_eq!(label, Some("ah_ah_ah".to_string()));
 
     // Events and Objects have MetricIdentifier implemented explicitly, as
     // they wrap the glean-core Event and Object types
     let (category, name, label) = metrics::event.get_identifiers();
     assert_eq!(category, "shire");
     assert_eq!(name, "birthday");
-    assert_eq!(label, Some("111th"));
+    assert_eq!(label, Some("111th".to_string()));
 
     let (category, name, label) = metrics::object.get_identifiers();
     assert_eq!(category, "court");
