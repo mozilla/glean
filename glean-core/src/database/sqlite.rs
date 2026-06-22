@@ -45,6 +45,7 @@ pub enum MigrationResult {
     Error,
 }
 
+#[derive(Debug)]
 pub struct Database {
     /// The database connection.
     pub(crate) conn: connection::Connection,
@@ -66,14 +67,6 @@ impl MallocSizeOf for Database {
     fn size_of(&self, _ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
         // FIXME: Can we get the allocated size of the connection?
         0
-    }
-}
-
-impl std::fmt::Debug for Database {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        fmt.debug_struct("Database")
-            .field("conn", &self.conn)
-            .finish()
     }
 }
 
