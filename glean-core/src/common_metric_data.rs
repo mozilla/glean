@@ -114,15 +114,10 @@ impl Display for MetricLabel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
         match self {
-            MetricLabel::Static(label) => write!(f, "{label}"),
-            MetricLabel::Label(label) => write!(f, "{label}"),
-            MetricLabel::KeyOnly(key, category) => {
-                write!(f, "{key}{RECORD_SEPARATOR}{category}")
-            }
-            MetricLabel::CategoryOnly(key, category) => {
-                write!(f, "{key}{RECORD_SEPARATOR}{category}")
-            }
-            MetricLabel::KeyAndCategory(key, category) => {
+            MetricLabel::Static(label) | MetricLabel::Label(label) => write!(f, "{label}"),
+            MetricLabel::KeyOnly(key, category)
+            | MetricLabel::CategoryOnly(key, category)
+            | MetricLabel::KeyAndCategory(key, category) => {
                 write!(f, "{key}{RECORD_SEPARATOR}{category}")
             }
         }
