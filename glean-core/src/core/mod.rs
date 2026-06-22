@@ -30,7 +30,7 @@ use crate::ping::PingMaker;
 use crate::session::{self, EventSessionContext, SessionManager, SessionMode, SessionState};
 use crate::storage::{StorageManager, INTERNAL_STORAGE};
 use crate::upload::{PingUploadManager, PingUploadTask, UploadResult, UploadTaskAction};
-use crate::util::{local_now_with_offset, sanitize_application_id};
+use crate::util::{local_now_with_offset, sanitize_application_id, truncate_string_at_boundary};
 use crate::{
     scheduler, system, AttributionMetrics, CommonMetricData, DistributionMetrics, ErrorKind,
     InternalConfiguration, Lifetime, PingRateLimit, Result, DEFAULT_MAX_EVENTS,
@@ -741,6 +741,8 @@ impl Glean {
             .as_ref()
             .and_then(|database| database.load_state())
         {
+            use crate::metrics::string::MAX_LENGTH_VALUE;
+            let load_state = truncate_string_at_boundary(load_state, MAX_LENGTH_VALUE);
             self.database_metrics.load_error.set_sync(self, load_state)
         }
     }

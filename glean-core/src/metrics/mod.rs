@@ -31,7 +31,7 @@ mod quantity;
 mod rate;
 mod recorded_experiment;
 mod remote_settings_config;
-mod string;
+pub(crate) mod string;
 mod string_list;
 mod text;
 mod time_unit;

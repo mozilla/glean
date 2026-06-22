@@ -24,6 +24,16 @@ fn clientid_metric() -> UuidMetric {
     })
 }
 
+fn load_error_metric() -> StringMetric {
+    StringMetric::new(CommonMetricData {
+        name: "load_error".into(),
+        category: "glean.database".into(),
+        send_in_pings: vec!["metrics".into(), "health".into()],
+        lifetime: Lifetime::Ping,
+        ..Default::default()
+    })
+}
+
 #[test]
 fn database_file_is_not_sqlite() {
     let temp = {
@@ -64,6 +74,9 @@ fn database_contains_wrong_table() {
 
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
+
+    let load_error = load_error_metric().get_value(&glean, None);
+    assert!(load_error.is_some());
 }
 
 #[test]
@@ -86,6 +99,9 @@ fn database_contains_correct_user_version_but_wrong_table() {
 
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
+
+    let load_error = load_error_metric().get_value(&glean, None);
+    assert!(load_error.is_some());
 }
 
 #[test]

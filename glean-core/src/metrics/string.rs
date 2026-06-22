@@ -12,7 +12,7 @@ use crate::util::truncate_string_at_boundary_with_error;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
 
-const MAX_LENGTH_VALUE: usize = 255;
+pub const MAX_LENGTH_VALUE: usize = 255;
 
 /// A string metric.
 ///
