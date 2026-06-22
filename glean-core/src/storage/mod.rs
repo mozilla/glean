@@ -143,10 +143,10 @@ impl StorageManager {
             log::debug!("could not snapshot ping lifetime store: {e:?}");
         }
         if let Err(e) = storage.iter_store(Lifetime::Application, store_name, &mut snapshotter) {
-            log::debug!("could not snapshot ping lifetime store: {e:?}");
+            log::debug!("could not snapshot application lifetime store: {e:?}");
         }
         if let Err(e) = storage.iter_store(Lifetime::User, store_name, &mut snapshotter) {
-            log::debug!("could not snapshot ping lifetime store: {e:?}");
+            log::debug!("could not snapshot user lifetime store: {e:?}");
         }
 
         // Add send in all pings client.annotations
