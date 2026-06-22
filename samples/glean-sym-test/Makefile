@@ -14,5 +14,5 @@ help:
 
 .PHONY: run
 run:  ## Run the sample app
-	cargo build
+	cargo build --locked
 	env $(LIB_PATH_NAME)=target/debug python3 app.py

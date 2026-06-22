@@ -16,7 +16,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="quantity_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -42,7 +42,7 @@ def test_disabled_quantities_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="quantity_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -61,7 +61,7 @@ def test_get_value_throws_value_error_if_nothing_is_stored():
             lifetime=Lifetime.APPLICATION,
             name="quantity_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -77,7 +77,7 @@ def test_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="quantity_metric",
             send_in_pings=["store1", "store2"],
-            dynamic_label=None,
+            label=None,
         )
     )
 
@@ -101,7 +101,7 @@ def test_negative_values_are_not_counted():
             lifetime=Lifetime.APPLICATION,
             name="quantity_metric",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         )
     )
 

@@ -20,7 +20,7 @@ def test_the_api_saves_to_its_storage_engine():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -42,7 +42,7 @@ def test_disabled_timing_distributions_must_not_record_data():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -61,7 +61,7 @@ def test_get_value_throws():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -77,7 +77,7 @@ def test_api_saves_to_secondary_pings():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1", "store2", "store3"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -100,7 +100,7 @@ def test_stopping_a_non_existent_timer_records_an_error():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1", "store2", "store3"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -120,7 +120,7 @@ def test_measure():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["baseline"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -143,7 +143,7 @@ def test_measure_exception():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["baseline"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )
@@ -163,7 +163,7 @@ def test_the_accumulate_apis_record_data():
             lifetime=Lifetime.APPLICATION,
             name="timing_distribution",
             send_in_pings=["store1"],
-            dynamic_label=None,
+            label=None,
         ),
         time_unit=TimeUnit.NANOSECOND,
     )

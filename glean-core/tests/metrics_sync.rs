@@ -29,6 +29,8 @@ static DEFINITION_ONLY: &[&str] = &[
     "glean.session_start",
     /* in foreign language wrapper */
     "glean.validation.foreground_count",
+    /* kept active while Rkv-powered Glean is in use */
+    "glean.database.rkv_load_error",
 ];
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]

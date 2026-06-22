@@ -34,7 +34,7 @@ impl<K> MallocSizeOf for ObjectMetric<K> {
 }
 
 impl<'a, K> MetricIdentifier<'a> for ObjectMetric<K> {
-    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<&'a str>) {
+    fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>) {
         self.inner.get_identifiers()
     }
 }

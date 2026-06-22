@@ -9,7 +9,7 @@ use std::sync::atomic::AtomicU8;
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, ErrorType};
 use crate::metrics::{Metric, MetricType, RecordedExperiment};
-use crate::storage::{StorageManager, INTERNAL_STORAGE};
+use crate::storage::INTERNAL_STORAGE;
 use crate::util::{truncate_string_at_boundary, truncate_string_at_boundary_with_error};
 use crate::Lifetime;
 use crate::{CommonMetricData, Glean};
@@ -205,12 +205,7 @@ impl ExperimentMetric {
     ///
     /// The stored value or `None` if nothing stored.
     pub fn test_get_value(&self, glean: &Glean) -> Option<RecordedExperiment> {
-        match StorageManager.snapshot_metric(
-            glean.storage(),
-            INTERNAL_STORAGE,
-            &self.meta.identifier(glean),
-            self.meta.inner.lifetime,
-        ) {
+        match glean.storage().get_metric(self.meta(), INTERNAL_STORAGE) {
             Some(Metric::Experiment(e)) => Some(e),
             _ => None,
         }
