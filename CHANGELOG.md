@@ -6,6 +6,16 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...v69.0.0)
 
+* General
+  * BREAKING CHANGE: Replaced the client-side storage backend with a SQLite-powered one.
+    This is major change and large refactoring of the Glean SDK internals, but has very limited breaking changes in the
+    public API (breaking changes in the Rust API only).
+    Data is migrated from the old rkv-powered storage to the SQLite database on first start with this Glean SDK version.
+    The Rkv data is retained for now. Only the SQLite-backed data is written to for new metric recordings.
+    New `glean.migration.*` metrics were added to monitor and validate the migration process.
+    Other monitoring metrics are preserved.
+    The `glean.database.rkv_load_error` has been replaced by a more generic `glean.database.load_error` with similar semantics.
+
 # v68.0.0 (2026-06-19)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...v68.0.0)
