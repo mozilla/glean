@@ -445,6 +445,10 @@ glean.internal.metrics:
           description: |
             Optional threshold for event buffering before an events
             ping is collected and submitted. Can be null if not set.
+        session_sample_rate:
+          type: number
+          description: |
+            Optional sample rate for session pings. Can be null if not set.
 
 
 glean.internal.metrics.attribution:
