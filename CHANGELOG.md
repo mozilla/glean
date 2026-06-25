@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...main)
 
+* General
+  * BUGFIX: Don't clear unrelated stores if they share a prefix with the one being cleared ([#3516](https://github.com/mozilla/glean/pull/3516))
+
 # v68.0.0 (2026-06-19)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v67.5.0...v68.0.0)
