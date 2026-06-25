@@ -648,22 +648,24 @@ impl Database {
     ///
     /// This function will **not** panic on database errors.
     pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
+        let storage_name = Self::get_storage_key(storage_name, None);
+
         // Lifetime::Ping data will be saved to `ping_lifetime_data`
         // in case `delay_ping_lifetime_io` is set to true
         if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
             ping_lifetime_data
                 .write()
                 .expect("Can't access ping lifetime data as writable")
-                .retain(|metric_id, _| !metric_id.starts_with(storage_name));
+                .retain(|metric_id, _| !metric_id.starts_with(&storage_name));
         }
 
         self.write_with_store(Lifetime::Ping, |mut writer, store| {
             let mut metrics = Vec::new();
             {
-                let mut iter = store.iter_from(&writer, storage_name)?;
+                let mut iter = store.iter_from(&writer, &storage_name)?;
                 while let Some(Ok((metric_id, _))) = iter.next() {
                     if let Ok(metric_id) = std::str::from_utf8(metric_id) {
-                        if !metric_id.starts_with(storage_name) {
+                        if !metric_id.starts_with(&storage_name) {
                             break;
                         }
                         metrics.push(metric_id.to_owned());
