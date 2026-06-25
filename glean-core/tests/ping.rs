@@ -323,3 +323,103 @@ fn database_write_timings_get_recorded() {
         "writing should take some time"
     );
 }
+
+#[test]
+fn clearing_storage_by_prefix_doesnt_clear_unrelated() {
+    let (mut glean, _t) = new_glean(None);
+
+    let prefix = String::from("prefix");
+    let other = format!("{prefix}-other");
+
+    let prefix_ping = new_test_ping(&mut glean, &prefix);
+    glean.register_ping_type(&prefix_ping);
+
+    let other_ping = new_test_ping(&mut glean, &other);
+    glean.register_ping_type(&other_ping);
+
+    // We need to store a metric to record something.
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec![prefix.clone(), other.clone()],
+        ..Default::default()
+    });
+    counter.add_sync(&glean, 1);
+
+    assert_eq!(1, counter.get_value(&glean, Some(&*prefix)).unwrap());
+    assert_eq!(1, counter.get_value(&glean, Some(&*other)).unwrap());
+
+    assert!(prefix_ping.submit_sync(&glean, None));
+
+    assert_eq!(None, counter.get_value(&glean, Some(&*prefix)));
+    assert_eq!(1, counter.get_value(&glean, Some(&*other)).unwrap());
+
+    counter.add_sync(&glean, 1);
+    assert!(other_ping.submit_sync(&glean, None));
+
+    assert_eq!(1, counter.get_value(&glean, Some(&*prefix)).unwrap());
+    assert_eq!(None, counter.get_value(&glean, Some(&*other)));
+}
+
+#[test]
+fn clearing_storage_by_prefix_doesnt_clear_unrelated_delayed_ping_io() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let cfg = glean_core::InternalConfiguration {
+        data_path: dir.path().display().to_string(),
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: true, // Differs from `new_glean`
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: false,
+        experimentation_id: None,
+        enable_internal_pings: true,
+        ping_schedule: Default::default(),
+        ping_lifetime_threshold: 0,
+        ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
+        session_mode: glean_core::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
+    };
+    let mut glean = glean_core::Glean::new(cfg).unwrap();
+
+    let prefix = String::from("prefix");
+    let other = format!("{prefix}-other");
+
+    let prefix_ping = new_test_ping(&mut glean, &prefix);
+    glean.register_ping_type(&prefix_ping);
+
+    let other_ping = new_test_ping(&mut glean, &other);
+    glean.register_ping_type(&other_ping);
+
+    // We need to store a metric to record something.
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec![prefix.clone(), other.clone()],
+        ..Default::default()
+    });
+    counter.add_sync(&glean, 1);
+
+    assert_eq!(1, counter.get_value(&glean, Some(&*prefix)).unwrap());
+    assert_eq!(1, counter.get_value(&glean, Some(&*other)).unwrap());
+
+    assert!(prefix_ping.submit_sync(&glean, None));
+
+    assert_eq!(None, counter.get_value(&glean, Some(&*prefix)));
+    assert_eq!(1, counter.get_value(&glean, Some(&*other)).unwrap());
+
+    counter.add_sync(&glean, 1);
+    assert!(other_ping.submit_sync(&glean, None));
+
+    assert_eq!(1, counter.get_value(&glean, Some(&*prefix)).unwrap());
+    assert_eq!(None, counter.get_value(&glean, Some(&*other)));
+}
