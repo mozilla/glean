@@ -1209,10 +1209,10 @@ fn records_database_file_size() {
     // We should see the database containing some data.
     assert!(data.sum > 0);
 
-    let load_state = &glean.database_metrics.load_error;
-    let load_error = load_state.get_value(&glean, "metrics");
+    let rkv_load_state = &glean.database_metrics.rkv_load_error;
+    let rkv_load_error = rkv_load_state.get_value(&glean, "metrics");
 
-    assert_eq!(load_error, None);
+    assert_eq!(rkv_load_error, None);
 }
 
 #[cfg(not(target_os = "windows"))]

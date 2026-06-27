@@ -18,12 +18,11 @@ pub enum Lifetime {
 }
 
 #[derive(uniffi::Enum)]
-pub enum MetricLabel {
-    Static(String),
+pub enum DynamicLabelType {
     Label(String),
-    KeyOnly(String, String),
-    CategoryOnly(String, String),
-    KeyAndCategory(String, String),
+    KeyOnly(String),
+    CategoryOnly(String),
+    KeyAndCategory(String),
 }
 
 #[derive(uniffi::Record, Default)]
@@ -33,7 +32,7 @@ pub struct CommonMetricData {
     pub send_in_pings: Vec<String>,
     pub lifetime: Lifetime,
     pub disabled: bool,
-    pub label: Option<MetricLabel>,
+    pub dynamic_label: Option<DynamicLabelType>,
     pub in_session: bool,
 }
 

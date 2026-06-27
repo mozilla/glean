@@ -379,7 +379,7 @@ interface PingType {
     void set_enabled(boolean enabled);
 };
 
-typedef enum MetricLabel;
+typedef enum DynamicLabelType;
 
 // The common set of data shared across all different metric types.
 dictionary CommonMetricData {
@@ -398,12 +398,12 @@ dictionary CommonMetricData {
     // Disabled metrics are never recorded.
     boolean disabled;
 
-    // Label for this metric.
+    // Dynamic label.
     //
     // When a labeled metric factory creates the specific metric to be recorded to,
-    // labels are stored in the metric data
-    // so that it can validated against the database later.
-    MetricLabel? label = null;
+    // dynamic labels are stored in the specific label so that
+    // we can validate them when the Glean singleton is available.
+    DynamicLabelType? dynamic_label = null;
 
     // Whether this metric is inside of the session scope.
     //

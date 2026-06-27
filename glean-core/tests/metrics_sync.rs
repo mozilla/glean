@@ -29,8 +29,13 @@ static DEFINITION_ONLY: &[&str] = &[
     "glean.session_start",
     /* in foreign language wrapper */
     "glean.validation.foreground_count",
-    /* kept active while Rkv-powered Glean is in use */
-    "glean.database.rkv_load_error",
+    /* sqlite migration metrics */
+    "glean.database.load_error",
+    "glean.migration.error",
+    "glean.migration.failed_metrics",
+    "glean.migration.metrics_in_sqlite",
+    "glean.migration.migrated_metrics",
+    "glean.migration.migration_duration",
 ];
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]

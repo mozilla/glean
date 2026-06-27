@@ -1487,7 +1487,7 @@ glean.migration:
       - metrics
       - health
   migration_duration:
-    type: timing_distribution
+    type: timespan
     lifetime: ping
     time_unit: millisecond
     description: |

@@ -5,11 +5,12 @@
 use std::mem;
 use std::sync::Arc;
 
-use crate::common_metric_data::{CommonMetricDataInternal, MetricLabel};
+use crate::common_metric_data::{CommonMetricDataInternal, DynamicLabelType};
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::histogram::{Functional, Histogram};
 use crate::metrics::memory_unit::MemoryUnit;
 use crate::metrics::{DistributionData, Metric, MetricType};
+use crate::storage::StorageManager;
 use crate::Glean;
 use crate::{CommonMetricData, TestGetValue};
 
@@ -63,9 +64,9 @@ impl MetricType for MemoryDistributionMetric {
         }
     }
 
-    fn with_label(&self, label: MetricLabel) -> Self {
+    fn with_dynamic_label(&self, label: DynamicLabelType) -> Self {
         let mut meta = (*self.meta).clone();
-        meta.inner.label = Some(label);
+        meta.inner.dynamic_label = Some(label);
         Self {
             meta: Arc::new(meta),
             memory_unit: self.memory_unit,
@@ -256,7 +257,12 @@ impl MemoryDistributionMetric {
             .into()
             .unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
-        match glean.storage().get_metric(self.meta(), queried_ping_name) {
+        match StorageManager.snapshot_metric(
+            glean.storage(),
+            queried_ping_name,
+            &self.meta.identifier(glean),
+            self.meta.inner.lifetime,
+        ) {
             Some(Metric::MemoryDistribution(hist)) => Some(snapshot(&hist)),
             _ => None,
         }
