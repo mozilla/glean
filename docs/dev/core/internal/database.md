@@ -1,6 +1,6 @@
 # Database format
 
-The Glean SDK stores all recorded data in an [SQLite] database for persistence.
+The Glean SDK stores all recorded data in a [SQLite] database for persistence.
 This data is read, written and transformed by the core implementation.
 
 Internal metrics are stored similar to user-defined metrics.
