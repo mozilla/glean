@@ -316,6 +316,11 @@ criteria = "safe-to-deploy"
 delta = "1.1.4 -> 1.1.9"
 notes = "No new unsafe code, some cleanup and a new function added"
 
+[[audits.camino]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "1.1.9 -> 1.2.3"
+
 [[audits.cargo-platform]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
