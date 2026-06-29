@@ -167,7 +167,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
 
     // Accumulate the samples. We intentionally do not report
     // negative values to not trigger error reporting.
-    metric.accumulate_samples_sync(&glean, &[1, 2, 3]);
+    metric.accumulate_samples_sync(&glean, &[0, 1, 2, 3]);
 
     let snapshot = metric
         .get_value(&glean, "store1")
@@ -179,11 +179,12 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
     assert_eq!(snapshot.sum, 6 * seconds_to_nanos);
 
     // Check that we got the right number of samples.
-    assert_eq!(snapshot.count, 3);
+    assert_eq!(snapshot.count, 4);
 
-    // We should get a sample in 3 buckets.
+    // We should get a sample in 4 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = 1..=3`.
+    assert_eq!(1, snapshot.values[&0]);
     assert_eq!(1, snapshot.values[&984625593]);
     assert_eq!(1, snapshot.values[&1969251187]);
     assert_eq!(1, snapshot.values[&2784941737]);
@@ -399,7 +400,7 @@ fn raw_samples_api_error_cases() {
     metric.accumulate_raw_samples_nanos_sync(
         &glean,
         &[
-            0,                   /* rounded up to 1 */
+            0,                   /* valid */
             1,                   /* valid */
             max_sample_time + 1, /* larger then the maximum, will record an error and the maximum */
         ],
@@ -410,7 +411,7 @@ fn raw_samples_api_error_cases() {
         .expect("Value should be stored");
 
     // Check that we got the right sum.
-    assert_eq!(snapshot.sum, 2 + max_sample_time as i64);
+    assert_eq!(snapshot.sum, 1 + max_sample_time as i64);
 
     // Check that we got the right number of samples.
     assert_eq!(snapshot.count, 3);
@@ -418,7 +419,8 @@ fn raw_samples_api_error_cases() {
     // We should get a sample in 3 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * seconds_to_nanos)` for `i = {1, max_sample_time}`.
-    assert_eq!(2, snapshot.values[&1]);
+    assert_eq!(1, snapshot.values[&0]);
+    assert_eq!(1, snapshot.values[&1]);
     assert_eq!(1, snapshot.values[&599512966122]);
 
     // 1 error should be reported.

@@ -127,7 +127,7 @@ fn the_accumulate_samples_api_correctly_stores_memory_values() {
 
     // Accumulate the samples. We intentionally do not report
     // negative values to not trigger error reporting.
-    metric.accumulate_samples_sync(&glean, [1, 2, 3].to_vec());
+    metric.accumulate_samples_sync(&glean, [0, 1, 2, 3].to_vec());
 
     let snapshot = metric
         .get_value(&glean, "store1")
@@ -138,9 +138,13 @@ fn the_accumulate_samples_api_correctly_stores_memory_values() {
     // Check that we got the right sum of samples.
     assert_eq!(snapshot.sum, 6 * kb);
 
-    // We should get a sample in 3 buckets.
+    // Check that we have the right count of samples.
+    assert_eq!(snapshot.count, 4);
+
+    // We should get a sample in 4 buckets.
     // These numbers are a bit magic, but they correspond to
     // `hist.sample_to_bucket_minimum(i * kb)` for `i = 1..=3`.
+    assert_eq!(1, snapshot.values[&0]);
     assert_eq!(1, snapshot.values[&1023]);
     assert_eq!(1, snapshot.values[&2047]);
     assert_eq!(1, snapshot.values[&3024]);
