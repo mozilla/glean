@@ -77,7 +77,9 @@ macro_rules! library_binding {
             pub fn load() -> std::io::Result<Self> {
                 // On iOS we compile it all together and can look up symbols without loading a library
                 let $localname: libloading::Library = libloading::os::unix::Library::this().into();
-                Ok(GleanSym { $($load)* _library: $localname })
+                let handle = GleanSym { $($load)* _library: $localname };
+                handle.check()?;
+                Ok(handle)
             }
 
             #[cfg(not(unix))]
