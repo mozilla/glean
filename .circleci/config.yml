@@ -288,7 +288,7 @@ jobs:
           name: Check vendored schema for upstream updates
           command: |
             bin/update-schema.sh HEAD
-            if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
+            if ! git diff --exit-code HEAD -- glean.1.schema.json; then
               echo "===================================="
               echo "Latest schema from upstream changed."
               echo "Please regenerate the file using:"
