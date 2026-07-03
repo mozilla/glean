@@ -159,12 +159,14 @@ class PingType<ReasonCodesEnum>(
      */
     @JvmOverloads
     fun submit(reason: ReasonCodesEnum? = null) {
-        Dispatchers.Delayed.launch {
-            this.testCallback?.let {
-                it(reason)
-            }
-            this.testCallback = null
+        this.testCallback?.let {
+            // If there's a callback, we're in tests and can block to wait for other recordings.
+            // The callback needs to be called on _this_ thread, as it may put things on the dispatcher.
+            it(reason)
+        }
+        this.testCallback = null
 
+        Dispatchers.Delayed.launch {
             val reasonString = reason?.let { this.reasonCodes[it.code()] }
             this.innerPing.submit(reasonString)
         }
