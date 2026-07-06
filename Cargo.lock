@@ -857,9 +857,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.176"
+version = "0.2.186"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58f929b4d672ea937a23a1ab494143d968337a5f47e56d0815df1e0890ddf174"
+checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
 
 [[package]]
 name = "libloading"
@@ -2056,9 +2056,9 @@ dependencies = [
 
 [[package]]
 name = "zeitstempel"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3347afac8523417112bc46e087add86d639eb76c84a16209d34aa5c6e8d16edd"
+checksum = "d7082d20989e6410d2d1c304c8b73fb66aa2c8f68a169b94bf31d340e85b3a4f"
 dependencies = [
  "cfg-if",
  "libc",
