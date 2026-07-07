@@ -103,6 +103,32 @@ be scheduled and sent at the same frequency as another ping, like `baseline`.
 > and ensure that you have not accidentally created any cycles with the
 > ping references.
 
+##### `include_info_sections`
+
+_default: `true`_
+
+When `true`, assemble and include the `client_info` and `ping_info` sections in the ping on submission.  
+When `false`, omit the `client_info` and `ping_info` sections when assembling the ping on submission.
+
+Interaction with `include_client_id`: `include_client_id` only takes effect when `metadata.include_info_sections` is `true`.
+
+##### `follows_collection_enabled`
+
+_default: `true`_
+
+Whether this ping follows the built-in collection enabled flag.
+
+Setting this to `false` disables the ping by default.
+Call [`setEnabled`](../pings/index.md#setenabled) to enable the ping at runtime.
+Metrics for a ping that does not follow `collection-enabled` are not recorded while the ping is disabled.
+
+If a ping does not follow the `collection-enabled` flag additional requirements might apply:
+
+* It might need its own `deletion-request` ping or integration into an existing one
+* Whether to enable or disable this ping should be tied to a preference to allow for opt-out
+
+If in doubt, reach out to the Glean team before using this.
+
 #### `include_client_id`
 
 A boolean indicating whether to include the client_id in

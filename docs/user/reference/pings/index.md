@@ -116,12 +116,19 @@ GleanPings.search.submit("performed");
 
 ### `setEnabled`
 
-Called with `true`: enables the ping to store data and be able to be submitted.
+Called with `true`: enables the ping to store data and be able to be submitted.  
 Called with `false`: disables the ping, deletes stored data and refuses new data,
 and doesn't submit when `submit()` is called.
 
-You shouldn't need to call this unless your ping has `follows_collection_enabled: false`,
-as Glean will take care of it for you.
+No data is collected for disabled pings.
+Only after enabling the ping (`setEnabled(true)`) data will be recorded.
+
+This should not be called unless the ping sets [`follows_collection_enabled: false`](../yaml/pings.md#follows_collection_enabled).
+
+If a ping does not follow the `collection-enabled` flag additional requirements might apply:
+
+* It might need its own `deletion-request` ping or integration into an existing one
+* Whether to enable or disable this ping should be tied to a preference to allow for opt-out
 
 {{#include ../../../shared/tab_header.md}}
 
