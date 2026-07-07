@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v68.0.1...main)
+
+# v68.0.1 (2026-07-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...v68.0.1)
 
 * General
   * BUGFIX: Don't clear unrelated stores if they share a prefix with the one being cleared ([#3516](https://github.com/mozilla/glean/pull/3516))
