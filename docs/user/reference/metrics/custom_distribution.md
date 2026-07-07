@@ -161,7 +161,6 @@ Glean.graphics.checkerboardPeak.accumulateSingleSample(23);
 
 ### `startBuffer`
 
-**Experimental:**
 Start a new histogram buffer associated with this custom distribution metric.
 
 A histogram buffer accumulates in-memory.
