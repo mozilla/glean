@@ -40,7 +40,6 @@ Additionally, applications (but not libraries) **must**:
 > - [Python](./python.md)
 > - [Rust](./rust.md)
 > - [Swift](./swift.md)
-> - [Qt/QML](./qt.md)
 > - [Server](./server.md)
 
 [Glean Dictionary]: https://dictionary.telemetry.mozilla.org

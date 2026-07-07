@@ -104,7 +104,7 @@ $ GLEAN_SOURCE_TAGS=my-tag,your-tag,our-tag python my_application.py
 $ GLEAN_SOURCE_TAGS=my-tag,your-tag,our-tag cargo run
 ```
 </div>
-<div data-lang="JavaScript" class="tab" data-info="It is not possible to access environment variables from the currently supported JavaScript platforms: Qt and browsers."></div>
+<div data-lang="JavaScript" class="tab" data-info="It is not possible to access environment variables from the browser"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 ```bash
