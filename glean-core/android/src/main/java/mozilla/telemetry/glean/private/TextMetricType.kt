@@ -44,7 +44,8 @@ class TextMetricType constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+    fun testGetValue(pingName: String? = null) =
+        Dispatchers.Delayed.launchBlocking { this.inner.testGetValue(pingName) }
 
     /**
      * Returns the number of errors recorded for the given metric.
@@ -53,5 +54,6 @@ class TextMetricType constructor(
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+    fun testGetNumRecordedErrors(errorType: ErrorType) =
+        Dispatchers.Delayed.launchBlocking { inner.testGetNumRecordedErrors(errorType) }
 }
