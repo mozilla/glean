@@ -595,6 +595,7 @@ dependencies = [
  "flate2",
  "log",
  "malloc_size_of_derive",
+ "mozbuild",
  "once_cell",
  "oslog",
  "pulldown-cmark",
@@ -925,6 +926,12 @@ checksum = "4ffbe83022cedc1d264172192511ae958937694cd57ce297164951b8b3568394"
 dependencies = [
  "adler2",
 ]
+
+[[package]]
+name = "mozbuild"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "903970ae2f248d7275214cf8f387f8ba0c4ea7e3d87a320e85493db60ce28616"
 
 [[package]]
 name = "nom"

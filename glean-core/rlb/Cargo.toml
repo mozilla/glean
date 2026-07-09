@@ -42,3 +42,4 @@ tempfile = "3.1.0"
 
 [features]
 gecko = ["glean-core/gecko"]
+mozbuild-rustlib = ["glean-core/mozbuild-rustlib"]

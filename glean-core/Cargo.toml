@@ -65,6 +65,7 @@ yaml-rust2 = "0.10"
 
 [build-dependencies]
 uniffi = { version = "0.31.0", default-features = false, features = ["build"] }
+mozbuild = "0.1"
 
 [features]
 # Enable `env_logger`. Only works on non-Android non-iOS targets.
@@ -73,3 +74,5 @@ enable_env_logger = ["env_logger"]
 gecko = []
 # Expose some internals for easier benchmarking
 benchmark = []
+# Explicitly link against m-c libraries
+mozbuild-rustlib = []
