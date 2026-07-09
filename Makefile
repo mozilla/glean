@@ -95,7 +95,7 @@ test-python: build-python ## Run all Python tests
 lint: lint-rust lint-kotlin lint-swift lint-yaml lint-python
 
 lint-rust: ## Run cargo-clippy to lint Rust code
-	cargo clippy --all --all-targets --all-features -- -D warnings -A unknown-lints
+	cargo clippy --all --all-targets --features "enable_env_logger gecko benchmark" -- -D warnings -A unknown-lints
 
 lint-kotlin: ## Run ktlint to lint Kotlin code
 	./gradlew lint ktlint detekt
