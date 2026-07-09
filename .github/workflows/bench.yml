@@ -13,9 +13,11 @@ jobs:
       deployment: false
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - uses: dtolnay/rust-toolchain@stable
-    - uses: Swatinem/rust-cache@v2
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: dtolnay/rust-toolchain@a75363d06101555fc97c6c7e1e65670b99104d98 # 1.96
+      with:
+        toolchain: stable
+    - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
     - name: Set up dependencies
       run: |
         sudo apt-get update
@@ -37,7 +39,7 @@ jobs:
         set -x
         cargo benchmark --bench instruction-count --features gungraun
 
-    - uses: actions/upload-artifact@v7
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
       with:
         name: gungraun-output
