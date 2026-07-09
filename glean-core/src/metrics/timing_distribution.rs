@@ -241,7 +241,7 @@ impl TimingDistributionMetric {
         let min_sample_time = self.time_unit.as_nanos(1);
         let max_sample_time = self.time_unit.as_nanos(MAX_SAMPLE_TIME);
 
-        duration = if duration < min_sample_time {
+        duration = if duration < min_sample_time && duration > 0 {
             // If measurement is less than the minimum, just truncate. This is
             // not recorded as an error.
             min_sample_time
@@ -389,9 +389,7 @@ impl TimingDistributionMetric {
                     // Check the range prior to converting the incoming unit to
                     // nanoseconds, so we can compare against the constant
                     // MAX_SAMPLE_TIME.
-                    if sample == 0 {
-                        sample = 1;
-                    } else if sample > MAX_SAMPLE_TIME {
+                    if sample > MAX_SAMPLE_TIME {
                         num_too_long_samples += 1;
                         sample = MAX_SAMPLE_TIME;
                     }
@@ -502,7 +500,7 @@ impl TimingDistributionMetric {
             for &sample in samples.iter() {
                 let mut sample = sample;
 
-                if sample < min_sample_time {
+                if sample < min_sample_time && sample > 0 {
                     sample = min_sample_time;
                 } else if sample > max_sample_time {
                     num_too_long_samples += 1;
@@ -664,9 +662,7 @@ impl<'a> LocalTimingDistribution<'a> {
         // Check the range prior to converting the incoming unit to
         // nanoseconds, so we can compare against the constant
         // MAX_SAMPLE_TIME.
-        let sample = if sample == 0 {
-            1
-        } else if sample > MAX_SAMPLE_TIME {
+        let sample = if sample > MAX_SAMPLE_TIME {
             self.errors += 1;
             MAX_SAMPLE_TIME
         } else {
