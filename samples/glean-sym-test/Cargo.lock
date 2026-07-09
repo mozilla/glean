@@ -462,6 +462,7 @@ dependencies = [
  "flate2",
  "log",
  "malloc_size_of_derive",
+ "mozbuild",
  "once_cell",
  "oslog",
  "rkv",
@@ -834,6 +835,12 @@ dependencies = [
  "adler2",
  "simd-adler32",
 ]
+
+[[package]]
+name = "mozbuild"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a051f109c6fe91717f24441d810cf2a90a344628d686a093eeb12546ab6910cf"
 
 [[package]]
 name = "nom"
