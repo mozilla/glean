@@ -48,3 +48,35 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+
+  event:
+    type: event
+    description: |
+      Just testing strings
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+
+  event_with_extras:
+    type: event
+    description: |
+      Just testing strings
+    bugs:
+      - https://bugzilla.mozilla.org/123456789
+    data_reviews:
+      - N/A
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - prototype
+    extra_keys:
+      is_set:
+        type: boolean
+        description: "True if this extra is set"

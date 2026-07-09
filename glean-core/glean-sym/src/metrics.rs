@@ -9,6 +9,7 @@
 // `glean-sym` tests ensure the vendored copy is unmodified.
 // This can be verified by running `cargo test -p glean-sym`.
 #![allow(clippy::all)]
+#![allow(unused)]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
@@ -1113,7 +1114,7 @@ impl DatetimeMetric {
     }
 }
 #[derive(uniffi::Record)]
-pub struct EventMetric {
+pub(crate) struct EventMetric {
     handle: u64,
 }
 impl EventMetric {

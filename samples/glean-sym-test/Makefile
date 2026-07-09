@@ -15,4 +15,4 @@ help:
 .PHONY: run
 run:  ## Run the sample app
 	cargo build --locked
-	env $(LIB_PATH_NAME)=target/debug python3 app.py
+	env $(LIB_PATH_NAME)=target/debug uv run pytest app.py
