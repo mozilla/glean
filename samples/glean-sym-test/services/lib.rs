@@ -32,5 +32,9 @@ unsafe extern "C" fn record(amount: i32) {
     let stored = glean_metrics::dylib::data.test_get_value(None).unwrap();
     assert_eq!("value", stored);
 
+    glean_metrics::dylib::event.record(None);
+    let extra = glean_metrics::dylib::EventWithExtrasExtra { is_set: Some(true) };
+    glean_metrics::dylib::event_with_extras.record(extra);
+
     glean_metrics::dylib::timing.stop_and_accumulate(tid);
 }

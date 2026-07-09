@@ -15,37 +15,49 @@ def library_name(name):
     return f"lib{name}.{suffix}"
 
 
-xul = cdll.LoadLibrary(library_name("xul"))
-services = cdll.LoadLibrary(library_name("services"))
+def test_run():
+    xul = cdll.LoadLibrary(library_name("xul"))
+    services = cdll.LoadLibrary(library_name("services"))
 
-with tempfile.TemporaryDirectory() as data_path:
-    startup_fn = xul.startup
-    startup_fn.argtypes = [ctypes.c_char_p]
-    startup_fn(str.encode(data_path))
+    with tempfile.TemporaryDirectory() as data_path:
+        startup_fn = xul.startup
+        startup_fn.argtypes = [ctypes.c_char_p]
+        startup_fn(str.encode(data_path))
 
-    services_record = services.record
-    services_record.argtypes = [ctypes.c_int32]
+        services_record = services.record
+        services_record.argtypes = [ctypes.c_int32]
 
-    amount = 31
-    services_record(amount)
+        amount = 31
+        services_record(amount)
 
-    xul.submit()
-    xul.shutdown()
+        xul.submit()
+        xul.shutdown()
 
-    # Check that
-    # * We submitted one ping only
-    # * It's the `prototype` ping
-    # * It contains 2 metrics with the expected values
-    path = os.path.join(data_path, "sent_pings")
-    for root, dirs, files in os.walk(path):
-        assert len(files) == 1
-        assert "prototype-" in files[0]
+        # Check that
+        # * We submitted one ping only
+        # * It's the `prototype` ping
+        # * It contains several metrics with the expected values
+        path = os.path.join(data_path, "sent_pings")
+        for root, dirs, files in os.walk(path):
+            assert len(files) == 1
+            assert "prototype-" in files[0]
 
-        sent_ping = os.path.join(path, files[0])
-        data = open(sent_ping).read()
-        end_first_object = data.find("}")
-        payload = json.loads(data[end_first_object + 1 :])
-        counter = payload["metrics"]["counter"]
+            sent_ping = os.path.join(path, files[0])
+            data = open(sent_ping).read()
+            end_first_object = data.find("}")
+            payload = json.loads(data[end_first_object + 1 :])
+            counter = payload["metrics"]["counter"]
+            events = payload["events"]
 
-        assert 1 == counter["test.metrics.sample_counter"]
-        assert amount == counter["dylib.counting"]
+            assert 1 == counter["test.metrics.sample_counter"]
+            assert amount == counter["dylib.counting"]
+
+            assert 2 == len(events)
+
+            no_extra = events[0]
+            assert "event" == no_extra["name"]
+
+            with_extra = events[1]
+            assert "event_with_extras" == with_extra["name"]
+            extras = with_extra["extra"]
+            assert "true", extras["is_set"]

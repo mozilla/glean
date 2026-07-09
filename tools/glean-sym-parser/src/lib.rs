@@ -25,6 +25,7 @@ const PREAMBLE: &str = r#"// DO NOT MODIFY!
 // `glean-sym` tests ensure the vendored copy is unmodified.
 // This can be verified by running `cargo test -p glean-sym`.
 #![allow(clippy::all)]
+#![allow(unused)]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
@@ -90,9 +91,14 @@ pub fn generate(content: &str) -> String {
         let structname = ident.0.to_lowercase().replace("_", "");
         let ident = format_ident!("{}", ident.0);
         let extern_fn_ident = format_ident!("uniffi_glean_core_fn_clone_{}", structname);
+        let visibility = if structname == "eventmetric" {
+            quote! { pub(crate) }
+        } else {
+            quote! { pub }
+        };
         tokens.push(quote! {
             #[derive(uniffi::Record)]
-            pub struct #ident {
+            #visibility struct #ident {
                 handle: u64
             }
 

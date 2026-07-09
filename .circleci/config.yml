@@ -121,6 +121,7 @@ commands:
       - run:
           name: Run glean-sym sample
           command: |
+            pip install uv
             cd samples/glean-sym-test
             make run
 
