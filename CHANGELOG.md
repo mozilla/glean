@@ -9,6 +9,7 @@
     * Run database maintenance after migration ([#3540](https://github.com/mozilla/glean/pull/3540)
     * Run database maintenance at shutdown & after collecting ping data ([#3559](https://github.com/mozilla/glean/pull/3559))
     * Validate that the database connection on open is usable for reads and writes ([#3513](https://github.com/mozilla/glean/pull/3513))
+    * Keep state about migration in the database ([#3545](https://github.com/mozilla/glean/pull/3545))
 * Rust
   * glean-sym
     * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
