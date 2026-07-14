@@ -171,11 +171,13 @@ impl Database {
 
         if sqlite_exists {
             log::debug!("SQLite database already exists. Not trying to migrate Rkv");
+            db.run_maintenance(false)?;
         } else {
             match migration::try_migrate(&path, &db) {
                 Ok(Some(state)) => {
                     log::debug!("Migration done. state={state:?}");
                     db.migration_state = Some(state);
+                    db.run_maintenance(true)?;
                 }
                 Ok(None) => {
                     log::debug!("No migration.");
@@ -202,6 +204,52 @@ impl Database {
         } else {
             None
         }
+    }
+
+    /// Run periodic database maintenance.
+    ///
+    /// If `force=true` always run the full maintenance taks
+    pub fn run_maintenance(&self, force: bool) -> Result<()> {
+        let conn = self.conn.lock();
+        let conn = &*conn;
+
+        self.run_maintenance_vacuum(conn, force)?;
+        self.run_maintenance_optimize(conn)?;
+        self.run_maintenance_checkpoint(conn)?;
+
+        Ok(())
+    }
+
+    /// Run maintenance on the database (vacuum step)
+    ///
+    /// If `force_full: true` it _always_ runs a full `VACUUM`.
+    fn run_maintenance_vacuum(&self, conn: &rusqlite::Connection, force_full: bool) -> Result<()> {
+        let auto_vacuum_setting: u32 =
+            conn.query_row_and_then("PRAGMA auto_vacuum", [], |row| row.get(0))?;
+        if !force_full && auto_vacuum_setting == 2 {
+            // Ideally, we run an incremental vacuum to delete 2 pages
+            conn.execute("PRAGMA incremental_vacuum(2)", [])?;
+        } else {
+            // If auto_vacuum=incremental isn't set, configure it and run a full vacuum.
+            log::warn!(
+                "run_maintenance_vacuum: Need to run a full vacuum to set auto_vacuum=incremental"
+            );
+            conn.execute("PRAGMA auto_vacuum=incremental", [])?;
+            conn.execute("VACUUM", [])?;
+        }
+        Ok(())
+    }
+
+    /// Run maintenance on the database (optimize step)
+    fn run_maintenance_optimize(&self, conn: &rusqlite::Connection) -> Result<()> {
+        conn.execute("PRAGMA optimize", [])?;
+        Ok(())
+    }
+
+    /// Run maintenance on the database (checkpoint step)
+    fn run_maintenance_checkpoint(&self, conn: &rusqlite::Connection) -> Result<()> {
+        conn.query_row("PRAGMA wal_checkpoint(PASSIVE)", [], |_| Ok(()))?;
+        Ok(())
     }
 
     /// Iterates with the provided transaction function
