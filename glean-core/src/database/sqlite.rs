@@ -158,7 +158,6 @@ impl Database {
 
         fs::create_dir_all(&path)?;
         let store_path = path.join(DEFAULT_DATABASE_FILE_NAME);
-        let sqlite_exists = store_path.exists();
         let (conn, load_state) = sqlite_open(&store_path)?;
 
         let mut db = Self {
@@ -169,23 +168,19 @@ impl Database {
             migration_error: MigrationResult::Unknown,
         };
 
-        if sqlite_exists {
-            log::debug!("SQLite database already exists. Not trying to migrate Rkv");
-            db.run_maintenance(false)?;
-        } else {
-            match migration::try_migrate(&path, &db) {
-                Ok(Some(state)) => {
-                    log::debug!("Migration done. state={state:?}");
-                    db.migration_state = Some(state);
-                    db.run_maintenance(true)?;
-                }
-                Ok(None) => {
-                    log::debug!("No migration.");
-                }
-                Err(e) => {
-                    db.migration_error = MigrationResult::Error;
-                    log::warn!("Migration failed! Continuing with SQLite backend without migrated data. Error: {e:?}")
-                }
+        match migration::try_migrate(&path, &db) {
+            Ok(Some(state)) => {
+                log::debug!("Migration done. state={state:?}");
+                db.migration_state = Some(state);
+                db.run_maintenance(true)?;
+            }
+            Ok(None) => {
+                log::debug!("No migration.");
+                db.run_maintenance(false)?;
+            }
+            Err(e) => {
+                db.migration_error = MigrationResult::Error;
+                log::warn!("Migration failed! Continuing with SQLite backend without migrated data. Error: {e:?}")
             }
         }
 
