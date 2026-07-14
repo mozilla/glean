@@ -74,9 +74,11 @@ impl ConnectionOpener for Schema {
                 // Clients upgrading to schema 2 don't have the table.
                 // But they did run through the migration.
                 tx.execute_batch(
-                    "CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);",
+                    "CREATE TABLE migration(
+                        id INTEGER PRIMARY KEY,
+                        state TEXT NOT NULL
+                    );",
                 )?;
-
                 let cid_exists: Option<i32> = tx
                     .query_row(
                         "SELECT 1 FROM telemetry WHERE id = 'client_id'",
