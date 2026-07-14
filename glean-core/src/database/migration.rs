@@ -14,6 +14,7 @@ use crate::Lifetime;
 use crate::Result;
 
 use rkv::StoreOptions;
+use rusqlite::OptionalExtension;
 use rusqlite::Transaction;
 
 use super::sqlite;
@@ -263,6 +264,23 @@ pub fn try_migrate(data_path: &Path, db: &sqlite::Database) -> Result<Option<Mig
         log::debug!("No rkv file. No migration.");
         return Ok(None);
     }
+
+    {
+        let conn = db.conn.lock();
+        let migration_status: Option<String> = conn
+            .query_row("SELECT state FROM migration", [], |row| row.get(0))
+            .optional()?;
+
+        if matches!(migration_status.as_deref(), Some("done")) {
+            log::debug!("Rkv already successfully migrated. Not doing it again.");
+            return Ok(None);
+        }
+    }
+
+    db.conn.write(|tx| {
+        tx.execute("INSERT INTO migration (id, state) VALUES (1, 'started') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
+        Ok::<(), rusqlite::Error>(())
+    })?;
 
     let rkv = RkvDatabase::new(data_path)?;
 
