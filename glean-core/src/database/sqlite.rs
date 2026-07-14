@@ -238,6 +238,11 @@ impl Database {
             }
         }
 
+        db.conn.write(|tx| {
+            tx.execute("INSERT INTO migration (id, state) VALUES (1, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
+            Ok::<(), rusqlite::Error>(())
+        })?;
+
         Ok(db)
     }
 
