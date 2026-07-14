@@ -7,7 +7,8 @@
 //! This module is inspired by, and borrows concepts from, the
 //! Application Services `sql-support` crate.
 
-use std::{fmt::Debug, num::NonZeroU32, path::Path, sync::Mutex};
+use std::sync::{Mutex, MutexGuard};
+use std::{fmt::Debug, num::NonZeroU32, path::Path};
 
 use rusqlite::{OpenFlags, Transaction, TransactionBehavior};
 
@@ -80,6 +81,11 @@ impl Connection {
         Self {
             conn: Mutex::new(conn),
         }
+    }
+
+    /// Get ahold of the connection with no transaction opened.
+    pub fn lock<'a>(&'a self) -> MutexGuard<'a, rusqlite::Connection> {
+        self.conn.lock().unwrap()
     }
 
     /// Accesses the database for reading.
