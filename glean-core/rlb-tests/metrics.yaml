@@ -65,8 +65,6 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
-    no_lint:
-      - COMMON_PREFIX
 
   sample_labeled_string:
     <<: *defaults
@@ -82,8 +80,6 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
-    no_lint:
-      - COMMON_PREFIX
 
   timings:
     <<: *defaults
