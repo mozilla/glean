@@ -85,6 +85,7 @@ pub struct DistributionData {
 }
 
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct TimerId {
     id: u64,
 }
@@ -207,10 +208,15 @@ impl<K: ExtraKeys> EventMetric<K> {
     }
 }
 
+#[cfg(feature = "noop")]
+pub struct PingType;
+
+#[cfg(not(feature = "noop"))]
 pub struct PingType {
     inner: crate::metrics::PingType,
 }
 
+#[cfg(not(feature = "noop"))]
 impl PingType {
     /// Creates a new ping type.
     ///
@@ -263,4 +269,42 @@ impl PingType {
     pub fn set_enabled(&self, enabled: bool) {
         self.inner.set_enabled(enabled)
     }
+}
+
+#[cfg(feature = "noop")]
+impl PingType {
+    /// Creates a new ping type.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the ping.
+    /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
+    /// * `send_if_empty` - Whether the ping should be sent empty or not.
+    /// * `precise_timestamps` - Whether the ping should use precise timestamps for the start and end time.
+    /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
+    /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
+    ///   ping will still be collected and is discarded instead of being submitted.
+    /// * `schedules_pings` - A list of pings which are triggered for submission when this ping is
+    ///   submitted.
+    /// * `reason_codes` - The valid reason codes for this ping.
+    /// * `uploader_capabilities` - The capabilities required during this ping's upload.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new<A: Into<String>>(
+        _name: A,
+        _include_client_id: bool,
+        _send_if_empty: bool,
+        _precise_timestamps: bool,
+        _include_info_sections: bool,
+        _enabled: bool,
+        _schedules_pings: Vec<String>,
+        _reason_codes: Vec<String>,
+        _follows_collection_enabled: bool,
+        _uploader_capabilities: Vec<String>,
+    ) -> Self {
+        Self
+    }
+
+    pub fn submit(&self, _reason: Option<&str>) {}
+
+    pub fn set_enabled(&self, _enabled: bool) {}
 }

@@ -13,19 +13,23 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
+#[cfg(not(feature = "noop"))]
 use crate::util::*;
 
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub(crate) struct PingType {
     handle: u64,
 }
 impl PingType {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_pingtype)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl PingType {
@@ -41,6 +45,7 @@ impl PingType {
         follows_collection_enabled: bool,
         uploader_capabilities: Vec<String>,
     ) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(name);
             let include_client_id = uniffi::FfiConverter::<
@@ -95,8 +100,10 @@ impl PingType {
             name.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn submit(&self, reason: Option<String>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let reason = uniffi::FfiConverter::<crate::UniFfiTag>::lower(reason);
@@ -110,8 +117,10 @@ impl PingType {
             reason.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn set_enabled(&self, enabled: bool) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let enabled = uniffi::FfiConverter::<crate::UniFfiTag>::lower(enabled);
@@ -125,23 +134,28 @@ impl PingType {
             enabled.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct CounterMetric {
     handle: u64,
 }
 impl CounterMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_countermetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl CounterMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -153,8 +167,10 @@ impl CounterMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn add(&self, amount: i32) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -168,8 +184,10 @@ impl CounterMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -183,8 +201,10 @@ impl CounterMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -198,14 +218,17 @@ impl CounterMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct TimespanMetric {
     handle: u64,
 }
 impl TimespanMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -214,10 +237,12 @@ impl TimespanMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl TimespanMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -232,8 +257,10 @@ impl TimespanMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn start(&self) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -244,8 +271,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn stop(&self) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -256,8 +285,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn cancel(&self) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -268,8 +299,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn set_raw_nanos(&self, elapsed: i64) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let elapsed = uniffi::FfiConverter::<crate::UniFfiTag>::lower(elapsed);
@@ -283,8 +316,10 @@ impl TimespanMetric {
             elapsed.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -298,8 +333,10 @@ impl TimespanMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -313,23 +350,28 @@ impl TimespanMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct BooleanMetric {
     handle: u64,
 }
 impl BooleanMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_booleanmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl BooleanMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -341,8 +383,10 @@ impl BooleanMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: bool) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -356,8 +400,10 @@ impl BooleanMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<bool> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -371,8 +417,10 @@ impl BooleanMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -386,23 +434,28 @@ impl BooleanMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct StringMetric {
     handle: u64,
 }
 impl StringMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_stringmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl StringMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -414,8 +467,10 @@ impl StringMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -429,8 +484,10 @@ impl StringMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -444,8 +501,10 @@ impl StringMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -459,14 +518,17 @@ impl StringMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct StringListMetric {
     handle: u64,
 }
 impl StringListMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -475,10 +537,12 @@ impl StringListMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl StringListMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -490,8 +554,10 @@ impl StringListMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn add(&self, value: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -505,8 +571,10 @@ impl StringListMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn set(&self, value: Vec<String>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -520,8 +588,10 @@ impl StringListMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<String>> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -535,8 +605,10 @@ impl StringListMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -550,23 +622,28 @@ impl StringListMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct UrlMetric {
     handle: u64,
 }
 impl UrlMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_urlmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl UrlMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -578,8 +655,10 @@ impl UrlMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -593,8 +672,10 @@ impl UrlMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -608,8 +689,10 @@ impl UrlMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -623,23 +706,28 @@ impl UrlMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct UuidMetric {
     handle: u64,
 }
 impl UuidMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_uuidmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl UuidMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -651,8 +739,10 @@ impl UuidMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -666,8 +756,10 @@ impl UuidMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn generate_and_set(&self) -> String {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -678,8 +770,10 @@ impl UuidMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -693,8 +787,10 @@ impl UuidMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -708,14 +804,17 @@ impl UuidMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct QuantityMetric {
     handle: u64,
 }
 impl QuantityMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -724,10 +823,12 @@ impl QuantityMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl QuantityMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -739,8 +840,10 @@ impl QuantityMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: i64) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -754,8 +857,10 @@ impl QuantityMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -769,8 +874,10 @@ impl QuantityMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -784,14 +891,17 @@ impl QuantityMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct TimingDistributionMetric {
     handle: u64,
 }
 impl TimingDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -800,10 +910,12 @@ impl TimingDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl TimingDistributionMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -818,8 +930,10 @@ impl TimingDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn start(&self) -> TimerId {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -830,8 +944,10 @@ impl TimingDistributionMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn stop_and_accumulate(&self, timer_id: TimerId) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let timer_id = uniffi::FfiConverter::<crate::UniFfiTag>::lower(timer_id);
@@ -845,8 +961,10 @@ impl TimingDistributionMetric {
             timer_id.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn cancel(&self, timer_id: TimerId) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let timer_id = uniffi::FfiConverter::<crate::UniFfiTag>::lower(timer_id);
@@ -860,8 +978,10 @@ impl TimingDistributionMetric {
             timer_id.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -875,8 +995,10 @@ impl TimingDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -890,8 +1012,10 @@ impl TimingDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -905,8 +1029,10 @@ impl TimingDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -920,14 +1046,17 @@ impl TimingDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct MemoryDistributionMetric {
     handle: u64,
 }
 impl MemoryDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -936,10 +1065,12 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl MemoryDistributionMetric {
     pub fn new(meta: CommonMetricData, memory_unit: MemoryUnit) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let memory_unit = uniffi::FfiConverter::<
@@ -956,8 +1087,10 @@ impl MemoryDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn accumulate(&self, sample: i64) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -971,8 +1104,10 @@ impl MemoryDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -986,8 +1121,10 @@ impl MemoryDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1001,8 +1138,10 @@ impl MemoryDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1016,14 +1155,17 @@ impl MemoryDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct CustomDistributionMetric {
     handle: u64,
 }
 impl CustomDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1032,6 +1174,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl CustomDistributionMetric {
@@ -1042,6 +1185,7 @@ impl CustomDistributionMetric {
         bucket_count: i64,
         histogram_type: HistogramType,
     ) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let range_min = uniffi::FfiConverter::<crate::UniFfiTag>::lower(range_min);
@@ -1069,8 +1213,10 @@ impl CustomDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -1084,8 +1230,10 @@ impl CustomDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -1099,8 +1247,10 @@ impl CustomDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1114,8 +1264,10 @@ impl CustomDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1129,14 +1281,17 @@ impl CustomDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct DatetimeMetric {
     handle: u64,
 }
 impl DatetimeMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1145,10 +1300,12 @@ impl DatetimeMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl DatetimeMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -1163,8 +1320,10 @@ impl DatetimeMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: Option<Datetime>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -1178,8 +1337,10 @@ impl DatetimeMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Datetime> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1193,8 +1354,10 @@ impl DatetimeMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value_as_string(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1208,8 +1371,10 @@ impl DatetimeMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1223,23 +1388,28 @@ impl DatetimeMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub(crate) struct EventMetric {
     handle: u64,
 }
 impl EventMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_eventmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl EventMetric {
     pub fn new(meta: CommonMetricData, allowed_extra_keys: Vec<String>) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let allowed_extra_keys = uniffi::FfiConverter::<
@@ -1256,8 +1426,10 @@ impl EventMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn record(&self, extra: ::std::collections::HashMap<String, String>) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let extra = uniffi::FfiConverter::<crate::UniFfiTag>::lower(extra);
@@ -1271,11 +1443,13 @@ impl EventMetric {
             extra.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(
         &self,
         ping_name: Option<String>,
     ) -> Option<Vec<RecordedEvent>> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1289,8 +1463,10 @@ impl EventMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1304,23 +1480,28 @@ impl EventMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct RateMetric {
     handle: u64,
 }
 impl RateMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_ratemetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl RateMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1332,8 +1513,10 @@ impl RateMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn add_to_numerator(&self, amount: i32) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1347,8 +1530,10 @@ impl RateMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn add_to_denominator(&self, amount: i32) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1362,8 +1547,10 @@ impl RateMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1377,8 +1564,10 @@ impl RateMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1392,14 +1581,17 @@ impl RateMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct DenominatorMetric {
     handle: u64,
 }
 impl DenominatorMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1408,10 +1600,12 @@ impl DenominatorMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl DenominatorMetric {
     pub fn new(meta: CommonMetricData, numerators: Vec<CommonMetricData>) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let numerators = uniffi::FfiConverter::<crate::UniFfiTag>::lower(numerators);
@@ -1426,8 +1620,10 @@ impl DenominatorMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn add(&self, amount: i32) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1441,8 +1637,10 @@ impl DenominatorMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1456,8 +1654,10 @@ impl DenominatorMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1471,14 +1671,17 @@ impl DenominatorMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct NumeratorMetric {
     handle: u64,
 }
 impl NumeratorMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1487,10 +1690,12 @@ impl NumeratorMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl NumeratorMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1502,8 +1707,10 @@ impl NumeratorMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn add_to_numerator(&self, amount: i32) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1517,8 +1724,10 @@ impl NumeratorMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1532,8 +1741,10 @@ impl NumeratorMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1547,23 +1758,28 @@ impl NumeratorMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct TextMetric {
     handle: u64,
 }
 impl TextMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_textmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl TextMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1575,8 +1791,10 @@ impl TextMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -1590,8 +1808,10 @@ impl TextMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1605,8 +1825,10 @@ impl TextMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1620,23 +1842,28 @@ impl TextMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct ObjectMetric {
     handle: u64,
 }
 impl ObjectMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_objectmetric)(self.handle, &mut call_status)
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl ObjectMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1648,8 +1875,10 @@ impl ObjectMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn set_string(&self, object: String) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let object = uniffi::FfiConverter::<crate::UniFfiTag>::lower(object);
@@ -1663,8 +1892,10 @@ impl ObjectMetric {
             object.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1678,8 +1909,10 @@ impl ObjectMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1693,8 +1926,10 @@ impl ObjectMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn record_schema_error(&self) -> () {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1705,14 +1940,17 @@ impl ObjectMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct DualLabeledCounterMetric {
     handle: u64,
 }
 impl DualLabeledCounterMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1721,6 +1959,7 @@ impl DualLabeledCounterMetric {
                 &mut call_status,
             )
         }
+        #[cfg(feature = "noop")] { 0 }
     }
 }
 impl DualLabeledCounterMetric {
@@ -1729,6 +1968,7 @@ impl DualLabeledCounterMetric {
         keys: Option<Vec<CowString>>,
         categories: Option<Vec<CowString>>,
     ) -> Self {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let keys = uniffi::FfiConverter::<crate::UniFfiTag>::lower(keys);
@@ -1746,8 +1986,10 @@ impl DualLabeledCounterMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(feature = "noop")] Self { handle: 0 }
     }
     pub fn get(&self, key: String, category: String) -> CounterMetric {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let key = uniffi::FfiConverter::<crate::UniFfiTag>::lower(key);
@@ -1764,6 +2006,7 @@ impl DualLabeledCounterMetric {
             key.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_value(
         &self,
@@ -1771,6 +2014,7 @@ impl DualLabeledCounterMetric {
     ) -> Option<
         ::std::collections::HashMap<String, ::std::collections::HashMap<String, i32>>,
     > {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1784,8 +2028,10 @@ impl DualLabeledCounterMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(not(feature = "noop"))]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1799,8 +2045,10 @@ impl DualLabeledCounterMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(feature = "noop")] Default::default()
     }
 }
+#[cfg(not(feature = "noop"))]
 library_binding! {
     fn ffi_glean_core_rustbuffer_from_bytes(bytes : ::uniffi::ForeignBytes, call_status :
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
