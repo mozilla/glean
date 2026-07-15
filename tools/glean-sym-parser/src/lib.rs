@@ -25,9 +25,11 @@ const PREAMBLE: &str = r#"// DO NOT MODIFY!
 // `glean-sym` tests ensure the vendored copy is unmodified.
 // This can be verified by running `cargo test -p glean-sym`.
 #![allow(clippy::all)]
+#![cfg_attr(feature = "noop", allow(unused))]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
+#[cfg(not(feature = "noop"))]
 use crate::util::*;
 "#;
 
@@ -92,16 +94,20 @@ pub fn generate(content: &str) -> String {
         let extern_fn_ident = format_ident!("uniffi_glean_core_fn_clone_{}", structname);
         tokens.push(quote! {
             #[derive(uniffi::Record)]
+            #[cfg_attr(feature = "noop", derive(Default))]
             pub struct #ident {
                 handle: u64
             }
 
             impl #ident {
                 unsafe fn clone_handle(&self) -> u64 {
+                    #[cfg(not(feature = "noop"))]
                     unsafe {
                         let mut call_status = uniffi::RustCallStatus::default();
                         (crate::GLEAN.#extern_fn_ident)(self.handle, &mut call_status)
                     }
+                    #[cfg(feature = "noop")]
+                    { 0 }
                 }
             }
         });
@@ -120,6 +126,7 @@ pub fn generate(content: &str) -> String {
                     let (arg_names, fn_args, extern_fn_args, destroys) = all_args.consume();
                     fns.push(quote! {
                         pub fn new(#(#fn_args,)*) -> Self {
+                            #[cfg(not(feature = "noop"))]
                             unsafe {
                                 #(
                                     let #arg_names = uniffi::FfiConverter::<crate::UniFfiTag>::lower(#arg_names);
@@ -131,6 +138,8 @@ pub fn generate(content: &str) -> String {
                                 )*
                                 Self { handle }
                             }
+                            #[cfg(feature = "noop")]
+                            Self { handle: 0 }
                         }
                     });
                     bindings.push(quote! {
@@ -152,6 +161,7 @@ pub fn generate(content: &str) -> String {
 
                     fns.push(quote! {
                         pub fn #fn_ident(&self, #(#fn_args),*) #ret_type {
+                            #[cfg(not(feature = "noop"))]
                             unsafe {
                                 let this = self.clone_handle();
                                 #(
@@ -164,6 +174,8 @@ pub fn generate(content: &str) -> String {
                                 )*
                                 crate::util::LocalTryLift::try_lift(res).unwrap()
                             }
+                            #[cfg(feature = "noop")]
+                            Default::default()
                         }
                     });
                     bindings.push(quote! {
@@ -182,6 +194,7 @@ pub fn generate(content: &str) -> String {
     }
 
     tokens.push(quote! {
+        #[cfg(not(feature = "noop"))]
         library_binding! {
             fn ffi_glean_core_rustbuffer_from_bytes(bytes: ::uniffi::ForeignBytes, call_status: &mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer;
             fn ffi_glean_core_uniffi_contract_version() -> u32;

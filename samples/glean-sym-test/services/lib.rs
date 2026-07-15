@@ -27,10 +27,14 @@ unsafe extern "C" fn record(amount: i32) {
     log::info!("Metric recorded.");
 
     glean_metrics::dylib::data.set(String::from("value"));
-    // `StringMetric#test_get_value` returns a string, which is passed through a `RustBuffer`,
-    // which needs to be copied and freed correctly.
-    let stored = glean_metrics::dylib::data.test_get_value(None).unwrap();
-    assert_eq!("value", stored);
+
+    #[cfg(not(feature = "noop"))]
+    {
+        // `StringMetric#test_get_value` returns a string, which is passed through a `RustBuffer`,
+        // which needs to be copied and freed correctly.
+        let stored = glean_metrics::dylib::data.test_get_value(None).unwrap();
+        assert_eq!("value", stored);
+    }
 
     glean_metrics::dylib::timing.stop_and_accumulate(tid);
 }

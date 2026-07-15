@@ -18,3 +18,7 @@ glean-build = { path = "../../../glean-core/build" }
 name = "services"
 path = "lib.rs"
 crate-type = ["cdylib"]
+
+[features]
+# Activate glean-noop and avoid test methods
+noop = ["glean-sym/noop"]

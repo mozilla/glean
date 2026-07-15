@@ -48,4 +48,8 @@ with tempfile.TemporaryDirectory() as data_path:
         counter = payload["metrics"]["counter"]
 
         assert 1 == counter["test.metrics.sample_counter"]
-        assert amount == counter["dylib.counting"]
+
+        if "GLEAN_NOOP" in os.environ:
+            assert "dylib.counting" not in counter
+        else:
+            assert amount == counter["dylib.counting"]
