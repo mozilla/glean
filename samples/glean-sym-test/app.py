@@ -19,22 +19,28 @@ def check_ping_data(ping_type, sent_ping, amount):
     end_first_object = data.find("}")
     payload = json.loads(data[end_first_object + 1 :])
     counter = payload["metrics"]["counter"]
-    events = payload["events"]
 
     if ping_type == "prototype":
         assert 1 == counter["test.metrics.sample_counter"]
 
-    assert amount == counter["dylib.counting"]
+    if "GLEAN_NOOP" in os.environ:
+        assert "dylib.counting" not in counter
+    else:
+        assert amount == counter["dylib.counting"]
 
-    assert 2 == len(events)
+    if "GLEAN_NOOP" in os.environ:
+        assert "events" not in payload
+    else:
+        events = payload["events"]
+        assert 2 == len(events)
 
-    no_extra = events[0]
-    assert "event" == no_extra["name"]
+        no_extra = events[0]
+        assert "event" == no_extra["name"]
 
-    with_extra = events[1]
-    assert "event_with_extras" == with_extra["name"]
-    extras = with_extra["extra"]
-    assert "true", extras["is_set"]
+        with_extra = events[1]
+        assert "event_with_extras" == with_extra["name"]
+        extras = with_extra["extra"]
+        assert "true", extras["is_set"]
 
 def test_run():
     xul = cdll.LoadLibrary(library_name("xul"))
@@ -59,13 +65,18 @@ def test_run():
         # * Both pings contain some data
         path = os.path.join(data_path, "sent_pings")
         for root, dirs, files in os.walk(path):
-            assert len(files) == 2
+            if "GLEAN_NOOP" in os.environ:
+                assert len(files) == 1
+            else:
+                assert len(files) == 2
+
             files = sorted(files)
 
             assert "prototype-" in files[0]
             sent_ping = os.path.join(path, files[0])
             check_ping_data("prototype", sent_ping, amount)
 
-            assert "services-info-" in files[1]
-            sent_ping = os.path.join(path, files[1])
-            check_ping_data("services-info", sent_ping, amount)
+            if "GLEAN_NOOP" not in os.environ:
+                assert "services-info-" in files[1]
+                sent_ping = os.path.join(path, files[1])
+                check_ping_data("services-info", sent_ping, amount)
