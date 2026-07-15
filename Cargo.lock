@@ -560,7 +560,7 @@ dependencies = [
 
 [[package]]
 name = "glean-build"
-version = "20.0.0"
+version = "20.1.0"
 dependencies = [
  "tempfile",
  "xshell-venv",
