@@ -478,7 +478,7 @@ dependencies = [
 
 [[package]]
 name = "glean-sym"
-version = "0.1.0"
+version = "69.0.0"
 dependencies = [
  "libloading",
  "once_cell",
