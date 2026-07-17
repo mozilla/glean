@@ -92,9 +92,19 @@ run $SED -i.bak -E \
     "${WORKSPACE_ROOT}/${FILE}"
 run rm "${WORKSPACE_ROOT}/${FILE}.bak"
 
+### GLEAN SYM ###
+
+# Update the version of the glean-sym dependency
+
+FILE=glean-core/glean-sym/Cargo.toml
+run $SED -i.bak -E \
+    -e "s/^version = \"[0-9a-z.-]+\"/version = \"${NEW_VERSION}\"/" \
+    "${WORKSPACE_ROOT}/${FILE}"
+run rm "${WORKSPACE_ROOT}/${FILE}.bak"
+
 ### Update Cargo.lock
 
-cargo update -p glean-core -p glean
+cargo update -p glean-core -p glean -p glean-sym
 cargo update --manifest-path glean-core/benchmark/Cargo.toml -p glean-core
 
 run cargo update --manifest-path samples/glean-sym-test/Cargo.toml -p xul --precise glean-bundle
