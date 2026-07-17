@@ -160,6 +160,13 @@ impl StorageManager {
             if let Err(e) = storage.clear_ping_lifetime_storage(store_name) {
                 log::warn!("Failed to clear lifetime storage: {:?}", e);
             }
+
+            if let Err(e) = storage.run_maintenance(false) {
+                log::warn!(
+                    "Failed to run database maintenance after ping submission: {:?}",
+                    e
+                );
+            }
         }
 
         if snapshot.is_empty() {
