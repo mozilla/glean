@@ -16,6 +16,118 @@ use crate::types::*;
 use crate::util::*;
 
 #[derive(uniffi::Record)]
+pub(crate) struct PingType {
+    handle: u64,
+}
+impl PingType {
+    unsafe fn clone_handle(&self) -> u64 {
+        unsafe {
+            let mut call_status = uniffi::RustCallStatus::default();
+            (crate::GLEAN
+                .uniffi_glean_core_fn_clone_pingtype)(self.handle, &mut call_status)
+        }
+    }
+}
+impl PingType {
+    pub fn new(
+        name: String,
+        include_client_id: bool,
+        send_if_empty: bool,
+        precise_timestamps: bool,
+        include_info_sections: bool,
+        enabled: bool,
+        schedules_pings: Vec<String>,
+        reason_codes: Vec<String>,
+        follows_collection_enabled: bool,
+        uploader_capabilities: Vec<String>,
+    ) -> Self {
+        unsafe {
+            let name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(name);
+            let include_client_id = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(include_client_id);
+            let send_if_empty = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(send_if_empty);
+            let precise_timestamps = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(precise_timestamps);
+            let include_info_sections = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(include_info_sections);
+            let enabled = uniffi::FfiConverter::<crate::UniFfiTag>::lower(enabled);
+            let schedules_pings = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(schedules_pings);
+            let reason_codes = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(reason_codes);
+            let follows_collection_enabled = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(follows_collection_enabled);
+            let uploader_capabilities = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(uploader_capabilities);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let handle = (crate::GLEAN
+                .uniffi_glean_core_fn_constructor_pingtype_new)(
+                name.clone_for_ffi(),
+                include_client_id.clone_for_ffi(),
+                send_if_empty.clone_for_ffi(),
+                precise_timestamps.clone_for_ffi(),
+                include_info_sections.clone_for_ffi(),
+                enabled.clone_for_ffi(),
+                schedules_pings.clone_for_ffi(),
+                reason_codes.clone_for_ffi(),
+                follows_collection_enabled.clone_for_ffi(),
+                uploader_capabilities.clone_for_ffi(),
+                &mut call_status,
+            );
+            uploader_capabilities.destroy();
+            follows_collection_enabled.destroy();
+            reason_codes.destroy();
+            schedules_pings.destroy();
+            enabled.destroy();
+            include_info_sections.destroy();
+            precise_timestamps.destroy();
+            send_if_empty.destroy();
+            include_client_id.destroy();
+            name.destroy();
+            Self { handle }
+        }
+    }
+    pub fn submit(&self, reason: Option<String>) -> () {
+        unsafe {
+            let this = self.clone_handle();
+            let reason = uniffi::FfiConverter::<crate::UniFfiTag>::lower(reason);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let res = (crate::GLEAN
+                .uniffi_glean_core_fn_method_pingtype_submit)(
+                this,
+                reason.clone_for_ffi(),
+                &mut call_status,
+            );
+            reason.destroy();
+            crate::util::LocalTryLift::try_lift(res).unwrap()
+        }
+    }
+    pub fn set_enabled(&self, enabled: bool) -> () {
+        unsafe {
+            let this = self.clone_handle();
+            let enabled = uniffi::FfiConverter::<crate::UniFfiTag>::lower(enabled);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let res = (crate::GLEAN
+                .uniffi_glean_core_fn_method_pingtype_set_enabled)(
+                this,
+                enabled.clone_for_ffi(),
+                &mut call_status,
+            );
+            enabled.destroy();
+            crate::util::LocalTryLift::try_lift(res).unwrap()
+        }
+    }
+}
+#[derive(uniffi::Record)]
 pub struct CounterMetric {
     handle: u64,
 }
@@ -1694,8 +1806,20 @@ library_binding! {
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
     ffi_glean_core_uniffi_contract_version() -> u32; fn
     ffi_glean_core_rustbuffer_free(bytes : ::uniffi::RustBuffer, call_status : & mut
-    ::uniffi::RustCallStatus); fn uniffi_glean_core_fn_clone_countermetric(handle : u64,
+    ::uniffi::RustCallStatus); fn uniffi_glean_core_fn_clone_pingtype(handle : u64,
     call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
+    uniffi_glean_core_fn_constructor_pingtype_new(name : uniffi::RustBuffer,
+    include_client_id : i8, send_if_empty : i8, precise_timestamps : i8,
+    include_info_sections : i8, enabled : i8, schedules_pings : uniffi::RustBuffer,
+    reason_codes : uniffi::RustBuffer, follows_collection_enabled : i8,
+    uploader_capabilities : uniffi::RustBuffer, call_status : & mut
+    ::uniffi::RustCallStatus) -> u64; fn
+    uniffi_glean_core_fn_method_pingtype_submit(handle : u64, reason :
+    uniffi::RustBuffer, call_status : & mut ::uniffi::RustCallStatus) -> (); fn
+    uniffi_glean_core_fn_method_pingtype_set_enabled(handle : u64, enabled : i8,
+    call_status : & mut ::uniffi::RustCallStatus) -> (); fn
+    uniffi_glean_core_fn_clone_countermetric(handle : u64, call_status : & mut
+    ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_constructor_countermetric_new(meta : uniffi::RustBuffer,
     call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_method_countermetric_add(handle : u64, amount : i32, call_status

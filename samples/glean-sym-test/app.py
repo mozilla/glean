@@ -14,6 +14,27 @@ def library_name(name):
     suffix = "dylib" if platform.system() == "Darwin" else "so"
     return f"lib{name}.{suffix}"
 
+def check_ping_data(ping_type, sent_ping, amount):
+    data = open(sent_ping).read()
+    end_first_object = data.find("}")
+    payload = json.loads(data[end_first_object + 1 :])
+    counter = payload["metrics"]["counter"]
+    events = payload["events"]
+
+    if ping_type == "prototype":
+        assert 1 == counter["test.metrics.sample_counter"]
+
+    assert amount == counter["dylib.counting"]
+
+    assert 2 == len(events)
+
+    no_extra = events[0]
+    assert "event" == no_extra["name"]
+
+    with_extra = events[1]
+    assert "event_with_extras" == with_extra["name"]
+    extras = with_extra["extra"]
+    assert "true", extras["is_set"]
 
 def test_run():
     xul = cdll.LoadLibrary(library_name("xul"))
@@ -39,25 +60,13 @@ def test_run():
         # * It contains several metrics with the expected values
         path = os.path.join(data_path, "sent_pings")
         for root, dirs, files in os.walk(path):
-            assert len(files) == 1
+            assert len(files) == 2
+            files = sorted(files)
+
             assert "prototype-" in files[0]
-
             sent_ping = os.path.join(path, files[0])
-            data = open(sent_ping).read()
-            end_first_object = data.find("}")
-            payload = json.loads(data[end_first_object + 1 :])
-            counter = payload["metrics"]["counter"]
-            events = payload["events"]
+            check_ping_data("prototype", sent_ping, amount)
 
-            assert 1 == counter["test.metrics.sample_counter"]
-            assert amount == counter["dylib.counting"]
-
-            assert 2 == len(events)
-
-            no_extra = events[0]
-            assert "event" == no_extra["name"]
-
-            with_extra = events[1]
-            assert "event_with_extras" == with_extra["name"]
-            extras = with_extra["extra"]
-            assert "true", extras["is_set"]
+            assert "services-info-" in files[1]
+            sent_ping = os.path.join(path, files[1])
+            check_ping_data("services-info", sent_ping, amount)

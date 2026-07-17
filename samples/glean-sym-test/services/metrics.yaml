@@ -20,6 +20,7 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+      - services-info
 
   timing:
     type: timing_distribution
@@ -34,6 +35,7 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+      - services-info
 
   data:
     type: string
@@ -48,6 +50,7 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+      - services-info
 
   event:
     type: event
@@ -62,6 +65,7 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+      - services-info
 
   event_with_extras:
     type: event
@@ -76,6 +80,7 @@ dylib:
     expires: never
     send_in_pings:
       - prototype
+      - services-info
     extra_keys:
       is_set:
         type: boolean

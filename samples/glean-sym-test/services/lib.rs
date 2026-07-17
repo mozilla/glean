@@ -16,6 +16,7 @@ pub mod glean_metrics {
 #[unsafe(no_mangle)]
 unsafe extern "C" fn record(amount: i32) {
     env_logger::init();
+    let _ = &*glean_metrics::services_info;
     log::info!("Record invoked");
 
     // A timer ID is passed through a `RustBuffer`,
@@ -37,4 +38,6 @@ unsafe extern "C" fn record(amount: i32) {
     glean_metrics::dylib::event_with_extras.record(extra);
 
     glean_metrics::dylib::timing.stop_and_accumulate(tid);
+
+    glean_metrics::services_info.submit(Some("recorded"));
 }
