@@ -206,3 +206,61 @@ impl<K: ExtraKeys> EventMetric<K> {
         self.inner.test_get_num_recorded_errors(error)
     }
 }
+
+pub struct PingType {
+    inner: crate::metrics::PingType,
+}
+
+impl PingType {
+    /// Creates a new ping type.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the ping.
+    /// * `include_client_id` - Whether to include the client ID in the assembled ping when.
+    /// * `send_if_empty` - Whether the ping should be sent empty or not.
+    /// * `precise_timestamps` - Whether the ping should use precise timestamps for the start and end time.
+    /// * `include_info_sections` - Whether the ping should include the client/ping_info sections.
+    /// * `enabled` - Whether or not this ping is enabled. Note: Data that would be sent on a disabled
+    ///   ping will still be collected and is discarded instead of being submitted.
+    /// * `schedules_pings` - A list of pings which are triggered for submission when this ping is
+    ///   submitted.
+    /// * `reason_codes` - The valid reason codes for this ping.
+    /// * `uploader_capabilities` - The capabilities required during this ping's upload.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new<A: Into<String>>(
+        name: A,
+        include_client_id: bool,
+        send_if_empty: bool,
+        precise_timestamps: bool,
+        include_info_sections: bool,
+        enabled: bool,
+        schedules_pings: Vec<String>,
+        reason_codes: Vec<String>,
+        follows_collection_enabled: bool,
+        uploader_capabilities: Vec<String>,
+    ) -> Self {
+        let inner = crate::metrics::PingType::new(
+            name.into(),
+            include_client_id,
+            send_if_empty,
+            precise_timestamps,
+            include_info_sections,
+            enabled,
+            schedules_pings,
+            reason_codes,
+            follows_collection_enabled,
+            uploader_capabilities,
+        );
+
+        Self { inner }
+    }
+
+    pub fn submit(&self, reason: Option<&str>) {
+        self.inner.submit(reason.map(|s| s.to_string()))
+    }
+
+    pub fn set_enabled(&self, enabled: bool) {
+        self.inner.set_enabled(enabled)
+    }
+}

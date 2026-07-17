@@ -84,17 +84,16 @@ pub fn generate(content: &str) -> String {
     for elem in parsed {
         let Interface(iface) = elem else { continue };
         let ident = iface.identifier;
-        if !ident.0.ends_with("Metric") {
+        if !ident.0.ends_with("Metric") && ident.0 != "PingType" {
             continue;
         }
 
         let structname = ident.0.to_lowercase().replace("_", "");
         let ident = format_ident!("{}", ident.0);
         let extern_fn_ident = format_ident!("uniffi_glean_core_fn_clone_{}", structname);
-        let visibility = if structname == "eventmetric" {
-            quote! { pub(crate) }
-        } else {
-            quote! { pub }
+        let visibility = match &*structname {
+            "eventmetric" | "pingtype" => quote! { pub(crate) },
+            _ => quote! { pub },
         };
         tokens.push(quote! {
             #[derive(uniffi::Record)]
