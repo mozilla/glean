@@ -33,6 +33,13 @@ pub trait ConnectionOpener {
     /// Upgrades an existing physical database to the schema with
     /// the given version.
     fn upgrade(tx: &mut Transaction<'_>, to_version: NonZeroU32) -> Result<(), Self::Error>;
+
+    /// Validate that the database is usable.
+    ///
+    /// Called after `create` / `upgrade`.
+    fn validate(_tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
+        Ok(())
+    }
 }
 
 /// A thread-safe wrapper around a connection to a physical SQLite database.
@@ -72,6 +79,7 @@ impl Connection {
         // so that upgrading to it again in the future can fix up any
         // invariants that our version might not uphold.
         tx.execute_batch(&format!("PRAGMA user_version = {}", O::MAX_SCHEMA_VERSION))?;
+        O::validate(&mut tx)?;
         tx.commit()?;
         Ok(Self::with_connection(conn))
     }

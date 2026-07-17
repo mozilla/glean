@@ -9,7 +9,7 @@ use std::result;
 
 use rkv::StoreError;
 
-use crate::database::sqlite::SchemaError;
+use crate::database::sqlite::{OpenError, SchemaError};
 
 /// A specialized [`Result`] type for this crate's operations.
 ///
@@ -173,15 +173,18 @@ impl From<rusqlite::Error> for Error {
     }
 }
 
-impl From<SchemaError> for Error {
-    fn from(error: SchemaError) -> Error {
+impl From<OpenError> for Error {
+    fn from(error: OpenError) -> Error {
         match error {
-            SchemaError::Sqlite(err) => Error {
-                kind: ErrorKind::SQLite(err),
+            OpenError::IncompatibleVersion(v) => Error {
+                kind: ErrorKind::Schema(SchemaError::UnsupportedSchemaVersion(v)),
             },
-            err => Error {
-                kind: ErrorKind::Schema(err),
+            // TODO
+            OpenError::Corrupt => Error {
+                kind: ErrorKind::NotInitialized,
             },
+            OpenError::SqlError(error) => error.into(),
+            OpenError::RecoveryError(error) => error.into(),
         }
     }
 }
