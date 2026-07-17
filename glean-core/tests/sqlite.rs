@@ -146,7 +146,7 @@ fn higher_user_version_upgrade_does_not_crash() {
     {
         let path = temp.path().join("db").join("glean.sqlite");
         let conn = rusqlite::Connection::open(path).unwrap();
-        conn.execute_batch("PRAGMA user_version = 2").unwrap();
+        conn.execute_batch("PRAGMA user_version = 99").unwrap();
     }
 
     let (glean, _temp) = new_glean(Some(temp));
@@ -229,4 +229,40 @@ fn database_externally_locked() {
 
     let client_id = clientid_metric().get_value(&glean, None);
     assert!(client_id.is_some());
+}
+
+#[test]
+fn schema_v2_is_applied() {
+    let (first_client_id, temp) = {
+        let (glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+        drop(glean);
+
+        let db_path = temp.path().join("db").join("glean.sqlite");
+        let conn = rusqlite::Connection::open(db_path).unwrap();
+
+        conn.execute("DROP TABLE migration", []).unwrap();
+
+        // Reset to first schema version
+        conn.execute("PRAGMA user_version = 1", []).unwrap();
+
+        (client_id, temp)
+    };
+
+    let db_path = temp.path().join("db").join("glean.sqlite");
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(first_client_id, client_id);
+
+    let conn = rusqlite::Connection::open(db_path).unwrap();
+    let cur_user_version: u32 = conn
+        .query_one("PRAGMA user_version", [], |row| row.get(0))
+        .unwrap();
+    assert_eq!(cur_user_version, 2);
+
+    let migration_state: String = conn
+        .query_one("SELECT state FROM migration", [], |row| row.get(0))
+        .unwrap();
+    assert_eq!(migration_state, "done");
 }
