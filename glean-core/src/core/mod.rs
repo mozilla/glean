@@ -322,7 +322,6 @@ impl Glean {
                 .add_sync(&glean, state.failed_metrics);
 
             let duration_ns = state.duration.as_nanos().try_into().unwrap_or(u64::MAX);
-            log::error!("set duration: {duration_ns:?}");
             glean
                 .database_metrics
                 .migration_duration
