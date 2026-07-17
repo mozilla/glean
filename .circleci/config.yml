@@ -123,6 +123,7 @@ commands:
           command: |
             cd samples/glean-sym-test
             make run
+            make run-noop
 
   install-rustup:
     steps:

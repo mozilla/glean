@@ -83,6 +83,7 @@ pub struct DistributionData {
 }
 
 #[derive(uniffi::Record)]
+#[cfg_attr(feature = "noop", derive(Default))]
 pub struct TimerId {
     id: u64,
 }

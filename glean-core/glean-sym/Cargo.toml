@@ -17,3 +17,7 @@ uniffi = "0.31.0"
 xshell = "0.2.7"
 glean-sym-parser = { path = "../../tools/glean-sym-parser" }
 glean-core = { path = "../" }
+
+[features]
+# No-op all metric type calls
+noop = []
