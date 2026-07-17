@@ -790,6 +790,12 @@ pub fn shutdown() {
         if let Err(e) = glean.persist_ping_lifetime_data() {
             log::info!("Can't persist ping lifetime data: {:?}", e);
         }
+
+        if let Some(database) = &glean.data_store {
+            if let Err(e) = database.run_maintenance(false) {
+                log::info!("Can't run database maintenance on shutdown: {:?}", e);
+            }
+        }
     });
 }
 
