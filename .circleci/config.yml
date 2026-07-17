@@ -420,6 +420,9 @@ jobs:
             pushd rlb
             cargo publish --verbose
 
+            pushd ../glean-sym
+            cargo publish --verbose
+
   ###########################################################################
   # Android / Kotlin / Java
 
