@@ -8,7 +8,7 @@ publish = false
 [dependencies]
 anyhow = "1"
 camino = "1.1.1"
-uniffi = { version = "0.31.0", default-features = false, features = ["bindgen", "cargo-metadata"] }
+uniffi = { version = "0.32.0", default-features = false, features = ["bindgen", "cargo-metadata"] }
 glob = "0.3.2"
 
 [lib]
