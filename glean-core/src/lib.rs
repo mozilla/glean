@@ -1672,3 +1672,24 @@ pub use ffi::*;
 #[cfg(test)]
 #[path = "lib_unit_tests.rs"]
 mod tests;
+
+#[unsafe(naked)]
+#[unsafe(no_mangle)]
+#[cfg(all(windows, target_env = "gnu", target_arch = "aarch64"))]
+unsafe extern "C" fn __chkstk() {
+    // Copied from rust-lang/rust:
+    // <https://github.com/rust-lang/rust/blob/ae3bbe78ec2a9bb57a03f10ad6ee0388e12bcefb/library/compiler-builtins/compiler-builtins/src/aarch64.rs#L2-L16>
+    //
+    // License: MIT AND Apache-2.0 WITH LLVM-exception AND (MIT OR Apache-2.0)
+    ::core::arch::naked_asm!(
+        ".p2align 2",
+        "lsl    x16, x15, #4",
+        "mov    x17, sp",
+        "1:",
+        "sub    x17, x17, 4096",
+        "subs   x16, x16, 4096",
+        "ldr    xzr, [x17]",
+        "b.gt   1b",
+        "ret",
+    );
+}
