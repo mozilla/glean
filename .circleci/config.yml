@@ -873,7 +873,7 @@ jobs:
           name: Setup Python env
           command: |
             make setup-python
-            .venv3.13/bin/pip install ziglang==0.15.2
+            .venv3.13/bin/pip install ziglang==0.16.0
       - run:
           name: Install additional targets
           command: |
