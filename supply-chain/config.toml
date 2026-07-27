@@ -25,6 +25,9 @@ audit-as-crates-io = false
 [policy.glean-core]
 audit-as-crates-io = false
 
+[policy.glean-sym]
+audit-as-crates-io = false
+
 [policy.sample]
 audit-as-crates-io = false
 
