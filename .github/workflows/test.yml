@@ -28,6 +28,7 @@ jobs:
     outputs:
       docs-changed: ${{ steps.set-flags.outputs.docs-changed }}
       rust-changed: ${{ steps.set-flags.outputs.rust-changed }}
+      yaml-changed: ${{ steps.set-flags.outputs.yaml-changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
@@ -49,14 +50,23 @@ jobs:
             **/Cargo.lock
             **/*.rs
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-yaml
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            glean-core/**/*.yml
+            glean-core/**/*.yaml
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - name: Decide which jobs to run
         id: set-flags
         env:
           DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-docs.outputs.any_changed }}
           RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
+          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-yaml.outputs.any_changed }}
         run: |
           echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
           echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
+          echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
 
   test-rust:
     runs-on: ubuntu-latest
@@ -181,3 +191,26 @@ jobs:
       - name: Check internal documentation links
         run: |
           make linkcheck-raw
+
+  lint-yaml:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.yaml-changed == 'true'
+    steps:
+      - &checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          filter: blob:none
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - name: Install yamllint
+        run: |
+          uv tool install yamllint
+
+      - name: Lint YAML
+        run: |
+          make lint-yaml
