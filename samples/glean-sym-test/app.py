@@ -55,9 +55,8 @@ def test_run():
         xul.shutdown()
 
         # Check that
-        # * We submitted one ping only
-        # * It's the `prototype` ping
-        # * It contains several metrics with the expected values
+        # * We submitted two pings: `prototype` from xul and `services-info` from services
+        # * Both pings contain some data
         path = os.path.join(data_path, "sent_pings")
         for root, dirs, files in os.walk(path):
             assert len(files) == 2
