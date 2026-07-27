@@ -15,4 +15,4 @@ help:
 .PHONY: run
 run:  ## Run the sample app
 	cargo build --locked
-	env $(LIB_PATH_NAME)=target/debug uv run pytest app.py
+	env $(LIB_PATH_NAME)=target/debug RUST_LOG=uv=error,debug uv run pytest --capture=no app.py
