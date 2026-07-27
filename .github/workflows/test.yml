@@ -26,7 +26,11 @@ jobs:
     permissions:
       contents: read
     outputs:
+      cargo-changed: ${{ steps.set-flags.outputs.cargo-changed }}
       docs-changed: ${{ steps.set-flags.outputs.docs-changed }}
+      kotlin-changed: ${{ steps.set-flags.outputs.kotlin-changed }}
+      metrics-changed: ${{ steps.set-flags.outputs.metrics-changed }}
+      python-changed: ${{ steps.set-flags.outputs.python-changed }}
       rust-changed: ${{ steps.set-flags.outputs.rust-changed }}
       yaml-changed: ${{ steps.set-flags.outputs.yaml-changed }}
     steps:
@@ -36,11 +40,40 @@ jobs:
           filter: blob:none
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - id: changed-files-cargo
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            **/Cargo.toml
+            Cargo.lock
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-docs
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
           files: |
             **/*.md
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-kotlin
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            **/*.kt
+            **/*.gradle
+            gradle-wrapper/**
+            **/*.groovy
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-metrics
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            glean-core/**/pings.yaml
+            glean-core/**/metrics.yaml
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-python
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            glean-core/**/*.py
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-rust
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
@@ -60,11 +93,19 @@ jobs:
       - name: Decide which jobs to run
         id: set-flags
         env:
+          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-cargo.outputs.any_changed }}
           DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-docs.outputs.any_changed }}
+          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-kotlin.outputs.any_changed }}
+          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-metrics.outputs.any_changed }}
+          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-python.outputs.any_changed }}
           RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
           YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-yaml.outputs.any_changed }}
         run: |
+          echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
           echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
+          echo "kotlin-changed=$KOTLIN_CHANGED" >> $GITHUB_OUTPUT
+          echo "metrics-changed=$METRICS_CHANGED" >> $GITHUB_OUTPUT
+          echo "python-changed=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
           echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
           echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
 
@@ -214,3 +255,169 @@ jobs:
       - name: Lint YAML
         run: |
           make lint-yaml
+
+  lint-licenses:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.cargo-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+        with:
+          cache-bin: true
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --version 0.19.9
+
+      - name: Run license check
+        run: cargo deny check licenses
+
+      - name: Run dependency ban check
+        run: cargo deny check bans
+
+  lint-schema:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    steps:
+      - *checkout
+
+      - name: Check vendored schema for upstream updates
+        run: |
+          bin/update-schema.sh HEAD
+          if ! git diff --exit-code HEAD -- glean-core/preview/tests/glean.1.schema.json; then
+            echo "===================================="
+            echo "Latest schema from upstream changed."
+            echo "Please regenerate the file using:"
+            echo "    bin/update-schema.sh latest"
+            echo "Commit the modified files and push."
+            echo "===================================="
+            exit 1
+          fi
+
+  lint-rust:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "${{ env.MSRV }}"
+          components: clippy
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - run: cargo clippy --version
+
+      - name: Clippy
+        run: |
+          echo "::add-matcher::.github/rust.json"
+          make lint-rust
+
+  lint-python:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.python-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "stable"
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - name: Lint Python
+        run: make lint-python
+
+  lint-internal-metrics:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.metrics-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - name: Internal metrics docs consistency check
+        run: |
+          make docs-metrics
+          if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
+            echo "=================================================="
+            echo "metrics.md is different from what's stored in git."
+            echo "Please regenerate the file using:"
+            echo "    make docs-metrics"
+            echo "Commit the modified file and push."
+            echo "=================================================="
+            exit 1
+          fi
+
+  lint-kotlin:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.kotlin-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6  # v2.9.2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+
+      - name: Install Android NDK
+        run: |
+          sdkmanager "ndk;29.0.14206865"
+
+      - name: Restrict to Linux builds only
+        run: |
+            echo "rust.targets=linux-x86-64" > local.properties
+
+      - name: Gradle lint
+        run: |
+          echo "::add-matcher::.github/ktlint.json"
+          ./gradlew --no-daemon lint ktlint detekt
+
+  fmt-rust:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "${{ env.MSRV }}"
+          components: rustfmt
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - run: rustfmt --version
+
+      - name: cargo fmt
+        run: |
+          echo "::add-matcher::.github/rust.json"
+          cargo fmt -- --check
