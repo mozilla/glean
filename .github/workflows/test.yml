@@ -697,3 +697,9 @@ jobs:
         run: |
           echo "::add-matcher::.github/rust.json"
           cargo fmt -- --check
+
+  code-security-analysis:
+    needs: [decide-runs]
+    permissions:
+      security-events: write # required for uploading code scanning alerts
+    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@0980dd214a92599ecdb67ad30f7086b508a3f825 # 2026-07-27
