@@ -703,3 +703,31 @@ jobs:
     permissions:
       security-events: write # required for uploading code scanning alerts
     uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@0980dd214a92599ecdb67ad30f7086b508a3f825 # 2026-07-27
+
+  report-result:
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    needs:
+      - code-security-analysis
+      - docs
+      - fmt-rust
+      - lint-internal-metrics
+      - lint-kotlin
+      - lint-licenses
+      - lint-python
+      - lint-rust
+      - lint-schema
+      - lint-yaml
+      - packaging-python-aarch64
+      - spelling
+      - test-kotlin
+      - test-python
+      - test-rust
+      - test-swift-sample
+      - test-swift
+    steps:
+      - name: Determine result
+        run: |
+          echo "$RESULTS" | grep -v failure
+        env:
+          RESULTS: ${{ join(needs.*.result, ',') }}
