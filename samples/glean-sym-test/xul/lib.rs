@@ -6,6 +6,8 @@ use std::ffi::{CStr, c_char};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
+use std::thread;
+use std::time::Duration;
 
 use flate2::read::GzDecoder;
 use glean::{ClientInfoMetrics, ConfigurationBuilder, net};
@@ -14,7 +16,7 @@ use glean::{ClientInfoMetrics, ConfigurationBuilder, net};
 /// Chosen empirically.
 /// If this crashes with `oom` increase it.
 #[global_allocator]
-static ALLOCATOR: local_allocator::Allocator::<2048> = local_allocator::Allocator::new("xul");
+static ALLOCATOR: local_allocator::Allocator<2048> = local_allocator::Allocator::new("xul");
 
 #[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {
@@ -118,5 +120,6 @@ unsafe extern "C" fn submit() {
 #[unsafe(no_mangle)]
 unsafe extern "C" fn shutdown() {
     log::info!("Shutdown invoked");
+    thread::sleep(Duration::from_millis(200));
     glean::shutdown();
 }
