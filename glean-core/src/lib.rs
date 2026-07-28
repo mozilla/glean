@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #![allow(clippy::doc_overindented_list_items)]
+#![allow(clippy::large_const_arrays)] // `UNIFFI_META_CONST_UDL_GLEAN`
 #![allow(clippy::significant_drop_in_scrutinee)]
 #![allow(clippy::uninlined_format_args)]
 #![deny(rustdoc::broken_intra_doc_links)]
@@ -1649,30 +1650,27 @@ pub fn glean_enable_logging_to_fd(_fd: u64) {
     // intentionally left empty
 }
 
-#[allow(missing_docs)]
-// uniffi-generated code should not be checked.
-#[allow(clippy::all)]
-mod ffi {
-    use super::*;
-    uniffi::include_scaffolding!("glean");
+// UNIFFI - START
 
-    type CowString = Cow<'static, str>;
+uniffi::include_scaffolding!("glean");
 
-    uniffi::custom_type!(CowString, String, {
-        remote,
-        lower: |s| s.into_owned(),
-        try_lift: |s| Ok(Cow::from(s))
-    });
+type CowString = Cow<'static, str>;
 
-    type JsonValue = serde_json::Value;
+uniffi::custom_type!(CowString, String, {
+    remote,
+    lower: |s| s.into_owned(),
+    try_lift: |s| Ok(Cow::from(s))
+});
 
-    uniffi::custom_type!(JsonValue, String, {
-        remote,
-        lower: |s| serde_json::to_string(&s).unwrap(),
-        try_lift: |s| Ok(serde_json::from_str(&s)?)
-    });
-}
-pub use ffi::*;
+type JsonValue = serde_json::Value;
+
+uniffi::custom_type!(JsonValue, String, {
+    remote,
+    lower: |s| serde_json::to_string(&s).unwrap(),
+    try_lift: |s| Ok(serde_json::from_str(&s)?)
+});
+
+// UNIFFI - END
 
 // Split unit tests to a separate file, to reduce the file of this one.
 #[cfg(test)]
