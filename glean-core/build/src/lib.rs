@@ -139,6 +139,7 @@ impl Builder {
 
             let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
             // TODO: Remove after we switched glean_parser away from legacy setup.py
+            venv.run_module("pip", &["--version"])?;
             venv.pip_install("setuptools")?;
             venv.pip_install(&glean_parser)?;
             venv
