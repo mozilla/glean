@@ -31,6 +31,9 @@ audit-as-crates-io = false
 [policy.sample]
 audit-as-crates-io = false
 
+[policy.xshell-venv]
+audit-as-crates-io = false
+
 [[exemptions.android_log-sys]]
 version = "0.2.0"
 criteria = "safe-to-deploy"

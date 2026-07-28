@@ -2037,8 +2037,7 @@ checksum = "32ac00cd3f8ec9c1d33fb3e7958a82df6989c42d747bd326c822b1d625283547"
 [[package]]
 name = "xshell-venv"
 version = "1.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ce3f9ddca75ddede32d5cc5a154fa237f4209ad71e6e2fc3db3ed18667d606b"
+source = "git+https://github.com/badboy/xshell-venv?branch=keep-venv-locked#666e66a51c4f796a4a60bd0608703244249c5836"
 dependencies = [
  "xshell",
 ]
