@@ -5,6 +5,9 @@ on:
     branches:
       main
 
+# Drop all default GITHUB_TOKEN permissions; each job declares its own least-privilege set.
+permissions: {}
+
 jobs:
   bench:
     name: Benchmarks
