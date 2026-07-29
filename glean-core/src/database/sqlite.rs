@@ -2,12 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::cell::Cell;
+use std::collections::btree_map::Entry;
+use std::collections::BTreeMap;
 use std::fmt::{self, Display};
 use std::fs;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
-use std::time::Duration;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::RwLock;
+use std::time::{Duration, Instant};
 
 use malloc_size_of::MallocSizeOf;
 use rusqlite::params;
@@ -47,6 +52,17 @@ pub enum MigrationResult {
     Error,
 }
 
+/// Key used to identify ping-lifetime metrics for in-memory storage
+///
+/// This is a subset of `CommonMetricData`, already encoded in the same way as used in the
+/// on-disk database.
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct CacheKey {
+    id: String,
+    ping: String,
+    labels: String,
+}
+
 #[derive(Debug)]
 pub struct Database {
     /// The database connection.
@@ -63,6 +79,32 @@ pub struct Database {
 
     /// Set when a database migration attempt failed.
     pub(crate) migration_error: MigrationResult,
+
+    /// If the `delay_ping_lifetime_io` Glean config option is `true`,
+    /// we will save metrics with 'ping' lifetime data in a map temporarily
+    /// so as to persist them to disk using rkv in bulk on demand.
+    ping_lifetime_data: Option<RwLock<BTreeMap<CacheKey, Metric>>>,
+
+    /// A count of how many database writes have been done since the last ping-lifetime flush.
+    ///
+    /// A ping-lifetime flush is automatically done after `ping_lifetime_threshold` writes.
+    ///
+    /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
+    ping_lifetime_count: AtomicUsize,
+
+    /// Write-count threshold when to auto-flush. `0` disables it.
+    ping_lifetime_threshold: usize,
+
+    /// The last time the `lifetime=ping` data was flushed to disk.
+    ///
+    /// Data is flushed to disk automatically when the last flush was more than
+    /// `ping_lifetime_max_time` ago.
+    ///
+    /// Only relevant if `delay_ping_lifetime_io` is set to `true`,
+    ping_lifetime_store_ts: Cell<Instant>,
+
+    /// After what time to auto-flush. 0 disables it.
+    ping_lifetime_max_time: Duration,
 }
 
 impl MallocSizeOf for Database {
@@ -197,9 +239,9 @@ impl Database {
     /// the underlying directory structure.
     pub fn new(
         data_path: &Path,
-        _delay_ping_lifetime_io: bool,
-        _ping_lifetime_threshold: usize,
-        _ping_lifetime_max_time: Duration,
+        delay_ping_lifetime_io: bool,
+        ping_lifetime_threshold: usize,
+        ping_lifetime_max_time: Duration,
     ) -> Result<Self> {
         let path = data_path.join("db");
         log::debug!("Database path: {:?}", path.display());
@@ -210,12 +252,24 @@ impl Database {
         let sqlite_exists = store_path.exists();
         let (conn, load_state) = sqlite_open(&store_path)?;
 
+        let ping_lifetime_data = if delay_ping_lifetime_io {
+            Some(RwLock::new(BTreeMap::new()))
+        } else {
+            None
+        };
+
+        let now = Instant::now();
         let mut db = Self {
             conn,
             file_size,
             load_state,
             migration_state: None,
             migration_error: MigrationResult::Unknown,
+            ping_lifetime_data,
+            ping_lifetime_count: AtomicUsize::new(0),
+            ping_lifetime_threshold,
+            ping_lifetime_store_ts: Cell::new(now),
+            ping_lifetime_max_time,
         };
 
         if sqlite_exists {
@@ -237,6 +291,8 @@ impl Database {
                 }
             }
         }
+
+        db.load_ping_lifetime_data();
 
         Ok(db)
     }
@@ -306,6 +362,58 @@ impl Database {
         Ok(())
     }
 
+    /// Loads Lifetime::Ping data from rkv to memory,
+    /// if `delay_ping_lifetime_io` is set to true.
+    ///
+    /// Does nothing if it isn't or if there is not data to load.
+    fn load_ping_lifetime_data(&self) {
+        if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+            log::debug!("loading lifetime data");
+            let mut data = ping_lifetime_data
+                .write()
+                .expect("Can't read ping lifetime data");
+
+            let iter_sql = r#"
+            SELECT
+                id,
+                ping,
+                labels,
+                value
+            FROM telemetry
+            WHERE
+                lifetime = ?1
+            "#;
+
+            let res: Result<()> = self.conn.read(|conn| {
+                let mut stmt = conn.prepare_cached(iter_sql)?;
+                let rows = stmt.query_map(params![Lifetime::Ping.as_str().to_string()], |row| {
+                    let id: String = row.get(0)?;
+                    let ping: String = row.get(1)?;
+                    let labels: String = row.get(2)?;
+                    let blob: Vec<u8> = row.get(3)?;
+                    let blob: Metric =
+                        rmp_serde::from_slice(&blob).map_err(|_| FromSqlError::InvalidType)?;
+                    Ok((id, ping, labels, blob))
+                })?;
+
+                for row in rows {
+                    let Ok((id, ping, labels, metric)) = row else {
+                        continue;
+                    };
+
+                    let key = CacheKey { id, ping, labels };
+                    data.insert(key, metric);
+                }
+
+                Ok(())
+            });
+
+            if let Err(err) = res {
+                log::error!("Could not load ping lifetime data from database. In-memory cache stays empty. Error: {err:?}");
+            }
+        }
+    }
+
     /// Iterates with the provided transaction function
     /// over the requested data from the given storage.
     ///
@@ -331,6 +439,23 @@ impl Database {
     where
         F: FnMut(&[u8], &[&str], &Metric),
     {
+        // Lifetime::Ping data is not immediately persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let data = ping_lifetime_data
+                    .read()
+                    .expect("Can't read ping lifetime data");
+                for (key, metric) in data.iter() {
+                    if key.ping == storage_name {
+                        let labels = &key.labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
+                        transaction_fn(key.id.as_bytes(), labels, metric);
+                    }
+                }
+                return Ok(());
+            }
+        }
+
         let iter_sql = r#"
         SELECT
             id,
@@ -374,6 +499,30 @@ impl Database {
         data: &CommonMetricDataInternal,
         storage_name: &str,
     ) -> Option<Metric> {
+        let metric_identifier = data.base_identifier();
+
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if data.inner.lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let map = ping_lifetime_data
+                    .read()
+                    .expect("Can't read ping lifetime data");
+
+                let conn = self.conn.lock();
+                let labels = data.check_labels(&*conn);
+                let labels = labels.label().to_string();
+
+                let key = CacheKey {
+                    id: metric_identifier,
+                    labels,
+                    ping: storage_name.to_string(),
+                };
+
+                return map.get(&key).cloned();
+            }
+        }
+
         // TODO(bug 2048194): Remove the `LIMIT 1` and error out when more than 1 row is returned.
         let get_metric_sql = r#"
         SELECT
@@ -423,6 +572,20 @@ impl Database {
         storage_name: &str,
         metric_identifier: &str,
     ) -> bool {
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let data = ping_lifetime_data
+                    .read()
+                    .expect("Can't read ping lifetime data");
+
+                return data
+                    .keys()
+                    .any(|key| key.ping == storage_name && key.id == metric_identifier);
+            }
+        }
+
         let has_metric_sql = r#"
         SELECT id
         FROM telemetry
@@ -492,6 +655,39 @@ impl Database {
     ///
     /// This function will **not** panic on database errors.
     pub(crate) fn record_per_lifetime(
+        &self,
+        tx: &mut Transaction,
+        lifetime: Lifetime,
+        storage_name: &str,
+        key: &str,
+        labels: &str,
+        metric: &Metric,
+    ) -> Result<()> {
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let key = CacheKey {
+                    id: key.to_string(),
+                    labels: labels.to_string(),
+                    ping: storage_name.to_string(),
+                };
+
+                let mut data = ping_lifetime_data
+                    .write()
+                    .expect("Can't read ping lifetime data");
+                data.insert(key, metric.clone());
+
+                // flush ping lifetime
+                if let Err(err) = self.persist_ping_lifetime_data_if_full(tx, &data) {
+                    log::error!("Can't flush ping lifetime data: {err:?}");
+                };
+                return Ok(());
+            }
+        }
+
+        self.record_per_lifetime_inner(tx, lifetime, storage_name, key, labels, metric)
+    }
+
+    pub(crate) fn record_per_lifetime_inner(
         &self,
         tx: &mut Transaction,
         lifetime: Lifetime,
@@ -596,6 +792,37 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let key = CacheKey {
+                    id: key.to_string(),
+                    labels: labels.to_string(),
+                    ping: storage_name.to_string(),
+                };
+
+                let mut data = ping_lifetime_data
+                    .write()
+                    .expect("Can't read ping lifetime data");
+
+                let entry = data.entry(key);
+                match entry {
+                    Entry::Occupied(mut entry) => {
+                        let old_value = entry.get().clone();
+                        entry.insert(transform(Some(old_value)));
+                    }
+                    Entry::Vacant(entry) => {
+                        entry.insert(transform(None));
+                    }
+                }
+
+                // flush ping lifetime
+                if let Err(err) = self.persist_ping_lifetime_data_if_full(tx, &data) {
+                    log::error!("Can't flush ping lifetime data: {err:?}");
+                };
+                return Ok(());
+            }
+        }
+
         // TODO(bug 2048194): Remove the `LIMIT 1` and error out when more than 1 row is returned.
         let value_sql = r#"
         SELECT value
@@ -666,6 +893,15 @@ impl Database {
     ///
     /// This function will **not** panic on database errors.
     pub fn clear_ping_lifetime_storage(&self, storage_name: &str) -> Result<()> {
+        // Lifetime::Ping data will be saved to `ping_lifetime_data`
+        // in case `delay_ping_lifetime_io` is set to true
+        if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+            ping_lifetime_data
+                .write()
+                .expect("Can't access ping lifetime data as writable")
+                .retain(|key, _| key.ping != storage_name);
+        }
+
         let clear_sql = "DELETE FROM telemetry WHERE lifetime = 'ping' AND ping = ?1";
         self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
@@ -707,6 +943,18 @@ impl Database {
         storage_name: &str,
         metric_id: &str,
     ) -> Result<()> {
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let mut data = ping_lifetime_data
+                    .write()
+                    .expect("Can't access app lifetime data as writable");
+
+                data.retain(|key, _| key.ping != storage_name || key.id != metric_id);
+            }
+        }
+
         let clear_sql = "DELETE FROM telemetry WHERE lifetime = ?1 AND ping = ?2 AND id = ?3";
         self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
@@ -723,6 +971,17 @@ impl Database {
     ///
     /// * This function will **not** panic on database errors.
     pub fn clear_lifetime(&self, lifetime: Lifetime) {
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                ping_lifetime_data
+                    .write()
+                    .expect("Can't access app lifetime data as writable")
+                    .clear();
+            }
+        }
+
         let clear_sql = "DELETE FROM telemetry WHERE lifetime = ?1";
         _ = self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
@@ -743,6 +1002,15 @@ impl Database {
     ///
     /// * This function will **not** panic on database errors.
     pub fn clear_all(&self) {
+        // Lifetime::Ping data is not persisted to disk if
+        // Glean has `delay_ping_lifetime_io` set to true
+        if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+            ping_lifetime_data
+                .write()
+                .expect("Can't access app lifetime data as writable")
+                .clear();
+        }
+
         let lifetimes = &[
             Lifetime::User.as_str(),
             Lifetime::Ping.as_str(),
@@ -769,6 +1037,85 @@ impl Database {
     ///
     /// * This function will **not** panic on database errors.
     pub fn persist_ping_lifetime_data(&self) -> Result<()> {
+        if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+            let data = ping_lifetime_data
+                .read()
+                .expect("Can't read ping lifetime data");
+
+            // We can reset the write-counter. Current data has been persisted.
+            self.ping_lifetime_count.store(0, Ordering::Release);
+            self.ping_lifetime_store_ts.replace(Instant::now());
+
+            self.conn.write(|tx| {
+                for (key, metric) in data.iter() {
+                    self.record_per_lifetime_inner(
+                        tx,
+                        Lifetime::Ping,
+                        &key.ping,
+                        &key.id,
+                        &key.labels,
+                        metric,
+                    )?;
+                }
+
+                Result::<()>::Ok(())
+            })?;
+        }
+        Ok(())
+    }
+
+    fn persist_ping_lifetime_data_if_full(
+        &self,
+        tx: &mut Transaction,
+        data: &BTreeMap<CacheKey, Metric>,
+    ) -> Result<()> {
+        if self.ping_lifetime_threshold == 0 && self.ping_lifetime_max_time.is_zero() {
+            return Ok(());
+        }
+
+        let write_count = self.ping_lifetime_count.fetch_add(1, Ordering::Release) + 1;
+        let last_write = self.ping_lifetime_store_ts.get();
+        let elapsed = last_write.elapsed();
+
+        if (self.ping_lifetime_threshold == 0 || write_count < self.ping_lifetime_threshold)
+            && (self.ping_lifetime_max_time.is_zero() || elapsed < self.ping_lifetime_max_time)
+        {
+            log::trace!(
+                "Not flushing. write_count={} (threshold={}), elapsed={:?} (max={:?})",
+                write_count,
+                self.ping_lifetime_threshold,
+                elapsed,
+                self.ping_lifetime_max_time
+            );
+            return Ok(());
+        }
+
+        if self.ping_lifetime_threshold > 0 && write_count >= self.ping_lifetime_threshold {
+            log::debug!(
+                "Flushing database due to threshold of {} reached.",
+                self.ping_lifetime_threshold
+            )
+        } else if !self.ping_lifetime_max_time.is_zero() && elapsed >= self.ping_lifetime_max_time {
+            log::debug!(
+                "Flushing database due to last write more than {:?} ago",
+                self.ping_lifetime_max_time
+            );
+        }
+
+        self.ping_lifetime_count.store(0, Ordering::Release);
+        self.ping_lifetime_store_ts.replace(Instant::now());
+
+        for (key, metric) in data.iter() {
+            self.record_per_lifetime_inner(
+                tx,
+                Lifetime::Ping,
+                &key.ping,
+                &key.id,
+                &key.labels,
+                metric,
+            )?;
+        }
+
         Ok(())
     }
 }
