@@ -14,6 +14,11 @@ DESTINATION="platform=iOS Simulator,name=iPhone 17"
 
 cmd="${1:-}"
 target="${2:-sdk}"
+xcpretty=xcpretty
+
+if [[ "$3" == "--verbose" ]]; then
+    xcpretty=cat
+fi
 
 function help() {
     echo "Usage: bin/iosbuild cmd [target]"
@@ -27,6 +32,7 @@ function xbuild() {
   local scheme="$2"
   local cmd="$3"
   local tee_file="$4"
+  local xcpretty="${5:-xcpretty}"
 
   set -euvx
   set -o pipefail && \
@@ -37,7 +43,7 @@ function xbuild() {
     -destination "$DESTINATION" \
     "$cmd" | \
     tee "$tee_file" | \
-    xcpretty && exit "${PIPESTATUS[0]}"
+    $xcpretty && exit "${PIPESTATUS[0]}"
 }
 
 if [[ -z "$cmd" ]]; then
@@ -50,16 +56,16 @@ cd "$WORKSPACE_ROOT"
 
 case "${cmd}-${target}" in
   "build-sdk")
-    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" build "raw_xcodebuild.log"
+    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" build "raw_xcodebuild.log" "$xcpretty"
     ;;
   "test-sdk")
-    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" test "raw_xcodetest.log"
+    xbuild "$SDK_WORKSPACE" "$SDK_SCHEME" test "raw_xcodetest.log" "$xcpretty"
     ;;
   "build-sample")
-    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" build "raw_sample_xcodebuild.log"
+    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" build "raw_sample_xcodebuild.log" "$xcpretty"
     ;;
   "test-sample")
-    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" test "raw_sample_xcodetest.log"
+    xbuild "$SAMPLE_WORKSPACE" "$SAMPLE_SCHEME" test "raw_sample_xcodetest.log" "$xcpretty"
     ;;
   "build-xcframework")
     ./bin/build-xcframework.sh
