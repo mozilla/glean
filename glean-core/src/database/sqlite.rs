@@ -28,6 +28,8 @@ use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
 
+use super::ConnExt;
+
 mod connection;
 mod schema;
 
@@ -280,14 +282,14 @@ impl Database {
             conn.query_row_and_then("PRAGMA auto_vacuum", [], |row| row.get(0))?;
         if !force_full && auto_vacuum_setting == 2 {
             // Ideally, we run an incremental vacuum to delete 2 pages
-            conn.execute("PRAGMA incremental_vacuum(2)", [])?;
+            conn.execute_one("PRAGMA incremental_vacuum(2)")?;
         } else {
             // If auto_vacuum=incremental isn't set, configure it and run a full vacuum.
             log::warn!(
                 "run_maintenance_vacuum: Need to run a full vacuum to set auto_vacuum=incremental"
             );
-            conn.execute("PRAGMA auto_vacuum=incremental", [])?;
-            conn.execute("VACUUM", [])?;
+            conn.execute_one("PRAGMA auto_vacuum=incremental")?;
+            conn.execute_one("VACUUM")?;
         }
         Ok(())
     }
