@@ -8,7 +8,7 @@ use std::collections::{HashMap, HashSet};
 use std::mem;
 use std::sync::{Arc, Mutex};
 
-use rusqlite::{params, Transaction};
+use rusqlite::params;
 
 use crate::common_metric_data::{
     CommonMetricData, CommonMetricDataInternal, LabelCheck, MetricLabel,
@@ -249,7 +249,7 @@ impl TestGetValue for DualLabeledCounterMetric {
 }
 
 pub fn validate_dual_label_sqlite(
-    tx: &Transaction,
+    tx: &rusqlite::Connection,
     base_identifier: &str,
     key: &str,
     category: &str,
