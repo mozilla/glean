@@ -14,6 +14,7 @@ use serde_json::Value;
 
 use glean::net::{CapablePingUploadRequest, UploadResult};
 use glean::private::*;
+use glean::AttributionMetrics;
 use glean::{
     traits, ClientInfoMetrics, CommonMetricData, ConfigurationBuilder, HistogramType, MemoryUnit,
     TimeUnit,
@@ -173,6 +174,16 @@ fn validate_against_schema() {
 
     let text_metric = TextMetric::new(common("text"));
     text_metric.set("loooooong text".repeat(100));
+
+    // string JUST outside the limits, forcing this to record an error.
+    let term = "a".repeat(255) + "b";
+    glean::update_attribution(AttributionMetrics {
+        source: Some("rlb-tests".into()),
+        medium: Some("cargo-test".into()),
+        campaign: Some("testing".into()),
+        term: Some(term),
+        content: None,
+    });
 
     // Define a new ping and submit it.
     let custom_ping = PingBuilder::new(PING_NAME).with_send_if_empty(true).build();
