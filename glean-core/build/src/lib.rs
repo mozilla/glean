@@ -142,6 +142,7 @@ impl Builder {
             dbg!(venv.run_module("pip", &["--version"])?);
             // Let's make sure pip is up-to-date.
             venv.pip_upgrade("pip")?;
+            dbg!(venv.run_module("pip", &["--version"])?);
             venv.pip_install(&glean_parser)?;
             venv
         };
