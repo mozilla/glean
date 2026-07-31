@@ -137,6 +137,9 @@ impl Builder {
         } else {
             let venv = VirtualEnv::new(&sh, "py3-glean_parser")?;
 
+            // Ensure pip is the latest version
+            venv.pip_upgrade("pip")?;
+
             let glean_parser = format!("glean_parser~={GLEAN_PARSER_VERSION}");
             venv.pip_install(&glean_parser)?;
             venv
