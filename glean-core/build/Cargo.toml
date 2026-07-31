@@ -16,7 +16,6 @@ include = [
 rust-version = "1.90"
 
 [dependencies]
-xshell = "0.2.7"
 xshell-venv = "1.4.0"
 
 [dev-dependencies]

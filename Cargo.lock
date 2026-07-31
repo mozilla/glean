@@ -563,7 +563,6 @@ name = "glean-build"
 version = "20.1.0"
 dependencies = [
  "tempfile",
- "xshell",
  "xshell-venv",
 ]
 

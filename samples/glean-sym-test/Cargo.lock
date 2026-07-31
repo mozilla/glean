@@ -448,7 +448,6 @@ dependencies = [
 name = "glean-build"
 version = "20.1.0"
 dependencies = [
- "xshell",
  "xshell-venv",
 ]
 
