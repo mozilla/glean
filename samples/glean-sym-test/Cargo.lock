@@ -1919,9 +1919,9 @@ checksum = "32ac00cd3f8ec9c1d33fb3e7958a82df6989c42d747bd326c822b1d625283547"
 
 [[package]]
 name = "xshell-venv"
-version = "1.4.0"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ce3f9ddca75ddede32d5cc5a154fa237f4209ad71e6e2fc3db3ed18667d606b"
+checksum = "b02ebe4a3558b86c64aeab700c924b08613020fca9c94d5f2cd412691b6c00bd"
 dependencies = [
  "xshell",
 ]
