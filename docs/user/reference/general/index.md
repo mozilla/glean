@@ -25,5 +25,5 @@ The Glean SDKs provide a general API that supports the following operations. See
 | `setExperimentActive` | Indicate that an experiment is running. | [Using the Experiments API][experiments-api] |
 | `setExperimentInactive` | Indicate that an experiment is no longer running.. | [Using the Experiments API][experiments-api] |
 | `registerEventListener` | Register a callback by which a consumer can be notified of all event metrics being recorded. | [Glean Event Listener](./glean-event-listener.md) |
-| `updateAttribution` | Update the product attribution `client_info` fields. | [Reporting Product Attribution and Distribution][attribution-api] |
-| `updateDistribution` | Update the product distribution `client_info` fields. | [Reporting Product Attribution and Distribution][attribution-api] |
+| `updateAttribution` | Update the product attribution `client_info` fields. | [Reporting Product Attribution and Distribution](attribution-api.md) |
+| `updateDistribution` | Update the product distribution `client_info` fields. | [Reporting Product Attribution and Distribution](attribution-api.md) |
