@@ -102,6 +102,7 @@ fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType
     if !send_in_pings.contains(&ping_name) {
         send_in_pings.push(ping_name);
     }
+    send_in_pings.retain(|elem| elem != "glean_internal_info" && elem != "glean_client_info");
 
     CounterMetric::new(CommonMetricData {
         name: error.as_str().to_string(),
@@ -169,6 +170,7 @@ pub fn record_error_sqlite(
     if !send_in_pings.contains(&ping_name) {
         send_in_pings.push(ping_name);
     }
+    send_in_pings.retain(|elem| elem != "glean_internal_info" && elem != "glean_client_info");
 
     let lifetime = Lifetime::Ping;
     let transform = |old_value| match old_value {
