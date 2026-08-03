@@ -538,6 +538,26 @@ interface LabeledMemoryDistribution {
     record<string, DistributionData>? test_get_value(optional string? ping_name = null);
 };
 
+interface LabeledTimingDistribution {
+    constructor(LabeledMetricData meta, sequence<CowString>? labels);
+
+    TimingDistributionMetric get(string label);
+
+    i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, DistributionData>? test_get_value(optional string? ping_name = null);
+};
+
+interface LabeledCustomDistribution {
+    constructor(LabeledMetricData meta, sequence<CowString>? labels);
+
+    CustomDistributionMetric get(string label);
+
+    i32 test_get_num_recorded_errors(ErrorType error);
+
+    record<string, DistributionData>? test_get_value(optional string? ping_name = null);
+};
+
 interface StringListMetric {
     constructor(CommonMetricData meta);
 
