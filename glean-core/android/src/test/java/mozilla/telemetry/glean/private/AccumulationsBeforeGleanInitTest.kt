@@ -60,11 +60,15 @@ class AccumulationsBeforeGleanInitTest {
         )
 
         val labeledCounterMetric = LabeledMetricType(
-            disabled = false,
-            category = "test.telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "pre_init_counter",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "test.telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "pre_init_counter",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
