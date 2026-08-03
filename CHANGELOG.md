@@ -5,6 +5,15 @@
 * General
   * Updated to `glean_parser` v20.1.0 ([#3539](https://github.com/mozilla/glean/issues/3539))
   * BUGFIX: Ensure errors are not put into the client_info or any other internal section ([#3564](https://github.com/mozilla/glean/pull/3564))
+  * SQLite backend
+    * Run database maintenance after migration ([#3540](https://github.com/mozilla/glean/pull/3540)
+    * Run database maintenance at shutdown & after collecting ping data ([#3559](https://github.com/mozilla/glean/pull/3559))
+    * Validate that the database connection on open is usable for reads and writes ([#3513](https://github.com/mozilla/glean/pull/3513))
+* Rust
+  * glean-sym
+    * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
+    * Support pings ([#3544](https://github.com/mozilla/glean/pull/3544))
+    * Implement the event metric ([#3534](https://github.com/mozilla/glean/pull/3534))
 
 # v69.0.0 (2026-06-22)
 
