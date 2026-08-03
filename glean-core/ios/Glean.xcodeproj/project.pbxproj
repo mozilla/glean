@@ -71,6 +71,8 @@
 		CD70CF932850D69500FC2014 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF922850D69500FC2014 /* Gzip */; };
 		CD70CF982850D77200FC2014 /* OHHTTPStubs in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF972850D77200FC2014 /* OHHTTPStubs */; };
 		CD70CF9A2850D79200FC2014 /* OHHTTPStubsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CD70CF992850D79200FC2014 /* OHHTTPStubsSwift */; };
+		CD72C3C03020E355009B6DCF /* CustomDistributionMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD72C3BF3020E355009B6DCF /* CustomDistributionMetric.swift */; };
+		CD72C3C23020E3FF009B6DCF /* CustomDistributionMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD72C3C13020E3FF009B6DCF /* CustomDistributionMetricTests.swift */; };
 		CD81DCFA282A8F9B00347965 /* RateMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81DCF9282A8F9A00347965 /* RateMetric.swift */; };
 		CD81DCFC282A911400347965 /* RateMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81DCFB282A911400347965 /* RateMetricTests.swift */; };
 		CD9DA7852BC809BE00E18F31 /* ObjectMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */; };
@@ -162,6 +164,8 @@
 		CD3682F22CAC10FE00B02F04 /* RidealongPingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidealongPingTests.swift; sourceTree = "<group>"; };
 		CD387868271D9CD100C097D8 /* glean.udl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = glean.udl; path = ../../src/glean.udl; sourceTree = "<group>"; };
 		CD38786C271DCCC700C097D8 /* libglean_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglean_ffi.a; path = ../../target/libglean_ffi.a; sourceTree = "<group>"; };
+		CD72C3BF3020E355009B6DCF /* CustomDistributionMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDistributionMetric.swift; sourceTree = "<group>"; };
+		CD72C3C13020E3FF009B6DCF /* CustomDistributionMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDistributionMetricTests.swift; sourceTree = "<group>"; };
 		CD81DCF9282A8F9A00347965 /* RateMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateMetric.swift; sourceTree = "<group>"; };
 		CD81DCFB282A911400347965 /* RateMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateMetricTests.swift; sourceTree = "<group>"; };
 		CD9DA7842BC809BE00E18F31 /* ObjectMetricTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectMetricTests.swift; sourceTree = "<group>"; };
@@ -347,6 +351,7 @@
 				AC06529B26E032E300D92D5E /* QuantityMetric.swift */,
 				1F6A8FEF233C049D007837D5 /* BooleanMetric.swift */,
 				BF43A8C6232A4BA400545310 /* CounterMetric.swift */,
+				CD72C3BF3020E355009B6DCF /* CustomDistributionMetric.swift */,
 				CD81DCF9282A8F9A00347965 /* RateMetric.swift */,
 				1F6A8FF3233C0A91007837D5 /* DatetimeMetric.swift */,
 				BF6C53B1232F870C00E3B43A /* Ping.swift */,
@@ -371,6 +376,7 @@
 				AC06529D26E034BF00D92D5E /* QuantityMetricTypeTest.swift */,
 				1F6A8FF1233C068A007837D5 /* BooleanMetricTypeTest.swift */,
 				BF43A8CC232A615200545310 /* CounterMetricTests.swift */,
+				CD72C3C13020E3FF009B6DCF /* CustomDistributionMetricTests.swift */,
 				CD81DCFB282A911400347965 /* RateMetricTests.swift */,
 				1F6A8FF5233C1555007837D5 /* DatetimeMetricTypeTests.swift */,
 				BF6C53B3232F872B00E3B43A /* PingTests.swift */,
@@ -638,6 +644,7 @@
 				CDBFB4DC27C3FA520045CCB9 /* Dispatchers.swift in Sources */,
 				EDC21C8F2EE22CCB0042D53E /* GleanUploadTaskProvider.swift in Sources */,
 				1F6058932314863400307A9F /* Configuration.swift in Sources */,
+				CD72C3C03020E355009B6DCF /* CustomDistributionMetric.swift in Sources */,
 				BF2E57052334B77D00364D92 /* EventMetric.swift in Sources */,
 				BF10008023548B0500064051 /* MemoryDistributionMetric.swift in Sources */,
 				BF93C698224BFC57006CE7D8 /* Glean.swift in Sources */,
@@ -681,6 +688,7 @@
 				8AF3BEA12E60EC670007A9ED /* PingUploaderTests.swift in Sources */,
 				BFAED50A2369752400DF293D /* StringListMetricTests.swift in Sources */,
 				60691AEB28DD0BF200BDF31A /* BaselinePingTests.swift in Sources */,
+				CD72C3C23020E3FF009B6DCF /* CustomDistributionMetricTests.swift in Sources */,
 				BF890561232BC227003CA2BA /* StringMetricTests.swift in Sources */,
 				CD0F7CC226F0F28900EDA6A4 /* UrlMetricTests.swift in Sources */,
 				EDC21B942EE20B2C0042D53E /* PingUploadSchedulerTests.swift in Sources */,

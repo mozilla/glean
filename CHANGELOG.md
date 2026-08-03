@@ -14,6 +14,10 @@
     * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
     * Support pings ([#3544](https://github.com/mozilla/glean/pull/3544))
     * Implement the event metric ([#3534](https://github.com/mozilla/glean/pull/3534))
+* iOS
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
+* Python
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
 
 # v69.0.0 (2026-06-22)
 
