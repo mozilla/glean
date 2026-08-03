@@ -11,16 +11,18 @@ This module contains all of the metric types.
 from .._uniffi import AttributionMetrics
 from .._uniffi import CommonMetricData
 from .._uniffi import DistributionMetrics
+from .._uniffi import HistogramType
 from .._uniffi import LabeledMetricData
 from .._uniffi import Lifetime
 from .._uniffi import MemoryUnit
+from .._uniffi import RecordedExperiment
 from .._uniffi import TimerId
 from .._uniffi import TimeUnit
-from .._uniffi import RecordedExperiment
 
 # Re-export some metrics directly
 from .._uniffi import BooleanMetric as BooleanMetricType
 from .._uniffi import CounterMetric as CounterMetricType
+from .._uniffi import CustomDistributionMetric as CustomDistributionMetricType
 from .._uniffi import DenominatorMetric as DenominatorMetricType
 from .._uniffi import MemoryDistributionMetric as MemoryDistributionMetricType
 from .._uniffi import NumeratorMetric as NumeratorMetricType
@@ -52,6 +54,7 @@ __all__ = [
     "BooleanMetricType",
     "CommonMetricData",
     "CounterMetricType",
+    "CustomDistributionMetricType",
     "DatetimeMetricType",
     "DenominatorMetricType",
     "DistributionMetrics",
@@ -82,4 +85,5 @@ __all__ = [
     "TimingDistributionMetricType",
     "UrlMetricType",
     "UuidMetricType",
+    "HistogramType",
 ]

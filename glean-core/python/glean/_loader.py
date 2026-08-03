@@ -42,6 +42,7 @@ _TYPE_MAPPING = {
     "timespan": metrics.TimespanMetricType,
     "timing_distribution": metrics.TimingDistributionMetricType,
     "uuid": metrics.UuidMetricType,
+    "custom_distribution": metrics.CustomDistributionMetricType,
 }
 
 

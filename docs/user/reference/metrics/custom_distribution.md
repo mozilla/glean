@@ -37,8 +37,25 @@ Graphics.INSTANCE.checkerboardPeak().accumulateSamples(listOf(23));
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Graphics.checkerboardPeak.accumulateSamples([23])
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.graphics.checkerboard_peak.accumulate_samples([23])
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -111,8 +128,25 @@ Graphics.INSTANCE.checkerboardPeak().accumulateSingleSample(23);
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Graphics.checkerboardPeak.accumulateSingleSample(23)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.graphics.checkerboard_peak.accumulate_single_sample(23)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -258,8 +292,42 @@ assertEquals(1L, snapshot.count);
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Get snapshot
+let snapshot = try! Graphics.checkerboardPeak.testGetValue()
+
+// Does the sum have the expected value?
+XCTAssertEqual(23, snapshot.sum)
+
+// Does the count have the expected value?
+XCTAssertEqual(1, snapshot.count)
+
+// Buckets are indexed by their lower bound.
+XCTAssertEqual(1L, snapshot.values[19])
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Does the sum have the expected value?
+assert 23 == metrics.graphics.checkerboard_peak.test_get_value().sum
+
+# Does the count have the expected value?
+assert 1 == metrics.graphics.checkerboard_peak.test_get_value().count
+
+# Buckets are indexed by their lower bound.
+assert 1 == metrics.graphics.checkerboard_peak.test_get_value().values[19]
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -349,8 +417,30 @@ assertEquals(
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+/// Did the metric receive a negative value?
+XCTAssertEqual(
+    0,
+    Graphics.checkerboardPeak.testGetNumRecordedErrors(.invalidValue)
+)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Were any of the values negative and thus caused an error to be recorded?
+assert 0 == metrics.graphics.checkerboard_peak.test_get_num_recorded_errors(ErrorType.INVALID_VALUE)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust

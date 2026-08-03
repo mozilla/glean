@@ -265,3 +265,39 @@ party:
           type: array
           items:
             type: number
+
+# These remain unused in the sample app,
+# but it's a good way to ensure the code that is generated for them compiles.
+codegen_test:
+  counter: &defaults
+    type: counter
+    description: |
+      A metric for codegen testing --
+      no extra data, just setting the defaults
+    bugs:
+      - https://bugzilla.mozilla.org/TODO
+    data_reviews:
+      - http://example.com/reviews
+    notification_emails:
+      - CHANGE-ME@example.com
+    expires: never
+    send_in_pings:
+      - sample
+
+  timing_distribution:
+    <<: *defaults
+    type: timing_distribution
+    time_unit: millisecond
+
+  memory_distribution:
+    <<: *defaults
+    type: memory_distribution
+    memory_unit: byte
+
+  custom_distribution:
+    <<: *defaults
+    type: custom_distribution
+    range_min: 0
+    range_max: 100
+    bucket_count: 100
+    histogram_type: linear

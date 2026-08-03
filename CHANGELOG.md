@@ -5,6 +5,10 @@
 * General
   * Updated to `glean_parser` v20.1.0 ([#3539](https://github.com/mozilla/glean/issues/3539))
   * BUGFIX: Ensure errors are not put into the client_info or any other internal section ([#3564](https://github.com/mozilla/glean/pull/3564))
+* iOS
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
+* Python
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
 
 # v69.0.0 (2026-06-22)
 
