@@ -259,7 +259,7 @@ fn database_externally_locked() {
 }
 
 #[test]
-fn schema_v2_is_applied() {
+fn latest_schema_is_applied() {
     let (first_client_id, temp) = {
         let (glean, temp) = new_glean(None);
         let client_id = clientid_metric().get_value(&glean, None).unwrap();
@@ -286,10 +286,58 @@ fn schema_v2_is_applied() {
     let cur_user_version: u32 = conn
         .query_one("PRAGMA user_version", [], |row| row.get(0))
         .unwrap();
-    assert_eq!(cur_user_version, 2);
+    assert_eq!(cur_user_version, 3);
 
     let migration_state: String = conn
         .query_one("SELECT state FROM migration", [], |row| row.get(0))
         .unwrap();
     assert_eq!(migration_state, "done");
+}
+
+#[test]
+fn test_storing_and_fetching_submitted_pings() {
+    let (glean, _temp) = new_glean(None);
+
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id".into(),
+            "ping".into(),
+            "2026-08-04T12:30:60.50Z".into(),
+            None,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one".into(),
+            "ping-two".into(),
+            "2026-08-05T12:30:60.50Z".into(),
+            Some("2026-08-05T12:30:60.51Z".into()),
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 2);
+    assert_eq!(all_pings.first().unwrap().document_id, "id-one".to_string());
+    assert_eq!(all_pings.last().unwrap().document_id, "id".to_string());
+    assert_eq!(
+        all_pings.first().unwrap().submitted_date.0,
+        chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:60.50Z").unwrap()
+    );
+    assert_eq!(
+        all_pings.first().unwrap().uploaded_date.clone().unwrap().0,
+        chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:60.51Z").unwrap()
+    );
+    assert_eq!(
+        all_pings.first().unwrap().value().unwrap(),
+        serde_json::json!({ "test": "a value" })
+    );
+
+    let some_pings = glean.storage().get_submitted_pings("ping");
+    assert_eq!(some_pings.len(), 1);
+    assert_eq!(some_pings.first().unwrap().document_id, "id".to_string());
 }
