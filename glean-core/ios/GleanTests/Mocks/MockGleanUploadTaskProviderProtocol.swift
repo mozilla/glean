@@ -2,10 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import UIKit
 import Glean
+import UIKit
 
-final class MockGleanUploadTaskProviderProtocol: GleanUploadTaskProviderProtocol, @unchecked Sendable {
+final class MockGleanUploadTaskProviderProtocol: GleanUploadTaskProviderProtocol,
+    @unchecked Sendable
+{
     let task: PingUploadTask
     var didCallGetUploadTask = false
 

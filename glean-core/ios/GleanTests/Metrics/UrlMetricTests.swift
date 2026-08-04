@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class UrlMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testUrlSavesToStorage() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(urlMetric.testGetValue())
 
@@ -37,13 +39,14 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testUrlMustNotRecordIfDisabled() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(urlMetric.testGetValue())
 
@@ -53,25 +56,27 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testUrlGetValueReturnsNilIfNothingIsStored() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(urlMetric.testGetValue())
     }
 
     func testUrlSavesToSecondaryPings() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         urlMetric.set("glean://value")
 
@@ -83,13 +88,14 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testSettingLongURLsRecordsAnError() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Whenever the URL is longer than our MAX_URL_LENGTH, we truncate the URL to the
         // MAX_URL_LENGTH.
@@ -113,13 +119,14 @@ class UrlMetricTypeTests: XCTestCase {
     }
 
     func testSettingURLType() {
-        let urlMetric = UrlMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "url_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let urlMetric = UrlMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "url_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(urlMetric.testGetValue())
 

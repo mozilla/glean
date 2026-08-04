@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class StringListMetricTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class StringListMetricTests: XCTestCase {
     }
 
     func testStringSavesToStorageByFirstAddingThenSetting() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Record by adding values
         stringListMetric.add("value1")
@@ -45,13 +47,14 @@ class StringListMetricTests: XCTestCase {
     }
 
     func testStringSavesToStorageByFirstSettingThenAdding() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Record by setting the list
         stringListMetric.set(["value1", "value2", "value3"])
@@ -74,43 +77,48 @@ class StringListMetricTests: XCTestCase {
     }
 
     func testStringMustNotRecordIfDisabled() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(stringListMetric.testGetValue())
 
         stringListMetric.set(["value1", "value2", "value3"])
-        XCTAssertNil(stringListMetric.testGetValue(), "Strings must not be recorded if they are disabled")
+        XCTAssertNil(
+            stringListMetric.testGetValue(), "Strings must not be recorded if they are disabled")
 
         stringListMetric.add("value4")
-        XCTAssertNil(stringListMetric.testGetValue(), "Strings must not be recorded if they are disabled")
+        XCTAssertNil(
+            stringListMetric.testGetValue(), "Strings must not be recorded if they are disabled")
     }
 
     func testStringGetValueReturnsNilIfNothingIsStored() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(stringListMetric.testGetValue())
     }
 
     func testStringSavesToSecondaryPings() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         stringListMetric.add("value1")
         stringListMetric.add("value2")
@@ -133,15 +141,16 @@ class StringListMetricTests: XCTestCase {
     }
 
     func testLongStringListsAreTruncated() {
-        let stringListMetric = StringListMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_list_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringListMetric = StringListMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_list_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
-        for n in 0 ... 100 {
+        for n in 0...100 {
             stringListMetric.add(String(format: "value%02d", n))
         }
 

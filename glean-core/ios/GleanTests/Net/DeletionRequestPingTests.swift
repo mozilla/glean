@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class DeletionRequestPingTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -116,7 +117,8 @@ class DeletionRequestPingTests: XCTestCase {
         glean.enableTestingMode()
 
         // Create directory for pending deletion-request pings
-        let pendingDeletionRequestDir = getGleanDirectory().appendingPathComponent("deletion_request")
+        let pendingDeletionRequestDir = getGleanDirectory().appendingPathComponent(
+            "deletion_request")
         try! FileManager.default.createDirectory(
             atPath: pendingDeletionRequestDir.path,
             withIntermediateDirectories: true,
@@ -128,7 +130,8 @@ class DeletionRequestPingTests: XCTestCase {
         let submitPath = "/submit/org-mozilla-samples-gleancore/deletion-request/1/\(pingId)"
         // swiftlint:disable line_length
         // REASON: This is inline JSON
-        let json = "{\"ping_info\": {\"ping_type\": \"deletion-request\"}, \"client_info\": {\"client_id\": \"test-only\"}}"
+        let json =
+            "{\"ping_info\": {\"ping_type\": \"deletion-request\"}, \"client_info\": {\"client_id\": \"test-only\"}}"
         // swiftlint:enable line_length
         let content = "\(submitPath)\n\(json)"
         let pingFile = pendingDeletionRequestDir.appendingPathComponent(pingId)

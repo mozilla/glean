@@ -52,7 +52,7 @@ class ViewControllerTest: XCTestCase {
 
         let expectedChooser: [[String: AnyHashable]] = [
             ["key": "fortytwo", "value": 42],
-            ["key": "to-be", "value": false]
+            ["key": "to-be", "value": false],
         ]
 
         let chooser = objects["party.chooser"] as! [[String: AnyHashable]]
@@ -62,7 +62,7 @@ class ViewControllerTest: XCTestCase {
         let expectedObj: [String: AnyHashable] = [
             "key1": "test",
             "another_value": 3,
-            "sub_array": [1, 2, 3]
+            "sub_array": [1, 2, 3],
         ]
         XCTAssertEqual(expectedObj, obj)
     }

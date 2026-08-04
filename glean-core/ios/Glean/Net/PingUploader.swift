@@ -50,7 +50,7 @@ public struct CapablePingUploadRequest {
     public func capable(_ uploaderCapabilities: [String]) -> PingUploadRequest? {
         // Check to see if the request's uploader capabilites are all satisfied by the
         // uploader capabilites that were advertised by the uploader via the
-        // `uploaderCapabilities` parameter to this function. 
+        // `uploaderCapabilities` parameter to this function.
         if self.request.uploaderCapabilities.allSatisfy(uploaderCapabilities.contains) {
             return self.request
         }

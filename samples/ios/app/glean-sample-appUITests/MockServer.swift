@@ -7,7 +7,9 @@ import Gzip
 import Swifter
 
 // Create a new Glean endpoint HTTP server on localhost and react only for the specified ping type
-func mockServer(expectPingType: String, port: UInt16 = 0, callback: @escaping ([String: Any]?) -> Void) -> HttpServer {
+func mockServer(
+    expectPingType: String, port: UInt16 = 0, callback: @escaping ([String: Any]?) -> Void
+) -> HttpServer {
     let server = HttpServer()
 
     server["/submit/:appid/:ping/:schema/:pinguuid"] = { request in
@@ -27,7 +29,9 @@ func mockServer(expectPingType: String, port: UInt16 = 0, callback: @escaping ([
     }
     // For logging purposes:
     server.middleware.append { request in
-        print("Middleware: \(request.address ?? "unknown address") -> \(request.method) -> \(request.path)")
+        print(
+            "Middleware: \(request.address ?? "unknown address") -> \(request.method) -> \(request.path)"
+        )
         return nil
     }
 

@@ -16,7 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let glean = Glean.shared
 
     // swiftlint:disable line_length
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         glean.registerPings(Pings.shared)
 
         // Set a "fake" legacy client id for the purpose of testing the deletion-request ping payload
@@ -36,7 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("using a mock server, setting address: \(address)")
             let cfg = Configuration(serverEndpoint: address)
             _ = glean.setSourceTags(["automation"])
-            glean.initialize(uploadEnabled: true, configuration: cfg, buildInfo: GleanMetrics.GleanBuild.info)
+            glean.initialize(
+                uploadEnabled: true, configuration: cfg, buildInfo: GleanMetrics.GleanBuild.info)
         } else {
             print("using default config for Glean")
             glean.initialize(uploadEnabled: true, buildInfo: GleanMetrics.GleanBuild.info)
@@ -52,9 +55,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func application(_: UIApplication,
-                     open url: URL,
-                     options _: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    func application(
+        _: UIApplication,
+        open url: URL,
+        options _: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
         // This does nothing if the url isn't meant for Glean.
         glean.handleCustomUrl(url: url)
 

@@ -49,7 +49,7 @@ let dateFormatPatterns: [TimeUnit: String] = [
     .second: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
     .minute: "yyyy-MM-dd'T'HH:mmZZZZZ",
     .hour: "yyyy-MM-dd'T'HHZZZZZ",
-    .day: "yyyy-MM-ddZZZZZ"
+    .day: "yyyy-MM-ddZZZZZ",
 ]
 
 extension Date {

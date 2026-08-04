@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import OHHTTPStubs
 import OHHTTPStubsSwift
 import XCTest
+
+@testable import Glean
 
 final class BaselinePingTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -32,7 +33,9 @@ final class BaselinePingTests: XCTestCase {
             if metrics != nil {
                 // Since we are only expecting error metrics,
                 // let's check that this is all we got.
-                XCTAssertEqual(metrics?.count, 1, "metrics has more keys than expected: \(JSONStringify(metrics!))")
+                XCTAssertEqual(
+                    metrics?.count, 1,
+                    "metrics has more keys than expected: \(JSONStringify(metrics!))")
                 let labeledCounters = metrics?["labeled_counter"] as? [String: Any]
                 labeledCounters!.forEach { key, _ in
                     XCTAssertTrue(
@@ -132,13 +135,14 @@ final class BaselinePingTests: XCTestCase {
         // Set the dirty flag.
         gleanSetDirtyFlag(true)
 
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "app_lifetime",
-            sendInPings: ["baseline"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "app_lifetime",
+                sendInPings: ["baseline"],
+                lifetime: .application,
+                disabled: false
+            ))
         stringMetric.set("HELLOOOOO!")
 
         // Set up the test stub based on the default telemetry endpoint
@@ -206,15 +210,15 @@ final class BaselinePingTests: XCTestCase {
         let now = Date()
         Glean.shared.metricsPingScheduler!.updateSentDate(now)
 
-                // Set a metric configuration that enables telemetry.counter_metric
+        // Set a metric configuration that enables telemetry.counter_metric
         let metricConfigStringifiedJson =
-"""
-{
-  "pings_enabled": {
-    "baseline": false
-  }
-}
-"""
+            """
+            {
+              "pings_enabled": {
+                "baseline": false
+              }
+            }
+            """
         Glean.shared.applyServerKnobsConfig(metricConfigStringifiedJson)
 
         // Resetting Glean doesn't trigger lifecycle events in tests so we must call the method

@@ -328,7 +328,8 @@ public final class Glean: @unchecked Sendable {
     ///
     /// - returns: `RecordedExperiment` if the experiment is active and reported in pings, `nil` otherwise.
     public func testGetExperimentData(_ experimentId: String)
-        -> RecordedExperiment? {
+        -> RecordedExperiment?
+    {
         return gleanTestGetExperimentData(experimentId)
     }
 

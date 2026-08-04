@@ -2,9 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import OHHTTPStubs
 import XCTest
+
+@testable import Glean
 
 class GleanDebugUtilityTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -63,22 +64,24 @@ class GleanDebugUtilityTests: XCTestCase {
 
         // Create a dummy event and a dummy metric so that the
         // respective pings will be sent
-        let event = EventMetricType<NoExtras>(CommonMetricData(
-            category: "ui",
-            name: "click",
-            sendInPings: ["events"],
-            lifetime: .ping,
-            disabled: false
-        ), ["object_id", "other"])
+        let event = EventMetricType<NoExtras>(
+            CommonMetricData(
+                category: "ui",
+                name: "click",
+                sendInPings: ["events"],
+                lifetime: .ping,
+                disabled: false
+            ), ["object_id", "other"])
         event.record()
 
-        let metric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let metric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
         metric.add()
 
         // Send the baseline ping via the custom URL

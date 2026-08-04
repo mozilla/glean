@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class TimingDistributionTypeTests: XCTestCase {
     override func setUp() {
@@ -15,18 +16,19 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testTiminingDistributionSavesToStorage() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
-        ), .nanosecond)
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
+            ), .nanosecond)
 
         XCTAssertNil(metric.testGetValue())
 
         // Accumulate a few values
-        for _ in 1 ... 3 {
+        for _ in 1...3 {
             let id = metric.start()
             metric.stopAndAccumulate(id)
         }
@@ -40,13 +42,14 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testTimingDistributionMustNotRecordIfDisabled() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: true
-        ), .nanosecond
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: true
+            ), .nanosecond
         )
 
         XCTAssertNil(metric.testGetValue())
@@ -56,33 +59,36 @@ class TimingDistributionTypeTests: XCTestCase {
         metric.stopAndAccumulate(id)
 
         // Check that nothing was recorded.
-        XCTAssertNil(metric.testGetValue(), "TimingDistributions must not be recorded if they are disabled")
+        XCTAssertNil(
+            metric.testGetValue(), "TimingDistributions must not be recorded if they are disabled")
     }
 
     func testTimingDistributionGetValueReturnsNilIfNothingIsStored() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .second)
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .second)
 
         XCTAssertNil(metric.testGetValue())
     }
 
     func testTimingDistributionSavesToSecondaryPings() {
         // Define a timing distribution metric which will be stored in multiple stores
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1", "store2", "store3"],
-            lifetime: .application,
-            disabled: false
-        ), .second)
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1", "store2", "store3"],
+                lifetime: .application,
+                disabled: false
+            ), .second)
 
         // Accumulate a few values
-        for _ in 1 ... 3 {
+        for _ in 1...3 {
             let id = metric.start()
             metric.stopAndAccumulate(id)
         }
@@ -101,12 +107,13 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testTimingDistributionMustNotRecordIfCanceled() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
             ), .nanosecond
         )
 
@@ -121,12 +128,13 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testStoppingNonexistentTimerRecordsAnError() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
             ), .nanosecond
         )
 
@@ -136,12 +144,13 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testMeasureFunctionCorrectlyStoresValues() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
             ), .nanosecond
         )
 
@@ -150,7 +159,7 @@ class TimingDistributionTypeTests: XCTestCase {
         }
 
         // Accumulate a few values
-        for _ in 1 ... 3 {
+        for _ in 1...3 {
             let testValue = metric.measure {
                 testFunc(value: true)
             }
@@ -169,12 +178,13 @@ class TimingDistributionTypeTests: XCTestCase {
     }
 
     func testMeasureFunctionThrows() {
-        let metric = TimingDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timing_distribution",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
+        let metric = TimingDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timing_distribution",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
             ), .nanosecond
         )
 
@@ -186,7 +196,7 @@ class TimingDistributionTypeTests: XCTestCase {
         }
 
         // Measure a few times. Nothing should be recorded.
-        for _ in 1 ... 3 {
+        for _ in 1...3 {
             // Perform the measurement
             do {
                 _ = try metric.measure {

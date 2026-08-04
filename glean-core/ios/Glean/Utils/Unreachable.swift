@@ -42,11 +42,17 @@ func unreachable() -> Never {
 /// - parameter file: The file name to print with the message. The default is the file where this function is called.
 /// - parameter line: The line number to print with the message. The default is the line where this function is called.
 @inline(__always)
-func assertUnreachable(_ message: @autoclosure () -> String = "Encountered unreachable path",
-                       file: StaticString = #file,
-                       line: UInt = #line) -> Never {
+func assertUnreachable(
+    _ message: @autoclosure () -> String = "Encountered unreachable path",
+    file: StaticString = #file,
+    line: UInt = #line
+) -> Never {
     var isDebug = false
-    assert({ isDebug = true; return true }())
+    assert(
+        {
+            isDebug = true
+            return true
+        }())
 
     if isDebug {
         fatalError(message(), file: file, line: line)

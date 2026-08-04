@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class PingTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -48,13 +49,14 @@ class PingTests: XCTestCase {
             uploaderCapabilities: []
         )
 
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["custom"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["custom"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         setupHttpResponseStub("custom")
         expectation = expectation(description: "Completed upload")
@@ -99,13 +101,14 @@ class PingTests: XCTestCase {
             uploaderCapabilities: []
         )
 
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["custom"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["custom"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         setupHttpResponseStub("custom")
         expectation = expectation(description: "Completed upload")
@@ -176,19 +179,21 @@ class PingTests: XCTestCase {
         // is not present
         if let metrics = lastPingJson!["metrics"] as? [String: Any],
             let strings = metrics["string"] as? [String: Any],
-            let id = strings["glean.client.annotation.experimentation_id"] as? String {
+            let id = strings["glean.client.annotation.experimentation_id"] as? String
+        {
             XCTAssertNil(id)
         }
     }
 
     func testSendingPingWithUnknownNameIsANoOp() {
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["unknown", "baseline"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["unknown", "baseline"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         counter.add()
         // Nothing stored for unknown ping
@@ -244,7 +249,8 @@ class PingTests: XCTestCase {
 
         var callbackWasCalled = false
         customPing.testBeforeNextSubmit { reason in
-            XCTAssertEqual(CustomReasonCodes.wasTested, reason, "Unexpected reason for custom ping submitted")
+            XCTAssertEqual(
+                CustomReasonCodes.wasTested, reason, "Unexpected reason for custom ping submitted")
             callbackWasCalled = true
         }
 

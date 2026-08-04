@@ -51,7 +51,8 @@ class GleanDebugUtility {
         }
 
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-            let params = components.queryItems else {
+            let params = components.queryItems
+        else {
             logger.error("Error parsing query parameters, aborting Glean debugging tools")
             return
         }
@@ -103,7 +104,8 @@ class GleanDebugUtility {
     ///
     /// - returns: A tuple containing the values of the parameters `pingTag`, `logPings`, `pingNamesToSend` or nil
     ///     when invalid or duplicated commands are detected.
-    private static func processCustomUrlQuery(urlQueryItems: [URLQueryItem]) -> ParsedQueryCommands? {
+    private static func processCustomUrlQuery(urlQueryItems: [URLQueryItem]) -> ParsedQueryCommands?
+    {
         var debugViewTag: String?
         var sourceTags: [String]?
         var willLogPings: Bool?
@@ -134,7 +136,8 @@ class GleanDebugUtility {
                 sourceTags = param.value?.components(separatedBy: ",")
             case "logPings":
                 if willLogPings != nil {
-                    logger.error("Multiple `logPings` commands not allowed, aborting Glean debug tools")
+                    logger.error(
+                        "Multiple `logPings` commands not allowed, aborting Glean debug tools")
                     return nil
                 }
 
@@ -144,13 +147,15 @@ class GleanDebugUtility {
                 willLogPings = Bool(param.value!)
             case "sendPing":
                 if pingToSend != nil {
-                    logger.error("Multiple `sendPing` commands not allowed, aborting Glean debug tools")
+                    logger.error(
+                        "Multiple `sendPing` commands not allowed, aborting Glean debug tools")
                     return nil
                 }
 
                 pingToSend = param.value
             default:
-                logger.error("Unknown parameter passed to Glean.handleCustomUrl, aborting Glean debug tools")
+                logger.error(
+                    "Unknown parameter passed to Glean.handleCustomUrl, aborting Glean debug tools")
                 return nil
             }
         }

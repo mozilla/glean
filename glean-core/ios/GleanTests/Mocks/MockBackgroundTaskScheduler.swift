@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import UIKit
 import Glean
+import UIKit
 
 final class MockBackgroundTaskScheduler: BackgroundTaskScheduler, @unchecked Sendable {
     let withValidTaskIdentifier: Bool
@@ -21,8 +21,8 @@ final class MockBackgroundTaskScheduler: BackgroundTaskScheduler, @unchecked Sen
     ) -> UIBackgroundTaskIdentifier {
         calledBeginBackgroundTask += 1
         return withValidTaskIdentifier
-               ? UIBackgroundTaskIdentifier(rawValue: Int.random(in: 0...Int.max))
-               : .invalid
+            ? UIBackgroundTaskIdentifier(rawValue: Int.random(in: 0...Int.max))
+            : .invalid
     }
 
     func endBackgroundTask(_ identifier: UIBackgroundTaskIdentifier) {

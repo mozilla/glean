@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class MemoryDistributionTypeTests: XCTestCase {
     override func setUp() {
@@ -15,17 +16,18 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testTiminingDistributionSavesToStorage() {
-        let metric = MemoryDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "memory_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
+        let metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "memory_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
             ), .kilobyte
         )
 
         // Accumulate a few values
-        for i in Int64(1) ... 3 {
+        for i in Int64(1)...3 {
             metric.accumulate(i)
         }
 
@@ -48,12 +50,13 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testMemoryDistributionValuesAreTruncatedTo1Tb() {
-        let metric = MemoryDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "memory_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
+        let metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "memory_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
             ), .gigabyte
         )
 
@@ -70,12 +73,13 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testMemoryDistributionMustNotRecordIfDisabled() {
-        let metric = MemoryDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "memory_distribution",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: true
+        let metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "memory_distribution",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: true
             ), .kilobyte
         )
 
@@ -84,12 +88,13 @@ class MemoryDistributionTypeTests: XCTestCase {
     }
 
     func testMemoryDistributionGetValueReturnsNilIfNothingIsStored() {
-        let metric = MemoryDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "memory_distribution",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
+        let metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "memory_distribution",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
             ), .kilobyte
         )
 
@@ -98,17 +103,18 @@ class MemoryDistributionTypeTests: XCTestCase {
 
     func testMemoryDistributionSavesToSecondaryPings() {
         // Define a memory distribution metric which will be stored in multiple stores
-        let metric = MemoryDistributionMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "memory_distribution",
-            sendInPings: ["store1", "store2", "store3"],
-            lifetime: .application,
-            disabled: false
+        let metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "memory_distribution",
+                sendInPings: ["store1", "store2", "store3"],
+                lifetime: .application,
+                disabled: false
             ), .kilobyte
         )
 
         // Accumulate a few values
-        for i in Int64(1) ... 3 {
+        for i in Int64(1)...3 {
             metric.accumulate(i)
         }
 

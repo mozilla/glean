@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import OHHTTPStubs
 import OHHTTPStubsSwift
 import XCTest
+
+@testable import Glean
 
 final class RidealongPingTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -19,7 +20,8 @@ final class RidealongPingTests: XCTestCase {
     func testSendRidealongPingWithBaseline() {
 
         let configuration = Configuration(pingSchedule: ["baseline": ["ridealong"]])
-        resetGleanDiscardingInitialPings(testCase: self, tag: "RidealongPingTests", configuration: configuration)
+        resetGleanDiscardingInitialPings(
+            testCase: self, tag: "RidealongPingTests", configuration: configuration)
 
         // Register ping _after_ Glean has been initialized to avoid this being sent multiple times.
         _ = Ping<NoReasonCodes>(
@@ -41,7 +43,10 @@ final class RidealongPingTests: XCTestCase {
 
         stubServerReceive { pingType, _ in
             XCTAssertTrue(!pingsToReceive.isEmpty, "No more pings expected")
-            XCTAssertTrue(pingsToReceive.contains(pingType), "Expected ping types: \(pingsToReceive), got \(pingType)")
+            XCTAssertTrue(
+                pingsToReceive.contains(pingType),
+                "Expected ping types: \(pingsToReceive), got \(pingType)"
+            )
             pingsToReceive.removeAll(where: { $0 == pingType })
 
             if pingsToReceive.isEmpty {

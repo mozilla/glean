@@ -13,7 +13,9 @@ final class MockPingUploader: PingUploader, @unchecked Sendable {
         self.uploadRequested = uploadRequested
     }
 
-    func upload(request: CapablePingUploadRequest, callback: @escaping @Sendable (UploadResult) -> Void) {
+    func upload(
+        request: CapablePingUploadRequest, callback: @escaping @Sendable (UploadResult) -> Void
+    ) {
         // Skip calling the regular callback for this mock's testing purposes; the global Glean object may not
         // be initialized (which will cause a crash).
         uploadRequested(request)

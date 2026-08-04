@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class TimespanMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanSavesToStorage() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ),
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ),
             .millisecond
         )
 
@@ -36,13 +38,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanMustNotRecordIfDisabled() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ), .millisecond
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ), .millisecond
         )
 
         // Record a timespan.
@@ -56,13 +59,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanMutCorrectlyCancel() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .millisecond
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .millisecond
         )
 
         // Record a timespan.
@@ -74,26 +78,28 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanGetValueReturnsNilIfNothingIsStored() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .millisecond
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .millisecond
         )
 
         XCTAssertNil(metric.testGetValue())
     }
 
     func testTimespanSavesToSecondaryPings() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .second)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .second)
 
         // Record a timespan.
         metric.start()
@@ -103,13 +109,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanSetRawNanos() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .second
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .second
         )
         let timespanNanos: Int64 = 6 * 1_000_000_000
 
@@ -118,13 +125,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanSetRawNanosFollowedByOtherApi() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .second)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .second)
         let timespanNanos: Int64 = 6 * 1_000_000_000
 
         metric.setRawNanos(timespanNanos)
@@ -136,13 +144,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanSetRawNanosDoesNotOverwrite() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .second)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .second)
         let timespanNanos: Int64 = 6 * 1_000_000_000
 
         metric.start()
@@ -155,13 +164,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanSetRawNanosDoesNothingWhenTimerIsRunning() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .nanosecond)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .nanosecond)
         let timespanNanos: Int64 = 6 * 1_000_000_000
 
         metric.start()
@@ -172,13 +182,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testTimespanRecordsAnErrorIfStartedTwice() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .nanosecond)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .nanosecond)
 
         metric.start()
         metric.start()
@@ -188,13 +199,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testMeasureFunctionCorrectlySavesValues() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .millisecond)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .millisecond)
 
         XCTAssertNil(metric.testGetValue())
 
@@ -219,13 +231,14 @@ class TimespanMetricTypeTests: XCTestCase {
     }
 
     func testMeasureFunctionThrows() {
-        let metric = TimespanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "timespan_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .millisecond)
+        let metric = TimespanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "timespan_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .millisecond)
 
         XCTAssertNil(metric.testGetValue())
 

@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class LabeledMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledCounterType() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -46,13 +48,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testOtherLabelWithPredefinedLabels() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -79,13 +82,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testOtherLabelWithoutPredefinedLabels() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -96,7 +100,7 @@ class LabeledMetricTypeTests: XCTestCase {
             subMetric: counterMetric
         )
 
-        for i in 0 ... 20 {
+        for i in 0...20 {
             labeledCounterMetric["label_\(i)"].add(1)
         }
 
@@ -104,20 +108,21 @@ class LabeledMetricTypeTests: XCTestCase {
         labeledCounterMetric["label_0"].add(1)
 
         XCTAssertEqual(2, labeledCounterMetric["label_0"].testGetValue())
-        for i in 1 ... 15 {
+        for i in 1...15 {
             XCTAssertEqual(1, labeledCounterMetric["label_\(i)"].testGetValue())
         }
         XCTAssertEqual(5, labeledCounterMetric["__other__"].testGetValue())
     }
 
     func testEnsureInvalidLabelsGoToOther() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",
@@ -153,13 +158,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledStringType() {
-        let counterMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledStringMetric = try! LabeledMetricType<StringMetricType>(
             category: "telemetry",
@@ -178,13 +184,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledBooleanType() {
-        let booleanMetric = BooleanMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_boolean_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let booleanMetric = BooleanMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_boolean_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledBooleanMetric = try! LabeledMetricType<BooleanMetricType>(
             category: "telemetry",
@@ -203,13 +210,14 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledQuantityType() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_quantity_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_quantity_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledQuantityMetric = try! LabeledMetricType<QuantityMetricType>(
             category: "telemetry",
@@ -228,34 +236,38 @@ class LabeledMetricTypeTests: XCTestCase {
     }
 
     func testLabeledEventsThrowAnException() {
-        let eventMetric = EventMetricType<NoExtras>(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_event",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ), nil)
+        let eventMetric = EventMetricType<NoExtras>(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_event",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ), nil)
 
-        XCTAssertThrowsError(try LabeledMetricType<EventMetricType<NoExtras>>(
-            category: "telemetry",
-            name: "labeled_event_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false,
-            subMetric: eventMetric
-        )) { error in
+        XCTAssertThrowsError(
+            try LabeledMetricType<EventMetricType<NoExtras>>(
+                category: "telemetry",
+                name: "labeled_event_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false,
+                subMetric: eventMetric
+            )
+        ) { error in
             XCTAssertEqual(error as! String, "Can not create a labeled version of this metric type")
         }
     }
 
     func testLabeledMetricTestGetLabeledValues() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "labeled_counter_metric",
-            sendInPings: ["metrics"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "labeled_counter_metric",
+                sendInPings: ["metrics"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         let labeledCounterMetric = try! LabeledMetricType<CounterMetricType>(
             category: "telemetry",

@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 struct BalloonsObjectItem: Codable, Equatable {
     var colour: String?
@@ -91,13 +92,14 @@ class ObjectMetricTypeTests: XCTestCase {
     }
 
     func testObjectSavesToStorage() {
-        let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
-            category: "test",
-            name: "balloon",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
-        ))
+        let metric = ObjectMetricType<BalloonsObject>(
+            CommonMetricData(
+                category: "test",
+                name: "balloon",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
+            ))
 
         XCTAssertNil(metric.testGetValue())
 
@@ -110,11 +112,11 @@ class ObjectMetricTypeTests: XCTestCase {
         XCTAssertEqual(2, snapshot.count)
 
         let expectedJson = """
-        [
-            { "colour": "red", "diameter": 5 },
-            { "colour": "green" }
-        ]
-        """
+            [
+                { "colour": "red", "diameter": 5 },
+                { "colour": "green" }
+            ]
+            """
         let jsonDecoder = JSONDecoder()
         let expected = try! jsonDecoder.decode(BalloonsObject.self, from: Data(expectedJson.utf8))
 
@@ -122,13 +124,14 @@ class ObjectMetricTypeTests: XCTestCase {
     }
 
     func testObjectMustNotRecordIfDisabled() {
-        let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
-            category: "test",
-            name: "balloon",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: true
-        ))
+        let metric = ObjectMetricType<BalloonsObject>(
+            CommonMetricData(
+                category: "test",
+                name: "balloon",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: true
+            ))
 
         var balloons: BalloonsObject = []
         balloons.append(BalloonsObjectItem(colour: "yellow", diameter: 10))
@@ -139,25 +142,27 @@ class ObjectMetricTypeTests: XCTestCase {
     }
 
     func testObjectGetValueReturnsNilIfNothingIsStored() {
-        let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
-            category: "test",
-            name: "balloon",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: true
-        ))
+        let metric = ObjectMetricType<BalloonsObject>(
+            CommonMetricData(
+                category: "test",
+                name: "balloon",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: true
+            ))
 
         XCTAssertNil(metric.testGetValue())
     }
 
     func testObjectSavesToSecondaryPings() {
-        let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
-            category: "test",
-            name: "balloon",
-            sendInPings: ["store1", "store2"],
-            lifetime: .ping,
-            disabled: false
-        )
+        let metric = ObjectMetricType<BalloonsObject>(
+            CommonMetricData(
+                category: "test",
+                name: "balloon",
+                sendInPings: ["store1", "store2"],
+                lifetime: .ping,
+                disabled: false
+            )
         )
 
         XCTAssertNil(metric.testGetValue())
@@ -168,11 +173,11 @@ class ObjectMetricTypeTests: XCTestCase {
         metric.set(balloons)
 
         let expectedJson = """
-        [
-            { "colour": "red", "diameter": 5 },
-            { "colour": "green" }
-        ]
-        """
+            [
+                { "colour": "red", "diameter": 5 },
+                { "colour": "green" }
+            ]
+            """
         let jsonDecoder = JSONDecoder()
         let expected = try! jsonDecoder.decode(BalloonsObject.self, from: Data(expectedJson.utf8))
 
@@ -185,42 +190,44 @@ class ObjectMetricTypeTests: XCTestCase {
         XCTAssertEqual(expected, snapshot)
     }
 
-     func testObjectDecodesFromSnakeCase() {
-         let metric = ObjectMetricType<BalloonsObject>(CommonMetricData(
-             category: "test",
-             name: "balloon",
-             sendInPings: ["store1"],
-             lifetime: .ping,
-             disabled: false
-         ))
+    func testObjectDecodesFromSnakeCase() {
+        let metric = ObjectMetricType<BalloonsObject>(
+            CommonMetricData(
+                category: "test",
+                name: "balloon",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
+            ))
 
-         XCTAssertNil(metric.testGetValue())
+        XCTAssertNil(metric.testGetValue())
 
-         var balloons: BalloonsObject = []
-         balloons.append(BalloonsObjectItem(colour: "red", diameter: 5, anotherValue: true))
-         balloons.append(BalloonsObjectItem(colour: "green", anotherValue: false))
-         metric.set(balloons)
+        var balloons: BalloonsObject = []
+        balloons.append(BalloonsObjectItem(colour: "red", diameter: 5, anotherValue: true))
+        balloons.append(BalloonsObjectItem(colour: "green", anotherValue: false))
+        metric.set(balloons)
 
-         let snapshot = metric.testGetValue()!
-         XCTAssertNotNil(snapshot)
-         XCTAssertEqual(2, snapshot.count)
+        let snapshot = metric.testGetValue()!
+        XCTAssertNotNil(snapshot)
+        XCTAssertEqual(2, snapshot.count)
 
-         XCTAssertEqual(snapshot[0].colour, "red")
-         XCTAssertEqual(snapshot[0].diameter, 5)
-         XCTAssertEqual(snapshot[0].anotherValue, true)
-         XCTAssertEqual(snapshot[1].colour, "green")
-         XCTAssertNil(snapshot[1].diameter)
-         XCTAssertEqual(snapshot[1].anotherValue, false)
-     }
+        XCTAssertEqual(snapshot[0].colour, "red")
+        XCTAssertEqual(snapshot[0].diameter, 5)
+        XCTAssertEqual(snapshot[0].anotherValue, true)
+        XCTAssertEqual(snapshot[1].colour, "green")
+        XCTAssertNil(snapshot[1].diameter)
+        XCTAssertEqual(snapshot[1].anotherValue, false)
+    }
 
     func testObjectWithStructureOnToplevel() {
-        let metric = ObjectMetricType<ToplevelObjectObject>(CommonMetricData(
-            category: "test",
-            name: "toplevel_object",
-            sendInPings: ["store1"],
-            lifetime: .ping,
-            disabled: false
-        ))
+        let metric = ObjectMetricType<ToplevelObjectObject>(
+            CommonMetricData(
+                category: "test",
+                name: "toplevel_object",
+                sendInPings: ["store1"],
+                lifetime: .ping,
+                disabled: false
+            ))
 
         XCTAssertNil(metric.testGetValue())
 

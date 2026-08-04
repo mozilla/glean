@@ -22,7 +22,8 @@ final class PingUploadSchedulerTests: XCTestCase {
 
         subject.process()
 
-        let waitForSerialOperationQueueExpectation = expectation(description: "Wait for all operations to finish")
+        let waitForSerialOperationQueueExpectation = expectation(
+            description: "Wait for all operations to finish")
 
         // Ensure the processing done on the serial operation queue does not loop indefinitely. We wait on a background
         // thread so the test can timeout if the loop never returns.
@@ -41,7 +42,8 @@ final class PingUploadSchedulerTests: XCTestCase {
 
         subject.process()
 
-        let waitForSerialOperationQueueExpectation = expectation(description: "Wait for all operations to finish")
+        let waitForSerialOperationQueueExpectation = expectation(
+            description: "Wait for all operations to finish")
 
         DispatchQueue.global().async {
             Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
@@ -57,13 +59,15 @@ final class PingUploadSchedulerTests: XCTestCase {
     }
 
     func testPingUploadScheduler_doesNotEndBackgroundTasks_forInvalidTaskIdentifier() {
-        let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(withValidTaskIdentifier: false)
+        let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(
+            withValidTaskIdentifier: false)
 
         let subject = createSubject(backgroundTaskScheduler: mockBackgroundTaskScheduler)
 
         subject.process()
 
-        let waitForSerialOperationQueueExpectation = expectation(description: "Wait for all operations to finish")
+        let waitForSerialOperationQueueExpectation = expectation(
+            description: "Wait for all operations to finish")
 
         DispatchQueue.global().async {
             Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
@@ -84,8 +88,10 @@ final class PingUploadSchedulerTests: XCTestCase {
 
         let pingUploadExpectation = expectation(description: "Wait for the ping upload request")
 
-        let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(withValidTaskIdentifier: false)
-        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(returningTask: testTaskType)
+        let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(
+            withValidTaskIdentifier: false)
+        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(
+            returningTask: testTaskType)
         let mockPingUploader = MockPingUploader(
             uploadRequested: { _ in
                 // We want to ensure that we try to upload a ping for `PingUploadTask.upload` tasks
@@ -108,7 +114,8 @@ final class PingUploadSchedulerTests: XCTestCase {
         let testTaskType = PingUploadTask.wait(time: 1)
 
         let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(withValidTaskIdentifier: true)
-        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(returningTask: testTaskType)
+        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(
+            returningTask: testTaskType)
 
         let subject = createSubject(
             backgroundTaskScheduler: mockBackgroundTaskScheduler,
@@ -117,7 +124,8 @@ final class PingUploadSchedulerTests: XCTestCase {
 
         subject.process()
 
-        let waitForSerialOperationQueueExpectation = expectation(description: "Wait for all operations to finish")
+        let waitForSerialOperationQueueExpectation = expectation(
+            description: "Wait for all operations to finish")
 
         DispatchQueue.global().async {
             Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
@@ -137,7 +145,8 @@ final class PingUploadSchedulerTests: XCTestCase {
         let testTaskType = PingUploadTask.done(unused: 0)
 
         let mockBackgroundTaskScheduler = MockBackgroundTaskScheduler(withValidTaskIdentifier: true)
-        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(returningTask: testTaskType)
+        let mockGleanUploadTaskProvider = MockGleanUploadTaskProviderProtocol(
+            returningTask: testTaskType)
 
         let subject = createSubject(
             backgroundTaskScheduler: mockBackgroundTaskScheduler,
@@ -146,7 +155,8 @@ final class PingUploadSchedulerTests: XCTestCase {
 
         subject.process()
 
-        let waitForSerialOperationQueueExpectation = expectation(description: "Wait for all operations to finish")
+        let waitForSerialOperationQueueExpectation = expectation(
+            description: "Wait for all operations to finish")
 
         DispatchQueue.global().async {
             Dispatchers.shared.serialOperationQueue.waitUntilAllOperationsAreFinished()
@@ -171,15 +181,15 @@ final class PingUploadSchedulerTests: XCTestCase {
     ) -> PingUploadScheduler {
         let configuration = Configuration(
             httpClient: mockPingUploader
-                        ?? MockPingUploader(uploadRequested: { _ in })
+                ?? MockPingUploader(uploadRequested: { _ in })
         )
 
         let subject = PingUploadScheduler(
             configuration: configuration,
             backgroundTaskScheduler: backgroundTaskScheduler
-                                     ?? MockBackgroundTaskScheduler(withValidTaskIdentifier: true),
+                ?? MockBackgroundTaskScheduler(withValidTaskIdentifier: true),
             gleanUploadTaskProvider: gleanUploadTaskProvider
-                                     ?? MockGleanUploadTaskProviderProtocol(returningTask: .done(unused: 0))
+                ?? MockGleanUploadTaskProviderProtocol(returningTask: .done(unused: 0))
         )
 
         return subject

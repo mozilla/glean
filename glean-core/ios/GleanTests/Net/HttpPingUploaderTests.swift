@@ -64,7 +64,7 @@ class HttpPingUploaderTests: XCTestCase {
         }
 
         // `UploadResult` is not `Equatable`, so instead of implementing that we just unpack it
-        if case let .httpStatus(statusCode) = testValue {
+        if case .httpStatus(let statusCode) = testValue {
             XCTAssertEqual(
                 200,
                 statusCode,

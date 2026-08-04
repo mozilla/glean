@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class QuantityMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class QuantityMetricTypeTests: XCTestCase {
     }
 
     func testCounterSavesToStorage() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "quantity_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "quantity_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(quantityMetric.testGetValue())
 
@@ -36,41 +38,45 @@ class QuantityMetricTypeTests: XCTestCase {
     }
 
     func testCounterMustNotRecordIfDisabled() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "quantity_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "quantity_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(quantityMetric.testGetValue())
 
         quantityMetric.set(1)
 
-        XCTAssertNil(quantityMetric.testGetValue(), "Quantities must not be recorded if they are disabled")
+        XCTAssertNil(
+            quantityMetric.testGetValue(), "Quantities must not be recorded if they are disabled")
     }
 
     func testCounterGetValueReturnsNilIfNothingIsStored() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "quantity_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "quantity_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(quantityMetric.testGetValue())
     }
 
     func testCounterSavesToSecondaryPings() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "quantity_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "quantity_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         quantityMetric.set(1)
 
@@ -83,13 +89,14 @@ class QuantityMetricTypeTests: XCTestCase {
     }
 
     func testNegativeValuesAreNotCounted() {
-        let quantityMetric = QuantityMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "quantity_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let quantityMetric = QuantityMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "quantity_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         quantityMetric.set(1)
 

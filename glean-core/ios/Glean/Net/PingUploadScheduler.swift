@@ -94,7 +94,7 @@ public class PingUploadScheduler {
                 // Limits are enforced by glean-core to avoid an infinite loop here.
                 // Whenever a limit is reached, this binding will receive `.done` and step out.
                 switch self.gleanUploadTaskProvider.getUploadTask() {
-                case let .upload(request):
+                case .upload(let request):
                     var body = Data(capacity: request.body.count)
                     body.append(contentsOf: request.body)
                     let capableRequest = CapablePingUploadRequest(

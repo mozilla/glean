@@ -191,7 +191,9 @@ class MetricsPingScheduler {
         reason: GleanMetrics.Pings.MetricsReasonCodes
     ) {
         let reasonString = GleanMetrics.Pings.shared.metrics.reasonCodes[reason.rawValue]
-        logger.info("Collecting the 'metrics' ping, now = \(now), startup = \(startupPing), reason = \(reasonString)")
+        logger.info(
+            "Collecting the 'metrics' ping, now = \(now), startup = \(startupPing), reason = \(reasonString)"
+        )
         if startupPing {
             // **IMPORTANT**
             //
@@ -225,8 +227,11 @@ class MetricsPingScheduler {
     func getLastCollectedDate() -> Date? {
         var lastCollectedDate: Date?
 
-        if let loadedDate = UserDefaults.standard.string(forKey: Constants.lastMetricsPingSentDateTime) {
-            lastCollectedDate = Date.fromISO8601String(dateString: loadedDate, precision: .millisecond)
+        if let loadedDate = UserDefaults.standard.string(
+            forKey: Constants.lastMetricsPingSentDateTime)
+        {
+            lastCollectedDate = Date.fromISO8601String(
+                dateString: loadedDate, precision: .millisecond)
         } else {
             logger.error("MetricsPingScheduler last stored ping time was not valid")
         }

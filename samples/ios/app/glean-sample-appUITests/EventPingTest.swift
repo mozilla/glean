@@ -91,8 +91,8 @@ class EventPingTest: XCTestCase {
         let expectedCount = 4 * 2
         XCTAssertEqual(expectedCount, events.count, "Events ping should have all button-tap events")
 
-        for i in 1...(expectedCount-1) {
-            let earlier = events[i-1]["timestamp"] as! Int
+        for i in 1...(expectedCount - 1) {
+            let earlier = events[i - 1]["timestamp"] as! Int
             let this = events[i]["timestamp"] as! Int
             XCTAssert(earlier <= this, "Events should be ordered monotonically non-decreasing")
         }
@@ -107,8 +107,9 @@ class EventPingTest: XCTestCase {
         let diff = last - notLast
         // Sleeping and tapping the button has a delay of ~600ms,
         // so we account for a tiny bit more here.
-        XCTAssert(diff >= 1000 && diff <= 2000,
-                  "Last event should be a second after the second-to-last event (actual diff: \(diff)")
+        XCTAssert(
+            diff >= 1000 && diff <= 2000,
+            "Last event should be a second after the second-to-last event (actual diff: \(diff)")
 
         server.stop()
     }

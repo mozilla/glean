@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class DatetimeMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -45,66 +46,74 @@ class DatetimeMetricTypeTests: XCTestCase {
     // swiftlint:enable function_parameter_count
 
     func testDatetimeSavesToStorage() {
-        let datetimeMetric = DatetimeMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "datetime_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .minute)
+        let datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "datetime_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .minute)
 
-        testDatetime(metric: datetimeMetric,
-                     testString: "2004-12-09T08:03-08:00",
-                     timeZone: TimeZone(identifier: "America/Los_Angeles")!,
-                     year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29)
+        testDatetime(
+            metric: datetimeMetric,
+            testString: "2004-12-09T08:03-08:00",
+            timeZone: TimeZone(identifier: "America/Los_Angeles")!,
+            year: 2004, month: 12, day: 9, hour: 8, minute: 3, second: 29)
 
-        testDatetime(metric: datetimeMetric,
-                     testString: "1993-02-23T09:05+00:00",
-                     timeZone: TimeZone(abbreviation: "GMT")!,
-                     year: 1993, month: 2, day: 23, hour: 9, minute: 5, second: 43)
+        testDatetime(
+            metric: datetimeMetric,
+            testString: "1993-02-23T09:05+00:00",
+            timeZone: TimeZone(abbreviation: "GMT")!,
+            year: 1993, month: 2, day: 23, hour: 9, minute: 5, second: 43)
 
-        testDatetime(metric: datetimeMetric,
-                     testString: "1969-08-20T20:17-12:00",
-                     timeZone: TimeZone(abbreviation: "GMT-12")!,
-                     year: 1969, month: 8, day: 20, hour: 20, minute: 17, second: 3)
+        testDatetime(
+            metric: datetimeMetric,
+            testString: "1969-08-20T20:17-12:00",
+            timeZone: TimeZone(abbreviation: "GMT-12")!,
+            year: 1969, month: 8, day: 20, hour: 20, minute: 17, second: 3)
     }
 
     func testDatetimeMustNotRecordIfDisabled() {
-        let datetimeMetric = DatetimeMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "datetime_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ), .minute)
+        let datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "datetime_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ), .minute)
 
         XCTAssertNil(datetimeMetric.testGetValue())
 
         datetimeMetric.set()
 
-        XCTAssertNil(datetimeMetric.testGetValue(), "Datetimes must not be recorded if they are disabled")
+        XCTAssertNil(
+            datetimeMetric.testGetValue(), "Datetimes must not be recorded if they are disabled")
     }
 
     func testDatetimeGetValueReturnsNilIfNothingIsStored() {
-        let datetimeMetric = DatetimeMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "datetime_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), .minute)
+        let datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "datetime_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), .minute)
 
         XCTAssertNil(datetimeMetric.testGetValue())
     }
 
     func testDatetimeSavesToSecondaryPings() {
-        let datetimeMetric = DatetimeMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "datetime_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ), .minute)
+        let datetimeMetric = DatetimeMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "datetime_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ), .minute)
 
         let timeZone = TimeZone(identifier: "America/Los_Angeles")
         let value = DateComponents(
@@ -119,7 +128,8 @@ class DatetimeMetricTypeTests: XCTestCase {
         )
         datetimeMetric.set(components: value)
         let testString = "2004-12-09T08:03-08:00"
-        let date = Date.fromISO8601String(dateString: testString, precision: datetimeMetric.timeUnit)
+        let date = Date.fromISO8601String(
+            dateString: testString, precision: datetimeMetric.timeUnit)
         XCTAssertEqual(date, datetimeMetric.testGetValue("store2"))
         XCTAssertEqual(testString, datetimeMetric.testGetValueAsString("store2"))
     }
@@ -137,7 +147,7 @@ class DatetimeMetricTypeTests: XCTestCase {
             ("2004-12-09T08:03:01-08:00", .second),
             ("2004-12-09T08:03-08:00", .minute),
             ("2004-12-09T08-08:00", .hour),
-            ("2004-12-09-08:00", .day)
+            ("2004-12-09-08:00", .day),
         ]
 
         for (dateString, precision) in dateStrings {
@@ -146,7 +156,8 @@ class DatetimeMetricTypeTests: XCTestCase {
             XCTAssertNotNil(date)
 
             // Validate pieces
-            let components = Calendar.current.dateComponents(in: TimeZone(abbreviation: "GMT-8")!, from: date!)
+            let components = Calendar.current.dateComponents(
+                in: TimeZone(abbreviation: "GMT-8")!, from: date!)
             switch precision {
             case .nanosecond:
                 // This is 150000095 due to floating point imprecision and that our support ISO8601

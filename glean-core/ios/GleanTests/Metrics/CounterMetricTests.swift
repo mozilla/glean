@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class CounterMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class CounterMetricTypeTests: XCTestCase {
     }
 
     func testCounterSavesToStorage() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(counterMetric.testGetValue())
 
@@ -39,41 +41,45 @@ class CounterMetricTypeTests: XCTestCase {
     }
 
     func testCounterMustNotRecordIfDisabled() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(counterMetric.testGetValue())
 
         counterMetric.add(1)
 
-        XCTAssertNil(counterMetric.testGetValue(), "Counters must not be recorded if they are disabled")
+        XCTAssertNil(
+            counterMetric.testGetValue(), "Counters must not be recorded if they are disabled")
     }
 
     func testCounterGetValueReturnsNilIfNothingIsStored() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(counterMetric.testGetValue())
     }
 
     func testCounterSavesToSecondaryPings() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         counterMetric.add(1)
         XCTAssertEqual(1, counterMetric.testGetValue("store2"))
@@ -83,13 +89,14 @@ class CounterMetricTypeTests: XCTestCase {
     }
 
     func testNegativeValuesAreNotCounted() {
-        let counterMetric = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counterMetric = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Increment to 1 (initial value)
         counterMetric.add()

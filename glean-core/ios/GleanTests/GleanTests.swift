@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import OHHTTPStubs
 import OHHTTPStubsSwift
 import XCTest
+
+@testable import Glean
 
 private typealias GleanInternalMetrics = GleanMetrics.GleanInternalMetrics
 
@@ -208,7 +209,8 @@ class GleanTests: XCTestCase {
         let host = URL(string: Configuration.Constants.defaultTelemetryEndpoint)!.host!
         stub(condition: isHost(host)) { data in
             let request = data as NSURLRequest
-            XCTAssertEqual(request.value(forHTTPHeaderField: "X-Source-Tags"), "valid-tag,tag-valid")
+            XCTAssertEqual(
+                request.value(forHTTPHeaderField: "X-Source-Tags"), "valid-tag,tag-valid")
 
             // Fulfill test's expectation once we parsed the incoming data.
             DispatchQueue.main.async {
@@ -267,13 +269,14 @@ class GleanTests: XCTestCase {
             uploaderCapabilities: []
         )
 
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["custom"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["custom"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         expectation = expectation(description: "Completed upload")
 
@@ -298,23 +301,24 @@ class GleanTests: XCTestCase {
     }
 
     func testSettingRemoteMetricConfiguration() {
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["custom"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["custom"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         // Set a metric configuration that enables telemetry.counter_metric
         let metricConfigStringifiedJson =
-"""
-{
-  "metrics_enabled": {
-    "telemetry.counter_metric": true
-  }
-}
-"""
+            """
+            {
+              "metrics_enabled": {
+                "telemetry.counter_metric": true
+              }
+            }
+            """
         Glean.shared.applyServerKnobsConfig(metricConfigStringifiedJson)
 
         // Attempt to add to the counter, this should succeed.
@@ -344,8 +348,10 @@ class GleanTests: XCTestCase {
     func testPassingInExplicitBuildInfo() {
         Glean.shared.testDestroyGleanHandle()
 
-        Glean.shared.initialize(uploadEnabled: true, buildInfo: stubBuildInfo("2020-11-06T11:30:50+0000"))
-        let expected = Date.fromISO8601String(dateString: "2020-11-06T11:30:50+00:00", precision: .second)
+        Glean.shared.initialize(
+            uploadEnabled: true, buildInfo: stubBuildInfo("2020-11-06T11:30:50+0000"))
+        let expected = Date.fromISO8601String(
+            dateString: "2020-11-06T11:30:50+00:00", precision: .second)
         XCTAssertEqual(
             expected,
             GleanInternalMetrics.buildDate.testGetValue()
@@ -410,13 +416,14 @@ class GleanTests: XCTestCase {
             uploaderCapabilities: []
         )
 
-        let counter = CounterMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter_metric",
-            sendInPings: ["custom"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let counter = CounterMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter_metric",
+                sendInPings: ["custom"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         expectation = expectation(description: "Completed upload")
         expectation?.expectedFulfillmentCount = 10

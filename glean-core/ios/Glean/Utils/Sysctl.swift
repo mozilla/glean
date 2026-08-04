@@ -79,15 +79,17 @@ struct Sysctl {
     public static func keys(for name: String) throws -> [Int32] {
         var keysBufferSize = Int(CTL_MAXNAME)
         var keysBuffer = [Int32](repeating: 0, count: keysBufferSize)
-        try keysBuffer.withUnsafeMutableBufferPointer { (lbp: inout UnsafeMutableBufferPointer<Int32>) throws in
+        try keysBuffer.withUnsafeMutableBufferPointer {
+            (lbp: inout UnsafeMutableBufferPointer<Int32>) throws in
             try name.withCString { (nbp: UnsafePointer<Int8>) throws in
                 guard sysctlnametomib(nbp, lbp.baseAddress, &keysBufferSize) == 0 else {
-                    throw POSIXErrorCode(rawValue: errno).map { Error.posixError($0) } ?? Error.unknown
+                    throw POSIXErrorCode(rawValue: errno).map { Error.posixError($0) }
+                        ?? Error.unknown
                 }
             }
         }
         if keysBuffer.count > keysBufferSize {
-            keysBuffer.removeSubrange(keysBufferSize ..< keysBuffer.count)
+            keysBuffer.removeSubrange(keysBufferSize..<keysBuffer.count)
         }
         return keysBuffer
     }

@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class UuidMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class UuidMetricTypeTests: XCTestCase {
     }
 
     func testUuidSavesToStorage() {
-        let uuidMetric = UuidMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "uuid_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let uuidMetric = UuidMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "uuid_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Check that there is no UUID recorded
         XCTAssertNil(uuidMetric.testGetValue())
@@ -40,13 +42,14 @@ class UuidMetricTypeTests: XCTestCase {
     }
 
     func testUuidMustNotRecordIfDisabled() {
-        let uuidMetric = UuidMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "uuid_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let uuidMetric = UuidMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "uuid_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(uuidMetric.testGetValue())
 
@@ -56,25 +59,27 @@ class UuidMetricTypeTests: XCTestCase {
     }
 
     func testUuidGetValueReturnsNilIfNothingIsStored() {
-        let uuidMetric = UuidMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "uuid_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let uuidMetric = UuidMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "uuid_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(uuidMetric.testGetValue())
     }
 
     func testUuidSavesToSecondaryPings() {
-        let uuidMetric = UuidMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "uuid_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let uuidMetric = UuidMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "uuid_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         // Record two UUID's of the same type, with a little delay
         let uuid = uuidMetric.generateAndSet()

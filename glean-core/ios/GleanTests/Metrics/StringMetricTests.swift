@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class StringMetricTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class StringMetricTests: XCTestCase {
     }
 
     func testStringSavesToStorage() {
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(stringMetric.testGetValue())
 
@@ -34,41 +36,45 @@ class StringMetricTests: XCTestCase {
     }
 
     func testStringMustNotRecordIfDisabled() {
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(stringMetric.testGetValue())
 
         stringMetric.set("value")
 
-        XCTAssertNil(stringMetric.testGetValue(), "Strings must not be recorded if they are disabled")
+        XCTAssertNil(
+            stringMetric.testGetValue(), "Strings must not be recorded if they are disabled")
     }
 
     func testStringGetValueReturnsNilIfNothingIsStored() {
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(stringMetric.testGetValue())
     }
 
     func testStringSavesToSecondaryPings() {
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_metric",
-            sendInPings: ["store1", "store2"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_metric",
+                sendInPings: ["store1", "store2"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         stringMetric.set("value")
 
@@ -80,13 +86,14 @@ class StringMetricTests: XCTestCase {
     }
 
     func testLongStringRecordsAnError() {
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "string_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "string_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         stringMetric.set(String(repeating: "0123456789", count: 26))
 

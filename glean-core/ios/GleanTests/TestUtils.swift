@@ -2,11 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import Gzip
 import OHHTTPStubs
 import OHHTTPStubsSwift
 import XCTest
+
+@testable import Glean
 
 /// Stub out receiving a request on Glean's default Telemetry endpoint.
 ///
@@ -49,10 +50,12 @@ func stubServerReceive(callback: @escaping (String, [String: Any]?) -> Void) {
 ///
 /// This also prevents outgoing network requests during unit tests while
 /// still allowing us to use the default telemetry endpoint.
-func resetGleanDiscardingInitialPings(testCase: XCTestCase,
-                                      tag: String,
-                                      clearStores: Bool = true,
-                                      configuration: Configuration = Configuration()) {
+func resetGleanDiscardingInitialPings(
+    testCase: XCTestCase,
+    tag: String,
+    clearStores: Bool = true,
+    configuration: Configuration = Configuration()
+) {
     let expectation = testCase.expectation(description: "\(tag): Ping Received")
 
     // We are using OHHTTPStubs combined with an XCTestExpectation in order to capture

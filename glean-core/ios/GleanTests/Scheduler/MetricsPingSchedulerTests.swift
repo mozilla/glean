@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class MetricsPingSchedulerTests: XCTestCase {
     var expectation: XCTestExpectation?
@@ -71,21 +72,24 @@ class MetricsPingSchedulerTests: XCTestCase {
         let mps = MetricsPingScheduler(true)
 
         // getLastCollectedDate must report nil when no stored date is available
-        UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
+        UserDefaults.standard.set(
+            nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         XCTAssertNil(
             mps.getLastCollectedDate(),
             "getLastCollectedDate must report nil when no date is stored"
         )
 
         // getLastCollectedDate must report nil when the stored date is corrupted
-        UserDefaults.standard.set(123, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
+        UserDefaults.standard.set(
+            123, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         XCTAssertNil(
             mps.getLastCollectedDate(),
             "getLastCollectedDate must report nil if date is wrong type"
         )
 
         // getLastCollectedDate must report nil when the date is of unexpected format
-        UserDefaults.standard.set("not-an-ISO-date", forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
+        UserDefaults.standard.set(
+            "not-an-ISO-date", forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         XCTAssertNil(
             mps.getLastCollectedDate(),
             "getLastCollectedDate must report nil when the date is of unexpected format"
@@ -93,7 +97,8 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // getLastCollectedDate must report the stored last collected date, if available
         let testDate = "2018-12-19T12:36:00.000-06:00"
-        UserDefaults.standard.set(testDate, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
+        UserDefaults.standard.set(
+            testDate, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         XCTAssertEqual(
             Date.fromISO8601String(dateString: testDate, precision: .millisecond),
             mps.getLastCollectedDate(),
@@ -109,7 +114,8 @@ class MetricsPingSchedulerTests: XCTestCase {
         // interested in the updated date that is scheduled after the call to `collectPingAndReschedule`.
         resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests")
 
-        UserDefaults.standard.set(nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
+        UserDefaults.standard.set(
+            nil, forKey: MetricsPingScheduler.Constants.lastMetricsPingSentDateTime)
         mps.collectPingAndReschedule(now, reason: GleanMetrics.Pings.MetricsReasonCodes.overdue)
 
         XCTAssertEqual(
@@ -150,16 +156,18 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
-        let expectedStringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "expected_metric",
-            sendInPings: ["metrics"],
-            lifetime: Lifetime.ping,
-            disabled: false
-        ))
+        let expectedStringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "expected_metric",
+                sendInPings: ["metrics"],
+                lifetime: Lifetime.ping,
+                disabled: false
+            ))
         let expectedValue = "must-exist-in-the-first-ping"
 
-        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
+        resetGleanDiscardingInitialPings(
+            testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
 
         expectedStringMetric.set(expectedValue)
 
@@ -168,13 +176,14 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Create data and attempt to record data before Glean is initialized.  This will
         // be queued in the dispatcher.
-        let stringMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "canary_metric",
-            sendInPings: ["metrics"],
-            lifetime: Lifetime.ping,
-            disabled: false
-        ))
+        let stringMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "canary_metric",
+                sendInPings: ["metrics"],
+                lifetime: Lifetime.ping,
+                disabled: false
+            ))
         let canaryValue = "must-not-be-in-the-first-ping"
         stringMetric.set(canaryValue)
 
@@ -193,8 +202,9 @@ class MetricsPingSchedulerTests: XCTestCase {
             let strings = metrics?["string"] as? [String: Any]
 
             // Ensure there is only the expected metric
-            XCTAssertEqual(1, strings?.count,
-                           "Must contain only the expected metric, content: \(JSONStringify(metrics!))")
+            XCTAssertEqual(
+                1, strings?.count,
+                "Must contain only the expected metric, content: \(JSONStringify(metrics!))")
 
             // Check the received metric's value against the expected value
             let receivedValue = strings?["telemetry.expected_metric"] as? String
@@ -238,17 +248,19 @@ class MetricsPingSchedulerTests: XCTestCase {
 
         // Create a metric and set its value. We expect this to be sent in the first ping
         // that gets generated the SECOND time we start Glean.
-        let testMetric = StringMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "test_applifetime_metric",
-            sendInPings: ["metrics"],
-            lifetime: Lifetime.application,
-            disabled: false
-        ))
+        let testMetric = StringMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "test_applifetime_metric",
+                sendInPings: ["metrics"],
+                lifetime: Lifetime.application,
+                disabled: false
+            ))
         let expectedValue = "I-will-survive!"
 
         // Reset Glean and start it for the FIRST time, then record a value.
-        resetGleanDiscardingInitialPings(testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
+        resetGleanDiscardingInitialPings(
+            testCase: self, tag: "MetricsPingSchedulerTests", clearStores: false)
 
         testMetric.set(expectedValue)
 

@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@testable import Glean
 import XCTest
+
+@testable import Glean
 
 class RateMetricTypeTests: XCTestCase {
     override func setUp() {
@@ -15,13 +16,14 @@ class RateMetricTypeTests: XCTestCase {
     }
 
     func testRateSavesToStorage() {
-        let rateMetric = RateMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "rate_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ))
+        let rateMetric = RateMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "rate_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ))
 
         XCTAssertNil(rateMetric.testGetValue())
 
@@ -34,13 +36,14 @@ class RateMetricTypeTests: XCTestCase {
     }
 
     func testRateMustNotRecordIfDisabled() {
-        let rateMetric = RateMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "rate_metric",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: true
-        ))
+        let rateMetric = RateMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "rate_metric",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: true
+            ))
 
         XCTAssertNil(rateMetric.testGetValue())
 
@@ -67,13 +70,14 @@ class RateMetricTypeTests: XCTestCase {
             disabled: false
         )
 
-        let denom = DenominatorMetricType(CommonMetricData(
-            category: "telemetry",
-            name: "counter",
-            sendInPings: ["store1"],
-            lifetime: .application,
-            disabled: false
-        ), [meta1, meta2])
+        let denom = DenominatorMetricType(
+            CommonMetricData(
+                category: "telemetry",
+                name: "counter",
+                sendInPings: ["store1"],
+                lifetime: .application,
+                disabled: false
+            ), [meta1, meta2])
 
         let num1 = NumeratorMetricType(meta1)
         let num2 = NumeratorMetricType(meta2)
