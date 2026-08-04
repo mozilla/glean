@@ -2,6 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use chrono::{DateTime, FixedOffset};
+use connection::Connection;
+use malloc_size_of::MallocSizeOf;
+use rusqlite::fallible_iterator::FallibleIterator;
+use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
+use rusqlite::OptionalExtension;
+use rusqlite::Transaction;
+use rusqlite::{params, ToSql};
+use rusqlite::{Error as SqlError, ErrorCode};
+use schema::Schema;
+pub use schema::SchemaError;
 use std::fmt::{self, Display};
 use std::fs;
 use std::num::NonZeroU64;
@@ -9,24 +20,13 @@ use std::path::Path;
 use std::str;
 use std::time::Duration;
 
-use malloc_size_of::MallocSizeOf;
-use rusqlite::params;
-use rusqlite::types::FromSqlError;
-use rusqlite::OptionalExtension;
-use rusqlite::Transaction;
-use rusqlite::{Error as SqlError, ErrorCode};
-
-use connection::Connection;
-use schema::Schema;
-pub use schema::SchemaError;
-
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
-use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
+use crate::{Error, Glean};
 
 use super::ConnExt;
 
@@ -69,6 +69,58 @@ impl MallocSizeOf for Database {
     fn size_of(&self, _ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
         // FIXME: Can we get the allocated size of the connection?
         0
+    }
+}
+
+#[allow(unused)]
+pub struct SubmittedPing {
+    pub document_id: String,
+    pub ping: String,
+    pub submitted_date: SqliteDatetime,
+    pub uploaded_date: Option<SqliteDatetime>,
+    pub value: Option<Vec<u8>>,
+}
+
+impl SubmittedPing {
+    pub fn value(&self) -> Option<serde_json::Value> {
+        self.value
+            .as_ref()
+            .map(|v| rmp_serde::from_slice(v).expect("IMPOSSIBLE: Deserializing value failed"))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct SqliteDatetime(pub DateTime<FixedOffset>);
+
+impl TryFrom<String> for SqliteDatetime {
+    type Error = Error;
+
+    fn try_from(value: String) -> Result<SqliteDatetime> {
+        DateTime::parse_from_rfc3339(&value)
+            .map(SqliteDatetime)
+            .map_err(|e| e.into())
+    }
+}
+
+impl FromSql for SqliteDatetime {
+    fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
+        String::column_result(value).and_then(|as_string| {
+            DateTime::parse_from_rfc3339(&as_string)
+                .map(SqliteDatetime)
+                .map_err(FromSqlError::other)
+        })
+    }
+}
+
+impl PartialEq for SqliteDatetime {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl ToSql for SqliteDatetime {
+    fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
+        Ok(self.0.to_utc().to_rfc3339().into())
     }
 }
 
@@ -446,6 +498,106 @@ impl Database {
                 Result::<bool, ()>::Ok(metric_iter.next().map(|m| m.is_some()).unwrap_or(false))
             })
             .unwrap_or(false)
+    }
+
+    pub fn get_all_submitted_pings(&self) -> Vec<SubmittedPing> {
+        let get_all_submitted_pings_sql = r#"
+        SELECT *
+        FROM submitted_pings
+        ORDER BY date_submitted DESC
+        "#;
+        self.conn
+            .read(|conn| {
+                let Ok(mut stmt) = conn.prepare_cached(get_all_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                let Ok(pings_iter) = stmt.query([]) else {
+                    return Ok(Default::default());
+                };
+
+                pings_iter
+                    .map(|r| {
+                        Ok(SubmittedPing {
+                            document_id: r.get(0).unwrap(),
+                            ping: r.get(1).unwrap(),
+                            submitted_date: r.get(2).unwrap(),
+                            uploaded_date: r.get(3).unwrap(),
+                            value: r.get(4).unwrap(),
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn get_submitted_pings(&self, ping: &str) -> Vec<SubmittedPing> {
+        let get_submitted_pings_sql = r#"
+        SELECT
+            document_id,
+            ping,
+            date_submitted,
+            date_uploaded,
+            value
+        FROM submitted_pings
+        WHERE
+            ping = ?1
+        ORDER BY date_submitted DESC
+        "#;
+        self.conn
+            .read(|conn| {
+                let Ok(mut stmt) = conn.prepare_cached(get_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                let Ok(pings_iter) = stmt.query([ping]) else {
+                    return Ok(Default::default());
+                };
+
+                pings_iter
+                    .map(|r| {
+                        Ok(SubmittedPing {
+                            document_id: r.get(0).unwrap(),
+                            ping: r.get(1).unwrap(),
+                            submitted_date: r.get(2).unwrap(),
+                            uploaded_date: r.get(3).unwrap(),
+                            value: r.get(4).unwrap(),
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn store_submitted_ping(
+        &self,
+        document_id: String,
+        ping: String,
+        date_submitted: String,
+        date_uploaded: Option<String>,
+        value: serde_json::Value,
+    ) -> Result<()> {
+        self.conn.write(|tx| {
+            let insert_sql = r#"
+                INSERT INTO
+                    submitted_pings (document_id, ping, date_submitted, date_uploaded, value)
+                VALUES
+                    (?1, ?2, ?3, ?4, ?5)
+                ON CONFLICT(document_id) DO UPDATE SET
+                    ping = excluded.ping,
+                    date_submitted = excluded.date_submitted,
+                    date_uploaded = excluded.date_uploaded,
+                    value = excluded.value
+                "#;
+            let mut stmt = tx.prepare_cached(insert_sql)?;
+            let encoded = rmp_serde::to_vec(&value).expect("IMPOSSIBLE: Serializing metric failed");
+            stmt.execute(params![
+                document_id,
+                ping,
+                SqliteDatetime::try_from(date_submitted).unwrap(),
+                date_uploaded.map(|d| SqliteDatetime::try_from(d).unwrap()),
+                encoded
+            ])?;
+            Ok(())
+        })
     }
 
     /// Records a metric in the underlying storage system.
