@@ -1,5 +1,7 @@
 # Unreleased changes
 
+* Add new `submitted_pings` table to the SQLite database. Also added methods to store submitted pings and retrieve them ([#3575](https://github.com/mozilla/glean/pull/3575)).
+
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
 # v70.0.0 (2026-08-20)
