@@ -131,6 +131,9 @@ fmt-python: setup-python ## Run ruff to format Python code
 fmt-kotlin:  ## Run ktlint to format KOtlin code
 	./gradlew ktlintFormat
 
+fmt-swift:  ## Run swift-format to format Swift code
+	swift-format --recursive --in-place glean-core/ios samples/ios
+
 .PHONY: fmt-rust fmt-python fmt-kotlin
 
 # Docs
