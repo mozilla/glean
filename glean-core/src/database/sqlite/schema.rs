@@ -107,8 +107,8 @@ impl ConnectionOpener for Schema {
                     "CREATE TABLE submitted_pings(
                            document_id TEXT PRIMARY KEY,
                            ping TEXT NOT NULL,
-                           date_submitted TIMESTAMP NOT NULL,
-                           date_uploaded TIMESTAMP,
+                           date_submitted DATETIME NOT NULL,
+                           date_uploaded DATETIME,
                            value BLOB
                          );
                          CREATE INDEX submitted_pings_ping on submitted_pings(ping);",
