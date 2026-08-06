@@ -2,6 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use std::fmt::{self, Display};
+use std::fs;
+use std::num::NonZeroU64;
+use std::path::Path;
+use std::str;
+use std::time::Duration;
+
 use chrono::{DateTime, FixedOffset};
 use connection::Connection;
 use malloc_size_of::MallocSizeOf;
@@ -13,12 +20,6 @@ use rusqlite::{params, ToSql};
 use rusqlite::{Error as SqlError, ErrorCode};
 use schema::Schema;
 pub use schema::SchemaError;
-use std::fmt::{self, Display};
-use std::fs;
-use std::num::NonZeroU64;
-use std::path::Path;
-use std::str;
-use std::time::Duration;
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
@@ -502,7 +503,12 @@ impl Database {
 
     pub fn get_all_submitted_pings(&self) -> Vec<SubmittedPing> {
         let get_all_submitted_pings_sql = r#"
-        SELECT *
+        SELECT
+            document_id,
+            ping,
+            date_submitted,
+            date_uploaded,
+            payload
         FROM submitted_pings
         ORDER BY date_submitted DESC
         "#;
@@ -537,7 +543,7 @@ impl Database {
             ping,
             date_submitted,
             date_uploaded,
-            value
+            payload
         FROM submitted_pings
         WHERE
             ping = ?1
@@ -577,16 +583,16 @@ impl Database {
     ) -> Result<()> {
         self.conn.write(|tx| {
             let insert_sql = r#"
-                INSERT INTO
-                    submitted_pings (document_id, ping, date_submitted, date_uploaded, value)
-                VALUES
-                    (?1, ?2, ?3, ?4, ?5)
-                ON CONFLICT(document_id) DO UPDATE SET
-                    ping = excluded.ping,
-                    date_submitted = excluded.date_submitted,
-                    date_uploaded = excluded.date_uploaded,
-                    value = excluded.value
-                "#;
+            INSERT INTO
+                submitted_pings (document_id, ping, date_submitted, date_uploaded, payload)
+            VALUES
+                (?1, ?2, ?3, ?4, ?5)
+            ON CONFLICT(document_id) DO UPDATE SET
+                ping = excluded.ping,
+                date_submitted = excluded.date_submitted,
+                date_uploaded = excluded.date_uploaded,
+                value = excluded.value
+            "#;
             let mut stmt = tx.prepare_cached(insert_sql)?;
             let encoded = rmp_serde::to_vec(&value).expect("IMPOSSIBLE: Serializing metric failed");
             stmt.execute(params![
