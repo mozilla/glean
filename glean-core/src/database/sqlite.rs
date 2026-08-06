@@ -591,7 +591,7 @@ impl Database {
                 ping = excluded.ping,
                 date_submitted = excluded.date_submitted,
                 date_uploaded = excluded.date_uploaded,
-                value = excluded.value
+                payload = excluded.payload
             "#;
             let mut stmt = tx.prepare_cached(insert_sql)?;
             let encoded = rmp_serde::to_vec(&value).expect("IMPOSSIBLE: Serializing metric failed");
