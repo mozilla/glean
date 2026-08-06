@@ -202,4 +202,25 @@ class TimingDistributionTypeTests: XCTestCase {
 
         XCTAssertNil(metric.testGetValue())
     }
+
+    func testTiminingDistributionAccumulatesSamples() {
+        let metric = TimingDistributionMetricType(CommonMetricData(
+            category: "telemetry",
+            name: "timing_distribution",
+            sendInPings: ["store1"],
+            lifetime: .ping,
+            disabled: false
+        ), .nanosecond)
+
+        XCTAssertNil(metric.testGetValue())
+
+        // Accumulate a few values
+        metric.accumulateSamples([1, 2])
+        metric.accumulateSingleSample(3)
+
+        // Check that data was properly recorded.
+        let snapshot = metric.testGetValue()!
+        XCTAssertEqual(6, snapshot.sum)
+        XCTAssertEqual(3, snapshot.count)
+    }
 }
