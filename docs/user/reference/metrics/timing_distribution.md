@@ -276,7 +276,17 @@ void onPageLoaded(Event e) {
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+func onPageLoaded() {
+    Pages.pageLoad.accumulateSamples(samples);
+}
+```
+
+</div>
 <div data-lang="Python" class="tab">
 
 ```Python
@@ -384,7 +394,17 @@ void onPageLoaded(Event e) {
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+func onPageLoaded() {
+    Pages.pageLoad.accumulateSingleSample(sample);
+}
+```
+
+</div>
 <div data-lang="Python" class="tab">
 
 ```Python
