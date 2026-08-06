@@ -207,7 +207,12 @@ def generateUniffiBindings = tasks.register("generateUniffiBindings") {
 
         exec {
             workingDir project.rootDir
-            commandLine 'cargo', 'uniffi-bindgen', 'generate', '--no-format', '--library', libraryPath, '--language', 'kotlin', '--out-dir', UNIFFI_OUT_DIR.get()
+            commandLine 'cargo', 'uniffi-bindgen', 'generate',
+              '--no-format',
+              '--library', libraryPath,
+              '--language', 'kotlin',
+              '--config', "${project.projectDir}/../uniffi.toml",
+              '--out-dir', UNIFFI_OUT_DIR.get()
         }
     }
 
