@@ -78,7 +78,7 @@ impl ConnectionOpener for Schema {
                ping TEXT NOT NULL,
                date_submitted DATETIME NOT NULL,
                date_uploaded DATETIME,
-               value BLOB
+               payload BLOB
              );
              CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
@@ -114,14 +114,16 @@ impl ConnectionOpener for Schema {
                 log::info!("Upgrading user_version to 3");
                 // Clients upgrading to schema 3 don't have the table or index
                 tx.execute_batch(
-                    "CREATE TABLE submitted_pings(
-                           document_id TEXT PRIMARY KEY,
-                           ping TEXT NOT NULL,
-                           date_submitted DATETIME NOT NULL,
-                           date_uploaded DATETIME,
-                           value BLOB
-                         );
-                         CREATE INDEX submitted_pings_ping on submitted_pings(ping);",
+                    "
+                    CREATE TABLE submitted_pings(
+                        document_id TEXT PRIMARY KEY,
+                        ping TEXT NOT NULL,
+                        date_submitted DATETIME NOT NULL,
+                        date_uploaded DATETIME,
+                        payload BLOB
+                    );
+                    CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+                    ",
                 )?;
                 tx.execute("INSERT INTO migration (id, state) VALUES (2, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
                 Ok(())
