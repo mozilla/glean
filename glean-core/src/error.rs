@@ -73,6 +73,9 @@ pub enum ErrorKind {
 
     /// Schema error
     Schema(SchemaError),
+
+    /// Chrono parse error
+    Chrono(chrono::ParseError),
 }
 
 /// A specialized [`Error`] type for this crate's operations.
@@ -131,6 +134,7 @@ impl Display for Error {
             UuidError(e) => write!(f, "Failed to parse UUID: {}", e),
             SQLite(e) => write!(f, "SQLite error: {}", e),
             Schema(e) => write!(f, "Schema error: {}", e),
+            Chrono(e) => write!(f, "Chrono time parse error: {}", e),
         }
     }
 }
@@ -209,6 +213,14 @@ impl From<uuid::Error> for Error {
     fn from(error: uuid::Error) -> Self {
         Error {
             kind: ErrorKind::UuidError(error),
+        }
+    }
+}
+
+impl From<chrono::ParseError> for Error {
+    fn from(error: chrono::ParseError) -> Self {
+        Error {
+            kind: ErrorKind::Chrono(error),
         }
     }
 }

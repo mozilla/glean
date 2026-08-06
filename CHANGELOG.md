@@ -4,6 +4,8 @@
 
 * General
   * Updated to `glean_parser` v20.1.0 ([#3539](https://github.com/mozilla/glean/issues/3539))
+  * Rust
+    * Add new `submitted_pings` table to the SQLite database. Also added methods to store submitted pings and retrieve them ([#3575](https://github.com/mozilla/glean/pull/3575)).
 
 # v69.0.0 (2026-06-22)
 
