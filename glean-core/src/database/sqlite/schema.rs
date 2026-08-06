@@ -53,23 +53,23 @@ impl ConnectionOpener for Schema {
     fn create(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
         tx.execute_batch(
             "
-             CREATE TABLE telemetry(
-               id TEXT NOT NULL,
-               ping TEXT NOT NULL,
-               lifetime TEXT NOT NULL,
-               labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
-               value BLOB,
-               UNIQUE(id, ping, labels)
-             );
-             CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
-             CREATE TABLE submitted_pings(
-               document_id TEXT PRIMARY KEY,
-               ping TEXT NOT NULL,
-               date_submitted DATETIME NOT NULL,
-               date_uploaded DATETIME,
-               value BLOB
-             );
-             CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+            CREATE TABLE telemetry(
+                id TEXT NOT NULL,
+                ping TEXT NOT NULL,
+                lifetime TEXT NOT NULL,
+                labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
+                value BLOB,
+                UNIQUE(id, ping, labels)
+            );
+            CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+            CREATE TABLE submitted_pings(
+                document_id TEXT PRIMARY KEY,
+                ping TEXT NOT NULL,
+                date_submitted DATETIME NOT NULL,
+                date_uploaded DATETIME,
+                payload BLOB
+            );
+            CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
         )?;
         Ok(())
@@ -104,14 +104,16 @@ impl ConnectionOpener for Schema {
                 log::info!("Upgrading user_version to 3");
                 // Clients upgrading to schema 3 don't have the table or index
                 tx.execute_batch(
-                    "CREATE TABLE submitted_pings(
-                           document_id TEXT PRIMARY KEY,
-                           ping TEXT NOT NULL,
-                           date_submitted DATETIME NOT NULL,
-                           date_uploaded DATETIME,
-                           value BLOB
-                         );
-                         CREATE INDEX submitted_pings_ping on submitted_pings(ping);",
+                    "
+                    CREATE TABLE submitted_pings(
+                        document_id TEXT PRIMARY KEY,
+                        ping TEXT NOT NULL,
+                        date_submitted DATETIME NOT NULL,
+                        date_uploaded DATETIME,
+                        payload BLOB
+                    );
+                    CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+                    ",
                 )?;
                 tx.execute("INSERT INTO migration (id, state) VALUES (2, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
                 Ok(())
