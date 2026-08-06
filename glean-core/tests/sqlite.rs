@@ -298,6 +298,7 @@ fn latest_schema_is_applied() {
 fn test_storing_and_fetching_submitted_pings() {
     let (glean, _temp) = new_glean(None);
 
+    // First ping, no upload date
     glean
         .storage()
         .store_submitted_ping(
@@ -309,6 +310,19 @@ fn test_storing_and_fetching_submitted_pings() {
         )
         .unwrap();
 
+    // Second ping, no upload date
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one".into(),
+            "ping-two".into(),
+            "2026-08-05T12:30:60.50Z".into(),
+            None,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Second ping again, with upload date .01s after submitted date
     glean
         .storage()
         .store_submitted_ping(
