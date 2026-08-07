@@ -8,9 +8,12 @@ from typing import Any, Dict, Optional, Set, Type
 
 from .._uniffi import LabeledBoolean
 from .._uniffi import LabeledCounter
+from .._uniffi import LabeledCustomDistribution
+from .._uniffi import LabeledMemoryDistribution
 from .._uniffi import LabeledMetricData
-from .._uniffi import LabeledString
 from .._uniffi import LabeledQuantity
+from .._uniffi import LabeledString
+from .._uniffi import LabeledTimingDistribution
 from ..testing import ErrorType
 
 
@@ -107,9 +110,24 @@ class LabeledQuantityMetricType(LabeledMetricBase):
     _ctor = LabeledQuantity
 
 
+class LabeledCustomDistributionMetricType(LabeledMetricBase):
+    _ctor = LabeledCustomDistribution
+
+
+class LabeledMemoryDistributionMetricType(LabeledMetricBase):
+    _ctor = LabeledMemoryDistribution
+
+
+class LabeledTimingDistributionMetricType(LabeledMetricBase):
+    _ctor = LabeledTimingDistribution
+
+
 __all__ = [
     "LabeledBooleanMetricType",
     "LabeledCounterMetricType",
+    "LabeledCustomDistributionMetricType",
+    "LabeledMemoryDistributionMetricType",
     "LabeledQuantityMetricType",
     "LabeledStringMetricType",
+    "LabeledTimingDistributionMetricType",
 ]
