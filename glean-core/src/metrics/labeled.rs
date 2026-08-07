@@ -9,7 +9,7 @@ use std::mem;
 use std::sync::{Arc, Mutex};
 
 use malloc_size_of::MallocSizeOf;
-use rusqlite::{params, Transaction};
+use rusqlite::params;
 
 use crate::common_metric_data::{CommonMetricData, LabelCheck, MetricLabel};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
@@ -384,7 +384,7 @@ where
 }
 
 pub fn validate_dynamic_label_sqlite(
-    tx: &Transaction,
+    tx: &rusqlite::Connection,
     base_identifier: &str,
     label: &str,
 ) -> LabelCheck {
