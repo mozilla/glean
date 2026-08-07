@@ -449,6 +449,11 @@ glean.internal.metrics:
           type: number
           description: |
             Optional sample rate for session pings. Can be null if not set.
+        events_ping_acceleration_factor:
+          type: number
+          description: |
+            Optional acceleration factor for events pings.
+            Can be null if not set.
 
 
 glean.internal.metrics.attribution:

@@ -75,6 +75,7 @@ Check the respective SDK documentation for details.
 | `experimentationId` | - | Optional. An identifier derived by the application to be sent in all pings for the purpose of experimentation. See the experiments API documentation for more information. |
 | `enableInternalPings` | `true` | Whether to enable the internal "baseline", "events", and "metrics" pings. |
 | `delayPingLifetimeIo` | `false` | Whether Glean should delay persistence of data from metrics with `ping` lifetime. On Android data is automatically persisted every 1000 writes and on backgrounding when enabled. |
+| `eventsPingAccelerationFactor` | - | Optional. Determines how many "events" pings to accelerate after init by decreasing the max events needed to be recorded before submission. |
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 

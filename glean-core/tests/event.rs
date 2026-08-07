@@ -558,6 +558,7 @@ fn with_event_timestamps() {
         session_mode: glean_core::SessionMode::Auto,
         session_sample_rate: 1.0,
         session_inactivity_timeout_ms: 1_800_000,
+        events_ping_acceleration_factor: None,
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping = PingBuilder::new("store1").build();
@@ -624,5 +625,251 @@ fn doesnt_crash_on_inaccessible_event_store_file() {
         assert_eq!("telemetry", events[0].category);
         assert_eq!("test_event_no_optional", events[0].name);
         assert!(events[0].extra.is_none());
+    }
+}
+
+#[test]
+fn test_server_knobs_config_events_factor() {
+    let (mut glean, _t) = new_glean(None);
+
+    let store_names: Vec<String> = vec!["events".into()];
+
+    glean.register_ping_type(
+        &PingBuilder::new(&store_names[0])
+            .with_reasons(vec!["max_capacity".to_string()])
+            .build(),
+    );
+
+    // 1. Set up an event to record
+    let click = EventMetric::new(
+        CommonMetricData {
+            name: "click".into(),
+            category: "ui".into(),
+            send_in_pings: store_names,
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec!["test_event_number".into()],
+    );
+
+    // 2. Set a Server Knobs configuration to accelerate the ping
+    let remote_settings_config = json!(
+        {
+            "events_ping_acceleration_factor": 5
+        }
+    )
+    .to_string();
+    glean
+        .apply_server_knobs_config(RemoteSettingsConfig::try_from(remote_settings_config).unwrap());
+
+    // 3. Record 21 events. We expect to get the first 20 in the first ping and 1
+    // remaining afterward
+    for i in 0..21 {
+        let mut extra = HashMap::new();
+        extra.insert("test_event_number".to_string(), i.to_string());
+        click.record_sync(&glean, i, extra, 0);
+    }
+
+    assert_eq!(1, click.get_value(&glean, "events").unwrap().len());
+
+    let (url, json, _) = &get_queued_pings(glean.get_data_path()).unwrap()[0];
+    assert!(url.starts_with(format!("/submit/{}/events/", glean.get_application_id()).as_str()));
+    assert_eq!(20, json["events"].as_array().unwrap().len());
+    assert_eq!(
+        "max_capacity",
+        json["ping_info"].as_object().unwrap()["reason"]
+            .as_str()
+            .unwrap()
+    );
+
+    for i in 0..20 {
+        let event = &json["events"].as_array().unwrap()[i];
+        assert_eq!(i.to_string(), event["extra"]["test_event_number"]);
+    }
+
+    let snapshot = glean
+        .event_storage()
+        .snapshot_as_json(&glean, "events", false)
+        .unwrap();
+    assert_eq!(1, snapshot.as_array().unwrap().len());
+    let event = &snapshot.as_array().unwrap()[0];
+    assert_eq!(20.to_string(), event["extra"]["test_event_number"]);
+}
+
+#[test]
+fn test_server_knobs_config_events_factor_decrease() {
+    let (mut glean, _t) = new_glean(None);
+
+    let store_names: Vec<String> = vec!["events".into()];
+
+    glean.register_ping_type(
+        &PingBuilder::new(&store_names[0])
+            .with_reasons(vec!["max_capacity".to_string()])
+            .build(),
+    );
+
+    // 1. Set up an event to record
+    let click = EventMetric::new(
+        CommonMetricData {
+            name: "click".into(),
+            category: "ui".into(),
+            send_in_pings: store_names,
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec!["test_event_number".into()],
+    );
+
+    // 2. Record 21 events. We expect no "events" ping to yet be submitted (threshold's 500).
+    for i in 0..21 {
+        let mut extra = HashMap::new();
+        extra.insert("test_event_number".to_string(), i.to_string());
+        click.record_sync(&glean, i, extra, 0);
+    }
+
+    assert_eq!(21, click.get_value(&glean, "events").unwrap().len());
+
+    // 3. Set a Server Knobs configuration to accelerate the ping
+    let remote_settings_config = json!(
+        {
+            "events_ping_acceleration_factor": 5
+        }
+    )
+    .to_string();
+    glean
+        .apply_server_knobs_config(RemoteSettingsConfig::try_from(remote_settings_config).unwrap());
+
+    // 4. We expect the ping to still not have been sent, even though the threshold's now 20.
+    // (Maybe in the future this will change.)
+    assert_eq!(21, click.get_value(&glean, "events").unwrap().len());
+
+    // 5. We record one more event (total: 22). A ping is submitted. All events are on it.
+    let mut extra = HashMap::new();
+    extra.insert("test_event_number".to_string(), 21.to_string());
+    click.record_sync(&glean, 21, extra, 0);
+    assert_eq!(None, click.get_value(&glean, "events"));
+
+    let (url, json, _) = &get_queued_pings(glean.get_data_path()).unwrap()[0];
+    assert!(url.starts_with(format!("/submit/{}/events/", glean.get_application_id()).as_str()));
+    assert_eq!(22, json["events"].as_array().unwrap().len());
+    assert_eq!(
+        "max_capacity",
+        json["ping_info"].as_object().unwrap()["reason"]
+            .as_str()
+            .unwrap()
+    );
+
+    for i in 0..22 {
+        let event = &json["events"].as_array().unwrap()[i];
+        assert_eq!(i.to_string(), event["extra"]["test_event_number"]);
+    }
+}
+
+#[test]
+fn events_factor_discounts_startup_ping() {
+    let (mut tempdir, _) = tempdir();
+
+    let store_name = "events";
+    let event = EventMetric::new(
+        CommonMetricData {
+            name: "name".into(),
+            category: "category".into(),
+            send_in_pings: vec![store_name.into()],
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec!["test_event_number".into()],
+    );
+
+    {
+        let (glean, dir) = new_glean(Some(tempdir));
+        // We don't need a full init. Just to deal with on-disk events:
+        assert!(!glean
+            .event_storage()
+            .flush_pending_events_on_startup(&glean, false));
+        tempdir = dir;
+
+        event.record_sync(&glean, 10, HashMap::new(), 0);
+    }
+
+    {
+        let (glean, _dir) = new_glean(Some(tempdir));
+        // Set a Server Knobs configuration to accelerate pings
+        let remote_settings_config = json!(
+            {
+                "events_ping_acceleration_factor": 5
+            }
+        )
+        .to_string();
+        glean.apply_server_knobs_config(
+            RemoteSettingsConfig::try_from(remote_settings_config).unwrap(),
+        );
+
+        // Ensure we flush the last session's event.
+        assert!(glean
+            .event_storage()
+            .flush_pending_events_on_startup(&glean, false));
+
+        // Record 21 events. We expect an "events" ping to be submitted at 20, with 1 left over.
+        for i in 0..21 {
+            let mut extra = HashMap::new();
+            extra.insert("test_event_number".to_string(), i.to_string());
+            event.record_sync(&glean, i, extra, 0);
+        }
+        assert_eq!(1, event.get_value(&glean, "events").unwrap().len());
+
+        let pings = get_queued_pings(glean.get_data_path()).unwrap();
+        assert!(
+            pings.len() >= 2,
+            "We expect at least the two 'events' pings"
+        );
+        let pattern = format!("/submit/{}/events/", glean.get_application_id());
+        let events_pings: Vec<(String, JsonValue, _)> = pings
+            .into_iter()
+            .filter(|p| p.0.starts_with(&pattern))
+            .collect();
+        assert_eq!(events_pings.len(), 2);
+
+        let startup_events_ping = events_pings
+            .iter()
+            .filter(|p| {
+                p.1["ping_info"].as_object().unwrap()["reason"]
+                    .as_str()
+                    .unwrap()
+                    == "startup"
+            })
+            .collect::<Vec<_>>()[0];
+        assert_eq!(1, startup_events_ping.1["events"].as_array().unwrap().len());
+
+        let accelerated_events_ping = events_pings
+            .iter()
+            .filter(|p| {
+                p.1["ping_info"].as_object().unwrap()["reason"]
+                    .as_str()
+                    .unwrap()
+                    == "max_capacity"
+            })
+            .collect::<Vec<_>>()[0];
+        assert_eq!(
+            20,
+            accelerated_events_ping.1["events"]
+                .as_array()
+                .unwrap()
+                .len()
+        );
+        for i in 0..20 {
+            let event = &accelerated_events_ping.1["events"].as_array().unwrap()[i];
+            assert_eq!(i.to_string(), event["extra"]["test_event_number"]);
+        }
+
+        let snapshot = glean
+            .event_storage()
+            .snapshot_as_json(&glean, "events", false)
+            .unwrap();
+        assert_eq!(1, snapshot.as_array().unwrap().len());
+        let event = &snapshot.as_array().unwrap()[0];
+        assert_eq!(20.to_string(), event["extra"]["test_event_number"]);
     }
 }

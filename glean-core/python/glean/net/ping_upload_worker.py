@@ -133,6 +133,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
             session_mode=SessionMode.AUTO,
             session_sample_rate=1.0,
             session_inactivity_timeout_ms=1_800_000,
+            events_ping_acceleration_factor=configuration.events_ping_acceleration_factor,
         )
         if not glean_initialize_for_subprocess(cfg):
             log.error("Couldn't initialize Glean in subprocess")

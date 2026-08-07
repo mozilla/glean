@@ -145,6 +145,7 @@ where
 ///     session_mode: glean_core::SessionMode::Auto,
 ///     session_sample_rate: 1.0,
 ///     session_inactivity_timeout_ms: 1_800_000,
+///     events_ping_acceleration_factor: None,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -194,6 +195,7 @@ pub struct Glean {
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
     #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
+    events_ping_acceleration_factor: Option<usize>,
 }
 
 impl Glean {
@@ -274,6 +276,9 @@ impl Glean {
                 cfg.session_sample_rate,
                 std::time::Duration::from_millis(cfg.session_inactivity_timeout_ms),
             ),
+            events_ping_acceleration_factor: cfg
+                .events_ping_acceleration_factor
+                .map(|x| x as usize),
         };
 
         // Ensuring these pings are registered.
@@ -598,6 +603,7 @@ impl Glean {
             session_mode: SessionMode::Auto,
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
+            events_ping_acceleration_factor: None,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -1023,6 +1029,17 @@ impl Glean {
         }
     }
 
+    /// Gets the number of "events" pings to accelerate each session, plus one.
+    pub fn get_events_ping_acceleration_factor(&self) -> usize {
+        let remote_settings_config = self.remote_settings_config.lock().unwrap();
+
+        if let Some(factor) = remote_settings_config.events_ping_acceleration_factor {
+            factor
+        } else {
+            self.events_ping_acceleration_factor.unwrap_or(1)
+        }
+    }
+
     /// Gets the next task for an uploader.
     ///
     /// This can be one of:
@@ -1248,6 +1265,9 @@ impl Glean {
                 }
                 clamped
             });
+
+            remote_settings_config.events_ping_acceleration_factor =
+                cfg.events_ping_acceleration_factor;
 
             // Store the Server Knobs configuration as an ObjectMetric
             // Since RemoteSettingsConfig only contains maps with string keys and primitives,

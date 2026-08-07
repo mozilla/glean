@@ -217,7 +217,8 @@ public final class Glean: @unchecked Sendable {
             maxPendingPingsDirectorySize: configuration.maxPendingPingsDirectorySize,
             sessionMode: configuration.sessionMode,
             sessionSampleRate: configuration.sessionSampleRate,
-            sessionInactivityTimeoutMs: configuration.sessionInactivityTimeoutMs
+            sessionInactivityTimeoutMs: configuration.sessionInactivityTimeoutMs,
+            eventsPingAccelerationFactor: configuration.eventsPingAccelerationFactor
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
