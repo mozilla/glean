@@ -301,3 +301,21 @@ codegen_test:
     range_max: 100
     bucket_count: 100
     histogram_type: linear
+
+  labeled_timing_distribution:
+    <<: *defaults
+    type: labeled_timing_distribution
+    time_unit: millisecond
+
+  labeled_memory_distribution:
+    <<: *defaults
+    type: labeled_memory_distribution
+    memory_unit: byte
+
+  labeled_custom_distribution:
+    <<: *defaults
+    type: labeled_custom_distribution
+    range_min: 0
+    range_max: 100
+    bucket_count: 100
+    histogram_type: exponential

@@ -13,10 +13,43 @@ Accumulate the provided sample in the metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Memory
+
+Network.httpUploadBandwidth[http_version].accumulate(requestSize * 8.0 / 1048576.0 / sendTime.seconds)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Memory;
+
+Network.INSTANCE.httpUploadBandwidth()[http_version].accumulate(requestSize * 8.0 / 1048576.0 / sendTime.seconds);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Network.httpUploadBandwidth[http_version].accumulate(request_size * 8.0 / 1048576.0 / send_time)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.network.http_upload_badwidth[http_version].accumulate(request_size * 8.0 / 1048576.0 / send_time)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -79,10 +112,71 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+// Assert the sum of all HTTP2 samples is 42MBps.
+assertEquals(42, Network.httpUploadBandwidth[http_version].testGetValue().sum)
+
+// Assert there's only the one sample
+assertEquals(1, Network.httpUploadBandwidth[http_version].testGetValue().count)
+
+// Buckets are indexed by their lower bound.
+assertEquals(1, Network.httpUploadBandwidth[http_version].testGetValue().values[41])
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network;
+
+// Assert the sum of all HTTP2 samples is 42MBps.
+assertEquals(42, Network.INSTANCE.httpUploadBandwidth()[http_version].testGetValue().sum);
+
+// Assert there's only the one sample
+assertEquals(1, Network.INSTANCE.httpUploadBandwidth()[http_version].testGetValue().count);
+
+// Buckets are indexed by their lower bound.
+assertEquals(1, Network.INSTANCE.httpUploadBandwidth()[http_version].testGetValue().values[41]);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Assert the sum of all HTTP2 samples is 42MBps.
+XCTAssertEqual(42, Network.httpUploadBandwidth[http_version].testGetValue().sum)
+
+// Assert there's only the one sample
+XCTAssertEqual(1, Network.httpUploadBandwidth[http_version].testGetValue().count);
+
+// Buckets are indexed by their lower bound.
+XCTAssertEqual(1, Network.httpUploadBandwidth[http_version].testGetValue().values[41]);
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Assert the sum of all HTTP2 samples is 42MBps.
+assert 42 == metrics.network.http_upload_bandwidth.get("h2").test_get_value().sum
+
+# Assert there's only the one sample
+assert 1 == metrics.network.http_upload_badwidth.get("h2").test_get_value().count
+
+# Buckets are indexed by their lower bound.
+assert 1 == metrics.network.http_upload_bandwidth.get("h2").test_get_value().values[41]
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -130,10 +224,47 @@ Gets the number of errors recorded for a given labeled custom distribution metri
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+// Assert there were no negative or overlarge values instrumented.
+assertEquals(0, Network.httpUploadBandwidth.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network;
+
+// Assert there were no negative or overlarge values instrumented.
+assertEquals(0, Network.INSTANCE.httpUploadBandwidth().testGetNumRecordedErrors(ErrorType.INVALID_VALUE));
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Assert there were no negative or overlarge values instrumented.
+XCTAssertEqual(0, Network.httpUploadBandwidth.testGetNumRecordedErrors(.invalidValue)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Assert there were no negative or overlarge values instrumented.
+assert 0 == metrics.network.http_upload_bandwidth.get.test_get_num_recorded_errors(ErrorType.INVALID_VALUE)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust

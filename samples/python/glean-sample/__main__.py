@@ -44,6 +44,17 @@ f = metrics.party.ChooserObjectItem(key="to-be", value=["string"])
 ch.append(f)
 metrics.party.chooser.set(ch)
 
+metrics.codegen_test.quantity.set(1)
+metrics.codegen_test.custom_distribution.accumulate_samples([1, 2])
+metrics.codegen_test.memory_distribution.accumulate_samples([1, 2])
+metrics.codegen_test.timing_distribution.accumulate_samples([1, 2])
+
+
+metrics.codegen_test.labeled_quantity["label"].set(1)
+metrics.codegen_test.labeled_custom_distribution["label"].accumulate_samples([1, 2])
+metrics.codegen_test.labeled_memory_distribution["label"].accumulate_samples([1, 2])
+metrics.codegen_test.labeled_timing_distribution["label"].accumulate_samples([1, 2])
+
 pings.prototype.submit()
 
 Glean.shutdown()
