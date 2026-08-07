@@ -12,6 +12,7 @@
     * Keep state about migration in the database ([#3545](https://github.com/mozilla/glean/pull/3545))
     * The database connection is closed on shutdown ([#3584](https://github.com/mozilla/glean/pull/3584))
   * BREAKING CHANGE: Updated to UniFFI 0.32.0 ([#3538](https://github.com/mozilla/glean/pull/3538))
+  * New optional configuration option and Server Knob: `events_ping_acceleration_factor: N`. Accelerate the first `N-1` "events" pings in each session ([bug 2060890](https://bugzilla.mozilla.org/show_bug.cgi?id=2060890))
 * Rust
   * glean-sym
     * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
