@@ -79,7 +79,10 @@ fn delayed_ping_data() {
     let mut lines = payload.lines();
     assert!(lines.any(|line| line.contains("\"url\":") && line.contains("/prototype/")));
     assert!(payload.contains("\"test.metrics.sample_counter\":10"));
-    assert!(payload.contains("\"test.metrics.labeled_counter\":{\"label\":10}}}"), "{payload}");
+    assert!(
+        payload.contains("\"test.metrics.labeled_counter\":{\"label\":10}}}"),
+        "{payload}"
+    );
 }
 
 #[cfg(unix)]

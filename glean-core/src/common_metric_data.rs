@@ -11,7 +11,7 @@ use rusqlite::Transaction;
 use crate::error::{Error, ErrorKind};
 use crate::error_recording::record_error_sqlite;
 use crate::metrics::dual_labeled_counter::validate_dual_label_sqlite;
-use crate::metrics::labeled::validate_dynamic_label_sqlite;
+use crate::metrics::labeled::{validate_dynamic_label, validate_dynamic_label_sqlite};
 use crate::{ErrorType, Glean};
 use serde::{Deserialize, Serialize};
 
@@ -262,6 +262,35 @@ impl CommonMetricDataInternal {
                 }
                 MetricLabel::KeyAndCategory(key, category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, key, category)
+                }
+            }
+        } else {
+            LabelCheck::NoLabel
+        }
+    }
+
+    pub(crate) fn check_labels_offline(&self, existing_labels: Vec<String>) -> LabelCheck {
+        let base_identifier = self.base_identifier();
+
+        if let Some(label) = &self.inner.label {
+            match label {
+                MetricLabel::Static(label) => LabelCheck::Label(label.to_string()),
+                MetricLabel::Label(label) => {
+                    validate_dynamic_label(existing_labels, &base_identifier, label)
+                }
+                MetricLabel::KeyOnly(key, static_category) => {
+                    //validate_dual_label_sqlite(tx, &base_identifier, key, "")
+                    //.map(|key| format!("{key}{static_category}"))
+                    todo!()
+                }
+                MetricLabel::CategoryOnly(static_key, category) => {
+                    //validate_dual_label_sqlite(tx, &base_identifier, "", category)
+                    //.map(|category| format!("{static_key}{category}"))
+                    todo!()
+                }
+                MetricLabel::KeyAndCategory(key, category) => {
+                    //validate_dual_label_sqlite(tx, &base_identifier, key, category)
+                    todo!()
                 }
             }
         } else {

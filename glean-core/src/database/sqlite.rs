@@ -509,8 +509,20 @@ impl Database {
                     .read()
                     .expect("Can't read ping lifetime data");
 
-                let conn = self.conn.lock();
-                let labels = data.check_labels(&*conn);
+                let lower_bound = CacheKey {
+                    id: metric_identifier.clone(),
+                    ping: "".into(),
+                    labels: "".into(),
+                };
+
+                let mut known_labels = vec![];
+                for (key, _) in map.range(lower_bound..) {
+                    if key.id != metric_identifier {
+                        break;
+                    }
+                    known_labels.push(key.labels.to_string());
+                }
+                let labels = data.check_labels_offline(known_labels);
                 let labels = labels.label().to_string();
 
                 let key = CacheKey {
@@ -742,7 +754,34 @@ impl Database {
     {
         let name = data.base_identifier();
 
-        let labels = data.check_labels(tx);
+        let labels = if data.inner.lifetime == Lifetime::Ping {
+            if let Some(ping_lifetime_data) = &self.ping_lifetime_data {
+                let map = ping_lifetime_data
+                    .write()
+                    .expect("Can't read ping lifetime data");
+
+                let lower_bound = CacheKey {
+                    id: name.clone(),
+                    ping: "".into(),
+                    labels: "".into(),
+                };
+
+                let mut known_labels = vec![];
+                for (key, _) in map.range(lower_bound..) {
+                    if key.id != name {
+                        break;
+                    }
+                    known_labels.push(key.labels.to_string());
+                }
+
+                data.check_labels_offline(known_labels)
+            } else {
+                data.check_labels(tx)
+            }
+        } else {
+            data.check_labels(tx)
+        };
+
         labels.record_error(glean, tx, &name, data.storage_names());
 
         for ping_name in data.storage_names() {

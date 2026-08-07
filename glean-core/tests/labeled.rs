@@ -690,3 +690,186 @@ fn overrun_the_label_count_with_a_single_label() {
     assert_eq!(json!(23), cached_labels["label-2"]);
     assert_eq!(json!(null), cached_labels["__other__"]);
 }
+
+#[test]
+fn delay_ping_lifetime_io_persistence() {
+    use glean_core::{Glean, InternalConfiguration, SessionMode};
+
+    let tmp = tempfile::tempdir().unwrap();
+    let data_path = tmp.path().display().to_string();
+
+    let cfg = InternalConfiguration {
+        data_path,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        // We delay ping lifetime and require an explicit `persist_ping_lifetime_data()`
+        delay_ping_lifetime_io: true,
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: true,
+        experimentation_id: None,
+        enable_internal_pings: true,
+        ping_schedule: Default::default(),
+        ping_lifetime_threshold: 0,
+        ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
+        session_mode: SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
+    };
+
+    let counter = CounterMetric::new(CommonMetricData {
+        name: "counter".into(),
+        category: "local".into(),
+        send_in_pings: vec!["metrics".into()],
+        ..Default::default()
+    });
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_counter".into(),
+                category: "local".into(),
+                send_in_pings: vec!["metrics".into()],
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    {
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        counter.add_sync(&glean, 1);
+        assert_eq!(1, counter.get_value(&glean, None).unwrap());
+
+        labeled.get("label").add_sync(&glean, 1);
+        assert_eq!(1, labeled.get("label").get_value(&glean, None).unwrap());
+
+        // No persistence!
+    }
+
+    {
+        // No persistence earlier -> no data now
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        assert!(counter.get_value(&glean, None).is_none());
+        assert!(labeled.get("label").get_value(&glean, None).is_none());
+    }
+
+    {
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        counter.add_sync(&glean, 1);
+        assert_eq!(1, counter.get_value(&glean, None).unwrap());
+
+        labeled.get("label").add_sync(&glean, 1);
+        assert_eq!(1, labeled.get("label").get_value(&glean, None).unwrap());
+
+        // Persistence!
+        glean.persist_ping_lifetime_data().unwrap();
+    }
+
+    {
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        assert_eq!(1, counter.get_value(&glean, None).unwrap());
+        assert_eq!(1, labeled.get("label").get_value(&glean, None).unwrap());
+    }
+}
+
+#[test]
+fn delay_ping_lifetime_io_with_labels() {
+    use glean_core::{Glean, InternalConfiguration, SessionMode};
+
+    let tmp = tempfile::tempdir().unwrap();
+    let data_path = tmp.path().display().to_string();
+
+    let cfg = InternalConfiguration {
+        data_path,
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        // We delay ping lifetime and require an explicit `persist_ping_lifetime_data()`
+        delay_ping_lifetime_io: true,
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: true,
+        experimentation_id: None,
+        enable_internal_pings: true,
+        ping_schedule: Default::default(),
+        ping_lifetime_threshold: 0,
+        ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
+        session_mode: SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
+    };
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_counter".into(),
+                category: "local".into(),
+                send_in_pings: vec!["metrics".into()],
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    {
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        // Set the maximum number of labels
+        for i in 1..=16 {
+            let label = format!("label{i}");
+            labeled.get(&label).add_sync(&glean, i);
+            assert_eq!(i, labeled.get(label).get_value(&glean, None).unwrap());
+        }
+
+        // The rest go to the __other__ bucket
+        labeled.get("__other__").add_sync(&glean, 10);
+
+        let mut val = 10;
+        for i in 1..=4 {
+            let label = format!("label{}", 16 + i);
+            labeled.get(&label).add_sync(&glean, i);
+            val += i;
+            assert_eq!(val, labeled.get(label).get_value(&glean, None).unwrap());
+        }
+
+        glean.persist_ping_lifetime_data().unwrap();
+    }
+
+    {
+        let glean = Glean::new(cfg.clone()).unwrap();
+
+        // Set the maximum number of labels
+        for i in 1..=16 {
+            let label = format!("label{i}");
+            assert_eq!(i, labeled.get(label).get_value(&glean, None).unwrap());
+        }
+
+        // The rest go to the __other__ bucket
+        assert_eq!(
+            20,
+            labeled.get("__other__").get_value(&glean, None).unwrap()
+        );
+
+        for i in 1..=4 {
+            let label = format!("label{}", 16 + i);
+            assert_eq!(20, labeled.get(label).get_value(&glean, None).unwrap());
+        }
+    }
+}

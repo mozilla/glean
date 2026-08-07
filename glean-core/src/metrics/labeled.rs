@@ -389,30 +389,35 @@ pub fn validate_dynamic_label_sqlite(
     label: &str,
 ) -> LabelCheck {
     let existing_labels_sql = "SELECT DISTINCT labels FROM telemetry WHERE id = ?1";
+    let mut existing_labels = vec![];
 
-    let mut label_already_used = false;
-    let mut label_count = 0;
-    {
-        let Ok(mut stmt) = tx.prepare(existing_labels_sql) else {
-            // If we can't fetch from the database, assume the label is ok to use
-            return LabelCheck::Label(label.to_string());
-        };
+    let Ok(mut stmt) = tx.prepare(existing_labels_sql) else {
+        // If we can't fetch from the database, assume the label is ok to use
+        return LabelCheck::Label(label.to_string());
+    };
 
-        let Ok(mut rows) = stmt.query(params![base_identifier]) else {
-            // If we can't fetch from the database, assume the label is ok to use
-            return LabelCheck::Label(label.to_string());
-        };
+    let Ok(mut rows) = stmt.query(params![base_identifier]) else {
+        // If we can't fetch from the database, assume the label is ok to use
+        return LabelCheck::Label(label.to_string());
+    };
 
-        while let Ok(Some(row)) = rows.next() {
-            let existing_label: String = row.get(0).unwrap();
-
-            label_count += 1;
-            if existing_label == label {
-                label_already_used = true;
-                break;
-            }
-        }
+    while let Ok(Some(row)) = rows.next() {
+        let existing_label = row.get(0).unwrap();
+        existing_labels.push(existing_label);
     }
+
+    validate_dynamic_label(existing_labels, base_identifier, label)
+}
+
+pub fn validate_dynamic_label(
+    existing_labels: Vec<String>,
+    base_identifier: &str,
+    label: &str,
+) -> LabelCheck {
+    let label_count = existing_labels.len();
+    let label_already_used = existing_labels
+        .into_iter()
+        .any(|existing| existing == label);
 
     if !label_already_used && label_count >= MAX_LABELS {
         LabelCheck::Label(String::from(OTHER_LABEL))
