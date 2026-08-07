@@ -181,6 +181,8 @@ pub struct InternalConfiguration {
     /// Inactivity timeout in milliseconds for AUTO mode before a new session starts.
     /// Default: 1 800 000 ms (30 minutes).
     pub session_inactivity_timeout_ms: u64,
+    /// The number of "events" pings to accelerate each session, plus one.
+    pub events_ping_acceleration_factor: Option<u32>,
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
