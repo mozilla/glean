@@ -128,7 +128,7 @@ fmt-rust: ## Format all Rust code
 fmt-python: setup-python ## Run ruff to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m ruff format glean-core/python/glean glean-core/python/tests
 
-fmt-kotlin:  ## Run ktlint to format KOtlin code
+fmt-kotlin:  ## Run ktlint to format Kotlin code
 	./gradlew ktlintFormat
 
 .PHONY: fmt-rust fmt-python fmt-kotlin
