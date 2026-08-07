@@ -39,6 +39,7 @@ import mozilla.telemetry.glean.net.PingUploader
  * @property sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
  * @property sessionInactivityTimeoutMs Inactivity timeout (milliseconds) before AUTO-mode
  *           sessions expire. Default: 30 minutes.
+ * @property eventsPingAccelerationFactor The number of "events" pings to accelerate each session, plus one.
  */
 data class Configuration
     @JvmOverloads
@@ -64,6 +65,7 @@ data class Configuration
         val sessionMode: SessionMode = SessionMode.AUTO,
         val sessionSampleRate: Double = 1.0,
         val sessionInactivityTimeoutMs: Long = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
+        val eventsPingAccelerationFactor: Int? = null,
     ) {
         companion object {
             /**

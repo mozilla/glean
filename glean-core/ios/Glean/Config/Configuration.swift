@@ -22,6 +22,7 @@ public struct Configuration {
     let httpClient: PingUploader
     let maxPendingPingsCount: UInt64?
     let maxPendingPingsDirectorySize: UInt64?
+    let eventsPingAccelerationFactor: UInt32?
 
     struct Constants {
         static let defaultTelemetryEndpoint =
@@ -56,6 +57,8 @@ public struct Configuration {
     ///   * sessionInactivityTimeoutMs Inactivity timeout (ms) before AUTO-mode
     ///   sessions expire. Default: 30 minutes (1,800,000 ms).
     ///   * httpClient An http uploader that supports the `PingUploader` protocol
+    ///   * eventsPingAccelerationFactor The number of "events" pings to accelerate each session,
+    ///     plus one.
     public init(
         maxEvents: Int32? = nil,
         channel: String? = nil,
@@ -74,6 +77,7 @@ public struct Configuration {
         sessionSampleRate: Double = 1.0,
         sessionInactivityTimeoutMs: UInt64 = 1_800_000,
         httpClient: PingUploader = HttpPingUploader()
+        eventsPingAccelerationFactor: UInt32? = nil,
     ) {
         self.serverEndpoint =
             serverEndpoint ?? Constants.defaultTelemetryEndpoint
@@ -93,5 +97,6 @@ public struct Configuration {
         self.sessionSampleRate = sessionSampleRate
         self.sessionInactivityTimeoutMs = sessionInactivityTimeoutMs
         self.httpClient = httpClient
+        self.eventsPingAccelerationFactor = eventsPingAccelerationFactor
     }
 }

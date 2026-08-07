@@ -46,6 +46,11 @@ pub struct RemoteSettingsConfig {
     /// Changes take effect at the next session start.
     #[serde(default)]
     pub session_sample_rate: Option<f64>,
+
+    /// The number of "events" pings to accelerate each session, plus one.
+    /// It overrides the value configured at initialization time.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub events_ping_acceleration_factor: Option<usize>,
 }
 
 impl RemoteSettingsConfig {
