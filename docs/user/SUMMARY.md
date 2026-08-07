@@ -38,6 +38,7 @@
     - [Experimenter Configuration](user/server-knobs/pings/experimenter-configuration.md)
   - [Other Server Knobs](user/server-knobs/other/index.md)
     - [Max Events per Ping](user/server-knobs/other/max-events.md)
+    - [Events Ping Acceleration Factor](user/server-knobs/other/events-accel.md)
 - [Debugging products using Glean](user/debugging/index.md)
     - [Android](user/debugging/android.md)
     - [iOS](user/debugging/ios.md)

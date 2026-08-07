@@ -275,6 +275,7 @@ open class GleanInternalAPI internal constructor() {
                 sessionMode = configuration.sessionMode,
                 sessionSampleRate = configuration.sessionSampleRate,
                 sessionInactivityTimeoutMs = configuration.sessionInactivityTimeoutMs.toULong(),
+                eventsPingAccelerationFactor = null,
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
