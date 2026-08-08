@@ -1273,6 +1273,8 @@ impl Glean {
             return data.persist_ping_lifetime_data();
         }
 
+        self.event_storage().sync_event_data();
+
         Ok(())
     }
 
