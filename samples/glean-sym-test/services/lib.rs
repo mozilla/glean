@@ -29,7 +29,7 @@ unsafe extern "C" fn record(amount: i32) {
 
     glean_metrics::dylib::data.set(String::from("value"));
 
-    #[cfg(not(feature = "noop"))]
+    #[cfg(feature = "active")]
     {
         // `StringMetric#test_get_value` returns a string, which is passed through a `RustBuffer`,
         // which needs to be copied and freed correctly.

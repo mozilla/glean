@@ -20,5 +20,5 @@ path = "lib.rs"
 crate-type = ["cdylib"]
 
 [features]
-# Activate glean-noop and avoid test methods
-noop = ["glean-sym/noop"]
+# glean-sym defaults to noop mode.
+active = ["glean-sym/active"]

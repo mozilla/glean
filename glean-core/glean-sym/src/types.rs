@@ -85,7 +85,7 @@ pub struct DistributionData {
 }
 
 #[derive(uniffi::Record)]
-#[cfg_attr(feature = "noop", derive(Default))]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct TimerId {
     id: u64,
 }
@@ -208,15 +208,15 @@ impl<K: ExtraKeys> EventMetric<K> {
     }
 }
 
-#[cfg(feature = "noop")]
+#[cfg(not(feature = "active"))]
 pub struct PingType;
 
-#[cfg(not(feature = "noop"))]
+#[cfg(feature = "active")]
 pub struct PingType {
     inner: crate::metrics::PingType,
 }
 
-#[cfg(not(feature = "noop"))]
+#[cfg(feature = "active")]
 impl PingType {
     /// Creates a new ping type.
     ///
@@ -271,7 +271,7 @@ impl PingType {
     }
 }
 
-#[cfg(feature = "noop")]
+#[cfg(not(feature = "active"))]
 impl PingType {
     /// Creates a new ping type.
     ///

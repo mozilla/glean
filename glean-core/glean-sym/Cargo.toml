@@ -19,5 +19,5 @@ glean-sym-parser = { path = "../../tools/glean-sym-parser" }
 glean-core = { path = "../" }
 
 [features]
-# No-op all metric type calls
-noop = []
+# Enable actual functionality. By default `glean-sym` acts in no-op mode.
+active = []
