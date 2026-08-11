@@ -1,6 +1,6 @@
 # Unreleased changes
 
-* Add new `submitted_pings` table to the SQLite database. Also added methods to store submitted pings and retrieve them ([#3575](https://github.com/mozilla/glean/pull/3575)).
+* Add new `submitted_pings` table to the SQLite database. Also added methods to store submitted pings and retrieve them ([#3585](https://github.com/mozilla/glean/pull/3585)).
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
@@ -24,8 +24,8 @@
     * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
     * Support pings ([#3544](https://github.com/mozilla/glean/pull/3544))
     * Implement the event metric ([#3534](https://github.com/mozilla/glean/pull/3534))
-    * BREAKING CHANGE: Switch from a noop feature to an `active` feature ([#3583](https://github.com/mozilla/glean/pull/3583))
 * iOS
+    * BREAKING CHANGE: Switch from a noop feature to an `active` feature ([#3583](https://github.com/mozilla/glean/pull/3583))
   * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
 * Python
   * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
