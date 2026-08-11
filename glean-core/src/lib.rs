@@ -786,7 +786,7 @@ pub fn shutdown() {
     uploader_shutdown();
 
     // Be sure to call this _after_ draining the dispatcher
-    core::with_glean(|glean| {
+    core::with_glean_mut(|glean| {
         if let Err(e) = glean.persist_ping_lifetime_data() {
             log::info!("Can't persist ping lifetime data: {:?}", e);
         }
@@ -796,6 +796,8 @@ pub fn shutdown() {
                 log::info!("Can't run database maintenance on shutdown: {:?}", e);
             }
         }
+
+        glean.close_db();
     });
 }
 
@@ -1343,7 +1345,7 @@ pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
                 if clear_stores {
                     glean.test_clear_all_stores()
                 }
-                glean.destroy_db()
+                glean.close_db()
             });
         }
 
