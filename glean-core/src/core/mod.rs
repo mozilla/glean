@@ -608,10 +608,10 @@ impl Glean {
         glean
     }
 
-    /// Destroys the database.
+    /// Close the database connection.
     ///
     /// After this Glean needs to be reinitialized.
-    pub fn destroy_db(&mut self) {
+    pub fn close_db(&mut self) {
         self.data_store = None;
     }
 

@@ -10,6 +10,7 @@
     * Run database maintenance at shutdown & after collecting ping data ([#3559](https://github.com/mozilla/glean/pull/3559))
     * Validate that the database connection on open is usable for reads and writes ([#3513](https://github.com/mozilla/glean/pull/3513))
     * Keep state about migration in the database ([#3545](https://github.com/mozilla/glean/pull/3545))
+    * The database connection is closed on shutdown ([#3584](https://github.com/mozilla/glean/pull/3584))
   * BREAKING CHANGE: Updated to UniFFI 0.32.0 ([#3538](https://github.com/mozilla/glean/pull/3538))
 * Rust
   * glean-sym
