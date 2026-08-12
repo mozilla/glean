@@ -184,6 +184,8 @@ pub struct InternalConfiguration {
     pub session_inactivity_timeout_ms: u64,
     /// The number of "events" pings to accelerate each session, plus one.
     pub events_ping_acceleration_factor: Option<u32>,
+    /// Whether to store submitted pings. Default: false
+    pub enable_store_submitted_pings: bool,
 }
 
 /// How to specify the rate at which pings may be uploaded before they are throttled.
@@ -963,6 +965,17 @@ pub fn glean_set_upload_enabled(enabled: bool) {
 /// This replaces `set_upload_enabled`.
 pub fn glean_set_collection_enabled(enabled: bool) {
     glean_set_upload_enabled(enabled)
+}
+
+/// Sets whether Glean should store submitted pings or not.
+pub fn glean_set_store_submitted_pings_enabled(enabled: bool) {
+    if !was_initialize_called() {
+        return;
+    }
+
+    launch_with_glean_mut(move |glean| {
+        glean.store_submitted_pings_enabled = enabled;
+    });
 }
 
 /// Enable or disable a ping.

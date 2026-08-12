@@ -76,8 +76,8 @@ impl ConnectionOpener for Schema {
              CREATE TABLE submitted_pings(
                document_id TEXT PRIMARY KEY,
                ping TEXT NOT NULL,
-               date_submitted DATETIME NOT NULL,
-               date_uploaded DATETIME,
+               date_submitted INTEGER NOT NULL,
+               date_uploaded INTEGER,
                payload BLOB
              );
              CREATE INDEX submitted_pings_ping on submitted_pings(ping);
@@ -118,8 +118,8 @@ impl ConnectionOpener for Schema {
                     CREATE TABLE submitted_pings(
                         document_id TEXT PRIMARY KEY,
                         ping TEXT NOT NULL,
-                        date_submitted DATETIME NOT NULL,
-                        date_uploaded DATETIME,
+                        date_submitted INTEGER NOT NULL,
+                        date_uploaded INTEGER,
                         payload BLOB
                     );
                     CREATE INDEX submitted_pings_ping on submitted_pings(ping);
