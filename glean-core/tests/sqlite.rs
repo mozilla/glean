@@ -3,9 +3,9 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 mod common;
-use std::fs;
-use chrono::Utc;
 use crate::common::*;
+use chrono::Utc;
+use std::fs;
 
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
@@ -300,8 +300,12 @@ fn latest_schema_is_applied() {
 fn test_storing_and_fetching_submitted_pings() {
     let (glean, _temp) = new_glean(None);
 
-    let utc_time_one = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.50Z").unwrap().to_utc();
-    let utc_time_two = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.51Z").unwrap().to_utc();
+    let utc_time_one = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.50Z")
+        .unwrap()
+        .to_utc();
+    let utc_time_two = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.51Z")
+        .unwrap()
+        .to_utc();
 
     // First ping, no upload date
     glean
@@ -343,10 +347,7 @@ fn test_storing_and_fetching_submitted_pings() {
     assert_eq!(all_pings.len(), 2);
     assert_eq!(all_pings.first().unwrap().document_id, "id-one".to_string());
     assert_eq!(all_pings.last().unwrap().document_id, "id".to_string());
-    assert_eq!(
-        all_pings.first().unwrap().submitted_date.0,
-        utc_time_two
-    );
+    assert_eq!(all_pings.first().unwrap().submitted_date.0, utc_time_two);
     assert_eq!(
         all_pings.first().unwrap().uploaded_date.clone().unwrap().0,
         utc_time_two
@@ -362,5 +363,8 @@ fn test_storing_and_fetching_submitted_pings() {
     let some_pings = glean.storage().get_submitted_pings("ping");
     assert_eq!(some_pings.len(), 1);
     assert_eq!(some_pings.first().unwrap().document_id, "id".to_string());
-    assert_eq!(some_pings.first().unwrap().uploaded_date.clone().unwrap().0, utc_time_one);
+    assert_eq!(
+        some_pings.first().unwrap().uploaded_date.clone().unwrap().0,
+        utc_time_one
+    );
 }

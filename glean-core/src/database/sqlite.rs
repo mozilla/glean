@@ -25,9 +25,9 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
+use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
-use crate::Glean;
 
 use super::ConnExt;
 
@@ -101,11 +101,9 @@ impl ToSql for SqliteDatetime {
 
 impl FromSql for SqliteDatetime {
     fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
-        i64::column_result(value).and_then(|as_i64| {
-            match DateTime::from_timestamp_millis(as_i64) {
-                Some(d) => Ok(SqliteDatetime(d)),
-                None => Err(FromSqlError::InvalidType)
-            }
+        i64::column_result(value).and_then(|as_i64| match DateTime::from_timestamp_millis(as_i64) {
+            Some(d) => Ok(SqliteDatetime(d)),
+            None => Err(FromSqlError::InvalidType),
         })
     }
 }
