@@ -146,6 +146,7 @@ where
 ///     session_sample_rate: 1.0,
 ///     session_inactivity_timeout_ms: 1_800_000,
 ///     events_ping_acceleration_factor: None,
+///     enable_store_submitted_pings: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -196,6 +197,7 @@ pub struct Glean {
     #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
     events_ping_acceleration_factor: Option<usize>,
+    pub(crate) store_submitted_pings_enabled: bool,
 }
 
 impl Glean {
@@ -279,6 +281,7 @@ impl Glean {
             events_ping_acceleration_factor: cfg
                 .events_ping_acceleration_factor
                 .map(|x| x as usize),
+            store_submitted_pings_enabled: cfg.enable_store_submitted_pings
         };
 
         // Ensuring these pings are registered.
@@ -569,6 +572,10 @@ impl Glean {
         // to ensure we don't enqueue pings before their files are deleted.
         let _scanning_thread = glean.upload_manager.scan_pending_pings_directories(true);
 
+        if cfg.enable_store_submitted_pings {
+
+        }
+
         Ok(glean)
     }
 
@@ -604,6 +611,7 @@ impl Glean {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         };
 
         let mut glean = Self::new(cfg).unwrap();
