@@ -572,9 +572,7 @@ impl Glean {
         // to ensure we don't enqueue pings before their files are deleted.
         let _scanning_thread = glean.upload_manager.scan_pending_pings_directories(true);
 
-        if cfg.enable_store_submitted_pings {
-
-        }
+        if cfg.enable_store_submitted_pings {}
 
         Ok(glean)
     }
