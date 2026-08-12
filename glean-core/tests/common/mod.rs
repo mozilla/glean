@@ -75,6 +75,7 @@ pub fn new_glean_with_upload(
         session_sample_rate: 1.0,
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
+        enable_store_submitted_pings: false,
     };
     let mut glean = Glean::new(cfg).unwrap();
 

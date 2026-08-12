@@ -47,6 +47,7 @@ fn session_cfg(
         session_sample_rate: sample_rate,
         session_inactivity_timeout_ms: timeout_ms,
         events_ping_acceleration_factor: None,
+        enable_store_submitted_pings: false,
     }
 }
 

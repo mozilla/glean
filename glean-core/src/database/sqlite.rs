@@ -9,7 +9,7 @@ use std::path::Path;
 use std::str;
 use std::time::Duration;
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, Utc};
 use connection::Connection;
 use malloc_size_of::MallocSizeOf;
 use rusqlite::fallible_iterator::FallibleIterator;
@@ -27,7 +27,7 @@ use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
 use crate::Lifetime;
 use crate::Result;
-use crate::{Error, Glean};
+use crate::Glean;
 
 use super::ConnExt;
 
@@ -91,24 +91,21 @@ impl SubmittedPing {
 }
 
 #[derive(Debug, Clone)]
-pub struct SqliteDatetime(pub DateTime<FixedOffset>);
+pub struct SqliteDatetime(pub DateTime<Utc>);
 
-impl TryFrom<String> for SqliteDatetime {
-    type Error = Error;
-
-    fn try_from(value: String) -> Result<SqliteDatetime> {
-        DateTime::parse_from_rfc3339(&value)
-            .map(SqliteDatetime)
-            .map_err(|e| e.into())
+impl ToSql for SqliteDatetime {
+    fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
+        Ok(ToSqlOutput::from(self.0.timestamp_millis()))
     }
 }
 
 impl FromSql for SqliteDatetime {
     fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
-        String::column_result(value).and_then(|as_string| {
-            DateTime::parse_from_rfc3339(&as_string)
-                .map(SqliteDatetime)
-                .map_err(FromSqlError::other)
+        i64::column_result(value).and_then(|as_i64| {
+            match DateTime::from_timestamp_millis(as_i64) {
+                Some(d) => Ok(SqliteDatetime(d)),
+                None => Err(FromSqlError::InvalidType)
+            }
         })
     }
 }
@@ -116,12 +113,6 @@ impl FromSql for SqliteDatetime {
 impl PartialEq for SqliteDatetime {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
-    }
-}
-
-impl ToSql for SqliteDatetime {
-    fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
-        Ok(self.0.to_utc().to_rfc3339().into())
     }
 }
 
@@ -573,12 +564,28 @@ impl Database {
             .unwrap_or_default()
     }
 
+    pub fn mark_ping_as_uploaded(&self, document_id: &str, date_uploaded: DateTime<Utc>) -> usize {
+        let get_submitted_pings_sql = r#"
+        UPDATE submitted_pings
+        SET date_uploaded = ?1
+        WHERE document_id = ?2
+        "#;
+        self.conn
+            .write(|conn| {
+                let Ok(mut stmt) = conn.prepare_cached(get_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                stmt.execute(params![SqliteDatetime(date_uploaded), document_id])
+            })
+            .unwrap_or_default()
+    }
+
     pub fn store_submitted_ping(
         &self,
-        document_id: String,
-        ping: String,
-        date_submitted: String,
-        date_uploaded: Option<String>,
+        document_id: &str,
+        ping: &str,
+        date_submitted: DateTime<Utc>,
+        date_uploaded: Option<DateTime<Utc>>,
         value: serde_json::Value,
     ) -> Result<()> {
         self.conn.write(|tx| {
@@ -598,8 +605,8 @@ impl Database {
             stmt.execute(params![
                 document_id,
                 ping,
-                SqliteDatetime::try_from(date_submitted).unwrap(),
-                date_uploaded.map(|d| SqliteDatetime::try_from(d).unwrap()),
+                SqliteDatetime(date_submitted),
+                date_uploaded.map(SqliteDatetime),
                 encoded
             ])?;
             Ok(())
