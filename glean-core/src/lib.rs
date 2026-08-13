@@ -797,6 +797,9 @@ pub fn shutdown() {
         }
 
         if let Some(database) = &glean.data_store {
+            if let Err(e) = database.cleanup_submitted_pings(None) {
+                log::info!("Could not clean up submitted_pings table: {:?}", e);
+            }
             if let Err(e) = database.run_maintenance(false) {
                 log::info!("Can't run database maintenance on shutdown: {:?}", e);
             }

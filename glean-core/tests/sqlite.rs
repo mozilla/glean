@@ -410,8 +410,8 @@ fn test_cleanup_of_submitted_pings() {
     // This should only remove the ping from >30 days ago
     glean
         .storage()
-        .run_maintenance(false)
-        .expect("run_maintenance failed");
+        .cleanup_submitted_pings(None)
+        .expect("Error running cleanup_submitted_pings");
 
     let all_pings = glean.storage().get_all_submitted_pings();
     assert_eq!(all_pings.len(), 1);
@@ -421,7 +421,7 @@ fn test_cleanup_of_submitted_pings() {
     // This should clear out all pings
     glean
         .storage()
-        .cleanup_submitted_pings(None, Some(Utc::now()))
+        .cleanup_submitted_pings(Some(Utc::now()))
         .expect("Error running cleanup_submitted_pings");
 
     let all_pings = glean.storage().get_all_submitted_pings();

@@ -90,7 +90,7 @@ impl SubmittedPing {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SqliteDatetime(pub DateTime<Utc>);
 
 impl ToSql for SqliteDatetime {
@@ -105,12 +105,6 @@ impl FromSql for SqliteDatetime {
             Some(d) => Ok(SqliteDatetime(d)),
             None => Err(FromSqlError::InvalidType),
         })
-    }
-}
-
-impl PartialEq for SqliteDatetime {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
     }
 }
 
@@ -309,7 +303,6 @@ impl Database {
         let conn = self.conn.lock();
         let conn = &*conn;
 
-        self.cleanup_submitted_pings(Some(conn), None)?;
         self.run_maintenance_vacuum(conn, force)?;
         self.run_maintenance_optimize(conn)?;
         self.run_maintenance_checkpoint(conn)?;
@@ -580,17 +573,33 @@ impl Database {
     ///
     /// A `usize` representing the number of rows updated.
     pub fn mark_ping_as_uploaded(&self, document_id: &str, date_uploaded: DateTime<Utc>) -> usize {
-        let get_submitted_pings_sql = r#"
+        let update_submitted_pings_sql = r#"
         UPDATE submitted_pings
         SET date_uploaded = ?1
         WHERE document_id = ?2
         "#;
         self.conn
-            .write(|conn| {
-                let Ok(mut stmt) = conn.prepare_cached(get_submitted_pings_sql) else {
+            .write(|tx| {
+                let Ok(mut stmt) = tx.prepare_cached(update_submitted_pings_sql) else {
                     return Ok(Default::default());
                 };
                 stmt.execute(params![SqliteDatetime(date_uploaded), document_id])
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn mark_ping_as_upload_failed(&self, document_id: &str) -> usize {
+        let update_submitted_pings_sql = r#"
+        UPDATE submitted_pings
+        SET upload_failed = true
+        WHERE document_id = ?1
+        "#;
+        self.conn
+            .write(|tx| {
+                let Ok(mut stmt) = tx.prepare_cached(update_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                stmt.execute(params![document_id])
             })
             .unwrap_or_default()
     }
@@ -645,32 +654,22 @@ impl Database {
     ///
     /// # Arguments
     ///
-    /// * `conn` - An optional rusqlite connection. If not supplied, it will open a `write` using `self.conn`.
     /// * `before_time` - An optional date – when supplied uses that date as the oldest date_submitted we should keep.
     ///     Defaults to 30 days if `None` is supplied.
     ///
     /// # Returns
     ///
     /// An empty `Result`.
-    pub fn cleanup_submitted_pings(
-        &self,
-        conn: Option<&rusqlite::Connection>,
-        before_time: Option<DateTime<Utc>>,
-    ) -> Result<()> {
+    pub fn cleanup_submitted_pings(&self, before_time: Option<DateTime<Utc>>) -> Result<()> {
         let time = before_time.unwrap_or(Utc::now() - Duration::from_secs(2592000));
         let delete_sql = r#"
         DELETE FROM submitted_pings
-        WHERE date_submitted < ?1
+        WHERE date_submitted <= ?1
         "#;
-        if let Some(conn) = conn {
-            let mut stmt = conn.prepare_cached(delete_sql)?;
-            stmt.execute(params![SqliteDatetime(time)])?;
-        } else {
-            self.conn.write(|tx| {
-                let mut stmt = tx.prepare_cached(delete_sql)?;
-                stmt.execute(params![SqliteDatetime(time)])
-            })?;
-        }
+        self.conn.write(|tx| {
+            let mut stmt = tx.prepare_cached(delete_sql)?;
+            stmt.execute(params![SqliteDatetime(time)])
+        })?;
         Ok(())
     }
 
