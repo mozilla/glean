@@ -136,6 +136,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         session_sample_rate: cfg.session_sample_rate,
         session_inactivity_timeout_ms: cfg.session_inactivity_timeout.as_millis() as u64,
         events_ping_acceleration_factor: cfg.events_ping_acceleration_factor.map(|x| x as u32),
+        enable_store_submitted_pings: cfg.enable_store_submitted_pings,
     };
 
     glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);
@@ -178,6 +179,13 @@ pub fn set_upload_enabled(enabled: bool) {
 /// See [`glean_core::Glean::set_upload_enabled`].
 pub fn set_collection_enabled(enabled: bool) {
     glean_core::glean_set_collection_enabled(enabled)
+}
+
+/// Sets whether storing submitted pings is enabled or not.
+///
+/// See [`glean_core::Glean::set_store_submitted_pings_enabled`].
+pub fn set_store_submitted_pings_enabled(enabled: bool) {
+    glean_core::glean_set_store_submitted_pings_enabled(enabled)
 }
 
 /// Collects and submits a ping for eventual uploading by name.
