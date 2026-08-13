@@ -285,10 +285,10 @@ impl Database {
             conn.execute_one("PRAGMA incremental_vacuum(2)")?;
         } else {
             // If auto_vacuum=incremental isn't set, configure it and run a full vacuum.
-            log::warn!(
+            log::debug!(
                 "run_maintenance_vacuum: Need to run a full vacuum to set auto_vacuum=incremental"
             );
-            conn.execute_one("PRAGMA auto_vacuum=incremental")?;
+            conn.execute_one("PRAGMA auto_vacuum = INCREMENTAL")?;
             conn.execute_one("VACUUM")?;
         }
         Ok(())
