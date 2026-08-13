@@ -25,9 +25,9 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
-use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
+use crate::{Glean, JsonValue};
 
 use super::ConnExt;
 
@@ -83,7 +83,7 @@ pub struct SubmittedPing {
 }
 
 impl SubmittedPing {
-    pub fn value(&self) -> Option<serde_json::Value> {
+    pub fn value(&self) -> Option<JsonValue> {
         self.value
             .as_ref()
             .map(|v| rmp_serde::from_slice(v).expect("IMPOSSIBLE: Deserializing value failed"))
@@ -309,6 +309,7 @@ impl Database {
         let conn = self.conn.lock();
         let conn = &*conn;
 
+        self.cleanup_submitted_pings(Some(conn), None)?;
         self.run_maintenance_vacuum(conn, force)?;
         self.run_maintenance_optimize(conn)?;
         self.run_maintenance_checkpoint(conn)?;
@@ -490,6 +491,7 @@ impl Database {
             .unwrap_or(false)
     }
 
+    /// Gets all pings in the `submitted_pings` table.
     pub fn get_all_submitted_pings(&self) -> Vec<SubmittedPing> {
         let get_all_submitted_pings_sql = r#"
         SELECT
@@ -525,6 +527,11 @@ impl Database {
             .unwrap_or_default()
     }
 
+    /// Returns all submitted pings in the `submitted_pings` table that match a supplied ping name.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping` - The name of the pings to return.
     pub fn get_submitted_pings(&self, ping: &str) -> Vec<SubmittedPing> {
         let get_submitted_pings_sql = r#"
         SELECT
@@ -562,6 +569,16 @@ impl Database {
             .unwrap_or_default()
     }
 
+    /// Marks a particular ping as uploaded.
+    ///
+    /// # Arguments
+    ///
+    /// * `document_id` - The ping to mark as uploaded.
+    /// * `date_uploaded` - The UTC date/time the ping was uploaded.
+    ///
+    /// # Returns
+    ///
+    /// A `usize` representing the number of rows updated.
     pub fn mark_ping_as_uploaded(&self, document_id: &str, date_uploaded: DateTime<Utc>) -> usize {
         let get_submitted_pings_sql = r#"
         UPDATE submitted_pings
@@ -578,13 +595,26 @@ impl Database {
             .unwrap_or_default()
     }
 
+    /// Stores a submitted ping into the `submitted_pings` table.
+    ///
+    /// # Arguments
+    ///
+    /// * `document_id` - The unique identifier for the ping.
+    /// * `ping` - The name of the ping.
+    /// * `date_submitted` - The UTC date/time the ping was submitted.
+    /// * `date_uploaded` - An optional UTC date/time the ping was uploaded.
+    /// * `value` - A JSON representation of the content of the ping.
+    ///
+    /// # Returns
+    ///
+    /// An empty `Result`.
     pub fn store_submitted_ping(
         &self,
         document_id: &str,
         ping: &str,
         date_submitted: DateTime<Utc>,
         date_uploaded: Option<DateTime<Utc>>,
-        value: serde_json::Value,
+        value: JsonValue,
     ) -> Result<()> {
         self.conn.write(|tx| {
             let insert_sql = r#"
@@ -609,6 +639,38 @@ impl Database {
             ])?;
             Ok(())
         })
+    }
+
+    /// Removes rows from the `submitted_pings` table where the `date_submitted` is older than the supplied date.
+    ///
+    /// # Arguments
+    ///
+    /// * `before_time` - An optional date – when supplied uses that date as the oldest date_submitted we should keep.
+    ///     Defaults to 30 days if `None` is supplied.
+    ///
+    /// # Returns
+    ///
+    /// An empty `Result`.
+    pub fn cleanup_submitted_pings(
+        &self,
+        conn: Option<&rusqlite::Connection>,
+        before_time: Option<DateTime<Utc>>,
+    ) -> Result<()> {
+        let time = before_time.unwrap_or(Utc::now() - Duration::from_secs(2592000));
+        let delete_sql = r#"
+        DELETE FROM submitted_pings
+        WHERE date_submitted < ?1
+        "#;
+        if let Some(conn) = conn {
+            let mut stmt = conn.prepare_cached(delete_sql)?;
+            stmt.execute(params![SqliteDatetime(time)])?;
+        } else {
+            self.conn.write(|tx| {
+                let mut stmt = tx.prepare_cached(delete_sql)?;
+                stmt.execute(params![SqliteDatetime(time)])
+            })?;
+        }
+        Ok(())
     }
 
     /// Records a metric in the underlying storage system.
