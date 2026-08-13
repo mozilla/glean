@@ -645,6 +645,7 @@ impl Database {
     ///
     /// # Arguments
     ///
+    /// * `conn` - An optional rusqlite connection. If not supplied, it will open a `write` using `self.conn`.
     /// * `before_time` - An optional date – when supplied uses that date as the oldest date_submitted we should keep.
     ///     Defaults to 30 days if `None` is supplied.
     ///
