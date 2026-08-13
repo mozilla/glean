@@ -311,8 +311,8 @@ fn test_storing_and_fetching_submitted_pings() {
     glean
         .storage()
         .store_submitted_ping(
-            "id".into(),
-            "ping".into(),
+            "id",
+            "ping",
             utc_time_one,
             None,
             serde_json::json!({ "test": "a value" }),
@@ -323,8 +323,8 @@ fn test_storing_and_fetching_submitted_pings() {
     glean
         .storage()
         .store_submitted_ping(
-            "id-one".into(),
-            "ping-two".into(),
+            "id-one",
+            "ping-two",
             utc_time_two,
             None,
             serde_json::json!({ "test": "a value" }),
@@ -335,8 +335,8 @@ fn test_storing_and_fetching_submitted_pings() {
     glean
         .storage()
         .store_submitted_ping(
-            "id-one".into(),
-            "ping-two".into(),
+            "id-one",
+            "ping-two",
             utc_time_two,
             Some(utc_time_two),
             serde_json::json!({ "test": "a value" }),
@@ -367,4 +367,63 @@ fn test_storing_and_fetching_submitted_pings() {
         some_pings.first().unwrap().uploaded_date.clone().unwrap().0,
         utc_time_one
     );
+}
+
+#[test]
+fn test_cleanup_of_submitted_pings() {
+    let (glean, _temp) = new_glean(None);
+
+    let utc_time_more_than_30_days_ago =
+        chrono::DateTime::parse_from_rfc3339("2026-06-05T12:30:00.50Z")
+            .unwrap()
+            .to_utc();
+
+    // Submitted ping from more than 30 days ago
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one",
+            "ping",
+            utc_time_more_than_30_days_ago,
+            None,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Submitted ping from now
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-two",
+            "ping",
+            Utc::now(),
+            None,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Both pings should have been stored
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 2);
+
+    // Run regular maintenance (happens on shutdown)
+    // This should only remove the ping from >30 days ago
+    glean
+        .storage()
+        .run_maintenance(false)
+        .expect("run_maintenance failed");
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 1);
+    assert_eq!(all_pings.first().unwrap().document_id, "id-two".to_string());
+
+    // Run `cleanup_submitted_pings` with now as the `before_time`
+    // This should clear out all pings
+    glean
+        .storage()
+        .cleanup_submitted_pings(None, Some(Utc::now()))
+        .expect("Error running cleanup_submitted_pings");
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 0);
 }

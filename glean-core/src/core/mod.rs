@@ -572,8 +572,6 @@ impl Glean {
         // to ensure we don't enqueue pings before their files are deleted.
         let _scanning_thread = glean.upload_manager.scan_pending_pings_directories(true);
 
-        if cfg.enable_store_submitted_pings {}
-
         Ok(glean)
     }
 
@@ -821,6 +819,16 @@ impl Glean {
         } else {
             false
         }
+    }
+
+    /// Sets whether storing submitted pings is enabled or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `enabled` - When true, enables storing submitted pings.
+    ///
+    pub fn set_store_submitted_pings_enabled(&mut self, enabled: bool) {
+        self.store_submitted_pings_enabled = enabled;
     }
 
     /// Enable or disable a ping.
