@@ -819,6 +819,9 @@ impl PingUploadManager {
                         .send_failure
                         .set_stop_and_accumulate(glean, failure_id, stop_time);
                 }
+                if glean.store_submitted_pings_enabled {
+                    glean.storage().mark_ping_as_upload_failed(document_id);
+                }
                 self.directory_manager.delete_file(document_id);
             }
 
