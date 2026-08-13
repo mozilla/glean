@@ -799,6 +799,11 @@ impl PingUploadManager {
                         .set_stop_and_accumulate(glean, success_id, stop_time);
                     self.upload_metrics.send_failure.cancel_sync(failure_id);
                 }
+                if glean.store_submitted_pings_enabled {
+                    glean
+                        .storage()
+                        .mark_ping_as_uploaded(document_id, Utc::now());
+                }
                 self.directory_manager.delete_file(document_id);
             }
 
@@ -2127,5 +2132,54 @@ mod test {
             &identifier.to_string(),
             UploadResult::http_status(200),
         );
+    }
+
+    #[test]
+    fn stores_pings_during_submission_and_upload_if_enabled() {
+        let (mut glean, _t) = new_glean(None);
+        glean.set_store_submitted_pings_enabled(true);
+
+        // Register a ping for testing
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            true,
+            vec![],
+            vec![],
+            true,
+            vec![],
+        );
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        ping_type.submit_sync(&glean, None);
+
+        let pings = glean.storage().get_all_submitted_pings();
+        assert_eq!(pings.len(), 1);
+        let ping = pings.first().unwrap();
+        assert!(ping.submitted_date.0 <= Utc::now());
+        assert!(ping.uploaded_date.is_none());
+
+        // Get the submitted PingRequest
+        match glean.get_upload_task() {
+            PingUploadTask::Upload { request } => {
+                // Simulate the processing of a sucessful request
+                let document_id = request.document_id;
+                glean.process_ping_upload_response(&document_id, UploadResult::http_status(200));
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        let pings = glean.storage().get_all_submitted_pings();
+        assert_eq!(pings.len(), 1);
+        let ping = pings.first().unwrap();
+        assert!(ping.submitted_date.0 <= Utc::now());
+        assert!(ping.uploaded_date.is_some());
+
+        // Verify that after request is returned, none are left
+        assert_eq!(glean.get_upload_task(), PingUploadTask::done());
     }
 }
