@@ -67,6 +67,8 @@ pub struct Configuration {
     pub session_inactivity_timeout: Duration,
     /// The number of "events" pings to accelerate each session, plus one.
     pub events_ping_acceleration_factor: Option<usize>,
+    /// Whether to store submitted pings or not
+    pub enable_store_submitted_pings: bool,
 }
 
 /// Configuration builder.
@@ -131,6 +133,8 @@ pub struct Builder {
     pub session_inactivity_timeout: Duration,
     /// The number of "events" pings to accelerate each session, plus one.
     pub events_ping_acceleration_factor: Option<usize>,
+    /// Whether to store submitted pings or not.
+    pub enable_store_submitted_pings: bool,
 }
 
 impl Builder {
@@ -162,6 +166,7 @@ impl Builder {
             session_sample_rate: 1.0,
             session_inactivity_timeout: Duration::from_secs(30 * 60),
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         }
     }
 
@@ -189,6 +194,7 @@ impl Builder {
             session_sample_rate: self.session_sample_rate,
             session_inactivity_timeout: self.session_inactivity_timeout,
             events_ping_acceleration_factor: self.events_ping_acceleration_factor,
+            enable_store_submitted_pings: self.enable_store_submitted_pings,
         }
     }
 
@@ -291,6 +297,12 @@ impl Builder {
     /// Set the number of "events" pings to accelerate each session, plus one.
     pub fn with_events_ping_acceleration_factor(mut self, factor: usize) -> Self {
         self.events_ping_acceleration_factor = Some(factor);
+        self
+    }
+
+    /// Set whether to store submitted pings or not.
+    pub fn with_store_submitted_pings_enabled(mut self, value: bool) -> Self {
+        self.enable_store_submitted_pings = value;
         self
     }
 }

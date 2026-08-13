@@ -389,6 +389,7 @@ fn clearing_storage_by_prefix_doesnt_clear_unrelated_delayed_ping_io() {
         session_sample_rate: 1.0,
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
+        enable_store_submitted_pings: false,
     };
     let mut glean = glean_core::Glean::new(cfg).unwrap();
 
