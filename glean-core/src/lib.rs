@@ -981,6 +981,55 @@ pub fn glean_set_store_submitted_pings_enabled(enabled: bool) {
     });
 }
 
+/// A submitted ping that has been stored by Glean.
+pub struct SubmittedPing {
+    /// The document ID (unique identifier)
+    document_id: String,
+    /// The ping's name
+    ping: String,
+    /// RFC3339 datetime string
+    submitted_date: String,
+    /// Optional RFC3339 datetime string
+    uploaded_date: Option<String>,
+    /// Whether the upload failed unrecoverably or not
+    upload_failed: bool,
+    /// The ping's payload
+    payload: Option<JsonValue>,
+}
+
+impl From<database::sqlite::SubmittedPing> for SubmittedPing {
+    fn from(value: database::sqlite::SubmittedPing) -> Self {
+        SubmittedPing {
+            document_id: value.document_id.clone(),
+            ping: value.ping.clone(),
+            submitted_date: value.submitted_date.0.to_rfc3339(),
+            uploaded_date: value.uploaded_date.as_ref().map(|d| d.0.to_rfc3339()),
+            upload_failed: value.upload_failed,
+            payload: value.payload(),
+        }
+    }
+}
+
+/// Returns a `Vec` containing all stored submitted pings.
+pub fn glean_get_all_stored_submitted_pings() -> Vec<SubmittedPing> {
+    core::with_glean(|glean| glean.storage().get_all_submitted_pings())
+        .into_iter()
+        .map(|p| p.into())
+        .collect()
+}
+
+/// Returns a `Vec` containing all stored submitted pings with the supplied name.
+///
+/// # Arguments
+///
+/// * `ping` - The name of the pings that should be returned.
+pub fn glean_get_stored_submitted_pings_by_name(ping: String) -> Vec<SubmittedPing> {
+    core::with_glean(|glean| glean.storage().get_submitted_pings_by_name(&ping))
+        .into_iter()
+        .map(|p| p.into())
+        .collect()
+}
+
 /// Clears the stored submitted pings.
 pub fn glean_clear_stored_submitted_pings() {
     launch_with_glean(|glean| {
