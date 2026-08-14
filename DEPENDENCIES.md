@@ -877,11 +877,11 @@ The following text applies to code linked from these dependencies:
 * [fallible-iterator 0.3.0]( https://github.com/sfackler/rust-fallible-iterator )
 * [fallible-streaming-iterator 0.1.9]( https://github.com/sfackler/fallible-streaming-iterator )
 * [humantime 2.1.0]( https://github.com/tailhook/humantime )
-* [serde_spanned 1.0.4]( https://github.com/toml-rs/toml )
-* [toml 0.9.6]( https://github.com/toml-rs/toml )
+* [serde_spanned 1.1.1]( https://github.com/toml-rs/toml )
+* [toml 0.9.12+spec-1.1.0]( https://github.com/toml-rs/toml )
 * [toml_datetime 0.7.5+spec-1.1.0]( https://github.com/toml-rs/toml )
-* [toml_parser 1.0.2]( https://github.com/toml-rs/toml )
-* [toml_writer 1.0.6+spec-1.1.0]( https://github.com/toml-rs/toml )
+* [toml_parser 1.1.2+spec-1.1.0]( https://github.com/toml-rs/toml )
+* [toml_writer 1.1.1+spec-1.1.0]( https://github.com/toml-rs/toml )
 
 ```
                                  Apache License
@@ -1518,7 +1518,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [bitflags 2.11.1]( https://github.com/bitflags/bitflags )
-* [camino 1.1.9]( https://github.com/camino-rs/camino )
+* [camino 1.2.3]( https://github.com/camino-rs/camino )
 * [cfg-if 1.0.3]( https://github.com/rust-lang/cfg-if )
 * [core-foundation-sys 0.8.7]( https://github.com/servo/core-foundation-rs )
 * [crossbeam-channel 0.5.15]( https://github.com/crossbeam-rs/crossbeam )
@@ -1529,12 +1529,13 @@ The following text applies to code linked from these dependencies:
 * [fastrand 2.3.0]( https://github.com/smol-rs/fastrand )
 * [flate2 1.0.35]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
-* [glob 0.3.2]( https://github.com/rust-lang/glob )
+* [glob 0.3.3]( https://github.com/rust-lang/glob )
 * [hashbrown 0.15.4]( https://github.com/rust-lang/hashbrown )
+* [hashbrown 0.17.1]( https://github.com/rust-lang/hashbrown )
 * [heck 0.5.0]( https://github.com/withoutboats/heck )
 * [id-arena 2.2.1]( https://github.com/fitzgen/id-arena )
 * [idna 0.3.0]( https://github.com/servo/rust-url/ )
-* [indexmap 2.9.0]( https://github.com/indexmap-rs/indexmap )
+* [indexmap 2.14.0]( https://github.com/indexmap-rs/indexmap )
 * [lazy_static 1.4.0]( https://github.com/rust-lang-nursery/lazy-static.rs )
 * [linux-raw-sys 0.4.10]( https://github.com/sunfishcode/linux-raw-sys )
 * [log 0.4.28]( https://github.com/rust-lang/log )
@@ -2606,7 +2607,7 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [adler2 2.0.0]( https://github.com/oyvindln/adler2 )
-* [cargo-platform 0.1.3]( https://github.com/rust-lang/cargo )
+* [cargo-platform 0.1.9]( https://github.com/rust-lang/cargo )
 
 ```
                               Apache License
@@ -3459,14 +3460,13 @@ The following text applies to code linked from these dependencies:
 * [miniz_oxide 0.8.2]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 * [prettyplease 0.2.37]( https://github.com/dtolnay/prettyplease )
 * [proc-macro2 1.0.106]( https://github.com/dtolnay/proc-macro2 )
-* [quote 1.0.45]( https://github.com/dtolnay/quote )
+* [quote 1.0.47]( https://github.com/dtolnay/quote )
 * [rustc-hash 2.1.1]( https://github.com/rust-lang/rustc-hash )
-* [ryu 1.0.19]( https://github.com/dtolnay/ryu )
-* [semver 1.0.25]( https://github.com/dtolnay/semver )
+* [semver 1.0.28]( https://github.com/dtolnay/semver )
 * [serde 1.0.228]( https://github.com/serde-rs/serde )
 * [serde_core 1.0.228]( https://github.com/serde-rs/serde )
 * [serde_derive 1.0.228]( https://github.com/serde-rs/serde )
-* [serde_json 1.0.138]( https://github.com/serde-rs/json )
+* [serde_json 1.0.150]( https://github.com/serde-rs/json )
 * [siphasher 1.0.1]( https://github.com/jedisct1/rust-siphash )
 * [syn 2.0.117]( https://github.com/dtolnay/syn )
 * [thiserror-impl 2.0.12]( https://github.com/dtolnay/thiserror )
@@ -4228,6 +4228,7 @@ SOFTWARE.
 The following text applies to code linked from these dependencies:
 
 * [cargo_metadata 0.19.2]( https://github.com/oli-obk/cargo_metadata )
+* [zmij 1.0.21]( https://github.com/dtolnay/zmij )
 
 ```
 Permission is hereby granted, free of charge, to any
@@ -4260,7 +4261,8 @@ DEALINGS IN THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [winnow 0.7.10]( https://github.com/winnow-rs/winnow )
+* [winnow 0.7.15]( https://github.com/winnow-rs/winnow )
+* [winnow 1.0.3]( https://github.com/winnow-rs/winnow )
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining
@@ -4350,7 +4352,7 @@ THE SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [xshell-venv 1.4.0]( https://github.com/badboy/xshell-venv )
+* [xshell-venv 2.0.0]( https://github.com/badboy/xshell-venv )
 
 ```
 The MIT License (MIT)
@@ -4474,9 +4476,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 69.0.0]( https://github.com/mozilla/glean )
-* [glean-build 20.0.0]( https://github.com/mozilla/glean )
-* [glean 69.0.0]( https://github.com/mozilla/glean )
+* [glean-core 68.1.0]( https://github.com/mozilla/glean )
+* [glean-build 20.1.0]( https://github.com/mozilla/glean )
+* [glean 68.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4862,20 +4864,20 @@ The following text applies to code linked from these dependencies:
 
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [glean-sym 0.1.0]( https://github.com/mozilla/glean )
+* [glean-sym 68.1.0]( https://github.com/mozilla/glean )
 * [glean-tests 0.1.0]( https://crates.io/crates/glean-tests )
 * [rapid-metrics 0.1.0]( https://crates.io/crates/rapid-metrics )
 * [sample 0.1.0]( https://crates.io/crates/sample )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )
 * [glean-sym-parser 0.1.0]( https://github.com/mozilla/glean )
-* [uniffi 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_core 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_internal_macros 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_pipeline 0.31.0]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_udl 0.31.0]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_core 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_internal_macros 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_pipeline 0.31.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_udl 0.31.2]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0

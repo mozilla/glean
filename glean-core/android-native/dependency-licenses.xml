@@ -124,6 +124,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: hashbrown</name>
     <url>https://github.com/rust-lang/hashbrown</url>
   </license>  <license>
+    <name>Apache License 2.0: hashbrown</name>
+    <url>https://github.com/rust-lang/hashbrown</url>
+  </license>  <license>
     <name>Apache License 2.0: heck</name>
     <url>https://github.com/withoutboats/heck</url>
   </license>  <license>
@@ -247,9 +250,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: rustc-hash</name>
     <url>https://github.com/rust-lang/rustc-hash</url>
   </license>  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>  <license>
     <name>Apache License 2.0: semver</name>
     <url>https://github.com/dtolnay/semver</url>
   </license>  <license>
@@ -348,6 +348,12 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
+  </license>  <license>
+    <name>MIT License: zmij</name>
+    <url>https://github.com/dtolnay/zmij</url>
+  </license>  <license>
+    <name>MIT License: winnow</name>
+    <url>https://github.com/winnow-rs/winnow</url>
   </license>  <license>
     <name>MIT License: winnow</name>
     <url>https://github.com/winnow-rs/winnow</url>
