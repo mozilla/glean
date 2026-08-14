@@ -981,6 +981,18 @@ pub fn glean_set_store_submitted_pings_enabled(enabled: bool) {
     });
 }
 
+/// Clears the stored submitted pings.
+pub fn glean_clear_stored_submitted_pings() {
+    launch_with_glean(|glean| {
+        if let Err(e) = glean
+            .storage()
+            .cleanup_submitted_pings(Some(chrono::Utc::now()))
+        {
+            log::warn!("Unable to clear stored submitted pings: {:?}", e);
+        }
+    });
+}
+
 /// Enable or disable a ping.
 ///
 /// Disabling a ping causes all data for that ping to be removed from storage
