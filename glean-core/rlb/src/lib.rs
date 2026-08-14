@@ -182,10 +182,29 @@ pub fn set_collection_enabled(enabled: bool) {
 }
 
 /// Sets whether storing submitted pings is enabled or not.
-///
-/// See [`glean_core::Glean::set_store_submitted_pings_enabled`].
 pub fn set_store_submitted_pings_enabled(enabled: bool) {
     glean_core::glean_set_store_submitted_pings_enabled(enabled)
+}
+
+/// Returns all stored submitted pings.
+///
+/// Requires storing submitted pings to be enabled.
+/// See [`set_store_submitted_pings_enabled`].
+pub fn get_all_stored_submitted_pings() -> Vec<glean_core::SubmittedPing> {
+    glean_core::glean_get_all_stored_submitted_pings()
+}
+
+/// Returns all stored submitted pings with a given ping name.
+///
+/// Requires storing submitted pings to be enabled.
+/// See [`set_store_submitted_pings_enabled`].
+pub fn get_stored_submitted_pings_by_name(ping: String) -> Vec<glean_core::SubmittedPing> {
+    glean_core::glean_get_stored_submitted_pings_by_name(ping)
+}
+
+/// Clears all stored submitted pings.
+pub fn clear_stored_submitted_pings() {
+    glean_core::glean_clear_stored_submitted_pings()
 }
 
 /// Collects and submits a ping for eventual uploading by name.
