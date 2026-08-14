@@ -306,6 +306,9 @@ fn test_storing_and_fetching_submitted_pings() {
     let utc_time_two = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.51Z")
         .unwrap()
         .to_utc();
+    let utc_time_three = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.52Z")
+        .unwrap()
+        .to_utc();
 
     // First ping, no upload date
     glean
@@ -315,6 +318,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping",
             utc_time_one,
             None,
+            false,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -327,6 +331,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping-two",
             utc_time_two,
             None,
+            false,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -339,28 +344,43 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping-two",
             utc_time_two,
             Some(utc_time_two),
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Third ping, upload failed
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-two",
+            "ping-three",
+            utc_time_three,
+            None,
+            true,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
 
     let all_pings = glean.storage().get_all_submitted_pings();
-    assert_eq!(all_pings.len(), 2);
-    assert_eq!(all_pings.first().unwrap().document_id, "id-one".to_string());
+    assert_eq!(all_pings.len(), 3);
     assert_eq!(all_pings.last().unwrap().document_id, "id".to_string());
-    assert_eq!(all_pings.first().unwrap().submitted_date.0, utc_time_two);
+    assert_eq!(all_pings.get(1).unwrap().document_id, "id-one".to_string());
+    assert_eq!(all_pings.get(1).unwrap().submitted_date.0, utc_time_two);
     assert_eq!(
-        all_pings.first().unwrap().uploaded_date.clone().unwrap().0,
+        all_pings.get(1).unwrap().uploaded_date.clone().unwrap().0,
         utc_time_two
     );
     assert_eq!(
-        all_pings.first().unwrap().value().unwrap(),
+        all_pings.get(1).unwrap().payload().unwrap(),
         serde_json::json!({ "test": "a value" })
     );
+    assert!(all_pings.first().unwrap().upload_failed);
 
     let count = glean.storage().mark_ping_as_uploaded("id", utc_time_one);
     assert_eq!(count, 1);
 
-    let some_pings = glean.storage().get_submitted_pings("ping");
+    let some_pings = glean.storage().get_submitted_pings_by_name("ping");
     assert_eq!(some_pings.len(), 1);
     assert_eq!(some_pings.first().unwrap().document_id, "id".to_string());
     assert_eq!(
@@ -386,6 +406,7 @@ fn test_cleanup_of_submitted_pings() {
             "ping",
             utc_time_more_than_30_days_ago,
             None,
+            false,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -398,6 +419,7 @@ fn test_cleanup_of_submitted_pings() {
             "ping",
             Utc::now(),
             None,
+            false,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();

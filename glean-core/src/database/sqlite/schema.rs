@@ -67,7 +67,8 @@ impl ConnectionOpener for Schema {
                 ping TEXT NOT NULL,
                 date_submitted INTEGER NOT NULL,
                 date_uploaded INTEGER,
-                payload BLOB
+                upload_failed BOOLEAN NOT NULL,
+                payload TEXT
             );
             CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
@@ -108,12 +109,12 @@ impl ConnectionOpener for Schema {
                         ping TEXT NOT NULL,
                         date_submitted INTEGER NOT NULL,
                         date_uploaded INTEGER,
-                        payload BLOB
+                        upload_failed BOOLEAN NOT NULL,
+                        payload TEXT
                     );
                     CREATE INDEX submitted_pings_ping on submitted_pings(ping);
                     ",
                 )?;
-                tx.execute("INSERT INTO migration (id, state) VALUES (2, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
                 Ok(())
             }
             to_version => Err(SchemaError::UnsupportedSchemaVersion(to_version)),
