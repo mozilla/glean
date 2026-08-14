@@ -359,9 +359,10 @@ impl PingType {
                         &self.0.name,
                         Utc::now(),
                         None,
+                        false,
                         ping.content.clone(),
                     ) {
-                        log::warn!("{}", e);
+                        log::warn!("Storing a submitted ping failed: {e}");
                     }
                 }
 

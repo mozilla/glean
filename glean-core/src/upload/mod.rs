@@ -2185,4 +2185,54 @@ mod test {
         // Verify that after request is returned, none are left
         assert_eq!(glean.get_upload_task(), PingUploadTask::done());
     }
+
+    #[test]
+    fn stores_pings_during_submission_and_marks_as_upload_failed_when_appropriate() {
+        let (mut glean, _t) = new_glean(None);
+        glean.set_store_submitted_pings_enabled(true);
+
+        // Register a ping for testing
+        let ping_type = PingType::new(
+            "test",
+            true,
+            /* send_if_empty */ true,
+            true,
+            true,
+            true,
+            vec![],
+            vec![],
+            true,
+            vec![],
+        );
+        glean.register_ping_type(&ping_type);
+
+        // Submit a ping
+        ping_type.submit_sync(&glean, None);
+
+        let pings = glean.storage().get_all_submitted_pings();
+        assert_eq!(pings.len(), 1);
+        let ping = pings.first().unwrap();
+        assert!(ping.submitted_date.0 <= Utc::now());
+        assert!(ping.uploaded_date.is_none());
+
+        // Get the submitted PingRequest
+        match glean.get_upload_task() {
+            PingUploadTask::Upload { request } => {
+                // Simulate the processing of a sucessful request
+                let document_id = request.document_id;
+                glean.process_ping_upload_response(&document_id, UploadResult::http_status(400));
+            }
+            _ => panic!("Expected upload manager to return the next request!"),
+        }
+
+        let pings = glean.storage().get_all_submitted_pings();
+        assert_eq!(pings.len(), 1);
+        let ping = pings.first().unwrap();
+        assert!(ping.submitted_date.0 <= Utc::now());
+        assert!(ping.upload_failed);
+        assert!(ping.uploaded_date.is_none());
+
+        // Verify that after request is returned, none are left
+        assert_eq!(glean.get_upload_task(), PingUploadTask::done());
+    }
 }
