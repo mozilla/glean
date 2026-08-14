@@ -29,6 +29,10 @@ namespace glean {
 
     void glean_set_store_submitted_pings_enabled(boolean enabled);
 
+    sequence<SubmittedPing> glean_get_all_stored_submitted_pings();
+
+    sequence<SubmittedPing> glean_get_stored_submitted_pings_by_name(string ping);
+
     void glean_clear_stored_submitted_pings();
 
     // Experiment reporting API
@@ -97,6 +101,15 @@ namespace glean {
     void glean_update_distribution(DistributionMetrics distribution);
     // Returns the current distribution metrics, if any.
     DistributionMetrics glean_test_get_distribution();
+};
+
+dictionary SubmittedPing {
+    string document_id;
+    string ping;
+    string submitted_date;
+    string? uploaded_date;
+    boolean upload_failed;
+    JsonValue? payload;
 };
 
 // A `Cow<'static, str>`, but really it's always the owned part.

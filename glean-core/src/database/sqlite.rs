@@ -73,7 +73,6 @@ impl MallocSizeOf for Database {
     }
 }
 
-#[allow(unused)]
 pub struct SubmittedPing {
     pub document_id: String,
     pub ping: String,
