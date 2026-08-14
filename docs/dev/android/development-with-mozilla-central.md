@@ -98,21 +98,15 @@ In `mozilla-central`:
 1. Add the local packages: `cp -a ~/.m2/repository/* third_party/kotlin`
 1. Commit the new files: `git add third_party/kotlin && git commit -m "dev glean from local repo"`
 1. Change the version number in `gradle/libs.versions.toml`
-1. Add the following under `repositories `to the top-level `build.gradle` and nested `build.gradle` files:
+1. Add the following under `repositories `to the top-level `build.gradle`:
     ```gradle
     maven {
        url uri("${gradle.mozconfig.topsrcdir}/third_party/kotlin")
    }
    ```
-
-The nested `build.gradle` files are:
-
-* `mobile/android/fenix/build.gradle`
-* `mobile/android/focus-android/build.gradle`
-* `mobile/android/android-components/build.gradle`
-
-You can now launch try tasks with the modified Glean.
-
-After changes in the Glean repository publish a new package using `./gradlew publishToMavenLocal`,
-then copy the files again with `cp -a ~/.m2/repository/* third_party/kotlin`.
-Commit the changes and push to try again.
+1. Add the following to the `configureMavenRepositories` function in `mobile/android/gradle/mozconfig.gradle`:
+    ```gradle
+    handler.maven {
+       url uri("${gradle.mozconfig.topsrcdir}/third_party/kotlin")
+   }
+   ```
