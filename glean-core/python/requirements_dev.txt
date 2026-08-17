@@ -12,4 +12,4 @@ semver==2.13.0
 twine==6.0.1
 wheel==0.47.0
 maturin==1.12.6
-patchelf>=0.17; sys_platform == "linux"
+patchelf>=0.19.1.0; sys_platform == "linux"
