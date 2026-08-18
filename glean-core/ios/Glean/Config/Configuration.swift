@@ -76,7 +76,7 @@ public struct Configuration {
         sessionMode: SessionMode = .auto,
         sessionSampleRate: Double = 1.0,
         sessionInactivityTimeoutMs: UInt64 = 1_800_000,
-        httpClient: PingUploader = HttpPingUploader()
+        httpClient: PingUploader = HttpPingUploader(),
         eventsPingAccelerationFactor: UInt32? = nil,
     ) {
         self.serverEndpoint =
