@@ -64,7 +64,7 @@ xshell = "0.2.7"
 yaml-rust2 = "0.10"
 
 [build-dependencies]
-mozbuild = "0.1.1"
+mozbuild = "0.1.0"
 uniffi = { version = "0.32.0", default-features = false, features = ["build"] }
 
 [features]
