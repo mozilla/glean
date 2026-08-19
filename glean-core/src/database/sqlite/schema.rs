@@ -6,7 +6,7 @@
 
 use std::num::NonZeroU32;
 
-use rusqlite::{config::DbConfig, OptionalExtension, Transaction};
+use rusqlite::{config::DbConfig, named_params, OptionalExtension, Transaction};
 
 use super::connection::ConnectionOpener;
 
@@ -107,4 +107,31 @@ pub enum SchemaError {
     UnsupportedSchemaVersion(u32),
     #[error("sqlite: {0}")]
     Sqlite(#[from] rusqlite::Error),
+}
+
+pub fn create_in_memory_table(
+    tx: &mut Transaction<'_>,
+    database: &str,
+    table: &str,
+) -> Result<(), rusqlite::Error> {
+    tx.execute(
+        "ATTACH DATABASE ':memory:' AS :database",
+        named_params! {":database": database},
+    )?;
+    tx.execute(
+        &format!(
+            r#"
+             CREATE TABLE {database}.{table}(
+               id TEXT NOT NULL,
+               ping TEXT NOT NULL,
+               lifetime TEXT NOT NULL,
+               labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
+               value BLOB,
+               UNIQUE(id, ping, labels)
+             );
+            "#
+        ),
+        [],
+    )?;
+    Ok(())
 }
