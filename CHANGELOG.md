@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
+
+# v70.0.0 (2026-08-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...v70.0.0)
 
 * General
   * Updated to `glean_parser` v20.1.0 ([#3539](https://github.com/mozilla/glean/issues/3539))
