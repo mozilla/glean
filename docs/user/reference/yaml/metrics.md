@@ -239,6 +239,35 @@ without removing references to it in your source code.
 Generally, when a metric is no longer needed, it should simply be removed.
 This does not affect the availability of data already collected by the pipeline.
 
+#### `in_session`
+
+_default: `true` for [`event`](../metrics/event.md) metrics, `false` for all other metric types_
+
+Whether the metric participates in Glean's session tracking.
+
+When set to `true`, the metric is considered part of the active session. This has two effects:
+
+- **Session sampling**: the metric is only recorded while the current session is
+  sampled in. If the active session has been sampled out, recording is suppressed.
+- **Session metadata**: the metric carries per-session metadata (such as the session
+  identifier and sequence numbers) for downstream analysis.
+
+When set to `false`, the metric bypasses session sampling entirely — it is always
+recorded regardless of the session's sampling status — and carries no session metadata.
+
+This property is only meaningful for [`event`](../metrics/event.md) metrics, which are
+scoped to a session by default. All other metric types default to `false`, and setting
+`in_session: true` on a non-event metric is a validation error.
+
+```yaml
+toolbar:
+  click:
+    type: event
+    # Opt an event out of session scoping (events default to `in_session: true`).
+    in_session: false
+    ...
+```
+
 #### `version`
 
 _default: `0`_

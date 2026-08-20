@@ -38,8 +38,6 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
-    no_lint:
-      - COMMON_PREFIX
 
   sample_string:
     type: string
@@ -54,8 +52,6 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
-    no_lint:
-      - COMMON_PREFIX
 
   timings:
     type: timing_distribution
@@ -71,8 +67,6 @@ test.metrics:
     expires: never
     send_in_pings:
       - prototype
-    no_lint:
-      - COMMON_PREFIX
 
   static_static:
     type: dual_labeled_counter

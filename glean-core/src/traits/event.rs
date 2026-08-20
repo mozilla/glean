@@ -22,11 +22,7 @@ pub trait ExtraKeys {
     /// List of allowed extra keys as strings.
     const ALLOWED_KEYS: &'static [&'static str];
 
-    /// Convert the event extras into 2 lists:
-    ///
-    /// 1. The list of extra key indices.
-    ///    Unset keys will be skipped.
-    /// 2. The list of extra values.
+    /// Convert the event extras into a hashmap of extra key to extra value.
     fn into_ffi_extra(self) -> HashMap<String, String>;
 }
 

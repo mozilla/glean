@@ -14,5 +14,10 @@ help:
 
 .PHONY: run
 run:  ## Run the sample app
+	cargo build --locked --features active
+	env $(LIB_PATH_NAME)=target/debug RUST_LOG=uv=error,debug uv run pytest --capture=no app.py
+
+.PHONY: run-noop
+run-noop:  ## Run the sample app, but with glean-sym in noop mode
 	cargo build --locked
-	env $(LIB_PATH_NAME)=target/debug python3 app.py
+	env GLEAN_NOOP=1 $(LIB_PATH_NAME)=target/debug RUST_LOG=uv=error,debug uv run pytest --capture=no app.py

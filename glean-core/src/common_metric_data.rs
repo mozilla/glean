@@ -243,7 +243,7 @@ impl CommonMetricDataInternal {
     /// No error is recorded in the database if the check fails.
     /// Extract the validated label, if any, using [`LabelCheck::label`].
     /// Record an error, if any, using [`LabelCheck::record_error`].
-    pub(crate) fn check_labels(&self, tx: &Transaction<'_>) -> LabelCheck {
+    pub(crate) fn check_labels(&self, tx: &rusqlite::Connection) -> LabelCheck {
         let base_identifier = self.base_identifier();
 
         if let Some(label) = &self.inner.label {

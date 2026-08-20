@@ -14,38 +14,69 @@ def library_name(name):
     suffix = "dylib" if platform.system() == "Darwin" else "so"
     return f"lib{name}.{suffix}"
 
+def check_ping_data(ping_type, sent_ping, amount):
+    data = open(sent_ping).read()
+    end_first_object = data.find("}")
+    payload = json.loads(data[end_first_object + 1 :])
+    counter = payload["metrics"]["counter"]
 
-xul = cdll.LoadLibrary(library_name("xul"))
-services = cdll.LoadLibrary(library_name("services"))
-
-with tempfile.TemporaryDirectory() as data_path:
-    startup_fn = xul.startup
-    startup_fn.argtypes = [ctypes.c_char_p]
-    startup_fn(str.encode(data_path))
-
-    services_record = services.record
-    services_record.argtypes = [ctypes.c_int32]
-
-    amount = 31
-    services_record(amount)
-
-    xul.submit()
-    xul.shutdown()
-
-    # Check that
-    # * We submitted one ping only
-    # * It's the `prototype` ping
-    # * It contains 2 metrics with the expected values
-    path = os.path.join(data_path, "sent_pings")
-    for root, dirs, files in os.walk(path):
-        assert len(files) == 1
-        assert "prototype-" in files[0]
-
-        sent_ping = os.path.join(path, files[0])
-        data = open(sent_ping).read()
-        end_first_object = data.find("}")
-        payload = json.loads(data[end_first_object + 1 :])
-        counter = payload["metrics"]["counter"]
-
+    if ping_type == "prototype":
         assert 1 == counter["test.metrics.sample_counter"]
+
+    if "GLEAN_NOOP" in os.environ:
+        assert "dylib.counting" not in counter
+    else:
         assert amount == counter["dylib.counting"]
+
+    if "GLEAN_NOOP" in os.environ:
+        assert "events" not in payload
+    else:
+        events = payload["events"]
+        assert 2 == len(events)
+
+        no_extra = events[0]
+        assert "event" == no_extra["name"]
+
+        with_extra = events[1]
+        assert "event_with_extras" == with_extra["name"]
+        extras = with_extra["extra"]
+        assert "true", extras["is_set"]
+
+def test_run():
+    xul = cdll.LoadLibrary(library_name("xul"))
+    services = cdll.LoadLibrary(library_name("services"))
+
+    with tempfile.TemporaryDirectory() as data_path:
+        startup_fn = xul.startup
+        startup_fn.argtypes = [ctypes.c_char_p]
+        startup_fn(str.encode(data_path))
+
+        services_record = services.record
+        services_record.argtypes = [ctypes.c_int32]
+
+        amount = 31
+        services_record(amount)
+
+        xul.submit()
+        xul.shutdown()
+
+        # Check that
+        # * We submitted two pings: `prototype` from xul and `services-info` from services
+        # * Both pings contain some data
+        path = os.path.join(data_path, "sent_pings")
+        for root, dirs, files in os.walk(path):
+            if "GLEAN_NOOP" in os.environ:
+                assert len(files) == 1
+            else:
+                assert len(files) == 2
+
+            files = sorted(files)
+
+            assert "prototype-" in files[0]
+            sent_ping = os.path.join(path, files[0])
+            check_ping_data("prototype", sent_ping, amount)
+
+            if "GLEAN_NOOP" not in os.environ:
+                assert "services-info-" in files[1]
+                sent_ping = os.path.join(path, files[1])
+                check_ping_data("services-info", sent_ping, amount)

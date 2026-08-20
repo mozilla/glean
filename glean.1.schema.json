@@ -923,6 +923,15 @@
                 "type": "string"
               },
               "type": "object"
+            },
+            "session_sample_rate": {
+              "description": "Remote override for the session sampling rate (0.0–1.0).",
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": [
+                "number",
+                "null"
+              ]
             }
           },
           "type": "object"

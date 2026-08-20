@@ -445,6 +445,15 @@ glean.internal.metrics:
           description: |
             Optional threshold for event buffering before an events
             ping is collected and submitted. Can be null if not set.
+        session_sample_rate:
+          type: number
+          description: |
+            Optional sample rate for session pings. Can be null if not set.
+        events_ping_acceleration_factor:
+          type: number
+          description: |
+            Optional acceleration factor for events pings.
+            Can be null if not set.
 
 
 glean.internal.metrics.attribution:
@@ -595,8 +604,6 @@ glean.error:
     expires: never
     send_in_pings:
       - all-pings
-    no_lint:
-      - COMMON_PREFIX
 
   invalid_label:
     type: labeled_counter
@@ -614,8 +621,6 @@ glean.error:
     expires: never
     send_in_pings:
       - all-pings
-    no_lint:
-      - COMMON_PREFIX
 
   invalid_state:
     type: labeled_counter
@@ -633,8 +638,6 @@ glean.error:
     expires: never
     send_in_pings:
       - all-pings
-    no_lint:
-      - COMMON_PREFIX
 
   invalid_overflow:
     type: labeled_counter
@@ -652,8 +655,6 @@ glean.error:
     expires: never
     send_in_pings:
       - all-pings
-    no_lint:
-      - COMMON_PREFIX
 
   preinit_tasks_overflow:
     version: 1
@@ -675,8 +676,6 @@ glean.error:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   io:
     type: counter
@@ -744,8 +743,6 @@ glean.upload:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   discarded_exceeding_pings_size:
     type: memory_distribution
@@ -764,8 +761,6 @@ glean.upload:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   pending_pings_directory_size:
     type: memory_distribution
@@ -785,8 +780,6 @@ glean.upload:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   deleted_pings_after_quota_hit:
     type: counter
@@ -808,8 +801,6 @@ glean.upload:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   pending_pings_deleted:
     type: labeled_counter
@@ -836,8 +827,6 @@ glean.upload:
     notification_emails:
       - glean-team@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   pending_pings:
     type: counter
@@ -857,8 +846,6 @@ glean.upload:
       - glean-team@mozilla.com
       - jrediger@mozilla.com
     expires: never
-    no_lint:
-      - COMMON_PREFIX
 
   send_success:
     type: timing_distribution

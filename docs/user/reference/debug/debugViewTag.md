@@ -132,7 +132,7 @@ $ GLEAN_DEBUG_VIEW_TAG="my-tag" python my_application.py
 $ GLEAN_DEBUG_VIEW_TAG="my-tag" cargo run
 ```
 </div>
-<div data-lang="JavaScript" class="tab" data-info="It is not possible to access environment variables from the currently supported JavaScript platforms: Qt and browsers."></div>
+<div data-lang="JavaScript" class="tab" data-info="It is not possible to access environment variables from the browser"></div>
 <div data-lang="Firefox Desktop" class="tab">
 
 ```bash

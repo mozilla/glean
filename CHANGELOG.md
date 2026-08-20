@@ -1,6 +1,32 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
+
+# v70.0.0 (2026-08-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...v70.0.0)
+
+* General
+  * Updated to `glean_parser` v20.1.0 ([#3539](https://github.com/mozilla/glean/issues/3539))
+  * BUGFIX: Ensure errors are not put into the client_info or any other internal section ([#3564](https://github.com/mozilla/glean/pull/3564))
+  * SQLite backend
+    * Run database maintenance after migration ([#3540](https://github.com/mozilla/glean/pull/3540)
+    * Run database maintenance at shutdown & after collecting ping data ([#3559](https://github.com/mozilla/glean/pull/3559))
+    * Validate that the database connection on open is usable for reads and writes ([#3513](https://github.com/mozilla/glean/pull/3513))
+    * Keep state about migration in the database ([#3545](https://github.com/mozilla/glean/pull/3545))
+    * The database connection is closed on shutdown ([#3584](https://github.com/mozilla/glean/pull/3584))
+  * BREAKING CHANGE: Updated to UniFFI 0.32.0 ([#3538](https://github.com/mozilla/glean/pull/3538))
+  * New optional configuration option and Server Knob: `events_ping_acceleration_factor: N`. Accelerate the first `N-1` "events" pings in each session ([bug 2060890](https://bugzilla.mozilla.org/show_bug.cgi?id=2060890))
+* Rust
+  * glean-sym
+    * Implement glean-noop as a feature of glean-sym ([#3541](https://github.com/mozilla/glean/pull/3541))
+    * Support pings ([#3544](https://github.com/mozilla/glean/pull/3544))
+    * Implement the event metric ([#3534](https://github.com/mozilla/glean/pull/3534))
+    * BREAKING CHANGE: Switch from a noop feature to an `active` feature ([#3583](https://github.com/mozilla/glean/pull/3583))
+* iOS
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
+* Python
+  * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
 
 # v69.0.0 (2026-06-22)
 
@@ -15,6 +41,13 @@
     New `glean.migration.*` metrics were added to monitor and validate the migration process.
     Other monitoring metrics are preserved.
     The `glean.database.rkv_load_error` has been replaced by a more generic `glean.database.load_error` with similar semantics.
+
+# v68.0.1 (2026-07-07)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...v68.0.1)
+
+* General
+  * BUGFIX: Don't clear unrelated stores if they share a prefix with the one being cleared ([#3516](https://github.com/mozilla/glean/pull/3516))
 
 # v68.0.0 (2026-06-19)
 

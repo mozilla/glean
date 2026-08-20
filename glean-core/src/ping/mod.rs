@@ -552,6 +552,7 @@ mod test {
             pings_enabled,
             event_threshold: Some(41),
             session_sample_rate: None,
+            events_ping_acceleration_factor: Some(5),
         };
         glean.apply_server_knobs_config(config);
 
@@ -563,6 +564,7 @@ mod test {
         assert_eq!(server_knobs["metrics_enabled"]["test.counter"], true);
         assert_eq!(server_knobs["pings_enabled"]["custom"], false);
         assert_eq!(server_knobs["event_threshold"], 41);
+        assert_eq!(server_knobs["events_ping_acceleration_factor"], 5);
     }
 
     #[test]
@@ -632,5 +634,8 @@ mod test {
         // pings_enabled and event_threshold should be absent (not empty object / null)
         assert!(server_knobs.get("pings_enabled").is_none());
         assert!(server_knobs.get("event_threshold").is_none());
+        assert!(server_knobs
+            .get("events_ping_acceleration_factor")
+            .is_none());
     }
 }

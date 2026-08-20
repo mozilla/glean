@@ -7,7 +7,8 @@
 //! This module is inspired by, and borrows concepts from, the
 //! Application Services `sql-support` crate.
 
-use std::{fmt::Debug, num::NonZeroU32, path::Path, sync::Mutex};
+use std::sync::{Mutex, MutexGuard};
+use std::{fmt::Debug, num::NonZeroU32, path::Path};
 
 use rusqlite::{OpenFlags, Transaction, TransactionBehavior};
 
@@ -33,6 +34,13 @@ pub trait ConnectionOpener {
     /// Upgrades an existing physical database to the schema with
     /// the given version.
     fn upgrade(tx: &mut Transaction<'_>, to_version: NonZeroU32) -> Result<(), Self::Error>;
+
+    /// Validate that the database is usable.
+    ///
+    /// Called after `create` / `upgrade`.
+    fn validate(_tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
+        Ok(())
+    }
 }
 
 /// A thread-safe wrapper around a connection to a physical SQLite database.
@@ -72,6 +80,7 @@ impl Connection {
         // so that upgrading to it again in the future can fix up any
         // invariants that our version might not uphold.
         tx.execute_batch(&format!("PRAGMA user_version = {}", O::MAX_SCHEMA_VERSION))?;
+        O::validate(&mut tx)?;
         tx.commit()?;
         Ok(Self::with_connection(conn))
     }
@@ -82,13 +91,18 @@ impl Connection {
         }
     }
 
+    /// Get ahold of the connection with no transaction opened.
+    pub fn lock<'a>(&'a self) -> MutexGuard<'a, rusqlite::Connection> {
+        self.conn.lock().unwrap()
+    }
+
     /// Accesses the database for reading.
-    pub fn read<T, E>(&self, f: impl FnOnce(&Transaction<'_>) -> Result<T, E>) -> Result<T, E> {
-        let mut conn = self.conn.lock().unwrap();
-        let tx = conn
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .unwrap();
-        f(&tx)
+    pub fn read<T, E>(
+        &self,
+        f: impl FnOnce(&rusqlite::Connection) -> Result<T, E>,
+    ) -> Result<T, E> {
+        let conn = self.conn.lock().unwrap();
+        f(&conn)
     }
 
     /// Accesses the database in a transaction for reading and writing.

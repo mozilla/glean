@@ -135,6 +135,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         session_mode: cfg.session_mode,
         session_sample_rate: cfg.session_sample_rate,
         session_inactivity_timeout_ms: cfg.session_inactivity_timeout.as_millis() as u64,
+        events_ping_acceleration_factor: cfg.events_ping_acceleration_factor.map(|x| x as u32),
     };
 
     glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);

@@ -25,7 +25,7 @@ tasks:
         - ['rustup', 'component', 'add', 'clippy']
       commands:
         - ['cargo', 'clippy', '--version']
-        - ['cargo', 'clippy', '--verbose', '--all', '--all-targets', '--all-features', '--', '-D', 'warnings']
+        - ['make', 'lint-rust']
     extra:
       excludeBranches:
         - release

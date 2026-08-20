@@ -6,7 +6,7 @@
 
 use std::num::NonZeroU32;
 
-use rusqlite::{config::DbConfig, Transaction};
+use rusqlite::{config::DbConfig, OptionalExtension, Transaction};
 
 use super::connection::ConnectionOpener;
 
@@ -16,7 +16,7 @@ use super::connection::ConnectionOpener;
 pub struct Schema;
 
 impl ConnectionOpener for Schema {
-    const MAX_SCHEMA_VERSION: u32 = 1;
+    const MAX_SCHEMA_VERSION: u32 = 2;
 
     type Error = SchemaError;
 
@@ -34,6 +34,8 @@ impl ConnectionOpener for Schema {
              PRAGMA temp_store = MEMORY;
              -- allows adding incremental cleanup later
              PRAGMA auto_vacuum = INCREMENTAL;
+             -- How long to wait for a lock before returning SQLITE_BUSY (in ms)
+             PRAGMA busy_timeout = 5000;
             ",
         )?;
 
@@ -50,20 +52,52 @@ impl ConnectionOpener for Schema {
 
     fn create(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
         tx.execute_batch(
-            "CREATE TABLE telemetry(
+            "
+             CREATE TABLE telemetry(
                id TEXT NOT NULL,
                ping TEXT NOT NULL,
                lifetime TEXT NOT NULL,
                labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
                value BLOB,
                UNIQUE(id, ping, labels)
-             );",
+             );
+             CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+            ",
         )?;
         Ok(())
     }
 
-    fn upgrade(_: &mut Transaction<'_>, to_version: NonZeroU32) -> Result<(), Self::Error> {
-        Err(SchemaError::UnsupportedSchemaVersion(to_version.get()))
+    fn upgrade(tx: &mut Transaction<'_>, to_version: NonZeroU32) -> Result<(), Self::Error> {
+        match to_version.get() {
+            2 => {
+                log::info!("Upgrading user_version to 2");
+                // Clients upgrading to schema 2 don't have the table.
+                // But they did run through the migration.
+                tx.execute_batch(
+                    "CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);",
+                )?;
+
+                let cid_exists: Option<i32> = tx
+                    .query_row(
+                        "SELECT 1 FROM telemetry WHERE id = 'client_id'",
+                        [],
+                        |row| row.get(0),
+                    )
+                    .optional()?;
+                if cid_exists.is_some() {
+                    log::info!("Client ID already exists. Marking migration as done.");
+                    tx.execute("INSERT INTO migration (id, state) VALUES (1, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
+                }
+                Ok(())
+            }
+            to_version => Err(SchemaError::UnsupportedSchemaVersion(to_version)),
+        }
+    }
+
+    fn validate(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
+        // A query selecting every field, it doesn't need to return anything.
+        tx.execute_batch("SELECT id, ping, lifetime, labels, value FROM telemetry WHERE 1 = 0")?;
+        Ok(())
     }
 }
 

@@ -1,5 +1,6 @@
 mod common;
 use std::fs;
+use std::os::unix::fs::MetadataExt;
 
 use crate::common::*;
 
@@ -10,6 +11,12 @@ use rkv::{Rkv, StoreOptions};
 use uuid::uuid;
 
 static RKV_DATABASE: &[u8] = include_bytes!("77ca0472-5124-4f6b-971d-4a2a928fb158.safe.bin");
+// This database is based on a submitted `metrics` ping from a real client.
+// Only metrics for that ping and a bare minimum of client info data is added,
+// a total of 61 metrics.
+// This is realistic enough to cause size differences in the non-vacuumed/vacuumed SQLite
+// databases after migration.
+static FILLED_RKV_DATABASE: &[u8] = include_bytes!("filled-rkv.data.safe.bin");
 
 fn clientid_metric() -> UuidMetric {
     UuidMetric::new(CommonMetricData {
@@ -217,4 +224,121 @@ fn migration_fails() {
     assert_eq!(None, metrics.metrics_in_sqlite.get_value(&glean, None));
     assert_eq!(None, metrics.failed_metrics.get_value(&glean, None));
     assert_eq!(None, metrics.migration_duration.get_value(&glean, None));
+}
+
+#[test]
+fn migration_checkpoints() {
+    let temp = tempfile::tempdir().unwrap();
+    let db_path = temp.path().join("db");
+    fs::create_dir_all(&db_path).unwrap();
+
+    let safe_bin = db_path.join("data.safe.bin");
+    // Reusing the same database file from above.
+    fs::write(safe_bin, FILLED_RKV_DATABASE).unwrap();
+    let exp_client_id = uuid!("3114d9df-9ae3-43a7-83b0-3540c3eba886");
+
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(exp_client_id, client_id);
+
+    let metrics = MigrationMetrics::new();
+    assert_eq!(Some(61), metrics.migrated_metrics.get_value(&glean, None));
+    assert_eq!(Some(61), metrics.metrics_in_sqlite.get_value(&glean, None));
+
+    assert!(metrics.migration_duration.get_value(&glean, None).is_some());
+    assert_eq!(None, metrics.migration_error.get_value(&glean, None));
+
+    // Ensure we close the database connection.
+    drop(glean);
+
+    let db_file = db_path.join("glean.sqlite");
+    let db_file_size = fs::metadata(db_file).unwrap().size();
+
+    // This test is very vague, but it's hard to do better right now.
+    //
+    // Unvacuumed the database is _smaller_, around 20k bytes, because the migrated data is in the WAL file.
+    // Vacuumed & checkpointed the WAL transactions are merged into the database.
+    // As of writing that database is at least 9 pages big (9 * 4096 bytes = 36864 bytes).
+    // This might grow if we add more metrics.
+    // This might shrink if we remove metrics, in which case this test will break and needs adjustement.
+    let vacuumed_database_size = 36864;
+    assert!(db_file_size >= vacuumed_database_size);
+}
+
+#[test]
+fn migration_reapplied_after_not_finishing() {
+    let temp = {
+        let (glean, temp) = new_glean(None);
+        drop(glean);
+
+        let db_path = temp.path().join("db").join("glean.sqlite");
+        let conn = rusqlite::Connection::open(db_path).unwrap();
+
+        // Let's start with an empty database.
+        conn.execute("DELETE FROM telemetry", []).unwrap();
+
+        // Ensure migration isn't marked as done.
+        conn.execute("DELETE FROM migration", []).unwrap();
+        temp
+    };
+
+    let db_path = temp.path().join("db");
+
+    let safe_bin = db_path.join("data.safe.bin");
+    // Reusing the same database file from above.
+    fs::write(safe_bin, RKV_DATABASE).unwrap();
+    let exp_client_id = uuid!("77ca0472-5124-4f6b-971d-4a2a928fb158");
+
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_eq!(exp_client_id, client_id);
+
+    let metrics = MigrationMetrics::new();
+    assert_eq!(Some(13), metrics.migrated_metrics.get_value(&glean, None));
+    assert_eq!(Some(13), metrics.metrics_in_sqlite.get_value(&glean, None));
+    assert_eq!(None, metrics.failed_metrics.get_value(&glean, None));
+
+    assert!(metrics.migration_duration.get_value(&glean, None).is_some());
+    assert_eq!(None, metrics.migration_error.get_value(&glean, None));
+}
+
+#[test]
+fn migration_not_reapplied_if_marked_as_finished() {
+    let (first_client_id, temp) = {
+        let (glean, temp) = new_glean(None);
+        let client_id = clientid_metric().get_value(&glean, None).unwrap();
+        drop(glean);
+
+        let db_path = temp.path().join("db").join("glean.sqlite");
+        let conn = rusqlite::Connection::open(db_path).unwrap();
+
+        // Ensure migration is marked as done.
+        conn.execute("DELETE FROM migration", []).unwrap();
+        conn.execute("INSERT INTO migration (id, state) VALUES (1, 'done')", [])
+            .unwrap();
+        (client_id, temp)
+    };
+
+    let db_path = temp.path().join("db");
+
+    let safe_bin = db_path.join("data.safe.bin");
+    // Reusing the same database file from above.
+    fs::write(safe_bin, RKV_DATABASE).unwrap();
+    let rkv_client_id = uuid!("77ca0472-5124-4f6b-971d-4a2a928fb158");
+
+    let (glean, _temp) = new_glean(Some(temp));
+
+    let client_id = clientid_metric().get_value(&glean, None).unwrap();
+    assert_ne!(rkv_client_id, client_id);
+    assert_eq!(first_client_id, client_id);
+
+    // No migration happened.
+    let metrics = MigrationMetrics::new();
+    assert_eq!(None, metrics.migrated_metrics.get_value(&glean, None));
+    assert_eq!(None, metrics.metrics_in_sqlite.get_value(&glean, None));
+    assert_eq!(None, metrics.failed_metrics.get_value(&glean, None));
+    assert_eq!(None, metrics.migration_duration.get_value(&glean, None));
+    assert_eq!(None, metrics.migration_error.get_value(&glean, None));
 }

@@ -239,6 +239,100 @@ Glean.pages.pageLoad.stopAndAccumulate(timerId);
 
 {{#include ../../../shared/tab_footer.md}}
 
+### `cancel`
+
+Aborts a previous `start` call.
+No error is recorded if `start` was not called.
+
+{{#include ../../../shared/tab_header.md}}
+
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Pages
+
+fun onPageError(e: Event) {
+    Pages.pageLoad.cancel(timerId)
+}
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Pages;
+
+fun onPageError(e: Event) {
+    Pages.INSTANCE.pageLoad().cancel(timerId);
+}
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+func onPageError() {
+    Pages.pageLoad.cancel(timerId)
+}
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+class PageHandler:
+    def on_page_error(self, event):
+        metrics.pages.page_load.cancel(self.timer_id)
+```
+
+</div>
+<div data-lang="Rust" class="tab">
+
+```Rust
+use glean_metrics::pages;
+
+fn on_page_error() {
+    pages::page_load.cancel(self.timer_id);
+}
+```
+
+</div>
+<div data-lang="JavaScript" class="tab">
+
+```Javascript
+import * as pages from "./path/to/generated/files/pages.js";
+
+function onPageError() {
+    pages.pageLoad.cancel(timerId);
+}
+```
+
+</div>
+<div data-lang="Firefox Desktop" class="tab">
+
+**C++**
+
+```c++
+#include "mozilla/glean/DomMetrics.h"
+
+mozilla::glean::pages::page_load.Cancel(std::move(timerId));
+```
+
+**JavaScript**
+
+```js
+Glean.pages.pageLoad.cancel(timerId);
+```
+
+</div>
+
+{{#include ../../../shared/tab_footer.md}}
+
 ### `accumulateSamples`
 
 Accumulates the provided signed samples in the metric.
@@ -276,7 +370,17 @@ void onPageLoaded(Event e) {
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+func onPageLoaded() {
+    Pages.pageLoad.accumulateSamples(samples);
+}
+```
+
+</div>
 <div data-lang="Python" class="tab">
 
 ```Python
@@ -384,7 +488,17 @@ void onPageLoaded(Event e) {
 ```
 
 </div>
-<div data-lang="Swift" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+func onPageLoaded() {
+    Pages.pageLoad.accumulateSingleSample(sample);
+}
+```
+
+</div>
 <div data-lang="Python" class="tab">
 
 ```Python
@@ -515,103 +629,8 @@ with metrics.pages.page_load.measure():
 
 {{#include ../../../shared/tab_footer.md}}
 
-### `cancel`
-
-Aborts a previous `start` call.
-No error is recorded if `start` was not called.
-
-{{#include ../../../shared/tab_header.md}}
-
-<div data-lang="Kotlin" class="tab">
-
-```Kotlin
-import org.mozilla.yourApplication.GleanMetrics.Pages
-
-fun onPageError(e: Event) {
-    Pages.pageLoad.cancel(timerId)
-}
-```
-
-</div>
-<div data-lang="Java" class="tab">
-
-```Java
-import org.mozilla.yourApplication.GleanMetrics.Pages;
-
-fun onPageError(e: Event) {
-    Pages.INSTANCE.pageLoad().cancel(timerId);
-}
-```
-
-</div>
-<div data-lang="Swift" class="tab">
-
-```Swift
-import Glean
-
-func onPageError() {
-    Pages.pageLoad.cancel(timerId)
-}
-```
-
-</div>
-<div data-lang="Python" class="tab">
-
-```Python
-from glean import load_metrics
-metrics = load_metrics("metrics.yaml")
-
-class PageHandler:
-    def on_page_error(self, event):
-        metrics.pages.page_load.cancel(self.timer_id)
-```
-
-</div>
-<div data-lang="Rust" class="tab">
-
-```Rust
-use glean_metrics::pages;
-
-fn on_page_error() {
-    pages::page_load.cancel(self.timer_id);
-}
-```
-
-</div>
-<div data-lang="JavaScript" class="tab">
-
-```Javascript
-import * as pages from "./path/to/generated/files/pages.js";
-
-function onPageError() {
-    pages.pageLoad.cancel(timerId);
-}
-```
-
-</div>
-<div data-lang="Firefox Desktop" class="tab">
-
-**C++**
-
-```c++
-#include "mozilla/glean/DomMetrics.h"
-
-mozilla::glean::pages::page_load.Cancel(std::move(timerId));
-```
-
-**JavaScript**
-
-```js
-Glean.pages.pageLoad.cancel(timerId);
-```
-
-</div>
-
-{{#include ../../../shared/tab_footer.md}}
-
 ### `startBuffer`
 
-**Experimental:**
 Start a new histogram buffer associated with this custom distribution metric.
 
 A histogram buffer accumulates in-memory.

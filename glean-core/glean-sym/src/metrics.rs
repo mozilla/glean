@@ -9,26 +9,153 @@
 // `glean-sym` tests ensure the vendored copy is unmodified.
 // This can be verified by running `cargo test -p glean-sym`.
 #![allow(clippy::all)]
+#![allow(unused)]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
+#[cfg(feature = "active")]
 use crate::util::*;
 
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
+pub(crate) struct PingType {
+    handle: u64,
+}
+impl PingType {
+    unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
+        unsafe {
+            let mut call_status = uniffi::RustCallStatus::default();
+            (crate::GLEAN
+                .uniffi_glean_core_fn_clone_pingtype)(self.handle, &mut call_status)
+        }
+        #[cfg(not(feature = "active"))] { 0 }
+    }
+}
+impl PingType {
+    pub fn new(
+        name: String,
+        include_client_id: bool,
+        send_if_empty: bool,
+        precise_timestamps: bool,
+        include_info_sections: bool,
+        enabled: bool,
+        schedules_pings: Vec<String>,
+        reason_codes: Vec<String>,
+        follows_collection_enabled: bool,
+        uploader_capabilities: Vec<String>,
+    ) -> Self {
+        #[cfg(feature = "active")]
+        unsafe {
+            let name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(name);
+            let include_client_id = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(include_client_id);
+            let send_if_empty = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(send_if_empty);
+            let precise_timestamps = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(precise_timestamps);
+            let include_info_sections = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(include_info_sections);
+            let enabled = uniffi::FfiConverter::<crate::UniFfiTag>::lower(enabled);
+            let schedules_pings = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(schedules_pings);
+            let reason_codes = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(reason_codes);
+            let follows_collection_enabled = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(follows_collection_enabled);
+            let uploader_capabilities = uniffi::FfiConverter::<
+                crate::UniFfiTag,
+            >::lower(uploader_capabilities);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let handle = (crate::GLEAN
+                .uniffi_glean_core_fn_constructor_pingtype_new)(
+                name.clone_for_ffi(),
+                include_client_id.clone_for_ffi(),
+                send_if_empty.clone_for_ffi(),
+                precise_timestamps.clone_for_ffi(),
+                include_info_sections.clone_for_ffi(),
+                enabled.clone_for_ffi(),
+                schedules_pings.clone_for_ffi(),
+                reason_codes.clone_for_ffi(),
+                follows_collection_enabled.clone_for_ffi(),
+                uploader_capabilities.clone_for_ffi(),
+                &mut call_status,
+            );
+            uploader_capabilities.destroy();
+            follows_collection_enabled.destroy();
+            reason_codes.destroy();
+            schedules_pings.destroy();
+            enabled.destroy();
+            include_info_sections.destroy();
+            precise_timestamps.destroy();
+            send_if_empty.destroy();
+            include_client_id.destroy();
+            name.destroy();
+            Self { handle }
+        }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
+    }
+    pub fn submit(&self, reason: Option<String>) -> () {
+        #[cfg(feature = "active")]
+        unsafe {
+            let this = self.clone_handle();
+            let reason = uniffi::FfiConverter::<crate::UniFfiTag>::lower(reason);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let res = (crate::GLEAN
+                .uniffi_glean_core_fn_method_pingtype_submit)(
+                this,
+                reason.clone_for_ffi(),
+                &mut call_status,
+            );
+            reason.destroy();
+            crate::util::LocalTryLift::try_lift(res).unwrap()
+        }
+        #[cfg(not(feature = "active"))] Default::default()
+    }
+    pub fn set_enabled(&self, enabled: bool) -> () {
+        #[cfg(feature = "active")]
+        unsafe {
+            let this = self.clone_handle();
+            let enabled = uniffi::FfiConverter::<crate::UniFfiTag>::lower(enabled);
+            let mut call_status = uniffi::RustCallStatus::default();
+            let res = (crate::GLEAN
+                .uniffi_glean_core_fn_method_pingtype_set_enabled)(
+                this,
+                enabled.clone_for_ffi(),
+                &mut call_status,
+            );
+            enabled.destroy();
+            crate::util::LocalTryLift::try_lift(res).unwrap()
+        }
+        #[cfg(not(feature = "active"))] Default::default()
+    }
+}
+#[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct CounterMetric {
     handle: u64,
 }
 impl CounterMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_countermetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl CounterMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -40,8 +167,10 @@ impl CounterMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn add(&self, amount: i32) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -55,8 +184,10 @@ impl CounterMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -70,8 +201,10 @@ impl CounterMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -85,14 +218,17 @@ impl CounterMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct TimespanMetric {
     handle: u64,
 }
 impl TimespanMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -101,10 +237,12 @@ impl TimespanMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl TimespanMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -119,8 +257,10 @@ impl TimespanMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn start(&self) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -131,8 +271,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn stop(&self) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -143,8 +285,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn cancel(&self) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -155,8 +299,10 @@ impl TimespanMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn set_raw_nanos(&self, elapsed: i64) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let elapsed = uniffi::FfiConverter::<crate::UniFfiTag>::lower(elapsed);
@@ -170,8 +316,10 @@ impl TimespanMetric {
             elapsed.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -185,8 +333,10 @@ impl TimespanMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -200,23 +350,28 @@ impl TimespanMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct BooleanMetric {
     handle: u64,
 }
 impl BooleanMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_booleanmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl BooleanMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -228,8 +383,10 @@ impl BooleanMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: bool) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -243,8 +400,10 @@ impl BooleanMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<bool> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -258,8 +417,10 @@ impl BooleanMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -273,23 +434,28 @@ impl BooleanMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct StringMetric {
     handle: u64,
 }
 impl StringMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_stringmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl StringMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -301,8 +467,10 @@ impl StringMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -316,8 +484,10 @@ impl StringMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -331,8 +501,10 @@ impl StringMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -346,14 +518,17 @@ impl StringMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct StringListMetric {
     handle: u64,
 }
 impl StringListMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -362,10 +537,12 @@ impl StringListMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl StringListMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -377,8 +554,10 @@ impl StringListMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn add(&self, value: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -392,8 +571,10 @@ impl StringListMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn set(&self, value: Vec<String>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -407,8 +588,10 @@ impl StringListMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Vec<String>> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -422,8 +605,10 @@ impl StringListMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -437,23 +622,28 @@ impl StringListMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct UrlMetric {
     handle: u64,
 }
 impl UrlMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_urlmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl UrlMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -465,8 +655,10 @@ impl UrlMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -480,8 +672,10 @@ impl UrlMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -495,8 +689,10 @@ impl UrlMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -510,23 +706,28 @@ impl UrlMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct UuidMetric {
     handle: u64,
 }
 impl UuidMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_uuidmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl UuidMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -538,8 +739,10 @@ impl UuidMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -553,8 +756,10 @@ impl UuidMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn generate_and_set(&self) -> String {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -565,8 +770,10 @@ impl UuidMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -580,8 +787,10 @@ impl UuidMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -595,14 +804,17 @@ impl UuidMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct QuantityMetric {
     handle: u64,
 }
 impl QuantityMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -611,10 +823,12 @@ impl QuantityMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl QuantityMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -626,8 +840,10 @@ impl QuantityMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: i64) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -641,8 +857,10 @@ impl QuantityMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i64> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -656,8 +874,10 @@ impl QuantityMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -671,14 +891,17 @@ impl QuantityMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct TimingDistributionMetric {
     handle: u64,
 }
 impl TimingDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -687,10 +910,12 @@ impl TimingDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl TimingDistributionMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -705,8 +930,10 @@ impl TimingDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn start(&self) -> TimerId {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -717,8 +944,10 @@ impl TimingDistributionMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn stop_and_accumulate(&self, timer_id: TimerId) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let timer_id = uniffi::FfiConverter::<crate::UniFfiTag>::lower(timer_id);
@@ -732,8 +961,10 @@ impl TimingDistributionMetric {
             timer_id.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn cancel(&self, timer_id: TimerId) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let timer_id = uniffi::FfiConverter::<crate::UniFfiTag>::lower(timer_id);
@@ -747,8 +978,10 @@ impl TimingDistributionMetric {
             timer_id.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -762,8 +995,10 @@ impl TimingDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -777,8 +1012,10 @@ impl TimingDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -792,8 +1029,10 @@ impl TimingDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -807,14 +1046,17 @@ impl TimingDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct MemoryDistributionMetric {
     handle: u64,
 }
 impl MemoryDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -823,10 +1065,12 @@ impl MemoryDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl MemoryDistributionMetric {
     pub fn new(meta: CommonMetricData, memory_unit: MemoryUnit) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let memory_unit = uniffi::FfiConverter::<
@@ -843,8 +1087,10 @@ impl MemoryDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn accumulate(&self, sample: i64) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -858,8 +1104,10 @@ impl MemoryDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -873,8 +1121,10 @@ impl MemoryDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -888,8 +1138,10 @@ impl MemoryDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -903,14 +1155,17 @@ impl MemoryDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct CustomDistributionMetric {
     handle: u64,
 }
 impl CustomDistributionMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -919,6 +1174,7 @@ impl CustomDistributionMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl CustomDistributionMetric {
@@ -929,6 +1185,7 @@ impl CustomDistributionMetric {
         bucket_count: i64,
         histogram_type: HistogramType,
     ) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let range_min = uniffi::FfiConverter::<crate::UniFfiTag>::lower(range_min);
@@ -956,8 +1213,10 @@ impl CustomDistributionMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn accumulate_samples(&self, samples: Vec<i64>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let samples = uniffi::FfiConverter::<crate::UniFfiTag>::lower(samples);
@@ -971,8 +1230,10 @@ impl CustomDistributionMetric {
             samples.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn accumulate_single_sample(&self, sample: i64) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let sample = uniffi::FfiConverter::<crate::UniFfiTag>::lower(sample);
@@ -986,8 +1247,10 @@ impl CustomDistributionMetric {
             sample.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<DistributionData> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1001,8 +1264,10 @@ impl CustomDistributionMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1016,14 +1281,17 @@ impl CustomDistributionMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct DatetimeMetric {
     handle: u64,
 }
 impl DatetimeMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1032,10 +1300,12 @@ impl DatetimeMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl DatetimeMetric {
     pub fn new(meta: CommonMetricData, time_unit: TimeUnit) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let time_unit = uniffi::FfiConverter::<crate::UniFfiTag>::lower(time_unit);
@@ -1050,8 +1320,10 @@ impl DatetimeMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: Option<Datetime>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -1065,8 +1337,10 @@ impl DatetimeMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Datetime> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1080,8 +1354,10 @@ impl DatetimeMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value_as_string(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1095,8 +1371,10 @@ impl DatetimeMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1110,23 +1388,28 @@ impl DatetimeMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
-pub struct EventMetric {
+#[cfg_attr(not(feature = "active"), derive(Default))]
+pub(crate) struct EventMetric {
     handle: u64,
 }
 impl EventMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_eventmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl EventMetric {
     pub fn new(meta: CommonMetricData, allowed_extra_keys: Vec<String>) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let allowed_extra_keys = uniffi::FfiConverter::<
@@ -1143,8 +1426,10 @@ impl EventMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn record(&self, extra: ::std::collections::HashMap<String, String>) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let extra = uniffi::FfiConverter::<crate::UniFfiTag>::lower(extra);
@@ -1158,11 +1443,13 @@ impl EventMetric {
             extra.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(
         &self,
         ping_name: Option<String>,
     ) -> Option<Vec<RecordedEvent>> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1176,8 +1463,10 @@ impl EventMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1191,23 +1480,28 @@ impl EventMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct RateMetric {
     handle: u64,
 }
 impl RateMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_ratemetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl RateMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1219,8 +1513,10 @@ impl RateMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn add_to_numerator(&self, amount: i32) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1234,8 +1530,10 @@ impl RateMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn add_to_denominator(&self, amount: i32) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1249,8 +1547,10 @@ impl RateMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1264,8 +1564,10 @@ impl RateMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1279,14 +1581,17 @@ impl RateMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct DenominatorMetric {
     handle: u64,
 }
 impl DenominatorMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1295,10 +1600,12 @@ impl DenominatorMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl DenominatorMetric {
     pub fn new(meta: CommonMetricData, numerators: Vec<CommonMetricData>) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let numerators = uniffi::FfiConverter::<crate::UniFfiTag>::lower(numerators);
@@ -1313,8 +1620,10 @@ impl DenominatorMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn add(&self, amount: i32) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1328,8 +1637,10 @@ impl DenominatorMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<i32> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1343,8 +1654,10 @@ impl DenominatorMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1358,14 +1671,17 @@ impl DenominatorMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct NumeratorMetric {
     handle: u64,
 }
 impl NumeratorMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1374,10 +1690,12 @@ impl NumeratorMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl NumeratorMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1389,8 +1707,10 @@ impl NumeratorMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn add_to_numerator(&self, amount: i32) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let amount = uniffi::FfiConverter::<crate::UniFfiTag>::lower(amount);
@@ -1404,8 +1724,10 @@ impl NumeratorMetric {
             amount.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<Rate> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1419,8 +1741,10 @@ impl NumeratorMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1434,23 +1758,28 @@ impl NumeratorMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct TextMetric {
     handle: u64,
 }
 impl TextMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_textmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl TextMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1462,8 +1791,10 @@ impl TextMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set(&self, value: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let value = uniffi::FfiConverter::<crate::UniFfiTag>::lower(value);
@@ -1477,8 +1808,10 @@ impl TextMetric {
             value.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<String> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1492,8 +1825,10 @@ impl TextMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1507,23 +1842,28 @@ impl TextMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct ObjectMetric {
     handle: u64,
 }
 impl ObjectMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
                 .uniffi_glean_core_fn_clone_objectmetric)(self.handle, &mut call_status)
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl ObjectMetric {
     pub fn new(meta: CommonMetricData) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1535,8 +1875,10 @@ impl ObjectMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn set_string(&self, object: String) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let object = uniffi::FfiConverter::<crate::UniFfiTag>::lower(object);
@@ -1550,8 +1892,10 @@ impl ObjectMetric {
             object.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(&self, ping_name: Option<String>) -> Option<JsonValue> {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1565,8 +1909,10 @@ impl ObjectMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1580,8 +1926,10 @@ impl ObjectMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn record_schema_error(&self) -> () {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let mut call_status = uniffi::RustCallStatus::default();
@@ -1592,14 +1940,17 @@ impl ObjectMetric {
             );
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
 #[derive(uniffi::Record)]
+#[cfg_attr(not(feature = "active"), derive(Default))]
 pub struct DualLabeledCounterMetric {
     handle: u64,
 }
 impl DualLabeledCounterMetric {
     unsafe fn clone_handle(&self) -> u64 {
+        #[cfg(feature = "active")]
         unsafe {
             let mut call_status = uniffi::RustCallStatus::default();
             (crate::GLEAN
@@ -1608,6 +1959,7 @@ impl DualLabeledCounterMetric {
                 &mut call_status,
             )
         }
+        #[cfg(not(feature = "active"))] { 0 }
     }
 }
 impl DualLabeledCounterMetric {
@@ -1616,6 +1968,7 @@ impl DualLabeledCounterMetric {
         keys: Option<Vec<CowString>>,
         categories: Option<Vec<CowString>>,
     ) -> Self {
+        #[cfg(feature = "active")]
         unsafe {
             let meta = uniffi::FfiConverter::<crate::UniFfiTag>::lower(meta);
             let keys = uniffi::FfiConverter::<crate::UniFfiTag>::lower(keys);
@@ -1633,8 +1986,10 @@ impl DualLabeledCounterMetric {
             meta.destroy();
             Self { handle }
         }
+        #[cfg(not(feature = "active"))] Self { handle: 0 }
     }
     pub fn get(&self, key: String, category: String) -> CounterMetric {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let key = uniffi::FfiConverter::<crate::UniFfiTag>::lower(key);
@@ -1651,6 +2006,7 @@ impl DualLabeledCounterMetric {
             key.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_value(
         &self,
@@ -1658,6 +2014,7 @@ impl DualLabeledCounterMetric {
     ) -> Option<
         ::std::collections::HashMap<String, ::std::collections::HashMap<String, i32>>,
     > {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let ping_name = uniffi::FfiConverter::<crate::UniFfiTag>::lower(ping_name);
@@ -1671,8 +2028,10 @@ impl DualLabeledCounterMetric {
             ping_name.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
+        #[cfg(feature = "active")]
         unsafe {
             let this = self.clone_handle();
             let error = uniffi::FfiConverter::<crate::UniFfiTag>::lower(error);
@@ -1686,15 +2045,29 @@ impl DualLabeledCounterMetric {
             error.destroy();
             crate::util::LocalTryLift::try_lift(res).unwrap()
         }
+        #[cfg(not(feature = "active"))] Default::default()
     }
 }
+#[cfg(feature = "active")]
 library_binding! {
     fn ffi_glean_core_rustbuffer_from_bytes(bytes : ::uniffi::ForeignBytes, call_status :
     & mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer; fn
     ffi_glean_core_uniffi_contract_version() -> u32; fn
     ffi_glean_core_rustbuffer_free(bytes : ::uniffi::RustBuffer, call_status : & mut
-    ::uniffi::RustCallStatus); fn uniffi_glean_core_fn_clone_countermetric(handle : u64,
+    ::uniffi::RustCallStatus); fn uniffi_glean_core_fn_clone_pingtype(handle : u64,
     call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
+    uniffi_glean_core_fn_constructor_pingtype_new(name : uniffi::RustBuffer,
+    include_client_id : i8, send_if_empty : i8, precise_timestamps : i8,
+    include_info_sections : i8, enabled : i8, schedules_pings : uniffi::RustBuffer,
+    reason_codes : uniffi::RustBuffer, follows_collection_enabled : i8,
+    uploader_capabilities : uniffi::RustBuffer, call_status : & mut
+    ::uniffi::RustCallStatus) -> u64; fn
+    uniffi_glean_core_fn_method_pingtype_submit(handle : u64, reason :
+    uniffi::RustBuffer, call_status : & mut ::uniffi::RustCallStatus) -> (); fn
+    uniffi_glean_core_fn_method_pingtype_set_enabled(handle : u64, enabled : i8,
+    call_status : & mut ::uniffi::RustCallStatus) -> (); fn
+    uniffi_glean_core_fn_clone_countermetric(handle : u64, call_status : & mut
+    ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_constructor_countermetric_new(meta : uniffi::RustBuffer,
     call_status : & mut ::uniffi::RustCallStatus) -> u64; fn
     uniffi_glean_core_fn_method_countermetric_add(handle : u64, amount : i32, call_status

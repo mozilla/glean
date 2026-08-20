@@ -118,7 +118,6 @@ Glean.memory.heapAllocated.accumulate(bytes / 1024);
 
 ### `startBuffer`
 
-**Experimental:**
 Start a new histogram buffer associated with this custom distribution metric.
 
 A histogram buffer accumulates in-memory.

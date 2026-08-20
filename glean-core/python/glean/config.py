@@ -45,6 +45,7 @@ class Configuration:
         session_mode: SessionMode = SessionMode.AUTO,
         session_sample_rate: float = 1.0,
         session_inactivity_timeout_ms: int = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
+        events_ping_acceleration_factor: Optional[int] = None,
     ):
         """
         Args:
@@ -75,6 +76,8 @@ class Configuration:
                 Default: `1.0`.
             session_inactivity_timeout_ms (int): Inactivity timeout (milliseconds)
                 before AUTO-mode sessions expire. Default: 30 minutes.
+            events_ping_acceleration_factor (int): Optional.
+                The number of "events" pings to accelerate each session, plus one.
         """
         if server_endpoint is None:
             server_endpoint = DEFAULT_TELEMETRY_ENDPOINT
@@ -93,6 +96,7 @@ class Configuration:
         self._session_mode = session_mode
         self._session_sample_rate = session_sample_rate
         self._session_inactivity_timeout_ms = session_inactivity_timeout_ms
+        self._events_ping_acceleration_factor = events_ping_acceleration_factor
 
     @property
     def server_endpoint(self) -> str:
@@ -171,6 +175,11 @@ class Configuration:
     def session_inactivity_timeout_ms(self) -> int:
         """Inactivity timeout (milliseconds) before AUTO-mode sessions expire."""
         return self._session_inactivity_timeout_ms
+
+    @property
+    def events_ping_acceleration_factor(self) -> Optional[int]:
+        """The number of "events" pings to accelerate each session, plus one."""
+        return self._events_ping_acceleration_factor
 
 
 __all__ = ["Configuration"]

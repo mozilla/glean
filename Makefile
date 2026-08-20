@@ -23,7 +23,7 @@ setup-python: $(GLEAN_PYENV)/bin/python3 ## Setup a Python virtual environment
 
 $(GLEAN_PYENV)/bin/python3:
 	python3 -m venv $(GLEAN_PYENV)
-	$(GLEAN_PYENV)/bin/pip install --upgrade pip wheel setuptools
+	$(GLEAN_PYENV)/bin/pip install --upgrade pip wheel
 	$(GLEAN_PYENV)/bin/pip install -r glean-core/python/requirements_dev.txt
 
 # All builds
@@ -95,7 +95,7 @@ test-python: build-python ## Run all Python tests
 lint: lint-rust lint-kotlin lint-swift lint-yaml lint-python
 
 lint-rust: ## Run cargo-clippy to lint Rust code
-	cargo clippy --all --all-targets --all-features -- -D warnings -A unknown-lints
+	cargo clippy --all --all-targets --features "enable_env_logger gecko benchmark" -- -D warnings -A unknown-lints
 
 lint-kotlin: ## Run ktlint to lint Kotlin code
 	./gradlew lint ktlint detekt
@@ -128,7 +128,7 @@ fmt-rust: ## Format all Rust code
 fmt-python: setup-python ## Run ruff to format Python code
 	$(GLEAN_PYENV)/bin/python3 -m ruff format glean-core/python/glean glean-core/python/tests
 
-fmt-kotlin:  ## Run ktlint to format KOtlin code
+fmt-kotlin:  ## Run ktlint to format Kotlin code
 	./gradlew ktlintFormat
 
 .PHONY: fmt-rust fmt-python fmt-kotlin
@@ -149,7 +149,7 @@ docs-python: build-python ## Build the Python documentation
 .PHONY: docs docs-rust docs-swift
 
 docs-metrics: setup-python ## Build the internal metrics documentation
-	$(GLEAN_PYENV)/bin/pip install glean_parser~=20.0
+	$(GLEAN_PYENV)/bin/pip install glean_parser~=20.1
 	$(GLEAN_PYENV)/bin/glean_parser translate --allow-reserved \
 		 -f markdown \
 		 -o ./docs/user/user/collected-metrics \

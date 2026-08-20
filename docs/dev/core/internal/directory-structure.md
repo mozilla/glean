@@ -12,7 +12,7 @@ For the Python bindings, if no directory is specified, it is stored in a tempora
 
 Within the `glean_data` directory are the following contents:
 
-- `db`: Contains the [rkv](https://github.com/mozilla/rkv) database used to persist ping and user lifetime metrics.
+- `db`: Contains the [SQLite](https://sqlite.org/) database files used to persist ping and user lifetime metrics.
 
 - `events`: Contains flat files containing persisted events before they are collected into pings.
 

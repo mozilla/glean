@@ -25,9 +25,11 @@ const PREAMBLE: &str = r#"// DO NOT MODIFY!
 // `glean-sym` tests ensure the vendored copy is unmodified.
 // This can be verified by running `cargo test -p glean-sym`.
 #![allow(clippy::all)]
+#![allow(unused)]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
 use crate::types::*;
+#[cfg(feature = "active")]
 use crate::util::*;
 "#;
 
@@ -83,25 +85,33 @@ pub fn generate(content: &str) -> String {
     for elem in parsed {
         let Interface(iface) = elem else { continue };
         let ident = iface.identifier;
-        if !ident.0.ends_with("Metric") {
+        if !ident.0.ends_with("Metric") && ident.0 != "PingType" {
             continue;
         }
 
         let structname = ident.0.to_lowercase().replace("_", "");
         let ident = format_ident!("{}", ident.0);
         let extern_fn_ident = format_ident!("uniffi_glean_core_fn_clone_{}", structname);
+        let visibility = match &*structname {
+            "eventmetric" | "pingtype" => quote! { pub(crate) },
+            _ => quote! { pub },
+        };
         tokens.push(quote! {
             #[derive(uniffi::Record)]
-            pub struct #ident {
+            #[cfg_attr(not(feature = "active"), derive(Default))]
+            #visibility struct #ident {
                 handle: u64
             }
 
             impl #ident {
                 unsafe fn clone_handle(&self) -> u64 {
+                    #[cfg(feature = "active")]
                     unsafe {
                         let mut call_status = uniffi::RustCallStatus::default();
                         (crate::GLEAN.#extern_fn_ident)(self.handle, &mut call_status)
                     }
+                    #[cfg(not(feature = "active"))]
+                    { 0 }
                 }
             }
         });
@@ -120,6 +130,7 @@ pub fn generate(content: &str) -> String {
                     let (arg_names, fn_args, extern_fn_args, destroys) = all_args.consume();
                     fns.push(quote! {
                         pub fn new(#(#fn_args,)*) -> Self {
+                            #[cfg(feature = "active")]
                             unsafe {
                                 #(
                                     let #arg_names = uniffi::FfiConverter::<crate::UniFfiTag>::lower(#arg_names);
@@ -131,6 +142,8 @@ pub fn generate(content: &str) -> String {
                                 )*
                                 Self { handle }
                             }
+                            #[cfg(not(feature = "active"))]
+                            Self { handle: 0 }
                         }
                     });
                     bindings.push(quote! {
@@ -152,6 +165,7 @@ pub fn generate(content: &str) -> String {
 
                     fns.push(quote! {
                         pub fn #fn_ident(&self, #(#fn_args),*) #ret_type {
+                            #[cfg(feature = "active")]
                             unsafe {
                                 let this = self.clone_handle();
                                 #(
@@ -164,6 +178,8 @@ pub fn generate(content: &str) -> String {
                                 )*
                                 crate::util::LocalTryLift::try_lift(res).unwrap()
                             }
+                            #[cfg(not(feature = "active"))]
+                            Default::default()
                         }
                     });
                     bindings.push(quote! {
@@ -182,6 +198,7 @@ pub fn generate(content: &str) -> String {
     }
 
     tokens.push(quote! {
+        #[cfg(feature = "active")]
         library_binding! {
             fn ffi_glean_core_rustbuffer_from_bytes(bytes: ::uniffi::ForeignBytes, call_status: &mut ::uniffi::RustCallStatus) -> ::uniffi::RustBuffer;
             fn ffi_glean_core_uniffi_contract_version() -> u32;

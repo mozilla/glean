@@ -16,6 +16,7 @@ pub mod glean_metrics {
 #[unsafe(no_mangle)]
 unsafe extern "C" fn record(amount: i32) {
     env_logger::init();
+    let _ = &*glean_metrics::services_info;
     log::info!("Record invoked");
 
     // A timer ID is passed through a `RustBuffer`,
@@ -27,10 +28,20 @@ unsafe extern "C" fn record(amount: i32) {
     log::info!("Metric recorded.");
 
     glean_metrics::dylib::data.set(String::from("value"));
-    // `StringMetric#test_get_value` returns a string, which is passed through a `RustBuffer`,
-    // which needs to be copied and freed correctly.
-    let stored = glean_metrics::dylib::data.test_get_value(None).unwrap();
-    assert_eq!("value", stored);
+
+    #[cfg(feature = "active")]
+    {
+        // `StringMetric#test_get_value` returns a string, which is passed through a `RustBuffer`,
+        // which needs to be copied and freed correctly.
+        let stored = glean_metrics::dylib::data.test_get_value(None).unwrap();
+        assert_eq!("value", stored);
+    }
+
+    glean_metrics::dylib::event.record(None);
+    let extra = glean_metrics::dylib::EventWithExtrasExtra { is_set: Some(true) };
+    glean_metrics::dylib::event_with_extras.record(extra);
 
     glean_metrics::dylib::timing.stop_and_accumulate(tid);
+
+    glean_metrics::services_info.submit(Some("recorded"));
 }

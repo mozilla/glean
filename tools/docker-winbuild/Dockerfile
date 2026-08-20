@@ -33,4 +33,6 @@ ADD build.sh /home/circleci/build.sh
 
 RUN sudo chown circleci:circleci ~/*.sh 
 
+USER circleci
+
 ENTRYPOINT ~/init.sh

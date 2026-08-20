@@ -14,7 +14,7 @@ provide some form of user interface to allow for toggling the collection status.
 > `setUploadEnabled` is now deprecated and replaced by `setCollectionEnabled`.
 > It behaves the same way with respect to built-in pings and custom pings,
 > unless those are marked with `follows_collection_enabled: false`.
-> See [TODO: the collection-enabled documentation for details]().
+> See [documentation on `follows_collection_enabled` for details](../yaml/pings.md#follows_collection_enabled).
 
 ## Disabling collection
 

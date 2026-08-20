@@ -68,7 +68,7 @@ Glean.gleanUpload.failures.get("baseline", "4xx").add(3);
 * The lists of key and category labels are limited to:
   * 16 different dynamic key labels and 16 category labels, if no static labels are defined.
     Additional key and category labels will all record to the special label `__other__`.
-    These labels may contain any UTF-8 characters.
+    These labels may contain any UTF-8 characters except a record separator (`0x1E`).
   * 4096 key labels and 4096 category labels if specified as static labels in `metrics.yaml`, see [key](#key) and [category](#category).
     Unknown key and category labels will be recorded under the special label `__other__`.
     These labels may only be made of printable ASCII characters.

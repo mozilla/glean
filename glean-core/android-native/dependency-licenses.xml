@@ -76,6 +76,9 @@ the details of which are reproduced below.
     <name>Apache License 2.0: askama_derive</name>
     <url>https://github.com/askama-rs/askama</url>
   </license>  <license>
+    <name>Apache License 2.0: askama_macros</name>
+    <url>https://github.com/askama-rs/askama</url>
+  </license>  <license>
     <name>Apache License 2.0: askama_parser</name>
     <url>https://github.com/askama-rs/askama</url>
   </license>  <license>
@@ -120,6 +123,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: glob</name>
     <url>https://github.com/rust-lang/glob</url>
+  </license>  <license>
+    <name>Apache License 2.0: hashbrown</name>
+    <url>https://github.com/rust-lang/hashbrown</url>
   </license>  <license>
     <name>Apache License 2.0: hashbrown</name>
     <url>https://github.com/rust-lang/hashbrown</url>
@@ -247,9 +253,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: rustc-hash</name>
     <url>https://github.com/rust-lang/rustc-hash</url>
   </license>  <license>
-    <name>Apache License 2.0: ryu</name>
-    <url>https://github.com/dtolnay/ryu</url>
-  </license>  <license>
     <name>Apache License 2.0: semver</name>
     <url>https://github.com/dtolnay/semver</url>
   </license>  <license>
@@ -348,6 +351,9 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
+  </license>  <license>
+    <name>MIT License: zmij</name>
+    <url>https://github.com/dtolnay/zmij</url>
   </license>  <license>
     <name>MIT License: winnow</name>
     <url>https://github.com/winnow-rs/winnow</url>
