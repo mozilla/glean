@@ -27,6 +27,14 @@ namespace glean {
 
     void glean_set_upload_enabled(boolean enabled);
 
+    void glean_set_store_submitted_pings_enabled(boolean enabled);
+
+    sequence<SubmittedPing> glean_get_all_stored_submitted_pings();
+
+    sequence<SubmittedPing> glean_get_stored_submitted_pings_by_name(string ping);
+
+    void glean_clear_stored_submitted_pings();
+
     // Experiment reporting API
     void glean_set_experiment_active(string experiment_id, string branch, record<DOMString, string> extra);
     void glean_set_experiment_inactive(string experiment_id);
@@ -95,6 +103,15 @@ namespace glean {
     DistributionMetrics glean_test_get_distribution();
 };
 
+dictionary SubmittedPing {
+    string document_id;
+    string ping;
+    string submitted_date;
+    string? uploaded_date;
+    boolean upload_failed;
+    JsonValue? payload;
+};
+
 // A `Cow<'static, str>`, but really it's always the owned part.
 [Custom]
 typedef string CowString;
@@ -127,6 +144,7 @@ dictionary InternalConfiguration {
     f64 session_sample_rate; // Must be in [0.0, 1.0]; values outside are clamped.
     u64 session_inactivity_timeout_ms; // Milliseconds; 0 means sessions never time out.
     u32? events_ping_acceleration_factor;
+    boolean enable_store_submitted_pings = false;
 };
 
 // Session management mode.

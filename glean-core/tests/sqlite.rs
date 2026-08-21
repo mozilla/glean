@@ -3,9 +3,9 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 mod common;
-use std::fs;
-
 use crate::common::*;
+use chrono::Utc;
+use std::fs;
 
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
@@ -205,6 +205,7 @@ mod unix {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: true,
         };
         let glean = Glean::new(cfg);
         assert!(glean.is_err());
@@ -253,13 +254,14 @@ fn database_externally_locked() {
         session_mode: SessionMode::Auto,
         session_sample_rate: 1.0,
         events_ping_acceleration_factor: None,
+        enable_store_submitted_pings: true,
     };
     let glean = Glean::new(cfg);
     assert!(glean.is_err());
 }
 
 #[test]
-fn schema_v2_is_applied() {
+fn latest_schema_is_applied() {
     let (first_client_id, temp) = {
         let (glean, temp) = new_glean(None);
         let client_id = clientid_metric().get_value(&glean, None).unwrap();
@@ -286,10 +288,164 @@ fn schema_v2_is_applied() {
     let cur_user_version: u32 = conn
         .query_one("PRAGMA user_version", [], |row| row.get(0))
         .unwrap();
-    assert_eq!(cur_user_version, 2);
+    assert_eq!(cur_user_version, 3);
 
     let migration_state: String = conn
         .query_one("SELECT state FROM migration", [], |row| row.get(0))
         .unwrap();
     assert_eq!(migration_state, "done");
+}
+
+#[test]
+fn test_storing_and_fetching_submitted_pings() {
+    let (glean, _temp) = new_glean(None);
+
+    let utc_time_one = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.50Z")
+        .unwrap()
+        .to_utc();
+    let utc_time_two = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.51Z")
+        .unwrap()
+        .to_utc();
+    let utc_time_three = chrono::DateTime::parse_from_rfc3339("2026-08-05T12:30:00.52Z")
+        .unwrap()
+        .to_utc();
+
+    // First ping, no upload date
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id",
+            "ping",
+            utc_time_one,
+            None,
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Second ping, no upload date
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one",
+            "ping-two",
+            utc_time_two,
+            None,
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Second ping again, with upload date .01s after submitted date
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one",
+            "ping-two",
+            utc_time_two,
+            Some(utc_time_two),
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Third ping, upload failed
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-two",
+            "ping-three",
+            utc_time_three,
+            None,
+            true,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 3);
+    assert_eq!(all_pings.last().unwrap().document_id, "id".to_string());
+    assert_eq!(all_pings.get(1).unwrap().document_id, "id-one".to_string());
+    assert_eq!(all_pings.get(1).unwrap().submitted_date.0, utc_time_two);
+    assert_eq!(
+        all_pings.get(1).unwrap().uploaded_date.clone().unwrap().0,
+        utc_time_two
+    );
+    assert_eq!(
+        all_pings.get(1).unwrap().payload().unwrap(),
+        serde_json::json!({ "test": "a value" })
+    );
+    assert!(all_pings.first().unwrap().upload_failed);
+
+    let count = glean.storage().mark_ping_as_uploaded("id", utc_time_one);
+    assert_eq!(count, 1);
+
+    let some_pings = glean.storage().get_submitted_pings_by_name("ping");
+    assert_eq!(some_pings.len(), 1);
+    assert_eq!(some_pings.first().unwrap().document_id, "id".to_string());
+    assert_eq!(
+        some_pings.first().unwrap().uploaded_date.clone().unwrap().0,
+        utc_time_one
+    );
+}
+
+#[test]
+fn test_cleanup_of_submitted_pings() {
+    let (glean, _temp) = new_glean(None);
+
+    let utc_time_more_than_30_days_ago =
+        chrono::DateTime::parse_from_rfc3339("2026-06-05T12:30:00.50Z")
+            .unwrap()
+            .to_utc();
+
+    // Submitted ping from more than 30 days ago
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-one",
+            "ping",
+            utc_time_more_than_30_days_ago,
+            None,
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Submitted ping from now
+    glean
+        .storage()
+        .store_submitted_ping(
+            "id-two",
+            "ping",
+            Utc::now(),
+            None,
+            false,
+            serde_json::json!({ "test": "a value" }),
+        )
+        .unwrap();
+
+    // Both pings should have been stored
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 2);
+
+    // Run regular maintenance (happens on shutdown)
+    // This should only remove the ping from >30 days ago
+    glean
+        .storage()
+        .cleanup_submitted_pings(None)
+        .expect("Error running cleanup_submitted_pings");
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 1);
+    assert_eq!(all_pings.first().unwrap().document_id, "id-two".to_string());
+
+    // Run `cleanup_submitted_pings` with now as the `before_time`
+    // This should clear out all pings
+    glean
+        .storage()
+        .cleanup_submitted_pings(Some(Utc::now()))
+        .expect("Error running cleanup_submitted_pings");
+
+    let all_pings = glean.storage().get_all_submitted_pings();
+    assert_eq!(all_pings.len(), 0);
 }

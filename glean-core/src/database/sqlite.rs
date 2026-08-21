@@ -9,14 +9,15 @@ use std::path::Path;
 use std::str;
 use std::time::Duration;
 
+use chrono::{DateTime, Utc};
+use connection::Connection;
 use malloc_size_of::MallocSizeOf;
-use rusqlite::params;
-use rusqlite::types::FromSqlError;
+use rusqlite::fallible_iterator::FallibleIterator;
+use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
 use rusqlite::OptionalExtension;
 use rusqlite::Transaction;
+use rusqlite::{params, ToSql};
 use rusqlite::{Error as SqlError, ErrorCode};
-
-use connection::Connection;
 use schema::Schema;
 pub use schema::SchemaError;
 
@@ -24,9 +25,9 @@ use crate::common_metric_data::CommonMetricDataInternal;
 use crate::database::migration::{self, MigrationState};
 use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
 use crate::metrics::Metric;
-use crate::Glean;
 use crate::Lifetime;
 use crate::Result;
+use crate::{Glean, JsonValue};
 
 use super::ConnExt;
 
@@ -69,6 +70,48 @@ impl MallocSizeOf for Database {
     fn size_of(&self, _ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
         // FIXME: Can we get the allocated size of the connection?
         0
+    }
+}
+
+pub struct SubmittedPing {
+    pub document_id: String,
+    pub ping: String,
+    pub submitted_date: SqliteDatetime,
+    pub uploaded_date: Option<SqliteDatetime>,
+    pub upload_failed: bool,
+    pub payload: Option<String>,
+}
+
+impl SubmittedPing {
+    pub fn payload(&self) -> Option<JsonValue> {
+        self.payload
+            .as_ref()
+            .map(|p| match serde_json::from_str(p) {
+                Ok(v) => Some(v),
+                Err(e) => {
+                    log::warn!("Unable to serialize JSON payload from string: {:?}", e);
+                    None
+                }
+            })
+            .unwrap_or(None)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SqliteDatetime(pub DateTime<Utc>);
+
+impl ToSql for SqliteDatetime {
+    fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
+        Ok(ToSqlOutput::from(self.0.timestamp_millis()))
+    }
+}
+
+impl FromSql for SqliteDatetime {
+    fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
+        i64::column_result(value).and_then(|as_i64| match DateTime::from_timestamp_millis(as_i64) {
+            Some(d) => Ok(SqliteDatetime(d)),
+            None => Err(FromSqlError::InvalidType),
+        })
     }
 }
 
@@ -446,6 +489,193 @@ impl Database {
                 Result::<bool, ()>::Ok(metric_iter.next().map(|m| m.is_some()).unwrap_or(false))
             })
             .unwrap_or(false)
+    }
+
+    /// Gets all pings in the `submitted_pings` table.
+    pub fn get_all_submitted_pings(&self) -> Vec<SubmittedPing> {
+        let get_all_submitted_pings_sql = r#"
+        SELECT
+            document_id,
+            ping,
+            date_submitted,
+            date_uploaded,
+            upload_failed,
+            payload
+        FROM submitted_pings
+        ORDER BY date_submitted DESC
+        "#;
+        self.conn
+            .read(|conn| {
+                let Ok(mut stmt) = conn.prepare_cached(get_all_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                let Ok(pings_iter) = stmt.query([]) else {
+                    return Ok(Default::default());
+                };
+
+                pings_iter
+                    .map(|r| {
+                        Ok(SubmittedPing {
+                            document_id: r.get(0).unwrap(),
+                            ping: r.get(1).unwrap(),
+                            submitted_date: r.get(2).unwrap(),
+                            uploaded_date: r.get(3).unwrap(),
+                            upload_failed: r.get(4).unwrap(),
+                            payload: r.get(5).unwrap(),
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    /// Returns all submitted pings in the `submitted_pings` table that match a supplied ping name.
+    ///
+    /// # Arguments
+    ///
+    /// * `ping` - The name of the pings to return.
+    pub fn get_submitted_pings_by_name(&self, ping: &str) -> Vec<SubmittedPing> {
+        let get_submitted_pings_sql = r#"
+        SELECT
+            document_id,
+            ping,
+            date_submitted,
+            date_uploaded,
+            upload_failed,
+            payload
+        FROM submitted_pings
+        WHERE
+            ping = ?1
+        ORDER BY date_submitted DESC
+        "#;
+        self.conn
+            .read(|conn| {
+                let Ok(mut stmt) = conn.prepare_cached(get_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                let Ok(pings_iter) = stmt.query([ping]) else {
+                    return Ok(Default::default());
+                };
+
+                pings_iter
+                    .map(|r| {
+                        Ok(SubmittedPing {
+                            document_id: r.get(0).unwrap(),
+                            ping: r.get(1).unwrap(),
+                            submitted_date: r.get(2).unwrap(),
+                            uploaded_date: r.get(3).unwrap(),
+                            upload_failed: r.get(4).unwrap(),
+                            payload: r.get(5).unwrap(),
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    /// Marks a particular ping as uploaded.
+    ///
+    /// # Arguments
+    ///
+    /// * `document_id` - The ping to mark as uploaded.
+    /// * `date_uploaded` - The UTC date/time the ping was uploaded.
+    ///
+    /// # Returns
+    ///
+    /// A `usize` representing the number of rows updated.
+    pub fn mark_ping_as_uploaded(&self, document_id: &str, date_uploaded: DateTime<Utc>) -> usize {
+        let update_submitted_pings_sql =
+            "UPDATE submitted_pings SET date_uploaded = ?1 WHERE document_id = ?2";
+        self.conn
+            .write(|tx| {
+                let Ok(mut stmt) = tx.prepare_cached(update_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                stmt.execute(params![SqliteDatetime(date_uploaded), document_id])
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn mark_ping_as_upload_failed(&self, document_id: &str) -> usize {
+        let update_submitted_pings_sql =
+            "UPDATE submitted_pings SET upload_failed = 1 WHERE document_id = ?1";
+        self.conn
+            .write(|tx| {
+                let Ok(mut stmt) = tx.prepare_cached(update_submitted_pings_sql) else {
+                    return Ok(Default::default());
+                };
+                stmt.execute(params![document_id])
+            })
+            .unwrap_or_default()
+    }
+
+    /// Stores a submitted ping into the `submitted_pings` table.
+    ///
+    /// # Arguments
+    ///
+    /// * `document_id` - The unique identifier for the ping.
+    /// * `ping` - The name of the ping.
+    /// * `date_submitted` - The UTC date/time the ping was submitted.
+    /// * `date_uploaded` - An optional UTC date/time the ping was uploaded.
+    /// * `payload` - A JSON representation of the content of the ping.
+    ///
+    /// # Returns
+    ///
+    /// An empty `Result`.
+    pub fn store_submitted_ping(
+        &self,
+        document_id: &str,
+        ping: &str,
+        date_submitted: DateTime<Utc>,
+        date_uploaded: Option<DateTime<Utc>>,
+        upload_failed: bool,
+        payload: JsonValue,
+    ) -> Result<()> {
+        self.conn.write(|tx| {
+            let insert_sql = r#"
+            INSERT INTO
+                submitted_pings (document_id, ping, date_submitted, date_uploaded, upload_failed, payload)
+            VALUES
+                (?1, ?2, ?3, ?4, ?5, ?6)
+            ON CONFLICT(document_id) DO UPDATE SET
+                ping = excluded.ping,
+                date_submitted = excluded.date_submitted,
+                date_uploaded = excluded.date_uploaded,
+                upload_failed = excluded.upload_failed,
+                payload = excluded.payload
+            "#;
+            let mut stmt = tx.prepare_cached(insert_sql)?;
+            stmt.execute(params![
+                document_id,
+                ping,
+                SqliteDatetime(date_submitted),
+                date_uploaded.map(SqliteDatetime),
+                upload_failed,
+                serde_json::to_string(&payload).expect("Unable to convert JSON payload to string.")
+            ])?;
+            Ok(())
+        })
+    }
+
+    /// Remove stored submitted pings that are older than `before_time` (or 30 days if not specified)
+    ///
+    /// # Arguments
+    ///
+    /// * `before_time` - An optional date – when supplied uses that date as the oldest date_submitted we should keep.
+    ///     Defaults to 30 days if `None` is supplied.
+    ///
+    /// # Returns
+    ///
+    /// An empty `Result`.
+    pub fn cleanup_submitted_pings(&self, before_time: Option<DateTime<Utc>>) -> Result<()> {
+        let days_30 = Duration::from_secs(30 * 24 * 60 * 60);
+        let time = before_time.unwrap_or_else(|| Utc::now() - days_30);
+        let delete_sql = "DELETE FROM submitted_pings WHERE date_submitted <= ?1";
+        self.conn.write(|tx| {
+            let mut stmt = tx.prepare_cached(delete_sql)?;
+            stmt.execute(params![SqliteDatetime(time)])
+        })?;
+        Ok(())
     }
 
     /// Records a metric in the underlying storage system.

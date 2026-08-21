@@ -2,13 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use std::fmt;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-
 use crate::ping::PingMaker;
 use crate::upload::PingPayload;
 use crate::Glean;
+use chrono::Utc;
+use std::fmt;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 use malloc_size_of_derive::MallocSizeOf;
 use uuid::Uuid;
@@ -351,6 +351,19 @@ impl PingType {
                         .pings_submitted
                         .get(ping.name)
                         .add_sync(glean, 1);
+                }
+
+                if glean.store_submitted_pings_enabled {
+                    if let Err(e) = glean.storage().store_submitted_ping(
+                        ping.doc_id,
+                        &self.0.name,
+                        Utc::now(),
+                        None,
+                        false,
+                        ping.content.clone(),
+                    ) {
+                        log::warn!("Storing a submitted ping failed: {e}");
+                    }
                 }
 
                 if let Err(e) = ping_maker.store_ping(glean.get_data_path(), &ping) {

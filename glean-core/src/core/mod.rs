@@ -146,6 +146,7 @@ where
 ///     session_sample_rate: 1.0,
 ///     session_inactivity_timeout_ms: 1_800_000,
 ///     events_ping_acceleration_factor: None,
+///     enable_store_submitted_pings: false,
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -196,6 +197,7 @@ pub struct Glean {
     #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
     events_ping_acceleration_factor: Option<usize>,
+    pub(crate) store_submitted_pings_enabled: bool,
 }
 
 impl Glean {
@@ -279,6 +281,7 @@ impl Glean {
             events_ping_acceleration_factor: cfg
                 .events_ping_acceleration_factor
                 .map(|x| x as usize),
+            store_submitted_pings_enabled: cfg.enable_store_submitted_pings
         };
 
         // Ensuring these pings are registered.
@@ -604,6 +607,7 @@ impl Glean {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         };
 
         let mut glean = Self::new(cfg).unwrap();
@@ -815,6 +819,16 @@ impl Glean {
         } else {
             false
         }
+    }
+
+    /// Sets whether storing submitted pings is enabled or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `enabled` - When true, enables storing submitted pings.
+    ///
+    pub fn set_store_submitted_pings_enabled(&mut self, enabled: bool) {
+        self.store_submitted_pings_enabled = enabled;
     }
 
     /// Enable or disable a ping.

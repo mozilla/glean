@@ -4,7 +4,7 @@
 
 //! Benchmark the impact of `delay_ping_lifetime_io` and automatic flushing on the overall performance.
 
-use criterion::{Criterion, criterion_group, criterion_main};
+use criterion::{criterion_group, criterion_main, Criterion};
 use glean_core::{CommonMetricData, CounterMetric, Glean, Lifetime};
 
 pub fn delay_io_benchmark(c: &mut Criterion) {
@@ -37,6 +37,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         };
         let glean = Glean::new(cfg).unwrap();
 
@@ -85,6 +86,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         };
         let glean = Glean::new(cfg).unwrap();
 
@@ -133,6 +135,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
         };
         let glean = Glean::new(cfg).unwrap();
 
