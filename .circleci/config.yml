@@ -871,7 +871,13 @@ jobs:
       - image: cimg/python:3.13
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          # We're using an older maturin,
+          # which pulls in an older Zig build,
+          # which doesn't filter a certain parameter (https://github.com/rust-cross/cargo-zigbuild/pull/452),
+          # which breaks the build.
+          # Rust 1.97 however is fine, for now.
+          rust-version: "1.97"
       - checkout
       - run:
           name: Setup Python env
