@@ -63,7 +63,7 @@ abstract class GleanMetricsYamlTransform implements TransformAction<TransformPar
 @SuppressWarnings("GrPackage")
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
-    private String GLEAN_PARSER_VERSION = "20.1"
+    private String GLEAN_PARSER_VERSION = "22.0"
 
     private String TASK_NAME_PREFIX = "gleanGenerateMetrics"
 
