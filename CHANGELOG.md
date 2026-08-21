@@ -4,6 +4,12 @@
 
 * General
   * Added a test that keeps the `server_knobs_config` metric definition and the vendored pipeline schema in sync with the Server Knobs configuration, and updated the vendored schema to include `events_ping_acceleration_factor` ([bug 2050579](https://bugzilla.mozilla.org/show_bug.cgi?id=2050579))
+* Android
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+* iOS
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+* Python
+  * Implement labeled {custom|memory|timing} distribution and labeled quantity ([#3573](https://github.com/mozilla/glean/pull/3573))
 
 # v70.3.0 (2026-10-20)
 
