@@ -16,7 +16,7 @@ import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.artifacts.ComponentMetadataRule
 import org.gradle.api.artifacts.ComponentMetadataContext
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.internal.artifacts.ArtifactAttributes
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -187,7 +187,7 @@ except:
                     // https://github.com/google/protobuf-gradle-plugin/blob/6d99a421c8d15710045e4e8d31a3af6cb0cc3b70/src/main/groovy/com/google/protobuf/gradle/ProtobufPlugin.groovy#L270-L277
                     inputs.files variant.compileConfiguration.incoming.artifactView {
                         attributes {
-                            it.attribute(ArtifactAttributes.ARTIFACT_FORMAT, 'glean-metrics-yaml')
+                            it.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'glean-metrics-yaml')
                         }
                     }.files
                 }
@@ -280,7 +280,7 @@ except:
                     // https://github.com/google/protobuf-gradle-plugin/blob/6d99a421c8d15710045e4e8d31a3af6cb0cc3b70/src/main/groovy/com/google/protobuf/gradle/ProtobufPlugin.groovy#L270-L277
                     inputs.files variant.compileConfiguration.incoming.artifactView {
                         attributes {
-                            it.attribute(ArtifactAttributes.ARTIFACT_FORMAT, 'glean-metrics-yaml')
+                            it.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'glean-metrics-yaml')
                         }
                     }.files
                 }
@@ -450,8 +450,8 @@ except:
                     // but there's no good way to access the including script's classpath from `apply from:`
                     // scripts. See https://stackoverflow.com/a/37060550. The 'android-exploded-aar' string is
                     // very unlikely to change, so it's just hard-coded.
-                    from.attribute(ArtifactAttributes.ARTIFACT_FORMAT, "android-exploded-aar")
-                    to.attribute(ArtifactAttributes.ARTIFACT_FORMAT, "glean-metrics-yaml")
+                    from.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "android-exploded-aar")
+                    to.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "glean-metrics-yaml")
                 }
             }
         }
