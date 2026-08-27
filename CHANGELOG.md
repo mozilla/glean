@@ -8,6 +8,17 @@
       * Add new `submitted_pings` table to the SQLite database.
       * Add methods to store, retrieve, update, and clear stored submitted pings.
       * Update Ping and uploader implementations to store and update submitted pings as appropriate.
+* Android
+  * Updated to Gradle 9.5.0 ([#3612](https://github.com/mozilla/glean/pull/3612))
+  * BREAKING CHANGE: The Glean Gradle plugin no longer uses JetBrains' Python envs plugin to
+    download a bundled Miniconda, as that plugin is unmaintained and incompatible with Gradle 9.
+    The plugin now always creates a virtual environment using the Python standard library `venv`
+    module, so a Python 3.9 or later interpreter must be available on the `PATH`, or pointed at
+    with the `GLEAN_PYTHON` environment variable. Consumers that set `ext.gleanPythonEnvDir` are
+    unaffected. Applications applying the Glean Gradle plugin no longer need to apply the
+    `com.jetbrains.python.envs` plugin themselves and can remove it from their build. The
+    `gleanCondaDir` project property, a legacy alias for `gleanPythonEnvDir`, is also gone
+    ([#3612](https://github.com/mozilla/glean/pull/3612))
 * Python
   * Treat `C` as an undetermined locale ([#3633](https://github.com/mozilla/glean/pull/3633))
 

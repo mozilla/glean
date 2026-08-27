@@ -6,10 +6,8 @@
 // https://github.com/mozilla/application-services/blob/c40e2ccb422cf4af9ffdf095149cec34de1d4bef/components/fxa-client/android/build.gradle
 
 import groovy.json.JsonOutput
-
-plugins {
-    alias libs.plugins.gradle.python.envs
-}
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -194,6 +192,12 @@ dependencies {
 apply from: "$rootDir/publish.gradle"
 ext.configurePublish()
 
+// Gradle 9 removed Project.exec().
+interface InjectedExecOps {
+    @Inject ExecOperations getExecOps()
+}
+def execOps = objects.newInstance(InjectedExecOps).execOps
+
 def generateUniffiBindings = tasks.register("generateUniffiBindings") {
     def gleanNative = configurations.getByName("gleanNative")
     doFirst {
@@ -205,7 +209,7 @@ def generateUniffiBindings = tasks.register("generateUniffiBindings") {
             throw new GradleException("libglean_ffi dynamic library path not found")
         }
 
-        exec {
+        execOps.exec {
             workingDir project.rootDir
             commandLine 'cargo', 'uniffi-bindgen', 'generate',
               '--no-format',
@@ -242,15 +246,13 @@ ext.gleanYamlFiles = [
 apply from: '../../gradle-plugin/src/main/groovy/mozilla/telemetry/glean-gradle-plugin/GleanGradlePlugin.groovy'
 ext.glean_plugin.apply(project)
 
-// Store the path to the Glean Miniconda installation in a buildConfigField
-// so that unit tests can validate JSON schema.
-// Note that despite the name of this variable it isn't strictly for Miniconda
-// anymore, it's for any sort of Python environment.
+// Expose the Python environment path to the unit tests, which run glean_parser
+// to validate ping JSON against the schema.
 android {
     defaultConfig {
         buildConfigField(
             "String",
-            "GLEAN_MINICONDA_DIR",
+            "GLEAN_PYTHON_ENV_DIR",
             // Carefully escape the string here so it will support `\` in
             // Windows paths correctly.
             JsonOutput.toJson(project.ext.gleanPythonEnvDir.path)
