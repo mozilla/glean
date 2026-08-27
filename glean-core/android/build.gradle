@@ -44,7 +44,7 @@ android {
         // Windows paths correctly.
         buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -55,7 +55,7 @@ android {
 
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
         }
 
