@@ -14,12 +14,12 @@ android {
     namespace = "org.mozilla.samples.gleancore"
 
     ndkVersion rootProject.ext.build.ndkVersion
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
+    compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         applicationId "org.mozilla.samples.gleancore"
-        minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        minSdk = rootProject.ext.build['minSdkVersion']
+        targetSdk = rootProject.ext.build['targetSdkVersion']
         // Keep the version in sync with gleanExpireByVersion which is
         // set below, near the end of the file.
         versionCode 1

@@ -19,11 +19,11 @@ android {
     namespace = "mozilla.telemetry.glean_native"
 
     ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdkVersion = rootProject.ext.build.compileSdkVersion
+    compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        minSdk = rootProject.ext.build['minSdkVersion']
+        targetSdk = rootProject.ext.build['targetSdkVersion']
     }
 
     buildTypes {
@@ -108,15 +108,10 @@ dependencies {
     }
 }
 
-afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
+// Referenced by name so `cargoBuild` does not have to exist yet.
+tasks.configureEach { task ->
+    if (task.name.startsWith("merge") && task.name.endsWith("JniLibFolders")) {
+        task.dependsOn("cargoBuild")
     }
 }
 
