@@ -131,13 +131,6 @@ subprojects {
                         withSourcesJar()
                     }
                 }
-
-                lint {
-                    // Anchored to the root project explicitly: all modules share the one
-                    // checked-in baseline, and an unqualified file() resolves against the
-                    // subproject under Gradle 9.
-                    baseline = rootProject.file("lint-baseline.xml")
-                }
             }
         }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
