@@ -152,6 +152,11 @@ commands:
           rust-version: stable
       - install-android-ndk
       - run:
+          name: Install required Python dependencies
+          command: |
+            sudo apt update
+            sudo apt install --yes --no-install-recommends python3-venv
+      - run:
           name: Restrict to Linux builds only
           command: |
             echo "rust.targets=linux-x86-64" > local.properties
