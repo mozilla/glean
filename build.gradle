@@ -133,7 +133,10 @@ subprojects {
                 }
 
                 lint {
-                    baseline = file("lint-baseline.xml")
+                    // Anchored to the root project explicitly: all modules share the one
+                    // checked-in baseline, and an unqualified file() resolves against the
+                    // subproject under Gradle 9.
+                    baseline = rootProject.file("lint-baseline.xml")
                 }
             }
         }
