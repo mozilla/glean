@@ -60,6 +60,9 @@ class GleanTestRule(
         @Suppress("MagicNumber") // it's a fixed date only used in tests.
         fakeNow.set(2015, 6, 11, 2, 0, 0)
         SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+        MetricsPingScheduler.clockOverride = {
+            Calendar.getInstance().apply { timeInMillis = fakeNow.timeInMillis }
+        }
 
         // Set the last sent date to yesterday.
         val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
@@ -112,6 +115,8 @@ class GleanTestRule(
     }
 
     override fun finished(description: Description?) {
+        MetricsPingScheduler.clockOverride = null
+
         // This closes the database to help prevent leaking it during tests.
         // See Bug1719905 for more info.
         WorkManagerTestInitHelper.closeWorkDatabase()

@@ -46,6 +46,13 @@ internal class MetricsPingScheduler(
         const val LAST_METRICS_PING_SENT_DATETIME = "last_metrics_ping_iso_datetime"
         const val DUE_HOUR_OF_THE_DAY = 4
         const val LAST_VERSION_OF_APP_USED = "last_version_of_app_used"
+
+        /**
+         * Test-only override for the clock returned by [getCalendarInstance]. Robolectric cannot
+         * shadow `System.currentTimeMillis`, so [Calendar.getInstance] otherwise reads real time.
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        internal var clockOverride: (() -> Calendar)? = null
     }
 
     init {
@@ -387,10 +394,11 @@ internal class MetricsPingScheduler(
 
     /**
      * Utility function to mock date creation and ease tests. This is intended
-     * to be used only in tests, by overriding the return value with mockito.
+     * to be used only in tests, by overriding the return value with mockito or
+     * by setting [clockOverride].
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun getCalendarInstance(): Calendar = Calendar.getInstance()
+    internal fun getCalendarInstance(): Calendar = clockOverride?.invoke() ?: Calendar.getInstance()
 }
 
 /**
