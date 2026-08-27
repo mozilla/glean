@@ -183,24 +183,30 @@ abstract class GenerateUniffiBindingsTask extends DefaultTask {
     abstract DirectoryProperty getOutputDir()
 }
 
+// Resolved up front: the task action must not reach back into the project.
+def nativeLibPattern = "${rootProject.ext.nativeRustTarget}/libxul.*"
+def cargoWorkingDir = rootDir
+def uniffiConfigFile = file("${projectDir}/../uniffi.toml")
+
 def generateUniffiBindings = tasks.register("generateUniffiBindings", GenerateUniffiBindingsTask) {
     def gleanNative = configurations.getByName("gleanNative")
     doFirst {
-        def libraryPath = gleanNative.asFileTree.matching {
-            include "${nativeRustTarget}/libxul.*"
-        }.singleFile
-
-        if (libraryPath == null) {
-            throw new GradleException("libglean_ffi dynamic library path not found")
+        def libraryFiles = gleanNative.asFileTree.matching {
+            include nativeLibPattern
         }
 
+        if (libraryFiles.isEmpty()) {
+            throw new GradleException("libglean_ffi dynamic library path not found")
+        }
+        def libraryPath = libraryFiles.singleFile
+
         execOps.exec {
-            workingDir project.rootDir
+            workingDir cargoWorkingDir
             commandLine 'cargo', 'uniffi-bindgen', 'generate',
               '--no-format',
               '--library', libraryPath,
               '--language', 'kotlin',
-              '--config', "${project.projectDir}/../uniffi.toml",
+              '--config', uniffiConfigFile,
               '--out-dir', outputDir.get()
         }
     }
