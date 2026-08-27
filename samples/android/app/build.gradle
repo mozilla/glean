@@ -13,7 +13,7 @@ kotlin {
 android {
     namespace = "org.mozilla.samples.gleancore"
 
-    ndkVersion rootProject.ext.build.ndkVersion
+    ndkVersion = rootProject.ext.build.ndkVersion
     compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {

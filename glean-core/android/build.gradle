@@ -33,7 +33,7 @@ kotlin {
 android {
     namespace = "mozilla.telemetry.glean"
 
-    ndkVersion rootProject.ext.build.ndkVersion
+    ndkVersion = rootProject.ext.build.ndkVersion
     compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
