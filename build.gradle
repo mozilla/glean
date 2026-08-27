@@ -155,11 +155,11 @@ subprojects {
 }
 
 detekt {
-    input = files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc")
-    config = files("${projectDir}/.detekt.yml")
+    source.from(files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc"))
+    config.from(files("${projectDir}/.detekt.yml"))
     buildUponDefaultConfig = true
     reports {
-        xml.enabled = false
+        xml.required = false
     }
 }
 
