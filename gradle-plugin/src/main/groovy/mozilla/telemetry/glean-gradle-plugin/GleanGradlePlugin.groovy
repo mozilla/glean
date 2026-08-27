@@ -19,12 +19,13 @@ import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.internal.artifacts.ArtifactAttributes
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.work.DisableCachingByDefault
 
 import groovy.transform.CompileStatic
-
-import java.util.concurrent.Semaphore
 
 // The suppression "GrPackage" is needed below since Android Studio wants this file to have
 // a package name, but adding one causes the build to fail with:
@@ -33,6 +34,7 @@ import java.util.concurrent.Semaphore
 
 // Exec task with a wired output dir, required to register it via addGeneratedSourceDirectory.
 @SuppressWarnings("GrPackage")
+@DisableCachingByDefault(because = "Shells out to glean_parser, whose environment is not tracked as an input")
 abstract class GenerateGleanMetricsAPITask extends Exec {
     @OutputDirectory
     abstract DirectoryProperty getOutputDir()
@@ -42,8 +44,10 @@ abstract class GenerateGleanMetricsAPITask extends Exec {
  * A helper class to extract metrics.yaml files from AAR files.
  */
 @SuppressWarnings("GrPackage")
+@DisableCachingByDefault(because = "Extracting a single file is cheaper than caching the result")
 abstract class GleanMetricsYamlTransform implements TransformAction<TransformParameters.None> {
     @InputArtifact
+    @PathSensitive(PathSensitivity.RELATIVE)
     abstract Provider<FileSystemLocation> getInputArtifact()
 
     @Override
@@ -60,13 +64,8 @@ abstract class GleanMetricsYamlTransform implements TransformAction<TransformPar
 class GleanPlugin implements Plugin<Project> {
     // The version of glean_parser to install from PyPI.
     private String GLEAN_PARSER_VERSION = "20.1"
-    // The version of Miniconda is explicitly specified.
-    // Miniconda3-4.5.12 is known to not work on Windows.
-    private String MINICONDA_VERSION = "24.3.0-0"
 
     private String TASK_NAME_PREFIX = "gleanGenerateMetrics"
-
-    private Semaphore bootstrapMinicondaSemaphore = new Semaphore(1)
 
     /* This script runs a given Python module as a "main" module, like
      * `python -m module`. However, it first checks that the installed
@@ -145,14 +144,10 @@ except:
     // Are we doing an offline build (by passing `--offline` to `./gradle`)?
     private Boolean isOffline
 
-    static File getPythonCommand(File envDir, boolean isOffline) {
-        // Note that the command line is OS dependant: on linux/mac is Miniconda3/bin/python.
+    static File getPythonCommand(File envDir) {
+        // Note that the command line is OS dependant.
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            if (isOffline) {
-                return new File(envDir, "Scripts\\python")
-            } else {
-                return new File(envDir, "python")
-            }
+            return new File(envDir, "Scripts\\python")
         }
 
         return new File(envDir, "bin/python")
@@ -202,7 +197,7 @@ except:
                 inputs.files(getYamlFiles(project)).optional(true)
 
                 workingDir project.rootDir
-                commandLine getPythonCommand(envDir, isOffline)
+                commandLine getPythonCommand(envDir)
 
                 def gleanNamespace = "mozilla.components.service.glean"
                 if (project.ext.has("gleanNamespace")) {
@@ -296,7 +291,7 @@ except:
 
                 outputs.dir gleanDocsDirectory
                 workingDir project.rootDir
-                commandLine getPythonCommand(envDir, isOffline)
+                commandLine getPythonCommand(envDir)
 
                 args "-c"
                 args runPythonScript
@@ -356,52 +351,56 @@ except:
     }
 
     File setupPythonEnvironmentTasks(Project project, String parserVersion) {
-        // For offline mode:
-        //     1. We use the system Python on the PATH, for one set by GLEAN_PYTHON
-        //     2. We create a virtual environment in ~/.gradle/glean/pythonenv based on
-        //        that Python.
-        //     3. We expect the wheels for glean_parser and all its depenencies in
-        //        $rootDir/glean-wheels, or GLEAN_PYTHON_WHEELS_DIR.  These can be
-        //        downloaded in advance easily with `pip download glean_parser`.
-        // For online mode:
-        //     1. We install miniconda into ~/.gradle/glean/
-        //     2. glean_parser is installed using pip from pypi.org
-        if (isOffline) {
-            // This installs a virtual environment in `~/.gradle/glean/pythonenv`, so it is shared
-            // between multiple projects using Glean.
-            File envDir = new File(
-                project.getGradle().gradleUserHomeDir,
-                "glean/pythonenv"
-            )
+        // 1. We use the system Python on the PATH, or the one set by GLEAN_PYTHON.
+        // 2. We create a virtual environment in ~/.gradle/glean/pythonenv based on that
+        //    Python, so it is shared between multiple projects using Glean.
+        // 3. glean_parser is installed using pip from pypi.org. In offline mode we instead
+        //    expect the wheels for glean_parser and all its dependencies in
+        //    $rootDir/glean-wheels, or GLEAN_PYTHON_WHEELS_DIR. These can be downloaded in
+        //    advance easily with `pip download glean_parser`.
+        File envDir = new File(
+            project.getGradle().gradleUserHomeDir,
+            "glean/pythonenv"
+        )
 
-            TaskProvider<Exec> createGleanPythonVirtualEnv = project.tasks.register("createGleanPythonVirtualEnv", Exec) {
-                description = "Create a Python virtual environment for Glean"
+        TaskProvider<Exec> createGleanPythonVirtualEnv = project.tasks.register("createGleanPythonVirtualEnv", Exec) {
+            description = "Create a Python virtual environment for Glean"
 
-                outputs.dir(envDir)
+            outputs.dir(envDir)
 
-                String pythonBinary = System.getenv("GLEAN_PYTHON")
-                if (!pythonBinary) {
-                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        pythonBinary = "python"
-                    } else {
-                        pythonBinary = "python3"
-                    }
+            String pythonBinary = System.getenv("GLEAN_PYTHON")
+            if (!pythonBinary) {
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    pythonBinary = "python"
+                } else {
+                    pythonBinary = "python3"
                 }
-
-                project.logger.warn("Building in offline mode, therefore, Glean is using a supplied Python at ${pythonBinary}")
-                project.logger.warn("The Python binary can be overridden with the GLEAN_PYTHON env var.")
-
-                commandLine pythonBinary
-                args "-m"
-                args "venv"
-                args envDir.toString()
             }
 
-            TaskProvider<Exec> installGleanParser = project.tasks.register("installGleanParser", Exec) {
-                description = "Install glean_parser"
+            if (isOffline) {
+                project.logger.warn("Building in offline mode, therefore, Glean is using a supplied Python at ${pythonBinary}")
+                project.logger.warn("The Python binary can be overridden with the GLEAN_PYTHON env var.")
+            } else {
+                project.logger.info("Glean is using the Python at ${pythonBinary}, overridable with the GLEAN_PYTHON env var.")
+            }
 
-                outputs.dir(envDir)
+            commandLine pythonBinary
+            args "-m"
+            args "venv"
+            args envDir.toString()
+        }
 
+        TaskProvider<Exec> installGleanParser = project.tasks.register("installGleanParser", Exec) {
+            description = "Install glean_parser"
+
+            outputs.dir(envDir)
+
+            commandLine getPythonCommand(envDir)
+            args "-m"
+            args "pip"
+            args "install"
+
+            if (isOffline) {
                 String pythonPackagesDir = System.getenv("GLEAN_PYTHON_WHEELS_DIR")
                 if (!pythonPackagesDir) {
                     pythonPackagesDir = "${project.rootDir}/glean-wheels"
@@ -410,90 +409,22 @@ except:
                 project.logger.warn("Installing glean_parser from cached Python packages in ${pythonPackagesDir}")
                 project.logger.warn("This can be overridden with the GLEAN_PYTHON_WHEELS_DIR env var.")
 
-                commandLine getPythonCommand(envDir, isOffline)
-                args "-m"
-                args "pip"
-                args "install"
                 args "glean_parser"
                 args "--no-index"
                 args "-f"
                 args pythonPackagesDir
+            } else {
+                // A git package (a la `git+https://github.com`) is installed as given.
+                args(parserVersion.matches("git.+") ? parserVersion : "glean_parser~=${parserVersion}")
             }
-
-            installGleanParser.configure {
-                dependsOn(createGleanPythonVirtualEnv)
-            }
-            project.preBuild.finalizedBy(installGleanParser)
-
-            return envDir
-        } else {
-            // This sets up tasks to install a Miniconda3 environment. It installs
-            // into the gradle user home directory so that it will be shared between
-            // all libraries that use Glean. This is important because it is
-            // approximately 300MB in installed size.
-            File condaBootstrapDir = new File(
-                project.getGradle().gradleUserHomeDir,
-                "glean/bootstrap-${MINICONDA_VERSION}"
-            )
-
-            // Even though we are installing the Miniconda environment to the gradle user
-            // home directory, the gradle-python-envs plugin is hardcoded to download the
-            // installer to the project's build directory. Doing so will fail if the
-            // project's build directory doesn't already exist. This task ensures that
-            // the project's build directory exists before downloading and installing the
-            // Miniconda environment.
-            // See https://github.com/JetBrains/gradle-python-envs/issues/26
-            // The fix in the above is not actually sufficient -- we need to add createBuildDir
-            // as a dependency of Bootstrap_CONDA (where conda is installed), as the preBuild
-            // task alone isn't early enough.
-            TaskProvider createBuildDir = project.tasks.register("createBuildDir") {
-                description = "Make sure the build dir exists before creating the Python Environments"
-
-                outputs.dir(project.buildDir)
-
-                doLast {
-                    project.logger.lifecycle("Creating build directory:" + project.buildDir.getPath())
-                    project.buildDir.mkdir()
-                }
-            }
-
-            project.envs {
-                bootstrapDirectory = condaBootstrapDir
-                pipInstallOptions = "--trusted-host pypi.python.org --no-cache-dir"
-
-                // Setup a miniconda environment. conda is used because it works
-                // non-interactively on Windows, unlike the standard Python installers
-
-                // If we have a git package (a la `git+https://github.com`) we install that.
-                if (parserVersion.matches("git.+")) {
-                    conda "Miniconda3", "Miniconda3-py311_${MINICONDA_VERSION}", "64", [parserVersion]
-                } else {
-                    conda "Miniconda3", "Miniconda3-py311_${MINICONDA_VERSION}", "64", ["glean_parser~=${parserVersion}"]
-                }
-            }
-            File envDir = new File(
-                condaBootstrapDir,
-                "Miniconda3"
-            )
-            project.tasks.configureEach { task ->
-                if (task.name.startsWith('Bootstrap_CONDA')) {
-                    task.dependsOn(createBuildDir)
-
-                    // The Bootstrap_CONDA* tasks all install miniconda to the
-                    // same place, so they can't run at the same time. This
-                    // holds a semaphore while running the task to make sure
-                    // only one of these classes of tasks runs at the same time.
-                    // Solution proposed in this Gradle bug:
-                    // https://github.com/gradle/gradle/issues/7047#issuecomment-430139316
-                    task.doFirst { bootstrapMinicondaSemaphore.acquire() }
-                    task.doLast { bootstrapMinicondaSemaphore.release() }
-                }
-            }
-            project.preBuild.dependsOn(createBuildDir)
-            project.preBuild.finalizedBy("build_envs")
-
-            return envDir
         }
+
+        installGleanParser.configure {
+            dependsOn(createGleanPythonVirtualEnv)
+        }
+        project.preBuild.finalizedBy(installGleanParser)
+
+        return envDir
     }
 
     void setupExtractMetricsFromAARTasks(Project project) {
@@ -554,8 +485,6 @@ except:
             envDir = setupPythonEnvironmentTasks(project, parserVersion)
             project.ext.set("gleanPythonEnvDir", envDir)
         }
-        // Also store in gleanCondaDir for backward compatibility reasons
-        project.ext.set("gleanCondaDir", project.ext.gleanPythonEnvDir)
 
         setupExtractMetricsFromAARTasks(project)
 
