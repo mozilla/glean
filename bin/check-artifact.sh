@@ -41,8 +41,8 @@ check_files() {
     echo "Artifact: $artifact"
 
     if [[ -z "$artifact" ]]; then
-        echo "No artifact found. Skipping."
-        return
+        echo "No artifact found to check. Abort." >&2
+        exit 1
     fi
 
     shift
@@ -82,8 +82,8 @@ check_symbol() {
     echo "Symbol: $symbol"
 
     if [[ -z "$artifact" ]]; then
-        echo "No artifact found. Skipping."
-        return
+        echo "No artifact found to check. Abort." >&2
+        exit 1
     fi
 
     nm=$(find "$(rustc --print sysroot)" -name "llvm-nm")
@@ -125,6 +125,7 @@ case "$ARTIFACT_ID" in
         check_symbol "$ARTIFACT" "glean_core_uniffi_contract_version" "${REQUIRED_FILES_TEST[@]}"
         ;;
     *)
-        echo "Unknown Artifact ID"
+        echo "No check defined for artifact '${ARTIFACT_ID}'. Abort." >&2
+        exit 1
         ;;
 esac
