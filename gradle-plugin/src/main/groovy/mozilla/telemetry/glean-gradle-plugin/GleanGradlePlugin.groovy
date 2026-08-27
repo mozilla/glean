@@ -144,6 +144,9 @@ except:
     // Are we doing an offline build (by passing `--offline` to `./gradle`)?
     private Boolean isOffline
 
+    // Null when the caller supplies their own environment via gleanPythonEnvDir.
+    private TaskProvider<Exec> installGleanParser
+
     static File getPythonCommand(File envDir) {
         // Note that the command line is OS dependant.
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -180,6 +183,9 @@ except:
             def namespaceProvider = variant.namespace.map({ ns -> "namespace=${ns}.GleanMetrics" })
 
             def generateKotlinAPI = project.tasks.register("${TASK_NAME_PREFIX}SourceFor${variant.name.capitalize()}", GenerateGleanMetricsAPITask) {
+                if (installGleanParser != null) {
+                    dependsOn(installGleanParser)
+                }
                 description = "Generate the Kotlin code for the Metrics API"
 
                 if (project.ext.has("allowMetricsFromAAR")) {
@@ -268,6 +274,9 @@ except:
             }
 
             TaskProvider<Exec> generateGleanMetricsDocs = project.tasks.register("${TASK_NAME_PREFIX}DocsFor${variant.name.capitalize()}", Exec) {
+                if (installGleanParser != null) {
+                    dependsOn(installGleanParser)
+                }
                 description = "Generate the Markdown docs for the collected metrics"
 
                 def gleanDocsDirectory = "${project.projectDir}/docs"
@@ -390,7 +399,7 @@ except:
             args envDir.toString()
         }
 
-        TaskProvider<Exec> installGleanParser = project.tasks.register("installGleanParser", Exec) {
+        installGleanParser = project.tasks.register("installGleanParser", Exec) {
             description = "Install glean_parser"
 
             outputs.dir(envDir)
