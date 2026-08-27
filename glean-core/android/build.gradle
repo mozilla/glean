@@ -22,9 +22,6 @@ apply plugin: 'kotlinx-serialization'
  */
 File GLEAN_PING_SCHEMA_PATH = file("$rootDir/glean.1.schema.json")
 
-// This will store the uniffi-bindgen generated files for our component
-def UNIFFI_OUT_DIR = layout.buildDirectory.dir("generated/uniffi/")
-
 // Set configuration for the glean_parser
 ext.allowGleanInternal = true
 ext.gleanNamespace = "mozilla.telemetry.glean"
@@ -37,11 +34,11 @@ android {
     namespace = "mozilla.telemetry.glean"
 
     ndkVersion rootProject.ext.build.ndkVersion
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
+    compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        minSdk = rootProject.ext.build['minSdkVersion']
+        targetSdk = rootProject.ext.build['targetSdkVersion']
 
         // Carefully escape the string here so it will support `\` in
         // Windows paths correctly.
@@ -67,8 +64,6 @@ android {
         }
     }
 
-    sourceSets.main.kotlin.srcDirs += UNIFFI_OUT_DIR
-
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 
@@ -87,25 +82,8 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
-}
 
 afterEvaluate {
-    android.libraryVariants.all { variant ->
-        def variantName = variant.name.capitalize();
-        def testTask = tasks["test${variantName}UnitTest"]
-    }
-
-    def gleanNative = configurations.getByName("gleanNative")
-    android.libraryVariants.all { variant ->
-        def variantName = variant.name.capitalize();
-        def compileTask = tasks["compile${variantName}Kotlin"]
-
-        compileTask.dependsOn(generateUniffiBindings)
-        variant.registerJavaGeneratingTask(generateUniffiBindings, gleanNative.singleFile)
-    }
-
     if (project.hasProperty("coverage")) {
         jacoco {
           toolVersion = libs.versions.jacoco
@@ -198,7 +176,14 @@ interface InjectedExecOps {
 }
 def execOps = objects.newInstance(InjectedExecOps).execOps
 
-def generateUniffiBindings = tasks.register("generateUniffiBindings") {
+// AGP sets the output directory when the task is registered as a generated source,
+// so it is a property for AGP to fill in rather than a path the task chooses.
+abstract class GenerateUniffiBindingsTask extends DefaultTask {
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+}
+
+def generateUniffiBindings = tasks.register("generateUniffiBindings", GenerateUniffiBindingsTask) {
     def gleanNative = configurations.getByName("gleanNative")
     doFirst {
         def libraryPath = gleanNative.asFileTree.matching {
@@ -216,11 +201,10 @@ def generateUniffiBindings = tasks.register("generateUniffiBindings") {
               '--library', libraryPath,
               '--language', 'kotlin',
               '--config', "${project.projectDir}/../uniffi.toml",
-              '--out-dir', UNIFFI_OUT_DIR.get()
+              '--out-dir', outputDir.get()
         }
     }
 
-    outputs.dir UNIFFI_OUT_DIR
     // Re-generate if native changes
     inputs.files gleanNative
     // Re-generate if the interface definition changes.
@@ -232,6 +216,10 @@ def generateUniffiBindings = tasks.register("generateUniffiBindings") {
     // Re-generate if our uniffi-bindgen version changes.
     inputs.file "${project.rootDir}/Cargo.lock"
 }
+
+androidComponents.onVariants(androidComponents.selector().all(), { variant ->
+    variant.sources.java.addGeneratedSourceDirectory(generateUniffiBindings) { task -> task.outputDir }
+})
 
 // Generate markdown docs for the collected metrics.
 ext.gleanDocsDirectory = "$rootDir/docs/user/user/collected-metrics"
