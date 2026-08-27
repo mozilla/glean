@@ -142,6 +142,7 @@ def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
 def copyGleanNative = tasks.register("copyGleanNative", Copy) {
     from layout.buildDirectory.dir("rustJniLibs/desktop")
     into layout.buildDirectory.dir("gleanNative")
+    dependsOn("cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}")
 }
 
 artifacts {
