@@ -28,6 +28,9 @@
 * Python
   * Implement the custom distribution metric type ([#3572](https://github.com/mozilla/glean/pull/3572))
 
+* General
+  * Accept 0-duration samples in timing_distribution metrics ([bug 2049040](https://bugzilla.mozilla.org/show_bug.cgi?id=2049040))
+
 # v69.0.0 (2026-06-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v68.0.0...v69.0.0)
