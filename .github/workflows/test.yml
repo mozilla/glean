@@ -508,6 +508,27 @@ jobs:
           name: gradle-test-failures
           path: test-results/tests
 
+  audit:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+        with:
+          cache-bin: true
+
+      - name: Install cargo-audit
+        run: |
+          command -v cargo-audit || cargo install cargo-audit --version 0.22.2
+
+      - name: Run cargo audit
+        run: |
+          make audit
+
   lint-yaml:
     runs-on: ubuntu-latest
     needs: [decide-runs]
@@ -549,10 +570,10 @@ jobs:
         run: cargo install cargo-deny --version 0.19.9
 
       - name: Run license check
-        run: cargo deny check licenses
+        run: make check-licenses
 
       - name: Run dependency ban check
-        run: cargo deny check bans
+        run: make check-bans
 
   lint-schema:
     runs-on: ubuntu-latest
@@ -708,6 +729,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     needs:
+      - audit
       - code-security-analysis
       - docs
       - fmt-rust
