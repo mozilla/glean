@@ -120,6 +120,16 @@ lint-python-fix: setup-python ## Run ruff and mypy to lint Python code
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
 
+check-licenses:
+	cargo deny check licenses
+
+check-bans:
+	cargo deny check bans
+
+check: check-licenses check-bans
+
+.PHONY: check-licenses check-bans check
+
 # Formatting
 
 fmt-rust: ## Format all Rust code
