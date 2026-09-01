@@ -281,7 +281,7 @@ impl Glean {
             events_ping_acceleration_factor: cfg
                 .events_ping_acceleration_factor
                 .map(|x| x as usize),
-            store_submitted_pings_enabled: cfg.enable_store_submitted_pings
+            store_submitted_pings_enabled: cfg.enable_store_submitted_pings,
         };
 
         // Ensuring these pings are registered.
