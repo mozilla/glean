@@ -63,3 +63,18 @@ typealias LabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData
  * The set of data specifically needed to construct simple labeled metric types.
  */
 typealias CommonLabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData.Common
+
+/**
+ * The set of data specifically needed to construct labeled memory distribution metric types.
+ */
+typealias MemoryDistributionLabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData.MemoryDistribution
+
+/**
+ * The set of data specifically needed to construct labeled timing distribution metric types.
+ */
+typealias TimingDistributionLabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData.TimingDistribution
+
+/**
+ * The set of data specifically needed to construct labeled custom distribution metric types.
+ */
+typealias CustomDistributionLabeledMetricData = mozilla.telemetry.glean.internal.LabeledMetricData.CustomDistribution

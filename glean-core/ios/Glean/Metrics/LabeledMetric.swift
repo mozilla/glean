@@ -13,8 +13,6 @@
 /// but records metrics for the underlying metric type `T` in the storage engine for that type.
 /// The only difference is that labeled metrics are stored with the special key `$category.$name/$label`.
 public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
-    let disabled: Bool
-    let sendInPings: [String]
     let subMetric: T
     let inner: AnyObject
 
@@ -24,38 +22,30 @@ public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
     /// * `BooleanMetricType`
     /// * `CounterMetricType`
     /// * `StringMetricType`
-    /// * `QuantityMetric`
+    /// * `QuantityMetricType`
+    /// * `LabeledCustomDistribution`
+    /// * `LabeledMemoryDistribution`
+    /// * `LabeledTimingDistribution`
     ///
     /// Throws an exception when used with unsupported sub-metrics.
-    public init(
-        category: String,
-        name: String,
-        sendInPings: [String],
-        lifetime: Lifetime,
-        disabled: Bool,
-        subMetric: T,
-        labels: [String]? = nil
-    ) throws {
-        let meta = CommonMetricData(
-            category: category,
-            name: name,
-            sendInPings: sendInPings,
-            lifetime: lifetime,
-            disabled: disabled
-        )
-        self.disabled = disabled
-        self.sendInPings = sendInPings
+    public init(_ meta: LabeledMetricData, subMetric: T, labels: [String]? = nil) throws {
         self.subMetric = subMetric
 
         switch subMetric {
         case is CounterMetricType:
-            self.inner = LabeledCounter(.common(cmd: meta), labels)
+            self.inner = LabeledCounter(meta, labels)
         case is BooleanMetricType:
-            self.inner = LabeledBoolean(.common(cmd: meta), labels)
+            self.inner = LabeledBoolean(meta, labels)
         case is StringMetricType:
-            self.inner = LabeledString(.common(cmd: meta), labels)
-        case is QuantityMetric:
-            self.inner = LabeledQuantity(.common(cmd: meta), labels)
+            self.inner = LabeledString(meta, labels)
+        case is QuantityMetricType:
+            self.inner = LabeledQuantity(meta, labels)
+        case is MemoryDistributionMetricType:
+            self.inner = LabeledMemoryDistribution(meta, labels)
+        case is TimingDistributionMetricType:
+            self.inner = LabeledTimingDistribution(meta, labels)
+        case is CustomDistributionMetricType:
+            self.inner = LabeledCustomDistribution(meta, labels)
         default:
             throw "Can not create a labeled version of this metric type"
         }
@@ -78,7 +68,6 @@ public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
     ///     * label: The label
     /// - returns: The specific metric for that label
     public subscript(label: String) -> T {
-
         switch self.inner {
         case is LabeledCounter:
             return (self.inner as! LabeledCounter).get(label) as! T
@@ -88,6 +77,12 @@ public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
             return (self.inner as! LabeledString).get(label) as! T
         case is LabeledQuantity:
             return (self.inner as! LabeledQuantity).get(label) as! T
+        case is LabeledMemoryDistribution:
+            return (self.inner as! LabeledMemoryDistribution).get(label) as! T
+        case is LabeledTimingDistribution:
+            return (self.inner as! LabeledTimingDistribution).get(label) as! T
+        case is LabeledCustomDistribution:
+            return (self.inner as! LabeledCustomDistribution).get(label) as! T
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()
@@ -109,6 +104,12 @@ public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
             return (self.inner as! LabeledString).testGetNumRecordedErrors(errorType)
         case is LabeledQuantity:
             return (self.inner as! LabeledQuantity).testGetNumRecordedErrors(errorType)
+        case is LabeledMemoryDistribution:
+            return (self.inner as! LabeledMemoryDistribution).testGetNumRecordedErrors(errorType)
+        case is LabeledTimingDistribution:
+            return (self.inner as! LabeledTimingDistribution).testGetNumRecordedErrors(errorType)
+        case is LabeledCustomDistribution:
+            return (self.inner as! LabeledCustomDistribution).testGetNumRecordedErrors(errorType)
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type
             assertUnreachable()
@@ -132,6 +133,12 @@ public final class LabeledMetricType<T: Sendable>: @unchecked Sendable {
         case let labeled as LabeledString:
             return labeled.testGetValue(pingName)!
         case let labeled as LabeledQuantity:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledMemoryDistribution:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledTimingDistribution:
+            return labeled.testGetValue(pingName)!
+        case let labeled as LabeledCustomDistribution:
             return labeled.testGetValue(pingName)!
         default:
             // The constructor will already throw an exception on an unhandled sub-metric type

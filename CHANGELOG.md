@@ -2,6 +2,15 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
+* General
+  * Updated to `glean_parser` v21.0.0 ([#3573](https://github.com/mozilla/glean/issues/3573))
+* Android
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+* iOS
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+* Python
+  * Implement labeled {custom|memory|timing} distribution and labeled quantity ([#3573](https://github.com/mozilla/glean/pull/3573))
+
 # v70.0.0 (2026-08-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...v70.0.0)
