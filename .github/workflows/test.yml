@@ -70,6 +70,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust-version }}
 
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
       - name: Install nextest
         run: |
           .github/workflows/crate-ci.sh \
@@ -94,3 +97,13 @@ jobs:
 
           echo "::add-matcher::.github/rust.json"
           make test-rust
+
+      - name: Run Rust sample
+        run: |
+          cargo run -p sample
+
+      - name: Run glean-sym sample
+        run: |
+          cd samples/glean-sym-test
+          make run
+          make run-noop
