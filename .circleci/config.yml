@@ -987,7 +987,7 @@ jobs:
           name: Internal metrics docs consistency check
           command: |
             make docs-metrics
-            if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
+            if ! git diff --exit-code HEAD -- docs/user/user/collected-metrics/metrics.md; then
               echo "=================================================="
               echo "metrics.md is different from what's stored in git."
               echo "Please regenerate the file using:"

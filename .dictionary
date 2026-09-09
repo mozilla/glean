@@ -1,4 +1,4 @@
-personal_ws-1.1 en 321 utf-8
+personal_ws-1.1 en 323 utf-8
 AAR
 AARs
 ABI
@@ -162,6 +162,7 @@ csh
 dataset
 datasets
 datetime
+deserialize
 destructor
 deterministically
 dev
@@ -269,6 +270,7 @@ semver
 serializable
 serializer
 setuptools
+sqlite
 stateful
 struct
 subcommand

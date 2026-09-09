@@ -109,3 +109,20 @@ fn reference_metrics_toc_is_sorted() {
         .run()
         .unwrap();
 }
+
+#[test]
+fn internal_metrics_docs_are_up_to_date() {
+    // Relative to the project root
+    let metrics_docs = "docs/user/user/collected-metrics/metrics.md";
+
+    let sh = Shell::new().unwrap();
+    // This is running from within `glean-core`, so we switch up one directory
+    let _root = sh.push_dir("..");
+
+    cmd!(sh, "make docs-metrics").run().unwrap();
+    assert!(sh.path_exists(metrics_docs));
+
+    cmd!(sh, "git --no-pager diff --exit-code {metrics_docs}")
+        .run()
+        .unwrap();
+}
