@@ -496,6 +496,21 @@ criteria = "safe-to-deploy"
 delta = "0.1.0 -> 0.1.4"
 notes = "Nothing out of the ordinary for a crate finding MSVC tooling."
 
+[[audits.bytecode-alliance.audits.flate2]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "1.0.30 -> 1.1.0"
+notes = """
+Minor updates, mostly a new changelog with many lines. No new `unsafe` code and
+mostly just updating Rust idioms.
+"""
+
+[[audits.bytecode-alliance.audits.flate2]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "1.1.0 -> 1.1.4"
+notes = "Minor amounts of unsafe code but what you would expect from interfacing with FFI libraries. Otherwise nothing major."
+
 [[audits.bytecode-alliance.audits.foldhash]]
 who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
@@ -646,6 +661,22 @@ who = "Alex Crichton <alex@alexcrichton.com>"
 criteria = "safe-to-deploy"
 delta = "0.7.1 -> 0.8.0"
 notes = "Minor updates, using new Rust features like `const`, no major changes."
+
+[[audits.bytecode-alliance.audits.miniz_oxide]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "0.8.0 -> 0.8.5"
+notes = """
+Lots of small updates here and there, for example around modernizing Rust
+idioms. No new `unsafe` code and everything looks like what you'd expect a
+compression library to be doing.
+"""
+
+[[audits.bytecode-alliance.audits.miniz_oxide]]
+who = "Alex Crichton <alex@alexcrichton.com>"
+criteria = "safe-to-deploy"
+delta = "0.8.5 -> 0.8.9"
+notes = "No new unsafe code, just refactorings."
 
 [[audits.bytecode-alliance.audits.num-traits]]
 who = "Andrew Brown <andrew.brown@intel.com>"
@@ -1195,65 +1226,6 @@ There were no hits of `-i cipher`, `-i crypto`, `'\bnet\b'`.
 '''
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
-[[audits.google.audits.flate2]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "safe-to-deploy"
-delta = "1.0.30 -> 1.0.31"
-notes = """
-WARNING: This certification is a result of a **partial** audit.  The
-`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
-more details.
-
-Only benign changes:
-
-* Comment-only changes in `.rs` files
-* Also changing dependency version in `Cargo.toml`, but this is for `any_zlib`
-  feature which is not used in Chromium (i.e. this is a *partial* audit - see
-  the previous audit notes for 1.0.30)
-"""
-aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
-
-[[audits.google.audits.flate2]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "safe-to-deploy"
-delta = "1.0.31 -> 1.0.33"
-notes = """
-WARNING: This certification is a result of a **partial** audit.  The
-`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
-more details.
-
-This delta audit has been reviewed in https://crrev.com/c/5811890
-The delta can be seen at https://diff.rs/flate2/1.0.31/1.0.33
-The delta bumps up `miniz_oxide` dependency to `0.8.0`
-The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Chromium
-and therefore hasn't been covered by this partial audit.
-"""
-aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
-
-[[audits.google.audits.flate2]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "safe-to-deploy"
-delta = "1.0.33 -> 1.0.34"
-notes = """
-WARNING: This certification is a result of a **partial** audit.  The
-`any_zlib` code has **not** been audited.  See the audit of 1.0.30 for
-more details.
-
-The delta can be seen at https://diff.rs/flate2/1.0.33/1.0.34
-The delta bumps up `libz-rs-sys` dependency from `0.2.1` to `0.3.0`
-The delta in `lib.rs` only tweaks comments and has no code changes.
-The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Chromium
-and therefore hasn't been covered by this partial audit.
-"""
-aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
-
-[[audits.google.audits.flate2]]
-who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = "safe-to-deploy"
-delta = "1.0.34 -> 1.0.35"
-notes = "There are no significant code changes in this delta (just one string constant change). Note that prior audits may have been partial."
-aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
-
 [[audits.google.audits.foldhash]]
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = "safe-to-deploy"
@@ -1364,12 +1336,6 @@ Unsafe review in https://docs.google.com/document/d/1IXQbD1GhTRqNHIGxq6yy7qHqxeO
 Unsafety is generally very well-documented, with one exception, which we
 describe in the review doc.
 """
-aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
-
-[[audits.google.audits.miniz_oxide]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "safe-to-deploy"
-delta = "0.8.0 -> 0.8.2"
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
 [[audits.google.audits.nom]]
@@ -1813,6 +1779,18 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
 delta = "1.0.218 -> 1.0.219"
 notes = "Minor changes (clippy tweaks, using `mem::take` instead of `mem::replace`)."
+aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
+
+[[audits.google.audits.simd-adler32]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "safe-to-deploy"
+version = "0.3.7"
+notes = """
+Security review of earlier versions of the crate can be found at
+(Google-internal, sorry): go/image-crate-chromium-security-review
+
+Audit comments for 1.3.2 can be found at https://crrev.com/c/4723145.
+"""
 aggregated-from = "https://chromium.googlesource.com/chromium/src/+/main/third_party/rust/chromium_crates_io/supply-chain/audits.toml?format=TEXT"
 
 [[audits.google.audits.smallvec]]
