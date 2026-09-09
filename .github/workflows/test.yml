@@ -89,6 +89,7 @@ jobs:
         with:
           files: |
             glean-core/ios/**
+            samples/ios/app/**
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-yaml
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
@@ -356,7 +357,8 @@ jobs:
           gem env
           xcpretty --version || true
 
-      - name: Setup build environment
+      - &swift-build-environment
+        name: Setup build environment
         run: |
           set -x
           rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
@@ -380,6 +382,42 @@ jobs:
       - name: Run iOS test
         run: |
           make test-swift
+
+  test-swift-sample:
+    runs-on: macos-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Install xcpretty
+        run: |
+          gem install --no-document xcpretty
+
+      - name: Show Ruby environment
+        run: |
+          ruby --version
+          gem env
+          xcpretty --version || true
+
+      - *swift-build-environment
+
+      - name: Build XCFramework archive
+        run: |
+          make build-xcframework
+
+      - name: Test sample app
+        run: |
+          make test-ios-sample
 
   test-kotlin:
     runs-on: ubuntu-latest
