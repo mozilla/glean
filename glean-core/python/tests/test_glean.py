@@ -1018,6 +1018,7 @@ def test_glean_shutdown(safe_httpserver):
     for _ in range(10):
         counter.add(1)
         custom_ping.submit()
+        counter.test_get_value()
 
     Glean.shutdown()
     wait_for_requests(safe_httpserver, n=10)
