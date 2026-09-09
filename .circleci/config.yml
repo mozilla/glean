@@ -168,7 +168,7 @@ commands:
       - run:
           name: Python tests
           command: |
-            export PYTEST_ARGS=-v
+            export PYTEST_ARGS=-vs
             make test-python
       - run:
           name: Detect and gather coredump files

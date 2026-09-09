@@ -204,7 +204,7 @@ impl Glean {
     /// Importantly, this will not send any pings at startup, since that
     /// sort of management should only happen in the main process.
     pub fn new_for_subprocess(cfg: &InternalConfiguration, scan_directories: bool) -> Result<Self> {
-        log::info!("Creating new Glean v{}", GLEAN_VERSION);
+        log::info!("Creating new Glean v{} -- cfg: {:?}", GLEAN_VERSION, cfg);
 
         let application_id = sanitize_application_id(&cfg.application_id);
         if application_id.is_empty() {

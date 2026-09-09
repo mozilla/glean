@@ -28,7 +28,7 @@ this_dir = Path(__file__)
 GLEAN_PING_SCHEMA_PATH = (this_dir.parent.parent.parent.parent / "glean.1.schema.json").resolve()
 
 # Turn on all logging when running the unit tests
-logging.getLogger(None).setLevel(logging.INFO)
+logging.getLogger(None).setLevel(logging.DEBUG)
 
 
 # This will be run before every test in the entire test suite

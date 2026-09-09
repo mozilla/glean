@@ -167,6 +167,9 @@ class Glean:
         if log_level is not None:
             cls._simple_log_level = log_level
             logging.basicConfig(level=log_level)
+        if log_level is None:
+            cls._simple_log_level = logging.DEBUG
+            logging.basicConfig(level=log_level)
 
         with cls._thread_lock:
             if cls.is_initialized():

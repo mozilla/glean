@@ -141,6 +141,7 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
     # Limits are enforced by glean-core to avoid an inifinite loop here.
     # Whenever a limit is reached, this binding will receive `UploadTaskTag.DONE` and step out.
+    pings_processed = 0
     while True:
         task = glean_get_upload_task()
 
@@ -158,14 +159,19 @@ def _process(data_dir: Path, application_id: str, configuration) -> bool:
 
             # Process the response.
             action = glean_process_ping_upload_response(request.document_id, upload_result)
+            pings_processed += 1
             if action == UploadTaskAction.NEXT:
+                log.debug(f"PingUploadWorker. Next task. Pings processed: {pings_processed}")
                 continue
             else:  # action == UploadTaskAction.END
+                log.debug(f"PingUploadWorker. Done. Pings processed: {pings_processed}")
                 return True
 
         elif isinstance(task, PingUploadTask.WAIT):
+            log.debug(f"PingUploadWorker. Waiting for {task.time} ms")
             time.sleep(task.time / 1000)
         elif task.is_done():
+            log.debug(f"PingUploadWorker. Done. Pings processed: {pings_processed}")
             return True
 
 
