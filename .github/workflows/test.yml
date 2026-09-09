@@ -29,14 +29,12 @@ jobs:
       rust-changed: ${{ steps.set-flags.outputs.rust-changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-        if: github.ref_name != 'main'
         with:
           persist-credentials: false
           filter: blob:none
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - id: changed-files-rust
-        if: github.ref_name != 'main'
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
           files: |
@@ -45,16 +43,11 @@ jobs:
             **/*.rs
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - name: Decide which jobs to run
-        if: github.ref_name != 'main'
         id: set-flags
         env:
-          RUST_CHANGED: ${{ steps.changed-files-rust.outputs.any_changed }}
+          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
         run: |
           echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
-      - name: Force full CI run on main
-        if: github.ref_name == 'main'
-        run:
-          echo "rust-changed=true" >> $GITHUB_OUTPUT
 
   test-rust:
     runs-on: ubuntu-latest
