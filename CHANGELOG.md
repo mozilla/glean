@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
+* General
+  * Add back `delay_ping_lifetime_io=true` functionality by using an in-memory table ([#3590](https://github.com/mozilla/glean/pull/3590))
 * Python
   * Treat `C` as an undetermined locale ([#3633](https://github.com/mozilla/glean/pull/3633))
 
