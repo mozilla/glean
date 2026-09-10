@@ -255,7 +255,7 @@ impl Database {
         let (conn, load_state) = sqlite_open(&store_path)?;
 
         if delay_ping_lifetime_io {
-            conn.write(|tx| create_in_memory_table(tx, IN_MEMORY_DATABASE, DEFAULT_TABLE))?;
+            conn.write(|tx| create_in_memory_table(tx, IN_MEMORY_DATABASE))?;
         }
 
         let now = Instant::now();

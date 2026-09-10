@@ -15,6 +15,24 @@ use super::connection::ConnectionOpener;
 #[derive(Debug)]
 pub struct Schema;
 
+fn table_schema(schema: Option<&str>) -> String {
+    let separator = if schema.is_some() { "." } else { "" };
+    let schema = schema.unwrap_or("");
+    let table_name = "telemetry";
+    format!(
+        "
+         CREATE TABLE {schema}{separator}{table_name}(
+           id TEXT NOT NULL,
+           ping TEXT NOT NULL,
+           lifetime TEXT NOT NULL,
+           labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
+           value BLOB,
+           UNIQUE(id, ping, labels)
+         );
+        "
+    )
+}
+
 impl ConnectionOpener for Schema {
     const MAX_SCHEMA_VERSION: u32 = 2;
 
@@ -51,19 +69,13 @@ impl ConnectionOpener for Schema {
     }
 
     fn create(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
-        tx.execute_batch(
+        tx.execute_batch(&format!(
             "
-             CREATE TABLE telemetry(
-               id TEXT NOT NULL,
-               ping TEXT NOT NULL,
-               lifetime TEXT NOT NULL,
-               labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
-               value BLOB,
-               UNIQUE(id, ping, labels)
-             );
+             {}
              CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
             ",
-        )?;
+            table_schema(None)
+        ))?;
         Ok(())
     }
 
@@ -112,7 +124,6 @@ pub enum SchemaError {
 pub fn create_in_memory_table(
     tx: &mut Transaction<'_>,
     database: &str,
-    table: &str,
 ) -> Result<(), rusqlite::Error> {
     tx.execute(
         "ATTACH DATABASE ':memory:' AS :database",
@@ -121,20 +132,6 @@ pub fn create_in_memory_table(
     // This must remain in sync with the schema for the main table listed above.
     // Otherwise bad things will happen.
     // TODO(bug 2070883): Ensure this is the same with a test or similar.
-    tx.execute(
-        &format!(
-            "
-             CREATE TABLE {database}.{table}(
-               id TEXT NOT NULL,
-               ping TEXT NOT NULL,
-               lifetime TEXT NOT NULL,
-               labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
-               value BLOB,
-               UNIQUE(id, ping, labels)
-             );
-            "
-        ),
-        [],
-    )?;
+    tx.execute(&table_schema(Some(database)), [])?;
     Ok(())
 }
