@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
+* Python
+  * Treat `C` as an undetermined locale ([#3633](https://github.com/mozilla/glean/pull/3633))
+
 # v70.0.0 (2026-08-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v69.0.0...v70.0.0)
