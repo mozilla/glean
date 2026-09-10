@@ -73,7 +73,9 @@ jobs:
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
           files: |
-            glean-core/**/*.py
+            pyproject.toml
+            glean-core/python/**
+            samples/python/**
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-rust
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
