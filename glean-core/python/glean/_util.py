@@ -23,7 +23,9 @@ def get_locale_tag() -> str:
     # In some contexts, especially on Windows, there is no locale set. Use "und"
     # to indicate "undetermined", as recommended by the Unicode TR35:
     # https://unicode.org/reports/tr35/#Unknown_or_Invalid_Identifiers
-    if value is None:
+    # In other cases, e.g. when the locale is not set on Linux, it defaults to `C`.
+    # We treat this as undetermined.
+    if value is None or value == "C":
         return "und"
 
     # The format of the locale string is platform depedent. At least on Linux,
