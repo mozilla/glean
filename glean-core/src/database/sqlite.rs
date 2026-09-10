@@ -369,7 +369,7 @@ impl Database {
     /// if `delay_ping_lifetime_io` is set to true.
     ///
     /// Does nothing if it isn't or if there is not data to load.
-    fn load_ping_lifetime_data(&self) {
+    fn load_ping_lifetime_data(&mut self) {
         if !self.delay_ping_lifetime_io {
             return;
         };
@@ -378,8 +378,8 @@ impl Database {
             "INSERT INTO lifetime_ping.telemetry SELECT * FROM telemetry WHERE lifetime = 'ping'";
         let res = self.conn.write(|tx| tx.execute_one(copy_sql));
         if let Err(err) = res {
-            // TODO(bug 2070884): Disable `delay_ping_lifetime_io` on error.
-            log::error!("Could not load ping lifetime data into memory: {err:?}");
+            log::error!("Could not load ping lifetime data into memory: {err:?}. Disabling ping lifetime IO delay.");
+            self.delay_ping_lifetime_io = false;
         }
     }
 
