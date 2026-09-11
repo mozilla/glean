@@ -32,6 +32,7 @@ jobs:
       metrics-changed: ${{ steps.set-flags.outputs.metrics-changed }}
       python-changed: ${{ steps.set-flags.outputs.python-changed }}
       rust-changed: ${{ steps.set-flags.outputs.rust-changed }}
+      swift-changed: ${{ steps.set-flags.outputs.swift-changed }}
       yaml-changed: ${{ steps.set-flags.outputs.yaml-changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -83,6 +84,13 @@ jobs:
             **/Cargo.lock
             **/*.rs
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-swift
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            glean-core/ios/**
+            samples/ios/app/**
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-yaml
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
@@ -99,6 +107,7 @@ jobs:
           METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-metrics.outputs.any_changed }}
           PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-python.outputs.any_changed }}
           RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
+          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-swift.outputs.any_changed }}
           YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-yaml.outputs.any_changed }}
         run: |
           echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
@@ -107,6 +116,7 @@ jobs:
           echo "metrics-changed=$METRICS_CHANGED" >> $GITHUB_OUTPUT
           echo "python-changed=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
           echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
+          echo "swift-changed=$SWIFT_CHANGED" >> $GITHUB_OUTPUT
           echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
 
   test-rust:
@@ -320,6 +330,94 @@ jobs:
           for target in $TARGETS; do
             make build-python-wheel GLEAN_BUILD_TARGET="$target" GLEAN_BUILD_EXTRA="--zig"
           done
+
+  test-swift:
+    runs-on: macos-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Install xcpretty
+        run: |
+          gem install --no-document xcpretty
+
+      - name: Show Ruby environment
+        run: |
+          ruby --version
+          gem env
+          xcpretty --version || true
+
+      - &swift-build-environment
+        name: Setup build environment
+        run: |
+          set -x
+          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+          # For some reason everything works fine if we use the host clang,
+          # not the Xcode-bundled clang.
+          echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+          echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
+
+          # List available devices -- allows us to see what's there
+          DEVICES=$(xcrun xctrace list devices 2>&1)
+          echo "$DEVICES"
+          # Pick a device and start it
+          UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
+          xcrun simctl boot "$UUID"
+
+      - name: Run iOS build
+        run: |
+          make build-swift
+
+      - name: Run iOS test
+        run: |
+          make test-swift
+
+  test-swift-sample:
+    runs-on: macos-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Install xcpretty
+        run: |
+          gem install --no-document xcpretty
+
+      - name: Show Ruby environment
+        run: |
+          ruby --version
+          gem env
+          xcpretty --version || true
+
+      - *swift-build-environment
+
+      - name: Build XCFramework archive
+        run: |
+          make build-xcframework
+
+      - name: Test sample app
+        run: |
+          make test-ios-sample
 
   test-kotlin:
     runs-on: ubuntu-latest
