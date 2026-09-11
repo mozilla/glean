@@ -15,7 +15,7 @@ As such it attempts to send itself at the moment the user opts out of data colle
 
 > Server-side Glean has no Glean-managed `client_id`, so it uses a separate
 > `server-deletion-request` ping carrying application-defined identifiers instead.
-> See [Adding Glean to your Server Application](../adding-glean-to-your-project/server.md#requesting-deletion-of-collected-data).
+> See [Requesting deletion of collected data](../adding-glean-to-your-project/server.md#requesting-deletion-of-collected-data).
 
 {{#include ../../../shared/blockquote-info.html}}
 

@@ -34,9 +34,9 @@ The ping is defined in the `glean-server` library, so you do not need to declare
 metric that identifies the user. `glean_parser` generates a logger for the ping alongside
 the ones for your other pings, which you record when the user requests deletion.
 
-Keep the identifier in the `send_in_pings` list of the ping your data is collected in as
-well. The deletion request tells the pipeline which user to delete, and the data ping is
-what creates the column the pipeline deletes from.
+That metric also needs to be sent in the pings that carry your telemetry, such as
+`events`. The deletion request says whose data to remove, and the pipeline finds it by
+matching the identifier in those pings.
 
 {{#include ../../../shared/blockquote-warning.html}}
 
