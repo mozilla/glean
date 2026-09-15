@@ -309,7 +309,7 @@ jobs:
       - name: Setup Python env
         run: |
             make setup-python
-            .venv3.13/bin/pip install ziglang==0.15.2
+            .venv3.13/bin/pip install ziglang==0.16.0
       - name: Install additional targets
         run: |
           rustup target add aarch64-unknown-linux-gnu
