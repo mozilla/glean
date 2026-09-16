@@ -7,6 +7,8 @@ namespace glean {
     // No-op on Android and iOS. Use `glean_enable_logging` instead.
     void glean_enable_logging_to_fd(u64 fd);
 
+    void glean_proceed_init();
+
     // Initializes Glean.
     //
     // This will fully initialize Glean in a separate thread.

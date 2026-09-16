@@ -21,6 +21,8 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
+#[cfg(all(feature = "wait-for-init", target_os = "android"))]
+use std::sync::Condvar;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, UNIX_EPOCH};
 use std::{fmt, fs};
@@ -125,6 +127,14 @@ static PRE_INIT_DISTRIBUTION_CLEARED: AtomicBool = AtomicBool::new(false);
 /// (Why a Vec? There might be more than one concurrent call to initialize.)
 static INIT_HANDLES: Lazy<Arc<Mutex<Vec<std::thread::JoinHandle<()>>>>> =
     Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
+
+#[cfg(all(feature = "wait-for-init", target_os = "android"))]
+static GLEAN_INIT: OnceCell<(Mutex<bool>, Condvar)> = OnceCell::new();
+
+#[cfg(all(feature = "wait-for-init", target_os = "android"))]
+fn global_glean_init() -> &'static (Mutex<bool>, Condvar) {
+    GLEAN_INIT.get_or_init(|| Default::default())
+}
 
 /// Configuration for Glean
 #[derive(Debug, Clone, MallocSizeOf)]
@@ -365,6 +375,21 @@ pub trait GleanEventListener: Send {
     fn on_event_recorded(&self, id: String);
 }
 
+/// TODO
+#[cfg(all(feature = "wait-for-init", target_os = "android"))]
+pub fn glean_proceed_init() {
+    let (lock, cvar) = global_glean_init();
+    let mut started = lock.lock().unwrap();
+    *started = true;
+    cvar.notify_all();
+}
+
+/// TODO
+#[cfg(not(all(feature = "wait-for-init", target_os = "android")))]
+pub fn glean_proceed_init() {
+    // Intentionally left empty.
+}
+
 /// Initializes Glean.
 ///
 /// # Arguments
@@ -418,6 +443,17 @@ fn initialize_inner(
     let init_handle = thread::spawn("glean.init", move || {
         let upload_enabled = cfg.upload_enabled;
         let trim_data_to_registered_pings = cfg.trim_data_to_registered_pings;
+
+        #[cfg(all(feature = "wait-for-init", target_os = "android"))]
+        {
+            let (lock, cvar) = global_glean_init();
+            let mut started = lock.lock().unwrap();
+            while !*started {
+                log::info!("waiting for unlock");
+                started = cvar.wait(started).unwrap();
+            }
+            log::info!("init unlocked. proceeding.");
+        }
 
         // Set the internal logging level.
         if let Some(level) = cfg.log_level {
