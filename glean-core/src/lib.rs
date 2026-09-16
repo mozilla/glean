@@ -984,17 +984,17 @@ pub fn glean_set_store_submitted_pings_enabled(enabled: bool) {
 /// A submitted ping that has been stored by Glean.
 pub struct SubmittedPing {
     /// The document ID (unique identifier)
-    document_id: String,
+    pub document_id: String,
     /// The ping's name
-    ping: String,
+    pub ping: String,
     /// RFC3339 datetime string
-    submitted_date: String,
+    pub submitted_date: String,
     /// Optional RFC3339 datetime string
-    uploaded_date: Option<String>,
+    pub uploaded_date: Option<String>,
     /// Whether the upload failed unrecoverably or not
-    upload_failed: Option<String>,
+    pub upload_failed: Option<String>,
     /// The ping's payload
-    payload: Option<JsonValue>,
+    pub payload: Option<JsonValue>,
 }
 
 impl From<database::sqlite::SubmittedPing> for SubmittedPing {
