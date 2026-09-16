@@ -123,7 +123,7 @@ pub struct SubmittedPing {
     pub ping: String,
     pub submitted_date: SqliteDatetime,
     pub uploaded_date: Option<SqliteDatetime>,
-    pub upload_failed: bool,
+    pub upload_failed: Option<SqliteDatetime>,
     pub payload: Option<String>,
 }
 
@@ -687,13 +687,13 @@ impl Database {
 
     pub fn mark_ping_as_upload_failed(&self, document_id: &str) -> usize {
         let update_submitted_pings_sql =
-            "UPDATE submitted_pings SET upload_failed = 1 WHERE document_id = ?1";
+            "UPDATE submitted_pings SET upload_failed = ?1 WHERE document_id = ?2";
         self.conn
             .write(|tx| {
                 let Ok(mut stmt) = tx.prepare_cached(update_submitted_pings_sql) else {
                     return Ok(Default::default());
                 };
-                stmt.execute(params![document_id])
+                stmt.execute(params![SqliteDatetime(Utc::now()), document_id])
             })
             .unwrap_or_default()
     }
@@ -717,7 +717,7 @@ impl Database {
         ping: &str,
         date_submitted: DateTime<Utc>,
         date_uploaded: Option<DateTime<Utc>>,
-        upload_failed: bool,
+        upload_failed: Option<DateTime<Utc>>,
         payload: JsonValue,
     ) -> Result<()> {
         self.conn.write(|tx| {
@@ -739,7 +739,7 @@ impl Database {
                 ping,
                 SqliteDatetime(date_submitted),
                 date_uploaded.map(SqliteDatetime),
-                upload_failed,
+                upload_failed.map(SqliteDatetime),
                 serde_json::to_string(&payload).expect("Unable to convert JSON payload to string.")
             ])?;
             Ok(())

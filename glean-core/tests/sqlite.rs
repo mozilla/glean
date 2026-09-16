@@ -3,10 +3,11 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 mod common;
-use crate::common::*;
-use chrono::Utc;
 use std::fs;
 
+use crate::common::*;
+
+use chrono::Utc;
 use glean_core::metrics::*;
 use glean_core::CommonMetricData;
 use glean_core::Glean;
@@ -318,7 +319,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping",
             utc_time_one,
             None,
-            false,
+            None,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -331,7 +332,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping-two",
             utc_time_two,
             None,
-            false,
+            None,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -344,7 +345,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping-two",
             utc_time_two,
             Some(utc_time_two),
-            false,
+            None,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -357,7 +358,7 @@ fn test_storing_and_fetching_submitted_pings() {
             "ping-three",
             utc_time_three,
             None,
-            true,
+            Some(utc_time_three),
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -375,7 +376,8 @@ fn test_storing_and_fetching_submitted_pings() {
         all_pings.get(1).unwrap().payload().unwrap(),
         serde_json::json!({ "test": "a value" })
     );
-    assert!(all_pings.first().unwrap().upload_failed);
+    assert_eq!(all_pings.first().unwrap().document_id, "id-two");
+    assert!(all_pings.first().unwrap().upload_failed.is_some());
 
     let count = glean.storage().mark_ping_as_uploaded("id", utc_time_one);
     assert_eq!(count, 1);
@@ -406,7 +408,7 @@ fn test_cleanup_of_submitted_pings() {
             "ping",
             utc_time_more_than_30_days_ago,
             None,
-            false,
+            None,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();
@@ -419,7 +421,7 @@ fn test_cleanup_of_submitted_pings() {
             "ping",
             Utc::now(),
             None,
-            false,
+            None,
             serde_json::json!({ "test": "a value" }),
         )
         .unwrap();

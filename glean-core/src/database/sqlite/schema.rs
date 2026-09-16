@@ -78,7 +78,7 @@ impl ConnectionOpener for Schema {
                ping TEXT NOT NULL,
                date_submitted INTEGER NOT NULL,
                date_uploaded INTEGER,
-               upload_failed BOOLEAN NOT NULL,
+               upload_failed INTEGER,
                payload BLOB
              );
              CREATE INDEX submitted_pings_ping on submitted_pings(ping);
@@ -121,7 +121,7 @@ impl ConnectionOpener for Schema {
                         ping TEXT NOT NULL,
                         date_submitted INTEGER NOT NULL,
                         date_uploaded INTEGER,
-                        upload_failed BOOLEAN NOT NULL,
+                        upload_failed INTEGER,
                         payload TEXT
                     );
                     CREATE INDEX submitted_pings_ping on submitted_pings(ping);

@@ -992,7 +992,7 @@ pub struct SubmittedPing {
     /// Optional RFC3339 datetime string
     uploaded_date: Option<String>,
     /// Whether the upload failed unrecoverably or not
-    upload_failed: bool,
+    upload_failed: Option<String>,
     /// The ping's payload
     payload: Option<JsonValue>,
 }
@@ -1004,7 +1004,7 @@ impl From<database::sqlite::SubmittedPing> for SubmittedPing {
             ping: value.ping.clone(),
             submitted_date: value.submitted_date.0.to_rfc3339(),
             uploaded_date: value.uploaded_date.as_ref().map(|d| d.0.to_rfc3339()),
-            upload_failed: value.upload_failed,
+            upload_failed: value.upload_failed.as_ref().map(|d| d.0.to_rfc3339()),
             payload: value.payload(),
         }
     }

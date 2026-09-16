@@ -108,7 +108,7 @@ dictionary SubmittedPing {
     string ping;
     string submitted_date;
     string? uploaded_date;
-    boolean upload_failed;
+    string? upload_failed;
     JsonValue? payload;
 };
 
