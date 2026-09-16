@@ -2229,7 +2229,7 @@ mod test {
         assert_eq!(pings.len(), 1);
         let ping = pings.first().unwrap();
         assert!(ping.submitted_date.0 <= Utc::now());
-        assert!(ping.upload_failed);
+        assert!(ping.upload_failed.is_some());
         assert!(ping.uploaded_date.is_none());
 
         // Verify that after request is returned, none are left
