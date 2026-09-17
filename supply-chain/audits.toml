@@ -369,6 +369,11 @@ criteria = "safe-to-deploy"
 delta = "0.5.14 -> 0.5.15"
 notes = "Fixes a regression from an earlier version which could lead to a double free"
 
+[[audits.crossbeam-channel]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-deploy"
+delta = "0.5.15 -> 0.5.17"
+
 [[audits.crossbeam-utils]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
