@@ -19,11 +19,11 @@ android {
     namespace = "mozilla.telemetry.glean_native"
 
     ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdkVersion = rootProject.ext.build.compileSdkVersion
+    compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        minSdk = rootProject.ext.build['minSdkVersion']
+        targetSdk = rootProject.ext.build['targetSdkVersion']
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ android {
 
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
         }
 
@@ -108,22 +108,24 @@ dependencies {
     }
 }
 
-afterEvaluate {
-    // The `cargoBuild` task isn't available until after evaluation.
-    android.libraryVariants.all { variant ->
-        def productFlavor = ""
-        variant.productFlavors.each {
-            productFlavor += "${it.name.capitalize()}"
-        }
-        def buildType = "${variant.buildType.name.capitalize()}"
-        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
+// Referenced by name so `cargoBuild` does not have to exist yet.
+tasks.configureEach { task ->
+    if (task.name.startsWith("merge") && task.name.endsWith("JniLibFolders")) {
+        task.dependsOn("cargoBuild")
     }
 }
 
 // Extract JNI dispatch libraries from the JAR into a directory, so that we can then package them
 // into our own glean-native-desktopLibraries JAR.
+def jnaJar = configurations.jna.elements.map {
+    if (it.size() != 1) {
+        throw new GradleException("Expected exactly one JNA jar, found ${it.size()}")
+    }
+    it.first().asFile
+}
+
 def extractLibJniDispatch = tasks.register("extractLibJniDispatch", Copy) {
-    from zipTree(configurations.jna.singleFile).matching {
+    from(zipTree(jnaJar)) {
         include "**/libjnidispatch.*"
     }
     into layout.buildDirectory.dir("libjnidispatch").get()
@@ -140,6 +142,7 @@ def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
 def copyGleanNative = tasks.register("copyGleanNative", Copy) {
     from layout.buildDirectory.dir("rustJniLibs/desktop")
     into layout.buildDirectory.dir("gleanNative")
+    dependsOn("cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}")
 }
 
 artifacts {
