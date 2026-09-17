@@ -1,14 +1,13 @@
 # Unreleased changes
 
-* Add mechanisms for storing and retrieving submitted pings ([#3585](https://github.com/mozilla/glean/pull/3585)).
-    * Add new `submitted_pings` table to the SQLite database.
-    * Add methods to store, retrieve, update, and clear stored submitted pings.
-    * Update Ping and uploader implementations to store and update submitted pings as appropriate.
-
 [Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
 
 * General
   * Add back `delay_ping_lifetime_io=true` functionality by using an in-memory table ([#3590](https://github.com/mozilla/glean/pull/3590))
+  * Add mechanisms for storing and retrieving submitted pings ([#3585](https://github.com/mozilla/glean/pull/3585)).
+      * Add new `submitted_pings` table to the SQLite database.
+      * Add methods to store, retrieve, update, and clear stored submitted pings.
+      * Update Ping and uploader implementations to store and update submitted pings as appropriate.
 * Python
   * Treat `C` as an undetermined locale ([#3633](https://github.com/mozilla/glean/pull/3633))
 
