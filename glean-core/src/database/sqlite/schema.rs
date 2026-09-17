@@ -34,7 +34,7 @@ fn table_schema(schema: Option<&str>) -> String {
 }
 
 impl ConnectionOpener for Schema {
-    const MAX_SCHEMA_VERSION: u32 = 2;
+    const MAX_SCHEMA_VERSION: u32 = 3;
 
     type Error = SchemaError;
 
@@ -73,6 +73,15 @@ impl ConnectionOpener for Schema {
             "
              {}
              CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+             CREATE TABLE submitted_pings(
+               document_id TEXT PRIMARY KEY,
+               ping TEXT NOT NULL,
+               date_submitted INTEGER NOT NULL,
+               date_uploaded INTEGER,
+               upload_failed INTEGER,
+               payload BLOB
+             );
+             CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
             table_schema(None)
         ))?;
@@ -100,6 +109,24 @@ impl ConnectionOpener for Schema {
                     log::info!("Client ID already exists. Marking migration as done.");
                     tx.execute("INSERT INTO migration (id, state) VALUES (1, 'done') ON CONFLICT(id) DO UPDATE SET state = excluded.state", [])?;
                 }
+                Ok(())
+            }
+            3 => {
+                log::info!("Upgrading user_version to 3");
+                // Clients upgrading to schema 3 don't have the table or index
+                tx.execute_batch(
+                    "
+                    CREATE TABLE submitted_pings(
+                        document_id TEXT PRIMARY KEY,
+                        ping TEXT NOT NULL,
+                        date_submitted INTEGER NOT NULL,
+                        date_uploaded INTEGER,
+                        upload_failed INTEGER,
+                        payload TEXT
+                    );
+                    CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+                    ",
+                )?;
                 Ok(())
             }
             to_version => Err(SchemaError::UnsupportedSchemaVersion(to_version)),
