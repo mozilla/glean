@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.1.0...main)
+
+# v70.1.0 (2026-09-18)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v70.0.0...v70.1.0)
 
 * General
   * Add back `delay_ping_lifetime_io=true` functionality by using an in-memory table ([#3590](https://github.com/mozilla/glean/pull/3590))
