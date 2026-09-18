@@ -49,6 +49,15 @@ object GleanBuildInfo {
 }
 
 /**
+ * Sets the simulated clock, for both Robolectric and the metrics ping scheduler.
+ */
+internal fun setFakeNow(fakeNow: Calendar) {
+    val millis = fakeNow.timeInMillis
+    SystemClock.setCurrentTimeMillis(millis)
+    MetricsPingScheduler.clockOverride = { Calendar.getInstance().apply { timeInMillis = millis } }
+}
+
+/**
  * Checks ping content against the Glean ping schema.
  *
  * This uses the Python utility, glean_parser, to perform the actual checking.
@@ -250,7 +259,7 @@ internal fun delayMetricsPing(
     val fakeNow = Calendar.getInstance()
     fakeNow.clear()
     fakeNow.set(2015, 6, 11, 2, 0, 0)
-    SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+    setFakeNow(fakeNow)
 
     // Set the last sent date to yesterday.
     val mps = MetricsPingScheduler(context, buildInfo)

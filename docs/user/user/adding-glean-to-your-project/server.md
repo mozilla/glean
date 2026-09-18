@@ -21,6 +21,37 @@ This method is intended for collecting user-level behavioral events in server en
 
 Follow the standard Glean SDK guide for adding metrics to `metrics.yaml` file.
 
+## Requesting deletion of collected data
+
+Server applications can ask the data pipeline to delete a user's data by sending the
+`server-deletion-request` ping. This is the server-side counterpart to the SDK's
+[`deletion-request` ping](../pings/deletion-request.md), but it works differently:
+server applications have no Glean-managed `client_id`, so the ping carries whichever
+identifier metrics your application already sends with its data.
+
+The ping is defined in the `glean-server` library, so you do not need to declare it in a
+`pings.yaml`. To use it, add `server-deletion-request` to the `send_in_pings` list of the
+metric that identifies the user. `glean_parser` generates a logger for the ping alongside
+the ones for your other pings, which you record when the user requests deletion.
+
+That metric also needs to be sent in the pings that carry your telemetry, such as
+`events`. The deletion request says whose data to remove, and the pipeline finds it by
+matching the identifier in those pings.
+
+{{#include ../../../shared/blockquote-warning.html}}
+
+##### Sending the ping does not by itself delete anything
+
+> The ping records which identifier should be deleted, but the pipeline also needs to know
+> which tables and columns that identifier appears in. That mapping is configured
+> separately, so coordinate with the Data Engineering team when you adopt this ping.
+> Until it is configured, the ping is collected but no data is removed.
+
+### Availability
+
+The `server-deletion-request` ping is currently supported by the JavaScript and
+TypeScript server outputters only.
+
 ## Technical details - ingestion
 
 For more technical details on how ingestion works, see the [Confluence page](https://mozilla-hub.atlassian.net/wiki/spaces/DATA/pages/741998604/Backend+telemetry+collection+with+Glean).

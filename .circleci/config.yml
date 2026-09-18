@@ -871,7 +871,13 @@ jobs:
       - image: cimg/python:3.13
     steps:
       - install-rustup
-      - setup-rust-toolchain
+      - setup-rust-toolchain:
+          # We're using an older maturin,
+          # which pulls in an older Zig build,
+          # which doesn't filter a certain parameter (https://github.com/rust-cross/cargo-zigbuild/pull/452),
+          # which breaks the build.
+          # Rust 1.97 however is fine, for now.
+          rust-version: "1.97"
       - checkout
       - run:
           name: Setup Python env
@@ -981,7 +987,7 @@ jobs:
           name: Internal metrics docs consistency check
           command: |
             make docs-metrics
-            if ! git diff --exit-code HEAD -- docs/user/collected-metrics/metrics.md; then
+            if ! git diff --exit-code HEAD -- docs/user/user/collected-metrics/metrics.md; then
               echo "=================================================="
               echo "metrics.md is different from what's stored in git."
               echo "Please regenerate the file using:"

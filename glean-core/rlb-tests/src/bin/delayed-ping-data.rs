@@ -13,7 +13,7 @@ use flate2::read::GzDecoder;
 use glean::{ClientInfoMetrics, ConfigurationBuilder, net, private::PingType};
 
 pub mod glean_metrics {
-    use glean::{CommonMetricData, Lifetime, private::CounterMetric};
+    use glean::{CommonMetricData, Lifetime, private::*};
 
     #[allow(non_upper_case_globals)]
     pub static sample_counter: once_cell::sync::Lazy<CounterMetric> =
@@ -26,6 +26,24 @@ pub mod glean_metrics {
                 lifetime: Lifetime::Ping,
                 ..Default::default()
             })
+        });
+
+    #[allow(non_upper_case_globals)]
+    pub static labeled_counter: once_cell::sync::Lazy<LabeledMetric<CounterMetric>> =
+        once_cell::sync::Lazy::new(|| {
+            LabeledMetric::new(
+                glean::LabeledMetricData::Common {
+                    cmd: CommonMetricData {
+                        name: "labeled_counter".into(),
+                        category: "test.metrics".into(),
+                        send_in_pings: vec!["prototype".into()],
+                        disabled: false,
+                        lifetime: Lifetime::Ping,
+                        ..Default::default()
+                    },
+                },
+                None,
+            )
         });
 }
 
@@ -123,11 +141,13 @@ fn main() {
     match &*state {
         "accumulate_one_and_pretend_crash" => {
             log::debug!("incrementing by 1. exiting without shutdown.");
-            glean_metrics::sample_counter.add(1)
+            glean_metrics::sample_counter.add(1);
+            glean_metrics::labeled_counter.get("label").add(1);
         }
         "accumulate_ten_and_orderly_shutdown" => {
             log::debug!("incrementing by 10, waiting, shutdown. should trigger a flush.");
             glean_metrics::sample_counter.add(10);
+            glean_metrics::labeled_counter.get("label").add(10);
             glean::shutdown();
         }
         "submit_ping" => {

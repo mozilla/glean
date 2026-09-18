@@ -6,7 +6,7 @@
 
 use std::num::NonZeroU32;
 
-use rusqlite::{config::DbConfig, OptionalExtension, Transaction};
+use rusqlite::{config::DbConfig, named_params, OptionalExtension, Transaction};
 
 use super::connection::ConnectionOpener;
 
@@ -15,8 +15,26 @@ use super::connection::ConnectionOpener;
 #[derive(Debug)]
 pub struct Schema;
 
+fn table_schema(schema: Option<&str>) -> String {
+    let separator = if schema.is_some() { "." } else { "" };
+    let schema = schema.unwrap_or("");
+    let table_name = "telemetry";
+    format!(
+        "
+         CREATE TABLE {schema}{separator}{table_name}(
+           id TEXT NOT NULL,
+           ping TEXT NOT NULL,
+           lifetime TEXT NOT NULL,
+           labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
+           value BLOB,
+           UNIQUE(id, ping, labels)
+         );
+        "
+    )
+}
+
 impl ConnectionOpener for Schema {
-    const MAX_SCHEMA_VERSION: u32 = 2;
+    const MAX_SCHEMA_VERSION: u32 = 3;
 
     type Error = SchemaError;
 
@@ -51,19 +69,22 @@ impl ConnectionOpener for Schema {
     }
 
     fn create(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
-        tx.execute_batch(
+        tx.execute_batch(&format!(
             "
-             CREATE TABLE telemetry(
-               id TEXT NOT NULL,
-               ping TEXT NOT NULL,
-               lifetime TEXT NOT NULL,
-               labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
-               value BLOB,
-               UNIQUE(id, ping, labels)
-             );
+             {}
              CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+             CREATE TABLE submitted_pings(
+               document_id TEXT PRIMARY KEY,
+               ping TEXT NOT NULL,
+               date_submitted INTEGER NOT NULL,
+               date_uploaded INTEGER,
+               upload_failed INTEGER,
+               payload BLOB
+             );
+             CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
-        )?;
+            table_schema(None)
+        ))?;
         Ok(())
     }
 
@@ -90,6 +111,24 @@ impl ConnectionOpener for Schema {
                 }
                 Ok(())
             }
+            3 => {
+                log::info!("Upgrading user_version to 3");
+                // Clients upgrading to schema 3 don't have the table or index
+                tx.execute_batch(
+                    "
+                    CREATE TABLE submitted_pings(
+                        document_id TEXT PRIMARY KEY,
+                        ping TEXT NOT NULL,
+                        date_submitted INTEGER NOT NULL,
+                        date_uploaded INTEGER,
+                        upload_failed INTEGER,
+                        payload TEXT
+                    );
+                    CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+                    ",
+                )?;
+                Ok(())
+            }
             to_version => Err(SchemaError::UnsupportedSchemaVersion(to_version)),
         }
     }
@@ -107,4 +146,19 @@ pub enum SchemaError {
     UnsupportedSchemaVersion(u32),
     #[error("sqlite: {0}")]
     Sqlite(#[from] rusqlite::Error),
+}
+
+pub fn create_in_memory_table(
+    tx: &mut Transaction<'_>,
+    database: &str,
+) -> Result<(), rusqlite::Error> {
+    tx.execute(
+        "ATTACH DATABASE ':memory:' AS :database",
+        named_params! {":database": database},
+    )?;
+    // This must remain in sync with the schema for the main table listed above.
+    // Otherwise bad things will happen.
+    // TODO(bug 2070883): Ensure this is the same with a test or similar.
+    tx.execute(&table_schema(Some(database)), [])?;
+    Ok(())
 }

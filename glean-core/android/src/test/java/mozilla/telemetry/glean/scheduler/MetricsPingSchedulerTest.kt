@@ -5,7 +5,6 @@
 package mozilla.telemetry.glean.scheduler
 
 import android.content.Context
-import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -24,6 +23,7 @@ import mozilla.telemetry.glean.private.Lifetime
 import mozilla.telemetry.glean.private.StringMetricType
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.resetGlean
+import mozilla.telemetry.glean.setFakeNow
 import mozilla.telemetry.glean.stubBuildDate
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.getISOTimeString
@@ -288,7 +288,7 @@ class MetricsPingSchedulerTest {
         fakeNow.clear()
         @Suppress("MagicNumber") // it's a fixed date only used in tests.
         fakeNow.set(2015, 6, 11, 2, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+        setFakeNow(fakeNow)
 
         // Set the last sent date to yesterday.
         val buildInfo = BuildInfo(versionCode = "0.0.1", versionName = "0.0.1", buildDate = Calendar.getInstance())
@@ -400,7 +400,7 @@ class MetricsPingSchedulerTest {
         val fakeNow = Calendar.getInstance()
         fakeNow.clear()
         fakeNow.set(2015, 6, 11, 7, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+        setFakeNow(fakeNow)
 
         // Set the last sent date to now.
         val mpsSpy =
@@ -436,7 +436,7 @@ class MetricsPingSchedulerTest {
         val fakeNow = Calendar.getInstance()
         fakeNow.clear()
         fakeNow.set(2015, 6, 11, 2, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNow.timeInMillis)
+        setFakeNow(fakeNow)
 
         // Set the last sent date to yesterday.
         val mpsSpy =
@@ -732,7 +732,7 @@ class MetricsPingSchedulerTest {
         val fakeNowDoNotSend = Calendar.getInstance()
         fakeNowDoNotSend.clear()
         fakeNowDoNotSend.set(2015, 6, 11, 4, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowDoNotSend.timeInMillis)
+        setFakeNow(fakeNowDoNotSend)
 
         // Create a fake instance of the metrics ping scheduler just to set the last
         // collection time.
@@ -778,7 +778,7 @@ class MetricsPingSchedulerTest {
         val fakeNowTriggerPing = Calendar.getInstance()
         fakeNowTriggerPing.clear()
         fakeNowTriggerPing.set(2015, 6, 12, 7, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowTriggerPing.timeInMillis)
+        setFakeNow(fakeNowTriggerPing)
 
         // Start the web-server that will receive the metrics ping.
         val server = getMockWebServer()
@@ -829,7 +829,7 @@ class MetricsPingSchedulerTest {
         val fakeNowDoNotSend = Calendar.getInstance()
         fakeNowDoNotSend.clear()
         fakeNowDoNotSend.set(2015, 6, 11, 4, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowDoNotSend.timeInMillis)
+        setFakeNow(fakeNowDoNotSend)
 
         // Create a fake instance of the metrics ping scheduler just to set the last
         // collection time.
@@ -859,7 +859,7 @@ class MetricsPingSchedulerTest {
         val fakeNowTriggerPing = Calendar.getInstance()
         fakeNowTriggerPing.clear()
         fakeNowTriggerPing.set(2015, 6, 12, 7, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowTriggerPing.timeInMillis)
+        setFakeNow(fakeNowTriggerPing)
 
         // Start the web-server that will receive the metrics ping.
         val server = getMockWebServer()
@@ -923,7 +923,7 @@ class MetricsPingSchedulerTest {
         val fakeNowDoNotSend = Calendar.getInstance()
         fakeNowDoNotSend.clear()
         fakeNowDoNotSend.set(2015, 6, 11, 4, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowDoNotSend.timeInMillis)
+        setFakeNow(fakeNowDoNotSend)
 
         // Create a fake instance of the metrics ping scheduler just to set the last
         // collection time.
@@ -979,7 +979,7 @@ class MetricsPingSchedulerTest {
         val fakeNowTriggerPing = Calendar.getInstance()
         fakeNowTriggerPing.clear()
         fakeNowTriggerPing.set(2015, 6, 12, 7, 0, 0)
-        SystemClock.setCurrentTimeMillis(fakeNowTriggerPing.timeInMillis)
+        setFakeNow(fakeNowTriggerPing)
 
         try {
             // Initialize Glean the SECOND time: it will send the expected string metric (stored

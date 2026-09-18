@@ -1528,7 +1528,7 @@ The following text applies to code linked from these dependencies:
 * [equivalent 1.0.2]( https://github.com/indexmap-rs/equivalent )
 * [errno 0.3.3]( https://github.com/lambda-fairy/rust-errno )
 * [fastrand 2.3.0]( https://github.com/smol-rs/fastrand )
-* [flate2 1.0.35]( https://github.com/rust-lang/flate2-rs )
+* [flate2 1.1.4]( https://github.com/rust-lang/flate2-rs )
 * [form_urlencoded 1.1.0]( https://github.com/servo/rust-url )
 * [glob 0.3.3]( https://github.com/rust-lang/glob )
 * [hashbrown 0.15.4]( https://github.com/rust-lang/hashbrown )
@@ -3453,12 +3453,12 @@ limitations under the License.
 The following text applies to code linked from these dependencies:
 
 * [android_system_properties 0.1.5]( https://github.com/nical/android_system_properties )
-* [anyhow 1.0.95]( https://github.com/dtolnay/anyhow )
+* [anyhow 1.0.103]( https://github.com/dtolnay/anyhow )
 * [basic-toml 0.1.9]( https://github.com/dtolnay/basic-toml )
 * [inherent 1.0.9]( https://github.com/dtolnay/inherent )
 * [itoa 1.0.14]( https://github.com/dtolnay/itoa )
 * [libc 0.2.176]( https://github.com/rust-lang/libc )
-* [miniz_oxide 0.8.2]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
+* [miniz_oxide 0.8.9]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 * [prettyplease 0.2.37]( https://github.com/dtolnay/prettyplease )
 * [proc-macro2 1.0.106]( https://github.com/dtolnay/proc-macro2 )
 * [quote 1.0.47]( https://github.com/dtolnay/quote )
@@ -4228,6 +4228,37 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
+* [simd-adler32 0.3.7]( https://github.com/mcountryman/simd-adler32 )
+
+```
+MIT License
+
+Copyright (c) [2021] [Marvin Countryman]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
+## MIT License
+<span id="MIT"></span>
+
+The following text applies to code linked from these dependencies:
+
 * [cargo_metadata 0.23.1]( https://github.com/oli-obk/cargo_metadata )
 * [zmij 1.0.21]( https://github.com/dtolnay/zmij )
 
@@ -4476,9 +4507,9 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 70.0.0]( https://github.com/mozilla/glean )
+* [glean-core 70.1.0]( https://github.com/mozilla/glean )
 * [glean-build 20.1.0]( https://github.com/mozilla/glean )
-* [glean 70.0.0]( https://github.com/mozilla/glean )
+* [glean 70.1.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4864,7 +4895,7 @@ The following text applies to code linked from these dependencies:
 
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [glean-sym 70.0.0]( https://github.com/mozilla/glean )
+* [glean-sym 70.1.0]( https://github.com/mozilla/glean )
 * [glean-tests 0.1.0]( https://crates.io/crates/glean-tests )
 * [rapid-metrics 0.1.0]( https://crates.io/crates/rapid-metrics )
 * [sample 0.1.0]( https://crates.io/crates/sample )

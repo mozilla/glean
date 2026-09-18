@@ -21,6 +21,7 @@ Options:
     -f, --force     Force overwriting an existing binary
     --crate NAME    Name of the crate to install (default <repository name>)
     --tag TAG       Tag (version) of the crate to install (default <latest release>)
+    --filename      Filename (instead of $crate-$tag-$target.tar.gz).
     --target TARGET Install the release compiled for $TARGET (default <`rustc` host>)
     --to LOCATION   Where to install the binary (default ~/.cargo/bin)
 EOF
@@ -69,6 +70,10 @@ while test $# -gt 0; do
             ;;
         --tag)
             tag=$2
+            shift
+            ;;
+        --filename)
+            filename=$2
             shift
             ;;
         --target)
@@ -148,7 +153,13 @@ fi
 
 say_err "Installing to: $dest"
 
-url="$url/download/$tag/$crate-$tag-$target.tar.gz"
+if [ -z "$filename" ]; then
+  filename="$crate-$tag-$target.tar.gz"
+fi
+
+url="$url/download/$tag/$filename"
+
+say_err "URL: $url"
 
 td=$(mktemp -d || mktemp -d -t tmp)
 curl -sL "$url" | tar xz -f - -C "$td"
