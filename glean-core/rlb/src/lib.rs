@@ -55,6 +55,11 @@ mod common_test;
 
 const LANGUAGE_BINDING_NAME: &str = "Rust";
 
+/// TODO
+pub fn proceed_init() {
+    glean_core::glean_proceed_init();
+}
+
 /// Creates and initializes a new Glean object.
 ///
 /// See [`glean_core::Glean::new`] for more information.

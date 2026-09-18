@@ -72,6 +72,8 @@ uniffi = { version = "0.32.0", default-features = false, features = ["build"] }
 enable_env_logger = ["env_logger"]
 # Enable gecko-specific APIs
 gecko = []
+# Enable the `glean_proceed_init` API (Android-only)
+wait-for-init = []
 # Expose some internals for easier benchmarking
 benchmark = []
 # Explicitly link against m-c libraries
