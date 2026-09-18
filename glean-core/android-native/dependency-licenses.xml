@@ -349,6 +349,9 @@ the details of which are reproduced below.
     <name>MIT License: oslog</name>
     <url>https://github.com/steven-joruk/oslog</url>
   </license>  <license>
+    <name>MIT License: simd-adler32</name>
+    <url>https://github.com/mcountryman/simd-adler32</url>
+  </license>  <license>
     <name>MIT License: cargo_metadata</name>
     <url>https://github.com/oli-obk/cargo_metadata</url>
   </license>  <license>
