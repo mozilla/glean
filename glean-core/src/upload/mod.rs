@@ -799,6 +799,7 @@ impl PingUploadManager {
                         .set_stop_and_accumulate(glean, success_id, stop_time);
                     self.upload_metrics.send_failure.cancel_sync(failure_id);
                 }
+                #[cfg(feature = "sqlite")]
                 if glean.store_submitted_pings_enabled {
                     glean
                         .storage()
@@ -819,6 +820,7 @@ impl PingUploadManager {
                         .send_failure
                         .set_stop_and_accumulate(glean, failure_id, stop_time);
                 }
+                #[cfg(feature = "sqlite")]
                 if glean.store_submitted_pings_enabled {
                     glean.storage().mark_ping_as_upload_failed(document_id);
                 }
@@ -2137,6 +2139,7 @@ mod test {
         );
     }
 
+    #[cfg(feature = "sqlite")]
     #[test]
     fn stores_pings_during_submission_and_upload_if_enabled() {
         let (mut glean, _t) = new_glean(None);
@@ -2186,6 +2189,7 @@ mod test {
         assert_eq!(glean.get_upload_task(), PingUploadTask::done());
     }
 
+    #[cfg(feature = "sqlite")]
     #[test]
     fn stores_pings_during_submission_and_marks_as_upload_failed_when_appropriate() {
         let (mut glean, _t) = new_glean(None);

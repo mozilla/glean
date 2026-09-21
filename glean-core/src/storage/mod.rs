@@ -10,7 +10,7 @@ use std::collections::HashMap;
 
 use serde_json::{json, Value as JsonValue};
 
-use crate::database::sqlite::Database;
+use crate::database::Database;
 use crate::metrics::Metric;
 use crate::Lifetime;
 
@@ -161,6 +161,7 @@ impl StorageManager {
                 log::warn!("Failed to clear lifetime storage: {:?}", e);
             }
 
+            #[cfg(feature = "sqlite")]
             if let Err(e) = storage.run_maintenance(false) {
                 log::warn!(
                     "Failed to run database maintenance after ping submission: {:?}",

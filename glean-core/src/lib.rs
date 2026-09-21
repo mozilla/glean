@@ -796,6 +796,7 @@ pub fn shutdown() {
             log::info!("Can't persist ping lifetime data: {:?}", e);
         }
 
+        #[cfg(feature = "sqlite")]
         if let Some(database) = &glean.data_store {
             if let Err(e) = database.cleanup_submitted_pings(None) {
                 log::info!("Could not clean up submitted_pings table: {:?}", e);
@@ -997,6 +998,7 @@ pub struct SubmittedPing {
     pub payload: Option<JsonValue>,
 }
 
+#[cfg(feature = "sqlite")]
 impl From<database::sqlite::SubmittedPing> for SubmittedPing {
     fn from(value: database::sqlite::SubmittedPing) -> Self {
         SubmittedPing {
@@ -1012,10 +1014,16 @@ impl From<database::sqlite::SubmittedPing> for SubmittedPing {
 
 /// Returns a `Vec` containing all stored submitted pings.
 pub fn glean_get_all_stored_submitted_pings() -> Vec<SubmittedPing> {
-    core::with_glean(|glean| glean.storage().get_all_submitted_pings())
-        .into_iter()
-        .map(|p| p.into())
-        .collect()
+    #[cfg(feature = "sqlite")]
+    {
+        core::with_glean(|glean| glean.storage().get_all_submitted_pings())
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[cfg(not(feature = "sqlite"))]
+    Vec::new()
 }
 
 /// Returns a `Vec` containing all stored submitted pings with the supplied name.
@@ -1024,14 +1032,24 @@ pub fn glean_get_all_stored_submitted_pings() -> Vec<SubmittedPing> {
 ///
 /// * `ping` - The name of the pings that should be returned.
 pub fn glean_get_stored_submitted_pings_by_name(ping: String) -> Vec<SubmittedPing> {
-    core::with_glean(|glean| glean.storage().get_submitted_pings_by_name(&ping))
-        .into_iter()
-        .map(|p| p.into())
-        .collect()
+    #[cfg(feature = "sqlite")]
+    {
+        core::with_glean(|glean| glean.storage().get_submitted_pings_by_name(&ping))
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[cfg(not(feature = "sqlite"))]
+    {
+        _ = ping;
+        Vec::new()
+    }
 }
 
 /// Clears the stored submitted pings.
 pub fn glean_clear_stored_submitted_pings() {
+    #[cfg(feature = "sqlite")]
     launch_with_glean(|glean| {
         if let Err(e) = glean
             .storage()

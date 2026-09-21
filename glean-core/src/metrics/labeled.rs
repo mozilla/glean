@@ -4,14 +4,19 @@
 
 use std::any::Any;
 use std::borrow::Cow;
+#[cfg(not(feature = "sqlite"))]
+use std::collections::HashSet;
 use std::collections::{hash_map::Entry, HashMap};
 use std::mem;
 use std::sync::{Arc, Mutex};
 
 use malloc_size_of::MallocSizeOf;
+#[cfg(feature = "sqlite")]
 use rusqlite::params;
 
-use crate::common_metric_data::{CommonMetricData, LabelCheck, MetricLabel};
+#[cfg(feature = "sqlite")]
+use crate::common_metric_data::LabelCheck;
+use crate::common_metric_data::{CommonMetricData, MetricLabel};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
@@ -19,6 +24,11 @@ use crate::metrics::{
     MetricType, QuantityMetric, StringMetric, TestGetValue, TimeUnit, TimingDistributionMetric,
 };
 use crate::storage::StorageManager;
+#[cfg(not(feature = "sqlite"))]
+use crate::{
+    common_metric_data::CommonMetricDataInternal, error_recording::record_error, metrics::Metric,
+    Glean,
+};
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -383,6 +393,7 @@ where
     }
 }
 
+#[cfg(feature = "sqlite")]
 pub fn validate_dynamic_label_sqlite(
     tx: &rusqlite::Connection,
     base_identifier: &str,
@@ -427,4 +438,73 @@ pub fn validate_dynamic_label_sqlite(
     } else {
         LabelCheck::Label(label.to_string())
     }
+}
+
+/// Validates a dynamic label, changing it to `OTHER_LABEL` if it's invalid.
+///
+/// Checks the requested label against limitations, such as the label length and allowed
+/// characters.
+///
+/// # Returns
+///
+/// Returns the corrected label.
+/// The errors are logged.
+#[cfg(not(feature = "sqlite"))]
+pub fn validate_dynamic_label_rkv(
+    glean: &Glean,
+    meta: &CommonMetricDataInternal,
+    base_identifier: &str,
+    label: &str,
+    record: bool,
+) -> String {
+    let key = combine_base_identifier_and_label(base_identifier, label);
+    for store in &meta.inner.send_in_pings {
+        if glean.storage().has_metric(meta.inner.lifetime, store, &key) {
+            return label.to_string();
+        }
+    }
+
+    let mut labels = HashSet::new();
+    let mut snapshotter = |_metric_id: &[u8], metric_labels: &[&str], _: &Metric| {
+        for &label in metric_labels {
+            labels.insert(label.to_string());
+        }
+    };
+
+    let lifetime = meta.inner.lifetime;
+    for store in &meta.inner.send_in_pings {
+        glean
+            .storage()
+            .iter_store_from(lifetime, store, Some(base_identifier), &mut snapshotter)
+            .ok();
+    }
+
+    let label_count = labels.len();
+    let error = if label_count >= MAX_LABELS {
+        true
+    } else if label.len() > MAX_LABEL_LENGTH {
+        if record {
+            let msg = format!(
+                "label length {} exceeds maximum of {}",
+                label.len(),
+                MAX_LABEL_LENGTH
+            );
+            record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        }
+        true
+    } else {
+        false
+    };
+
+    if error {
+        OTHER_LABEL.to_string()
+    } else {
+        label.to_string()
+    }
+}
+
+/// Combines a metric's base identifier and label
+#[cfg(not(feature = "sqlite"))]
+pub fn combine_base_identifier_and_label(base_identifier: &str, label: &str) -> String {
+    format!("{}/{}", base_identifier, label)
 }

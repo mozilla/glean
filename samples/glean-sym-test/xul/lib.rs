@@ -16,7 +16,7 @@ use glean::{ClientInfoMetrics, ConfigurationBuilder, net};
 /// Chosen empirically.
 /// If this crashes with `oom` increase it.
 #[global_allocator]
-static ALLOCATOR: local_allocator::Allocator<2048> = local_allocator::Allocator::new("xul");
+static ALLOCATOR: local_allocator::Allocator<4096> = local_allocator::Allocator::new("xul");
 
 #[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {

@@ -9,6 +9,7 @@ use std::result;
 
 use rkv::StoreError;
 
+#[cfg(feature = "sqlite")]
 use crate::database::sqlite::{OpenError, SchemaError};
 
 /// A specialized [`Result`] type for this crate's operations.
@@ -69,9 +70,11 @@ pub enum ErrorKind {
     UuidError(uuid::Error),
 
     /// Database/SQLite error
+    #[cfg(feature = "sqlite")]
     SQLite(rusqlite::Error),
 
     /// Schema error
+    #[cfg(feature = "sqlite")]
     Schema(SchemaError),
 }
 
@@ -129,7 +132,9 @@ impl Display for Error {
                 s / 1024
             ),
             UuidError(e) => write!(f, "Failed to parse UUID: {}", e),
+            #[cfg(feature = "sqlite")]
             SQLite(e) => write!(f, "SQLite error: {}", e),
+            #[cfg(feature = "sqlite")]
             Schema(e) => write!(f, "Schema error: {}", e),
         }
     }
@@ -165,6 +170,7 @@ impl From<serde_json::error::Error> for Error {
     }
 }
 
+#[cfg(feature = "sqlite")]
 impl From<rusqlite::Error> for Error {
     fn from(error: rusqlite::Error) -> Error {
         Error {
@@ -173,6 +179,7 @@ impl From<rusqlite::Error> for Error {
     }
 }
 
+#[cfg(feature = "sqlite")]
 impl From<OpenError> for Error {
     fn from(error: OpenError) -> Error {
         match error {
