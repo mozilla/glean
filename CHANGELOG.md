@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
 
+* iOS
+  * Re-enable the SQLite backend by default ([#3650](https://github.com/mozilla/glean/pull/3650))
+
 # v70.2.0 (2026-09-21)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.1.0...v70.2.0)
