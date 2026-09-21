@@ -32,6 +32,7 @@ jobs:
       metrics-changed: ${{ steps.set-flags.outputs.metrics-changed }}
       python-changed: ${{ steps.set-flags.outputs.python-changed }}
       rust-changed: ${{ steps.set-flags.outputs.rust-changed }}
+      swift-changed: ${{ steps.set-flags.outputs.swift-changed }}
       yaml-changed: ${{ steps.set-flags.outputs.yaml-changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -85,6 +86,13 @@ jobs:
             **/Cargo.lock
             **/*.rs
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - id: changed-files-swift
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            glean-core/ios/**
+            samples/ios/app/**
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-yaml
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
@@ -101,6 +109,7 @@ jobs:
           METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-metrics.outputs.any_changed }}
           PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-python.outputs.any_changed }}
           RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
+          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-swift.outputs.any_changed }}
           YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-yaml.outputs.any_changed }}
         run: |
           echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
@@ -109,6 +118,7 @@ jobs:
           echo "metrics-changed=$METRICS_CHANGED" >> $GITHUB_OUTPUT
           echo "python-changed=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
           echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
+          echo "swift-changed=$SWIFT_CHANGED" >> $GITHUB_OUTPUT
           echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
 
   test-rust:
@@ -133,7 +143,7 @@ jobs:
           toolchain: ${{ matrix.rust-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Install nextest
         run: |
@@ -169,6 +179,33 @@ jobs:
           cd samples/glean-sym-test
           make run
           make run-noop
+
+      - name: Compile benchmarks
+        if: matrix.rust-version == 'stable'
+        run: |
+          # Only compile them, don't run them
+          cargo benchmark --no-run --locked
+
+      - name: Install the latest version of uv
+        if: matrix.rust-version == 'stable'
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - name: Setup development environment
+        if: matrix.rust-version == 'stable'
+        run: |
+          uv tool install ziglang==0.16.0
+          zig=$(command -v python-zig)
+          ln -s "$zig" ~/.cargo/bin/zig
+          cargo install cargo-zigbuild --version 0.23.4 --locked
+          rustup target add x86_64-pc-windows-gnu
+
+          zig version
+          cargo-zigbuild --version
+
+      - name: Check RLB on Windows x86_64
+        if: matrix.rust-version == 'stable'
+        run: |
+          cargo-zigbuild check --target x86_64-pc-windows-gnu -p glean --examples --tests
 
   spelling:
     runs-on: ubuntu-latest
@@ -309,7 +346,7 @@ jobs:
       - name: Setup Python env
         run: |
             make setup-python
-            .venv3.13/bin/pip install ziglang==0.15.2
+            .venv3.13/bin/pip install ziglang==0.16.0
       - name: Install additional targets
         run: |
           rustup target add aarch64-unknown-linux-gnu
@@ -322,6 +359,154 @@ jobs:
           for target in $TARGETS; do
             make build-python-wheel GLEAN_BUILD_TARGET="$target" GLEAN_BUILD_EXTRA="--zig"
           done
+
+  test-swift:
+    runs-on: macos-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Install xcpretty
+        run: |
+          gem install --no-document xcpretty
+
+      - name: Show Ruby environment
+        run: |
+          ruby --version
+          gem env
+          xcpretty --version || true
+
+      - &swift-build-environment
+        name: Setup build environment
+        run: |
+          set -x
+          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+          # For some reason everything works fine if we use the host clang,
+          # not the Xcode-bundled clang.
+          echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
+          echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
+
+          # List available devices -- allows us to see what's there
+          DEVICES=$(xcrun xctrace list devices 2>&1)
+          echo "$DEVICES"
+          # Pick a device and start it
+          UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
+          xcrun simctl boot "$UUID"
+
+      - name: Run iOS build
+        run: |
+          make build-swift
+
+      - name: Run iOS test
+        run: |
+          make test-swift
+
+  test-swift-sample:
+    runs-on: macos-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Install xcpretty
+        run: |
+          gem install --no-document xcpretty
+
+      - name: Show Ruby environment
+        run: |
+          ruby --version
+          gem env
+          xcpretty --version || true
+
+      - *swift-build-environment
+
+      - name: Build XCFramework archive
+        run: |
+          make build-xcframework
+
+      - name: Test sample app
+        run: |
+          make test-ios-sample
+
+  test-kotlin:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.kotlin-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+          packages: platform-tools
+
+      - name: Install Android NDK
+        run: |
+          sdkmanager "ndk;29.0.14206865"
+
+      - name: Restrict to Linux builds only
+        run: |
+            echo "rust.targets=linux-x86-64" > local.properties
+
+      - name: Test
+        run: |
+          export GRADLE_OPTS="-Xmx2048m"
+          export TARGET_CFLAGS="-DNDEBUG"
+          ./gradlew --no-daemon :glean:testDebugUnitTest
+
+      - name: Build Android Sample App
+        run: |
+          export GRADLE_OPTS="-Xmx2048m"
+          export TARGET_CFLAGS="-DNDEBUG"
+          ./gradlew :glean-sample-app:assembleAndroidTest
+
+      - name: Save test results
+        if: failure()
+        run: |
+            mkdir -p test-results/junit/
+            mkdir -p test-results/tests/
+            cp -a glean-core/android/build/reports/tests test-results/
+            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} test-results/junit/ \;
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: gradle-test-failures
+          path: test-results/tests
 
   lint-yaml:
     runs-on: ubuntu-latest
@@ -336,7 +521,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Install yamllint
         run: |
@@ -425,7 +610,7 @@ jobs:
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Lint Python
         run: make lint-python
@@ -438,7 +623,7 @@ jobs:
       - *checkout
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Internal metrics docs consistency check
         run: |
@@ -466,7 +651,7 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6  # v2.9.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           java-version: '17'
           distribution: 'temurin'

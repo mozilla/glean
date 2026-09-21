@@ -29,8 +29,6 @@ static DEFINITION_ONLY: &[&str] = &[
     "glean.session_start",
     /* in foreign language wrapper */
     "glean.validation.foreground_count",
-    /* kept active while Rkv-powered Glean is in use */
-    "glean.database.rkv_load_error",
 ];
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
@@ -238,6 +236,19 @@ fn keep_internal_metrics_in_sync_with_definitions() {
             continue;
         }
         if !metrics_in_code.contains_key(key) {
+            msg.push_str(&format!("- {key}\n"));
+            mismatch_found = true;
+        }
+    }
+
+    msg.push_str("\nDefined in DEFINITION_ONLY, but found in code:\n");
+    let mut keys = definitions.keys().collect::<Vec<_>>();
+    keys.sort();
+    for key in keys.into_iter() {
+        if !DEFINITION_ONLY.contains(&&key[..]) {
+            continue;
+        }
+        if metrics_in_code.contains_key(key) {
             msg.push_str(&format!("- {key}\n"));
             mismatch_found = true;
         }

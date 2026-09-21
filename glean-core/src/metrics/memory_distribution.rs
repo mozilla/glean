@@ -256,7 +256,12 @@ impl MemoryDistributionMetric {
             .into()
             .unwrap_or_else(|| &self.meta().inner.send_in_pings[0]);
 
-        match glean.storage().get_metric(self.meta(), queried_ping_name) {
+        match glean.storage().get_metric(
+            #[cfg(not(feature = "sqlite"))]
+            glean,
+            self.meta(),
+            queried_ping_name,
+        ) {
             Some(Metric::MemoryDistribution(hist)) => Some(snapshot(&hist)),
             _ => None,
         }
