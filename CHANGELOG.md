@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v70.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
+
+# v70.2.0 (2026-09-21)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v70.1.0...v70.2.0)
 
 * General
   * Re-enable Rkv storage and put SQLite behind a flag ([#3646](https://github.com/mozilla/glean/pull/3646))
