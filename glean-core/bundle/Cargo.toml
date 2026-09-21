@@ -24,3 +24,6 @@ path = ".."
 # Needed in order for maturin to find it during builds from `sdist`
 [dev-dependencies.uniffi-bindgen]
 path = "../../tools/embedded-uniffi-bindgen"
+
+[features]
+sqlite = ["glean-core/sqlite"]
