@@ -8,14 +8,17 @@ use std::collections::{HashMap, HashSet};
 use std::mem;
 use std::sync::{Arc, Mutex};
 
+#[cfg(feature = "sqlite")]
 use rusqlite::params;
 
-use crate::common_metric_data::{
-    CommonMetricData, CommonMetricDataInternal, LabelCheck, MetricLabel,
-};
+#[cfg(feature = "sqlite")]
+use crate::common_metric_data::LabelCheck;
+use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, MetricLabel};
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::metrics::{CounterMetric, MetricType};
 use crate::TestGetValue;
+#[cfg(not(feature = "sqlite"))]
+use crate::{error_recording::record_error, metrics::Metric, Glean};
 
 const MAX_LABELS: usize = 16;
 const OTHER_LABEL: &str = "__other__";
@@ -248,6 +251,7 @@ impl TestGetValue for DualLabeledCounterMetric {
     }
 }
 
+#[cfg(feature = "sqlite")]
 pub fn validate_dual_label_sqlite(
     tx: &rusqlite::Connection,
     base_identifier: &str,
@@ -260,7 +264,9 @@ pub fn validate_dual_label_sqlite(
     // the other potentially valid label.
     // This needs adjustement of the test `labels_containing_a_record_separator_record_an_error`.
     if key.contains(RECORD_SEPARATOR) || category.contains(RECORD_SEPARATOR) {
-        log::warn!("Metric {base_identifier:?}: Label cannot contain the ASCII record separator character (0x1E)");
+        log::warn!(
+            "Metric {base_identifier:?}: Label cannot contain the ASCII record separator character (0x1E)"
+        );
         return LabelCheck::Error(format!("{OTHER_LABEL}{RECORD_SEPARATOR}{OTHER_LABEL}"), 1);
     }
 
@@ -283,7 +289,9 @@ pub fn validate_dual_label_sqlite(
                 existing_labels.split_once(RECORD_SEPARATOR)
             else {
                 // TODO(bug 2048195): Instrument this.
-                log::debug!("Metric {base_identifier:?}: Database contains invalid dual-label: {existing_labels:?}");
+                log::debug!(
+                    "Metric {base_identifier:?}: Database contains invalid dual-label: {existing_labels:?}"
+                );
                 continue;
             };
 
@@ -320,6 +328,7 @@ pub fn validate_dual_label_sqlite(
     }
 }
 
+#[cfg(feature = "sqlite")]
 fn label_is_valid(label: &str, metric_id: &str) -> bool {
     if label.len() > MAX_LABEL_LENGTH {
         log::warn!(
@@ -330,9 +339,167 @@ fn label_is_valid(label: &str, metric_id: &str) -> bool {
         );
         false
     } else if label.contains(RECORD_SEPARATOR) {
-        log::warn!("Metric {metric_id:?}: Label cannot contain the ASCII record separator character (0x1E)");
+        log::warn!(
+            "Metric {metric_id:?}: Label cannot contain the ASCII record separator character (0x1E)"
+        );
         false
     } else {
         true
     }
+}
+
+#[cfg(not(feature = "sqlite"))]
+fn label_is_valid_record(label: &str, glean: &Glean, meta: &CommonMetricDataInternal) -> bool {
+    if label.len() > MAX_LABEL_LENGTH {
+        let msg = format!(
+            "label length {} exceeds maximum of {}",
+            label.len(),
+            MAX_LABEL_LENGTH
+        );
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        false
+    } else {
+        true
+    }
+}
+
+/// Validates a dynamic dual label, changing key and category to `OTHER_LABEL` if they are invalid.
+///
+/// Checks the requested dual label against limitations, such as the label length and allowed
+/// characters.
+///
+/// # Returns
+///
+/// Returns the corrected key and category concatenated with the `RECORD_SEPARATOR`.
+/// The errors are logged.
+#[cfg(not(feature = "sqlite"))]
+pub fn validate_dual_label_rkv(
+    glean: &Glean,
+    meta: &CommonMetricDataInternal,
+    base_identifier: &str,
+    label: &MetricLabel,
+    record: bool,
+) -> String {
+    let (key, category) = match label {
+        MetricLabel::Static(_) | MetricLabel::Label(_) => {
+            if record {
+                record_error(
+                    glean,
+                    meta,
+                    ErrorType::InvalidLabel,
+                    "Invalid `DualLabeledCounter` label format, unable to determine key and/or category",
+                    None,
+                );
+            }
+            return combine_labels(OTHER_LABEL, OTHER_LABEL);
+        }
+        MetricLabel::KeyOnly(key, category)
+        | MetricLabel::CategoryOnly(key, category)
+        | MetricLabel::KeyAndCategory(key, category) => (key, category),
+    };
+
+    if key.contains(RECORD_SEPARATOR) || category.contains(RECORD_SEPARATOR) {
+        let msg = "Label cannot contain the ASCII record separator character (0x1E)".to_string();
+        record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        return combine_labels(OTHER_LABEL, OTHER_LABEL);
+    }
+
+    // Loop through the stores we expect to find this metric in, and if we
+    // find it then just return the full metric identifier that was found
+    for store in &meta.inner.send_in_pings {
+        let id = combine_base_identifier_and_labels(base_identifier, key, category);
+        if glean.storage().has_metric(meta.inner.lifetime, store, &id) {
+            return combine_labels(key, category);
+        }
+    }
+
+    let mut key = &key[..];
+    let mut category = &category[..];
+
+    // Count the number of distinct keys and categories already recorded, we can figure out which
+    // one(s) to check based on the label variant.
+    let (seen_keys, seen_categories) = get_seen_keys_and_categories(meta, glean);
+    match label {
+        MetricLabel::KeyOnly(..) => {
+            if (!seen_keys.contains(key) && seen_keys.len() >= MAX_LABELS)
+                || !label_is_valid_record(key, glean, meta)
+            {
+                key = OTHER_LABEL;
+            }
+        }
+        MetricLabel::CategoryOnly(..) => {
+            if (!seen_categories.contains(category) && seen_categories.len() >= MAX_LABELS)
+                || !label_is_valid_record(category, glean, meta)
+            {
+                category = OTHER_LABEL;
+            }
+        }
+        MetricLabel::KeyAndCategory(..) => {
+            if (!seen_keys.contains(key) && seen_keys.len() >= MAX_LABELS)
+                || !label_is_valid_record(key, glean, meta)
+            {
+                key = OTHER_LABEL;
+            }
+            if (!seen_categories.contains(category) && seen_categories.len() >= MAX_LABELS)
+                || !label_is_valid_record(category, glean, meta)
+            {
+                category = OTHER_LABEL;
+            }
+        }
+        // Other options already excluded above.
+        _ => {}
+    }
+
+    combine_labels(key, category)
+}
+
+#[cfg(not(feature = "sqlite"))]
+fn get_seen_keys_and_categories(
+    meta: &CommonMetricDataInternal,
+    glean: &Glean,
+) -> (HashSet<String>, HashSet<String>) {
+    let base_identifier = &meta.base_identifier();
+    let mut seen_keys: HashSet<String> = HashSet::new();
+    let mut seen_categories: HashSet<String> = HashSet::new();
+    let mut snapshotter = |_metric_id: &[u8], labels: &[&str], _: &Metric| {
+        if labels.len() == 2 {
+            seen_keys.insert(labels[0].to_string());
+            seen_categories.insert(labels[1].to_string());
+        } else {
+            record_error(
+                glean,
+                meta,
+                ErrorType::InvalidLabel,
+                "Dual Labeled Counter label doesn't contain exactly 2 parts".to_string(),
+                None,
+            );
+        }
+    };
+
+    let lifetime = meta.inner.lifetime;
+    for store in &meta.inner.send_in_pings {
+        glean
+            .storage()
+            .iter_store_from(lifetime, store, Some(base_identifier), &mut snapshotter)
+            .ok();
+    }
+
+    (seen_keys, seen_categories)
+}
+
+#[cfg(not(feature = "sqlite"))]
+fn combine_labels(key: &str, category: &str) -> String {
+    format!("{}{}{}", key, RECORD_SEPARATOR, category)
+}
+
+#[cfg(not(feature = "sqlite"))]
+pub fn combine_base_identifier_and_labels(
+    base_identifer: &str,
+    key: &str,
+    category: &str,
+) -> String {
+    format!(
+        "{}{}{}{}{}",
+        base_identifer, RECORD_SEPARATOR, key, RECORD_SEPARATOR, category
+    )
 }

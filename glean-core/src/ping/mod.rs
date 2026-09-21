@@ -83,7 +83,12 @@ impl PingMaker {
             ..Default::default()
         });
 
-        let current_seq = match glean.storage().get_metric(seq.meta(), INTERNAL_STORAGE) {
+        let current_seq = match glean.storage().get_metric(
+            #[cfg(not(feature = "sqlite"))]
+            glean,
+            seq.meta(),
+            INTERNAL_STORAGE,
+        ) {
             Some(Metric::Counter(i)) => i,
             _ => 0,
         };

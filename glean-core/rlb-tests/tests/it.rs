@@ -300,6 +300,7 @@ fn enabled_pings() {
     assert!(payload.contains("/two/"), "Payload: {payload}");
 }
 
+#[cfg(feature = "sqlite")]
 #[test]
 fn rkv_sqlite_migration() {
     let tempdir = tempfile::tempdir().unwrap();
