@@ -46,12 +46,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: crc32fast</name>
     <url>https://github.com/srijs/rust-crc32fast</url>
   </license>  <license>
-    <name>Apache License 2.0: fallible-iterator</name>
-    <url>https://github.com/sfackler/rust-fallible-iterator</url>
-  </license>  <license>
-    <name>Apache License 2.0: fallible-streaming-iterator</name>
-    <url>https://github.com/sfackler/fallible-streaming-iterator</url>
-  </license>  <license>
     <name>Apache License 2.0: humantime</name>
     <url>https://github.com/tailhook/humantime</url>
   </license>  <license>
@@ -127,9 +121,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: hashbrown</name>
     <url>https://github.com/rust-lang/hashbrown</url>
   </license>  <license>
-    <name>Apache License 2.0: hashbrown</name>
-    <url>https://github.com/rust-lang/hashbrown</url>
-  </license>  <license>
     <name>Apache License 2.0: heck</name>
     <url>https://github.com/withoutboats/heck</url>
   </license>  <license>
@@ -172,9 +163,6 @@ the details of which are reproduced below.
     <name>Apache License 2.0: rustix</name>
     <url>https://github.com/bytecodealliance/rustix</url>
   </license>  <license>
-    <name>Apache License 2.0: smallvec</name>
-    <url>https://github.com/servo/rust-smallvec</url>
-  </license>  <license>
     <name>Apache License 2.0: tempfile</name>
     <url>https://github.com/Stebalien/tempfile</url>
   </license>  <license>
@@ -192,9 +180,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Apache License 2.0: wr_malloc_size_of</name>
     <url>https://crates.io/crates/wr_malloc_size_of</url>
-  </license>  <license>
-    <name>Apache License 2.0: hashlink</name>
-    <url>https://github.com/kyren/hashlink</url>
   </license>  <license>
     <name>Apache License 2.0: minimal-lexical</name>
     <url>https://github.com/Alexhuszagh/minimal-lexical</url>
@@ -306,12 +291,6 @@ the details of which are reproduced below.
   </license>  <license>
     <name>ISC License: libloading</name>
     <url>https://github.com/nagisa/rust_libloading/</url>
-  </license>  <license>
-    <name>MIT License: libsqlite3-sys</name>
-    <url>https://github.com/rusqlite/rusqlite</url>
-  </license>  <license>
-    <name>MIT License: rusqlite</name>
-    <url>https://github.com/rusqlite/rusqlite</url>
   </license>  <license>
     <name>MIT License: nom</name>
     <url>https://github.com/Geal/nom</url>
@@ -441,8 +420,5 @@ the details of which are reproduced below.
   </license>  <license>
     <name>Unicode License v3: unicode-ident</name>
     <url>https://github.com/dtolnay/unicode-ident</url>
-  </license>  <license>
-    <name>zlib License: foldhash</name>
-    <url>https://github.com/orlp/foldhash</url>
   </license></licenses>
 
