@@ -24,6 +24,7 @@ enum Action {
     String,
     Timing,
     DualLabeledDyamic,
+    Persist,
     __Last,
 }
 
@@ -36,6 +37,7 @@ impl From<u8> for Action {
             3 => Action::String,
             4 => Action::Timing,
             5 => Action::DualLabeledDyamic,
+            6 => Action::Persist,
             _ => panic!("can't convert {val} to Action"),
         }
     }
@@ -66,6 +68,8 @@ fn main() {
         optional -s,--seed seed: u64
         /// Number of threads (default: 4)
         optional -t,--threads threads: usize
+        /// Enable ping lifetime IO.
+        optional -d,--delay
         /// Data directory (default: simple-db)
         optional path: PathBuf
     };
@@ -78,11 +82,13 @@ fn main() {
     let maxn: usize = flags.maxn.unwrap_or(100);
     let seed: Option<u64> = flags.seed;
     let nthreads = flags.threads.unwrap_or(4);
+    let delay = flags.delay;
 
     log::info!("Data path: {}", data_path.display());
     log::info!("Iterations: {maxn}");
     log::info!("Seed: {seed:?}");
     log::info!("Threads: {nthreads}");
+    log::info!("Delay: {delay}");
 
     let mut rng = match seed {
         Some(seed) => {
@@ -97,6 +103,7 @@ fn main() {
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)
         .with_uploader(uploader)
+        .with_delay_ping_lifetime_io(delay)
         .build();
 
     let client_info = ClientInfoMetrics {
@@ -175,6 +182,9 @@ fn main() {
                                 glean_metrics::test_metrics::dynamic_dynamic
                                     .get(key, cat)
                                     .add(val);
+                            }
+                            Action::Persist => {
+                                glean::persist_ping_lifetime_data();
                             }
                             _ => unreachable!(),
                         }
