@@ -414,7 +414,7 @@ jobs:
   test-swift-sample:
     runs-on: macos-latest
     needs: [decide-runs]
-    if: false
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
     steps:
       - *checkout
 
