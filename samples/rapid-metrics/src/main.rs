@@ -8,7 +8,7 @@ use std::{env, thread};
 use fastrand::Rng;
 use tempfile::Builder;
 
-use glean::{net, ClientInfoMetrics, ConfigurationBuilder};
+use glean::{net, ClientInfoMetrics, ConfigurationBuilder, TestGetValue};
 
 #[allow(clippy::all)] // Don't lint generated code.
 pub mod glean_metrics {
@@ -117,6 +117,8 @@ fn main() {
     _ = &*glean_metrics::prototype;
     _ = &*glean_metrics::usage_reporting;
     glean::initialize(cfg, client_info);
+
+    _ = glean_metrics::test_metrics::sample_boolean.test_get_value(None);
 
     thread::scope(|s| {
         for tid in 0..nthreads {
