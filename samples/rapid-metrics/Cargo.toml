@@ -16,3 +16,6 @@ xflags = "0.3.2"
 
 [build-dependencies]
 glean-build = { path = "../../glean-core/build" }
+
+[features]
+sqlite = ["glean/sqlite"]
