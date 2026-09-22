@@ -15,6 +15,32 @@ pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
 }
 
+#[derive(Debug, Clone, Copy)]
+#[repr(u8)]
+enum Action {
+    Bool,
+    Counter,
+    DualLabeledStatic,
+    String,
+    Timing,
+    DualLabeledDyamic,
+    __Last,
+}
+
+impl From<u8> for Action {
+    fn from(val: u8) -> Action {
+        match val {
+            0 => Action::Bool,
+            1 => Action::Counter,
+            2 => Action::DualLabeledStatic,
+            3 => Action::String,
+            4 => Action::Timing,
+            5 => Action::DualLabeledDyamic,
+            _ => panic!("can't convert {val} to Action"),
+        }
+    }
+}
+
 #[derive(Debug)]
 struct MockUploader;
 
@@ -98,7 +124,7 @@ fn main() {
                     let mut timer_id_start = 0;
 
                     for i in 0..maxn {
-                        let dice = rng.u32(0..6);
+                        let dice = rng.u8(0..Action::__Last as u8).into();
 
                         if let Some(timer_id) = timer_id.take() {
                             if (i - timer_id_start) == 10 {
@@ -108,29 +134,29 @@ fn main() {
                         }
 
                         match dice {
-                            0 => {
+                            Action::Bool => {
                                 let val = rng.bool();
                                 log::info!("Setting bool={val}");
                                 glean_metrics::test_metrics::sample_boolean.set(val);
                             }
-                            1 => {
+                            Action::Counter => {
                                 let val = rng.i32(0..2);
                                 log::info!("Adding counter={val}");
                                 glean_metrics::test_metrics::sample_counter.add(val);
                             }
-                            2 => {
+                            Action::DualLabeledStatic => {
                                 let val = rng.i32(1..101);
                                 log::info!("Setting dual-labeld val={val}");
                                 glean_metrics::test_metrics::static_static
                                     .get("key1", "category1")
                                     .add(val);
                             }
-                            3 => {
+                            Action::String => {
                                 let val = format!("cola-{}", rng.u8(0..100));
                                 log::info!("Setting string val={val}");
                                 glean_metrics::test_metrics::sample_string.set(val);
                             }
-                            4 => {
+                            Action::Timing => {
                                 if let Some(timer_id) = timer_id.take() {
                                     log::info!("Got timer. Stopping timings.");
                                     glean_metrics::test_metrics::timings
@@ -140,7 +166,7 @@ fn main() {
                                 timer_id = Some(glean_metrics::test_metrics::timings.start());
                                 timer_id_start = i;
                             }
-                            5 => {
+                            Action::DualLabeledDyamic => {
                                 let key = format!("key-{}", rng.u8(0..16));
                                 let cat = format!("cat-{}", rng.u8(0..16));
                                 let val = rng.i32(1..101);
