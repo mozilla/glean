@@ -399,7 +399,6 @@ jobs:
 
           # List available devices -- allows us to see what's there
           DEVICES=$(xcrun xctrace list devices 2>&1)
-          echo "$DEVICES"
           # Pick a device and start it
           UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
           xcrun simctl boot "$UUID"

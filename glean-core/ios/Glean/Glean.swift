@@ -685,3 +685,4 @@ public final class Glean: @unchecked Sendable {
     }
 }
 // swiftlint:enable type_body_length
+
