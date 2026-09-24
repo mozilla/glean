@@ -17,11 +17,6 @@
 //!
 //! ## [The Glean SDK Book](https://mozilla.github.io/glean)
 
-use chrono::{DateTime, Utc};
-use crossbeam_channel::unbounded;
-use log::LevelFilter;
-use malloc_size_of_derive::MallocSizeOf;
-use once_cell::sync::{Lazy, OnceCell};
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::path::Path;
@@ -29,6 +24,12 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, UNIX_EPOCH};
 use std::{fmt, fs};
+
+use chrono::{DateTime, Utc};
+use crossbeam_channel::unbounded;
+use log::LevelFilter;
+use malloc_size_of_derive::MallocSizeOf;
+use once_cell::sync::{Lazy, OnceCell};
 use uuid::Uuid;
 
 use metrics::RemoteSettingsConfig;
