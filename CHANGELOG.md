@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
 
+* General
+  * Set up RKV storage to store submitted pings in memory when enabled ([#]())
 * iOS
   * Re-enable the SQLite backend by default ([#3650](https://github.com/mozilla/glean/pull/3650))
 
