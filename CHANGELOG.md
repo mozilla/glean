@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
 
+* Rust
+  * glean-sym: Ensure UniFFI symbols are always included ([#3660](https://github.com/mozilla/glean/pull/3660))
 * iOS
   * Re-enable the SQLite backend by default ([#3650](https://github.com/mozilla/glean/pull/3650))
 
