@@ -399,7 +399,6 @@ jobs:
 
           # List available devices -- allows us to see what's there
           DEVICES=$(xcrun xctrace list devices 2>&1)
-          echo "$DEVICES"
           # Pick a device and start it
           UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
           xcrun simctl boot "$UUID"
@@ -408,9 +407,23 @@ jobs:
         run: |
           make build-swift
 
+      - name: Upload raw build log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: raw_xcodebuild.log
+          path: raw_xcodebuild.log
+
       - name: Run iOS test
         run: |
           make test-swift
+
+      - name: Upload raw test log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: raw_xcodetest.log
+          path: raw_xcodetest.log
 
   test-swift-sample:
     runs-on: macos-latest
@@ -447,6 +460,13 @@ jobs:
       - name: Test sample app
         run: |
           make test-ios-sample
+
+      - name: Upload raw test log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: raw_sample_xcodetest.log
+          path: raw_sample_xcodetest.log
 
   test-kotlin:
     runs-on: ubuntu-latest
