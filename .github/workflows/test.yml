@@ -170,6 +170,15 @@ jobs:
           echo "::add-matcher::.github/rust.json"
           make test-rust
 
+      - name: "Test (SQLite)"
+        run: |
+          export RUST_BACKTRACE=1
+          export RUST_LOG=glean_core=debug
+          export CARGO_INCREMENTAL=0
+
+          echo "::add-matcher::.github/rust.json"
+          cargo nextest run --all --features sqlite
+
       - name: Run Rust sample
         run: |
           cargo run -p sample
