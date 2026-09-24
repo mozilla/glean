@@ -19,7 +19,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2021-11-22"
 end = "2027-01-08"
 
@@ -41,7 +41,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_bindgen]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2021-11-22"
 end = "2027-01-08"
 
@@ -63,7 +63,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_build]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2021-11-22"
 end = "2027-01-08"
 
@@ -85,7 +85,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_checksum_derive]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2023-11-20"
 end = "2027-01-08"
 
@@ -107,7 +107,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_core]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2023-11-20"
 end = "2027-01-08"
 
@@ -136,7 +136,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_macros]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2021-11-22"
 end = "2027-01-08"
 
@@ -158,7 +158,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_meta]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2023-11-20"
 end = "2027-01-08"
 
@@ -172,7 +172,7 @@ end = "2027-01-08"
 [[wildcard-audits.uniffi_pipeline]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2025-10-08"
 end = "2027-01-14"
 notes = "Maintained by the Glean and Application Services teams"
@@ -188,7 +188,7 @@ notes = "Maintained by the Glean and Application Services teams"
 [[wildcard-audits.uniffi_testing]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2023-11-20"
 end = "2027-01-08"
 
@@ -202,7 +202,7 @@ end = "2027-01-08"
 [[wildcard-audits.uniffi_udl]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
-user-id = 111105 # Mark Hammond (mhammond)
+user-id = 111105
 start = "2023-11-20"
 end = "2027-01-08"
 
