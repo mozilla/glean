@@ -2,20 +2,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
+use crate::{ErrorKind, JsonValue, SubmittedPing};
+use chrono::{DateTime, Utc};
 use std::cell::{Cell, RefCell};
 use std::collections::btree_map::Entry;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fs;
 use std::io;
 use std::num::NonZeroU64;
 use std::path::Path;
 use std::str;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::RwLock;
+use std::sync::{Mutex, RwLock};
 use std::time::{Duration, Instant};
-
-use crate::metrics::dual_labeled_counter::RECORD_SEPARATOR;
-use crate::ErrorKind;
 
 use malloc_size_of::MallocSizeOf;
 use rkv::{StoreError, StoreOptions};
@@ -95,6 +95,7 @@ pub fn rkv_new(path: &Path) -> std::result::Result<(Rkv, RkvLoadState), rkv::Sto
 }
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::database::StoredSubmittedPingHandler;
 use crate::metrics::Metric;
 use crate::Glean;
 use crate::Lifetime;
@@ -147,6 +148,8 @@ pub struct Database {
     /// Times an Rkv write-commit took.
     /// Re-applied as samples in a timing distribution later.
     pub(crate) write_timings: RefCell<Vec<i64>>,
+
+    submitted_pings_store: Mutex<HashMap<String, SubmittedPing>>,
 }
 
 impl MallocSizeOf for Database {
@@ -264,6 +267,7 @@ impl Database {
             file_size,
             rkv_load_state,
             write_timings,
+            submitted_pings_store: Mutex::new(HashMap::new()),
         };
 
         db.load_ping_lifetime_data();
@@ -1006,6 +1010,125 @@ impl Database {
             writer.commit()?;
             Ok(())
         })
+    }
+}
+
+impl StoredSubmittedPingHandler for Database {
+    fn get_all_submitted_pings(&self) -> Vec<SubmittedPing> {
+        let lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        let mut res = lock.values().cloned().collect::<Vec<SubmittedPing>>();
+        res.sort_by(|a, b| {
+            if a.submitted_date() < b.submitted_date() {
+                std::cmp::Ordering::Greater
+            } else if a.submitted_date() > b.submitted_date() {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        res
+    }
+
+    fn get_submitted_pings_by_name(&self, ping: &str) -> Vec<SubmittedPing> {
+        let lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        let mut res = lock
+            .values()
+            .filter(|v| v.ping == ping)
+            .cloned()
+            .collect::<Vec<SubmittedPing>>();
+        res.sort_by(|a, b| {
+            if a.submitted_date() < b.submitted_date() {
+                std::cmp::Ordering::Greater
+            } else if a.submitted_date() > b.submitted_date() {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        res
+    }
+
+    fn mark_ping_as_uploaded(&self, document_id: &str, date_uploaded: DateTime<Utc>) -> usize {
+        let mut lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        let entry = lock.get_mut(document_id);
+        if let Some(p) = entry {
+            p.uploaded_date = Some(date_uploaded.to_rfc3339());
+            1
+        } else {
+            0
+        }
+    }
+
+    fn mark_ping_as_upload_failed(&self, document_id: &str) -> usize {
+        let mut lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        let entry = lock.get_mut(document_id);
+        if let Some(p) = entry {
+            p.upload_failed = Some(Utc::now().to_rfc3339());
+            1
+        } else {
+            0
+        }
+    }
+
+    fn store_submitted_ping(
+        &self,
+        document_id: &str,
+        ping: &str,
+        date_submitted: DateTime<Utc>,
+        date_uploaded: Option<DateTime<Utc>>,
+        upload_failed: Option<DateTime<Utc>>,
+        payload: JsonValue,
+    ) -> Result<()> {
+        let mut lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        lock.insert(
+            document_id.to_string(),
+            SubmittedPing {
+                document_id: document_id.to_string(),
+                ping: ping.to_string(),
+                submitted_date: date_submitted.to_rfc3339(),
+                uploaded_date: date_uploaded.map(|d| d.to_rfc3339()),
+                upload_failed: upload_failed.map(|d| d.to_rfc3339()),
+                payload: Some(payload),
+            },
+        );
+        Ok(())
+    }
+
+    fn cleanup_submitted_pings(&self, before_time: Option<DateTime<Utc>>) -> Result<()> {
+        let mut lock = self
+            .submitted_pings_store
+            .lock()
+            .expect("Unable to lock submitted pings store");
+        let days_30 = Duration::from_secs(30 * 24 * 60 * 60);
+        let mut time = before_time.unwrap_or_else(|| Utc::now() - days_30);
+        if let Some(t) = before_time {
+            time = t;
+        }
+        let mut keys = vec![];
+        for (k, v) in lock.iter_mut() {
+            if v.submitted_date() <= time {
+                keys.push(k.clone());
+            }
+        }
+        for k in keys {
+            lock.remove(&k);
+        }
+        Ok(())
     }
 }
 
