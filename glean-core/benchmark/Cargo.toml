@@ -19,6 +19,7 @@ gungraun = { version = "0.17.0", features = ["cachegrind"], optional = true }
 
 [features]
 gungraun = ["dep:gungraun"]
+sqlite = ["glean-core/sqlite"]
 
 [lib]
 bench = false
