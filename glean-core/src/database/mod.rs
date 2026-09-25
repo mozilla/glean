@@ -25,7 +25,7 @@ pub use sqlite::Database;
 pub use rkv::Database;
 
 /// A trait defining the methods for a database to handle storing submitted pings.
-pub trait StoredSubmittedPingHandler {
+pub(crate) trait StoredSubmittedPingHandler {
     /// Gets all pings in the `submitted_pings` table.
     fn get_all_submitted_pings(&self) -> Vec<crate::SubmittedPing>;
 

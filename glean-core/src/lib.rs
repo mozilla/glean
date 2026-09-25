@@ -69,7 +69,7 @@ mod fd_logger;
 pub use crate::common_metric_data::{CommonMetricData, Lifetime, MetricLabel};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
-pub use crate::database::StoredSubmittedPingHandler;
+use crate::database::StoredSubmittedPingHandler;
 use crate::dispatcher::is_test_mode;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
@@ -1019,7 +1019,7 @@ impl SubmittedPing {
     }
 
     /// Returns the upload failed date as an optional UTC DateTime.
-    pub fn uploaded_failed(&self) -> Option<DateTime<Utc>> {
+    pub fn upload_failed(&self) -> Option<DateTime<Utc>> {
         self.upload_failed.as_ref().map(|upload_failed| {
             DateTime::parse_from_rfc3339(upload_failed)
                 .map(|d| d.to_utc())
