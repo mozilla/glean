@@ -149,6 +149,8 @@ pub struct Database {
     /// Re-applied as samples in a timing distribution later.
     pub(crate) write_timings: RefCell<Vec<i64>>,
 
+    /// An in-memory store for submitted pings. This could get pretty big, but
+    /// since it's a development-only thing that's alright.
     submitted_pings_store: Mutex<HashMap<String, SubmittedPing>>,
 }
 
