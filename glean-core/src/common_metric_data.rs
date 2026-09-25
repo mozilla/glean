@@ -321,6 +321,28 @@ impl CommonMetricDataInternal {
         }
     }
 
+    /// TODO: This needs to run the actual label checks WITHOUT SQLITE
+    #[cfg(feature = "sqlite")]
+    pub(crate) fn check_labels_(&self) -> LabelCheck {
+        if let Some(label) = &self.inner.label {
+            match label {
+                MetricLabel::Static(label) => LabelCheck::Label(label.to_string()),
+                MetricLabel::Label(label) => LabelCheck::Label(label.to_string()),
+                MetricLabel::KeyOnly(key, static_category) => {
+                    LabelCheck::Label(format!("{key}{static_category}"))
+                }
+                MetricLabel::CategoryOnly(static_key, category) => {
+                    LabelCheck::Label(format!("{static_key}{category}"))
+                }
+                MetricLabel::KeyAndCategory(key, category) => {
+                    LabelCheck::Label(format!("{key}{category}"))
+                }
+            }
+        } else {
+            LabelCheck::NoLabel
+        }
+    }
+
     /// Whether or not the metric is `in_session`.
     ///
     /// Metrics that are `in_session` participate in session tracking and carry session metadata.
