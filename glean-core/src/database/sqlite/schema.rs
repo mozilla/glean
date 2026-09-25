@@ -21,14 +21,14 @@ fn table_schema(schema: Option<&str>) -> String {
     let table_name = "telemetry";
     format!(
         "
-         CREATE TABLE {schema}{separator}{table_name}(
-           id TEXT NOT NULL,
-           ping TEXT NOT NULL,
-           lifetime TEXT NOT NULL,
-           labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
-           value BLOB,
-           UNIQUE(id, ping, labels)
-         );
+        CREATE TABLE {schema}{separator}{table_name}(
+          id TEXT NOT NULL,
+          ping TEXT NOT NULL,
+          lifetime TEXT NOT NULL,
+          labels TEXT NOT NULL, -- can't be null or ON CONFLICT won't work
+          value BLOB,
+          UNIQUE(id, ping, labels)
+        );
         "
     )
 }
@@ -41,19 +41,19 @@ impl ConnectionOpener for Schema {
     fn setup(conn: &mut rusqlite::Connection) -> Result<(), Self::Error> {
         conn.execute_batch(
             "
-             -- we unconditionally want write-ahead-logging mode
-             PRAGMA journal_mode = WAL;
-             -- Sync at the most criticial moments, but not with every write
-             PRAGMA synchronous = NORMAL;
-             -- limit size of the journal. TODO(bug 2049290): value currently arbitrary.
-             -- needs refinement.
-             PRAGMA journal_size_limit = 512000; -- 512 KB.
-             -- We don't care about temp tables being persisted to disk
-             PRAGMA temp_store = MEMORY;
-             -- allows adding incremental cleanup later
-             PRAGMA auto_vacuum = INCREMENTAL;
-             -- How long to wait for a lock before returning SQLITE_BUSY (in ms)
-             PRAGMA busy_timeout = 5000;
+            -- we unconditionally want write-ahead-logging mode
+            PRAGMA journal_mode = WAL;
+            -- Sync at the most criticial moments, but not with every write
+            PRAGMA synchronous = NORMAL;
+            -- limit size of the journal. TODO(bug 2049290): value currently arbitrary.
+            -- needs refinement.
+            PRAGMA journal_size_limit = 512000; -- 512 KB.
+            -- We don't care about temp tables being persisted to disk
+            PRAGMA temp_store = MEMORY;
+            -- allows adding incremental cleanup later
+            PRAGMA auto_vacuum = INCREMENTAL;
+            -- How long to wait for a lock before returning SQLITE_BUSY (in ms)
+            PRAGMA busy_timeout = 5000;
             ",
         )?;
 
@@ -71,17 +71,17 @@ impl ConnectionOpener for Schema {
     fn create(tx: &mut Transaction<'_>) -> Result<(), Self::Error> {
         tx.execute_batch(&format!(
             "
-             {}
-             CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
-             CREATE TABLE submitted_pings(
-               document_id TEXT PRIMARY KEY,
-               ping TEXT NOT NULL,
-               date_submitted INTEGER NOT NULL,
-               date_uploaded INTEGER,
-               upload_failed INTEGER,
-               payload BLOB
-             );
-             CREATE INDEX submitted_pings_ping on submitted_pings(ping);
+            {}
+            CREATE TABLE migration(id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+            CREATE TABLE submitted_pings(
+              document_id TEXT PRIMARY KEY,
+              ping TEXT NOT NULL,
+              date_submitted INTEGER NOT NULL,
+              date_uploaded INTEGER,
+              upload_failed INTEGER,
+              payload BLOB
+            );
+            CREATE INDEX submitted_pings_ping on submitted_pings(ping);
             ",
             table_schema(None)
         ))?;
