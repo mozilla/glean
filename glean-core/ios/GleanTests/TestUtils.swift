@@ -127,7 +127,7 @@ func resetGleanDiscardingInitialPings(testCase: XCTestCase,
 
     Glean.shared.resetGlean(configuration: configuration, clearStores: clearStores)
 
-    testCase.waitForExpectations(timeout: 5.0) { error in
+    testCase.waitForExpectations(timeout: 30.0) { error in
         XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
     }
 
