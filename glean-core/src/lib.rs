@@ -1042,13 +1042,13 @@ impl From<database::sqlite::SubmittedPing> for SubmittedPing {
     }
 }
 
-/// Returns a `Vec` containing all stored submitted pings.
+/// Blocks and awaits the Glean Dispatcher before returning a Vec containing the stored pings.
 pub fn glean_get_all_stored_submitted_pings() -> Vec<SubmittedPing> {
     block_on_dispatcher();
     core::with_glean(|glean| glean.storage().get_all_submitted_pings())
 }
 
-/// Returns a `Vec` containing all stored submitted pings with the supplied name.
+/// Blocks and awaits the Glean Dispatcher before returning a Vec containing the stored pings with the supplied name.
 ///
 /// # Arguments
 ///
