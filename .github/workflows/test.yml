@@ -370,9 +370,9 @@ jobs:
           done
 
   test-swift:
-    runs-on: macos-latest
+    runs-on: glean-macos-arm64
     needs: [decide-runs]
-    if: false #needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
     steps:
       - *checkout
 
@@ -422,9 +422,9 @@ jobs:
           make test-swift
 
   test-swift-sample:
-    runs-on: macos-latest
+    runs-on: glean-macos-arm64
     needs: [decide-runs]
-    if: false #needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
     steps:
       - *checkout
 
