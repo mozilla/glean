@@ -37,6 +37,8 @@ if [ "${LLVM_TARGET_TRIPLE_SUFFIX-}" = "-simulator" ]; then
   IS_SIMULATOR=1
 fi
 
+FEATURES="--features sqlite"
+
 for arch in $ARCHS; do
   case "$arch" in
     x86_64)
@@ -47,16 +49,16 @@ for arch in $ARCHS; do
 
       # Intel iOS simulator
       export CFLAGS_x86_64_apple_ios="-target x86_64-apple-ios"
-      $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET --lib --crate-type staticlib $RELFLAG --target x86_64-apple-ios
+      $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET $FEATURES --lib --crate-type staticlib $RELFLAG --target x86_64-apple-ios
       ;;
 
     arm64)
       if [ $IS_SIMULATOR -eq 0 ]; then
         # Hardware iOS targets
-        $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET --lib --crate-type staticlib $RELFLAG --target aarch64-apple-ios
+        $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET $FEATURES --lib --crate-type staticlib $RELFLAG --target aarch64-apple-ios
       else
         # M1 iOS simulator
-        $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET --lib --crate-type staticlib $RELFLAG --target aarch64-apple-ios-sim
+        $HOME/.cargo/bin/cargo rustc -p $FFI_TARGET $FEATURES --lib --crate-type staticlib $RELFLAG --target aarch64-apple-ios-sim
       fi
   esac
 done

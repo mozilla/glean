@@ -120,15 +120,23 @@ lint-python-fix: setup-python ## Run ruff and mypy to lint Python code
 
 .PHONY: lint-rust lint-kotlin lint-swift lint-yaml
 
-check-licenses:
+check-licenses:  ## Check dependency licenses
 	cargo deny check licenses
 
-check-bans:
+check-bans:  ## Check for any banned crates
 	cargo deny check bans
 
 check: check-licenses check-bans
 
-.PHONY: check-licenses check-bans check
+audit:  ## Run cargo-audit
+	# Explanation for ignored issues:
+	#  * RUSTSEC-2026-0204: Invalid pointer dereference in fmt::Pointer impl for Atomic and Shared when the underlying pointer is invalid
+	#                       not exposed to user code, we use only file paths in rkv. 
+	#  * RUSTSEC-2025-0141: Bincode is unmaintained
+	#                       The crate is not broken. We're migrating away from it though.
+	cargo audit --ignore RUSTSEC-2024-0421 --ignore RUSTSEC-2025-0141
+
+.PHONY: check-licenses check-bans check audit
 
 # Formatting
 

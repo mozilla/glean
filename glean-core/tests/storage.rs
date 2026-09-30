@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 mod common;
+
 use crate::common::*;
 
 use serde_json::json;

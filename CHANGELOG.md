@@ -1,6 +1,17 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...main)
+
+# v70.2.1 (2026-09-30)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...v70.2.1)
+
+* General
+  * Set up RKV storage to store submitted pings in memory when enabled ([#3661](https://github.com/mozilla/glean/pull/3661))
+* Rust
+  * glean-sym: Ensure UniFFI symbols are always included ([#3660](https://github.com/mozilla/glean/pull/3660))
+* iOS
+  * Re-enable the SQLite backend by default ([#3650](https://github.com/mozilla/glean/pull/3650))
 
 # v70.2.0 (2026-09-21)
 
