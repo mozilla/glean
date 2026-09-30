@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.0...main)
 
+* General
+  * Set up RKV storage to store submitted pings in memory when enabled ([#3661](https://github.com/mozilla/glean/pull/3661))
 * Rust
   * glean-sym: Ensure UniFFI symbols are always included ([#3660](https://github.com/mozilla/glean/pull/3660))
 * iOS
