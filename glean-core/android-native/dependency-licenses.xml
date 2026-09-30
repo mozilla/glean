@@ -10,6 +10,12 @@ the details of which are reproduced below.
     <name>Apache License 2.0: static_assertions</name>
     <url>https://github.com/nvzqz/static-assertions-rs</url>
   </license>  <license>
+    <name>Apache License 2.0: linux-raw-sys</name>
+    <url>https://github.com/sunfishcode/linux-raw-sys</url>
+  </license>  <license>
+    <name>Apache License 2.0: rustix</name>
+    <url>https://github.com/bytecodealliance/rustix</url>
+  </license>  <license>
     <name>Apache License 2.0: tinyvec</name>
     <url>https://github.com/Lokathor/tinyvec</url>
   </license>  <license>
@@ -357,6 +363,12 @@ the details of which are reproduced below.
   </license>  <license>
     <name>MIT License: bincode</name>
     <url>https://github.com/servo/bincode</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
+  </license>  <license>
+    <name>Mozilla Public License 2.0: glean-core</name>
+    <url>https://github.com/mozilla/glean</url>
   </license>  <license>
     <name>Mozilla Public License 2.0: glean-core</name>
     <url>https://github.com/mozilla/glean</url>
