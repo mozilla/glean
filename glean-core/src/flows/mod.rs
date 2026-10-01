@@ -170,7 +170,6 @@ impl FlowRegistry {
     }
 
     /// Looks up the flows an event takes part in, by its base identifier.
-    #[cfg(test)]
     pub(crate) fn lookup(&self, identifier: &str) -> Option<&EventFlows> {
         if self.index.is_empty() {
             return None;
@@ -316,23 +315,86 @@ pub(crate) fn lookup<'a>(glean: &'a Glean, metric: &EventMetric) -> Option<&'a E
     glean.flow_registry.lookup_metric(meta)
 }
 
-/// Opens an instance of every flow the event starts that has none active.
+/// Opens an instance of every enabled flow the event starts that has none active.
+///
+/// A flow is enabled by its `flows_enabled` Server Knobs override if it has
+/// one, and otherwise by its `flows.yaml` setting. That is checked only for a
+/// flow that would actually open, and only here: it never closes an instance.
 ///
 /// Nothing is recorded: the entry event itself is tagged with the new instance.
 pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
     if event_flows.starts.is_empty() {
         return;
     }
+    let would_open: Vec<FlowId> = {
+        let state = glean.flow_state.lock().unwrap();
+        event_flows
+            .starts
+            .iter()
+            .copied()
+            .filter(|flow| !state.active.contains_key(flow))
+            .collect()
+    };
+    if would_open.is_empty() {
+        return;
+    }
+    let to_open: Vec<FlowId> = {
+        let remote = glean.remote_settings_config.lock().unwrap();
+        would_open
+            .into_iter()
+            .filter(|flow| {
+                let flow = glean.flow_registry.flow(*flow);
+                remote
+                    .flows_enabled
+                    .get(&flow.name)
+                    .copied()
+                    .unwrap_or(!flow.disabled)
+            })
+            .collect()
+    };
+    if to_open.is_empty() {
+        return;
+    }
+
     let now = now_ms();
     let mut state = glean.flow_state.lock().unwrap();
     // Every flow must be opened, so this must not short-circuit.
     let mut opened = false;
-    for flow in &event_flows.starts {
-        opened |= state.open(*flow, now);
+    for flow in to_open {
+        opened |= state.open(flow, now);
     }
     if opened {
         persist(glean, &state);
     }
+}
+
+/// Returns each event that `metrics_enabled` disables and that is an entry or
+/// exit event of some flow, with the names of those flows.
+pub(crate) fn boundary_events_disabled<'a>(
+    registry: &'a FlowRegistry,
+    metrics_enabled: &'a HashMap<String, bool>,
+) -> Vec<(&'a str, Vec<&'a str>)> {
+    let mut disabled: Vec<(&str, Vec<&str>)> = metrics_enabled
+        .iter()
+        .filter(|(_, enabled)| !**enabled)
+        .filter_map(|(event, _)| {
+            let flows = registry.lookup(event)?;
+            let mut names: Vec<&str> = flows
+                .starts
+                .iter()
+                .chain(&flows.ends)
+                .map(|flow| registry.flow(*flow).name.as_str())
+                .collect();
+            if names.is_empty() {
+                return None;
+            }
+            names.sort_unstable();
+            names.dedup();
+            Some((event.as_str(), names))
+        })
+        .collect();
+    disabled.sort_unstable();
+    disabled
 }
 
 /// Closes, with `reason: timeout`, every expired instance of a flow the event
@@ -2169,5 +2231,148 @@ mod test {
         assert!(active_seqs(&glean).is_empty());
         assert!(read_persisted(&glean).is_none());
         assert!(flow_ends(&glean).is_empty());
+    }
+
+    // -----------------------------------------------------------------------
+    // flows_enabled
+    // -----------------------------------------------------------------------
+
+    fn set_flows_enabled(glean: &Glean, flows: &[(&str, bool)]) {
+        let mut cfg = crate::metrics::RemoteSettingsConfig::new();
+        cfg.flows_enabled = flows.iter().map(|(f, e)| (f.to_string(), *e)).collect();
+        glean.apply_server_knobs_config(cfg);
+    }
+
+    #[test]
+    fn flow_shipped_disabled_does_not_open() {
+        let mut flows = two_flows();
+        flows[0].disabled = true;
+        let (mut glean, _t) = glean_with_flows(flows);
+        glean.session_start();
+
+        record_now(&glean, "alpha", "started");
+
+        let started = event("alpha", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert!(started[0].flows.is_empty());
+        assert!(active_seqs(&glean).is_empty());
+    }
+
+    #[test]
+    fn server_knobs_can_enable_a_flow_shipped_disabled() {
+        let mut flows = two_flows();
+        flows[0].disabled = true;
+        let (mut glean, _t) = glean_with_flows(flows);
+        glean.session_start();
+
+        set_flows_enabled(&glean, &[("alpha", true)]);
+        record_now(&glean, "alpha", "started");
+
+        assert_eq!(vec![("alpha".to_string(), 0)], active_seqs(&glean));
+    }
+
+    #[test]
+    fn server_knobs_can_disable_a_flow() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+
+        set_flows_enabled(&glean, &[("alpha", false)]);
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+
+        // Only the disabled flow is affected; the entry event is still recorded.
+        assert_eq!(vec![("zeta".to_string(), 0)], active_seqs(&glean));
+        let started = event("alpha", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert!(started[0].flows.is_empty());
+    }
+
+    #[test]
+    fn toggling_the_override_never_affects_an_open_instance() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+
+        set_flows_enabled(&glean, &[("alpha", false)]);
+        record_now(&glean, "app", "card_shown");
+        set_flows_enabled(&glean, &[("alpha", true)]);
+        record_now(&glean, "alpha", "finished");
+
+        let shown = event("app", "card_shown", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("alpha", 0)], shown[0].flows);
+        assert_eq!(
+            vec![exit_extras("alpha", 0, "alpha.finished")],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn disabled_instance_ends_naturally_and_the_next_one_does_not_open() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+        set_flows_enabled(&glean, &[("alpha", false)]);
+
+        record_now(&glean, "alpha", "finished");
+        record_now(&glean, "alpha", "started");
+
+        assert_eq!(
+            vec![exit_extras("alpha", 0, "alpha.finished")],
+            flow_ends(&glean)
+        );
+        assert!(active_seqs(&glean).is_empty());
+    }
+
+    #[test]
+    fn unknown_flow_in_the_override_is_ignored() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+
+        set_flows_enabled(&glean, &[("no_such_flow", false)]);
+        record_now(&glean, "alpha", "started");
+
+        assert_eq!(vec![("alpha".to_string(), 0)], active_seqs(&glean));
+    }
+
+    #[test]
+    fn flows_enabled_is_parsed_from_the_server_knobs_payload() {
+        let cfg = crate::metrics::RemoteSettingsConfig::try_from(
+            r#"{"flows_enabled": {"alpha": false, "zeta": true}}"#.to_string(),
+        )
+        .unwrap();
+        assert_eq!(Some(&false), cfg.flows_enabled.get("alpha"));
+        assert_eq!(Some(&true), cfg.flows_enabled.get("zeta"));
+    }
+
+    #[test]
+    fn disabling_a_boundary_event_is_reported() {
+        let registry = FlowRegistry::new(&two_flows());
+        let metrics_enabled: HashMap<String, bool> = [
+            // Entry event of alpha: reported.
+            ("alpha.started", false),
+            // Exit event of zeta: reported.
+            ("zeta.finished", false),
+            // Member only: not a boundary, not reported.
+            ("app.card_shown", false),
+            // Enabled, not disabled: not reported.
+            ("zeta.started", true),
+            // No flow: not reported.
+            ("settings.opened", false),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect();
+
+        assert_eq!(
+            vec![
+                ("alpha.started", vec!["alpha"]),
+                ("zeta.finished", vec!["zeta"])
+            ],
+            boundary_events_disabled(&registry, &metrics_enabled)
+        );
     }
 }

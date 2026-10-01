@@ -284,6 +284,7 @@ fn keep_server_knobs_config_in_sync_with_definitions() {
     let config = RemoteSettingsConfig {
         metrics_enabled: HashMap::from([("category.name".to_string(), true)]),
         pings_enabled: HashMap::from([("ping".to_string(), true)]),
+        flows_enabled: HashMap::from([("flow".to_string(), true)]),
         event_threshold: Some(41),
         session_sample_rate: Some(1.0),
         events_ping_acceleration_factor: Some(1),
