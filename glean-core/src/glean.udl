@@ -788,6 +788,18 @@ dictionary RecordedEvent {
     // Session metadata for this event.
     // Null for out-of-session events and events from before sessions were introduced.
     SessionMetadata? session = null;
+
+    // The active flow instances this event belongs to, in name order.
+    // Empty for events that belong to no active flow instance.
+    sequence<FlowEntry> flows = [];
+};
+
+// An active flow instance an event belongs to.
+dictionary FlowEntry {
+    // The flow's name.
+    string name;
+    // The instance's sequence number within the session, starting at 0.
+    u64 seq;
 };
 
 interface EventMetric {
