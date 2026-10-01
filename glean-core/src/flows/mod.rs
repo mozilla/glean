@@ -10,12 +10,13 @@
 //! definitions into a [`FlowRegistry`], keyed by event, so the recording path
 //! resolves everything it needs about an event with a single lookup.
 
-// TODO(bug 2077137): remove once the recording path reads the registry.
-#![allow(dead_code)]
-
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use malloc_size_of_derive::MallocSizeOf;
+use serde::{Deserialize, Serialize};
+
+use crate::common_metric_data::CommonMetricDataInternal;
+use crate::Glean;
 
 /// The role an event plays in a flow.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, MallocSizeOf)]
@@ -41,6 +42,15 @@ pub struct FlowDefinition {
     pub auto_close_timeout_ms: Option<u64>,
     /// Whether the flow ships disabled.
     pub disabled: bool,
+}
+
+/// An active flow instance an event belongs to, as attached to the recorded event.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, MallocSizeOf)]
+pub struct FlowEntry {
+    /// The flow's name.
+    pub name: String,
+    /// The instance's sequence number within the session, starting at 0.
+    pub seq: u64,
 }
 
 /// Identifies a registered flow.
@@ -133,14 +143,25 @@ impl FlowRegistry {
     }
 
     /// Whether no flows are registered.
+    #[cfg(test)]
     pub(crate) fn is_empty(&self) -> bool {
         self.flows.is_empty()
     }
 
-    /// Looks up the flows an event takes part in, by its base identifier.
+    /// Looks up the flows an event metric takes part in.
     ///
-    /// When no flows are registered this is a single emptiness check, which is
-    /// all the recording path pays in a product that defines no flows.
+    /// When no flows are registered this is a single emptiness check, made before
+    /// building the metric's identifier, which is all the recording path pays in
+    /// a product that defines no flows.
+    pub(crate) fn lookup_metric(&self, meta: &CommonMetricDataInternal) -> Option<&EventFlows> {
+        if self.index.is_empty() {
+            return None;
+        }
+        self.index.get(&meta.base_identifier())
+    }
+
+    /// Looks up the flows an event takes part in, by its base identifier.
+    #[cfg(test)]
     pub(crate) fn lookup(&self, identifier: &str) -> Option<&EventFlows> {
         if self.index.is_empty() {
             return None;
@@ -154,6 +175,8 @@ impl FlowRegistry {
     }
 
     /// Finds a registered flow by name.
+    // TODO(bug 2077143): restoring persisted instances finds their flow by name.
+    #[cfg_attr(not(test), allow(dead_code))]
     pub(crate) fn find(&self, name: &str) -> Option<FlowId> {
         self.flows
             .binary_search_by(|flow| flow.name.as_str().cmp(name))
@@ -162,9 +185,39 @@ impl FlowRegistry {
     }
 }
 
+/// The flow instances active in the current session.
+#[derive(Debug, Default)]
+pub(crate) struct FlowState {
+    /// Each active flow, mapped to its instance's `flow_seq`.
+    pub(crate) active: BTreeMap<FlowId, u64>,
+}
+
+/// Returns a `flows` entry for every active instance of a flow the event belongs to.
+///
+/// Entries are in name order, which `member_of` already is.
+pub(crate) fn active_entries(glean: &Glean, meta: &CommonMetricDataInternal) -> Vec<FlowEntry> {
+    let Some(event_flows) = glean.flow_registry.lookup_metric(meta) else {
+        return Vec::new();
+    };
+    let state = glean.flow_state.lock().unwrap();
+    event_flows
+        .member_of
+        .iter()
+        .filter_map(|id| {
+            state.active.get(id).map(|seq| FlowEntry {
+                name: glean.flow_registry.flow(*id).name.clone(),
+                seq: *seq,
+            })
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::metrics::EventMetric;
+    use crate::session::SessionMode;
+    use crate::{CommonMetricData, InternalConfiguration, Lifetime};
 
     fn definition(name: &str, events: &[(&str, FlowRole)]) -> FlowDefinition {
         FlowDefinition {
@@ -262,5 +315,197 @@ mod test {
         assert_eq!("onboarding", flow.name);
         assert_eq!(Some(45 * 60 * 1000), flow.auto_close_timeout_ms);
         assert!(flow.disabled);
+    }
+
+    // -----------------------------------------------------------------------
+    // Tagging recorded events
+    // -----------------------------------------------------------------------
+
+    fn glean_with_flows(flows: Vec<FlowDefinition>) -> (Glean, tempfile::TempDir) {
+        let dir = tempfile::tempdir().unwrap();
+        let cfg = InternalConfiguration {
+            data_path: dir.path().display().to_string(),
+            application_id: "org.mozilla.glean.test.app".into(),
+            language_binding_name: "Rust".into(),
+            upload_enabled: true,
+            max_events: None,
+            delay_ping_lifetime_io: false,
+            app_build: "Unknown".into(),
+            use_core_mps: false,
+            trim_data_to_registered_pings: false,
+            log_level: None,
+            rate_limit: None,
+            enable_event_timestamps: false,
+            experimentation_id: None,
+            enable_internal_pings: true,
+            ping_schedule: Default::default(),
+            ping_lifetime_threshold: 0,
+            ping_lifetime_max_time: 0,
+            max_pending_pings_count: None,
+            max_pending_pings_directory_size: None,
+            session_mode: SessionMode::Manual,
+            session_sample_rate: 1.0,
+            session_inactivity_timeout_ms: 0,
+            events_ping_acceleration_factor: None,
+            enable_store_submitted_pings: false,
+            flows,
+        };
+        (Glean::new(cfg).unwrap(), dir)
+    }
+
+    fn event(category: &str, name: &str, in_session: bool) -> EventMetric {
+        EventMetric::new(
+            CommonMetricData {
+                category: category.into(),
+                name: name.into(),
+                send_in_pings: vec!["events".into()],
+                lifetime: Lifetime::Ping,
+                in_session,
+                ..Default::default()
+            },
+            vec![],
+        )
+    }
+
+    /// Marks `flow` as having an active instance with the given `flow_seq`.
+    fn activate(glean: &Glean, flow: &str, seq: u64) {
+        let id = glean.flow_registry.find(flow).unwrap();
+        glean.flow_state.lock().unwrap().active.insert(id, seq);
+    }
+
+    /// Records `metric` and returns the `flows` on the resulting event.
+    fn record_and_get_flows(glean: &Glean, metric: &EventMetric) -> Vec<FlowEntry> {
+        metric.record_sync(glean, 0, HashMap::new(), 0);
+        metric
+            .get_value(glean, "events")
+            .expect("event should be recorded")
+            .pop()
+            .unwrap()
+            .flows
+    }
+
+    fn entry(name: &str, seq: u64) -> FlowEntry {
+        FlowEntry {
+            name: name.into(),
+            seq,
+        }
+    }
+
+    fn onboarding_and_checkout() -> Vec<FlowDefinition> {
+        vec![
+            definition(
+                "onboarding",
+                &[
+                    ("onboarding.started", FlowRole::Start),
+                    ("app.card_shown", FlowRole::Member),
+                    ("app.settings_toggled", FlowRole::Member),
+                ],
+            ),
+            definition(
+                "checkout",
+                &[
+                    ("checkout.started", FlowRole::Start),
+                    ("app.card_shown", FlowRole::Member),
+                ],
+            ),
+        ]
+    }
+
+    #[test]
+    fn member_event_is_tagged_with_its_active_flow() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        activate(&glean, "onboarding", 0);
+
+        let flows = record_and_get_flows(&glean, &event("app", "settings_toggled", true));
+        assert_eq!(vec![entry("onboarding", 0)], flows);
+    }
+
+    #[test]
+    fn member_event_is_not_tagged_when_its_flow_is_not_active() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        // checkout is active, but settings_toggled belongs only to onboarding.
+        activate(&glean, "checkout", 0);
+
+        let flows = record_and_get_flows(&glean, &event("app", "settings_toggled", true));
+        assert!(flows.is_empty());
+    }
+
+    #[test]
+    fn event_in_several_active_flows_has_entries_in_name_order() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        activate(&glean, "onboarding", 1);
+        activate(&glean, "checkout", 0);
+
+        let flows = record_and_get_flows(&glean, &event("app", "card_shown", true));
+        assert_eq!(vec![entry("checkout", 0), entry("onboarding", 1)], flows);
+    }
+
+    #[test]
+    fn event_named_by_no_flow_is_not_tagged() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        activate(&glean, "onboarding", 0);
+        activate(&glean, "checkout", 0);
+
+        let flows = record_and_get_flows(&glean, &event("settings", "opened", true));
+        assert!(flows.is_empty());
+    }
+
+    #[test]
+    fn out_of_session_event_is_not_tagged_even_if_a_flow_names_it() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        activate(&glean, "onboarding", 0);
+
+        let flows = record_and_get_flows(&glean, &event("app", "settings_toggled", false));
+        assert!(flows.is_empty());
+    }
+
+    #[test]
+    fn event_is_not_tagged_between_sessions() {
+        let (glean, _t) = glean_with_flows(onboarding_and_checkout());
+        activate(&glean, "onboarding", 0);
+
+        let flows = record_and_get_flows(&glean, &event("app", "settings_toggled", true));
+        assert!(flows.is_empty());
+    }
+
+    #[test]
+    fn flows_are_serialized_on_tagged_events_and_omitted_otherwise() {
+        let (mut glean, _t) = glean_with_flows(onboarding_and_checkout());
+        glean.session_start();
+        activate(&glean, "onboarding", 3);
+
+        event("app", "settings_toggled", true).record_sync(&glean, 0, HashMap::new(), 0);
+        event("settings", "opened", true).record_sync(&glean, 0, HashMap::new(), 0);
+
+        let json = glean
+            .event_storage()
+            .snapshot_as_json(&glean, "events", false)
+            .unwrap();
+        let events = json.as_array().unwrap();
+        let find = |category: &str, name: &str| {
+            events
+                .iter()
+                .find(|e| e["category"] == category && e["name"] == name)
+                .unwrap()
+                .clone()
+        };
+        assert_eq!(
+            serde_json::json!([{"name": "onboarding", "seq": 3}]),
+            find("app", "settings_toggled")["flows"]
+        );
+        assert!(find("settings", "opened").get("flows").is_none());
+    }
+
+    #[test]
+    fn stored_events_without_flows_deserialize_with_no_flows() {
+        let event: crate::event_database::RecordedEvent =
+            serde_json::from_str(r#"{"timestamp": 0, "category": "app", "name": "opened"}"#)
+                .unwrap();
+        assert!(event.flows.is_empty());
     }
 }

@@ -170,9 +170,16 @@ impl EventMetric {
             EventSessionContext::OutOfSession
         };
 
+        // Flow instances only exist within a session, so an out-of-session event
+        // is never tagged, even if a flow names it.
+        let flows = match &ctx {
+            EventSessionContext::InSession(_) => crate::flows::active_entries(glean, &self.meta),
+            EventSessionContext::OutOfSession => Vec::new(),
+        };
+
         glean
             .event_storage()
-            .record(glean, &self.meta, timestamp, extra_strings, ctx)
+            .record(glean, &self.meta, timestamp, extra_strings, ctx, flows)
     }
 
     /// **Test-only API (exported for FFI purposes).**
