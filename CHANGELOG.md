@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...main)
 
 * General
+  * Disabling upload now resets the in-memory session state, so re-enabling upload starts a new session instead of continuing the one from before the `deletion-request` ping ([bug 2077130](https://bugzilla.mozilla.org/show_bug.cgi?id=2077130))
   * BUGFIX: Clear event storage when a ping is disabled ([#3679](https://github.com/mozilla/glean/issues/3679))
 * iOS
   * Glean for iOS is now being built with Xcode 26.6 ([#3672](https://github.com/mozilla/glean/pull/3672))
