@@ -39,9 +39,9 @@ pub use glean_core::{
         Datetime, DistributionData, MemoryUnit, MetricIdentifier, Rate, RecordedEvent,
         TestGetValue, TimeUnit, TimerId,
     },
-    traits, AttributionMetrics, CommonMetricData, DistributionMetrics, Error, ErrorType, Glean,
-    HistogramType, LabeledMetricData, Lifetime, PingRateLimit, RecordedExperiment, Result,
-    SessionMode, SubmittedPing,
+    traits, AttributionMetrics, CommonMetricData, DistributionMetrics, Error, ErrorType,
+    FlowDefinition, FlowRole, Glean, HistogramType, LabeledMetricData, Lifetime, PingRateLimit,
+    RecordedExperiment, Result, SessionMode, SubmittedPing,
 };
 
 mod configuration;
@@ -137,6 +137,7 @@ fn initialize_internal(cfg: Configuration, client_info: ClientInfoMetrics) -> Op
         session_inactivity_timeout_ms: cfg.session_inactivity_timeout.as_millis() as u64,
         events_ping_acceleration_factor: cfg.events_ping_acceleration_factor.map(|x| x as u32),
         enable_store_submitted_pings: cfg.enable_store_submitted_pings,
+        flows: cfg.flows,
     };
 
     glean_core::glean_initialize(core_cfg, client_info.into(), callbacks);

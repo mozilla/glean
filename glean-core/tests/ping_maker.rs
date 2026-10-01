@@ -103,6 +103,7 @@ fn test_metrics_must_report_experimentation_id() {
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: false,
+        flows: vec![],
     })
     .unwrap();
     let ping_maker = PingMaker::new();
@@ -165,6 +166,7 @@ fn experimentation_id_is_removed_if_send_if_empty_is_false() {
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: false,
+        flows: vec![],
     })
     .unwrap();
     let ping_maker = PingMaker::new();
