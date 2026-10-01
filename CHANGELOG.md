@@ -3,7 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...main)
 
 * General
-  * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
+  * Added flows, which group the events of a bounded user task declared in `flows.yaml`. Events recorded while a flow is active carry a `flows` entry identifying the flow instance, each instance's end is reported by a new `glean.flow_end` event, and flows can be turned on or off remotely through the new `flows_enabled` Server Knob. See [Flows](https://mozilla.github.io/glean/book/user/flows/index.html) in the Glean book ([bug 2077127](https://bugzilla.mozilla.org/show_bug.cgi?id=2077127))
 * Android
   * BUGFIX: Ensure start/stop for a timing distribution don't throw an exception when called before initialize ([#3778](https://github.com/mozilla/glean/pull/3778))
   * Updated Kotlin to 2.4.21

@@ -5,6 +5,7 @@ Below are additional Glean parameters and settings that are exposed via Server K
 ## Contents
 - [Max Events per Event Ping]
 - [Events Ping Acceleration Factor]
+- [Flows Enabled]
 
 Additional Glean settings will be added to Server Knobs as needed or by request.
 
@@ -15,3 +16,4 @@ Additional Glean settings will be added to Server Knobs as needed or by request.
 [Controlling Pings with Server Knobs]: ../pings/index.md
 [Max Events per Event Ping]: ./max-events.md
 [Events Ping Acceleration Factor]: ./events-accel.md
+[Flows Enabled]: ./flows-enabled.md

@@ -76,6 +76,7 @@ Check the respective SDK documentation for details.
 | `enableInternalPings` | `true` | Whether to enable the internal "baseline", "events", and "metrics" pings. |
 | `delayPingLifetimeIo` | `false` | Whether Glean should delay persistence of data from metrics with `ping` lifetime. On Android data is automatically persisted every 1000 writes and on backgrounding when enabled. |
 | `eventsPingAccelerationFactor` | - | Optional. Determines how many "events" pings to accelerate after init by decreasing the max events needed to be recorded before submission. |
+| `flows` | No flows | The flow definitions `glean_parser` generates from your [`flows.yaml`](../yaml/flows.md) files. See [Flows](../../user/flows/index.md). |
 
 To learn about SDK specific configuration options available, refer to the [Reference](#reference) section.
 

@@ -30,3 +30,8 @@ For a full reference on the `pings.yaml` format, refer to the
 
 For a full reference on the `tags.yaml` format, refer to the
 [Tags YAML Registry Format](tags.md) page.
+
+## `flows.yaml` file
+
+For a full reference on the `flows.yaml` format, refer to the
+[Flows YAML Registry Format](flows.md) page.
