@@ -560,6 +560,7 @@ fn with_event_timestamps() {
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: false,
+        flows: vec![],
     };
     let mut glean = Glean::new(cfg).unwrap();
     let ping = PingBuilder::new("store1").build();
