@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, test_get_num_recorded_errors, ErrorType};
 use crate::event_database::RecordedEvent;
+use crate::flows;
 use crate::metrics::MetricType;
 use crate::session::EventSessionContext;
 use crate::util::truncate_string_at_boundary_with_error;
@@ -170,16 +171,39 @@ impl EventMetric {
             EventSessionContext::OutOfSession
         };
 
-        // Flow instances only exist within a session, so an out-of-session event
-        // is never tagged, even if a flow names it.
-        let flows = match &ctx {
-            EventSessionContext::InSession(_) => crate::flows::active_entries(glean, &self.meta),
-            EventSessionContext::OutOfSession => Vec::new(),
-        };
+        // Flow boundaries are handled while this event is recorded. Coming after
+        // `should_record()` and extra validation, an event that isn't recorded
+        // never opens or closes an instance.
+        let event_flows = flows::lookup(glean, &self.meta);
 
-        glean
-            .event_storage()
-            .record(glean, &self.meta, timestamp, extra_strings, ctx, flows)
+        // 1. Open any instance this event starts, so it is tagged with it below.
+        if let Some(event_flows) = event_flows {
+            flows::open_instances(glean, event_flows);
+        }
+
+        // 2. Tag the event with every active instance it belongs to. Computed
+        //    before step 4, so an exit event is tagged with the instance it closes.
+        let flow_entries = event_flows
+            .map(|event_flows| flows::active_entries(glean, event_flows))
+            .unwrap_or_default();
+
+        // 3. Record the event.
+        let mut submitted = glean.event_storage().record(
+            glean,
+            &self.meta,
+            timestamp,
+            extra_strings,
+            ctx,
+            flow_entries,
+        );
+
+        // 4. Close any instance this event ends, recording `glean.flow_end` after
+        //    the event so it takes the higher `session.event_seq`.
+        if let Some(event_flows) = event_flows {
+            submitted |= flows::close_instances(glean, event_flows, &self.meta);
+        }
+
+        submitted
     }
 
     /// **Test-only API (exported for FFI purposes).**

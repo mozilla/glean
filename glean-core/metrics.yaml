@@ -1181,6 +1181,55 @@ glean:
           - "abnormal_inactive": session was inactive at time of crash
         type: string
 
+  flow_end:
+    type: event
+    description: |
+      Recorded when a flow instance ends. Every instance records exactly one.
+
+      Recorded in the session that owns the instance, after the instance's last
+      tagged event, but never carries a `flows` entry itself. Its timestamp is
+      when Glean noticed the instance had ended, which is when it actually ended
+      only for `reason: exit`.
+    send_in_pings:
+      - events
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2077138
+    data_reviews:
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2077138
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+    extra_keys:
+      flow_name:
+        description: The name of the flow, as declared in `flows.yaml`.
+        type: string
+      flow_seq:
+        description: |
+          The instance's sequence number within its session. Matches `seq` in
+          the `flows` entries of the instance's tagged events.
+        type: quantity
+      reason:
+        description: |
+          Why the instance ended:
+          - "exit": an event in the flow's `ends_on` was recorded
+          - "timeout": the flow's `auto_close_timeout` elapsed
+          - "session_end": the session ended while the instance was active
+          - "abnormal": the app ended abnormally while the instance was active
+        type: string
+      terminating_event:
+        description: |
+          The event that closed the instance (`category.name`). Only present
+          when `reason` is "exit".
+        type: string
+      session_id:
+        description: |
+          The session that owned the instance. Only present when `reason` is
+          "abnormal", since that `flow_end` is recorded outside any session.
+        type: string
+
   sessions_seen:
     type: counter
     description: |

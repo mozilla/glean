@@ -10,13 +10,16 @@
 //! definitions into a [`FlowRegistry`], keyed by event, so the recording path
 //! resolves everything it needs about an event with a single lookup.
 
+use std::collections::btree_map::Entry;
 use std::collections::{BTreeMap, HashMap};
 
+use chrono::Utc;
 use malloc_size_of_derive::MallocSizeOf;
 use serde::{Deserialize, Serialize};
 
 use crate::common_metric_data::CommonMetricDataInternal;
-use crate::Glean;
+use crate::session::EventSessionContext;
+use crate::{CommonMetricData, Glean, Lifetime};
 
 /// The role an event plays in a flow.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, MallocSizeOf)]
@@ -190,15 +193,88 @@ impl FlowRegistry {
 pub(crate) struct FlowState {
     /// Each active flow, mapped to its instance's `flow_seq`.
     pub(crate) active: BTreeMap<FlowId, u64>,
+    /// The `flow_seq` the next instance opened in this session will get.
+    pub(crate) next_seq: u64,
+}
+
+impl FlowState {
+    /// Opens an instance of `flow`, unless one is already active.
+    ///
+    /// An entry event recorded while its flow is active does nothing: the
+    /// active instance is kept, not replaced.
+    fn open(&mut self, flow: FlowId) {
+        if let Entry::Vacant(entry) = self.active.entry(flow) {
+            entry.insert(self.next_seq);
+            self.next_seq += 1;
+        }
+    }
+}
+
+/// Why a flow instance ended, as reported in `glean.flow_end`.
+// TODO(bugs 2077139, 2077141, 2077143): the session-end, timeout, and
+// persistence bugs construct the remaining reasons.
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum FlowEndReason<'a> {
+    /// An event in the flow's `ends_on` was recorded.
+    Exit {
+        /// The closing event's identifier (`category.name`).
+        terminating_event: &'a str,
+    },
+    /// The flow's `auto_close_timeout` elapsed.
+    Timeout,
+    /// The session ended while the instance was active.
+    SessionEnd,
+    /// The app ended abnormally while the instance was active.
+    Abnormal {
+        /// The session that owned the instance.
+        session_id: &'a str,
+    },
+}
+
+impl FlowEndReason<'_> {
+    fn as_str(&self) -> &'static str {
+        match self {
+            FlowEndReason::Exit { .. } => "exit",
+            FlowEndReason::Timeout => "timeout",
+            FlowEndReason::SessionEnd => "session_end",
+            FlowEndReason::Abnormal { .. } => "abnormal",
+        }
+    }
+}
+
+/// Looks up the flows an event metric's recording can affect.
+///
+/// Returns `None` unless the metric is in-session and a session is active,
+/// since instances only exist within a session: an event recorded between
+/// sessions neither opens an instance nor is tagged.
+pub(crate) fn lookup<'a>(
+    glean: &'a Glean,
+    meta: &CommonMetricDataInternal,
+) -> Option<&'a EventFlows> {
+    if !meta.inner.in_session || !glean.session_manager().is_active() {
+        return None;
+    }
+    glean.flow_registry.lookup_metric(meta)
+}
+
+/// Opens an instance of every flow the event starts that has none active.
+///
+/// Nothing is recorded: the entry event itself is tagged with the new instance.
+pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
+    if event_flows.starts.is_empty() {
+        return;
+    }
+    let mut state = glean.flow_state.lock().unwrap();
+    for flow in &event_flows.starts {
+        state.open(*flow);
+    }
 }
 
 /// Returns a `flows` entry for every active instance of a flow the event belongs to.
 ///
 /// Entries are in name order, which `member_of` already is.
-pub(crate) fn active_entries(glean: &Glean, meta: &CommonMetricDataInternal) -> Vec<FlowEntry> {
-    let Some(event_flows) = glean.flow_registry.lookup_metric(meta) else {
-        return Vec::new();
-    };
+pub(crate) fn active_entries(glean: &Glean, event_flows: &EventFlows) -> Vec<FlowEntry> {
     let state = glean.flow_state.lock().unwrap();
     event_flows
         .member_of
@@ -210,6 +286,110 @@ pub(crate) fn active_entries(glean: &Glean, meta: &CommonMetricDataInternal) -> 
             })
         })
         .collect()
+}
+
+/// Closes the active instance of every flow the event ends, recording a
+/// `glean.flow_end` with `reason: exit` for each.
+///
+/// Must be called after the event itself is recorded, so each `flow_end` gets
+/// a higher `session.event_seq` than the event that closed it.
+///
+/// Returns `true` if any `flow_end` caused a ping to be submitted.
+pub(crate) fn close_instances(
+    glean: &Glean,
+    event_flows: &EventFlows,
+    meta: &CommonMetricDataInternal,
+) -> bool {
+    if event_flows.ends.is_empty() {
+        return false;
+    }
+    let closed: Vec<(FlowId, u64)> = {
+        let mut state = glean.flow_state.lock().unwrap();
+        event_flows
+            .ends
+            .iter()
+            .filter_map(|flow| state.active.remove(flow).map(|seq| (*flow, seq)))
+            .collect()
+    };
+    if closed.is_empty() {
+        return false;
+    }
+
+    let terminating_event = meta.base_identifier();
+    let mut submitted = false;
+    for (flow, seq) in closed {
+        submitted |= record_flow_end(
+            glean,
+            &glean.flow_registry.flow(flow).name,
+            seq,
+            FlowEndReason::Exit {
+                terminating_event: &terminating_event,
+            },
+        );
+    }
+    submitted
+}
+
+/// Records a `glean.flow_end` event.
+///
+/// Like `glean.session_end`, this bypasses `EventMetric` and records directly,
+/// but in-session rather than out-of-session, so it is ordered against the
+/// instance's own events by `session.event_seq`. It is never flow-tagged. The
+/// exception is `reason: abnormal`, recorded at startup before any session
+/// exists, which carries the owning session's ID as an extra instead.
+///
+/// Returns `true` if recording it caused a ping to be submitted.
+pub(crate) fn record_flow_end(
+    glean: &Glean,
+    flow_name: &str,
+    flow_seq: u64,
+    reason: FlowEndReason,
+) -> bool {
+    let meta = CommonMetricData {
+        name: "flow_end".into(),
+        category: "glean".into(),
+        send_in_pings: vec!["events".into()],
+        lifetime: Lifetime::Ping,
+        ..Default::default()
+    };
+
+    let mut extra = HashMap::new();
+    extra.insert("flow_name".to_string(), flow_name.to_string());
+    extra.insert("flow_seq".to_string(), flow_seq.to_string());
+    extra.insert("reason".to_string(), reason.as_str().to_string());
+    let ctx = match reason {
+        FlowEndReason::Exit { terminating_event } => {
+            extra.insert(
+                "terminating_event".to_string(),
+                terminating_event.to_string(),
+            );
+            glean.session_manager().compute_event_context()
+        }
+        FlowEndReason::Abnormal { session_id } => {
+            extra.insert("session_id".to_string(), session_id.to_string());
+            EventSessionContext::OutOfSession
+        }
+        FlowEndReason::Timeout | FlowEndReason::SessionEnd => {
+            glean.session_manager().compute_event_context()
+        }
+    };
+    // Wall-clock time, matching `EventMetric::record`. The event's main
+    // timestamp stays on the monotonic clock.
+    if glean.with_timestamps() {
+        extra.insert(
+            "glean_timestamp".to_string(),
+            Utc::now().timestamp_millis().to_string(),
+        );
+    }
+
+    glean.event_storage().record(
+        glean,
+        &meta.into(),
+        crate::get_timestamp_ms(),
+        Some(extra),
+        ctx,
+        Vec::new(),
+    )
 }
 
 #[cfg(test)]
@@ -323,7 +503,12 @@ mod test {
 
     fn glean_with_flows(flows: Vec<FlowDefinition>) -> (Glean, tempfile::TempDir) {
         let dir = tempfile::tempdir().unwrap();
-        let cfg = InternalConfiguration {
+        let cfg = test_cfg(&dir, flows);
+        (Glean::new(cfg).unwrap(), dir)
+    }
+
+    fn test_cfg(dir: &tempfile::TempDir, flows: Vec<FlowDefinition>) -> InternalConfiguration {
+        InternalConfiguration {
             data_path: dir.path().display().to_string(),
             application_id: "org.mozilla.glean.test.app".into(),
             language_binding_name: "Rust".into(),
@@ -349,8 +534,7 @@ mod test {
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
             flows,
-        };
-        (Glean::new(cfg).unwrap(), dir)
+        }
     }
 
     fn event(category: &str, name: &str, in_session: bool) -> EventMetric {
@@ -507,5 +691,333 @@ mod test {
             serde_json::from_str(r#"{"timestamp": 0, "category": "app", "name": "opened"}"#)
                 .unwrap();
         assert!(event.flows.is_empty());
+    }
+
+    // -----------------------------------------------------------------------
+    // Lifecycle
+    // -----------------------------------------------------------------------
+
+    /// The `onboarding` flow from the proposal's worked example.
+    fn onboarding() -> FlowDefinition {
+        definition(
+            "onboarding",
+            &[
+                ("onboarding.started", FlowRole::Start),
+                ("onboarding.finished", FlowRole::End),
+                ("onboarding.dismissed", FlowRole::End),
+                ("onboarding.card_shown", FlowRole::Member),
+                ("onboarding.permission_prompted", FlowRole::Member),
+            ],
+        )
+    }
+
+    fn flow_end_metric() -> EventMetric {
+        EventMetric::new(
+            CommonMetricData {
+                category: "glean".into(),
+                name: "flow_end".into(),
+                send_in_pings: vec!["events".into()],
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+            vec![],
+        )
+    }
+
+    fn flow_ends(glean: &Glean) -> Vec<HashMap<String, String>> {
+        flow_end_metric()
+            .get_value(glean, "events")
+            .unwrap_or_default()
+            .into_iter()
+            .map(|e| e.extra.unwrap())
+            .collect()
+    }
+
+    fn exit_extras(flow: &str, seq: u64, terminating_event: &str) -> HashMap<String, String> {
+        [
+            ("flow_name", flow.to_string()),
+            ("flow_seq", seq.to_string()),
+            ("reason", "exit".to_string()),
+            ("terminating_event", terminating_event.to_string()),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect()
+    }
+
+    fn record(glean: &Glean, category: &str, name: &str) -> bool {
+        event(category, name, true).record_sync(glean, 0, HashMap::new(), 0)
+    }
+
+    /// The worked example from the proposal, row by row.
+    #[test]
+    fn worked_example() {
+        let (mut glean, _t) = glean_with_flows(vec![onboarding()]);
+
+        glean.session_start();
+        let steps = [
+            ("onboarding", "started"),
+            ("onboarding", "card_shown"),
+            ("onboarding", "permission_prompted"),
+            ("settings", "opened"),
+            ("onboarding", "card_shown"),
+            ("onboarding", "dismissed"),
+        ];
+        // The snapshot is ordered by timestamp, so use the same clock as the
+        // session boundary events.
+        for (category, name) in steps {
+            event(category, name, true).record_sync(
+                &glean,
+                crate::get_timestamp_ms(),
+                HashMap::new(),
+                0,
+            );
+        }
+        glean.session_end(None);
+
+        let json = glean
+            .event_storage()
+            .snapshot_as_json(&glean, "events", false)
+            .unwrap();
+        let rows: Vec<(String, Option<u64>, serde_json::Value)> = json
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| {
+                (
+                    format!(
+                        "{}.{}",
+                        e["category"].as_str().unwrap(),
+                        e["name"].as_str().unwrap()
+                    ),
+                    e["session"]["event_seq"].as_u64(),
+                    e.get("flows").cloned().unwrap_or(serde_json::Value::Null),
+                )
+            })
+            .collect();
+
+        let tagged = serde_json::json!([{"name": "onboarding", "seq": 0}]);
+        let none = serde_json::Value::Null;
+        let expected = vec![
+            ("glean.session_start", None, none.clone()),
+            ("onboarding.started", Some(0), tagged.clone()),
+            ("onboarding.card_shown", Some(1), tagged.clone()),
+            ("onboarding.permission_prompted", Some(2), tagged.clone()),
+            ("settings.opened", Some(3), none.clone()),
+            ("onboarding.card_shown", Some(4), tagged.clone()),
+            ("onboarding.dismissed", Some(5), tagged.clone()),
+            ("glean.flow_end", Some(6), none.clone()),
+            ("glean.session_end", None, none),
+        ];
+        let expected: Vec<(String, Option<u64>, serde_json::Value)> = expected
+            .into_iter()
+            .map(|(name, seq, flows)| (name.to_string(), seq, flows))
+            .collect();
+        assert_eq!(expected, rows);
+
+        assert_eq!(
+            vec![exit_extras("onboarding", 0, "onboarding.dismissed")],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn entry_event_while_active_keeps_the_existing_instance() {
+        let (mut glean, _t) = glean_with_flows(vec![onboarding()]);
+        glean.session_start();
+
+        record(&glean, "onboarding", "started");
+        record(&glean, "onboarding", "started");
+        record(&glean, "onboarding", "dismissed");
+
+        let starts = event("onboarding", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("onboarding", 0)], starts[0].flows);
+        assert_eq!(vec![entry("onboarding", 0)], starts[1].flows);
+        assert_eq!(
+            vec![exit_extras("onboarding", 0, "onboarding.dismissed")],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn exit_event_while_inactive_does_nothing() {
+        let (mut glean, _t) = glean_with_flows(vec![onboarding()]);
+        glean.session_start();
+
+        record(&glean, "onboarding", "dismissed");
+
+        let dismissed = event("onboarding", "dismissed", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert!(dismissed[0].flows.is_empty());
+        assert!(flow_ends(&glean).is_empty());
+    }
+
+    #[test]
+    fn second_attempt_in_a_session_is_a_new_instance() {
+        let (mut glean, _t) = glean_with_flows(vec![onboarding()]);
+        glean.session_start();
+
+        record(&glean, "onboarding", "started");
+        record(&glean, "onboarding", "dismissed");
+        record(&glean, "onboarding", "started");
+        record(&glean, "onboarding", "card_shown");
+        record(&glean, "onboarding", "finished");
+
+        let shown = event("onboarding", "card_shown", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("onboarding", 1)], shown[0].flows);
+        assert_eq!(
+            vec![
+                exit_extras("onboarding", 0, "onboarding.dismissed"),
+                exit_extras("onboarding", 1, "onboarding.finished"),
+            ],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn no_instance_opens_without_an_active_session() {
+        let (glean, _t) = glean_with_flows(vec![onboarding()]);
+
+        record(&glean, "onboarding", "started");
+
+        assert!(glean.flow_state.lock().unwrap().active.is_empty());
+    }
+
+    #[test]
+    fn a_suppressed_entry_event_opens_nothing() {
+        let (mut glean, _t) = glean_with_flows(vec![onboarding()]);
+        glean.session_start();
+
+        let disabled = EventMetric::new(
+            CommonMetricData {
+                category: "onboarding".into(),
+                name: "started".into(),
+                send_in_pings: vec!["events".into()],
+                lifetime: Lifetime::Ping,
+                in_session: true,
+                disabled: true,
+                ..Default::default()
+            },
+            vec![],
+        );
+        disabled.record_sync(&glean, 0, HashMap::new(), 0);
+
+        assert!(glean.flow_state.lock().unwrap().active.is_empty());
+    }
+
+    #[test]
+    fn one_event_can_end_one_flow_and_start_another() {
+        let (mut glean, _t) = glean_with_flows(vec![
+            definition(
+                "browse",
+                &[
+                    ("browse.started", FlowRole::Start),
+                    ("checkout.started", FlowRole::End),
+                ],
+            ),
+            definition(
+                "checkout",
+                &[
+                    ("checkout.started", FlowRole::Start),
+                    ("checkout.paid", FlowRole::End),
+                ],
+            ),
+        ]);
+        glean.session_start();
+
+        record(&glean, "browse", "started");
+        record(&glean, "checkout", "started");
+
+        let started = event("checkout", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        // Tagged with both: the instance it closes and the one it opens.
+        assert_eq!(
+            vec![entry("browse", 0), entry("checkout", 1)],
+            started[0].flows
+        );
+        assert_eq!(
+            vec![exit_extras("browse", 0, "checkout.started")],
+            flow_ends(&glean)
+        );
+        let checkout = glean.flow_registry.find("checkout").unwrap();
+        assert_eq!(
+            Some(&1),
+            glean.flow_state.lock().unwrap().active.get(&checkout)
+        );
+    }
+
+    #[test]
+    fn event_ending_two_flows_records_a_flow_end_for_each_in_name_order() {
+        let shared_exit = ("app.closed", FlowRole::End);
+        let (mut glean, _t) = glean_with_flows(vec![
+            definition("zeta", &[("zeta.started", FlowRole::Start), shared_exit]),
+            definition("alpha", &[("alpha.started", FlowRole::Start), shared_exit]),
+        ]);
+        glean.session_start();
+
+        record(&glean, "zeta", "started");
+        record(&glean, "alpha", "started");
+        record(&glean, "app", "closed");
+
+        assert_eq!(
+            vec![
+                exit_extras("alpha", 1, "app.closed"),
+                exit_extras("zeta", 0, "app.closed"),
+            ],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn flow_end_carries_a_wall_clock_glean_timestamp() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = test_cfg(&dir, vec![onboarding()]);
+        cfg.enable_event_timestamps = true;
+        let mut glean = Glean::new(cfg).unwrap();
+        glean.session_start();
+
+        let before = Utc::now().timestamp_millis();
+        record(&glean, "onboarding", "started");
+        record(&glean, "onboarding", "dismissed");
+        let after = Utc::now().timestamp_millis();
+
+        let json = glean
+            .event_storage()
+            .snapshot_as_json(&glean, "events", false)
+            .unwrap();
+        let flow_end = json
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|e| e["category"] == "glean" && e["name"] == "flow_end")
+            .unwrap();
+        let glean_timestamp: i64 = flow_end["extra"]["glean_timestamp"]
+            .as_str()
+            .unwrap()
+            .parse()
+            .unwrap();
+        assert!((before..=after).contains(&glean_timestamp));
+    }
+
+    #[test]
+    fn ping_submitted_by_flow_end_is_reported_to_the_caller() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = test_cfg(&dir, vec![onboarding()]);
+        // session_start, started, dismissed, and then flow_end fills the store.
+        cfg.max_events = Some(4);
+        let mut glean = Glean::new(cfg).unwrap();
+        glean.session_start();
+
+        assert!(!record(&glean, "onboarding", "started"));
+        assert!(
+            record(&glean, "onboarding", "dismissed"),
+            "the ping submitted by flow_end must be reported by the exit event's recording"
+        );
     }
 }
