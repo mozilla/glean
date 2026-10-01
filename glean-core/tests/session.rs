@@ -859,6 +859,42 @@ fn manual_mode_second_session_has_seq_2() {
     assert_eq!("2", seq_str, "second manual session must have seq=2");
 }
 
+/// Session boundary events carry a wall-clock `glean_timestamp`, like every
+/// other event, rather than the monotonic clock used for `timestamp`.
+#[test]
+fn session_boundary_events_use_wall_clock_glean_timestamp() {
+    let (_t, data_path) = tempdir();
+    let mut cfg = session_cfg(&data_path, SessionMode::Manual, 1.0, 0);
+    cfg.enable_event_timestamps = true;
+    let mut glean = Glean::new(cfg).unwrap();
+
+    let before = chrono::Utc::now().timestamp_millis();
+    glean.session_start();
+    glean.session_end(None);
+    let after = chrono::Utc::now().timestamp_millis();
+
+    let json = glean
+        .event_storage()
+        .snapshot_as_json(&glean, "events", false)
+        .expect("expected boundary events");
+    let events = json.as_array().unwrap();
+    for name in ["session_start", "session_end"] {
+        let event = events
+            .iter()
+            .find(|e| e["category"] == "glean" && e["name"] == name)
+            .unwrap_or_else(|| panic!("expected glean.{name}"));
+        let glean_timestamp: i64 = event["extra"]["glean_timestamp"]
+            .as_str()
+            .expect("glean_timestamp should exist")
+            .parse()
+            .expect("glean_timestamp should be an integer");
+        assert!(
+            (before..=after).contains(&glean_timestamp),
+            "glean.{name} glean_timestamp {glean_timestamp} not in wall-clock range {before}..={after}"
+        );
+    }
+}
+
 // ---------------------------------------------------------------------------
 // AUTO mode — session resumption and timeout across restarts
 // ---------------------------------------------------------------------------
