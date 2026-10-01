@@ -1267,6 +1267,30 @@ glean:
       - glean-team@mozilla.com
     expires: never
 
+  flows_not_started:
+    type: labeled_counter
+    description: |
+      The number of times a flow's entry event was recorded while no session
+      was active, so no instance of the flow could open. Labeled by flow name;
+      the labels are the flows the application registers.
+
+      Not incremented for a disabled flow. This shows the size of the
+      problem, not a loss rate: it is sent in the metrics ping, on a different
+      schedule from the events ping that carries tagged events and
+      `glean.flow_end`, so it can't be used as a numerator against them.
+    send_in_pings:
+      - metrics
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2077146
+    data_reviews:
+      - "TODO data review"
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2077146
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - glean-team@mozilla.com
+    expires: never
+
 glean.ping:
   uploader_capabilities:
     type: string_list
