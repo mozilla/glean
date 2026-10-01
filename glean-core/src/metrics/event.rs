@@ -168,7 +168,7 @@ impl EventMetric {
         // 1. Close any expired instance of this event's flows, so the event isn't
         //    tagged with it, then open any instance this event starts, so it is.
         if let Some(event_flows) = event_flows {
-            submitted |= flows::close_expired_for_event(glean, event_flows);
+            submitted |= flows::close_expired_for_event(glean, event_flows, timestamp);
             flows::open_instances(glean, event_flows);
         }
 
@@ -203,7 +203,7 @@ impl EventMetric {
         // 4. Close any instance this event ends, recording `glean.flow_end` after
         //    the event so it takes the higher `session.event_seq`.
         if let Some(event_flows) = event_flows {
-            submitted |= flows::close_instances(glean, event_flows, &self.meta);
+            submitted |= flows::close_instances(glean, event_flows, &self.meta, timestamp);
         }
 
         submitted

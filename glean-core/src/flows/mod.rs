@@ -18,8 +18,13 @@ use malloc_size_of_derive::MallocSizeOf;
 use serde::{Deserialize, Serialize};
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::metrics::TextMetric;
 use crate::session::EventSessionContext;
+use crate::storage::INTERNAL_STORAGE;
 use crate::{CommonMetricData, Glean, Lifetime};
+
+// Storage key for persisted flow state, alongside the `session#*` keys.
+const FLOW_STATE_METRIC_NAME: &str = "flows#state";
 
 /// The role an event plays in a flow.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, MallocSizeOf)]
@@ -178,8 +183,6 @@ impl FlowRegistry {
     }
 
     /// Finds a registered flow by name.
-    // TODO(bug 2077143): restoring persisted instances finds their flow by name.
-    #[cfg_attr(not(test), allow(dead_code))]
     pub(crate) fn find(&self, name: &str) -> Option<FlowId> {
         self.flows
             .binary_search_by(|flow| flow.name.as_str().cmp(name))
@@ -213,14 +216,18 @@ impl FlowState {
     ///
     /// An entry event recorded while its flow is active does nothing: the
     /// active instance is kept, not replaced.
-    fn open(&mut self, flow: FlowId, now_ms: i64) {
-        if let Entry::Vacant(entry) = self.active.entry(flow) {
-            entry.insert(ActiveInstance {
-                seq: self.next_seq,
-                opened_at_ms: now_ms,
-            });
-            self.next_seq += 1;
-        }
+    ///
+    /// Returns whether an instance was opened.
+    fn open(&mut self, flow: FlowId, now_ms: i64) -> bool {
+        let Entry::Vacant(entry) = self.active.entry(flow) else {
+            return false;
+        };
+        entry.insert(ActiveInstance {
+            seq: self.next_seq,
+            opened_at_ms: now_ms,
+        });
+        self.next_seq += 1;
+        true
     }
 
     /// Removes and returns every active instance, among `candidates`, whose
@@ -262,8 +269,6 @@ fn now_ms() -> i64 {
 }
 
 /// Why a flow instance ended, as reported in `glean.flow_end`.
-// TODO(bug 2077143): the persistence bug constructs `Abnormal`.
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum FlowEndReason<'a> {
     /// An event in the flow's `ends_on` was recorded.
@@ -317,8 +322,13 @@ pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
     }
     let now = now_ms();
     let mut state = glean.flow_state.lock().unwrap();
+    // Every flow must be opened, so this must not short-circuit.
+    let mut opened = false;
     for flow in &event_flows.starts {
-        state.open(*flow, now);
+        opened |= state.open(*flow, now);
+    }
+    if opened {
+        persist(glean, &state);
     }
 }
 
@@ -329,9 +339,16 @@ pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
 /// that notices an expiry is not tagged with the expired instance, and an entry
 /// event for that flow opens a new one in the same recording.
 ///
+/// Each `flow_end` takes the event's `timestamp`, that being when the expiry
+/// was noticed.
+///
 /// Returns `true` if any `flow_end` caused a ping to be submitted.
-pub(crate) fn close_expired_for_event(glean: &Glean, event_flows: &EventFlows) -> bool {
-    close_expired(glean, Some(&event_flows.member_of))
+pub(crate) fn close_expired_for_event(
+    glean: &Glean,
+    event_flows: &EventFlows,
+    timestamp: u64,
+) -> bool {
+    close_expired(glean, Some(&event_flows.member_of), timestamp)
 }
 
 /// Closes, with `reason: timeout`, every expired active instance.
@@ -344,12 +361,12 @@ pub(crate) fn close_all_expired(glean: &Glean) -> bool {
     if !glean.session_manager().is_active() {
         return false;
     }
-    close_expired(glean, None)
+    close_expired(glean, None, crate::get_timestamp_ms())
 }
 
 /// Closes expired instances among `candidates`, or among all active instances
 /// when `candidates` is `None`.
-fn close_expired(glean: &Glean, candidates: Option<&[FlowId]>) -> bool {
+fn close_expired(glean: &Glean, candidates: Option<&[FlowId]>, timestamp: u64) -> bool {
     let expired = {
         let mut state = glean.flow_state.lock().unwrap();
         if state.active.is_empty() {
@@ -363,7 +380,11 @@ fn close_expired(glean: &Glean, candidates: Option<&[FlowId]>) -> bool {
                 &all
             }
         };
-        state.take_expired(&glean.flow_registry, candidates, now_ms())
+        let expired = state.take_expired(&glean.flow_registry, candidates, now_ms());
+        if !expired.is_empty() {
+            persist(glean, &state);
+        }
+        expired
     };
 
     let mut submitted = false;
@@ -373,6 +394,7 @@ fn close_expired(glean: &Glean, candidates: Option<&[FlowId]>) -> bool {
             &glean.flow_registry.flow(flow).name,
             seq,
             FlowEndReason::Timeout,
+            timestamp,
         );
     }
     submitted
@@ -399,24 +421,30 @@ pub(crate) fn active_entries(glean: &Glean, event_flows: &EventFlows) -> Vec<Flo
 /// `glean.flow_end` with `reason: exit` for each.
 ///
 /// Must be called after the event itself is recorded, so each `flow_end` gets
-/// a higher `session.event_seq` than the event that closed it.
+/// a higher `session.event_seq` than the event that closed it. Each takes the
+/// event's `timestamp`.
 ///
 /// Returns `true` if any `flow_end` caused a ping to be submitted.
 pub(crate) fn close_instances(
     glean: &Glean,
     event_flows: &EventFlows,
     meta: &CommonMetricDataInternal,
+    timestamp: u64,
 ) -> bool {
     if event_flows.ends.is_empty() {
         return false;
     }
     let closed: Vec<(FlowId, u64)> = {
         let mut state = glean.flow_state.lock().unwrap();
-        event_flows
+        let closed: Vec<(FlowId, u64)> = event_flows
             .ends
             .iter()
             .filter_map(|flow| state.active.remove(flow).map(|i| (*flow, i.seq)))
-            .collect()
+            .collect();
+        if !closed.is_empty() {
+            persist(glean, &state);
+        }
+        closed
     };
     if closed.is_empty() {
         return false;
@@ -432,6 +460,7 @@ pub(crate) fn close_instances(
             FlowEndReason::Exit {
                 terminating_event: &terminating_event,
             },
+            timestamp,
         );
     }
     submitted
@@ -451,6 +480,7 @@ pub(crate) fn close_all_at_session_end(glean: &Glean) {
             .map(|(flow, instance)| (flow, instance.seq))
             .collect()
     };
+    clear_persisted(glean);
     // `flow_seq` is assigned in order of opening.
     closed.sort_by_key(|a| std::cmp::Reverse(a.1));
     for (flow, seq) in closed {
@@ -459,8 +489,193 @@ pub(crate) fn close_all_at_session_end(glean: &Glean) {
             &glean.flow_registry.flow(flow).name,
             seq,
             FlowEndReason::SessionEnd,
+            crate::get_timestamp_ms(),
         );
     }
+}
+
+/// Resets in-memory flow state for a new session, and clears what was persisted.
+///
+/// Instances never span sessions, and `flow_seq` restarts at 0.
+pub(crate) fn reset_for_new_session(glean: &Glean) {
+    *glean.flow_state.lock().unwrap() = FlowState::default();
+    clear_persisted(glean);
+}
+
+/// Restores the persisted instances of the session being resumed at startup.
+///
+/// Only instances owned by `session_id` are restored, along with the flow
+/// counter, so the resumed session doesn't reuse sequence numbers. Instances
+/// of a flow that is no longer registered are discarded without a `flow_end`.
+/// Instances of a disabled flow are restored: restoring is not opening.
+pub(crate) fn restore(glean: &Glean, session_id: &str) {
+    let Some(persisted) = read_persisted(glean) else {
+        return;
+    };
+    if persisted.session_id != session_id {
+        clear_persisted(glean);
+        return;
+    }
+    // A resumed session recomputes its sampling decision from the current
+    // sample rate. If that now samples it out, nothing in it is recorded, so
+    // its instances can neither be tagged nor closed.
+    if !glean.session_manager().sampled_in() {
+        log::info!("Discarding persisted flow instances of a now sampled-out session");
+        clear_persisted(glean);
+        return;
+    }
+
+    let persisted_count = persisted.instances.len();
+    let mut state = FlowState {
+        active: BTreeMap::new(),
+        next_seq: persisted.next_seq,
+    };
+    for instance in persisted.instances {
+        if instance.session_id != session_id {
+            continue;
+        }
+        match glean.flow_registry.find(&instance.flow_name) {
+            Some(flow) => {
+                state.active.insert(
+                    flow,
+                    ActiveInstance {
+                        seq: instance.flow_seq,
+                        opened_at_ms: instance.opened_at_ms,
+                    },
+                );
+            }
+            None => log::info!(
+                "Discarding persisted instance of flow '{}', which is no longer registered",
+                instance.flow_name
+            ),
+        }
+    }
+    if state.active.len() != persisted_count {
+        persist(glean, &state);
+    }
+    *glean.flow_state.lock().unwrap() = state;
+}
+
+/// Closes every persisted instance with `reason: abnormal`, for a session that
+/// ended without closing them (a crash, or a session abandoned at startup).
+///
+/// Each `flow_end` is recorded out-of-session, since the owning session is no
+/// longer current, and carries that session's ID. Instances of a flow that is
+/// no longer registered are discarded without one. Must be called before the
+/// session's own synthetic `session_end` is recorded.
+pub(crate) fn recover_abnormal(glean: &Glean) {
+    if let Some(persisted) = read_persisted(glean) {
+        let mut instances = persisted.instances;
+        // Reverse order of opening, as at session end.
+        instances.sort_by_key(|a| std::cmp::Reverse(a.flow_seq));
+        for instance in instances {
+            if glean.flow_registry.find(&instance.flow_name).is_none() {
+                continue;
+            }
+            record_flow_end(
+                glean,
+                &instance.flow_name,
+                instance.flow_seq,
+                FlowEndReason::Abnormal {
+                    session_id: &instance.session_id,
+                },
+                crate::get_timestamp_ms(),
+            );
+        }
+    }
+    *glean.flow_state.lock().unwrap() = FlowState::default();
+    clear_persisted(glean);
+}
+
+/// Discards persisted flow state without recording anything, for instances
+/// whose session was not resumed and did not end abnormally.
+pub(crate) fn discard_persisted(glean: &Glean) {
+    *glean.flow_state.lock().unwrap() = FlowState::default();
+    clear_persisted(glean);
+}
+
+/// Flow state as persisted.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+struct PersistedFlowState {
+    /// The session that owns the flow counter.
+    session_id: String,
+    next_seq: u64,
+    instances: Vec<PersistedInstance>,
+}
+
+/// An active instance as persisted.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+struct PersistedInstance {
+    flow_name: String,
+    flow_seq: u64,
+    /// The session that owns the instance.
+    session_id: String,
+    opened_at_ms: i64,
+}
+
+fn make_flow_state_metric() -> TextMetric {
+    TextMetric::new(CommonMetricData {
+        name: FLOW_STATE_METRIC_NAME.into(),
+        category: String::new(),
+        send_in_pings: vec![INTERNAL_STORAGE.into()],
+        lifetime: Lifetime::User,
+        ..Default::default()
+    })
+}
+
+/// Persists the active instances and the flow counter, in one write.
+///
+/// Called only when an instance opens or closes.
+fn persist(glean: &Glean, state: &FlowState) {
+    // Subprocesses have no storage, and never have an active session.
+    if glean.data_store.is_none() {
+        return;
+    }
+    let Some(session_id) = glean.session_manager().session_id() else {
+        return;
+    };
+    let session_id = session_id.to_string();
+    let persisted = PersistedFlowState {
+        session_id: session_id.clone(),
+        next_seq: state.next_seq,
+        instances: state
+            .active
+            .iter()
+            .map(|(flow, instance)| PersistedInstance {
+                flow_name: glean.flow_registry.flow(*flow).name.clone(),
+                flow_seq: instance.seq,
+                session_id: session_id.clone(),
+                opened_at_ms: instance.opened_at_ms,
+            })
+            .collect(),
+    };
+    // Safe unwrap: these types always serialize.
+    let json = serde_json::to_string(&persisted).unwrap();
+    make_flow_state_metric().set_sync(glean, json);
+}
+
+/// Reads the persisted flow state, if any.
+fn read_persisted(glean: &Glean) -> Option<PersistedFlowState> {
+    glean.data_store.as_ref()?;
+    let json = make_flow_state_metric().get_value(glean, INTERNAL_STORAGE)?;
+    if json.is_empty() {
+        return None;
+    }
+    match serde_json::from_str(&json) {
+        Ok(persisted) => Some(persisted),
+        Err(e) => {
+            log::warn!("Discarding unreadable persisted flow state: {e}");
+            None
+        }
+    }
+}
+
+/// Clears the persisted flow state.
+fn clear_persisted(glean: &Glean) {
+    if glean.data_store.is_none() {
+        return;
+    }
+    make_flow_state_metric().set_sync(glean, "");
 }
 
 /// Records a `glean.flow_end` event.
@@ -471,12 +686,16 @@ pub(crate) fn close_all_at_session_end(glean: &Glean) {
 /// exception is `reason: abnormal`, recorded at startup before any session
 /// exists, which carries the owning session's ID as an extra instead.
 ///
+/// `timestamp` is on the same monotonic clock as every event's main timestamp:
+/// the triggering event's when one closed the instance, otherwise now.
+///
 /// Returns `true` if recording it caused a ping to be submitted.
 pub(crate) fn record_flow_end(
     glean: &Glean,
     flow_name: &str,
     flow_seq: u64,
     reason: FlowEndReason,
+    timestamp: u64,
 ) -> bool {
     let meta = CommonMetricData {
         name: "flow_end".into(),
@@ -515,14 +734,9 @@ pub(crate) fn record_flow_end(
         );
     }
 
-    glean.event_storage().record(
-        glean,
-        &meta.into(),
-        crate::get_timestamp_ms(),
-        Some(extra),
-        ctx,
-        Vec::new(),
-    )
+    glean
+        .event_storage()
+        .record(glean, &meta.into(), timestamp, Some(extra), ctx, Vec::new())
 }
 
 #[cfg(test)]
@@ -1607,5 +1821,347 @@ mod test {
             ],
             flow_ends(&glean)
         );
+    }
+
+    // -----------------------------------------------------------------------
+    // Persistence
+    // -----------------------------------------------------------------------
+
+    fn auto_cfg(dir: &tempfile::TempDir, flows: Vec<FlowDefinition>) -> InternalConfiguration {
+        let mut cfg = test_cfg(dir, flows);
+        cfg.session_mode = SessionMode::Auto;
+        cfg.session_inactivity_timeout_ms = 30 * 60 * 1000;
+        cfg
+    }
+
+    /// Drops `glean` and starts a new instance on the same data directory.
+    fn restart(glean: Glean, cfg: InternalConfiguration) -> Glean {
+        drop(glean);
+        Glean::new(cfg).unwrap()
+    }
+
+    fn active_seqs(glean: &Glean) -> Vec<(String, u64)> {
+        glean
+            .flow_state
+            .lock()
+            .unwrap()
+            .active
+            .iter()
+            .map(|(flow, i)| (glean.flow_registry.flow(*flow).name.clone(), i.seq))
+            .collect()
+    }
+
+    /// Moves a persisted instance's opening time `ms` into the past.
+    fn backdate_persisted(glean: &Glean, flow: &str, ms: u64) {
+        let mut persisted = read_persisted(glean).expect("flow state should be persisted");
+        let instance = persisted
+            .instances
+            .iter_mut()
+            .find(|i| i.flow_name == flow)
+            .expect("instance should be persisted");
+        instance.opened_at_ms -= ms as i64;
+        make_flow_state_metric().set_sync(glean, serde_json::to_string(&persisted).unwrap());
+    }
+
+    fn abnormal_extras(flow: &str, seq: u64, session_id: &str) -> HashMap<String, String> {
+        [
+            ("flow_name", flow.to_string()),
+            ("flow_seq", seq.to_string()),
+            ("reason", "abnormal".to_string()),
+            ("session_id", session_id.to_string()),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect()
+    }
+
+    #[test]
+    fn opening_and_closing_persist_instances_and_the_counter() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+        record_now(&glean, "zeta", "finished");
+
+        assert_eq!(
+            Some(PersistedFlowState {
+                session_id: session_id.clone(),
+                next_seq: 2,
+                instances: vec![PersistedInstance {
+                    flow_name: "alpha".into(),
+                    flow_seq: 0,
+                    session_id,
+                    opened_at_ms: read_persisted(&glean).unwrap().instances[0].opened_at_ms,
+                }],
+            }),
+            read_persisted(&glean)
+        );
+
+        glean.session_end(None);
+        assert!(read_persisted(&glean).is_none(), "cleared at session end");
+    }
+
+    #[test]
+    fn clean_restart_restores_instances_and_the_counter() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+        record_now(&glean, "zeta", "finished");
+        glean.handle_client_inactive();
+
+        let mut glean = restart(glean, auto_cfg(&dir, two_flows()));
+        assert_eq!(vec![("alpha".to_string(), 0)], active_seqs(&glean));
+
+        glean.handle_client_active();
+        assert_eq!(
+            session_id,
+            glean.session_manager().session_id().unwrap().to_string()
+        );
+        record_now(&glean, "app", "card_shown");
+        record_now(&glean, "zeta", "started");
+
+        let shown = event("app", "card_shown", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("alpha", 0)], shown[0].flows);
+        // The counter was restored, so the reopened flow doesn't reuse seq 1.
+        assert_eq!(
+            vec![("alpha".to_string(), 0), ("zeta".to_string(), 2)],
+            active_seqs(&glean)
+        );
+    }
+
+    #[test]
+    fn instance_of_an_unregistered_flow_is_discarded_on_restore_without_a_flow_end() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+        glean.handle_client_inactive();
+
+        // The new build no longer defines `alpha`.
+        let zeta_only: Vec<FlowDefinition> = two_flows()
+            .into_iter()
+            .filter(|f| f.name == "zeta")
+            .collect();
+        let glean = restart(glean, auto_cfg(&dir, zeta_only));
+
+        assert_eq!(vec![("zeta".to_string(), 1)], active_seqs(&glean));
+        assert!(flow_ends(&glean).is_empty());
+        let persisted = read_persisted(&glean).unwrap();
+        assert_eq!(
+            vec!["zeta"],
+            persisted
+                .instances
+                .iter()
+                .map(|i| i.flow_name.as_str())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn instance_of_a_now_disabled_flow_is_restored() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        record_now(&glean, "alpha", "started");
+        glean.handle_client_inactive();
+
+        let mut flows = two_flows();
+        flows[0].disabled = true;
+        let glean = restart(glean, auto_cfg(&dir, flows));
+
+        assert_eq!(vec![("alpha".to_string(), 0)], active_seqs(&glean));
+    }
+
+    #[test]
+    fn instance_that_expired_while_not_running_is_closed_on_restore() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, timed_flows())).unwrap();
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "onboarding", "started");
+        glean.handle_client_inactive();
+        backdate_persisted(&glean, "onboarding", TIMEOUT_MS);
+
+        let glean = restart(glean, auto_cfg(&dir, timed_flows()));
+
+        assert!(active_seqs(&glean).is_empty());
+        let flow_end = flow_end_metric()
+            .get_value(&glean, "events")
+            .expect("flow_end should be recorded at restore")
+            .pop()
+            .unwrap();
+        assert_eq!(Some(timeout_extras("onboarding", 0)), flow_end.extra);
+        let session = flow_end.session.expect("recorded in the resumed session");
+        assert_eq!(session_id, session.session_id);
+        assert!(
+            !glean.session_manager().is_active(),
+            "session stays inactive"
+        );
+        assert!(read_persisted(&glean).unwrap().instances.is_empty());
+    }
+
+    #[test]
+    fn dirty_restart_closes_persisted_instances_as_abnormal_before_session_end() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        // Active, and never goes inactive: the dirty flag stays set.
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "zeta", "started");
+        record_now(&glean, "alpha", "started");
+
+        let mut glean = restart(glean, auto_cfg(&dir, two_flows()));
+        assert!(active_seqs(&glean).is_empty(), "not restored after a crash");
+        glean.recover_session_on_dirty_flag();
+
+        assert_eq!(
+            vec![
+                abnormal_extras("alpha", 1, &session_id),
+                abnormal_extras("zeta", 0, &session_id),
+            ],
+            flow_ends(&glean)
+        );
+        let order: Vec<(String, Option<u64>)> = ping_order(&glean)
+            .into_iter()
+            .filter(|(name, _, _)| name.starts_with("glean."))
+            .map(|(name, _, seq)| (name, seq))
+            .collect();
+        assert_eq!(
+            vec![
+                ("glean.flow_end".to_string(), None),
+                ("glean.flow_end".to_string(), None),
+                ("glean.session_end".to_string(), None),
+            ],
+            order,
+            "abnormal flow_ends are out-of-session and precede the recovery session_end"
+        );
+        assert!(read_persisted(&glean).is_none());
+    }
+
+    #[test]
+    fn dirty_restart_of_an_inactive_session_closes_instances_as_abnormal() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+        glean.handle_client_inactive();
+        // A crash with `inactive_since` persisted (the session_end reason is
+        // "abnormal_inactive"): the session is resumable, but the crash wins.
+        glean.set_dirty_flag(true);
+
+        let mut glean = restart(glean, auto_cfg(&dir, two_flows()));
+        assert!(active_seqs(&glean).is_empty(), "not restored after a crash");
+        glean.recover_session_on_dirty_flag();
+
+        assert_eq!(
+            vec![abnormal_extras("alpha", 0, &session_id)],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn dirty_restart_skips_instances_of_unregistered_flows() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+
+        let zeta_only: Vec<FlowDefinition> = two_flows()
+            .into_iter()
+            .filter(|f| f.name == "zeta")
+            .collect();
+        let mut glean = restart(glean, auto_cfg(&dir, zeta_only));
+        glean.recover_session_on_dirty_flag();
+
+        assert_eq!(
+            vec![abnormal_extras("zeta", 1, &session_id)],
+            flow_ends(&glean)
+        );
+    }
+
+    #[test]
+    fn session_abandoned_on_mode_change_closes_instances_as_abnormal() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+        glean.handle_client_inactive();
+
+        let mut cfg = auto_cfg(&dir, two_flows());
+        cfg.session_mode = SessionMode::Lifecycle;
+        let glean = restart(glean, cfg);
+
+        assert_eq!(
+            vec![abnormal_extras("alpha", 0, &session_id)],
+            flow_ends(&glean)
+        );
+        let order: Vec<String> = ping_order(&glean)
+            .into_iter()
+            .map(|(name, _, _)| name)
+            .collect();
+        assert_eq!(vec!["glean.flow_end", "glean.session_end"], order);
+        assert!(active_seqs(&glean).is_empty());
+        assert!(read_persisted(&glean).is_none());
+    }
+
+    #[test]
+    fn instances_of_a_session_that_was_not_resumed_are_discarded() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        glean.handle_client_active();
+        record_now(&glean, "alpha", "started");
+        // No inactive_since is recorded, so the session can't be resumed, but
+        // the dirty flag is clear, so this isn't a crash either.
+        glean.set_dirty_flag(false);
+
+        let glean = restart(glean, auto_cfg(&dir, two_flows()));
+
+        assert!(active_seqs(&glean).is_empty());
+        assert!(flow_ends(&glean).is_empty());
+        assert!(read_persisted(&glean).is_none());
+    }
+
+    #[test]
+    fn instances_of_a_session_resumed_as_sampled_out_are_discarded() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, timed_flows())).unwrap();
+        glean.handle_client_active();
+        record_now(&glean, "onboarding", "started");
+        glean.handle_client_inactive();
+        backdate_persisted(&glean, "onboarding", TIMEOUT_MS);
+
+        // The new build samples every session out.
+        let mut cfg = auto_cfg(&dir, timed_flows());
+        cfg.session_sample_rate = 0.0;
+        let glean = restart(glean, cfg);
+
+        assert!(active_seqs(&glean).is_empty());
+        assert!(flow_ends(&glean).is_empty());
+        assert!(read_persisted(&glean).is_none());
+    }
+
+    #[test]
+    fn disabling_upload_resets_flow_state_without_a_flow_end() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+
+        glean.set_upload_enabled(false);
+
+        assert!(active_seqs(&glean).is_empty());
+        assert!(read_persisted(&glean).is_none());
+        assert!(flow_ends(&glean).is_empty());
     }
 }
