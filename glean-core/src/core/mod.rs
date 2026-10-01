@@ -21,6 +21,7 @@ use crate::database::Database;
 use crate::debug::DebugOptions;
 use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
+use crate::flows::FlowRegistry;
 use crate::internal_metrics::{
     AdditionalMetrics, CoreMetrics, DatabaseMetrics, ExceptionState, HealthMetrics,
 };
@@ -151,6 +152,7 @@ where
 ///     session_inactivity_timeout_ms: 1_800_000,
 ///     events_ping_acceleration_factor: None,
 ///     enable_store_submitted_pings: false,
+///     flows: vec![],
 /// };
 /// let mut glean = Glean::new(cfg).unwrap();
 /// let ping = PingType::new("sample", true, false, true, true, true, vec![], vec![], true, vec![]);
@@ -198,6 +200,7 @@ pub struct Glean {
     pub(crate) remote_settings_config: Arc<Mutex<RemoteSettingsConfig>>,
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
+    pub(crate) flow_registry: FlowRegistry,
     #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
     events_ping_acceleration_factor: Option<usize>,
@@ -270,6 +273,10 @@ impl Glean {
             remote_settings_config: Arc::new(Mutex::new(RemoteSettingsConfig::new())),
             with_timestamps: cfg.enable_event_timestamps,
             ping_schedule: cfg.ping_schedule.clone(),
+            // Built here, rather than applied after init like pre-init ping
+            // registration, because `Glean::new()` restores persisted session
+            // state (and with it, flow instances) before it returns.
+            flow_registry: FlowRegistry::new(&cfg.flows),
             // The SessionManager is deliberately left in its default (hollow)
             // state for subprocesses. `restore_session_state_from_storage()`
             // is only called in `Glean::new()`, not here, so the subprocess
@@ -614,6 +621,7 @@ impl Glean {
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
+            flows: vec![],
         };
 
         let mut glean = Self::new(cfg).unwrap();

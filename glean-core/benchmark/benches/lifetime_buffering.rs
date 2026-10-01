@@ -38,6 +38,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
+            flows: vec![],
         };
         let glean = Glean::new(cfg).unwrap();
 
@@ -87,6 +88,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
+            flows: vec![],
         };
         let glean = Glean::new(cfg).unwrap();
 
@@ -136,6 +138,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
+            flows: vec![],
         };
         let glean = Glean::new(cfg).unwrap();
 
