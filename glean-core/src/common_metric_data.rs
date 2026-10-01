@@ -253,7 +253,12 @@ impl CommonMetricDataInternal {
         if self.inner.category.is_empty() {
             self.inner.name.clone()
         } else {
-            format!("{}.{}", self.inner.category, self.inner.name)
+            let mut id =
+                String::with_capacity(self.inner.category.len() + self.inner.name.len() + 1);
+            id.push_str(&self.inner.category);
+            id.push('.');
+            id.push_str(&self.inner.name);
+            id
         }
     }
 
@@ -306,11 +311,11 @@ impl CommonMetricDataInternal {
                 }
                 MetricLabel::KeyOnly(key, static_category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, key, "")
-                        .map(|key| format!("{key}{static_category}"))
+                        .map(|key| [key, static_category].concat())
                 }
                 MetricLabel::CategoryOnly(static_key, category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, "", category)
-                        .map(|category| format!("{static_key}{category}"))
+                        .map(|category| [static_key, category].concat())
                 }
                 MetricLabel::KeyAndCategory(key, category) => {
                     validate_dual_label_sqlite(tx, &base_identifier, key, category)
