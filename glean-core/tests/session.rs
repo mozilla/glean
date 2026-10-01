@@ -1297,3 +1297,59 @@ fn mode_switch_auto_to_lifecycle_emits_abandoned_session_end() {
 
     drop(t);
 }
+
+/// Disabling upload resets the in-memory session along with its persisted
+/// state, so re-enabling in the same process starts a new session rather than
+/// continuing the one from before the `deletion-request` ping.
+#[test]
+fn upload_disable_then_enable_does_not_continue_old_session() {
+    let (_t, data_path) = tempdir();
+    let cfg = session_cfg(&data_path, SessionMode::Auto, 1.0, 1_800_000);
+    let mut glean = Glean::new(cfg).unwrap();
+
+    glean.handle_client_active();
+    let old_session_id = glean
+        .session_manager()
+        .session_id()
+        .expect("session should be active")
+        .to_string();
+
+    glean.set_upload_enabled(false);
+    assert!(
+        !glean.session_manager().is_active(),
+        "session must not stay active after upload is disabled"
+    );
+    assert!(glean.session_manager().session_id().is_none());
+
+    glean.set_upload_enabled(true);
+    glean.handle_client_active();
+
+    let user_event = EventMetric::new(
+        CommonMetricData {
+            name: "test_event".into(),
+            category: "test".into(),
+            send_in_pings: vec!["events".into()],
+            lifetime: Lifetime::Ping,
+            in_session: true,
+            ..Default::default()
+        },
+        vec![],
+    );
+    user_event.record_sync(&glean, 1000, HashMap::new(), 0);
+
+    let events = user_event
+        .get_value(&glean, "events")
+        .expect("expected event after re-enabling upload");
+    let session = events[0]
+        .session
+        .as_ref()
+        .expect("event should carry session metadata");
+    assert_ne!(
+        old_session_id, session.session_id,
+        "event after re-enabling must not carry the pre-opt-out session_id"
+    );
+    assert_eq!(
+        1, session.session_seq,
+        "session_seq must restart, like the ping sequence numbers"
+    );
+}

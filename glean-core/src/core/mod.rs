@@ -1013,6 +1013,16 @@ impl Glean {
             log::warn!("Error clearing pending events: {}", err);
         }
 
+        // The persisted `session#*` keys were cleared with internal storage above.
+        // Reset the in-memory session state to match, so a later opt-in can't
+        // continue the pre-opt-out session. No `session_end` is recorded, since
+        // upload is being disabled.
+        self.session_manager = SessionManager::new(
+            self.session_manager.mode,
+            self.session_manager.configured_sample_rate,
+            self.session_manager.inactivity_timeout,
+        );
+
         // This does not clear the experiments store (which isn't managed by the
         // StorageEngineManager), since doing so would mean we would have to have the
         // application tell us again which experiments are active if telemetry is
