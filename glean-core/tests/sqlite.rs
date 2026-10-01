@@ -207,6 +207,7 @@ mod unix {
             session_inactivity_timeout_ms: 1_800_000,
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: true,
+            flows: vec![],
         };
         let glean = Glean::new(cfg);
         assert!(glean.is_err());
@@ -256,6 +257,7 @@ fn database_externally_locked() {
         session_sample_rate: 1.0,
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: true,
+        flows: vec![],
     };
     let glean = Glean::new(cfg);
     assert!(glean.is_err());
