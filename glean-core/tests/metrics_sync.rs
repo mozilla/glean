@@ -25,6 +25,7 @@ static DEFINITION_ONLY: &[&str] = &[
     /* adhoc in src/ping/mod.rs */
     "glean.ping.uploader_capabilities",
     /* adhoc events */
+    "glean.flow_end",
     "glean.restarted",
     "glean.session_end",
     "glean.session_start",
