@@ -75,6 +75,9 @@ def test_the_api_records_to_its_storage_engine():
 
     assert first_event.timestamp < second_event.timestamp
 
+    # No flows are defined, so no event belongs to a flow instance.
+    assert [] == first_event.flows
+
 
 def test_the_api_records_to_its_storage_engine_when_category_is_empty():
     click = metrics.EventMetricType(
