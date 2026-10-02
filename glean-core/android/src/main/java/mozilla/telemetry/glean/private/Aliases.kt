@@ -88,3 +88,8 @@ typealias FlowDefinition = mozilla.telemetry.glean.internal.FlowDefinition
  * The role an event plays in a flow.
  */
 typealias FlowRole = mozilla.telemetry.glean.internal.FlowRole
+
+/**
+ * An active flow instance an event belongs to, as found in [RecordedEvent.flows].
+ */
+typealias FlowEntry = mozilla.telemetry.glean.internal.FlowEntry
