@@ -88,6 +88,11 @@ impl FlowRegistry {
     /// out in name order without sorting at record time. glean_parser rejects
     /// duplicate flow names; if one gets through anyway, the first definition
     /// wins and the rest are ignored.
+    ///
+    /// Takes a borrow because `Glean::new_for_subprocess()` only holds
+    /// `&InternalConfiguration`; taking ownership would just move the clone
+    /// to the caller. The sort below works on references, so the definitions
+    /// themselves are not copied, only the strings the registry keeps.
     pub(crate) fn new(definitions: &[FlowDefinition]) -> Self {
         let mut definitions: Vec<&FlowDefinition> = definitions.iter().collect();
         // Stable, so among duplicates the first one passed in stays first.
