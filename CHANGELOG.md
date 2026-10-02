@@ -62,9 +62,6 @@
 * iOS
   * Glean for iOS is now being built with Xcode 26.6 ([#3672](https://github.com/mozilla/glean/pull/3672))
 
-* General
-  * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
-  * Events carry a `flows` entry for each active flow instance they belong to, exposed through `testGetValue` as `RecordedEvent.flows` ([bug 2077137](https://bugzilla.mozilla.org/show_bug.cgi?id=2077137))
 
 # v70.2.1 (2026-09-30)
 
