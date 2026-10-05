@@ -512,7 +512,7 @@ jobs:
 
   Check Swift formatting:
     macos:
-      xcode: "26.2"
+      xcode: "26.6"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -530,7 +530,7 @@ jobs:
 
   iOS build and test:
     macos:
-      xcode: "26.2"
+      xcode: "26.6"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -544,16 +544,16 @@ jobs:
       - setup-rust-toolchain
       - restore_cache:
           name: Restore rubygems cache
-          key: swift-docs-gems-v23
+          key: swift-docs-gems-v24
       - run:
           name: Install jazzy
           command: gem install --no-document jazzy
       - save_cache:
           name: Save rubygems cache
           # NEEDS TO CHANGE WHEN JAZZY OR RUBY IS UPDATED
-          key: swift-docs-gems-v23
+          key: swift-docs-gems-v24
           paths:
-            - ~/.rbenv/versions/3.4.7/lib/ruby/gems/3.4.0
+            - ~/.rbenv/versions/3.4.9/lib/ruby/gems/3.4.0
       - run:
           name: Setup build environment
           command: |
@@ -619,7 +619,7 @@ jobs:
 
   iOS integration test:
     macos:
-      xcode: "26.2"
+      xcode: "26.6"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -664,7 +664,7 @@ jobs:
 
   iOS Framework release:
     macos:
-      xcode: "26.2"
+      xcode: "26.6"
     resource_class: "m4pro.medium"
     steps:
       - checkout
@@ -920,7 +920,7 @@ jobs:
 
   pypi-macos-release:
     macos:
-      xcode: "26.2"
+      xcode: "26.6"
     resource_class: "m4pro.medium"
     steps:
       - install-rustup
