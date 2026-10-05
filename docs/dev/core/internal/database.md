@@ -21,7 +21,7 @@ CREATE TABLE telemetry(
   labels TEXT NOT NULL,
   value BLOB,
   UNIQUE(id, ping, labels)
-);",
+);
 ```
 
 | Column | Type | Description |
