@@ -1433,7 +1433,7 @@ fn configure_ping_throttling() {
         .build();
     let pings_per_interval = 10;
     cfg.rate_limit = Some(crate::PingRateLimit {
-        seconds_per_interval: 1,
+        seconds_per_interval: 5,
         pings_per_interval,
     });
 
