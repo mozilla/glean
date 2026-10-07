@@ -125,8 +125,7 @@ mod test {
         type SimpleArray = Vec<i64>;
 
         let metric: ObjectMetric<SimpleArray> = ObjectMetric::new(CommonMetricData {
-            name: "object".into(),
-            category: "test".into(),
+            identifier: "test.object".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         });
@@ -159,8 +158,7 @@ mod test {
         }
 
         let metric: ObjectMetric<BalloonsObject> = ObjectMetric::new(CommonMetricData {
-            name: "object".into(),
-            category: "test".into(),
+            identifier: "test.object".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         });
@@ -193,8 +191,7 @@ mod test {
         type SimpleArray = Vec<i64>;
 
         let metric: ObjectMetric<SimpleArray> = ObjectMetric::new(CommonMetricData {
-            name: "object".into(),
-            category: "test".into(),
+            identifier: "test.object".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         });
@@ -240,8 +237,7 @@ mod test {
         }
 
         let metric: ObjectMetric<StackTrace> = ObjectMetric::new(CommonMetricData {
-            name: "object".into(),
-            category: "test".into(),
+            identifier: "test.object".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         });

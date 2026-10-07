@@ -98,8 +98,7 @@ pub fn metric_dispatcher_benchmark(c: &mut Criterion) {
 
     c.bench_function("counter.add", |b| {
         let metric = CounterMetric::new(CommonMetricData {
-            name: "counter".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.counter".into(),
             send_in_pings: vec!["baseline".into()],
             disabled: false,
             lifetime: Lifetime::Ping,

@@ -78,10 +78,8 @@ impl TryFrom<i32> for Lifetime {
 /// The common set of data shared across all different metric types.
 #[derive(Default, Debug, Clone, Deserialize, Serialize, MallocSizeOf)]
 pub struct CommonMetricData {
-    /// The metric's name.
-    pub name: String,
-    /// The metric's category.
-    pub category: String,
+    /// The metric's full identifier: `category.name`.
+    pub identifier: String,
     /// List of ping names to include this metric in.
     pub send_in_pings: Vec<String>,
     /// The metric's lifetime.
@@ -251,10 +249,15 @@ impl CommonMetricDataInternal {
         name: B,
         ping_name: C,
     ) -> CommonMetricDataInternal {
+        let category = category.into();
+        let identifier = if category.is_empty() {
+            name.into()
+        } else {
+            [category, name.into()].join(".")
+        };
         CommonMetricDataInternal {
             inner: CommonMetricData {
-                name: name.into(),
-                category: category.into(),
+                identifier,
                 send_in_pings: vec![ping_name.into()],
                 ..Default::default()
             },
@@ -266,12 +269,8 @@ impl CommonMetricDataInternal {
     ///
     /// If `category` is empty, it's ommitted.
     /// Otherwise, it's the combination of the metric's `category` and `name`.
-    pub(crate) fn base_identifier(&self) -> String {
-        if self.inner.category.is_empty() {
-            self.inner.name.clone()
-        } else {
-            format!("{}.{}", self.inner.category, self.inner.name)
-        }
+    pub(crate) fn base_identifier(&self) -> &str {
+        &self.inner.identifier
     }
 
     /// The metric's unique identifier, including the category, name and label.
@@ -286,22 +285,22 @@ impl CommonMetricDataInternal {
             let label = match label {
                 MetricLabel::Static(label) => label.to_string(),
                 MetricLabel::Label(label) => {
-                    validate_dynamic_label_rkv(glean, self, &base_identifier, label, record)
+                    validate_dynamic_label_rkv(glean, self, base_identifier, label, record)
                 }
                 MetricLabel::KeyOnly(..) => {
-                    validate_dual_label_rkv(glean, self, &base_identifier, label, record)
+                    validate_dual_label_rkv(glean, self, base_identifier, label, record)
                 }
                 MetricLabel::CategoryOnly(..) => {
-                    validate_dual_label_rkv(glean, self, &base_identifier, label, record)
+                    validate_dual_label_rkv(glean, self, base_identifier, label, record)
                 }
                 MetricLabel::KeyAndCategory(..) => {
-                    validate_dual_label_rkv(glean, self, &base_identifier, label, record)
+                    validate_dual_label_rkv(glean, self, base_identifier, label, record)
                 }
             };
 
-            combine_base_identifier_and_label(&base_identifier, &label)
+            combine_base_identifier_and_label(base_identifier, &label)
         } else {
-            base_identifier
+            base_identifier.to_string()
         }
     }
 

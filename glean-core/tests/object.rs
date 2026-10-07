@@ -22,8 +22,7 @@ fn object_serializer_should_correctly_serialize_objects() {
         tempdir = dir;
 
         let metric = ObjectMetric::new(CommonMetricData {
-            name: "object_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.object_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -62,8 +61,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = ObjectMetric::new(CommonMetricData {
-        name: "object_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.object_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -90,8 +88,7 @@ fn getting_data_json_encoded() {
     let (glean, _t) = new_glean(None);
 
     let object: ObjectMetric = ObjectMetric::new(CommonMetricData {
-        name: "transformation".into(),
-        category: "local".into(),
+        identifier: "local.transformation".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
