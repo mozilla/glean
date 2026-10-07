@@ -16,10 +16,45 @@ Returns a unique `TimerId` for the new timer.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import mozilla.components.service.glean.GleanTimerId
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+val start: GleanTimerId = Devtools.ColdToolboxOpenDelay[toolboxId].start()
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import mozilla.components.service.glean.GleanTimerId;
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+val start: GleanTimerId = Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].start();
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+let start = Devtools.ColdToolboxOpenDelay[toolboxId].start()
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+start = metrics.devtools.cold_toolbox_open_delay[toolbox_id].start()
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -78,10 +113,43 @@ Do not use the provided `TimerId` after passing it to this method.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+Devtools.ColdToolboxOpenDelay[toolboxId].stopAndAccumulate(start)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].stopAndAccumulate(start);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Devtools.ColdToolboxOpenDelay[toolboxId].stopAndAccumulate(start)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.devtools.cold_toolbox_open_delay[toolbox_id].stop_and_accumulate(start)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -137,10 +205,43 @@ Aborts a previous `start` call, consuming the supplied timer id.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+Devtools.ColdToolboxOpenDelay[toolboxId].cancel(start)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].cancel(start);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Devtools.ColdToolboxOpenDelay[toolboxId].cancel(start)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.devtools.cold_toolbox_open_delay[toolbox_id].cancel(start)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -208,10 +309,43 @@ instance this method was called on is using `TimeUnit::Second`, then
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+Devtools.ColdToolboxOpenDelay[toolboxId].accumulateSamples(samples)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].accumulateSamples(samples);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Devtools.ColdToolboxOpenDelay[toolboxId].accumulateSamples(samples)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.devtools.cold_toolbox_open_delay[toolbox_id].accumulate_samples(samples)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -281,10 +415,43 @@ instance this method was called on is using `TimeUnit::Second`, then
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+Devtools.ColdToolboxOpenDelay[toolboxId].accumulateSingleSample(sample)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].accumulateSingleSample(sample);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Devtools.ColdToolboxOpenDelay[toolboxId].accumulateSingleSample(sample)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.devtools.cold_toolbox_open_delay[toolbox_id].accumulate_single_sample(sample)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -342,10 +509,40 @@ For convenience one can measure the time of a function or block of code.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+Devtools.ColdToolboxOpenDelay[toolboxId].measure {
+  // measure the delay
+}
+```
+
+</div>
 <div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Devtool.ColdToolboxOpenDelay[toolboxId].measure {
+  // measure the delay
+}
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+with metrics.devtools.cold_toolbox_open_delay[toolbox_id].measure():
+    # measue the delay
+```
+
+</div>
 <div data-lang="Rust" class="tab"></div>
 <div data-lang="JavaScript" class="tab"></div>
 <div data-lang="Firefox Desktop" class="tab">
@@ -399,10 +596,63 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+// Usually you don't know the exact timing values,
+// but you do know how many samples there are:
+assertEquals(2, Devtools.ColdToolboxOpenDelay[toolboxId].testGetValue().count)
+
+// ...and the lower bound of how long they all took:
+assertTrue(400 <= Devtools.ColdToolboxOpenDelay[toolboxId].testGetValue().sum)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+// Usually you don't know the exact timing values,
+// but you do know how many samples there are:
+assertEquals(2, Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].testGetValue().count);
+
+// ...and the lower bound of how long they all took:
+assertTrue(400 <= Devtools.INSTANCE.ColdToolboxOpenDelay()[toolboxId].testGetValue().sum);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Usually you don't know the exact timing values,
+// but you do know how many samples there are:
+XCTAssertEqual(2, Devtools.ColdToolboxOpenDelay[toolboxId]).testGetValue().count)
+
+// ...and the lower bound of how long they all took:
+XCTAssertLessThanOrEqual(400, Devtools.ColdToolboxOpenDelay[toolboxId]).testGetValue().sum)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Usually you don't know the exact timing values,
+# but you do know how many samples there are:
+assert 2 == metrics.devtools.cold_toolbox_open_delay[toolbox_id].test_get_value().count
+
+# ...and the lower bound of how long they all took:
+assert 400 <= metrics.devtools.cold_toolbox_open_delay[toolbox_id].test_get_value().sum
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -449,10 +699,47 @@ Gets the number of errors recorded for a given labeled timing distribution metri
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Devtools
+
+// Assert there were no negative values instrumented.
+assertEquals(0, Devtools.ColdToolboxOpenDelay.testGetNumRecordedErrors(ErrorType.INVALID_VALUE))
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Devtools;
+
+// Assert there were no negative values instrumented.
+assertEquals(0, Devtools.INSTANCE.ColdToolboxOpenDelay().testGetNumRecordedErrors(ErrorType.INVALID_VALUE));
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Assert there were no negative values instrumented.
+XCTAssertEqual(0, Devtools.ColdToolboxOpenDelay.testGetNumRecordedErrors(.invalidValue))
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Assert there were no negative values instrumented.
+assert 0 == metrics.devtools.cold_toolbox_open_delay.test_get_num_recorded_errors(ErrorType.INVALID_VALUE)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust

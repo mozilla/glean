@@ -36,11 +36,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
@@ -70,11 +74,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
             labels = setOf("foo", "bar", "baz"),
         )
@@ -106,11 +114,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
@@ -140,11 +152,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
@@ -180,11 +196,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType<CounterMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
@@ -233,11 +253,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledBooleanMetric = LabeledMetricType<BooleanMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_boolean_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_boolean_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = booleanMetric,
         )
 
@@ -286,11 +310,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_string_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = stringMetric,
         )
 
@@ -339,11 +367,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledStringMetric = LabeledMetricType<StringMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_string_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_string_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = stringMetric,
         )
 
@@ -367,11 +399,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledBooleanMetric = LabeledMetricType<BooleanMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_boolean_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_boolean_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = booleanMetric,
         )
 
@@ -395,11 +431,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledQuantityMetric = LabeledMetricType<QuantityMetricType>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_quantity_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_quantity_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = quantityMetric,
         )
 
@@ -424,11 +464,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledEventMetric = LabeledMetricType<EventMetricType<NoExtras>>(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_event_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_event_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = eventMetric,
         )
 
@@ -451,11 +495,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
             labels = setOf("foo", "bar", "baz"),
         )
@@ -493,11 +541,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_nocrash",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_nocrash",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
             labels = setOf("foo"),
         )
@@ -525,11 +577,15 @@ class LabeledMetricTypeTest {
         )
 
         val labeledCounterMetric = LabeledMetricType(
-            disabled = false,
-            category = "telemetry",
-            lifetime = Lifetime.APPLICATION,
-            name = "labeled_counter_metric",
-            sendInPings = listOf("metrics"),
+            CommonLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_counter_metric",
+                    sendInPings = listOf("metrics"),
+                ),
+            ),
             subMetric = counterMetric,
         )
 
@@ -540,5 +596,40 @@ class LabeledMetricTypeTest {
         assertEquals(2, values.size)
         assertEquals(1, values["label1"])
         assertEquals(2, values["label2"])
+    }
+
+    @Test
+    fun `test labeled memory distribution`() {
+        val metric = MemoryDistributionMetricType(
+            CommonMetricData(
+                disabled = false,
+                category = "telemetry",
+                lifetime = Lifetime.PING,
+                name = "memory_distribution",
+                sendInPings = listOf("store1"),
+            ),
+            memoryUnit = MemoryUnit.KILOBYTE,
+        )
+
+        val labeledMetric = LabeledMetricType<MemoryDistributionMetricType>(
+            MemoryDistributionLabeledMetricData(
+                cmd = CommonMetricData(
+                    disabled = false,
+                    category = "telemetry",
+                    lifetime = Lifetime.APPLICATION,
+                    name = "labeled_memory_distribution",
+                    sendInPings = listOf("store1"),
+                ),
+                unit = MemoryUnit.KILOBYTE,
+            ),
+            subMetric = metric,
+        )
+
+        labeledMetric["label1"].accumulate(1)
+        labeledMetric["label2"].accumulate(2)
+
+        val kb = 1024
+        assertEquals(1L * kb, labeledMetric["label1"].testGetValue()!!.sum)
+        assertEquals(2L * kb, labeledMetric["label2"].testGetValue()!!.sum)
     }
 }

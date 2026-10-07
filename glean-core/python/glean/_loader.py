@@ -32,7 +32,11 @@ _TYPE_MAPPING = {
     "event": metrics.EventMetricType,
     "labeled_boolean": metrics.LabeledBooleanMetricType,
     "labeled_counter": metrics.LabeledCounterMetricType,
+    "labeled_custom_distribution": metrics.LabeledCustomDistributionMetricType,
+    "labeled_memory_distribution": metrics.LabeledMemoryDistributionMetricType,
+    "labeled_quantity": metrics.LabeledQuantityMetricType,
     "labeled_string": metrics.LabeledStringMetricType,
+    "labeled_timing_distribution": metrics.LabeledTimingDistributionMetricType,
     "memory_distribution": metrics.MemoryDistributionMetricType,
     "object": metrics.ObjectMetricType,
     "ping": metrics.PingType,
@@ -91,6 +95,10 @@ _ARG_CONVERSION = {
         gp_metrics.MemoryUnit.kilobyte: metrics.MemoryUnit.KILOBYTE,
         gp_metrics.MemoryUnit.megabyte: metrics.MemoryUnit.MEGABYTE,
         gp_metrics.MemoryUnit.gigabyte: metrics.MemoryUnit.GIGABYTE,
+    },
+    "histogram_type": {
+        gp_metrics.HistogramType.linear: metrics.HistogramType.LINEAR,
+        gp_metrics.HistogramType.exponential: metrics.HistogramType.EXPONENTIAL,
     },
 }
 
@@ -289,9 +297,32 @@ def _get_metric_objects(
             args["label"] = None
         meta_args, rest = _split_ctor_args(args)
         if getattr(metric, "labeled", False):
-            glean_metric = metric_type(
-                metrics.LabeledMetricData.COMMON(metrics.CommonMetricData(**meta_args)), **rest
-            )
+            if metric.type == "labeled_custom_distribution":
+                glean_metric = metric_type(
+                    metrics.LabeledMetricData.CUSTOM_DISTRIBUTION(
+                        metrics.CommonMetricData(**meta_args), **rest
+                    )
+                )
+            elif metric.type == "labeled_timing_distribution":
+                rest["unit"] = rest["time_unit"]
+                del rest["time_unit"]
+                glean_metric = metric_type(
+                    metrics.LabeledMetricData.TIMING_DISTRIBUTION(
+                        metrics.CommonMetricData(**meta_args), **rest
+                    )
+                )
+            elif metric.type == "labeled_memory_distribution":
+                rest["unit"] = rest["memory_unit"]
+                del rest["memory_unit"]
+                glean_metric = metric_type(
+                    metrics.LabeledMetricData.MEMORY_DISTRIBUTION(
+                        metrics.CommonMetricData(**meta_args), **rest
+                    )
+                )
+            else:
+                glean_metric = metric_type(
+                    metrics.LabeledMetricData.COMMON(metrics.CommonMetricData(**meta_args)), **rest
+                )
         else:
             glean_metric = metric_type(metrics.CommonMetricData(**meta_args), **rest)
 

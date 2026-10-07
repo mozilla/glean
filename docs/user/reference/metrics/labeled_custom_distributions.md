@@ -16,10 +16,47 @@ Accumulate the provided samples in the metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+Network.http3LateAckRatio["ack"].accumulateSamples(listOf((late_ack * 10000) / packets_tx))
+Network.http3LateAckRatio["pto"].accumulateSamples(listOf((pto_ack * 10000) / packets_tx))
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network;
+
+Network.INSTANCE.http3LateAckRatio()["ack"].accumulateSamples(listOf((late_ack * 10000) / packets_tx));
+Network.INSTANCE.http3LateAckRatio()["pto"].accumulateSamples(listOf((pto_ack * 10000) / packets_tx));
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Network.http3LateAckRatio["ack"].accumulateSamples([(late_ack * 10000) / packets_tx]);
+Network.http3LateAckRatio["pto"].accumulateSamples([(pto_ack * 10000) / packets_tx]);
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.network.http3_late_ack_ratio["ack"].accumulate_samples([(late_ack * 10000) // packets_tx])
+metrics.network.http3_late_ack_ratio["pto"].accumulate_samples([(late_pto * 10000) // packets_tx])
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -85,10 +122,47 @@ Accumulates one sample and appends it to the metric.
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+Network.http3LateAckRatio["ack"].accumulateSingleSample((late_ack * 10000) / packets_tx)
+Network.http3LateAckRatio["pto"].accumulateSingleSample((pto_ack * 10000) / packets_tx)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network;
+
+Network.INSTANCE.http3LateAckRatio()["ack"].accumulateSingleSample((late_ack * 10000) / packets_tx);
+Network.INSTANCE.http3LateAckRatio()["pto"].accumulateSingleSample((pto_ack * 10000) / packets_tx);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+Network.http3LateAckRatio["ack"].accumulateSingleSample((late_ack * 10000) / packets_tx);
+Network.http3LateAckRatio["pto"].accumulateSingleSample((pto_ack * 10000) / packets_tx);
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+metrics.network.http3_late_ack_ratio["ack"].accumulate_single_sample([(late_ack * 10000) // packets_tx])
+metrics.network.http3_late_ack_ratio["pto"].accumulate_single_sample([(late_pto * 10000) // packets_tx])
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -159,10 +233,71 @@ in Rust where it's required. `None` or no argument will default to the first val
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+// Assert the sum of all `ack` samples is 42.
+assertEquals(42, Network.http3LateAckRatio["ack"].testGetValue().sum)
+
+// Assert there's only the one sample
+assertEquals(1, Network.http3LateAckRatio["ack"].testGetValue().count)
+
+// Buckets are indexed by their lower bound.
+assertEquals(1, Network.http3LateAckRatio["ack"].testGetValue().values[41])
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+// Assert the sum of all `ack` samples is 42.
+assertEquals(42, Network.INSTANCE.http3LateAckRatio()["ack"].testGetValue().sum);
+
+// Assert there's only the one sample
+assertEquals(1, Network.INSTANCE.http3LateAckRatio()["ack"].testGetValue().count);
+
+// Buckets are indexed by their lower bound.
+assertEquals(1, Network.INSTANCE.http3LateAckRatio()["ack"].testGetValue().values[41]);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+// Assert the sum of all `ack` samples is 42.
+XCTAssertEqual(42, Network.http3LateAckRatio["ack"].testGetValue().sum)
+
+// Assert there's only the one sample
+XCTAssertEqual(1, Network.http3LateAckRatio["ack"].testGetValue().count)
+
+// Buckets are indexed by their lower bound.
+XCTAssertEqual(1, Network.http3LateAckRatio["ack"].testGetValue().values[41])
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Assert the sum of all samples is 42.
+assert 42 == metrics.network.http3_late_ack_ratio.get("ack").test_get_value().sum
+
+# Assert there's only the one sample
+assert 1 == metrics.network.http3_late_ack_ratio.get("ack").test_get_value().count
+
+# Buckets are indexed by their lower bound.
+assert 1 == metrics.network.http3_late_ack_ratio.get("ack").test_get_value().values[41]
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
@@ -209,10 +344,44 @@ Gets the number of errors recorded for a given labeled custom distribution metri
 
 {{#include ../../../shared/tab_header.md}}
 
-<div data-lang="Kotlin" class="tab"></div>
-<div data-lang="Java" class="tab"></div>
-<div data-lang="Swift" class="tab"></div>
-<div data-lang="Python" class="tab"></div>
+<div data-lang="Kotlin" class="tab">
+
+```Kotlin
+import org.mozilla.yourApplication.GleanMetrics.Network
+
+assertEquals(0, Network.http3LateAckRatio.testGetNumRecordedErrors(ErrorType.INVALID_VALUE)
+```
+
+</div>
+<div data-lang="Java" class="tab">
+
+```Java
+import org.mozilla.yourApplication.GleanMetrics.Network;
+
+assertEquals(0, Network.http3LateAckRatio.testGetNumRecordedErrors(ErrorType.INVALID_VALUE);
+```
+
+</div>
+<div data-lang="Swift" class="tab">
+
+```Swift
+import Glean
+
+XCTAssertEqual(0, Network.http3LateAckRatio.testGetNumRecordedErrors(.invalidValue)
+```
+
+</div>
+<div data-lang="Python" class="tab">
+
+```Python
+from glean import load_metrics
+metrics = load_metrics("metrics.yaml")
+
+# Assert there were no negative values instrumented.
+assert 0 == metrics.network.http3_late_ack_ratio.get("ack").test_get_num_recorded_errors(ErrorType.INVALID_VALUE)
+```
+
+</div>
 <div data-lang="Rust" class="tab">
 
 ```Rust
