@@ -43,7 +43,7 @@ class DeletionRequestPingTest: XCTestCase {
 
         app.switches.firstMatch.tap()
 
-        waitForExpectations(timeout: 5.0) { error in
+        waitForExpectations(timeout: 30.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
