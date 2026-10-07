@@ -334,13 +334,13 @@ impl CommonMetricDataInternal {
                 MetricLabel::Static(label) => LabelCheck::Label(label.to_string()),
                 MetricLabel::Label(label) => LabelCheck::Label(label.to_string()),
                 MetricLabel::KeyOnly(key, static_category) => {
-                    LabelCheck::Label(format!("{key}{static_category}"))
+                    LabelCheck::Label([&key[..], &static_category[..]].concat())
                 }
                 MetricLabel::CategoryOnly(static_key, category) => {
-                    LabelCheck::Label(format!("{static_key}{category}"))
+                    LabelCheck::Label([&static_key[..], &category[..]].concat())
                 }
                 MetricLabel::KeyAndCategory(key, category) => {
-                    LabelCheck::Label(format!("{key}{category}"))
+                    LabelCheck::Label([&key[..], &category[..]].concat())
                 }
             }
         } else {
