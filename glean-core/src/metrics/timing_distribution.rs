@@ -99,16 +99,6 @@ impl MetricType for TimingDistributionMetric {
         &self.meta
     }
 
-    fn with_name(&self, name: String) -> Self {
-        let mut meta = (*self.meta).clone();
-        meta.inner.name = name;
-        Self {
-            meta: Arc::new(meta),
-            time_unit: self.time_unit,
-            next_id: Arc::new(AtomicUsize::new(1)),
-            start_times: Arc::new(Mutex::new(Default::default())),
-        }
-    }
 
     fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();

@@ -16,8 +16,7 @@ fn list_can_store_multiple_items() {
     let (glean, _t) = new_glean(None);
 
     let list: StringListMetric = StringListMetric::new(CommonMetricData {
-        name: "list".into(),
-        category: "local".into(),
+        identifier: "local.list".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -52,8 +51,7 @@ fn stringlist_serializer_should_correctly_serialize_stringlists() {
         tempdir = dir;
 
         let metric = StringListMetric::new(CommonMetricData {
-            name: "string_list_metric".into(),
-            category: "telemetry.test".into(),
+            identifier: "telemetry.test.string_list_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -81,8 +79,7 @@ fn set_properly_sets_the_value_in_all_stores() {
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = StringListMetric::new(CommonMetricData {
-        name: "string_list_metric".into(),
-        category: "telemetry.test".into(),
+        identifier: "telemetry.test.string_list_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -108,8 +105,7 @@ fn long_string_values_are_truncated() {
     let (glean, _t) = new_glean(None);
 
     let metric = StringListMetric::new(CommonMetricData {
-        name: "string_list_metric".into(),
-        category: "telemetry.test".into(),
+        identifier: "telemetry.test.string_list_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -151,8 +147,7 @@ fn disabled_string_lists_dont_record() {
     let (glean, _t) = new_glean(None);
 
     let metric = StringListMetric::new(CommonMetricData {
-        name: "string_list_metric".into(),
-        category: "telemetry.test".into(),
+        identifier: "telemetry.test.string_list_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: true,
         lifetime: Lifetime::Ping,
@@ -178,8 +173,7 @@ fn string_lists_dont_exceed_max_items() {
     let (glean, _t) = new_glean(None);
 
     let metric = StringListMetric::new(CommonMetricData {
-        name: "string_list_metric".into(),
-        category: "telemetry.test".into(),
+        identifier: "telemetry.test.string_list_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -227,8 +221,7 @@ fn set_does_not_record_error_when_receiving_empty_list() {
     let (glean, _t) = new_glean(None);
 
     let metric = StringListMetric::new(CommonMetricData {
-        name: "string_list_metric".into(),
-        category: "telemetry.test".into(),
+        identifier: "telemetry.test.string_list_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Ping,

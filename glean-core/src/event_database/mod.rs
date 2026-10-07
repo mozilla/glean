@@ -205,8 +205,7 @@ impl EventDatabase {
                 if !glean_restarted_stores.is_empty() {
                     for store_name in glean_restarted_stores.iter() {
                         CounterMetric::new(CommonMetricData {
-                            name: "execution_counter".into(),
-                            category: store_name.into(),
+                            identifier: format!("{store_name}.execution_counter"),
                             send_in_pings: vec![INTERNAL_STORAGE.into()],
                             lifetime: Lifetime::Ping,
                             ..Default::default()
@@ -214,8 +213,7 @@ impl EventDatabase {
                         .add_sync(glean, 1);
                     }
                     let glean_restarted = CommonMetricData {
-                        name: "restarted".into(),
-                        category: "glean".into(),
+                        identifier: "glean.restarted".into(),
                         send_in_pings: glean_restarted_stores,
                         lifetime: Lifetime::Ping,
                         ..Default::default()
@@ -340,19 +338,19 @@ impl EventDatabase {
 
                 let store = db.entry(store_name.to_string()).or_default();
                 let execution_counter = CounterMetric::new(CommonMetricData {
-                    name: "execution_counter".into(),
-                    category: store_name.into(),
+                    identifier: format!("{store_name}.execution_counter"),
                     send_in_pings: vec![INTERNAL_STORAGE.into()],
                     lifetime: Lifetime::Ping,
                     ..Default::default()
                 })
                 .get_value(glean, INTERNAL_STORAGE);
                 // Create StoredEvent object, and its JSON form for serialization on disk.
+                let (category, name) = meta.inner.identifier.rsplit_once('.').unwrap_or_else(|| ("", &meta.inner.identifier));
                 let event = StoredEvent {
                     event: RecordedEvent {
                         timestamp,
-                        category: meta.inner.category.to_string(),
-                        name: meta.inner.name.to_string(),
+                        category: category.to_string(),
+                        name: name.to_string(),
                         extra: extra.clone(),
                         session: session.clone(),
                     },
@@ -469,8 +467,7 @@ impl EventDatabase {
         let is_glean_restarted =
             |event: &RecordedEvent| event.category == "glean" && event.name == "restarted";
         let glean_restarted_meta = |store_name: &str| CommonMetricData {
-            name: "restarted".into(),
-            category: "glean".into(),
+            identifier: "glean.restarted".into(),
             send_in_pings: vec![store_name.into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -556,8 +553,7 @@ impl EventDatabase {
                 }
                 let ping_start = DatetimeMetric::new(
                     CommonMetricData {
-                        name: format!("{}#start", store_name),
-                        category: "".into(),
+                        identifier: format!("{}#start", store_name),
                         send_in_pings: vec![INTERNAL_STORAGE.into()],
                         lifetime: Lifetime::User,
                         ..Default::default()
@@ -734,6 +730,7 @@ impl EventDatabase {
         meta: &'a CommonMetricDataInternal,
         store_name: &str,
     ) -> Option<Vec<RecordedEvent>> {
+        let (category, name) = meta.inner.identifier.rsplit_once('.').unwrap_or_else(|| ("", &meta.inner.identifier));
         let value: Vec<RecordedEvent> = self
             .event_stores
             .read()
@@ -742,7 +739,7 @@ impl EventDatabase {
             .into_iter()
             .flatten()
             .map(|stored_event| stored_event.event.clone())
-            .filter(|event| event.name == meta.inner.name && event.category == meta.inner.category)
+            .filter(|event| event.name == name && event.category == category)
             .collect();
         if !value.is_empty() {
             Some(value)
@@ -786,8 +783,8 @@ mod test {
     fn stable_serialization() {
         let event_empty = RecordedEvent {
             timestamp: 2,
-            category: "cat".to_string(),
-            name: "name".to_string(),
+            category: "cat".into(),
+            name: "name".into(),
             extra: None,
             session: None,
         };
@@ -796,8 +793,8 @@ mod test {
         data.insert("a key".to_string(), "a value".to_string());
         let event_data = RecordedEvent {
             timestamp: 2,
-            category: "cat".to_string(),
-            name: "name".to_string(),
+            category: "cat".into(),
+            name: "name".into(),
             extra: Some(data),
             session: None,
         };
@@ -844,8 +841,8 @@ mod test {
 
         let event_empty = RecordedEvent {
             timestamp: 2,
-            category: "cat".to_string(),
-            name: "name".to_string(),
+            category: "cat".into(),
+            name: "name".into(),
             extra: None,
             session: None,
         };
@@ -854,8 +851,8 @@ mod test {
         data.insert("a key".to_string(), "a value".to_string());
         let event_data = RecordedEvent {
             timestamp: 2,
-            category: "cat".to_string(),
-            name: "name".to_string(),
+            category: "cat".into(),
+            name: "name".into(),
             extra: Some(data),
             session: None,
         };
@@ -1107,7 +1104,7 @@ mod test {
         };
         let not_glean_restarted = StoredEvent {
             event: RecordedEvent {
-                category: "category".into(),
+                category: "catgory".into(),
                 name: "name".into(),
                 ..Default::default()
             },
@@ -1347,8 +1344,7 @@ mod test {
             test_get_num_recorded_errors(
                 &glean,
                 &CommonMetricData {
-                    name: "restarted".into(),
-                    category: "glean".into(),
+                    identifier: "glean.restarted".into(),
                     send_in_pings: vec![store_name.into()],
                     lifetime: Lifetime::Ping,
                     ..Default::default()
@@ -1422,8 +1418,7 @@ mod test {
         assert!(test_get_num_recorded_errors(
             &glean,
             &CommonMetricData {
-                name: "restarted".into(),
-                category: "glean".into(),
+                identifier: "glean.restarted".into(),
                 send_in_pings: vec![store_name.into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()
@@ -1436,8 +1431,7 @@ mod test {
         assert!(test_get_num_recorded_errors(
             &glean,
             &CommonMetricData {
-                name: "restarted".into(),
-                category: "glean".into(),
+                identifier: "glean.restarted".into(),
                 send_in_pings: vec![store_name.into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()

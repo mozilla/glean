@@ -27,8 +27,7 @@ fn serializer_should_correctly_serialize_memory_distribution() {
 
         let metric = MemoryDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -75,8 +74,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
 
     let metric = MemoryDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -115,8 +113,7 @@ fn the_accumulate_samples_api_correctly_stores_memory_values() {
 
     let metric = MemoryDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -155,8 +152,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
 
     let metric = MemoryDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,

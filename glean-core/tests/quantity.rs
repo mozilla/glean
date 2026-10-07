@@ -28,8 +28,7 @@ fn quantity_serializer_should_correctly_serialize_quantities() {
         tempdir = dir;
 
         let metric = QuantityMetric::new(CommonMetricData {
-            name: "quantity_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.quantity_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -67,8 +66,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = QuantityMetric::new(CommonMetricData {
-        name: "quantity_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.quantity_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -97,8 +95,7 @@ fn quantities_must_not_set_when_passed_negative() {
     let (glean, _t) = new_glean(None);
 
     let metric = QuantityMetric::new(CommonMetricData {
-        name: "quantity_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.quantity_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Application,

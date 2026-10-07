@@ -19,8 +19,7 @@ use uuid::uuid;
 
 fn clientid_metric() -> UuidMetric {
     UuidMetric::new(CommonMetricData {
-        name: "client_id".into(),
-        category: "".into(),
+        identifier: "client_id".into(),
         send_in_pings: vec!["glean_client_info".into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -29,8 +28,7 @@ fn clientid_metric() -> UuidMetric {
 
 fn load_error_metric() -> StringMetric {
     StringMetric::new(CommonMetricData {
-        name: "load_error".into(),
-        category: "glean.database".into(),
+        identifier: "glean.database.load_error".into(),
         send_in_pings: vec!["metrics".into(), "health".into()],
         lifetime: Lifetime::Ping,
         ..Default::default()

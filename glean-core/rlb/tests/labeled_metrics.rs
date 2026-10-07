@@ -18,8 +18,7 @@ mod metrics {
         LabeledBoolean::new(
             LabeledMetricData::Common {
                 cmd: CommonMetricData {
-                    name: "labeled_boolean".into(),
-                    category: "sample".into(),
+                    identifier: "sample.labeled_boolean".into(),
                     send_in_pings: vec!["validation".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
@@ -35,8 +34,7 @@ mod metrics {
         LabeledBoolean::new(
             LabeledMetricData::Common {
                 cmd: CommonMetricData {
-                    name: "labeled_boolean_static_labels".into(),
-                    category: "sample".into(),
+                    identifier: "sample.labeled_boolean_static_labels".into(),
                     send_in_pings: vec!["validation".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
@@ -52,8 +50,7 @@ mod metrics {
         LabeledBoolean::new(
             LabeledMetricData::Common {
                 cmd: CommonMetricData {
-                    name: "labeled_boolean_static_labels".into(),
-                    category: "sample".into(),
+                    identifier: "sample.labeled_boolean_static_labels".into(),
                     send_in_pings: vec!["validation".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,

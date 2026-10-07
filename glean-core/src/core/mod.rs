@@ -1420,9 +1420,7 @@ impl Glean {
 
     fn get_dirty_bit_metric(&self) -> metrics::BooleanMetric {
         metrics::BooleanMetric::new(CommonMetricData {
-            name: "dirtybit".into(),
-            // We don't need a category, the name is already unique
-            category: "".into(),
+            identifier: "dirtybit".into(),
             send_in_pings: vec![INTERNAL_STORAGE.into()],
             lifetime: Lifetime::User,
             ..Default::default()
@@ -1567,8 +1565,7 @@ impl Glean {
         sampled_in: bool,
     ) {
         let meta = CommonMetricData {
-            name: "session_start".into(),
-            category: "glean".into(),
+            identifier: "glean.session_start".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -1595,8 +1592,7 @@ impl Glean {
     /// Records a `glean.session_end` boundary event (always, regardless of sampling).
     fn record_session_end_event(&self, session_id: &str, seq: u64, reason: Option<&str>) {
         let meta = CommonMetricData {
-            name: "session_end".into(),
-            category: "glean".into(),
+            identifier: "glean.session_end".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()

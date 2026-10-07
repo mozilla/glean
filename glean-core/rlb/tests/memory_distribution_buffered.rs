@@ -22,8 +22,7 @@ mod metrics {
     pub static measure: Lazy<MemoryDistributionMetric> = Lazy::new(|| {
         MemoryDistributionMetric::new(
             CommonMetricData {
-                name: "measure".into(),
-                category: "sample".into(),
+                identifier: "sample.measure".into(),
                 send_in_pings: vec!["store1".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

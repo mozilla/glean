@@ -34,8 +34,7 @@ pub mod metrics {
     pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
         once_cell::sync::Lazy::new(|| {
             BooleanMetric::new(CommonMetricData {
-                name: "sample_boolean".into(),
-                category: "test.metrics".into(),
+                identifier: "test.metrics.sample_boolean".into(),
                 send_in_pings: vec!["validation".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -50,8 +49,7 @@ pub mod metrics {
         once_cell::sync::Lazy::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
-                    name: "send_success".into(),
-                    category: "glean.upload".into(),
+                    identifier: "glean.upload.send_success".into(),
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
@@ -66,8 +64,7 @@ pub mod metrics {
         once_cell::sync::Lazy::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
-                    name: "send_failure".into(),
-                    category: "glean.upload".into(),
+                    identifier: "glean.upload.send_failure".into(),
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
@@ -82,8 +79,7 @@ pub mod metrics {
         once_cell::sync::Lazy::new(|| {
             TimingDistributionMetric::new(
                 CommonMetricData {
-                    name: "shutdown_wait".into(),
-                    category: "glean.validation".into(),
+                    identifier: "glean.validation.shutdown_wait".into(),
                     send_in_pings: vec!["metrics".into()],
                     lifetime: Lifetime::Ping,
                     disabled: false,
