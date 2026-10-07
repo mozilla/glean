@@ -25,8 +25,7 @@ mod metrics {
     pub static initialization: Lazy<TimespanMetric> = Lazy::new(|| {
         TimespanMetric::new(
             CommonMetricData {
-                name: "initialization".into(),
-                category: "sample".into(),
+                identifier: "sample.initialization".into(),
                 send_in_pings: vec!["validation".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
