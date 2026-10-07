@@ -11,7 +11,7 @@ This is enforced in CI.
 Multi-line strings in Rust code should use double-quotes where possible, or raw string markers (`r#" "#`) if needed.
 
 When indentation doesn't matter, the double-quote should be on its own line and the start of the string indented by 4 spaces below.
-The closing double-quote should be aligned with the identifier.
+The closing double-quote should be aligned with the beginning of the line that opened the string.
 Unfortunately `rustfmt` will not enforce the intended formatting.
 
 **Good**:
