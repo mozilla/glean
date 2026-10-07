@@ -70,9 +70,8 @@ impl ExperimentMetric {
         let new_experiment = Self {
             meta: CommonMetricDataInternal {
                 inner: CommonMetricData {
-                    name: format!("{}#experiment", truncated_id),
                     // We don't need a category, the name is already unique
-                    category: "".into(),
+                    identifier: format!("{}#experiment", truncated_id),
                     send_in_pings: vec![INTERNAL_STORAGE.into()],
                     lifetime: Lifetime::Application,
                     ..Default::default()
@@ -183,7 +182,7 @@ impl ExperimentMetric {
         if let Err(e) = glean.storage().remove_single_metric(
             Lifetime::Application,
             INTERNAL_STORAGE,
-            &self.meta.inner.name,
+            &self.meta.inner.identifier
         ) {
             log::error!("Failed to set experiment as inactive: {:?}", e);
         }

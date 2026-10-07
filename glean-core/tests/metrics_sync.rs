@@ -103,12 +103,11 @@ fn extract_metrics_from_code(map: &mut HashMap<String, Metric>, file_path: &str)
         if line.contains("CommonMetricData ") {
             let mut metric = Metric::default();
             let line = lines.next().unwrap();
-            assert!(line.contains("name:"));
-            metric.name = extract_string(line);
-
-            let line = lines.next().unwrap();
-            assert!(line.contains("category:"));
-            metric.category = extract_string(line);
+            assert!(line.contains("identifier:"));
+            let identifier = extract_string(line);
+            let (category, name) = identifier.rsplit_once('.').unwrap_or_else(|| ("", &identifier));
+            metric.category = category.to_string();
+            metric.name = name.to_string();
 
             // Special-casing some internals.
             if metric.category.is_empty() {

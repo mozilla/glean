@@ -42,17 +42,6 @@ impl MetricType for CustomDistributionMetric {
         &self.meta
     }
 
-    fn with_name(&self, name: String) -> Self {
-        let mut meta = (*self.meta).clone();
-        meta.inner.name = name;
-        Self {
-            meta: Arc::new(meta),
-            range_min: self.range_min,
-            range_max: self.range_max,
-            bucket_count: self.bucket_count,
-            histogram_type: self.histogram_type,
-        }
-    }
 
     fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();

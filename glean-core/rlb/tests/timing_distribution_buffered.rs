@@ -23,8 +23,7 @@ mod metrics {
     pub static boo: Lazy<TimingDistributionMetric> = Lazy::new(|| {
         TimingDistributionMetric::new(
             CommonMetricData {
-                name: "boo".into(),
-                category: "sample".into(),
+                identifier: "sample.boo".into(),
                 send_in_pings: vec!["store1".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

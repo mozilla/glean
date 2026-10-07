@@ -267,8 +267,7 @@ fn start_scheduler(
 fn get_last_sent_time_metric() -> DatetimeMetric {
     DatetimeMetric::new(
         CommonMetricData {
-            name: "last_sent_time".into(),
-            category: "mps".into(),
+            identifier: "mps.last_sent_time".into(),
             send_in_pings: vec![INTERNAL_STORAGE.into()],
             lifetime: Lifetime::User,
             ..Default::default()
@@ -279,8 +278,7 @@ fn get_last_sent_time_metric() -> DatetimeMetric {
 
 fn get_last_sent_build_metric() -> StringMetric {
     StringMetric::new(CommonMetricData {
-        name: "last_sent_build".into(),
-        category: "mps".into(),
+        identifier: "mps.last_sent_build".into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()

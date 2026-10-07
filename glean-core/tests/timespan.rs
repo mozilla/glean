@@ -30,8 +30,7 @@ fn serializer_should_correctly_serialize_timespans() {
 
         let metric = TimespanMetric::new(
             CommonMetricData {
-                name: "timespan_metric".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.timespan_metric".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -70,8 +69,7 @@ fn single_elapsed_time_must_be_recorded() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -100,8 +98,7 @@ fn second_timer_run_is_skipped() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -140,8 +137,7 @@ fn recorded_time_conforms_to_resolution() {
 
     let ns_metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_ns".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_ns".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -152,8 +148,7 @@ fn recorded_time_conforms_to_resolution() {
 
     let minute_metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_m".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_m".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -186,8 +181,7 @@ fn cancel_does_not_store() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -208,8 +202,7 @@ fn nothing_stored_before_stop() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -234,8 +227,7 @@ fn set_raw_time() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -257,8 +249,7 @@ fn set_raw_time_does_nothing_when_timer_running() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -289,8 +280,7 @@ fn timespan_is_tracked_across_upload_toggle() {
 
     let metric = TimespanMetric::new(
         CommonMetricData {
-            name: "timespan_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.timespan_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -329,8 +319,7 @@ fn time_cannot_go_backwards() {
 
     let metric: TimespanMetric = TimespanMetric::new(
         CommonMetricData {
-            name: "raw_timespan".into(),
-            category: "test".into(),
+            identifier: "test.raw_timespan".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         },

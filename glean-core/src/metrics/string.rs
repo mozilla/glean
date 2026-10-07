@@ -28,13 +28,6 @@ impl MetricType for StringMetric {
         &self.meta
     }
 
-    fn with_name(&self, name: String) -> Self {
-        let mut meta = (*self.meta).clone();
-        meta.inner.name = name;
-        Self {
-            meta: Arc::new(meta),
-        }
-    }
 
     fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();
@@ -161,8 +154,7 @@ mod test {
         let (glean, _t) = new_glean(None);
 
         let metric = StringMetric::new(CommonMetricData {
-            name: "string_metric".into(),
-            category: "test".into(),
+            identifier: "test.string_metric".into(),
             send_in_pings: vec!["store1".into()],
             lifetime: Lifetime::Application,
             disabled: false,

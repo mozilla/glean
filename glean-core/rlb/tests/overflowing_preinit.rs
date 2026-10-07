@@ -22,8 +22,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static rapid_counting: Lazy<CounterMetric> = Lazy::new(|| {
         CounterMetric::new(CommonMetricData {
-            name: "rapid_counting".into(),
-            category: "sample".into(),
+            identifier: "sample.rapid_counting".into(),
             send_in_pings: vec!["metrics".into()],
             lifetime: Lifetime::Ping,
             disabled: false,
@@ -37,8 +36,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static preinit_tasks_overflow: Lazy<CounterMetric> = Lazy::new(|| {
         CounterMetric::new(CommonMetricData {
-            category: "glean.error".into(),
-            name: "preinit_tasks_overflow".into(),
+            identifier: "glean.error.preinit_tasks_overflow".into(),
             send_in_pings: vec!["metrics".into(), "health".into()],
             lifetime: Lifetime::Ping,
             disabled: false,
