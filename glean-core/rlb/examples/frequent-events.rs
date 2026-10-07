@@ -32,8 +32,7 @@ pub mod glean_metrics {
     pub static sample_event: ::glean::private::__export::Lazy<EventMetric<NoExtraKeys>> =
         ::glean::private::__export::Lazy::new(|| {
             let meta = CommonMetricData {
-                category: "test.metrics".into(),
-                name: "sample_event".into(),
+                identifier: "test.metrics.sample_event".into(),
                 send_in_pings: vec!["prototype".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

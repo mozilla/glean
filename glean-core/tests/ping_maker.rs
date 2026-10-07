@@ -19,8 +19,7 @@ fn set_up_basic_ping() -> (Glean, PingMaker, PingType, tempfile::TempDir) {
 
     // Record something, so the ping will have data
     let metric = BooleanMetric::new(CommonMetricData {
-        name: "boolean_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.boolean_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::User,
@@ -111,8 +110,7 @@ fn test_metrics_must_report_experimentation_id() {
 
     // Record something, so the ping will have data
     let metric = BooleanMetric::new(CommonMetricData {
-        name: "boolean_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.boolean_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::User,
@@ -198,8 +196,7 @@ fn seq_number_must_be_sequential() {
     let (mut glean, ping_maker, _ping_type, _t) = set_up_basic_ping();
 
     let metric = BooleanMetric::new(CommonMetricData {
-        name: "boolean_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.boolean_metric".into(),
         send_in_pings: vec!["store2".into()],
         disabled: false,
         lifetime: Lifetime::User,
@@ -270,8 +267,7 @@ fn clear_pending_pings() {
 
     // Record something, so the ping will have data
     let metric = BooleanMetric::new(CommonMetricData {
-        name: "boolean_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.boolean_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::User,

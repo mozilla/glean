@@ -27,8 +27,7 @@ mod metrics {
 
     pub static sample_boolean: Lazy<BooleanMetric> = Lazy::new(|| {
         BooleanMetric::new(CommonMetricData {
-            name: "sample_boolean".into(),
-            category: "test.metrics".into(),
+            identifier: "test.metrics.sample_boolean".into(),
             send_in_pings: vec!["validation".into()],
             disabled: false,
             lifetime: Lifetime::Ping,

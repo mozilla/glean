@@ -20,8 +20,7 @@ fn write_ping_to_disk() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -40,8 +39,7 @@ fn disabling_upload_clears_pending_pings() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -131,8 +129,7 @@ fn test_pings_submitted_metric() {
     let pings_submitted = LabeledCounter::new(
         LabeledMetricData::Common {
             cmd: CommonMetricData {
-                name: "pings_submitted".into(),
-                category: "glean.validation".into(),
+                identifier: "glean.validation.pings_submitted".into(),
                 send_in_pings: vec!["metrics".into(), "baseline".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,
@@ -151,8 +148,7 @@ fn test_pings_submitted_metric() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["metrics".into()],
         ..Default::default()
     });
@@ -248,8 +244,7 @@ fn events_ping_with_metric_but_no_events_is_not_sent() {
 
     let events_ping = new_test_ping(&mut glean, "events");
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["events".into()],
         ..Default::default()
     });
@@ -261,8 +256,7 @@ fn events_ping_with_metric_but_no_events_is_not_sent() {
 
     let event = EventMetric::new(
         CommonMetricData {
-            name: "name".into(),
-            category: "category".into(),
+            identifier: "category.name".into(),
             send_in_pings: vec!["events".into()],
             ..Default::default()
         },
@@ -304,8 +298,7 @@ fn database_write_timings_get_recorded() {
 
     // We need to store a metric to record something.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["metrics".into()],
         ..Default::default()
     });
@@ -339,8 +332,7 @@ fn clearing_storage_by_prefix_doesnt_clear_unrelated() {
 
     // We need to store a metric to record something.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec![prefix.clone(), other.clone()],
         ..Default::default()
     });
@@ -404,8 +396,7 @@ fn clearing_storage_by_prefix_doesnt_clear_unrelated_delayed_ping_io() {
 
     // We need to store a metric to record something.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec![prefix.clone(), other.clone()],
         ..Default::default()
     });
