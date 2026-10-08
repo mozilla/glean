@@ -564,7 +564,7 @@ impl Database {
             let map = self.ping_lifetime_data.read().unwrap();
 
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
             let key = [storage_name, &name, labels.label()].join("|");
             return map.get(&key).cloned();
         }
@@ -602,8 +602,14 @@ impl Database {
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
         if data.inner.lifetime == Lifetime::Ping && self.delay_ping_lifetime_io {
+            let map = self.ping_lifetime_data.read().unwrap();
+
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
+
+            // Release the map so that error recording can work
+            drop(map);
+            labels.record_error_metric(glean, data);
 
             let mut map = self.ping_lifetime_data.write().unwrap();
 
@@ -726,8 +732,14 @@ impl Database {
         F: FnMut(Option<Metric>) -> Metric,
     {
         if data.inner.lifetime == Lifetime::Ping && self.delay_ping_lifetime_io {
+            let map = self.ping_lifetime_data.read().unwrap();
+
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
+
+            // Release the map so that error recording can work
+            drop(map);
+            labels.record_error_metric(glean, data);
 
             let mut map = self.ping_lifetime_data.write().unwrap();
 
