@@ -61,7 +61,7 @@ internal fun setFakeNow(fakeNow: Calendar) {
  * Checks ping content against the Glean ping schema.
  *
  * This uses the Python utility, glean_parser, to perform the actual checking.
- * This is installed in its own Miniconda environment as part of the build
+ * This is installed in its own virtual environment as part of the build
  * configuration by glean-gradle-plugin.
  *
  * @param content The JSON content of the ping
@@ -71,9 +71,9 @@ internal fun checkPingSchema(content: JSONObject) {
     val os = System.getProperty("os.name")?.lowercase()
     val pythonExecutable =
         if (os?.indexOf("win")?.compareTo(0) == 0) {
-            "${BuildConfig.GLEAN_MINICONDA_DIR}/python"
+            "${BuildConfig.GLEAN_PYTHON_ENV_DIR}/Scripts/python"
         } else {
-            "${BuildConfig.GLEAN_MINICONDA_DIR}/bin/python"
+            "${BuildConfig.GLEAN_PYTHON_ENV_DIR}/bin/python"
         }
 
     val proc = ProcessBuilder(

@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-plugins {
-    alias libs.plugins.gradle.python.envs
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
@@ -17,13 +13,13 @@ kotlin {
 android {
     namespace = "org.mozilla.samples.gleancore"
 
-    ndkVersion rootProject.ext.build.ndkVersion
-    compileSdkVersion rootProject.ext.build.compileSdkVersion
+    ndkVersion = rootProject.ext.build.ndkVersion
+    compileSdk = rootProject.ext.build.compileSdkVersion
 
     defaultConfig {
         applicationId "org.mozilla.samples.gleancore"
-        minSdkVersion rootProject.ext.build['minSdkVersion']
-        targetSdkVersion rootProject.ext.build['targetSdkVersion']
+        minSdk = rootProject.ext.build['minSdkVersion']
+        targetSdk = rootProject.ext.build['targetSdkVersion']
         // Keep the version in sync with gleanExpireByVersion which is
         // set below, near the end of the file.
         versionCode 1
@@ -35,7 +31,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
