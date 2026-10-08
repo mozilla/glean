@@ -577,7 +577,7 @@ impl Database {
             let map = self.ping_lifetime_data.read().unwrap();
 
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
             let label = database_label(labels.label());
             let key = [storage_name, &name, label].join("|");
             return map.get(&key).cloned();
@@ -617,8 +617,14 @@ impl Database {
     /// Records a metric in the underlying storage system.
     pub fn record(&self, glean: &Glean, data: &CommonMetricDataInternal, value: &Metric) {
         if data.inner.lifetime == Lifetime::Ping && self.delay_ping_lifetime_io {
+            let map = self.ping_lifetime_data.read().unwrap();
+
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
+
+            // Release the map so that error recording can work
+            drop(map);
+            labels.record_error_metric(glean, data);
 
             let mut map = self.ping_lifetime_data.write().unwrap();
 
@@ -734,15 +740,28 @@ impl Database {
         Ok(())
     }
 
-    /// Records the provided value, with the given lifetime,
-    /// after applying a transformation function.
-    pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricDataInternal, mut transform: F)
+    /// Record a metric to the in-memory storage if necessary.
+    ///
+    /// Returns `true` if it recorded, `false` otherwise.
+    pub fn record_in_memory<F>(
+        &self,
+        glean: &Glean,
+        data: &CommonMetricDataInternal,
+        tx: Option<&mut Transaction>,
+        mut transform: F,
+    ) -> bool
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
         if data.inner.lifetime == Lifetime::Ping && self.delay_ping_lifetime_io {
+            let map = self.ping_lifetime_data.read().unwrap();
+
             let name = data.base_identifier();
-            let labels = data.check_labels_();
+            let labels = data.check_labels_in_memory(&map);
+
+            // Release the map so that error recording can work
+            drop(map);
+            labels.record_error_metric(glean, data);
 
             let mut map = self.ping_lifetime_data.write().unwrap();
 
@@ -768,10 +787,23 @@ impl Database {
             // Ensure map is unlocked.
             drop(map);
 
-            if let Err(err) = self.persist_ping_lifetime_data_if_full(None) {
+            if let Err(err) = self.persist_ping_lifetime_data_if_full(tx) {
                 log::error!("Can't flush ping lifetime data: {err:?}");
             };
 
+            return true;
+        }
+
+        false
+    }
+
+    /// Records the provided value, with the given lifetime,
+    /// after applying a transformation function.
+    pub fn record_with<F>(&self, glean: &Glean, data: &CommonMetricDataInternal, mut transform: F)
+    where
+        F: FnMut(Option<Metric>) -> Metric,
+    {
+        if self.record_in_memory(glean, data, None, &mut transform) {
             return;
         }
 
@@ -791,7 +823,6 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
-        assert!(!labels.contains('|'));
         let key = [storage_name, key, labels].join("|");
 
         match map.entry(key) {
@@ -816,6 +847,13 @@ impl Database {
     where
         F: FnMut(Option<Metric>) -> Metric,
     {
+        // We still need to check if we need to record in-memory.
+        // Usually caught higher up the chain by `record_with`,
+        // but some parts might already have a transaction and will call this function directly.
+        if self.record_in_memory(glean, data, Some(tx), &mut transform) {
+            return Ok(());
+        }
+
         let name = data.base_identifier();
 
         let labels = data.check_labels(tx);
