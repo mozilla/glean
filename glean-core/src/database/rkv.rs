@@ -17,6 +17,11 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Mutex, RwLock};
 use std::time::{Duration, Instant};
 
+#[cfg(feature = "gecko")]
+use gecko_profiler::{
+    gecko_profiler_category, lazy_add_marker, MarkerOptions, MarkerTiming, ProfilerMarker,
+    ProfilerTime,
+};
 use malloc_size_of::MallocSizeOf;
 use rkv::{StoreError, StoreOptions};
 
@@ -37,8 +42,29 @@ macro_rules! unwrap_or {
     };
 }
 
+#[cfg(feature = "gecko")]
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct TimingMarker;
+
+#[cfg(feature = "gecko")]
+impl ProfilerMarker for TimingMarker {
+    fn marker_type_name() -> &'static str {
+        "TimingMarker"
+    }
+
+    fn marker_type_display() -> gecko_profiler::MarkerSchema {
+        use gecko_profiler::schema::*;
+        let schema = MarkerSchema::new(&[Location::MarkerChart, Location::MarkerTable]);
+        schema
+    }
+
+    fn stream_json_marker_data(&self, _json_writer: &mut gecko_profiler::JSONWriter) {}
+}
+
 macro_rules! measure_commit {
     ($this:ident, $expr:expr) => {{
+        #[cfg(feature = "gecko")]
+        let profiler_start = ProfilerTime::now();
         let now = ::std::time::Instant::now();
         let res = $expr;
         let elapsed = now.elapsed();
@@ -46,6 +72,16 @@ macro_rules! measure_commit {
             let mut samples = $this.write_timings.borrow_mut();
             samples.push(elapsed);
         }
+        #[cfg(feature = "gecko")]
+        lazy_add_marker!(
+            "glean-core::commit",
+            gecko_profiler_category!(Telemetry),
+            MarkerOptions {
+                timing: MarkerTiming::interval_until_now_from(profiler_start),
+                ..Default::default()
+            },
+            TimingMarker
+        );
         res
     }};
 }
