@@ -853,3 +853,77 @@ fn overflow_labels_go_to_other_with_no_error() {
         snapshot
     );
 }
+
+#[test]
+fn pipe_is_allowed() {
+    let (glean, _t) = new_glean(None);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "pipe".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    let metric = labeled.get("left|right");
+    metric.add_sync(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({ "labeled_counter": { "telemetry.pipe": { "left|right": 1 } } }),
+        snapshot
+    );
+}
+
+/// Errors for non-ping-lifetime metrics are recorded through `record_error_sqlite`,
+/// which writes the (ping-lifetime) error counter via `record_with_transaction`.
+/// With delayed ping-lifetime IO, that counter must land in the in-memory cache,
+/// otherwise it never shows up in the `metrics` ping.
+#[test]
+fn errors_for_user_lifetime_metrics_are_visible_with_delayed_io() {
+    let (glean, _t) = new_glean_delayed_io();
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "labeled_metric".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::User,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+    let metric = labeled.get("1".repeat(112));
+    metric.add_sync(&glean, 1);
+
+    assert_eq!(
+        Ok(1),
+        test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidLabel)
+    );
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", false)
+        .expect("metrics ping should not be empty");
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "glean.error.invalid_label": { "telemetry.labeled_metric": 1 },
+                "telemetry.labeled_metric": { "__other__":  1 },
+            }
+        }),
+        snapshot
+    );
+}
