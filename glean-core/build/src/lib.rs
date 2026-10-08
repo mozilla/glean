@@ -128,8 +128,9 @@ impl Builder {
         }
 
         let sh = Shell::new()?;
+
+        println!("cargo::rerun-if-env-changed=GLEAN_PYTHON_VENV_DIR");
         let venv = if let Ok(env_dir) = env::var("GLEAN_PYTHON_VENV_DIR") {
-            eprintln!("got env dir: {env_dir}");
             let env_path = PathBuf::from(env_dir);
             VirtualEnv::with_path(&sh, &env_path)?
         } else if let Some(env_dir) = &self.env_dir {
@@ -146,7 +147,7 @@ impl Builder {
         };
 
         for file in &self.files {
-            println!("cargo:rerun-if-changed={file}");
+            println!("cargo::rerun-if-changed={file}");
         }
 
         let mut args = vec!["translate", "--output", out_dir];
