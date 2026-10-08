@@ -54,14 +54,6 @@ impl MetricType for MemoryDistributionMetric {
         &self.meta
     }
 
-    fn with_name(&self, name: String) -> Self {
-        let mut meta = (*self.meta).clone();
-        meta.inner.name = name;
-        Self {
-            meta: Arc::new(meta),
-            memory_unit: self.memory_unit,
-        }
-    }
 
     fn with_label(&self, label: MetricLabel) -> Self {
         let mut meta = (*self.meta).clone();

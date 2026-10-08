@@ -25,8 +25,7 @@ static FILLED_RKV_DATABASE: &[u8] = include_bytes!("filled-rkv.data.safe.bin");
 
 fn clientid_metric() -> UuidMetric {
     UuidMetric::new(CommonMetricData {
-        name: "client_id".into(),
-        category: "".into(),
+        identifier: "client_id".into(),
         send_in_pings: vec!["glean_client_info".into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -46,24 +45,21 @@ impl MigrationMetrics {
     fn new() -> Self {
         Self {
             migrated_metrics: CounterMetric::new(CommonMetricData {
-                name: "migrated_metrics".into(),
-                category: "glean.migration".into(),
+                identifier: "glean.migration.migrated_metrics".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()
             }),
 
             metrics_in_sqlite: CounterMetric::new(CommonMetricData {
-                name: "metrics_in_sqlite".into(),
-                category: "glean.migration".into(),
+                identifier: "glean.migration.metrics_in_sqlite".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()
             }),
 
             failed_metrics: CounterMetric::new(CommonMetricData {
-                name: "failed_metrics".into(),
-                category: "glean.migration".into(),
+                identifier: "glean.migration.failed_metrics".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()
@@ -71,8 +67,7 @@ impl MigrationMetrics {
 
             migration_duration: TimingDistributionMetric::new(
                 CommonMetricData {
-                    name: "migration_duration".into(),
-                    category: "glean.migration".into(),
+                    identifier: "glean.migration.migration_duration".into(),
                     send_in_pings: vec!["metrics".into(), "health".into()],
                     lifetime: Lifetime::Ping,
                     ..Default::default()
@@ -80,8 +75,7 @@ impl MigrationMetrics {
                 TimeUnit::Millisecond,
             ),
             migration_error: CounterMetric::new(CommonMetricData {
-                name: "error".into(),
-                category: "glean.migration".into(),
+                identifier: "glean.migration.error".into(),
                 send_in_pings: vec!["metrics".into(), "health".into()],
                 lifetime: Lifetime::Ping,
                 ..Default::default()

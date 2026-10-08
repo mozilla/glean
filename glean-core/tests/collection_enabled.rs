@@ -37,8 +37,7 @@ fn pings_with_follows_false_are_exempt() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["nofollows".into()],
         ..Default::default()
     });
@@ -97,8 +96,7 @@ fn nofollows_ping_can_ride_along() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["manual".into(), "nofollows".into()],
         lifetime: Lifetime::Application,
         ..Default::default()
@@ -179,8 +177,7 @@ fn queued_nofollows_pings_are_not_removed() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["manual".into(), "nofollows".into()],
         lifetime: Lifetime::Application,
         ..Default::default()
@@ -210,8 +207,7 @@ fn label_errors_when_collection_disabled() {
     let labeled = LabeledCounter::new(
         LabeledMetricData::Common {
             cmd: CommonMetricData {
-                name: "labeled_metric".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.labeled_metric".into(),
                 send_in_pings: vec!["manual".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,

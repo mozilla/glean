@@ -23,8 +23,7 @@ fn record_properly_records_without_optional_arguments() {
 
     let metric = EventMetric::new(
         CommonMetricData {
-            name: "test_event_no_optional".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.test_event_no_optional".into(),
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -52,8 +51,7 @@ fn record_properly_records_with_optional_arguments() {
 
     let metric = EventMetric::new(
         CommonMetricData {
-            name: "test_event_no_optional".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.test_event_no_optional".into(),
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -106,8 +104,7 @@ fn snapshot_correctly_clears_the_stores() {
 
     let metric = EventMetric::new(
         CommonMetricData {
-            name: "test_event_clear".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.test_event_clear".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -171,8 +168,7 @@ fn test_sending_of_event_ping_when_it_fills_up() {
 
     let click = EventMetric::new(
         CommonMetricData {
-            name: "click".into(),
-            category: "ui".into(),
+            identifier: "ui.click".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -234,8 +230,7 @@ fn test_server_knobs_config_changing_max_events() {
     // 1. Set up an event to record
     let click = EventMetric::new(
         CommonMetricData {
-            name: "click".into(),
-            category: "ui".into(),
+            identifier: "ui.click".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -296,8 +291,7 @@ fn extra_keys_must_be_recorded_and_truncated_if_needed() {
 
     let test_event = EventMetric::new(
         CommonMetricData {
-            name: "testEvent".into(),
-            category: "ui".into(),
+            identifier: "ui.testEvent".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -342,8 +336,7 @@ fn snapshot_sorts_the_timestamps() {
 
     let metric = EventMetric::new(
         CommonMetricData {
-            name: "test_event_clear".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.test_event_clear".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -387,8 +380,7 @@ fn ensure_custom_ping_events_dont_overflow() {
 
     let store_name = "store1";
     let event_meta = CommonMetricData {
-        name: "name".into(),
-        category: "category".into(),
+        identifier: "category.name".into(),
         send_in_pings: vec![store_name.into()],
         lifetime: Lifetime::Ping,
         ..Default::default()
@@ -433,8 +425,7 @@ fn ensure_custom_ping_events_from_multiple_runs_work() {
     let store_name = "store1";
     let event = EventMetric::new(
         CommonMetricData {
-            name: "name".into(),
-            category: "category".into(),
+            identifier: "category.name".into(),
             send_in_pings: vec![store_name.into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -488,8 +479,7 @@ fn event_storage_trimming() {
     let store_name_2 = "store-name-2";
     let event = EventMetric::new(
         CommonMetricData {
-            name: "name".into(),
-            category: "category".into(),
+            identifier: "category.name".into(),
             send_in_pings: vec![store_name.into(), store_name_2.into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -568,8 +558,7 @@ fn with_event_timestamps() {
     let store_name = "store1";
     let event = EventMetric::new(
         CommonMetricData {
-            name: "name".into(),
-            category: "category".into(),
+            identifier: "category.name".into(),
             send_in_pings: vec![store_name.into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -608,8 +597,7 @@ fn doesnt_crash_on_inaccessible_event_store_file() {
 
     let metric = EventMetric::new(
         CommonMetricData {
-            name: "test_event_no_optional".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.test_event_no_optional".into(),
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -644,8 +632,7 @@ fn test_server_knobs_config_events_factor() {
     // 1. Set up an event to record
     let click = EventMetric::new(
         CommonMetricData {
-            name: "click".into(),
-            category: "ui".into(),
+            identifier: "ui.click".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -713,8 +700,7 @@ fn test_server_knobs_config_events_factor_decrease() {
     // 1. Set up an event to record
     let click = EventMetric::new(
         CommonMetricData {
-            name: "click".into(),
-            category: "ui".into(),
+            identifier: "ui.click".into(),
             send_in_pings: store_names,
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -775,8 +761,7 @@ fn events_factor_discounts_startup_ping() {
     let store_name = "events";
     let event = EventMetric::new(
         CommonMetricData {
-            name: "name".into(),
-            category: "category".into(),
+            identifier: "category.name".into(),
             send_in_pings: vec![store_name.into()],
             lifetime: Lifetime::Ping,
             ..Default::default()

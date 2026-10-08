@@ -261,7 +261,7 @@ pub trait MetricType {
             // if it were `enabled` to make it easier to understand.
 
             if !remote_settings_config.metrics_enabled.is_empty() {
-                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(&identifier) {
+                if let Some(is_enabled) = remote_settings_config.metrics_enabled.get(identifier) {
                     u8::from(!*is_enabled)
                 } else {
                     u8::from(self.meta().inner.disabled)
@@ -317,9 +317,10 @@ where
 {
     fn get_identifiers(&'a self) -> (&'a str, &'a str, Option<String>) {
         let meta = &self.meta().inner;
+        let (category, name) = meta.identifier.rsplit_once('.').unwrap_or_else(|| ("", &meta.identifier));
         (
-            &meta.category,
-            &meta.name,
+            category,
+            name,
             meta.label.as_ref().map(|label| label.to_string()),
         )
     }
