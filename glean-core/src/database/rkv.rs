@@ -154,6 +154,13 @@ pub struct Database {
     submitted_pings_store: Mutex<HashMap<String, SubmittedPing>>,
 }
 
+impl Drop for Database {
+    // TODO(jer): figure out if this is suitable
+    fn drop(&mut self) {
+        _ = self.persist_ping_lifetime_data();
+    }
+}
+
 impl MallocSizeOf for Database {
     fn size_of(&self, ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
         // TODO(bug 1960592): Fill in gaps.
