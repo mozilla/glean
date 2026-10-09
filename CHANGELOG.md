@@ -2,6 +2,8 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...main)
 
+* General
+  * BUGFIX: Clear event storage when a ping is disabled ([#3679](https://github.com/mozilla/glean/issues/3679))
 * iOS
   * Glean for iOS is now being built with Xcode 26.6 ([#3672](https://github.com/mozilla/glean/pull/3672))
 
