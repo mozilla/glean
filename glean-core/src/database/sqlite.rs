@@ -111,6 +111,13 @@ pub struct Database {
     ping_lifetime_max_time: Duration,
 }
 
+impl Drop for Database {
+    // TODO(jer): figure out if this is suitable
+    fn drop(&mut self) {
+        _ = self.persist_ping_lifetime_data();
+    }
+}
+
 impl MallocSizeOf for Database {
     fn size_of(&self, _ops: &mut malloc_size_of::MallocSizeOfOps) -> usize {
         // FIXME: Can we get the allocated size of the connection?
