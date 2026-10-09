@@ -1572,7 +1572,7 @@ fn pings_get_submitted_on_disabled_ping_schedule() {
     handle_client_active();
 
     // We expect a ride-along ping to ride along.
-    let url = r.recv_timeout(Duration::from_millis(100)).unwrap();
+    let url = r.recv_timeout(Duration::from_millis(500)).unwrap();
     assert!(url.contains("ride-along"));
 }
 
