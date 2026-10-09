@@ -382,6 +382,7 @@ impl EventDatabase {
                 }
             }
         }
+
         if submit_max_capacity_event_ping {
             glean.submit_ping_by_name("events", Some("max_capacity"));
             true
@@ -719,6 +720,26 @@ impl EventDatabase {
         let _lock = self.file_lock.lock().unwrap();
         std::fs::remove_dir_all(&self.path)?;
         create_dir_all(&self.path)?;
+
+        Ok(())
+    }
+
+    /// Clears all stored events, both in memory and on-disk.
+    pub fn clear_for_ping(&self, ping: &str) -> Result<()> {
+        log::debug!("Clearing event storage for ping {ping}");
+
+        // safe unwrap, only error case is poisoning
+        let _lock = self.file_lock.lock().unwrap();
+
+        // safe unwrap, only error case is poisoning
+        self.event_stores.write().unwrap().remove(ping);
+        if let Some(ping_file) = self.event_store_files.write().unwrap().remove(ping) {
+            // We're the last owner, dropping it here ensures we're closing it.
+            debug_assert_eq!(1, Arc::strong_count(&ping_file));
+            drop(ping_file);
+            let file_path = self.path.join(ping);
+            std::fs::remove_file(file_path)?;
+        }
 
         Ok(())
     }
