@@ -874,3 +874,44 @@ fn events_factor_discounts_startup_ping() {
         assert_eq!(20.to_string(), event["extra"]["test_event_number"]);
     }
 }
+
+#[test]
+fn storage_is_cleared_when_ping_is_disabled() {
+    let (mut glean, dir) = new_glean(None);
+
+    let ping_name = "custom-events";
+    let ping = new_test_ping(&mut glean, ping_name);
+    let event = EventMetric::new(
+        CommonMetricData {
+            name: "name".into(),
+            category: "category".into(),
+            send_in_pings: vec![ping_name.into()],
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        vec![],
+    );
+
+    event.record_sync(&glean, 10, HashMap::new(), 0);
+
+    // The event is stored on disk now
+    let event_store = dir.path().join("events").join(ping_name);
+    assert!(event_store.exists());
+
+    // After disabling the ping, the on-disk file is gone
+    glean.set_ping_enabled(&ping, false);
+    assert!(!event_store.exists());
+
+    assert_eq!(None, event.get_value(&glean, None));
+
+    // After re-enabling no data file created until recording
+    glean.set_ping_enabled(&ping, true);
+    assert!(!event_store.exists());
+
+    event.record_sync(&glean, 20, HashMap::new(), 0);
+    assert!(event_store.exists());
+
+    let records = event.get_value(&glean, None).unwrap();
+    assert_eq!(1, records.len());
+    assert_eq!(20, records[0].timestamp);
+}
