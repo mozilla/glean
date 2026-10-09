@@ -15,34 +15,6 @@ pub mod glean_metrics {
     include!(concat!(env!("OUT_DIR"), "/glean_metrics.rs"));
 }
 
-#[derive(Debug, Clone, Copy)]
-#[repr(u8)]
-enum Action {
-    Bool,
-    Counter,
-    DualLabeledStatic,
-    String,
-    Timing,
-    DualLabeledDyamic,
-    Persist,
-    __Last,
-}
-
-impl From<u8> for Action {
-    fn from(val: u8) -> Action {
-        match val {
-            0 => Action::Bool,
-            1 => Action::Counter,
-            2 => Action::DualLabeledStatic,
-            3 => Action::String,
-            4 => Action::Timing,
-            5 => Action::DualLabeledDyamic,
-            6 => Action::Persist,
-            _ => panic!("can't convert {val} to Action"),
-        }
-    }
-}
-
 #[derive(Debug)]
 struct MockUploader;
 
@@ -68,9 +40,7 @@ fn main() {
         optional -s,--seed seed: u64
         /// Number of threads (default: 4)
         optional -t,--threads threads: usize
-        /// Enable ping lifetime IO.
-        optional -d,--delay
-        /// Data directory (default: simple-db)
+        /// Data directory (default: $TMP/simple-db)
         optional path: PathBuf
     };
 
@@ -82,13 +52,11 @@ fn main() {
     let maxn: usize = flags.maxn.unwrap_or(100);
     let seed: Option<u64> = flags.seed;
     let nthreads = flags.threads.unwrap_or(4);
-    let delay = flags.delay;
 
     log::info!("Data path: {}", data_path.display());
     log::info!("Iterations: {maxn}");
     log::info!("Seed: {seed:?}");
     log::info!("Threads: {nthreads}");
-    log::info!("Delay: {delay}");
 
     let mut rng = match seed {
         Some(seed) => {
@@ -103,7 +71,6 @@ fn main() {
         .with_server_endpoint("invalid-test-host")
         .with_use_core_mps(true)
         .with_uploader(uploader)
-        .with_delay_ping_lifetime_io(delay)
         .build();
 
     let client_info = ClientInfoMetrics {
@@ -115,7 +82,6 @@ fn main() {
     };
 
     _ = &*glean_metrics::prototype;
-    _ = &*glean_metrics::usage_reporting;
     glean::initialize(cfg, client_info);
 
     thread::scope(|s| {
@@ -131,61 +97,57 @@ fn main() {
                     let mut timer_id_start = 0;
 
                     for i in 0..maxn {
-                        let dice = rng.u8(0..Action::__Last as u8).into();
+                        let dice = rng.u32(0..6);
 
                         if let Some(timer_id) = timer_id.take() {
                             if (i - timer_id_start) == 10 {
                                 log::info!("Got timer. Stopping timings after 10 rounds.");
-                                glean_metrics::test_metrics::timings.stop_and_accumulate(timer_id);
+                                glean_metrics::rapid_metrics::timings.stop_and_accumulate(timer_id);
                             }
                         }
 
                         match dice {
-                            Action::Bool => {
+                            0 => {
                                 let val = rng.bool();
                                 log::info!("Setting bool={val}");
-                                glean_metrics::test_metrics::sample_boolean.set(val);
+                                glean_metrics::rapid_metrics::sample_boolean.set(val);
                             }
-                            Action::Counter => {
+                            1 => {
                                 let val = rng.i32(0..2);
                                 log::info!("Adding counter={val}");
-                                glean_metrics::test_metrics::sample_counter.add(val);
+                                glean_metrics::rapid_metrics::sample_counter.add(val);
                             }
-                            Action::DualLabeledStatic => {
+                            2 => {
                                 let val = rng.i32(1..101);
                                 log::info!("Setting dual-labeld val={val}");
-                                glean_metrics::test_metrics::static_static
+                                glean_metrics::rapid_metrics::static_static
                                     .get("key1", "category1")
                                     .add(val);
                             }
-                            Action::String => {
+                            3 => {
                                 let val = format!("cola-{}", rng.u8(0..100));
                                 log::info!("Setting string val={val}");
-                                glean_metrics::test_metrics::sample_string.set(val);
+                                glean_metrics::rapid_metrics::sample_string.set(val);
                             }
-                            Action::Timing => {
+                            4 => {
                                 if let Some(timer_id) = timer_id.take() {
                                     log::info!("Got timer. Stopping timings.");
-                                    glean_metrics::test_metrics::timings
+                                    glean_metrics::rapid_metrics::timings
                                         .stop_and_accumulate(timer_id);
                                 }
                                 log::info!("Starting timings.");
-                                timer_id = Some(glean_metrics::test_metrics::timings.start());
+                                timer_id = Some(glean_metrics::rapid_metrics::timings.start());
                                 timer_id_start = i;
                             }
-                            Action::DualLabeledDyamic => {
+                            5 => {
                                 let key = format!("key-{}", rng.u8(0..16));
                                 let cat = format!("cat-{}", rng.u8(0..16));
                                 let val = rng.i32(1..101);
 
                                 log::info!("Setting dual-labeld key={key} cat={cat} val={val}");
-                                glean_metrics::test_metrics::dynamic_dynamic
+                                glean_metrics::rapid_metrics::dynamic_dynamic
                                     .get(key, cat)
                                     .add(val);
-                            }
-                            Action::Persist => {
-                                log::info!("Persist ping lifetime data");
-                                glean::persist_ping_lifetime_data();
                             }
                             _ => unreachable!(),
                         }

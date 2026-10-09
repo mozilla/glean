@@ -216,6 +216,11 @@ jobs:
         run: |
           cargo-zigbuild check --target x86_64-pc-windows-gnu -p glean --examples --tests
 
+      - name: disk-write test
+        if: matrix.rust-version == 'stable'
+        run: |
+          cargo test -p glean-tests --test disk-writes -- --ignored --no-capture
+
   spelling:
     runs-on: ubuntu-latest
     needs: [decide-runs]
