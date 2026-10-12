@@ -1099,33 +1099,6 @@ workflows:
       - docs-spellcheck:
           filters: *ci-only
 
-  # iOS jobs require manual approval on PRs
-  iOS:
-    jobs:
-      - hold:
-          type: approval
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-      - iOS build and test:
-          requires:
-            - hold
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-      - iOS integration test:
-          requires:
-            - hold
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-
   release:
     jobs:
       - Python 3_9 tests:
