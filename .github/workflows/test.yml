@@ -297,6 +297,8 @@ jobs:
             os: ubuntu-latest
           - python-version: "3.12"
             os: ubuntu-latest
+          - python-version: "3.15"
+            os: ubuntu-latest
           - python-version: "3.9"
             os: windows-latest
     steps:
