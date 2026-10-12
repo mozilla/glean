@@ -1032,26 +1032,6 @@ jobs:
 
 workflows:
   version: 2
-  lint:
-    jobs:
-      - Lint YAML with yamllint:
-          filters: *ci-filters
-      - License check:
-          filters: *ci-filters
-      - Lint Rust with clippy:
-          filters: *ci-filters
-      - Docs internal metrics check:
-          filters: *ci-filters
-      - Lint Android with ktlint and detekt:
-          filters: *ci-filters
-      - Lint Python:
-          filters: *ci-filters
-      - Check vendored schema:
-          filters: *ci-filters
-      - Check Rust formatting:
-          filters: *ci-filters
-      - Check Swift formatting:
-          filters: *ci-filters
 
   ci:
     jobs:
