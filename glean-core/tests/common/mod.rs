@@ -51,13 +51,15 @@ pub fn new_glean_with_upload(
         None => tempfile::tempdir().unwrap(),
     };
 
+    let delay_ping_lifetime_io = std::env::var("GLEAN_TEST_DELAY_PING_LIFETIME_IO").is_ok();
+
     let cfg = glean_core::InternalConfiguration {
         data_path: dir.path().display().to_string(),
         application_id: GLOBAL_APPLICATION_ID.into(),
         language_binding_name: "Rust".into(),
         upload_enabled,
         max_events: None,
-        delay_ping_lifetime_io: false,
+        delay_ping_lifetime_io,
         app_build: "Unknown".into(),
         use_core_mps: false,
         trim_data_to_registered_pings: false,
