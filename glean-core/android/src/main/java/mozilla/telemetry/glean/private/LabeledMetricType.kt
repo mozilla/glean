@@ -8,11 +8,14 @@ import androidx.annotation.VisibleForTesting
 import mozilla.telemetry.glean.testing.ErrorType
 import mozilla.telemetry.glean.internal.LabeledBoolean as InternalLabeledBoolean
 import mozilla.telemetry.glean.internal.LabeledCounter as InternalLabeledCounter
+import mozilla.telemetry.glean.internal.LabeledCustomDistribution as InternalLabeledCustomDistribution
+import mozilla.telemetry.glean.internal.LabeledMemoryDistribution as InternalLabeledMemoryDistribution
 import mozilla.telemetry.glean.internal.LabeledQuantity as InternalLabeledQuantity
 import mozilla.telemetry.glean.internal.LabeledString as InternalLabeledString
+import mozilla.telemetry.glean.internal.LabeledTimingDistribution as InternalLabeledTimingDistribution
 
 class LabeledBoolean constructor(
-    meta: CommonLabeledMetricData,
+    meta: LabeledMetricData,
     labels: List<String>?,
 ) {
     val metric = InternalLabeledBoolean(meta, labels)
@@ -21,7 +24,7 @@ class LabeledBoolean constructor(
 }
 
 class LabeledCounter constructor(
-    meta: CommonLabeledMetricData,
+    meta: LabeledMetricData,
     labels: List<String>?,
 ) {
     val metric = InternalLabeledCounter(meta, labels)
@@ -30,7 +33,7 @@ class LabeledCounter constructor(
 }
 
 class LabeledQuantity constructor(
-    meta: CommonLabeledMetricData,
+    meta: LabeledMetricData,
     labels: List<String>?,
 ) {
     val metric = InternalLabeledQuantity(meta, labels)
@@ -39,12 +42,39 @@ class LabeledQuantity constructor(
 }
 
 class LabeledString constructor(
-    meta: CommonLabeledMetricData,
+    meta: LabeledMetricData,
     labels: List<String>?,
 ) {
     val metric = InternalLabeledString(meta, labels)
 
     fun get(label: String): StringMetricType = StringMetricType(metric.get(label))
+}
+
+class LabeledMemoryDistribution constructor(
+    meta: LabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledMemoryDistribution(meta, labels)
+
+    fun get(label: String): MemoryDistributionMetricType = MemoryDistributionMetricType(metric.get(label))
+}
+
+class LabeledTimingDistribution constructor(
+    meta: LabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledTimingDistribution(meta, labels)
+
+    fun get(label: String): TimingDistributionMetricType = TimingDistributionMetricType(metric.get(label))
+}
+
+class LabeledCustomDistribution constructor(
+    meta: LabeledMetricData,
+    labels: List<String>?,
+) {
+    val metric = InternalLabeledCustomDistribution(meta, labels)
+
+    fun get(label: String): CustomDistributionMetricType = CustomDistributionMetricType(metric.get(label))
 }
 
 /**
@@ -61,33 +91,22 @@ class LabeledString constructor(
  */
 @Suppress("LongParameterList")
 class LabeledMetricType<T>(
-    private val disabled: Boolean,
-    category: String,
-    lifetime: Lifetime,
-    name: String,
-    private val labels: Set<String>? = null,
-    private val sendInPings: List<String>,
+    private val meta: LabeledMetricData,
     private val subMetric: T,
+    private val labels: Set<String>? = null,
 ) {
     // The inner labeled metric, from which actual metrics are constructed.
     private val inner: Any
 
     init {
-        val meta = CommonLabeledMetricData(
-            cmd = CommonMetricData(
-                category = category,
-                name = name,
-                sendInPings = sendInPings,
-                disabled = disabled,
-                lifetime = lifetime,
-            ),
-        )
-
         this.inner = when (subMetric) {
             is CounterMetricType -> LabeledCounter(meta, labels?.toList())
             is BooleanMetricType -> LabeledBoolean(meta, labels?.toList())
             is StringMetricType -> LabeledString(meta, labels?.toList())
             is QuantityMetricType -> LabeledQuantity(meta, labels?.toList())
+            is CustomDistributionMetricType -> LabeledCustomDistribution(meta, labels?.toList())
+            is MemoryDistributionMetricType -> LabeledMemoryDistribution(meta, labels?.toList())
+            is TimingDistributionMetricType -> LabeledTimingDistribution(meta, labels?.toList())
             else -> error("Can not create a labeled version of this metric type")
         }
     }
@@ -116,6 +135,9 @@ class LabeledMetricType<T>(
             is LabeledBoolean -> this.inner.get(label) as T
             is LabeledString -> this.inner.get(label) as T
             is LabeledQuantity -> this.inner.get(label) as T
+            is LabeledCustomDistribution -> this.inner.get(label) as T
+            is LabeledMemoryDistribution -> this.inner.get(label) as T
+            is LabeledTimingDistribution -> this.inner.get(label) as T
             else -> error("Can not create a labeled version of this metric type")
         }
 
@@ -153,6 +175,9 @@ class LabeledMetricType<T>(
             is LabeledBoolean -> this.inner.metric.testGetNumRecordedErrors(errorType)
             is LabeledString -> this.inner.metric.testGetNumRecordedErrors(errorType)
             is LabeledQuantity -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledCustomDistribution -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledMemoryDistribution -> this.inner.metric.testGetNumRecordedErrors(errorType)
+            is LabeledTimingDistribution -> this.inner.metric.testGetNumRecordedErrors(errorType)
             else -> error("Can not create a labeled version of this metric type")
         }
 
@@ -173,6 +198,9 @@ class LabeledMetricType<T>(
             is LabeledCounter -> this.inner.metric.testGetValue(pingName)
             is LabeledString -> this.inner.metric.testGetValue(pingName)
             is LabeledQuantity -> this.inner.metric.testGetValue(pingName)
+            is LabeledCustomDistribution -> this.inner.metric.testGetValue(pingName)
+            is LabeledMemoryDistribution -> this.inner.metric.testGetValue(pingName)
+            is LabeledTimingDistribution -> this.inner.metric.testGetValue(pingName)
             else -> error("Can not create a labeled version of this metric type")
         }!!
 }
