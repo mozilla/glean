@@ -5,6 +5,8 @@
 package mozilla.telemetry.glean.private
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.runBlocking
 import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.internal.StringMetric
 import mozilla.telemetry.glean.testing.ErrorType
@@ -23,7 +25,7 @@ class StringMetricType {
 
     constructor(meta: CommonMetricData) {
         Dispatchers.Delayed.launch {
-            inner = StringMetric(meta)
+            this.inner = StringMetric(meta)
         }
     }
 
@@ -54,7 +56,8 @@ class StringMetricType {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+    fun testGetValue(pingName: String? = null) =
+        Dispatchers.Delayed.launchBlocking { this.inner.testGetValue(pingName) }
 
     /**
      * Returns the number of errors recorded for the given metric.
@@ -63,5 +66,6 @@ class StringMetricType {
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+    fun testGetNumRecordedErrors(errorType: ErrorType) =
+        Dispatchers.Delayed.launchBlocking { inner.testGetNumRecordedErrors(errorType) }
 }
