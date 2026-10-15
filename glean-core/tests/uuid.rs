@@ -16,8 +16,7 @@ fn uuid_is_generated_and_stored() {
     let (mut glean, _t) = new_glean(None);
 
     let uuid: UuidMetric = UuidMetric::new(CommonMetricData {
-        name: "uuid".into(),
-        category: "local".into(),
+        identifier: "local.uuid".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -50,8 +49,7 @@ fn uuid_serializer_should_correctly_serialize_uuids() {
         tempdir = dir;
 
         let metric = UuidMetric::new(CommonMetricData {
-            name: "uuid_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.uuid_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -90,8 +88,7 @@ fn set_properly_sets_the_value_in_all_stores() {
     let value = uuid::Uuid::new_v4();
 
     let metric = UuidMetric::new(CommonMetricData {
-        name: "uuid_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.uuid_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,

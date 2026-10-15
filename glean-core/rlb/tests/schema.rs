@@ -92,8 +92,7 @@ fn validate_against_schema() {
     const PING_NAME: &str = "test-ping";
 
     let common = |name: &str| CommonMetricData {
-        category: "test".into(),
-        name: name.into(),
+        identifier: format!("test.{name}"),
         send_in_pings: vec![PING_NAME.into()],
         ..Default::default()
     };
