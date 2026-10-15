@@ -542,6 +542,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "gecko-profiler"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60f0e0112988282ef091969a75a3c181b505a7154a23d3a4f784da03a40a062b"
+
+[[package]]
 name = "getrandom"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -605,6 +611,7 @@ dependencies = [
  "ctor",
  "env_logger",
  "flate2",
+ "gecko-profiler",
  "log",
  "malloc_size_of_derive",
  "mozbuild",
