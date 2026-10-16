@@ -13,7 +13,7 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 
 # Mozilla
-rust-android-gradle = "0.9.6"
+rust-android-gradle = "0.10.0"
 
 # AndroidX
 androidx-annotation = "1.10.0"
@@ -44,7 +44,6 @@ robolectric = "4.16"
 
 # Miscellaneous Gradle plugins
 jacoco = "0.8.14"
-python-envs = "0.0.31"
 
 [libraries]
 # AGP
@@ -90,4 +89,3 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-gradle-python-envs = { id = "com.jetbrains.python.envs", version.ref = "python-envs" }

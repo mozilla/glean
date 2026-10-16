@@ -74,6 +74,7 @@ ext.configurePublish = {
     if (isNative) {
         publishing.publications.withType(MavenPublication).each {publication ->
             def checkFileTask = task "checkFilesForMavenArtifact-${publication.artifactId}"(type: Exec) {
+                dependsOn("publish")
                 commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.buildDir, publication.artifactId
             }
             checkMavenArtifacts.dependsOn(checkFileTask)

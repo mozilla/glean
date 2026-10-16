@@ -60,10 +60,12 @@ This package is standalone and its version will be exported from the main Glean 
 
 ## Setting up metrics and pings code generation
 
-In order for the Glean Kotlin SDK to generate an API for your metrics, two Gradle plugins must be included in your build:
+In order for the Glean Kotlin SDK to generate an API for your metrics, the
+[Glean Gradle plugin](https://github.com/mozilla/glean/tree/main/gradle-plugin/) must be included in your build.
 
-- The [Glean Gradle plugin](https://github.com/mozilla/glean/tree/main/gradle-plugin/)
-- JetBrains' [Python envs plugin](https://github.com/JetBrains/gradle-python-envs/)
+The plugin creates its own Python virtual environment to run `glean_parser` in, so a Python 3.9 or
+later interpreter needs to be available on the `PATH`. Set the `GLEAN_PYTHON` environment variable to
+point at a specific interpreter instead.
 
 The Glean Gradle plugin is distributed through Mozilla's Maven, so we need to tell your build where to look for it by adding the following to the top of your `build.gradle`:
 
@@ -87,14 +89,6 @@ buildscript {
 
 > As above, the `{latest-components-version}` placeholder in the above link should be replaced with the version number of the Glean SDK used in your project.
 
-The JetBrains Python plugin is distributed in the Gradle plugin repository, so it can be included with:
-
-```Groovy
-plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
-}
-```
-
 Right before the end of the same file, we need to apply the Glean Gradle plugin.
 Set any [additional parameters](../../language-bindings/android/android-build-configuration-options.md) to control the behavior of the Glean Gradle plugin before calling `apply plugin`.
 
@@ -104,15 +98,6 @@ Set any [additional parameters](../../language-bindings/android/android-build-co
 ext.gleanGenerateMarkdownDocs = true
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ```
-
-{{#include ../../../shared/blockquote-info.html}}
-
-##### Rosetta 2 required on Apple Silicon
-
-> On Apple Silicon machines (M1/M2/M3 MacBooks and iMacs) Rosetta 2 is required for the bundled Python.
-> See the [Apple documentation about Rosetta 2](https://support.apple.com/en-us/HT211861)
-> and [Bug 1775420](https://bugzilla.mozilla.org/show_bug.cgi?id=1775420) for details.  
-> You can install it with `softwareupdate --install-rosetta`
 
 {{#include ../../../shared/blockquote-info.html}}
 
