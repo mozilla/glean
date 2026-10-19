@@ -32,7 +32,7 @@ use crate::Lifetime;
 use crate::Result;
 use crate::{Glean, JsonValue};
 
-use super::{ConnExt, StoredSubmittedPingHandler};
+use super::{ConnExt, StoredSubmittedPingHandler, EMPTY_LABEL};
 
 mod connection;
 mod schema;
@@ -51,6 +51,18 @@ fn consts_are_correct() {
         DEFAULT_TABLE,
         &IN_MEMORY_TABLE[(IN_MEMORY_TABLE.len() - DEFAULT_TABLE.len())..]
     );
+}
+
+// Database-conformant label:
+// * empty string if no label given
+// * `DEL` character if an empty label is given
+// * otherwise the (already validated) label
+fn database_label(label: Option<&str>) -> &str {
+    match label {
+        None => "",
+        Some("") => EMPTY_LABEL,
+        Some(label) => label,
+    }
 }
 
 #[derive(Debug)]
@@ -498,8 +510,16 @@ impl Database {
                 let Ok((metric_id, labels, metric)) = row else {
                     continue;
                 };
-                let labels = labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
-                transaction_fn(metric_id.as_bytes(), &labels, &metric);
+                let label_vec;
+                let labels = if labels.is_empty() {
+                    &[]
+                } else if labels == EMPTY_LABEL {
+                    &[""]
+                } else {
+                    label_vec = labels.split(RECORD_SEPARATOR).collect::<Vec<_>>();
+                    &*label_vec
+                };
+                transaction_fn(metric_id.as_bytes(), labels, &metric);
             }
 
             Ok(())
@@ -535,7 +555,8 @@ impl Database {
                 let labels = data.check_labels(tx);
 
                 let mut stmt = tx.prepare_cached(&get_metric_sql)?;
-                stmt.query_one([metric_identifier, storage_name, labels.label()], |row| {
+                let label = database_label(labels.label());
+                stmt.query_one([metric_identifier, storage_name, label], |row| {
                     let blob: Vec<u8> = row.get(0)?;
                     let blob: Metric =
                         rmp_serde::from_slice(&blob).map_err(|_| FromSqlError::InvalidType)?;
@@ -609,7 +630,7 @@ impl Database {
                         data.inner.lifetime,
                         ping_name,
                         &name,
-                        labels.label(),
+                        database_label(labels.label()),
                         value,
                     ) {
                         log::error!(
@@ -716,7 +737,7 @@ impl Database {
                     data.inner.lifetime,
                     ping_name,
                     &name,
-                    labels.label(),
+                    database_label(labels.label()),
                     &mut transform,
                 ) {
                     log::error!(

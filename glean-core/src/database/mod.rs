@@ -24,6 +24,11 @@ pub use sqlite::Database;
 #[cfg(not(feature = "sqlite"))]
 pub use rkv::Database;
 
+// We need to differentiate between NO label and an empty string as the label.
+// The empty string case will end up using `\x1E` (`DEL` in ASCII),
+// which is forbidden as a label by itself.
+pub(crate) const EMPTY_LABEL: &str = "\x7F";
+
 /// A trait defining the methods for a database to handle storing submitted pings.
 pub(crate) trait StoredSubmittedPingHandler {
     /// Gets all pings in the `submitted_pings` table.

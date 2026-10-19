@@ -432,12 +432,14 @@ impl Database {
                         }
                     }
 
-                    let metric_id = &key[len..];
-                    let (metric_id, labels_str) = metric_id
+                    let orig_key = &key[len..];
+                    let (metric_id, labels_str) = orig_key
                         .split_once(|c| ['/', RECORD_SEPARATOR].contains(&c))
-                        .unwrap_or((metric_id, ""));
+                        .unwrap_or((orig_key, ""));
 
-                    let labels: &[&str] = if labels_str.is_empty() {
+                    let labels: &[&str] = if orig_key.contains('/') && labels_str.is_empty() {
+                        &[""]
+                    } else if labels_str.is_empty() {
                         &[]
                     } else if labels_str.contains(RECORD_SEPARATOR) {
                         let (key, category) = labels_str.split_once(RECORD_SEPARATOR).unwrap();
@@ -476,12 +478,14 @@ impl Database {
             };
 
             let metric_id = &metric_id[len..];
-            let metric_id = String::from_utf8_lossy(metric_id);
-            let (metric_id, labels_str) = metric_id
+            let full_metric_id = String::from_utf8_lossy(metric_id);
+            let (metric_id, labels_str) = full_metric_id
                 .split_once(|c| ['/', RECORD_SEPARATOR].contains(&c))
-                .unwrap_or((&metric_id, ""));
+                .unwrap_or((&full_metric_id, ""));
 
-            let labels: &[&str] = if labels_str.is_empty() {
+            let labels: &[&str] = if full_metric_id.contains('/') && labels_str.is_empty() {
+                &[""]
+            } else if labels_str.is_empty() {
                 &[]
             } else if labels_str.contains(RECORD_SEPARATOR) {
                 let (key, category) = labels_str.split_once(RECORD_SEPARATOR).unwrap();

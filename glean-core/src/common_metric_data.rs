@@ -177,12 +177,12 @@ pub enum LabelCheck {
 
 #[cfg(feature = "sqlite")]
 impl LabelCheck {
-    /// Extract the label to be used (or an empty string if no label was checked)
-    pub fn label(&self) -> &str {
+    /// Extract the label to be used (or `None` if no label was checked)
+    pub fn label(&self) -> Option<&str> {
         use LabelCheck::*;
         match self {
-            NoLabel => "",
-            Label(label) | Error(label, _) => label,
+            NoLabel => None,
+            Label(label) | Error(label, _) => Some(label),
         }
     }
 
