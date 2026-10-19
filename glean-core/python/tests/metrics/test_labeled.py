@@ -205,7 +205,7 @@ def test_other_label_without_predefined_labels_before_glean_init():
     assert 5 == labeled_counter_metric["__other__"].test_get_value()
 
 
-def test_invalid_labels_go_to_other():
+def test_labels_have_very_few_restrictions():
     labeled_counter_metric = metrics.LabeledCounterMetricType(
         LabeledMetricData.COMMON(
             CommonMetricData(
@@ -228,6 +228,20 @@ def test_invalid_labels_go_to_other():
 
     assert 0 == labeled_counter_metric.test_get_num_recorded_errors(ErrorType.INVALID_LABEL)
 
+
+def test_invalid_labels_go_to_other():
+    labeled_counter_metric = metrics.LabeledCounterMetricType(
+        LabeledMetricData.COMMON(
+            CommonMetricData(
+                disabled=False,
+                category="telemetry",
+                lifetime=Lifetime.APPLICATION,
+                name="labeled_counter_metric",
+                send_in_pings=["metrics"],
+                label=None,
+            )
+        )
+    )
     # Longer than 111? Nope.
     labeled_counter_metric["1" * 112].add(1)
 
