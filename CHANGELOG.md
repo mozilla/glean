@@ -6,6 +6,7 @@
   * Disabling upload now resets the in-memory session state, so re-enabling upload starts a new session instead of continuing the one from before the `deletion-request` ping ([bug 2077130](https://bugzilla.mozilla.org/show_bug.cgi?id=2077130))
   * `glean_timestamp` on `glean.session_start` and `glean.session_end` now uses wall-clock time, like every other event ([bug 2077129](https://bugzilla.mozilla.org/show_bug.cgi?id=2077129))
   * BUGFIX: Clear event storage when a ping is disabled ([#3679](https://github.com/mozilla/glean/issues/3679))
+  * BUGFIX: Metrics with empty labels are put into the right part of the payload again ([#3694](https://github.com/mozilla/glean/pull/3694))
 * iOS
   * Glean for iOS is now being built with Xcode 26.6 ([#3672](https://github.com/mozilla/glean/pull/3672))
 
