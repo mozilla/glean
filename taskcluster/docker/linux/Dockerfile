@@ -12,7 +12,7 @@ RUN echo "trigger rebuild"
 
 # Add worker user
 
-RUN mkdir /builds && \
+RUN mkdir -p /builds && \
     useradd -d /builds/worker -s /bin/bash -m worker && \
     chown worker:worker /builds/worker && \
     mkdir /builds/worker/artifacts && \

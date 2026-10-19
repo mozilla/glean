@@ -39,7 +39,7 @@ tasks:
         - 'assembleDebugUnitTest'
         - 'testDebugUnitTest'
       using: gradlew
-      use-caches: true
+      use-caches: [checkout]
     extra:
       excludeBranches:
         - release
