@@ -244,8 +244,10 @@ def test_invalid_labels_go_to_other():
     )
     # Longer than 111? Nope.
     labeled_counter_metric["1" * 112].add(1)
+    labeled_counter_metric["\x1e"].add(1)
+    labeled_counter_metric["\x7f"].add(1)
 
-    assert 1 == labeled_counter_metric.test_get_num_recorded_errors(ErrorType.INVALID_LABEL)
+    assert 3 == labeled_counter_metric.test_get_num_recorded_errors(ErrorType.INVALID_LABEL)
 
 
 def test_rapidly_recreating_labeled_metrics_does_not_crash():
