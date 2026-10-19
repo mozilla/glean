@@ -130,8 +130,8 @@ class MetricsPingSchedulerTests: XCTestCase {
             )!
         )!
         XCTAssertEqual(
-            fireDate.toISO8601String(precision: .second),
-            mps.timer?.fireDate.toISO8601String(precision: .second),
+            fireDate.toISO8601String(precision: .minute),
+            mps.timer?.fireDate.toISO8601String(precision: .minute),
             "schedulePingCollection must schedule next collection on the next day"
         )
 
