@@ -4,9 +4,9 @@
 
 
 import os
-import yaml
+from functools import cache
 
-from taskgraph.util.memoize import memoize
+import yaml
 
 
 EXTENSIONS = {
@@ -57,7 +57,7 @@ def get_extensions(module_name):
     return extensions
 
 
-@memoize
+@cache
 def _read_build_config():
     current_dir = os.path.dirname(os.path.realpath(__file__))
     project_dir = os.path.realpath(os.path.join(current_dir, '..', '..'))

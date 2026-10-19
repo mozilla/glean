@@ -9,12 +9,12 @@ from voluptuous import Required
 
 from taskgraph.task import Task
 from taskgraph.util.attributes import sorted_unique_list
-from taskgraph.util.schema import Schema
+from taskgraph.util.schema import LegacySchema
 
 from . import group_tasks
 
 
-schema = Schema({
+schema = LegacySchema({
     Required('primary-dependency', 'primary dependency task'): Task,
     Required(
         'dependent-tasks',
