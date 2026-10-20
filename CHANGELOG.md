@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...main)
 
+* General
+  * Added a test that keeps the `server_knobs_config` metric definition and the vendored pipeline schema in sync with the Server Knobs configuration, and updated the vendored schema to include `events_ping_acceleration_factor` ([bug 2050579](https://bugzilla.mozilla.org/show_bug.cgi?id=2050579))
+
 # v70.3.0 (2026-10-20)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...v70.3.0)

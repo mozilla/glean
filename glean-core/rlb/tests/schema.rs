@@ -185,6 +185,19 @@ fn validate_against_schema() {
         content: None,
     });
 
+    // Populate every field so `ping_info.server_knobs_config` is validated too.
+    // Field coverage is checked in `glean-core/tests/metrics_sync.rs`.
+    glean::glean_apply_server_knobs_config(
+        serde_json::json!({
+            "metrics_enabled": { "test.counter": true },
+            "pings_enabled": { PING_NAME: true },
+            "event_threshold": 500,
+            "session_sample_rate": 1.0,
+            "events_ping_acceleration_factor": 5,
+        })
+        .to_string(),
+    );
+
     // Define a new ping and submit it.
     let custom_ping = PingBuilder::new(PING_NAME).with_send_if_empty(true).build();
     custom_ping.submit(None);
