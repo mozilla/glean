@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...main)
+
+# v70.3.0 (2026-10-20)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...v70.3.0)
 
 * General
   * Disabling upload now resets the in-memory session state, so re-enabling upload starts a new session instead of continuing the one from before the `deletion-request` ping ([bug 2077130](https://bugzilla.mozilla.org/show_bug.cgi?id=2077130))

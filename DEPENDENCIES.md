@@ -3473,7 +3473,7 @@ The following text applies to code linked from these dependencies:
 * [basic-toml 0.1.9]( https://github.com/dtolnay/basic-toml )
 * [inherent 1.0.9]( https://github.com/dtolnay/inherent )
 * [itoa 1.0.14]( https://github.com/dtolnay/itoa )
-* [libc 0.2.176]( https://github.com/rust-lang/libc )
+* [libc 0.2.190]( https://github.com/rust-lang/libc )
 * [miniz_oxide 0.8.9]( https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide )
 * [prettyplease 0.2.37]( https://github.com/dtolnay/prettyplease )
 * [proc-macro2 1.0.106]( https://github.com/dtolnay/proc-macro2 )
@@ -4493,11 +4493,11 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 70.2.1]( https://github.com/mozilla/glean )
-* [glean-core 70.2.1]( https://github.com/mozilla/glean )
-* [glean-core 70.2.1]( https://github.com/mozilla/glean )
+* [glean-core 70.3.0]( https://github.com/mozilla/glean )
+* [glean-core 70.3.0]( https://github.com/mozilla/glean )
+* [glean-core 70.3.0]( https://github.com/mozilla/glean )
 * [glean-build 20.1.0]( https://github.com/mozilla/glean )
-* [glean 70.2.1]( https://github.com/mozilla/glean )
+* [glean 70.3.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4883,20 +4883,20 @@ The following text applies to code linked from these dependencies:
 
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [glean-sym 70.2.1]( https://github.com/mozilla/glean )
+* [glean-sym 70.3.0]( https://github.com/mozilla/glean )
 * [glean-tests 0.1.0]( https://crates.io/crates/glean-tests )
 * [rapid-metrics 0.1.0]( https://crates.io/crates/rapid-metrics )
 * [sample 0.1.0]( https://crates.io/crates/sample )
 * [uniffi-bindgen 0.1.0]( https://crates.io/crates/uniffi-bindgen )
 * [glean-sym-parser 0.1.0]( https://github.com/mozilla/glean )
-* [uniffi 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_bindgen 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_core 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_internal_macros 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_macros 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_meta 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_pipeline 0.32.1]( https://github.com/mozilla/uniffi-rs )
-* [uniffi_udl 0.32.1]( https://github.com/mozilla/uniffi-rs )
+* [uniffi 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_bindgen 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_core 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_internal_macros 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_macros 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_meta 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_pipeline 0.32.2]( https://github.com/mozilla/uniffi-rs )
+* [uniffi_udl 0.32.2]( https://github.com/mozilla/uniffi-rs )
 
 ```
 Mozilla Public License Version 2.0
