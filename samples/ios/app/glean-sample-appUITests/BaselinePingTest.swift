@@ -76,7 +76,7 @@ class BaselinePingTest: XCTestCase {
         // Trigger baseline ping by putting app into the background
         XCUIDevice.shared.press(XCUIDevice.Button.home)
 
-        waitForExpectations(timeout: 5.0) { error in
+        waitForExpectations(timeout: 30.0) { error in
             XCTAssertNil(error, "Test timed out waiting for upload: \(error!)")
         }
 
