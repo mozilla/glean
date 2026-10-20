@@ -900,6 +900,14 @@
                 "null"
               ]
             },
+            "events_ping_acceleration_factor": {
+              "description": "The number of 'events' pings to accelerate each session, plus one.",
+              "minimum": 0,
+              "type": [
+                "number",
+                "null"
+              ]
+            },
             "metrics_enabled": {
               "additionalProperties": {
                 "type": "boolean"

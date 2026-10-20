@@ -1,6 +1,7 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::fs;
 
+use glean_core::metrics::RemoteSettingsConfig;
 use yaml_rust2::YamlLoader;
 
 /// Metrics that are defined in `metrics.yaml`,
@@ -263,4 +264,61 @@ fn keep_internal_metrics_in_sync_with_definitions() {
         };
         assert_eq!(&metric, defined_metric);
     }
+}
+
+/// The `server_knobs_config` object metric is a serialized `RemoteSettingsConfig`.
+/// Its structure is defined in three places that must agree:
+///
+/// - `RemoteSettingsConfig` in code
+/// - the `structure` of `glean.internal.metrics.server_knobs_config` in `metrics.yaml`
+/// - `ping_info.server_knobs_config` in the pipeline schema (`glean.1.schema.json`)
+///
+/// The schema sets `additionalProperties: false`, so a field added in code but not in
+/// the schema causes ingestion errors (see bug 2050579).
+#[test]
+fn keep_server_knobs_config_in_sync_with_definitions() {
+    // No `..Default::default()` here on purpose:
+    // adding a field to `RemoteSettingsConfig` must fail to compile until it is added here,
+    // which in turn makes this test check it against the definitions below.
+    let config = RemoteSettingsConfig {
+        metrics_enabled: HashMap::from([("category.name".to_string(), true)]),
+        pings_enabled: HashMap::from([("ping".to_string(), true)]),
+        event_threshold: Some(41),
+        session_sample_rate: Some(1.0),
+        events_ping_acceleration_factor: Some(1),
+    };
+    let serialized = serde_json::to_value(&config).unwrap();
+    let in_code: BTreeSet<String> = serialized.as_object().unwrap().keys().cloned().collect();
+
+    // Relative to `glean-core`
+    let metrics_definitions =
+        fs::read_to_string("metrics.yaml").expect("unable to read metrics.yaml");
+    let docs = YamlLoader::load_from_str(&metrics_definitions).unwrap();
+    let in_yaml: BTreeSet<String> = docs[0]["glean.internal.metrics"]["server_knobs_config"]
+        ["structure"]["properties"]
+        .as_hash()
+        .expect("server_knobs_config structure properties missing in metrics.yaml")
+        .keys()
+        .map(|k| k.as_str().unwrap().to_string())
+        .collect();
+
+    let schema = fs::read_to_string("../glean.1.schema.json").expect("unable to read schema");
+    let schema: serde_json::Value = serde_json::from_str(&schema).unwrap();
+    let in_schema: BTreeSet<String> = schema["properties"]["ping_info"]["properties"]
+        ["server_knobs_config"]["properties"]
+        .as_object()
+        .expect("ping_info.server_knobs_config properties missing in glean.1.schema.json")
+        .keys()
+        .cloned()
+        .collect();
+
+    assert_eq!(
+        in_code, in_yaml,
+        "`RemoteSettingsConfig` fields and `server_knobs_config` structure in metrics.yaml differ"
+    );
+    assert_eq!(
+        in_code, in_schema,
+        "`RemoteSettingsConfig` fields and `ping_info.server_knobs_config` in glean.1.schema.json differ.\n\
+         Update the schema in mozilla-services/mozilla-pipeline-schemas first, then vendor it with `bin/update-schema.sh <commit>`."
+    );
 }
