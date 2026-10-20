@@ -22,6 +22,7 @@
 - [Python bindings](python/index.md)
     - [Setup Build Environment](python/setting-up-python-build-environment.md)
 - [Rust Component](core/index.md)
+    - [Style Guide](core/style-guide.md)
     - [Documentation guidelines](core/documentation-guidelines.md)
     - [Dependency Management](core/dependency-management.md)
       - [Dependency Vetting](core/dependency-vetting.md)

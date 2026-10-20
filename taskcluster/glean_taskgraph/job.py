@@ -3,12 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+from shlex import quote as shell_quote
+
 from taskgraph.transforms.run import run_task_using, configure_taskdesc_for_run
 from taskgraph.util import path
-from taskgraph.util.schema import Schema, taskref_or_string
-from voluptuous import Required, Optional
-
-from pipes import quote as shell_quote
+from taskgraph.util.schema import LegacySchema, taskref_or_string
+from voluptuous import Any, Required, Optional
 
 secret_schema = {
     Required("name"): str,
@@ -23,24 +23,24 @@ dummy_secret_schema = {
     Optional("json"): bool,
 }
 
-gradlew_schema = Schema({
+gradlew_schema = LegacySchema({
     Required("using"): "gradlew",
     Optional("pre-gradlew"): [[str]],
     Required("gradlew"): [str],
     Optional("post-gradlew"): [[str]],
     # Base work directory used to set up the task.
     Required("workdir"): str,
-    Optional("use-caches"): bool,
+    Optional("use-caches"): Any(bool, [str]),
     Optional("secrets"): [secret_schema],
     Optional("dummy-secrets"): [dummy_secret_schema],
 })
 
-run_commands_schema = Schema({
+run_commands_schema = LegacySchema({
     Required("using"): "run-commands",
     Optional("pre-commands"): [[str]],
     Required("commands"): [[taskref_or_string]],
     Required("workdir"): str,
-    Optional("use-caches"): bool,
+    Optional("use-caches"): Any(bool, [str]),
     Optional("secrets"): [secret_schema],
     Optional("dummy-secrets"): [dummy_secret_schema],
 })

@@ -690,3 +690,75 @@ fn overrun_the_label_count_with_a_single_label() {
     assert_eq!(json!(23), cached_labels["label-2"]);
     assert_eq!(json!(null), cached_labels["__other__"]);
 }
+
+#[test]
+fn empty_labels() {
+    let (glean, _t) = new_glean(None);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "empty_labels".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    let metric = labeled.get("");
+    metric.add_sync(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "telemetry.empty_labels": { "": 1 }
+            }
+        }),
+        snapshot
+    );
+}
+
+#[test]
+fn empty_label_marker_is_disallowed() {
+    let (glean, _t) = new_glean(None);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "empty_labels".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    labeled.get("\x7F").add_sync(&glean, 1);
+    labeled.get("\x7F\x7F").add_sync(&glean, 1);
+    labeled.get("left\x7Fright").add_sync(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "glean.error.invalid_label": { "telemetry.empty_labels": 3 },
+                "telemetry.empty_labels": { "__other__": 3 }
+            }
+        }),
+        snapshot
+    );
+}

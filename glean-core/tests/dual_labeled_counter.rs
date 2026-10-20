@@ -674,3 +674,47 @@ fn labels_containing_a_record_separator_record_an_error() {
         snapshot
     );
 }
+
+#[test]
+fn empty_dual_labels() {
+    let (glean, _t) = new_glean(None);
+    let dual_labeled_counter = DualLabeledCounterMetric::new(
+        CommonMetricData {
+            name: "empty_dual_labeled".into(),
+            category: "telemetry".into(),
+            send_in_pings: vec!["store1".into()],
+            disabled: false,
+            lifetime: Lifetime::Ping,
+            ..Default::default()
+        },
+        None,
+        None,
+    );
+
+    dual_labeled_counter.get("key1", "").add_sync(&glean, 1);
+    dual_labeled_counter
+        .get("", "category1")
+        .add_sync(&glean, 1);
+    dual_labeled_counter.get("", "").add_sync(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "dual_labeled_counter": {
+                "telemetry.empty_dual_labeled": {
+                    "key1": {
+                        "": 1
+                    },
+                    "": {
+                        "category1": 1,
+                        "": 1
+                    }
+                }
+            }
+        }),
+        snapshot
+    );
+}

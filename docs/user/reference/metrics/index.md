@@ -77,7 +77,7 @@ Labeled metrics come in two forms:
 
 ### Label format
 
-Labels must have a maximum of 111 characters, and may may contain any UTF-8 characters except a record separator (`0x1E`).
+Labels must have a maximum of 111 characters, and may may contain any UTF-8 characters except a record separator (`0x1E`) or the `DEL` character (`0x7F`).
 Static labels may only be made of printable ASCII characters.
 
 ## Adding or changing metric types

@@ -55,3 +55,10 @@ flowchart TD
     
     Z(normal operation)
 ```
+
+## `client_id.txt` use by embedding applications
+
+We make no guarantees about the specific format or contents of `client_id.txt`.
+But, should an embedding application wish to, it may take the `client_id.txt`
+from the data path and place it in a new data path in order to maintain the client ID value
+(so long as the Glean SDK version that wrote it is the same as the one that reads it).

@@ -859,6 +859,42 @@ fn manual_mode_second_session_has_seq_2() {
     assert_eq!("2", seq_str, "second manual session must have seq=2");
 }
 
+/// Session boundary events carry a wall-clock `glean_timestamp`, like every
+/// other event, rather than the monotonic clock used for `timestamp`.
+#[test]
+fn session_boundary_events_use_wall_clock_glean_timestamp() {
+    let (_t, data_path) = tempdir();
+    let mut cfg = session_cfg(&data_path, SessionMode::Manual, 1.0, 0);
+    cfg.enable_event_timestamps = true;
+    let mut glean = Glean::new(cfg).unwrap();
+
+    let before = chrono::Utc::now().timestamp_millis();
+    glean.session_start();
+    glean.session_end(None);
+    let after = chrono::Utc::now().timestamp_millis();
+
+    let json = glean
+        .event_storage()
+        .snapshot_as_json(&glean, "events", false)
+        .expect("expected boundary events");
+    let events = json.as_array().unwrap();
+    for name in ["session_start", "session_end"] {
+        let event = events
+            .iter()
+            .find(|e| e["category"] == "glean" && e["name"] == name)
+            .unwrap_or_else(|| panic!("expected glean.{name}"));
+        let glean_timestamp: i64 = event["extra"]["glean_timestamp"]
+            .as_str()
+            .expect("glean_timestamp should exist")
+            .parse()
+            .expect("glean_timestamp should be an integer");
+        assert!(
+            (before..=after).contains(&glean_timestamp),
+            "glean.{name} glean_timestamp {glean_timestamp} not in wall-clock range {before}..={after}"
+        );
+    }
+}
+
 // ---------------------------------------------------------------------------
 // AUTO mode — session resumption and timeout across restarts
 // ---------------------------------------------------------------------------
@@ -1296,4 +1332,60 @@ fn mode_switch_auto_to_lifecycle_emits_abandoned_session_end() {
     );
 
     drop(t);
+}
+
+/// Disabling upload resets the in-memory session along with its persisted
+/// state, so re-enabling in the same process starts a new session rather than
+/// continuing the one from before the `deletion-request` ping.
+#[test]
+fn upload_disable_then_enable_does_not_continue_old_session() {
+    let (_t, data_path) = tempdir();
+    let cfg = session_cfg(&data_path, SessionMode::Auto, 1.0, 1_800_000);
+    let mut glean = Glean::new(cfg).unwrap();
+
+    glean.handle_client_active();
+    let old_session_id = glean
+        .session_manager()
+        .session_id()
+        .expect("session should be active")
+        .to_string();
+
+    glean.set_upload_enabled(false);
+    assert!(
+        !glean.session_manager().is_active(),
+        "session must not stay active after upload is disabled"
+    );
+    assert!(glean.session_manager().session_id().is_none());
+
+    glean.set_upload_enabled(true);
+    glean.handle_client_active();
+
+    let user_event = EventMetric::new(
+        CommonMetricData {
+            name: "test_event".into(),
+            category: "test".into(),
+            send_in_pings: vec!["events".into()],
+            lifetime: Lifetime::Ping,
+            in_session: true,
+            ..Default::default()
+        },
+        vec![],
+    );
+    user_event.record_sync(&glean, 1000, HashMap::new(), 0);
+
+    let events = user_event
+        .get_value(&glean, "events")
+        .expect("expected event after re-enabling upload");
+    let session = events[0]
+        .session
+        .as_ref()
+        .expect("event should carry session metadata");
+    assert_ne!(
+        old_session_id, session.session_id,
+        "event after re-enabling must not carry the pre-opt-out session_id"
+    );
+    assert_eq!(
+        1, session.session_seq,
+        "session_seq must restart, like the ping sequence numbers"
+    );
 }

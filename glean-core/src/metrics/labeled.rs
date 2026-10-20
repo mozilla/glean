@@ -17,6 +17,7 @@ use rusqlite::params;
 #[cfg(feature = "sqlite")]
 use crate::common_metric_data::LabelCheck;
 use crate::common_metric_data::{CommonMetricData, MetricLabel};
+use crate::database::EMPTY_LABEL;
 use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
 use crate::histogram::HistogramType;
 use crate::metrics::{
@@ -435,6 +436,12 @@ pub fn validate_dynamic_label_sqlite(
             MAX_LABEL_LENGTH
         );
         LabelCheck::Error(String::from(OTHER_LABEL), 1)
+    } else if label.contains(EMPTY_LABEL) {
+        log::warn!(
+            "Metric {:?}: label can't contain DEL (`\\x7F`)",
+            base_identifier,
+        );
+        LabelCheck::Error(String::from(OTHER_LABEL), 1)
     } else {
         LabelCheck::Label(label.to_string())
     }
@@ -489,6 +496,12 @@ pub fn validate_dynamic_label_rkv(
                 label.len(),
                 MAX_LABEL_LENGTH
             );
+            record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
+        }
+        true
+    } else if label.contains(EMPTY_LABEL) {
+        if record {
+            let msg = String::from("label can't contain DEL (`\\x7F`)");
             record_error(glean, meta, ErrorType::InvalidLabel, msg, None);
         }
         true

@@ -121,7 +121,7 @@ impl StorageManager {
         let mut snapshotter = |metric_id: &[u8], labels: &[&str], metric: &Metric| {
             let metric_id = String::from_utf8_lossy(metric_id).into_owned();
             match labels {
-                [] | [""] => {
+                [] => {
                     let map = snapshot.entry(metric.ping_section().into()).or_default();
                     map.insert(metric_id, metric.as_json());
                 }
