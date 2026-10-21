@@ -4493,11 +4493,11 @@ SOFTWARE.
 
 The following text applies to code linked from these dependencies:
 
-* [glean-core 70.3.0]( https://github.com/mozilla/glean )
-* [glean-core 70.3.0]( https://github.com/mozilla/glean )
-* [glean-core 70.3.0]( https://github.com/mozilla/glean )
-* [glean-build 20.1.0]( https://github.com/mozilla/glean )
-* [glean 70.3.0]( https://github.com/mozilla/glean )
+* [glean-core 71.0.0]( https://github.com/mozilla/glean )
+* [glean-core 71.0.0]( https://github.com/mozilla/glean )
+* [glean-core 71.0.0]( https://github.com/mozilla/glean )
+* [glean-build 22.0.1]( https://github.com/mozilla/glean )
+* [glean 71.0.0]( https://github.com/mozilla/glean )
 * [zeitstempel 0.2.1]( https://github.com/badboy/zeitstempel )
 
 ```
@@ -4883,7 +4883,7 @@ The following text applies to code linked from these dependencies:
 
 * [glean-bundle 1.0.0]( https://github.com/mozilla/glean )
 * [glean-bundle-android 1.0.0]( https://github.com/mozilla/glean )
-* [glean-sym 70.3.0]( https://github.com/mozilla/glean )
+* [glean-sym 71.0.0]( https://github.com/mozilla/glean )
 * [glean-tests 0.1.0]( https://crates.io/crates/glean-tests )
 * [rapid-metrics 0.1.0]( https://crates.io/crates/rapid-metrics )
 * [sample 0.1.0]( https://crates.io/crates/sample )
