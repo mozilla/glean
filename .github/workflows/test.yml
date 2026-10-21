@@ -729,6 +729,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     needs:
+      - decide-runs
       - audit
       - code-security-analysis
       - docs
