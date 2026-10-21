@@ -1,0 +1,37 @@
+actions:
+  - ".github/workflows/test.yml"
+
+cargo:
+  - "**/Cargo.toml"
+  - "Cargo.lock"
+
+docs:
+  - "**/*.md"
+
+kotlin:
+  - "**/*.kt"
+  - "**/*.gradle"
+  - "gradle-wrapper/**"
+  - "**/*.groovy"
+
+metrics:
+  - "glean-core/**/pings.yaml"
+  - "glean-core/**/metrics.yaml"
+
+python:
+  - "pyproject.toml"
+  - "glean-core/python/**"
+  - "samples/python/**"
+
+rust:
+  - "**/Cargo.toml"
+  - "**/Cargo.lock"
+  - "**/*.rs"
+
+swift:
+  - "glean-core/ios/**"
+  - "samples/ios/app/**"
+
+yaml:
+  - "glean-core/**/*.yml"
+  - "glean-core/**/*.yaml"
