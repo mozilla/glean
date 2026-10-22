@@ -1,6 +1,30 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
+
+# v71.0.0 (2026-10-22)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...v71.0.0)
+
+* General
+  * Added a test that keeps the `server_knobs_config` metric definition and the vendored pipeline schema in sync with the Server Knobs configuration, and updated the vendored schema to include `events_ping_acceleration_factor` ([bug 2050579](https://bugzilla.mozilla.org/show_bug.cgi?id=2050579))
+  * Updated to `glean_parser` v22.0.1 ([#3573](https://github.com/mozilla/glean/issues/3573))
+* Android
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+  * Updated to Gradle 9.5.0 ([#3612](https://github.com/mozilla/glean/pull/3612))
+  * BREAKING CHANGE: The Glean Gradle plugin no longer uses JetBrains' Python envs plugin to
+    download a bundled Miniconda, as that plugin is unmaintained and incompatible with Gradle 9.
+    The plugin now always creates a virtual environment using the Python standard library `venv`
+    module, so a Python 3.9 or later interpreter must be available on the `PATH`, or pointed at
+    with the `GLEAN_PYTHON` environment variable. Consumers that set `ext.gleanPythonEnvDir` are
+    unaffected. Applications applying the Glean Gradle plugin no longer need to apply the
+    `com.jetbrains.python.envs` plugin themselves and can remove it from their build. The
+    `gleanCondaDir` project property, a legacy alias for `gleanPythonEnvDir`, is also gone
+    ([#3612](https://github.com/mozilla/glean/pull/3612))
+* iOS
+  * Implement labeled {custom|memory|timing} distribution ([#3573](https://github.com/mozilla/glean/pull/3573))
+* Python
+  * Implement labeled {custom|memory|timing} distribution and labeled quantity ([#3573](https://github.com/mozilla/glean/pull/3573))
 
 # v70.3.0 (2026-10-20)
 

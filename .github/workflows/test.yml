@@ -41,6 +41,12 @@ jobs:
           filter: blob:none
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - id: changed-files-actions
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
+        with:
+          files: |
+            .github/workflows/test.yml
+          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
       - id: changed-files-cargo
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
@@ -103,14 +109,14 @@ jobs:
       - name: Decide which jobs to run
         id: set-flags
         env:
-          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-cargo.outputs.any_changed }}
-          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-docs.outputs.any_changed }}
-          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-kotlin.outputs.any_changed }}
-          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-metrics.outputs.any_changed }}
-          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-python.outputs.any_changed }}
-          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-rust.outputs.any_changed }}
-          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-swift.outputs.any_changed }}
-          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-yaml.outputs.any_changed }}
+          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-cargo.outputs.any_changed }}
+          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-docs.outputs.any_changed }}
+          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-kotlin.outputs.any_changed }}
+          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-metrics.outputs.any_changed }}
+          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-python.outputs.any_changed }}
+          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-rust.outputs.any_changed }}
+          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-swift.outputs.any_changed }}
+          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-yaml.outputs.any_changed }}
         run: |
           echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
           echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
@@ -496,7 +502,7 @@ jobs:
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
 
       - name: Set up JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -707,7 +713,7 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6  # v2.9.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -758,7 +764,7 @@ jobs:
     needs: [decide-runs]
     permissions:
       security-events: write # required for uploading code scanning alerts
-    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@3ff69ae8733c81c53a7fb058610e7fe728482e7f # 2026-07-27
+    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@dea789d28210f84655a41be4ac02c384e1aac72a # 2026-07-27
 
   report-result:
     runs-on: ubuntu-latest

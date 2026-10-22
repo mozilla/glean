@@ -762,3 +762,39 @@ fn empty_label_marker_is_disallowed() {
         snapshot
     );
 }
+
+#[test]
+fn record_separator_is_not_allowed() {
+    let (glean, _t) = new_glean(None);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "single_label".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    let metric = labeled.get("left\x1Eright");
+    metric.add_sync(&glean, 1);
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "glean.error.invalid_label": { "telemetry.single_label": 1 },
+                "telemetry.single_label": { "__other__": 1 }
+            }
+        }),
+        snapshot
+    );
+}
