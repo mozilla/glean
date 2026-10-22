@@ -102,7 +102,8 @@ class TimingDistributionMetricType : HistogramBase {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+    fun testGetValue(pingName: String? = null) =
+        Dispatchers.Delayed.launchBlocking { this.inner.testGetValue(pingName) }
 
     /**
      * Returns the number of errors recorded for the given metric.
@@ -111,5 +112,6 @@ class TimingDistributionMetricType : HistogramBase {
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(error: ErrorType) = inner.testGetNumRecordedErrors(error)
+    fun testGetNumRecordedErrors(errorType: ErrorType) =
+        Dispatchers.Delayed.launchBlocking { inner.testGetNumRecordedErrors(errorType) }
 }
