@@ -10,6 +10,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v70.2.1...v70.3.0)
 
 * General
+  * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
   * Disabling upload now resets the in-memory session state, so re-enabling upload starts a new session instead of continuing the one from before the `deletion-request` ping ([bug 2077130](https://bugzilla.mozilla.org/show_bug.cgi?id=2077130))
   * `glean_timestamp` on `glean.session_start` and `glean.session_end` now uses wall-clock time, like every other event ([bug 2077129](https://bugzilla.mozilla.org/show_bug.cgi?id=2077129))
   * BUGFIX: Clear event storage when a ping is disabled ([#3679](https://github.com/mozilla/glean/issues/3679))
