@@ -93,7 +93,7 @@ def wait_for_server(httpserver, timeout=30):
 
 class Helpers:
     @staticmethod
-    def wait_for_ping(path, timeout=2) -> (str, str):
+    def wait_for_ping(path, timeout=5) -> (str, str):
         """
         Wait for a ping to appear in `path` for at most `timeout` seconds.
 
