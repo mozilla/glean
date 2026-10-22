@@ -312,8 +312,7 @@ pub(crate) fn uuid_to_sample_value(uuid: &Uuid) -> f64 {
 
 fn make_session_seq_metric() -> QuantityMetric {
     QuantityMetric::new(CommonMetricData {
-        name: SESSION_SEQ_METRIC_NAME.into(),
-        category: String::new(),
+        identifier: SESSION_SEQ_METRIC_NAME.into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -322,8 +321,7 @@ fn make_session_seq_metric() -> QuantityMetric {
 
 fn make_session_id_metric() -> StringMetric {
     StringMetric::new(CommonMetricData {
-        name: SESSION_ID_METRIC_NAME.into(),
-        category: String::new(),
+        identifier: SESSION_ID_METRIC_NAME.into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -334,8 +332,7 @@ fn make_session_id_metric() -> StringMetric {
 /// An empty string (or absence of the key) means no recorded inactive_since.
 fn make_inactive_since_metric() -> StringMetric {
     StringMetric::new(CommonMetricData {
-        name: SESSION_INACTIVE_SINCE_METRIC_NAME.into(),
-        category: String::new(),
+        identifier: SESSION_INACTIVE_SINCE_METRIC_NAME.into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -421,8 +418,7 @@ pub(crate) fn clear_inactive_since(glean: &Glean) {
 
 fn make_session_start_time_metric() -> StringMetric {
     StringMetric::new(CommonMetricData {
-        name: SESSION_START_TIME_METRIC_NAME.into(),
-        category: String::new(),
+        identifier: SESSION_START_TIME_METRIC_NAME.into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()
@@ -458,8 +454,7 @@ pub(crate) fn clear_session_start_time(glean: &Glean) {
 
 fn make_session_event_seq_metric() -> QuantityMetric {
     QuantityMetric::new(CommonMetricData {
-        name: SESSION_EVENT_SEQ_METRIC_NAME.into(),
-        category: String::new(),
+        identifier: SESSION_EVENT_SEQ_METRIC_NAME.into(),
         send_in_pings: vec![INTERNAL_STORAGE.into()],
         lifetime: Lifetime::User,
         ..Default::default()
