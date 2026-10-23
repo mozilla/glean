@@ -35,88 +35,47 @@ jobs:
       swift-changed: ${{ steps.set-flags.outputs.swift-changed }}
       yaml-changed: ${{ steps.set-flags.outputs.yaml-changed }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
           filter: blob:none
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - id: changed-files-actions
+      - name: Get changed files
+        id: changed-files
         uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
         with:
-          files: |
-            .github/workflows/test.yml
+          files_yaml_from_source_file: .github/changed-files.yaml
           base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-cargo
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            **/Cargo.toml
-            Cargo.lock
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-docs
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            **/*.md
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-kotlin
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            **/*.kt
-            **/*.gradle
-            gradle-wrapper/**
-            **/*.groovy
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-metrics
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            glean-core/**/pings.yaml
-            glean-core/**/metrics.yaml
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-python
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            pyproject.toml
-            glean-core/python/**
-            samples/python/**
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-rust
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            **/Cargo.toml
-            **/Cargo.lock
-            **/*.rs
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-swift
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            glean-core/ios/**
-            samples/ios/app/**
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
-      - id: changed-files-yaml
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96  # v47.0.6
-        with:
-          files: |
-            glean-core/**/*.yml
-            glean-core/**/*.yaml
-          base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - name: List changed files
+        env:
+          ALL_ACTIONS_CHANGED_FILES: ${{ steps.changed-files.outputs.actions_all_changed_files }}
+          ALL_CARGO_CHANGED_FILES: ${{ steps.changed-files.outputs.cargo_all_changed_files }}
+          ALL_DOCS_CHANGED_FILES: ${{ steps.changed-files.outputs.docs_all_changed_files }}
+          ALL_KOTLIN_CHANGED_FILES: ${{ steps.changed-files.outputs.kotlin_all_changed_files }}
+          ALL_METRICS_CHANGED_FILES: ${{ steps.changed-files.outputs.metrics_all_changed_files }}
+          ALL_PYTHON_CHANGED_FILES: ${{ steps.changed-files.outputs.python_all_changed_files }}
+          ALL_RUST_CHANGED_FILES: ${{ steps.changed-files.outputs.rust_all_changed_files }}
+          ALL_SWIFT_CHANGED_FILES: ${{ steps.changed-files.outputs.swift_all_changed_files }}
+          ALL_YAML_CHANGED_FILES: ${{ steps.changed-files.outputs.yaml_all_changed_files }}
+        run: |
+          for type in actions cargo docs kotlin metrics python rust swift yaml; do
+            echo "Category: $type changed files:"
+            changed_files_var=$(echo "ALL_${type^^}_CHANGED_FILES" | tr '-' '_')
+            echo "${!changed_files_var}"
+          done
       - name: Decide which jobs to run
         id: set-flags
         env:
-          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-cargo.outputs.any_changed }}
-          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-docs.outputs.any_changed }}
-          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-kotlin.outputs.any_changed }}
-          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-metrics.outputs.any_changed }}
-          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-python.outputs.any_changed }}
-          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-rust.outputs.any_changed }}
-          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-swift.outputs.any_changed }}
-          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files-actions.outputs.any_changed || steps.changed-files-yaml.outputs.any_changed }}
+          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.cargo_any_changed }}
+          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.docs_any_changed }}
+          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.kotlin_any_changed }}
+          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.metrics_any_changed }}
+          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.python_any_changed }}
+          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.rust_any_changed }}
+          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.swift_any_changed }}
+          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.yaml_any_changed }}
         run: |
           echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
           echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
@@ -770,6 +729,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     needs:
+      - decide-runs
       - audit
       - code-security-analysis
       - docs
