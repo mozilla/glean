@@ -32,13 +32,18 @@ fn install_panic_handler() {
 }
 
 /// Create a new instance of Glean.
-pub fn initialize(cfg: Configuration) {
+pub fn initialize(mut cfg: Configuration) {
     // Ensure panics in threads, such as the init thread or the dispatcher, cause the process to
     // exit.
     //
     // Otherwise in case of a panic in a thread the integration test will just hang.
     // CI will terminate it after a timeout, but why stick around if we know nothing is happening?
     install_panic_handler();
+
+    let delay_ping_lifetime_io = std::env::var("GLEAN_TEST_DELAY_PING_LIFETIME_IO").is_ok();
+    if delay_ping_lifetime_io {
+        cfg.delay_ping_lifetime_io = delay_ping_lifetime_io;
+    }
 
     // Use some default values to make our life easier a bit.
     let client_info = ClientInfoMetrics {
