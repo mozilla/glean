@@ -28,7 +28,8 @@ controls the minimum and maximum values that will recorded:
   - `millisecond`: 1ms <= x <= ~19 years
 
 Overflowing this range is considered an error and is reported through the error reporting mechanism.
-Underflowing this range is not an error and the value is silently truncated to the minimum value.
+Underflowing this range is not an error and the value is silently promoted to the minimum value.
+Values of zero are preserved as zero.
 
 Additionally, when a metric comes from GeckoView (the `geckoview_datapoint` parameter is present),
 the `time_unit` parameter specifies the unit that the samples are in when passed to Glean.
