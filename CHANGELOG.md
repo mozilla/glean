@@ -2,6 +2,10 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
 
+* General
+  * The uploader treats HTTP codes 408 Request Timeout and 429 Too Many Requests as recoverable errors (pings will be
+    retried on next submit) ([#3724](https://github.com/mozilla/glean/pull/3724))
+
 # v71.0.0 (2026-10-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...v71.0.0)
