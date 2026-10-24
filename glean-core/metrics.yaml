@@ -726,6 +726,8 @@ glean.upload:
       though the counts appear in the next successfully sent `metrics` ping.
     labels:
       - "status_code_4xx"
+      - "status_code_408"
+      - "status_code_429"
       - "status_code_5xx"
       - "status_code_unknown"
       - "unrecoverable"
