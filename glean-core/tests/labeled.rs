@@ -798,3 +798,58 @@ fn record_separator_is_not_allowed() {
         snapshot
     );
 }
+
+#[test]
+fn overflow_labels_go_to_other_with_no_error() {
+    let (glean, _t) = new_glean(None);
+
+    let labeled = LabeledCounter::new(
+        LabeledMetricData::Common {
+            cmd: CommonMetricData {
+                name: "max".into(),
+                category: "telemetry".into(),
+                send_in_pings: vec!["store1".into()],
+                disabled: false,
+                lifetime: Lifetime::Ping,
+                ..Default::default()
+            },
+        },
+        None,
+    );
+
+    for i in 0..20 {
+        let metric = labeled.get(&format!("label{:>02}", i + 1));
+        metric.add_sync(&glean, 1);
+    }
+
+    let snapshot = StorageManager
+        .snapshot_as_json(glean.storage(), "store1", true)
+        .unwrap();
+
+    assert_eq!(
+        json!({
+            "labeled_counter": {
+                "telemetry.max": {
+                    "label01": 1,
+                    "label02": 1,
+                    "label03": 1,
+                    "label04": 1,
+                    "label05": 1,
+                    "label06": 1,
+                    "label07": 1,
+                    "label08": 1,
+                    "label09": 1,
+                    "label10": 1,
+                    "label11": 1,
+                    "label12": 1,
+                    "label13": 1,
+                    "label14": 1,
+                    "label15": 1,
+                    "label16": 1,
+                    "__other__": 4,
+                }
+            }
+        }),
+        snapshot
+    );
+}
