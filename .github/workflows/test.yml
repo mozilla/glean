@@ -388,6 +388,12 @@ jobs:
 
           file $(which rustc)
 
+          cargo -vV || true
+          $HOME/.cargo/bin/cargo -vV || true
+
+          rustc -vV || true
+          $HOME/.cargo/bin/rustc -vV || true
+
       - &swift-build-environment
         name: Setup build environment
         run: |
