@@ -383,6 +383,16 @@ jobs:
           UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
           xcrun simctl boot "$UUID"
 
+      - &show-build-environment
+        name: Show build environment
+        run: |
+          exec 1>&2
+          set -x
+          rustup --version
+          ls -lR $HOME/.cargo/bin
+          $HOME/.cargo/bin/cargo -vV
+          $HOME/.cargo/bin/rustc -vV
+
       - name: Run iOS build
         run: |
           make build-swift
@@ -432,6 +442,8 @@ jobs:
           xcpretty --version || true
 
       - *swift-build-environment
+
+      - *show-build-environment
 
       - name: Build XCFramework archive
         run: |
