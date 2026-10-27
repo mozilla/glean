@@ -372,13 +372,21 @@ jobs:
       - &swift-build-environment
         name: Setup build environment
         run: |
+          exec 1>&2
           set -x
+
+          # Need to prepare user-local cargo directory,
+          # the Swift build assumes that's where it is.
+          mkdir -p $HOME/.cargo/bin
+          cp -a /opt/homebrew/opt/rustup/bin/* $HOME/.cargo/bin
+
           rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
           # For some reason everything works fine if we use the host clang,
           # not the Xcode-bundled clang.
           echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
           echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
+          rustup target list --installed
 
           # List available devices -- allows us to see what's there
           DEVICES=$(xcrun xctrace list devices 2>&1)
