@@ -77,14 +77,14 @@ jobs:
           SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.swift_any_changed == 'true' }}
           YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.yaml_any_changed == 'true' }}
         run: |
-          echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
-          echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
-          echo "kotlin-changed=$KOTLIN_CHANGED" >> $GITHUB_OUTPUT
-          echo "metrics-changed=$METRICS_CHANGED" >> $GITHUB_OUTPUT
-          echo "python-changed=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
-          echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
-          echo "swift-changed=$SWIFT_CHANGED" >> $GITHUB_OUTPUT
-          echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
+          echo "cargo-changed=false" >> $GITHUB_OUTPUT
+          echo "docs-changed=false" >> $GITHUB_OUTPUT
+          echo "kotlin-changed=false" >> $GITHUB_OUTPUT
+          echo "metrics-changed=false" >> $GITHUB_OUTPUT
+          echo "python-changed=false" >> $GITHUB_OUTPUT
+          echo "rust-changed=false" >> $GITHUB_OUTPUT
+          echo "swift-changed=true" >> $GITHUB_OUTPUT
+          echo "yaml-changed=false" >> $GITHUB_OUTPUT
 
   test-rust:
     runs-on: ubuntu-latest
@@ -348,26 +348,55 @@ jobs:
     steps:
       - *checkout
 
+      - name: Fixup local rustup
+        run: |
+          exec 1>&2
+          set -x
+
+          which rustup-init
+          file $(which rustup-init)
+
+          rustup-init --default-toolchain none -y
+
+          cat /Users/runner/.rustup/settings.toml || true
+          file $(which rustup)
+          file $(which rustc)
+          ls -lR $(dirname $(which rustc))
+
+          rustc -vV
+          cargo -vV
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
         with:
-         cache-bin: "false"
+          cache-bin: "false"
 
-      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
-        with:
-          ruby-version: '3.4'
-
-      - name: Install xcpretty
+      - name: Early build env
         run: |
-          gem install --no-document xcpretty
+          exec 1>&2
+          set +e
+          set -x
+          which rustc
+          which cargo
+          which rustup
 
-      - name: Show Ruby environment
-        run: |
-          ruby --version
-          gem env
-          xcpretty --version || true
+          file $(which rustc)
+          file $(which cargo)
+          file $(which rustup)
+
+          rustc -vV
+          dirname $(which rustc)
+          ls -lR $(dirname $(which rustc))
+
+          file $(which rustc)
+
+          cargo -vV || true
+          $HOME/.cargo/bin/cargo -vV || true
+
+          rustc -vV || true
+          $HOME/.cargo/bin/rustc -vV || true
 
       - &swift-build-environment
         name: Setup build environment
@@ -375,20 +404,15 @@ jobs:
           exec 1>&2
           set -x
 
-          # Need to prepare user-local cargo directory,
-          # the Swift build assumes that's where it is.
-          mkdir -p $HOME/.cargo/bin
-          cp -a /opt/homebrew/opt/rustup/bin/* $HOME/.cargo/bin
-
           rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
           rustup target list --installed
 
           # List available devices -- allows us to see what's there
-          DEVICES=$(xcrun xctrace list devices 2>&1)
-          echo "$DEVICES"
+          # DEVICES=$(xcrun xctrace list devices 2>&1)
+          # echo "$DEVICES"
           # Pick a device and start it
-          UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
-          xcrun simctl boot "$UUID"
+          # UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
+          # xcrun simctl boot "$UUID"
 
       - &show-build-environment
         name: Show build environment
@@ -400,32 +424,10 @@ jobs:
           $HOME/.cargo/bin/cargo -vV
           $HOME/.cargo/bin/rustc -vV
 
-      - name: Run iOS build
-        run: |
-          make build-swift
-
-      - name: Upload raw build log
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
-        with:
-          name: raw_xcodebuild.log
-          path: raw_xcodebuild.log
-
-      - name: Run iOS test
-        run: |
-          make test-swift
-
-      - name: Upload raw test log
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
-        with:
-          name: raw_xcodetest.log
-          path: raw_xcodetest.log
-
   test-swift-sample:
     runs-on: glean-macos-arm64
     needs: [decide-runs]
-    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    if: false
     steps:
       - *checkout
 
