@@ -369,6 +369,29 @@ jobs:
           gem env
           xcpretty --version || true
 
+
+      - name: Early build env
+        run: |
+          exec 1>&2
+          set +e
+          set -x
+          which rustc
+          which cargo
+          which rustup
+
+          file $(which rustc)
+          file $(which cargo)
+          file $(which rustup)
+
+          rustc -vV
+          dirname $(which rustc)
+          ls -lR $(dirname $(which rustc))
+
+          file $(which rustc)
+          echo "----"
+          cat $(which rustc)
+          echo "----"
+
       - &swift-build-environment
         name: Setup build environment
         run: |
