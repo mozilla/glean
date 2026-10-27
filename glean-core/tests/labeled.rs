@@ -818,7 +818,7 @@ fn overflow_labels_go_to_other_with_no_error() {
     );
 
     for i in 0..20 {
-        let metric = labeled.get(&format!("label{:>02}", i + 1));
+        let metric = labeled.get(format!("label{:>02}", i + 1));
         metric.add_sync(&glean, 1);
     }
 

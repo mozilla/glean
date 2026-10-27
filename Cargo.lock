@@ -676,7 +676,6 @@ dependencies = [
  "once_cell",
  "serde_json",
  "tempfile",
- "xflags",
  "xshell",
 ]
 
