@@ -400,11 +400,6 @@ jobs:
           exec 1>&2
           set -x
 
-          # Need to prepare user-local cargo directory,
-          # the Swift build assumes that's where it is.
-          mkdir -p $HOME/.cargo/bin
-          cp -a /opt/homebrew/opt/rustup/bin/* $HOME/.cargo/bin
-
           rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
           rustup target list --installed
 
