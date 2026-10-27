@@ -68,14 +68,14 @@ jobs:
       - name: Decide which jobs to run
         id: set-flags
         env:
-          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.cargo_any_changed }}
-          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.docs_any_changed }}
-          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.kotlin_any_changed }}
-          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.metrics_any_changed }}
-          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.python_any_changed }}
-          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.rust_any_changed }}
-          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.swift_any_changed }}
-          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed || steps.changed-files.outputs.yaml_any_changed }}
+          CARGO_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.cargo_any_changed == 'true' }}
+          DOCS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.docs_any_changed == 'true' }}
+          KOTLIN_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.kotlin_any_changed == 'true' }}
+          METRICS_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.metrics_any_changed == 'true' }}
+          PYTHON_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.python_any_changed == 'true' }}
+          RUST_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.rust_any_changed == 'true' }}
+          SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.swift_any_changed == 'true' }}
+          YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.yaml_any_changed == 'true' }}
         run: |
           echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
           echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
