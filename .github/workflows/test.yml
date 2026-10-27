@@ -358,27 +358,16 @@ jobs:
 
           rustup-init --default-toolchain none -y
 
+          cat /Users/runner/.rustup/settings.toml || true
           file $(which rustup)
           file $(which rustc)
           ls -lR $(dirname $(which rustc))
 
+          rustc -vV
+          cargo -vV
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
-
-      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
-        with:
-          ruby-version: '3.4'
-
-      - name: Install xcpretty
-        run: |
-          gem install --no-document xcpretty
-
-      - name: Show Ruby environment
-        run: |
-          ruby --version
-          gem env
-          xcpretty --version || true
-
 
       - name: Early build env
         run: |
@@ -398,9 +387,6 @@ jobs:
           ls -lR $(dirname $(which rustc))
 
           file $(which rustc)
-          echo "----"
-          cat $(which rustc)
-          echo "----"
 
       - &swift-build-environment
         name: Setup build environment
