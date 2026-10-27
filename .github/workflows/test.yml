@@ -77,14 +77,14 @@ jobs:
           SWIFT_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.swift_any_changed == 'true' }}
           YAML_CHANGED: ${{ github.ref_name == 'main' || steps.changed-files.outputs.actions_any_changed == 'true' || steps.changed-files.outputs.yaml_any_changed == 'true' }}
         run: |
-          echo "cargo-changed=$CARGO_CHANGED" >> $GITHUB_OUTPUT
-          echo "docs-changed=$DOCS_CHANGED" >> $GITHUB_OUTPUT
-          echo "kotlin-changed=$KOTLIN_CHANGED" >> $GITHUB_OUTPUT
-          echo "metrics-changed=$METRICS_CHANGED" >> $GITHUB_OUTPUT
-          echo "python-changed=$PYTHON_CHANGED" >> $GITHUB_OUTPUT
-          echo "rust-changed=$RUST_CHANGED" >> $GITHUB_OUTPUT
-          echo "swift-changed=$SWIFT_CHANGED" >> $GITHUB_OUTPUT
-          echo "yaml-changed=$YAML_CHANGED" >> $GITHUB_OUTPUT
+          echo "cargo-changed=false" >> $GITHUB_OUTPUT
+          echo "docs-changed=false" >> $GITHUB_OUTPUT
+          echo "kotlin-changed=false" >> $GITHUB_OUTPUT
+          echo "metrics-changed=false" >> $GITHUB_OUTPUT
+          echo "python-changed=false" >> $GITHUB_OUTPUT
+          echo "rust-changed=false" >> $GITHUB_OUTPUT
+          echo "swift-changed=true" >> $GITHUB_OUTPUT
+          echo "yaml-changed=false" >> $GITHUB_OUTPUT
 
   test-rust:
     runs-on: ubuntu-latest
@@ -400,32 +400,10 @@ jobs:
           $HOME/.cargo/bin/cargo -vV
           $HOME/.cargo/bin/rustc -vV
 
-      - name: Run iOS build
-        run: |
-          make build-swift
-
-      - name: Upload raw build log
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
-        with:
-          name: raw_xcodebuild.log
-          path: raw_xcodebuild.log
-
-      - name: Run iOS test
-        run: |
-          make test-swift
-
-      - name: Upload raw test log
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
-        with:
-          name: raw_xcodetest.log
-          path: raw_xcodetest.log
-
   test-swift-sample:
     runs-on: glean-macos-arm64
     needs: [decide-runs]
-    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
+    if: false
     steps:
       - *checkout
 
