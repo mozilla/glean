@@ -348,6 +348,20 @@ jobs:
     steps:
       - *checkout
 
+      - name: Fixup local rustup
+        run: |
+          exec 1>&2
+          set -x
+
+          which rustup-init
+          file $(which rustup-init)
+
+          rustup-init --default-toolchain none -y
+
+          file $(which rustup)
+          file $(which rustc)
+          ls -lR $(dirname $(which rustc))
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -403,11 +417,11 @@ jobs:
           rustup target list --installed
 
           # List available devices -- allows us to see what's there
-          DEVICES=$(xcrun xctrace list devices 2>&1)
-          echo "$DEVICES"
+          # DEVICES=$(xcrun xctrace list devices 2>&1)
+          # echo "$DEVICES"
           # Pick a device and start it
-          UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
-          xcrun simctl boot "$UUID"
+          # UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
+          # xcrun simctl boot "$UUID"
 
       - &show-build-environment
         name: Show build environment
