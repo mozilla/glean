@@ -604,6 +604,17 @@ fn initialize_inner(
             }
         });
 
+        if !is_test_mode() && internal_pings_enabled {
+            // Now that Glean is initialized, we can capture the directory info from the pre_init phase and send it in
+            // a health ping with reason "pre_init".
+            record_dir_info_and_submit_health_ping(dir_info, "pre_init");
+
+            let state = global_state().lock().unwrap();
+            if let Err(e) = state.callbacks.trigger_upload() {
+                log::error!("Triggering upload failed. Error: {}", e);
+            }
+        }
+
         // Signal Dispatcher that init is complete
         // bug 1839433: It is important that this happens after any init tasks
         // that shutdown() depends on. At time of writing that's only setting up
@@ -617,17 +628,6 @@ fn initialize_inner(
             }
             Ok(_) => {}
             Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
-        }
-
-        if !is_test_mode() && internal_pings_enabled {
-            // Now that Glean is initialized, we can capture the directory info from the pre_init phase and send it in
-            // a health ping with reason "pre_init".
-            record_dir_info_and_submit_health_ping(dir_info, "pre_init");
-
-            let state = global_state().lock().unwrap();
-            if let Err(e) = state.callbacks.trigger_upload() {
-                log::error!("Triggering upload failed. Error: {}", e);
-            }
         }
         let state = global_state().lock().unwrap();
         state.callbacks.initialize_finished();
