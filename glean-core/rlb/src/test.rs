@@ -1681,3 +1681,159 @@ fn test_attribution_and_distribution_clears_before_glean_inits() {
         test_get_distribution()
     );
 }
+
+fn extract_payload(ping: net::PingUploadRequest) -> (String, JsonValue) {
+    let net::PingUploadRequest { body, url, .. } = ping;
+    // Decode the gzipped body.
+    let mut gzip_decoder = GzDecoder::new(&body[..]);
+    let mut s = String::with_capacity(body.len());
+
+    let data = gzip_decoder
+        .read_to_string(&mut s)
+        .ok()
+        .map(|_| &s[..])
+        .or_else(|| std::str::from_utf8(&body).ok())
+        .and_then(|payload| serde_json::from_str(payload).ok())
+        .unwrap();
+
+    let doc_id = url.rsplit('/').next().unwrap();
+    (doc_id.to_string(), data)
+}
+
+#[test]
+fn different_http_error_codes_are_handled() {
+    let _lock = lock_test();
+
+    let (s, r) = crossbeam_channel::bounded::<net::PingUploadRequest>(1);
+    let (next_result_tx, next_result_rx) = crossbeam_channel::unbounded();
+
+    // Define a fake uploader that reports back the ping upload request.
+    #[derive(Debug)]
+    pub struct HttpResultUploader {
+        sender: crossbeam_channel::Sender<net::PingUploadRequest>,
+        next_result: crossbeam_channel::Receiver<i32>,
+    }
+    impl net::PingUploader for HttpResultUploader {
+        fn upload(&self, upload_request: net::CapablePingUploadRequest) -> net::UploadResult {
+            let upload_request = upload_request.capable(|_| true).unwrap();
+            self.sender.send(upload_request).unwrap();
+            net::UploadResult::http_status(self.next_result.recv().unwrap())
+        }
+    }
+
+    // Create a custom configuration to use a fake uploader.
+    let dir = tempfile::tempdir().unwrap();
+    let tmpname = dir.path().to_path_buf();
+
+    let cfg = ConfigurationBuilder::new(true, tmpname, GLOBAL_APPLICATION_ID)
+        .with_server_endpoint("invalid-test-host")
+        .with_uploader(HttpResultUploader {
+            sender: s,
+            next_result: next_result_rx,
+        })
+        .build();
+
+    glean_core::glean_set_test_mode(true);
+    let _t = new_glean(Some(cfg), true);
+
+    // Define a new ping and submit it.
+    let metrics_ping = new_test_ping("metrics");
+    const PING_NAME: &str = "test-ping";
+    let custom_ping = new_test_ping(PING_NAME);
+
+    // 404 pings will get rejected as unrecoverable
+    next_result_tx.send(404).unwrap();
+    custom_ping.submit(None);
+
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+
+    next_result_tx.send(200).unwrap();
+    metrics_ping.submit(None);
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, "metrics");
+    let (_doc_id, payload) = extract_payload(upload_request);
+    assert_eq!(
+        1,
+        payload["metrics"]["labeled_counter"]["glean.upload.ping_upload_failure"]
+            ["status_code_4xx"],
+        "{payload:#?}"
+    );
+
+    next_result_tx.send(408).unwrap();
+    custom_ping.submit(None);
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id_408, _) = extract_payload(upload_request);
+
+    // The 408 ping will be retried.
+    next_result_tx.send(200).unwrap();
+    // Next we reject a ping again, with a different error.
+    next_result_tx.send(429).unwrap();
+
+    custom_ping.submit(None);
+
+    // First we get the previously rejected ping.
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id, _) = extract_payload(upload_request);
+    assert_eq!(doc_id_408, doc_id);
+
+    // Then the 429 ping
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id_429, _) = extract_payload(upload_request);
+
+    // The 429 pings will be retried, we let them through this time.
+    next_result_tx.send(200).unwrap();
+    // Then we use a different error code, this is also recoverable
+    next_result_tx.send(300).unwrap();
+
+    custom_ping.submit(None);
+
+    // We get the 429 ping again
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id, _) = extract_payload(upload_request);
+    assert_eq!(doc_id_429, doc_id);
+
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id_300, _) = extract_payload(upload_request);
+
+    // We let the 300 ping pass this time.
+    next_result_tx.send(200).unwrap();
+    // The metrics ping also goes through
+    next_result_tx.send(200).unwrap();
+
+    // The metrics ping will tell us about the retried pings.
+    metrics_ping.submit(None);
+
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, PING_NAME);
+    let (doc_id, _) = extract_payload(upload_request);
+    assert_eq!(doc_id_300, doc_id);
+
+    let upload_request = r.recv().unwrap();
+    assert_eq!(upload_request.ping_name, "metrics");
+    let (_doc_id, payload) = extract_payload(upload_request);
+
+    assert_eq!(
+        1,
+        payload["metrics"]["labeled_counter"]["glean.upload.ping_upload_failure"]
+            ["status_code_408"],
+        "{payload:#?}"
+    );
+    assert_eq!(
+        1,
+        payload["metrics"]["labeled_counter"]["glean.upload.ping_upload_failure"]
+            ["status_code_429"],
+        "{payload:#?}"
+    );
+    assert_eq!(
+        1,
+        payload["metrics"]["labeled_counter"]["glean.upload.ping_upload_failure"]
+            ["status_code_unknown"],
+        "{payload:#?}"
+    );
+}
