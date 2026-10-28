@@ -22,8 +22,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static boo: Lazy<CounterMetric> = Lazy::new(|| {
         CounterMetric::new(CommonMetricData {
-            name: "boo".into(),
-            category: "sample".into(),
+            identifier: "sample.boo".into(),
             send_in_pings: vec!["one".into(), "two".into()],
             lifetime: Lifetime::Ping,
             disabled: false,

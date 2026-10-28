@@ -19,8 +19,7 @@ pub mod glean_metrics {
     pub static sample_counter: once_cell::sync::Lazy<CounterMetric> =
         once_cell::sync::Lazy::new(|| {
             CounterMetric::new(CommonMetricData {
-                name: "sample_counter".into(),
-                category: "test.metrics".into(),
+                identifier: "test.metrics.sample_counter".into(),
                 send_in_pings: vec!["prototype".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -34,8 +33,7 @@ pub mod glean_metrics {
             LabeledMetric::new(
                 glean::LabeledMetricData::Common {
                     cmd: CommonMetricData {
-                        name: "labeled_counter".into(),
-                        category: "test.metrics".into(),
+                        identifier: "test.metrics.labeled_counter".into(),
                         send_in_pings: vec!["prototype".into()],
                         disabled: false,
                         lifetime: Lifetime::Ping,

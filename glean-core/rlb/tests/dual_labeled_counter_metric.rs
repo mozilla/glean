@@ -17,8 +17,7 @@ mod metrics {
     pub static dual_labeled_counter: Lazy<DualLabeledCounterMetric> = Lazy::new(|| {
         DualLabeledCounterMetric::new(
             CommonMetricData {
-                name: "labeled_boolean".into(),
-                category: "sample".into(),
+                identifier: "sample.labeled_boolean".into(),
                 send_in_pings: vec!["validation".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

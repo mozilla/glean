@@ -294,8 +294,7 @@ fn client_id_and_first_run_date_must_be_regenerated() {
 fn basic_metrics_should_be_cleared_when_uploading_is_disabled() {
     let (mut glean, _t) = new_glean(None);
     let metric = StringMetric::new(CommonMetricData {
-        category: "category".to_string(),
-        name: "string_metric".to_string(),
+        identifier: "category.string_metric".into(),
         send_in_pings: vec!["baseline".to_string()],
         ..Default::default()
     });
@@ -766,8 +765,7 @@ fn test_change_metric_type_runtime() {
     let ping_name = "store1";
 
     let string_metric = StringMetric::new(CommonMetricData {
-        name: metric_name.into(),
-        category: metric_category.into(),
+        identifier: format!("{metric_category}.{metric_name}"),
         send_in_pings: vec![ping_name.into()],
         disabled: false,
         lifetime: metric_lifetime,
@@ -785,8 +783,7 @@ fn test_change_metric_type_runtime() {
 
     let timespan_metric = TimespanMetric::new(
         CommonMetricData {
-            name: metric_name.into(),
-            category: metric_category.into(),
+            identifier: format!("{metric_category}.{metric_name}"),
             send_in_pings: vec![ping_name.into()],
             disabled: false,
             lifetime: metric_lifetime,
@@ -838,8 +835,7 @@ fn timing_distribution_truncation() {
     ] {
         let dist = TimingDistributionMetric::new(
             CommonMetricData {
-                name: format!("local_metric_{:?}", unit),
-                category: "local".into(),
+                identifier: format!("local.local_metric_{:?}", unit),
                 send_in_pings: vec!["baseline".into()],
                 ..Default::default()
             },
@@ -898,8 +894,7 @@ fn timing_distribution_truncation_accumulate() {
     ] {
         let dist = TimingDistributionMetric::new(
             CommonMetricData {
-                name: format!("local_metric_{:?}", unit),
-                category: "local".into(),
+                identifier: format!("local.local_metric_{:?}", unit),
                 send_in_pings: vec!["baseline".into()],
                 ..Default::default()
             },
@@ -963,16 +958,14 @@ fn test_setting_log_pings() {
 fn test_set_remote_metric_configuration() {
     let (glean, _t) = new_glean(None);
     let metric = StringMetric::new(CommonMetricData {
-        category: "category".to_string(),
-        name: "string_metric".to_string(),
+        identifier: "category.string_metric".into(),
         send_in_pings: vec!["baseline".to_string()],
         ..Default::default()
     });
     let another_metric = LabeledString::new(
         LabeledMetricData::Common {
             cmd: CommonMetricData {
-                category: "category".to_string(),
-                name: "labeled_string_metric".to_string(),
+                identifier: "category.labeled_string_metric".into(),
                 send_in_pings: vec!["baseline".to_string()],
                 ..Default::default()
             },
@@ -1123,8 +1116,7 @@ fn test_remote_settings_epoch() {
 fn test_remote_settings_epoch_updates_in_metric() {
     let (glean, _t) = new_glean(None);
     let metric = StringMetric::new(CommonMetricData {
-        category: "category".to_string(),
-        name: "string_metric".to_string(),
+        identifier: "category.string_metric".into(),
         send_in_pings: vec!["baseline".to_string()],
         ..Default::default()
     });
@@ -1297,8 +1289,7 @@ fn disabled_pings_are_not_submitted() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["custom-disabled".into()],
         ..Default::default()
     });
@@ -1317,8 +1308,7 @@ fn internal_pings_can_be_disabled() {
 
     // We need to store a metric as an empty ping is not stored.
     let counter = CounterMetric::new(CommonMetricData {
-        name: "counter".into(),
-        category: "local".into(),
+        identifier: "local.counter".into(),
         send_in_pings: vec!["baseline".into()],
         ..Default::default()
     });
@@ -1389,8 +1379,7 @@ fn pings_are_controllable_from_remote_settings_config() {
 fn session_end_metric_internal() -> metrics::EventMetric {
     metrics::EventMetric::new(
         CommonMetricData {
-            name: "session_end".into(),
-            category: "glean".into(),
+            identifier: "glean.session_end".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()

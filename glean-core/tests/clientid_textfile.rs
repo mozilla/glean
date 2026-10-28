@@ -18,8 +18,7 @@ use glean_core::Lifetime;
 
 fn clientid_metric() -> UuidMetric {
     UuidMetric::new(CommonMetricData {
-        name: "client_id".into(),
-        category: "".into(),
+        identifier: "client_id".into(),
         send_in_pings: vec!["glean_client_info".into()],
         lifetime: Lifetime::User,
         disabled: false,
