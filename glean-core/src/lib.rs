@@ -609,26 +609,39 @@ fn initialize_inner(
         // that shutdown() depends on. At time of writing that's only setting up
         // the global Glean, but it is probably best to flush the preinit queue
         // as late as possible in the glean.init thread.
-        match dispatcher::flush_init() {
-            Ok(task_count) if task_count > 0 => {
-                core::with_glean(|glean| {
-                    glean_metrics::error::preinit_tasks_overflow.add_sync(glean, task_count as i32);
-                });
+        let overflow_count = match dispatcher::flush_init() {
+            Ok(task_count) => task_count,
+            Err(err) => {
+                log::error!("Unable to flush the preinit queue: {}", err);
+                0
             }
-            Ok(_) => {}
-            Err(err) => log::error!("Unable to flush the preinit queue: {}", err),
+        };
+
+        // bug 2072668: Anything recorded after the flush is launched on the dispatcher rather than run directly on
+        // this thread, so that `shutdown()` waits for it (by blocking on the dispatcher) before closing the database.
+        let submit_health_ping = !is_test_mode() && internal_pings_enabled;
+        if overflow_count > 0 || submit_health_ping {
+            dispatcher::launch(move || {
+                if overflow_count > 0 {
+                    core::with_glean(|glean| {
+                        glean_metrics::error::preinit_tasks_overflow
+                            .add_sync(glean, overflow_count as i32);
+                    });
+                }
+
+                if submit_health_ping {
+                    // Now that Glean is initialized, we can capture the directory info from the pre_init phase and
+                    // send it in a health ping with reason "pre_init".
+                    record_dir_info_and_submit_health_ping(dir_info, "pre_init");
+
+                    let state = global_state().lock().unwrap();
+                    if let Err(e) = state.callbacks.trigger_upload() {
+                        log::error!("Triggering upload failed. Error: {}", e);
+                    }
+                }
+            });
         }
 
-        if !is_test_mode() && internal_pings_enabled {
-            // Now that Glean is initialized, we can capture the directory info from the pre_init phase and send it in
-            // a health ping with reason "pre_init".
-            record_dir_info_and_submit_health_ping(dir_info, "pre_init");
-
-            let state = global_state().lock().unwrap();
-            if let Err(e) = state.callbacks.trigger_upload() {
-                log::error!("Triggering upload failed. Error: {}", e);
-            }
-        }
         let state = global_state().lock().unwrap();
         state.callbacks.initialize_finished();
     })
