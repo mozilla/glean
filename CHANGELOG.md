@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
 
+* General
+  * Fixed a race between initialization and `shutdown()` that could crash with "No database found" when recording the `pre_init` health ping or `glean.error.preinit_tasks_overflow`. Both are now recorded on the dispatcher after the pre-init queue is flushed, so shutdown waits for them before closing the database ([bug 2072668](https://bugzilla.mozilla.org/show_bug.cgi?id=2072668))
+
 # v71.0.0 (2026-10-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...v71.0.0)
