@@ -767,8 +767,9 @@ jobs:
       - test-kotlin
       - test-python
       - test-rust
-      - test-swift-sample
-      - test-swift
+      # TODO(bug 2087420): Re-enable once the macOS runners work reliably
+      # - test-swift-sample
+      # - test-swift
     steps:
       - name: Determine result
         run: |
