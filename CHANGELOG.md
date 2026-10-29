@@ -12,6 +12,7 @@
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
   * Glean is now built with JDK 25. Its Android libraries and the Glean Gradle plugin still target Java 17 ([bug 1785929](https://bugzilla.mozilla.org/show_bug.cgi?id=1785929))
+  * Updated NDK to r30 ([#3728](https://github.com/mozilla/glean/pull/3728))
 
 # v71.0.0 (2026-10-22)
 
