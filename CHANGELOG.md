@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
 
+* Android
+  * Updated NDK to r30 ([#3728](https://github.com/mozilla/glean/pull/3728))
+
 # v71.0.0 (2026-10-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...v71.0.0)

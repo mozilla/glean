@@ -496,7 +496,7 @@ jobs:
 
       - name: Install Android NDK
         run: |
-          sdkmanager "ndk;29.0.14206865"
+          sdkmanager "ndk;30.0.16248370"
 
       - name: Restrict to Linux builds only
         run: |
@@ -707,7 +707,7 @@ jobs:
 
       - name: Install Android NDK
         run: |
-          sdkmanager "ndk;29.0.14206865"
+          sdkmanager "ndk;30.0.16248370"
 
       - name: Restrict to Linux builds only
         run: |
