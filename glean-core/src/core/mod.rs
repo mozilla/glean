@@ -1965,24 +1965,34 @@ impl Glean {
     /// Updates attribution fields with new values.
     /// AttributionMetrics fields with `None` values will not overwrite older values.
     pub fn update_attribution(&self, attribution: AttributionMetrics) {
+        const MAX_ATTRIBUTION_LENGTH: usize = 512;
+
         if let Some(source) = attribution.source {
-            self.core_metrics.attribution_source.set_sync(self, source);
+            self.core_metrics
+                .attribution_source
+                .set_sync_with_max_length(self, source, MAX_ATTRIBUTION_LENGTH);
         }
         if let Some(medium) = attribution.medium {
-            self.core_metrics.attribution_medium.set_sync(self, medium);
+            self.core_metrics
+                .attribution_medium
+                .set_sync_with_max_length(self, medium, MAX_ATTRIBUTION_LENGTH);
         }
         if let Some(campaign) = attribution.campaign {
             self.core_metrics
                 .attribution_campaign
-                .set_sync(self, campaign);
+                .set_sync_with_max_length(self, campaign, MAX_ATTRIBUTION_LENGTH);
         }
         if let Some(term) = attribution.term {
-            self.core_metrics.attribution_term.set_sync(self, term);
+            self.core_metrics.attribution_term.set_sync_with_max_length(
+                self,
+                term,
+                MAX_ATTRIBUTION_LENGTH,
+            );
         }
         if let Some(content) = attribution.content {
             self.core_metrics
                 .attribution_content
-                .set_sync(self, content);
+                .set_sync_with_max_length(self, content, MAX_ATTRIBUTION_LENGTH);
         }
     }
 

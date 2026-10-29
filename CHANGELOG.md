@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
 
+* General
+  * Increase the length limit for each `client_info.attribution` field from 255 to 512 bytes ([bug 2079526](https://bugzilla.mozilla.org/show_bug.cgi?id=2079526))
+
 # v71.0.0 (2026-10-22)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v70.3.0...v71.0.0)
