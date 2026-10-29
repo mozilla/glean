@@ -10,6 +10,7 @@
     retried on next submit) ([#3724](https://github.com/mozilla/glean/pull/3724))
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
+  * Updated NDK to r30 ([#3728](https://github.com/mozilla/glean/pull/3728))
 
 # v71.0.0 (2026-10-22)
 
