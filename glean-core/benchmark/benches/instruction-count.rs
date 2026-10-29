@@ -45,7 +45,7 @@ mod imp {
     }
 
     fn dispatcher_flush_init(value: u64) -> u64 {
-        _ = dispatcher::flush_init();
+        _ = dispatcher::flush_init(|_| {});
         value
     }
 
