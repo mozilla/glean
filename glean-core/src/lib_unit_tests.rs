@@ -405,6 +405,7 @@ fn client_id_is_set_to_random_value_when_uploading_enabled_at_start() {
 
 #[test]
 fn attribution_and_distribution_are_correctly_stored() {
+    // Required for `metric.meta()` in the overflow error assertions below.
     use crate::metrics::MetricType;
 
     let dir = tempfile::tempdir().unwrap();
@@ -427,7 +428,7 @@ fn attribution_and_distribution_are_correctly_stored() {
         medium: Some("m".repeat(512)),
         campaign: Some("c".repeat(512)),
         term: Some("t".repeat(512)),
-        content: Some("é".repeat(256)),
+        content: Some("é".repeat(512 / "é".len())), // Each `é` is two bytes in UTF-8.
     };
     let distribution = DistributionMetrics {
         name: Some("name".into()),
