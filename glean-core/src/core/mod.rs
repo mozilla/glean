@@ -532,6 +532,8 @@ impl Glean {
                 .set_sync(&glean, experimentation_id.to_string());
         }
 
+        glean.set_early_metrics();
+
         // The upload enabled flag may have changed since the last run, for
         // example by the changing of a config file.
         if cfg.upload_enabled {
@@ -730,21 +732,6 @@ impl Glean {
             let new_clientid = self.core_metrics.client_id.generate_and_set_sync(self);
             self.store_client_id_with_reporting(new_clientid, "New client in database only.");
         }
-
-        if self
-            .core_metrics
-            .first_run_date
-            .get_value(self, "glean_client_info")
-            .is_none()
-        {
-            self.core_metrics.first_run_date.set_sync(self, None);
-            // The `first_run_date` field is generated on the very first run
-            // and persisted across upload toggling. We can assume that, the only
-            // time it is set, that's indeed our "first run".
-            self.is_first_run = true;
-        }
-
-        self.set_application_lifetime_core_metrics();
     }
 
     /// Initializes the database metrics managed by Glean's Rust core.
@@ -1348,6 +1335,26 @@ impl Glean {
         }
 
         Ok(())
+    }
+
+    /// Set early metrics unconditionally.
+    ///
+    /// This covers e.g. the `first_run_date` and application lifetime metrics known at build time.
+    fn set_early_metrics(&mut self) {
+        // We set the first_run_date unconditionally nowadays
+        if self
+            .core_metrics
+            .first_run_date
+            .get_value(self, "glean_client_info")
+            .is_none()
+        {
+            self.core_metrics.first_run_date.set_sync(self, None);
+            // The `first_run_date` field is generated on the very first run
+            // and persisted across upload toggling. We can assume that, the only
+            // time it is set, that's indeed our "first run".
+            self.is_first_run = true;
+        }
+        self.set_application_lifetime_core_metrics();
     }
 
     /// Sets internally-handled application lifetime metrics.

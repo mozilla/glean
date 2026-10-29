@@ -8,6 +8,7 @@
   * In SQLite mode: Replace in-memory table with the old `BTreeMap`-powered in-memory cache ([#3664](https://github.com/mozilla/glean/pull/3664))
   * The uploader treats HTTP codes 408 Request Timeout and 429 Too Many Requests as recoverable errors (pings will be
     retried on next submit) ([#3724](https://github.com/mozilla/glean/pull/3724))
+  * Always set `first_run_date` when missing at initialization (and `client_info.os`) to ensure pings are always schema-conform ([#3608](https://github.com/mozilla/glean/pull/3608))
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
 
