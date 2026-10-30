@@ -13,7 +13,8 @@ on:
 permissions: {}
 
 env:
-  MSRV: '1.90'
+  MSRV: "1.90"
+  ANDROID_NDK: "ndk;30.0.16248370"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -560,8 +561,10 @@ jobs:
           packages: platform-tools
 
       - name: Install Android NDK
+        env:
+          ANDROID_NDK: ${{ env.ANDROID_NDK }}
         run: |
-          sdkmanager "ndk;30.0.16248370"
+          sdkmanager "${ANDROID_NDK}"
 
       - name: Restrict to Linux builds only
         run: |
@@ -771,8 +774,10 @@ jobs:
           packages: platform-tools
 
       - name: Install Android NDK
+        env:
+          ANDROID_NDK: ${{ env.ANDROID_NDK }}
         run: |
-          sdkmanager "ndk;30.0.16248370"
+          sdkmanager "${ANDROID_NDK}"
 
       - name: Restrict to Linux builds only
         run: |
