@@ -233,11 +233,9 @@ impl DispatchGuard {
 
         // Queue the final task behind all other pre-init tasks.
         // We explicitly don't use `self.launch` here, which would discard it if the buffer is full.
-        let guard = self.clone();
+        let overflow_count = self.overflow_count.load(Ordering::SeqCst);
         self.preinit_sender
-            .send(Command::Task(Box::new(move || {
-                final_task(guard.overflow_count.load(Ordering::SeqCst))
-            })))
+            .send(Command::Task(Box::new(move || final_task(overflow_count))))
             .map_err(|_| DispatchError::SendError)?;
 
         // Single-use channel to communicate with the worker thread.
