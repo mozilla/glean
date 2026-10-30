@@ -22,6 +22,8 @@ All locations need to be updated on upgrades:
     * `.circleci/config.yml`
         * `sdkmanager 'build-tools;36.0.0'`
         * `image: circleci/android:2025.10.1-browsers`
+    * `.github/workflows/test.yml`
+        * `ANDROID_NDK: "ndk;30.0.16248370"`
     * `taskcluster/docker/linux/Dockerfile`.
         * `ENV ANDROID_BUILD_TOOLS "37.0.0"`
         * `ENV ANDROID_TOOLS_VERSION "16111833"`
