@@ -22,6 +22,7 @@ use serde_json::{json, Value as JsonValue};
 
 use crate::common_metric_data::CommonMetricDataInternal;
 use crate::error_recording::{record_error, ErrorType};
+use crate::flows::FlowEntry;
 use crate::metrics::{DatetimeMetric, TimeUnit};
 use crate::session::{EventSessionContext, SessionMetadata};
 use crate::storage::INTERNAL_STORAGE;
@@ -62,6 +63,14 @@ pub struct RecordedEvent {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub session: Option<SessionMetadata>,
+
+    /// The active flow instances this event belongs to, in name order.
+    ///
+    /// Empty for events that belong to no active flow instance, in which case
+    /// it is omitted from the payload.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub flows: Vec<FlowEntry>,
 }
 
 /// Represents the stored data for a single event.
@@ -234,6 +243,7 @@ impl EventDatabase {
                         crate::get_timestamp_ms(),
                         Some(extra),
                         EventSessionContext::OutOfSession,
+                        Vec::new(),
                     );
                 }
                 if has_events_events && glean.submit_ping_by_name("events", Some("startup")) {
@@ -306,6 +316,7 @@ impl EventDatabase {
     /// * `extra` - Extra data values, mapping strings to strings.
     /// * `ctx` - The event's session context, conveying both whether session
     ///   metadata should be attached and what that metadata is.
+    /// * `flows` - The active flow instances the event belongs to.
     ///
     /// ## Returns
     ///
@@ -318,6 +329,7 @@ impl EventDatabase {
         timestamp: u64,
         extra: Option<HashMap<String, String>>,
         ctx: EventSessionContext,
+        flows: Vec<FlowEntry>,
     ) -> bool {
         // If upload is disabled we don't want to record.
         if !glean.is_upload_enabled() {
@@ -355,6 +367,7 @@ impl EventDatabase {
                         name: meta.inner.name.to_string(),
                         extra: extra.clone(),
                         session: session.clone(),
+                        flows: flows.clone(),
                     },
                     execution_counter,
                 };
@@ -811,6 +824,7 @@ mod test {
             name: "name".to_string(),
             extra: None,
             session: None,
+            flows: Vec::new(),
         };
 
         let mut data = HashMap::new();
@@ -821,6 +835,7 @@ mod test {
             name: "name".to_string(),
             extra: Some(data),
             session: None,
+            flows: Vec::new(),
         };
 
         let event_empty_json = ::serde_json::to_string_pretty(&event_empty).unwrap();
@@ -869,6 +884,7 @@ mod test {
             name: "name".to_string(),
             extra: None,
             session: None,
+            flows: Vec::new(),
         };
 
         let mut data = HashMap::new();
@@ -879,6 +895,7 @@ mod test {
             name: "name".to_string(),
             extra: Some(data),
             session: None,
+            flows: Vec::new(),
         };
 
         assert_eq!(
@@ -913,6 +930,7 @@ mod test {
             name: test_name.to_string(),
             extra: None,
             session: None,
+            flows: Vec::new(),
         };
 
         // Upload is not yet disabled,
@@ -923,6 +941,7 @@ mod test {
             2,
             None,
             EventSessionContext::OutOfSession,
+            Vec::new(),
         );
         {
             let event_stores = db.event_stores.read().unwrap();
@@ -945,6 +964,7 @@ mod test {
             2,
             None,
             EventSessionContext::OutOfSession,
+            Vec::new(),
         );
         {
             let event_stores = db.event_stores.read().unwrap();
@@ -965,6 +985,7 @@ mod test {
                 name: "restarted".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: None,
         };
@@ -1006,6 +1027,7 @@ mod test {
                 name: "restarted".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: None,
         };
@@ -1016,6 +1038,7 @@ mod test {
                 name: "name".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: None,
         };
@@ -1057,6 +1080,7 @@ mod test {
                 name: "restarted".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: None,
         };
@@ -1068,6 +1092,7 @@ mod test {
                 name: "name".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: None,
         };
@@ -1394,6 +1419,7 @@ mod test {
                 name: "restarted".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: Some(2),
         };
@@ -1404,6 +1430,7 @@ mod test {
                 name: "name".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: Some(2),
         };
@@ -1414,6 +1441,7 @@ mod test {
                 name: "restarted".into(),
                 extra: None,
                 session: None,
+                flows: Vec::new(),
             },
             execution_counter: Some(3),
         };

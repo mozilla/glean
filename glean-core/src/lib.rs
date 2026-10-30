@@ -74,7 +74,7 @@ use crate::database::StoredSubmittedPingHandler;
 use crate::dispatcher::is_test_mode;
 pub use crate::error::{Error, ErrorKind, Result};
 pub use crate::error_recording::{test_get_num_recorded_errors, ErrorType};
-pub use crate::flows::{FlowDefinition, FlowRole};
+pub use crate::flows::{FlowDefinition, FlowEntry, FlowRole};
 pub use crate::histogram::HistogramType;
 use crate::internal_metrics::DataDirectoryInfoObject;
 pub use crate::metrics::labeled::{
