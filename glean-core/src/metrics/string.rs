@@ -130,9 +130,12 @@ impl StringMetric {
     pub fn test_get_num_recorded_errors(&self, error: ErrorType) -> i32 {
         crate::block_on_dispatcher();
 
-        crate::core::with_glean(|glean| {
-            test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
-        })
+        crate::core::with_glean(|glean| self.test_get_num_recorded_errors_sync(glean, error))
+    }
+
+    /// Gets the number of recorded errors synchronously for the given Glean instance.
+    pub(crate) fn test_get_num_recorded_errors_sync(&self, glean: &Glean, error: ErrorType) -> i32 {
+        test_get_num_recorded_errors(glean, self.meta(), error).unwrap_or(0)
     }
 }
 

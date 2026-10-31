@@ -471,9 +471,6 @@ fn client_id_is_set_to_random_value_when_uploading_enabled_at_start() {
 
 #[test]
 fn attribution_and_distribution_are_correctly_stored() {
-    // Required for `metric.meta()` in the overflow error assertions below.
-    use crate::metrics::MetricType;
-
     let dir = tempfile::tempdir().unwrap();
     let tmpname = dir.path().display().to_string();
     let glean = Glean::with_options(&tmpname, GLOBAL_APPLICATION_ID, true, true);
@@ -547,8 +544,7 @@ fn attribution_and_distribution_are_correctly_stored() {
         );
         assert_eq!(
             1,
-            test_get_num_recorded_errors(&glean, metric.meta(), ErrorType::InvalidOverflow)
-                .unwrap()
+            metric.test_get_num_recorded_errors_sync(&glean, ErrorType::InvalidOverflow)
         );
     }
 
