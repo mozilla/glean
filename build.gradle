@@ -122,6 +122,11 @@ subprojects {
     afterEvaluate {
         if (it.hasProperty('android')) {
             android {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+                    targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+                }
+
                 buildFeatures {
                     buildConfig = true
                 }
@@ -133,8 +138,15 @@ subprojects {
                 }
             }
         }
+        pluginManager.withPlugin('java') {
+            java {
+                sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+                targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+            }
+        }
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions.allWarningsAsErrors = true
+            compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
         }
     }
 
