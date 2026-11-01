@@ -425,7 +425,10 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2026.07.1-browsers
+      - &android-image
+        image: cimg/android:2026.10.1-browsers
+        environment:
+          JAVA_HOME: /usr/lib/jvm/java-1.25.0-openjdk-amd64
     steps:
       - checkout
       - run:
@@ -453,7 +456,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2026.07.1-browsers
+      - *android-image
     resource_class: "medium+"
     steps:
       - checkout

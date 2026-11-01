@@ -11,6 +11,7 @@
   * Always set `first_run_date` when missing at initialization (and `client_info.os`) to ensure pings are always schema-conform ([#3608](https://github.com/mozilla/glean/pull/3608))
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
+  * Glean is now built with JDK 25. Its Android libraries and the Glean Gradle plugin still target Java 17 ([bug 1785929](https://bugzilla.mozilla.org/show_bug.cgi?id=1785929))
 
 # v71.0.0 (2026-10-22)
 
