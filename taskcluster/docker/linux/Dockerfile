@@ -50,7 +50,7 @@ ENV \
 RUN apt-get update -qq \
     && apt-get install -qy --no-install-recommends \
         # To compile Android stuff.
-        openjdk-17-jdk \
+        openjdk-25-jdk \
         git \
         curl \
         # Required by symbolstore.py.
