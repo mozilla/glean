@@ -348,12 +348,34 @@ jobs:
     steps:
       - *checkout
 
+      # The bundled one _might_ be outdated, which in turn causes problems down the line
+      - &install-rustup
+        name: Install rustup
+        run: |
+          exec 1>&2
+          set -x
+
+          RUSTUP_VERSION=1.29.2
+          RUSTUP_SHA=f7c7e11eb2e07f006e532a8aaac77b32f4527d305ac386c0c633ca6133d35ca9
+          TARGET=aarch64-apple-darwin
+
+          curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail \
+            --output "$RUNNER_TEMP/rustup-init" \
+            "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/${TARGET}/rustup-init"
+
+          echo "$RUSTUP_SHA $RUNNER_TEMP/rustup-init" | sha256sum -c -
+
+          chmod +x "$RUNNER_TEMP/rustup-init"
+          "$RUNNER_TEMP/rustup-init" --default-toolchain none -y
+
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
         with:
-         cache-bin: "false"
+          prefix-key: "v2-rust"
 
       - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
         with:
@@ -363,11 +385,22 @@ jobs:
         run: |
           gem install --no-document xcpretty
 
-      - name: Show Ruby environment
+      - &dev-env
+        name: Show dev environment
         run: |
+          exec 1>&2
+          set -x
+
           ruby --version
           gem env
           xcpretty --version || true
+
+          echo "PATH=$PATH"
+          echo "HOME=$HOME"
+          echo "CARGO_HOME=$CARGO_HOME"
+          rustup -vV
+          rustc -vV
+          cargo -vV
 
       - &swift-build-environment
         name: Setup build environment
@@ -375,30 +408,14 @@ jobs:
           exec 1>&2
           set -x
 
-          # Need to prepare user-local cargo directory,
-          # the Swift build assumes that's where it is.
-          mkdir -p $HOME/.cargo/bin
-          cp -a /opt/homebrew/opt/rustup/bin/* $HOME/.cargo/bin
-
           rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
           rustup target list --installed
 
           # List available devices -- allows us to see what's there
           DEVICES=$(xcrun xctrace list devices 2>&1)
-          echo "$DEVICES"
           # Pick a device and start it
           UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
           xcrun simctl boot "$UUID"
-
-      - &show-build-environment
-        name: Show build environment
-        run: |
-          exec 1>&2
-          set -x
-          rustup --version
-          ls -lR $HOME/.cargo/bin
-          $HOME/.cargo/bin/cargo -vV
-          $HOME/.cargo/bin/rustc -vV
 
       - name: Run iOS build
         run: |
@@ -429,12 +446,14 @@ jobs:
     steps:
       - *checkout
 
+      - *install-rustup
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
         with:
-         cache-bin: "false"
+          prefix-key: "v2-rust"
 
       - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
         with:
@@ -444,15 +463,9 @@ jobs:
         run: |
           gem install --no-document xcpretty
 
-      - name: Show Ruby environment
-        run: |
-          ruby --version
-          gem env
-          xcpretty --version || true
+      - *dev-env
 
       - *swift-build-environment
-
-      - *show-build-environment
 
       - name: Build XCFramework archive
         run: |
