@@ -14,8 +14,7 @@ fn rate_smoke() {
     let (glean, _t) = new_glean(None);
 
     let metric: RateMetric = RateMetric::new(CommonMetricData {
-        name: "rate".into(),
-        category: "test".into(),
+        identifier: "test.rate".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -50,8 +49,7 @@ fn numerator_smoke() {
     let (glean, _t) = new_glean(None);
 
     let metric: NumeratorMetric = NumeratorMetric::new(CommonMetricData {
-        name: "rate".into(),
-        category: "test".into(),
+        identifier: "test.rate".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });
@@ -87,15 +85,13 @@ fn denominator_smoke() {
     let (glean, _t) = new_glean(None);
 
     let meta1 = CommonMetricData {
-        name: "rate1".into(),
-        category: "test".into(),
+        identifier: "test.rate1".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     };
 
     let meta2 = CommonMetricData {
-        name: "rate2".into(),
-        category: "test".into(),
+        identifier: "test.rate2".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     };
@@ -103,8 +99,7 @@ fn denominator_smoke() {
     // This acts like a normal counter.
     let denom: DenominatorMetric = DenominatorMetric::new(
         CommonMetricData {
-            name: "counter".into(),
-            category: "test".into(),
+            identifier: "test.counter".into(),
             send_in_pings: vec!["store1".into()],
             ..Default::default()
         },

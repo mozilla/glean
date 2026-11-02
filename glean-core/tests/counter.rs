@@ -28,8 +28,7 @@ fn counter_serializer_should_correctly_serialize_counters() {
         tempdir = dir;
 
         let metric = CounterMetric::new(CommonMetricData {
-            name: "counter_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.counter_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -67,8 +66,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = CounterMetric::new(CommonMetricData {
-        name: "counter_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.counter_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,
@@ -97,8 +95,7 @@ fn counters_must_not_increment_when_passed_zero_or_negative() {
     let (glean, _t) = new_glean(None);
 
     let metric = CounterMetric::new(CommonMetricData {
-        name: "counter_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.counter_metric".into(),
         send_in_pings: vec!["store1".into()],
         disabled: false,
         lifetime: Lifetime::Application,
@@ -134,8 +131,7 @@ fn transformation_works() {
     let (glean, _t) = new_glean(None);
 
     let counter: CounterMetric = CounterMetric::new(CommonMetricData {
-        name: "transformation".into(),
-        category: "local".into(),
+        identifier: "local.transformation".into(),
         send_in_pings: vec!["store1".into(), "store2".into()],
         ..Default::default()
     });
@@ -161,8 +157,7 @@ fn saturates_at_boundary() {
     let (glean, _t) = new_glean(None);
 
     let counter: CounterMetric = CounterMetric::new(CommonMetricData {
-        name: "transformation".into(),
-        category: "local".into(),
+        identifier: "local.transformation".into(),
         send_in_pings: vec!["store1".into()],
         ..Default::default()
     });

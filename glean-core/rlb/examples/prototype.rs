@@ -17,8 +17,7 @@ pub mod glean_metrics {
     pub static sample_boolean: once_cell::sync::Lazy<BooleanMetric> =
         once_cell::sync::Lazy::new(|| {
             BooleanMetric::new(CommonMetricData {
-                name: "sample_boolean".into(),
-                category: "test.metrics".into(),
+                identifier: "test.metrics.sample_boolean".into(),
                 send_in_pings: vec!["prototype".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,

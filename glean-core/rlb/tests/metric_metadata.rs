@@ -42,8 +42,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static countit: Lazy<CounterMetric> = Lazy::new(|| {
         CounterMetric::new(CommonMetricData {
-            name: "count_von_count".into(),
-            category: "sesame".into(),
+            identifier: "sesame.count_von_count".into(),
             send_in_pings: vec!["validation".into()],
             label: Some(MetricLabel::Label("ah_ah_ah".into())),
             ..Default::default()
@@ -53,8 +52,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static event: Lazy<EventMetric<SomeExtras>> = Lazy::new(|| {
         EventMetric::new(CommonMetricData {
-            name: "birthday".into(),
-            category: "shire".into(),
+            identifier: "shire.birthday".into(),
             send_in_pings: vec!["validation".into()],
             label: Some(MetricLabel::Label("111th".into())),
             ..Default::default()
@@ -64,8 +62,7 @@ mod metrics {
     #[allow(non_upper_case_globals)]
     pub static object: Lazy<ObjectMetric<i32>> = Lazy::new(|| {
         ObjectMetric::new(CommonMetricData {
-            name: "objection".into(),
-            category: "court".into(),
+            identifier: "court.objection".into(),
             send_in_pings: vec!["validation".into()],
             ..Default::default()
         })

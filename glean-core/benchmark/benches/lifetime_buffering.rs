@@ -43,8 +43,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
         let glean = Glean::new(cfg).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
-            name: "counter".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.counter".into(),
             send_in_pings: vec!["baseline".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -93,8 +92,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
         let glean = Glean::new(cfg).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
-            name: "counter".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.counter".into(),
             send_in_pings: vec!["baseline".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -143,8 +141,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
         let glean = Glean::new(cfg).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
-            name: "counter".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.counter".into(),
             send_in_pings: vec!["baseline".into()],
             disabled: false,
             lifetime: Lifetime::Ping,

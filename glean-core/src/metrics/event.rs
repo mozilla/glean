@@ -86,7 +86,7 @@ impl EventMetric {
             }
         });
 
-        let id = self.meta().base_identifier();
+        let id = self.meta().base_identifier().to_string();
         crate::launch_with_glean(move |_| {
             let event_listeners = crate::event_listeners().lock().unwrap();
             event_listeners

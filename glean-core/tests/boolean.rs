@@ -25,8 +25,7 @@ fn boolean_serializer_should_correctly_serialize_boolean() {
         tempdir = dir;
 
         let metric = BooleanMetric::new(CommonMetricData {
-            name: "boolean_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.boolean_metric".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::User,
@@ -64,8 +63,7 @@ fn set_properly_sets_the_value_in_all_stores() {
     let store_names: Vec<String> = vec!["store1".into(), "store2".into()];
 
     let metric = BooleanMetric::new(CommonMetricData {
-        name: "boolean_metric".into(),
-        category: "telemetry".into(),
+        identifier: "telemetry.boolean_metric".into(),
         send_in_pings: store_names.clone(),
         disabled: false,
         lifetime: Lifetime::Ping,

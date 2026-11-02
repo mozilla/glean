@@ -29,8 +29,7 @@ fn serializer_should_correctly_serialize_timing_distribution() {
 
         let metric = TimingDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -82,8 +81,7 @@ fn set_value_properly_sets_the_value_in_all_stores() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: store_names.clone(),
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -124,8 +122,7 @@ fn timing_distributions_must_not_accumulate_negative_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -155,8 +152,7 @@ fn the_accumulate_samples_api_correctly_stores_timing_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -198,8 +194,7 @@ fn the_accumulate_samples_api_correctly_handles_negative_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -239,8 +234,7 @@ fn the_accumulate_samples_api_correctly_handles_overflowing_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -283,8 +277,7 @@ fn large_nanoseconds_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -314,8 +307,7 @@ fn stopping_non_existing_id_records_an_error() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "non_existing_id".into(),
-            category: "test".into(),
+            identifier: "test.non_existing_id".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -340,8 +332,7 @@ fn the_accumulate_raw_samples_api_correctly_stores_timing_values() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -383,8 +374,7 @@ fn raw_samples_api_error_cases() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,
@@ -434,8 +424,7 @@ fn timing_distribution_is_tracked_across_upload_toggle() {
 
     let metric = TimingDistributionMetric::new(
         CommonMetricData {
-            name: "distribution".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.distribution".into(),
             send_in_pings: vec!["store1".into()],
             disabled: false,
             lifetime: Lifetime::Ping,

@@ -109,8 +109,7 @@ fn get_error_metric_for_metric(meta: &CommonMetricDataInternal, error: ErrorType
     send_in_pings.retain(|elem| elem != "glean_internal_info" && elem != "glean_client_info");
 
     CounterMetric::new(CommonMetricData {
-        name: error.as_str().to_string(),
-        category: "glean.error".into(),
+        identifier: format!("glean.error.{}", error.as_str()),
         lifetime: Lifetime::Ping,
         send_in_pings,
         label: Some(MetricLabel::Label(name.to_string())),
@@ -184,8 +183,7 @@ pub fn record_error_sqlite(
     };
 
     let inner = CommonMetricData {
-        category: String::from("glean.error"),
-        name: String::from(error.as_str()),
+        identifier: format!("glean.error.{}", error.as_str()),
         send_in_pings,
         lifetime,
         label: Some(MetricLabel::Static(String::from(metric_name))),
@@ -251,8 +249,7 @@ mod test {
         let (glean, _t) = new_glean(None);
 
         let string_metric = StringMetric::new(CommonMetricData {
-            name: "string_metric".into(),
-            category: "telemetry".into(),
+            identifier: "telemetry.string_metric".into(),
             send_in_pings: vec!["store1".into(), "store2".into()],
             disabled: false,
             lifetime: Lifetime::User,

@@ -121,8 +121,7 @@ pub mod internal_metrics {
 
     pub static app_build: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "app_build".into(),
-            category: "".into(),
+            identifier: "app_build".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -132,8 +131,7 @@ pub mod internal_metrics {
 
     pub static app_display_version: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "app_display_version".into(),
-            category: "".into(),
+            identifier: "app_display_version".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -144,8 +142,7 @@ pub mod internal_metrics {
     pub static app_build_date: Lazy<DatetimeMetric> = Lazy::new(|| {
         DatetimeMetric::new(
             CommonMetricData {
-                name: "build_date".into(),
-                category: "".into(),
+                identifier: "build_date".into(),
                 send_in_pings: vec!["glean_client_info".into()],
                 lifetime: Lifetime::Application,
                 disabled: false,
@@ -157,8 +154,7 @@ pub mod internal_metrics {
 
     pub static app_channel: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "app_channel".into(),
-            category: "".into(),
+            identifier: "app_channel".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -168,8 +164,7 @@ pub mod internal_metrics {
 
     pub static os_version: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "os_version".into(),
-            category: "".into(),
+            identifier: "os_version".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -179,8 +174,7 @@ pub mod internal_metrics {
 
     pub static architecture: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "architecture".into(),
-            category: "".into(),
+            identifier: "architecture".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -190,8 +184,7 @@ pub mod internal_metrics {
 
     pub static android_sdk_version: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "android_sdk_version".into(),
-            category: "".into(),
+            identifier: "android_sdk_version".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -201,8 +194,7 @@ pub mod internal_metrics {
 
     pub static windows_build_number: Lazy<QuantityMetric> = Lazy::new(|| {
         QuantityMetric::new(CommonMetricData {
-            name: "windows_build_number".into(),
-            category: "".into(),
+            identifier: "windows_build_number".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -212,8 +204,7 @@ pub mod internal_metrics {
 
     pub static device_manufacturer: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "device_manufacturer".into(),
-            category: "".into(),
+            identifier: "device_manufacturer".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -223,8 +214,7 @@ pub mod internal_metrics {
 
     pub static device_model: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "device_model".into(),
-            category: "".into(),
+            identifier: "device_model".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -234,8 +224,7 @@ pub mod internal_metrics {
 
     pub static locale: Lazy<StringMetric> = Lazy::new(|| {
         StringMetric::new(CommonMetricData {
-            name: "locale".into(),
-            category: "".into(),
+            identifier: "locale".into(),
             send_in_pings: vec!["glean_client_info".into()],
             lifetime: Lifetime::Application,
             disabled: false,
@@ -246,8 +235,7 @@ pub mod internal_metrics {
     pub static baseline_duration: Lazy<TimespanMetric> = Lazy::new(|| {
         TimespanMetric::new(
             CommonMetricData {
-                name: "duration".into(),
-                category: "glean.baseline".into(),
+                identifier: "glean.baseline.duration".into(),
                 send_in_pings: vec!["baseline".into()],
                 lifetime: Lifetime::Ping,
                 disabled: false,

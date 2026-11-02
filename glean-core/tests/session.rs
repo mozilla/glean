@@ -56,8 +56,7 @@ fn session_cfg(
 fn session_start_metric() -> EventMetric {
     EventMetric::new(
         CommonMetricData {
-            name: "session_start".into(),
-            category: "glean".into(),
+            identifier: "glean.session_start".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -70,8 +69,7 @@ fn session_start_metric() -> EventMetric {
 fn session_end_metric() -> EventMetric {
     EventMetric::new(
         CommonMetricData {
-            name: "session_end".into(),
-            category: "glean".into(),
+            identifier: "glean.session_end".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -428,8 +426,7 @@ fn sampling_rate_zero_blocks_user_events_within_session() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -461,8 +458,7 @@ fn sampling_rate_one_passes_all_user_events() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -490,8 +486,7 @@ fn events_outside_session_bypass_sampling_gate() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -520,8 +515,7 @@ fn out_of_session_events_bypass_sampling_gate() {
 
     let oos_event = EventMetric::new(
         CommonMetricData {
-            name: "oos_event".into(),
-            category: "test".into(),
+            identifier: "test.oos_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -547,8 +541,7 @@ fn sample_rate_below_zero_clamped_to_zero() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -575,8 +568,7 @@ fn sample_rate_above_one_clamped_to_one() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -607,8 +599,7 @@ fn session_metadata_attached_to_in_session_events() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -651,8 +642,7 @@ fn out_of_session_events_have_no_session_metadata() {
 
     let oos_event = EventMetric::new(
         CommonMetricData {
-            name: "oos_event".into(),
-            category: "test".into(),
+            identifier: "test.oos_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             ..Default::default()
@@ -681,8 +671,7 @@ fn event_seq_increments_within_session() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -723,8 +712,7 @@ fn event_seq_resets_on_new_session() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -802,8 +790,7 @@ fn manual_mode_explicit_session_start_end() {
     // Record a user event — it should carry session metadata.
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -962,8 +949,7 @@ fn auto_mode_event_seq_continuous_across_restart() {
 
         let user_event = EventMetric::new(
             CommonMetricData {
-                name: "pre_restart_event".into(),
-                category: "test".into(),
+                identifier: "test.pre_restart_event".into(),
                 send_in_pings: vec!["events".into()],
                 lifetime: Lifetime::Ping,
                 in_session: true,
@@ -1006,8 +992,7 @@ fn auto_mode_event_seq_continuous_across_restart() {
 
     let post_event = EventMetric::new(
         CommonMetricData {
-            name: "post_restart_event".into(),
-            category: "test".into(),
+            identifier: "test.post_restart_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -1125,8 +1110,7 @@ fn auto_mode_sampled_out_session_stays_sampled_out_after_restart() {
     // User event must still be suppressed.
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,
@@ -1193,8 +1177,7 @@ fn sessions_seen_increments_regardless_of_sampling() {
     let mut glean = Glean::new(cfg).unwrap();
 
     let sessions_seen = CounterMetric::new(CommonMetricData {
-        name: "sessions_seen".into(),
-        category: "glean".into(),
+        identifier: "glean.sessions_seen".into(),
         send_in_pings: vec!["metrics".into()],
         lifetime: Lifetime::Ping,
         in_session: false,
@@ -1233,8 +1216,7 @@ fn sessions_seen_is_out_of_session() {
     glean.handle_client_active(); // session sampled-out
 
     let sessions_seen = CounterMetric::new(CommonMetricData {
-        name: "sessions_seen".into(),
-        category: "glean".into(),
+        identifier: "glean.sessions_seen".into(),
         send_in_pings: vec!["metrics".into()],
         lifetime: Lifetime::Ping,
         in_session: false,
@@ -1260,8 +1242,7 @@ fn in_session_events_share_session_id() {
 
     let user_event = EventMetric::new(
         CommonMetricData {
-            name: "test_event".into(),
-            category: "test".into(),
+            identifier: "test.test_event".into(),
             send_in_pings: vec!["events".into()],
             lifetime: Lifetime::Ping,
             in_session: true,

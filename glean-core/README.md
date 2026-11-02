@@ -36,8 +36,7 @@ let ping = PingType::new("sample", true, true, vec![]);
 glean.register_ping_type(&ping);
 
 let call_counter: CounterMetric = CounterMetric::new(CommonMetricData {
-    name: "calls".into(),
-    category: "local".into(),
+    identifier: "local.calls".into(),
     send_in_pings: vec!["sample".into()],
     ..Default::default()
 });

@@ -27,8 +27,7 @@ mod linear {
 
             let metric = CustomDistributionMetric::new(
                 CommonMetricData {
-                    name: "distribution".into(),
-                    category: "telemetry".into(),
+                    identifier: "telemetry.distribution".into(),
                     send_in_pings: vec!["store1".into()],
                     disabled: false,
                     lifetime: Lifetime::Ping,
@@ -71,8 +70,7 @@ mod linear {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: store_names.clone(),
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -111,8 +109,7 @@ mod linear {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -154,8 +151,7 @@ mod linear {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -196,8 +192,7 @@ mod linear {
         let (glean, _t) = new_glean(None);
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -229,8 +224,7 @@ mod exponential {
 
             let metric = CustomDistributionMetric::new(
                 CommonMetricData {
-                    name: "distribution".into(),
-                    category: "telemetry".into(),
+                    identifier: "telemetry.distribution".into(),
                     send_in_pings: vec!["store1".into()],
                     disabled: false,
                     lifetime: Lifetime::Ping,
@@ -273,8 +267,7 @@ mod exponential {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: store_names.clone(),
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -313,8 +306,7 @@ mod exponential {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -356,8 +348,7 @@ mod exponential {
 
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
@@ -398,8 +389,7 @@ mod exponential {
         let (glean, _t) = new_glean(None);
         let metric = CustomDistributionMetric::new(
             CommonMetricData {
-                name: "distribution".into(),
-                category: "telemetry".into(),
+                identifier: "telemetry.distribution".into(),
                 send_in_pings: vec!["store1".into()],
                 disabled: false,
                 lifetime: Lifetime::Ping,
