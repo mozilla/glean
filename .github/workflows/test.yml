@@ -348,23 +348,16 @@ jobs:
     steps:
       - *checkout
 
-      - name: Fixup local rustup
+      - &install-rustup
+        name: Install rustup
         run: |
           exec 1>&2
           set -x
 
-          which rustup-init
-          file $(which rustup-init)
+          curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | \
+            sh -s -- --default-toolchain none -y
 
-          rustup-init --default-toolchain none -y
-
-          cat /Users/runner/.rustup/settings.toml || true
-          file $(which rustup)
-          file $(which rustc)
-          ls -lR $(dirname $(which rustc))
-
-          rustc -vV
-          cargo -vV
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -382,36 +375,22 @@ jobs:
         run: |
           gem install --no-document xcpretty
 
-      - name: Show Ruby environment
+      - &dev-env
+        name: Show dev environment
         run: |
+          exec 1>&2
+          set -x
+
           ruby --version
           gem env
           xcpretty --version || true
 
-      - name: Early build env
-        run: |
-          exec 1>&2
-          set +e
-          set -x
-          which rustc
-          which cargo
-          which rustup
-
-          file $(which rustc)
-          file $(which cargo)
-          file $(which rustup)
-
+          echo "PATH=$PATH"
+          echo "HOME=$HOME"
+          echo "CARGO_HOME=$CARGO_HOME"
+          rustup -vV
           rustc -vV
-          dirname $(which rustc)
-          ls -lR $(dirname $(which rustc))
-
-          file $(which rustc)
-
-          cargo -vV || true
-          $HOME/.cargo/bin/cargo -vV || true
-
-          rustc -vV || true
-          $HOME/.cargo/bin/rustc -vV || true
+          cargo -vV
 
       - &swift-build-environment
         name: Setup build environment
@@ -442,16 +421,19 @@ jobs:
   test-swift-sample:
     runs-on: glean-macos-arm64
     needs: [decide-runs]
-    if: false
+    if: needs.decide-runs.outputs.rust-changed == 'true' || needs.decide-runs.outputs.swift-changed == 'true'
     steps:
       - *checkout
+
+      - *install-rustup
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
         with:
-         cache-bin: "false"
+          prefix-key: "v1-rust"
+          cache-bin: "false"
 
       - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
         with:
@@ -461,11 +443,7 @@ jobs:
         run: |
           gem install --no-document xcpretty
 
-      - name: Show Ruby environment
-        run: |
-          ruby --version
-          gem env
-          xcpretty --version || true
+      - *dev-env
 
       - *swift-build-environment
 
