@@ -134,7 +134,9 @@ audit:  ## Run cargo-audit
 	#                       not exposed to user code, we use only file paths in rkv. 
 	#  * RUSTSEC-2025-0141: Bincode is unmaintained
 	#                       The crate is not broken. We're migrating away from it though.
-	cargo audit --ignore RUSTSEC-2024-0421 --ignore RUSTSEC-2025-0141
+	#  * RUSTSEC-2024-0421: `idna` accepts Punycode labels that do not produce any non-ASCII when decoded.
+	#                       Transitive dependency of jsonschema-valid->url. Only used in testing with known endpoints.
+	cargo audit --ignore RUSTSEC-2024-0421 --ignore RUSTSEC-2025-0141 --ignore RUSTSEC-2024-0421
 
 .PHONY: check-licenses check-bans check audit
 
