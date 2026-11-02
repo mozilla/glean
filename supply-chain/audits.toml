@@ -587,6 +587,11 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-run"
 delta = "0.13.4 -> 0.13.5"
 
+[[audits.pulldown-cmark]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.13.5 -> 0.13.6"
+
 [[audits.quote]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
