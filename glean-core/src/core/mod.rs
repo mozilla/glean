@@ -21,7 +21,7 @@ use crate::database::Database;
 use crate::debug::DebugOptions;
 use crate::error::ClientIdFileError;
 use crate::event_database::EventDatabase;
-use crate::flows::{FlowRegistry, FlowState};
+use crate::flows::{self, FlowRegistry, FlowState};
 use crate::internal_metrics::{
     AdditionalMetrics, CoreMetrics, DatabaseMetrics, ExceptionState, HealthMetrics,
 };
@@ -1688,6 +1688,8 @@ impl Glean {
         self.session_manager.sampled_in = sampled_in;
         self.session_manager.state = SessionState::Active;
         self.session_manager.inactive_since = None;
+        // Flow instances never span sessions, and `flow_seq` restarts at 0.
+        *self.flow_state.lock().unwrap() = FlowState::default();
 
         // 4. Persist to storage.
         session::store_session_seq(self, new_seq);
@@ -1711,6 +1713,12 @@ impl Glean {
         }
 
         let session_id = self.session_manager.session_id?;
+
+        // Close every active flow instance first, while this session is still
+        // current, so each `glean.flow_end` is recorded in-session and takes a
+        // `session.event_seq` from the session that owns the instance.
+        flows::close_all_at_session_end(self);
+
         let seq = self.session_manager.session_seq;
         let event_seq = self.session_manager.event_seq.load(Ordering::Relaxed);
         let sample_rate = self.session_manager.sample_rate;

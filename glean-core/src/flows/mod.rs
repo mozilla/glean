@@ -211,8 +211,8 @@ impl FlowState {
 }
 
 /// Why a flow instance ended, as reported in `glean.flow_end`.
-// TODO(bugs 2077139, 2077141, 2077143): the session-end, timeout, and
-// persistence bugs construct the remaining reasons.
+// TODO(bugs 2077141, 2077143): the timeout and persistence bugs construct the
+// remaining reasons.
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum FlowEndReason<'a> {
@@ -328,6 +328,28 @@ pub(crate) fn close_instances(
         );
     }
     submitted
+}
+
+/// Closes every active instance with `reason: session_end`, in reverse order of
+/// opening.
+///
+/// Must be called while the ending session is still current, before its state
+/// is torn down and `glean.session_end` is recorded.
+pub(crate) fn close_all_at_session_end(glean: &Glean) {
+    let mut closed: Vec<(FlowId, u64)> = {
+        let mut state = glean.flow_state.lock().unwrap();
+        std::mem::take(&mut state.active).into_iter().collect()
+    };
+    // `flow_seq` is assigned in order of opening.
+    closed.sort_by_key(|a| std::cmp::Reverse(a.1));
+    for (flow, seq) in closed {
+        record_flow_end(
+            glean,
+            &glean.flow_registry.flow(flow).name,
+            seq,
+            FlowEndReason::SessionEnd,
+        );
+    }
 }
 
 /// Records a `glean.flow_end` event.
@@ -1018,6 +1040,199 @@ mod test {
         assert!(
             record(&glean, "onboarding", "dismissed"),
             "the ping submitted by flow_end must be reported by the exit event's recording"
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // Session end
+    // -----------------------------------------------------------------------
+
+    fn two_flows() -> Vec<FlowDefinition> {
+        vec![
+            definition(
+                "alpha",
+                &[
+                    ("alpha.started", FlowRole::Start),
+                    ("alpha.finished", FlowRole::End),
+                    ("app.card_shown", FlowRole::Member),
+                ],
+            ),
+            definition(
+                "zeta",
+                &[
+                    ("zeta.started", FlowRole::Start),
+                    ("zeta.finished", FlowRole::End),
+                ],
+            ),
+        ]
+    }
+
+    fn session_end_extras(flow: &str, seq: u64) -> HashMap<String, String> {
+        [
+            ("flow_name", flow.to_string()),
+            ("flow_seq", seq.to_string()),
+            ("reason", "session_end".to_string()),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect()
+    }
+
+    /// Returns `(category.name, session.session_id, session.event_seq)` for each
+    /// event in the events store, in ping order.
+    fn ping_order(glean: &Glean) -> Vec<(String, Option<String>, Option<u64>)> {
+        glean
+            .event_storage()
+            .snapshot_as_json(glean, "events", false)
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| {
+                (
+                    format!(
+                        "{}.{}",
+                        e["category"].as_str().unwrap(),
+                        e["name"].as_str().unwrap()
+                    ),
+                    e["session"]["session_id"].as_str().map(str::to_string),
+                    e["session"]["event_seq"].as_u64(),
+                )
+            })
+            .collect()
+    }
+
+    fn record_now(glean: &Glean, category: &str, name: &str) {
+        event(category, name, true).record_sync(
+            glean,
+            crate::get_timestamp_ms(),
+            HashMap::new(),
+            0,
+        );
+    }
+
+    #[test]
+    fn session_end_closes_instances_in_reverse_order_of_opening_before_session_end() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+
+        // zeta opens first (seq 0), alpha second (seq 1).
+        record_now(&glean, "zeta", "started");
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "app", "card_shown");
+        glean.session_end(None);
+
+        let id = Some(session_id);
+        assert_eq!(
+            vec![
+                ("glean.session_start".to_string(), None, None),
+                ("zeta.started".to_string(), id.clone(), Some(0)),
+                ("alpha.started".to_string(), id.clone(), Some(1)),
+                ("app.card_shown".to_string(), id.clone(), Some(2)),
+                ("glean.flow_end".to_string(), id.clone(), Some(3)),
+                ("glean.flow_end".to_string(), id, Some(4)),
+                ("glean.session_end".to_string(), None, None),
+            ],
+            ping_order(&glean)
+        );
+        assert_eq!(
+            vec![
+                session_end_extras("alpha", 1),
+                session_end_extras("zeta", 0)
+            ],
+            flow_ends(&glean)
+        );
+        assert!(glean.flow_state.lock().unwrap().active.is_empty());
+    }
+
+    #[test]
+    fn replaced_session_closes_instances_in_the_old_session() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        let old_session = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+
+        glean.session_start();
+
+        let flow_end = flow_end_metric()
+            .get_value(&glean, "events")
+            .unwrap()
+            .pop()
+            .unwrap();
+        assert_eq!(Some(session_end_extras("alpha", 0)), flow_end.extra);
+        assert_eq!(
+            old_session,
+            flow_end.session.expect("flow_end is in-session").session_id
+        );
+        assert!(glean.flow_state.lock().unwrap().active.is_empty());
+    }
+
+    #[test]
+    fn auto_mode_timeout_closes_instances_in_the_timed_out_session() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = test_cfg(&dir, two_flows());
+        cfg.session_mode = SessionMode::Auto;
+        cfg.session_inactivity_timeout_ms = 1;
+        let mut glean = Glean::new(cfg).unwrap();
+
+        glean.handle_client_active();
+        let old_session = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "alpha", "started");
+        glean.handle_client_inactive();
+        std::thread::sleep(std::time::Duration::from_millis(5));
+
+        // The timeout is noticed here, ending the old session and starting a new one.
+        glean.handle_client_active();
+        assert_ne!(
+            old_session,
+            glean.session_manager().session_id().unwrap().to_string()
+        );
+
+        let flow_end = flow_end_metric()
+            .get_value(&glean, "events")
+            .expect("flow_end should be recorded when the timeout is noticed")
+            .pop()
+            .unwrap();
+        assert_eq!(Some(session_end_extras("alpha", 0)), flow_end.extra);
+        assert_eq!(
+            old_session,
+            flow_end.session.expect("flow_end is in-session").session_id
+        );
+    }
+
+    #[test]
+    fn flow_seq_restarts_at_zero_in_each_session() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "alpha", "finished");
+        record_now(&glean, "zeta", "started");
+        glean.session_end(None);
+
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+
+        let starts = event("alpha", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("alpha", 0)], starts[0].flows);
+        assert_eq!(vec![entry("alpha", 0)], starts[1].flows);
+    }
+
+    #[test]
+    fn session_end_with_no_active_instances_records_no_flow_end() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "alpha", "finished");
+        glean.session_end(None);
+
+        // Only the exit's flow_end, none at session end.
+        assert_eq!(
+            vec![exit_extras("alpha", 0, "alpha.finished")],
+            flow_ends(&glean)
         );
     }
 }
