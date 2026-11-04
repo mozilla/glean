@@ -317,6 +317,13 @@ user-id = 48
 user-login = "badboy"
 user-name = "Jan-Erik Rediger"
 
+[[publisher.xshell-venv]]
+version = "2.0.1"
+when = "2026-10-21"
+user-id = 48
+user-login = "badboy"
+user-name = "Jan-Erik Rediger"
+
 [[publisher.zeitstempel]]
 version = "0.2.1"
 when = "2026-05-05"
