@@ -61,11 +61,12 @@ class ObjectMetricType<K> constructor(
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null): JsonElement? {
-        return inner.testGetValue(pingName)?.let {
-            return Json.decodeFromString(it)
+    fun testGetValue(pingName: String? = null): JsonElement? =
+        Dispatchers.Delayed.launchBlocking {
+            inner.testGetValue(pingName)?.let {
+                Json.decodeFromString(it)
+            }
         }
-    }
 
     /**
      * Returns the number of errors recorded for the given metric.
@@ -74,5 +75,6 @@ class ObjectMetricType<K> constructor(
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(errorType: ErrorType) = inner.testGetNumRecordedErrors(errorType)
+    fun testGetNumRecordedErrors(errorType: ErrorType) =
+        Dispatchers.Delayed.launchBlocking { inner.testGetNumRecordedErrors(errorType) }
 }
