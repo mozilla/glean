@@ -188,11 +188,22 @@ impl FlowRegistry {
     }
 }
 
+/// An active flow instance.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ActiveInstance {
+    /// The instance's sequence number within the session.
+    pub(crate) seq: u64,
+    /// When the instance opened, in wall-clock milliseconds since the epoch.
+    ///
+    /// Wall-clock time so that it stays meaningful across restarts.
+    pub(crate) opened_at_ms: i64,
+}
+
 /// The flow instances active in the current session.
 #[derive(Debug, Default)]
 pub(crate) struct FlowState {
-    /// Each active flow, mapped to its instance's `flow_seq`.
-    pub(crate) active: BTreeMap<FlowId, u64>,
+    /// Each active flow, mapped to its instance.
+    pub(crate) active: BTreeMap<FlowId, ActiveInstance>,
     /// The `flow_seq` the next instance opened in this session will get.
     pub(crate) next_seq: u64,
 }
@@ -202,17 +213,56 @@ impl FlowState {
     ///
     /// An entry event recorded while its flow is active does nothing: the
     /// active instance is kept, not replaced.
-    fn open(&mut self, flow: FlowId) {
+    fn open(&mut self, flow: FlowId, now_ms: i64) {
         if let Entry::Vacant(entry) = self.active.entry(flow) {
-            entry.insert(self.next_seq);
+            entry.insert(ActiveInstance {
+                seq: self.next_seq,
+                opened_at_ms: now_ms,
+            });
             self.next_seq += 1;
         }
     }
+
+    /// Removes and returns every active instance, among `candidates`, whose
+    /// flow's `auto_close_timeout` has elapsed since it opened. Returned in
+    /// reverse order of opening.
+    fn take_expired(
+        &mut self,
+        registry: &FlowRegistry,
+        candidates: &[FlowId],
+        now_ms: i64,
+    ) -> Vec<(FlowId, u64)> {
+        let expired_flows: Vec<FlowId> = candidates
+            .iter()
+            .copied()
+            .filter(|flow| {
+                let Some(instance) = self.active.get(flow) else {
+                    return false;
+                };
+                registry
+                    .flow(*flow)
+                    .auto_close_timeout_ms
+                    .is_some_and(|timeout| {
+                        let timeout = i64::try_from(timeout).unwrap_or(i64::MAX);
+                        now_ms.saturating_sub(instance.opened_at_ms) >= timeout
+                    })
+            })
+            .collect();
+        let mut expired: Vec<(FlowId, u64)> = expired_flows
+            .into_iter()
+            .filter_map(|flow| self.active.remove(&flow).map(|i| (flow, i.seq)))
+            .collect();
+        expired.sort_by_key(|a| std::cmp::Reverse(a.1));
+        expired
+    }
+}
+
+fn now_ms() -> i64 {
+    Utc::now().timestamp_millis()
 }
 
 /// Why a flow instance ended, as reported in `glean.flow_end`.
-// TODO(bugs 2077141, 2077143): the timeout and persistence bugs construct the
-// remaining reasons.
+// TODO(bug 2077143): the persistence bug constructs `Abnormal`.
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum FlowEndReason<'a> {
@@ -265,10 +315,67 @@ pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
     if event_flows.starts.is_empty() {
         return;
     }
+    let now = now_ms();
     let mut state = glean.flow_state.lock().unwrap();
     for flow in &event_flows.starts {
-        state.open(*flow);
+        state.open(*flow, now);
     }
+}
+
+/// Closes, with `reason: timeout`, every expired instance of a flow the event
+/// belongs to.
+///
+/// Must be called before the event opens instances or is tagged, so the event
+/// that notices an expiry is not tagged with the expired instance, and an entry
+/// event for that flow opens a new one in the same recording.
+///
+/// Returns `true` if any `flow_end` caused a ping to be submitted.
+pub(crate) fn close_expired_for_event(glean: &Glean, event_flows: &EventFlows) -> bool {
+    close_expired(glean, Some(&event_flows.member_of))
+}
+
+/// Closes, with `reason: timeout`, every expired active instance.
+///
+/// Does nothing when no session is active: instances are only checked, and
+/// their `flow_end` only recorded, from within the session that owns them.
+///
+/// Returns `true` if any `flow_end` caused a ping to be submitted.
+pub(crate) fn close_all_expired(glean: &Glean) -> bool {
+    if !glean.session_manager().is_active() {
+        return false;
+    }
+    close_expired(glean, None)
+}
+
+/// Closes expired instances among `candidates`, or among all active instances
+/// when `candidates` is `None`.
+fn close_expired(glean: &Glean, candidates: Option<&[FlowId]>) -> bool {
+    let expired = {
+        let mut state = glean.flow_state.lock().unwrap();
+        if state.active.is_empty() {
+            return false;
+        }
+        let all: Vec<FlowId>;
+        let candidates = match candidates {
+            Some(candidates) => candidates,
+            None => {
+                all = state.active.keys().copied().collect();
+                &all
+            }
+        };
+        state.take_expired(&glean.flow_registry, candidates, now_ms())
+    };
+
+    let mut submitted = false;
+    for (flow, seq) in expired {
+        submitted |= record_flow_end(
+            glean,
+            &glean.flow_registry.flow(flow).name,
+            seq,
+            FlowEndReason::Timeout,
+        );
+    }
+    submitted
 }
 
 /// Returns a `flows` entry for every active instance of a flow the event belongs to.
@@ -280,9 +387,9 @@ pub(crate) fn active_entries(glean: &Glean, event_flows: &EventFlows) -> Vec<Flo
         .member_of
         .iter()
         .filter_map(|id| {
-            state.active.get(id).map(|seq| FlowEntry {
+            state.active.get(id).map(|instance| FlowEntry {
                 name: glean.flow_registry.flow(*id).name.clone(),
-                seq: *seq,
+                seq: instance.seq,
             })
         })
         .collect()
@@ -308,7 +415,7 @@ pub(crate) fn close_instances(
         event_flows
             .ends
             .iter()
-            .filter_map(|flow| state.active.remove(flow).map(|seq| (*flow, seq)))
+            .filter_map(|flow| state.active.remove(flow).map(|i| (*flow, i.seq)))
             .collect()
     };
     if closed.is_empty() {
@@ -331,14 +438,18 @@ pub(crate) fn close_instances(
 }
 
 /// Closes every active instance with `reason: session_end`, in reverse order of
-/// opening.
+/// opening, after first closing any that have expired with `reason: timeout`.
 ///
 /// Must be called while the ending session is still current, before its state
 /// is torn down and `glean.session_end` is recorded.
 pub(crate) fn close_all_at_session_end(glean: &Glean) {
+    close_all_expired(glean);
     let mut closed: Vec<(FlowId, u64)> = {
         let mut state = glean.flow_state.lock().unwrap();
-        std::mem::take(&mut state.active).into_iter().collect()
+        std::mem::take(&mut state.active)
+            .into_iter()
+            .map(|(flow, instance)| (flow, instance.seq))
+            .collect()
     };
     // `flow_seq` is assigned in order of opening.
     closed.sort_by_key(|a| std::cmp::Reverse(a.1));
@@ -576,7 +687,13 @@ mod test {
     /// Marks `flow` as having an active instance with the given `flow_seq`.
     fn activate(glean: &Glean, flow: &str, seq: u64) {
         let id = glean.flow_registry.find(flow).unwrap();
-        glean.flow_state.lock().unwrap().active.insert(id, seq);
+        glean.flow_state.lock().unwrap().active.insert(
+            id,
+            ActiveInstance {
+                seq,
+                opened_at_ms: now_ms(),
+            },
+        );
     }
 
     /// Records `metric` and returns the `flows` on the resulting event.
@@ -969,8 +1086,14 @@ mod test {
         );
         let checkout = glean.flow_registry.find("checkout").unwrap();
         assert_eq!(
-            Some(&1),
-            glean.flow_state.lock().unwrap().active.get(&checkout)
+            Some(1),
+            glean
+                .flow_state
+                .lock()
+                .unwrap()
+                .active
+                .get(&checkout)
+                .map(|i| i.seq)
         );
     }
 
@@ -1232,6 +1355,256 @@ mod test {
         // Only the exit's flow_end, none at session end.
         assert_eq!(
             vec![exit_extras("alpha", 0, "alpha.finished")],
+            flow_ends(&glean)
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // auto_close_timeout
+    // -----------------------------------------------------------------------
+
+    const TIMEOUT_MS: u64 = 60_000;
+
+    /// `onboarding` with a one-minute `auto_close_timeout`, and `untimed`, with none.
+    fn timed_flows() -> Vec<FlowDefinition> {
+        let mut timed = onboarding();
+        timed.auto_close_timeout_ms = Some(TIMEOUT_MS);
+        let untimed = definition(
+            "untimed",
+            &[
+                ("untimed.started", FlowRole::Start),
+                ("untimed.finished", FlowRole::End),
+            ],
+        );
+        vec![timed, untimed]
+    }
+
+    /// Moves an active instance's opening time `ms` into the past.
+    fn backdate(glean: &Glean, flow: &str, ms: u64) {
+        let id = glean.flow_registry.find(flow).unwrap();
+        let mut state = glean.flow_state.lock().unwrap();
+        let instance = state.active.get_mut(&id).expect("flow should be active");
+        instance.opened_at_ms -= ms as i64;
+    }
+
+    fn is_active(glean: &Glean, flow: &str) -> bool {
+        let id = glean.flow_registry.find(flow).unwrap();
+        glean.flow_state.lock().unwrap().active.contains_key(&id)
+    }
+
+    fn timeout_extras(flow: &str, seq: u64) -> HashMap<String, String> {
+        [
+            ("flow_name", flow.to_string()),
+            ("flow_seq", seq.to_string()),
+            ("reason", "timeout".to_string()),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_string(), v))
+        .collect()
+    }
+
+    /// Returns the events from every queued `events` ping.
+    fn queued_events(dir: &tempfile::TempDir) -> Vec<serde_json::Value> {
+        let Ok(entries) = std::fs::read_dir(dir.path().join("pending_pings")) else {
+            return Vec::new();
+        };
+        entries
+            .filter_map(|entry| std::fs::read_to_string(entry.ok()?.path()).ok())
+            .filter_map(|contents| {
+                let mut lines = contents.lines();
+                let url = lines.next()?;
+                if !url.contains("/events/") {
+                    return None;
+                }
+                serde_json::from_str::<serde_json::Value>(lines.next()?).ok()
+            })
+            .flat_map(|ping| ping["events"].as_array().cloned().unwrap_or_default())
+            .collect()
+    }
+
+    #[test]
+    fn member_event_after_expiry_closes_the_instance_before_it_is_recorded() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        record_now(&glean, "onboarding", "card_shown");
+
+        let shown = event("onboarding", "card_shown", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert!(
+            shown[0].flows.is_empty(),
+            "noticing event must not be tagged"
+        );
+        assert_eq!(vec![timeout_extras("onboarding", 0)], flow_ends(&glean));
+
+        // The flow_end comes before the event that noticed the expiry.
+        let order: Vec<(String, Option<u64>)> = ping_order(&glean)
+            .into_iter()
+            .map(|(name, _, seq)| (name, seq))
+            .collect();
+        assert_eq!(
+            vec![
+                ("glean.session_start".to_string(), None),
+                ("onboarding.started".to_string(), Some(0)),
+                ("glean.flow_end".to_string(), Some(1)),
+                ("onboarding.card_shown".to_string(), Some(2)),
+            ],
+            order
+        );
+    }
+
+    #[test]
+    fn entry_event_after_expiry_opens_a_new_instance_in_the_same_recording() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        record_now(&glean, "onboarding", "started");
+
+        let starts = event("onboarding", "started", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("onboarding", 1)], starts[1].flows);
+        assert_eq!(vec![timeout_extras("onboarding", 0)], flow_ends(&glean));
+        assert!(is_active(&glean, "onboarding"));
+    }
+
+    #[test]
+    fn exit_event_after_expiry_records_only_the_timeout() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        record_now(&glean, "onboarding", "finished");
+
+        let finished = event("onboarding", "finished", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert!(finished[0].flows.is_empty());
+        assert_eq!(vec![timeout_extras("onboarding", 0)], flow_ends(&glean));
+    }
+
+    #[test]
+    fn instance_within_its_timeout_is_untouched() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS - 1_000);
+
+        record_now(&glean, "onboarding", "card_shown");
+
+        let shown = event("onboarding", "card_shown", true)
+            .get_value(&glean, "events")
+            .unwrap();
+        assert_eq!(vec![entry("onboarding", 0)], shown[0].flows);
+        assert!(flow_ends(&glean).is_empty());
+    }
+
+    #[test]
+    fn flow_without_a_timeout_never_times_out() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "untimed", "started");
+        backdate(&glean, "untimed", 365 * 24 * 60 * 60 * 1000);
+
+        record_now(&glean, "untimed", "started");
+
+        assert!(flow_ends(&glean).is_empty());
+        assert!(is_active(&glean, "untimed"));
+    }
+
+    #[test]
+    fn an_unrelated_event_does_not_notice_an_expiry() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        record_now(&glean, "settings", "opened");
+
+        assert!(flow_ends(&glean).is_empty());
+        assert!(is_active(&glean, "onboarding"));
+    }
+
+    #[test]
+    fn going_inactive_closes_expired_instances_into_that_events_ping() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = test_cfg(&dir, timed_flows());
+        cfg.session_mode = SessionMode::Auto;
+        cfg.session_inactivity_timeout_ms = 30 * 60 * 1000;
+        let mut glean = Glean::new(cfg).unwrap();
+
+        glean.handle_client_active();
+        record_now(&glean, "onboarding", "started");
+        record_now(&glean, "untimed", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        glean.handle_client_inactive();
+
+        assert!(!is_active(&glean, "onboarding"));
+        assert!(is_active(&glean, "untimed"));
+        let flow_ends: Vec<serde_json::Value> = queued_events(&dir)
+            .into_iter()
+            .filter(|e| e["category"] == "glean" && e["name"] == "flow_end")
+            .collect();
+        assert_eq!(1, flow_ends.len());
+        assert_eq!("timeout", flow_ends[0]["extra"]["reason"]);
+        assert!(
+            flow_ends[0]["session"]["event_seq"].is_u64(),
+            "flow_end must be recorded in-session"
+        );
+    }
+
+    #[test]
+    fn coming_back_to_a_resumed_session_closes_expired_instances() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = test_cfg(&dir, timed_flows());
+        cfg.session_mode = SessionMode::Auto;
+        cfg.session_inactivity_timeout_ms = 30 * 60 * 1000;
+        let mut glean = Glean::new(cfg).unwrap();
+
+        glean.handle_client_active();
+        let session_id = glean.session_manager().session_id().unwrap().to_string();
+        record_now(&glean, "onboarding", "started");
+        glean.handle_client_inactive();
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        glean.handle_client_active();
+
+        assert_eq!(
+            session_id,
+            glean.session_manager().session_id().unwrap().to_string(),
+            "session should have resumed"
+        );
+        let flow_end = flow_end_metric()
+            .get_value(&glean, "events")
+            .expect("flow_end should be recorded on resume")
+            .pop()
+            .unwrap();
+        assert_eq!(Some(timeout_extras("onboarding", 0)), flow_end.extra);
+        assert_eq!(session_id, flow_end.session.unwrap().session_id);
+    }
+
+    #[test]
+    fn session_end_records_timeout_for_expired_instances_and_session_end_for_the_rest() {
+        let (mut glean, _t) = glean_with_flows(timed_flows());
+        glean.session_start();
+        record_now(&glean, "onboarding", "started");
+        record_now(&glean, "untimed", "started");
+        backdate(&glean, "onboarding", TIMEOUT_MS);
+
+        glean.session_end(None);
+
+        assert_eq!(
+            vec![
+                timeout_extras("onboarding", 0),
+                session_end_extras("untimed", 1)
+            ],
             flow_ends(&glean)
         );
     }

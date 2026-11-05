@@ -1880,6 +1880,10 @@ impl Glean {
             }
         }
 
+        // Check flow timeouts now that any resumed session is active again. A
+        // session that timed out has already closed its instances.
+        flows::close_all_expired(self);
+
         if !self
             .internal_pings
             .baseline
@@ -1896,6 +1900,10 @@ impl Glean {
     /// This functions generates a baseline and an events ping with reason
     /// `inactive` and then clears the dirty bit.
     pub fn handle_client_inactive(&mut self) {
+        // Check flow timeouts while the session is still active, so any
+        // `flow_end` is recorded in-session and sent in this events ping.
+        flows::close_all_expired(self);
+
         match self.session_manager.mode {
             SessionMode::Auto => {
                 // In AUTO mode, don't end the session immediately. Instead record

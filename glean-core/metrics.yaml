@@ -1189,7 +1189,9 @@ glean:
       Recorded in the session that owns the instance, after the instance's last
       tagged event, but never carries a `flows` entry itself. Its timestamp is
       when Glean noticed the instance had ended, which is when it actually ended
-      only for `reason: exit`.
+      only for `reason: exit`. Timeouts are checked lazily, so for
+      `reason: timeout` the instance actually expired at its first tagged
+      event's time plus the flow's `auto_close_timeout`.
     send_in_pings:
       - events
     bugs:

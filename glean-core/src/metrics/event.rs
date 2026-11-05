@@ -159,7 +159,23 @@ impl EventMetric {
             map.insert("glean_timestamp".to_string(), precise_timestamp.to_string());
         }
 
-        // Determine the session context for this event.
+        // Flow boundaries are handled while this event is recorded. Coming after
+        // `should_record()` and extra validation, an event that isn't recorded
+        // never opens or closes an instance.
+        let event_flows = flows::lookup(glean, &self.meta);
+        let mut submitted = false;
+
+        // 1. Close any expired instance of this event's flows, so the event isn't
+        //    tagged with it, then open any instance this event starts, so it is.
+        if let Some(event_flows) = event_flows {
+            submitted |= flows::close_expired_for_event(glean, event_flows);
+            flows::open_instances(glean, event_flows);
+        }
+
+        // 2. Determine the session context and tag the event with every active
+        //    instance it belongs to. Both come after step 1, so a timeout
+        //    `flow_end` recorded there takes the lower `session.event_seq`, and
+        //    before step 4, so an exit event is tagged with the instance it closes.
         //
         // Sampling suppression has already been handled by `should_record()` above,
         // which gates all metric types uniformly.  This call is concerned only with
@@ -170,25 +186,12 @@ impl EventMetric {
         } else {
             EventSessionContext::OutOfSession
         };
-
-        // Flow boundaries are handled while this event is recorded. Coming after
-        // `should_record()` and extra validation, an event that isn't recorded
-        // never opens or closes an instance.
-        let event_flows = flows::lookup(glean, &self.meta);
-
-        // 1. Open any instance this event starts, so it is tagged with it below.
-        if let Some(event_flows) = event_flows {
-            flows::open_instances(glean, event_flows);
-        }
-
-        // 2. Tag the event with every active instance it belongs to. Computed
-        //    before step 4, so an exit event is tagged with the instance it closes.
         let flow_entries = event_flows
             .map(|event_flows| flows::active_entries(glean, event_flows))
             .unwrap_or_default();
 
         // 3. Record the event.
-        let mut submitted = glean.event_storage().record(
+        submitted |= glean.event_storage().record(
             glean,
             &self.meta,
             timestamp,
