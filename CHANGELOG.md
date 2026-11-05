@@ -9,6 +9,7 @@
   * Recording a flow's entry event opens an instance and recording its exit event closes it, recording a new `glean.flow_end` event ([bug 2077138](https://bugzilla.mozilla.org/show_bug.cgi?id=2077138))
   * Ending a session closes its active flow instances with `reason: session_end`, and `flow_seq` restarts at 0 in each session ([bug 2077139](https://bugzilla.mozilla.org/show_bug.cgi?id=2077139))
   * Flow instances past their `auto_close_timeout` are closed with `reason: timeout`, checked lazily when the SDK next handles the flow ([bug 2077141](https://bugzilla.mozilla.org/show_bug.cgi?id=2077141))
+  * Active flow instances persist across a clean restart that resumes their session, and are closed with `reason: abnormal` after a crash or when their session is abandoned at startup ([bug 2077143](https://bugzilla.mozilla.org/show_bug.cgi?id=2077143))
 
 # v71.0.0 (2026-10-22)
 

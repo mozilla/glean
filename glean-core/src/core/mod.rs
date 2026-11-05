@@ -1034,6 +1034,10 @@ impl Glean {
             self.session_manager.inactivity_timeout,
         );
 
+        // Persisted flow state was cleared with internal storage above. Reset the
+        // in-memory state to match, recording no `flow_end`.
+        *self.flow_state.lock().unwrap() = FlowState::default();
+
         // This does not clear the experiments store (which isn't managed by the
         // StorageEngineManager), since doing so would mean we would have to have the
         // application tell us again which experiments are active if telemetry is
@@ -1523,6 +1527,9 @@ impl Glean {
         // persisted session, emit a synthetic session_end("abandoned") and
         // clear all persisted session state so it doesn't leak across builds.
         if self.session_manager.mode != SessionMode::Auto {
+            // The abandoned session's flow instances end with it, before its
+            // `session_end`, as on a crash.
+            flows::recover_abnormal(self);
             if let Some(id_str) = session::read_session_id(self) {
                 log::info!(
                     "Orphaned session {} found from a previous Auto-mode build; \
@@ -1564,8 +1571,43 @@ impl Glean {
                         .event_seq
                         .store(session::read_session_event_seq(self), Ordering::Relaxed);
                     self.session_manager.state = SessionState::Inactive;
+                    self.restore_flow_state(&id_str);
+                    return;
                 }
             }
+        }
+
+        // No session was resumed, so no persisted flow instance can be either.
+        // After a crash, `recover_session_on_dirty_flag()` still needs them.
+        if !self.is_dirty_flag_set() {
+            flows::discard_persisted(self);
+        }
+    }
+
+    /// Restores the resumed session's flow instances, closing any that expired
+    /// while the app was not running.
+    ///
+    /// Skipped after a crash, where `recover_session_on_dirty_flag()` closes
+    /// them with `reason: abnormal` instead.
+    fn restore_flow_state(&mut self, session_id: &str) {
+        if self.is_dirty_flag_set() {
+            return;
+        }
+        flows::restore(self, session_id);
+
+        // Close expired instances now, in the session that owns them. As in the
+        // timeout path of `session_transition_to_active()`, the session is marked
+        // active just long enough to record in it.
+        let event_seq_before = self.session_manager.event_seq.load(Ordering::Relaxed);
+        self.session_manager.state = SessionState::Active;
+        flows::close_all_expired(self);
+        self.session_manager.state = SessionState::Inactive;
+
+        // Persist any `event_seq` consumed by a `flow_end`, so a crash before the
+        // next inactive transition doesn't reuse it.
+        let event_seq = self.session_manager.event_seq.load(Ordering::Relaxed);
+        if event_seq != event_seq_before {
+            session::store_session_event_seq(self, event_seq);
         }
     }
 
@@ -1688,8 +1730,7 @@ impl Glean {
         self.session_manager.sampled_in = sampled_in;
         self.session_manager.state = SessionState::Active;
         self.session_manager.inactive_since = None;
-        // Flow instances never span sessions, and `flow_seq` restarts at 0.
-        *self.flow_state.lock().unwrap() = FlowState::default();
+        flows::reset_for_new_session(self);
 
         // 4. Persist to storage.
         session::store_session_seq(self, new_seq);
@@ -1815,6 +1856,10 @@ impl Glean {
     /// If the dirty flag was set and a session ID is persisted, emits a synthetic
     /// `session_end` event with reason "abnormal" and clears session state.
     pub(crate) fn recover_session_on_dirty_flag(&mut self) {
+        // Close the crashed session's flow instances first, so their
+        // `flow_end`s precede its synthetic `session_end`.
+        flows::recover_abnormal(self);
+
         let persisted_id = match session::read_session_id(self) {
             Some(id) => id,
             None => return, // No previous session to recover.
