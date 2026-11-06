@@ -1095,11 +1095,11 @@ impl Database {
             Lifetime::Ping.as_str(),
             Lifetime::Application.as_str(),
         ];
-        let clear_sql =
-            "DELETE FROM telemetry WHERE lifetime = ?1 OR lifetime = ?2 OR lifetime = ?3";
+        let clear_sql = "DELETE FROM telemetry";
         let res = self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
             stmt.execute(lifetimes)?;
+            tx.execute_one("VACUUM")?;
 
             Ok::<(), rusqlite::Error>(())
         });

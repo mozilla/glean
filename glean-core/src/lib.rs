@@ -1460,7 +1460,9 @@ pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
             glean
                 .storage_opt()
                 .map(|storage| {
-                    _ = storage.persist_ping_lifetime_data();
+                    if !clear_stores {
+                        _ = storage.persist_ping_lifetime_data();
+                    }
                 })
                 .is_some()
         })

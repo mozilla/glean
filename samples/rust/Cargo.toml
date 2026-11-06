@@ -14,3 +14,6 @@ tempfile = "3.3.0"
 
 [build-dependencies]
 glean-build = { path = "../../glean-core/build" }
+
+[features]
+sqlite = ["glean/sqlite"]
