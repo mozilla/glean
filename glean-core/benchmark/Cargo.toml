@@ -40,6 +40,10 @@ harness = false
 name = "bin-bench"
 harness = false
 
+[[bench]]
+name = "test_destroy_glean"
+harness = false
+
 [profile.bench]
 debug = true
 strip = false
