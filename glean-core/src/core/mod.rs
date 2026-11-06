@@ -1186,6 +1186,7 @@ impl Glean {
             log::debug!("Duplicate ping named '{}'", ping.name())
         }
 
+        log::info!("Registering ping type: {}", ping.name());
         self.ping_registry
             .insert(ping.name().to_string(), ping.clone());
     }

@@ -506,6 +506,7 @@ fn initialize_inner(
             // Perform registration of pings that were attempted to be
             // registered before init.
             let pings = PRE_INIT_PING_REGISTRATION.lock().unwrap();
+            log::info!("Pre-init ping registration: {:?}", pings);
             for ping in pings.iter() {
                 glean.register_ping_type(ping);
             }
