@@ -259,13 +259,15 @@ jobs:
           cache-bin: true
 
       - name: Set up Python
-        id: setup_python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: "3.10"
-          cache: 'pip'
-          cache-dependency-path: |
-            glean-core/python/requirements_dev.txt
+          enable-cache: "false"
+          venv-path: ".venv3.10"
+
+      - name: Setup Python env
+        run: |
+            make setup-python -B V=1
 
       - name: Install mdbook-dtmo
         run: |
@@ -324,13 +326,17 @@ jobs:
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
 
       - name: Set up Python
-        id: setup_python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: |
-            glean-core/python/requirements_dev.txt
+          activate-environment: "true"
+          venv-path: ".venv${{ matrix.python-version }}"
+          no-project: "true"
+
+      - name: Setup Python env
+        if: runner.os != 'Windows'
+        run: |
+            make setup-python -B V=1
 
       - name: Python tests
         if: runner.os != 'Windows'
@@ -340,7 +346,7 @@ jobs:
       - name: "Python tests (Windows)"
         if: runner.os == 'Windows'
         run: |
-          python3 -m venv venv
+          uv run python3 -m venv venv
           .\venv\Scripts\pip install --upgrade wheel setuptools
           .\venv\Scripts\pip install -r glean-core\python\requirements_dev.txt
           .\venv\Scripts\pip install -e .
@@ -360,17 +366,16 @@ jobs:
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4  # v2.9.1
 
       - name: Set up Python
-        id: setup_python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: "3.13"
-          cache: 'pip'
-          cache-dependency-path: |
-            glean-core/python/requirements_dev.txt
+          activate-environment: "true"
+          venv-path: ".venv3.13"
+          no-project: "true"
 
       - name: Setup Python env
         run: |
-            make setup-python
+            make setup-python -B V=1
             .venv3.13/bin/pip install ziglang==0.16.0
       - name: Install additional targets
         run: |
