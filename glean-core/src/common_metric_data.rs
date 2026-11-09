@@ -144,6 +144,8 @@ impl Display for MetricLabel {
     }
 }
 
+/// TODO
+#[allow(missing_docs)]
 #[derive(Default, Debug, MallocSizeOf)]
 pub struct CommonMetricDataInternal {
     pub inner: CommonMetricData,

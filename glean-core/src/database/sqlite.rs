@@ -1116,6 +1116,40 @@ impl Database {
         }
     }
 
+    pub fn print_ping_lifetime_data(&self) {
+        if !self.delay_ping_lifetime_io {
+            return;
+        }
+
+        let map = self.ping_lifetime_data.read().unwrap();
+
+        for (key, value) in map.iter() {
+            let mut split = key.splitn(3, '|');
+            let Some(storage_name) = split.next() else {
+                continue;
+            };
+            let Some(key) = split.next() else { continue };
+            let Some(labels) = split.next() else { continue };
+
+            #[derive(serde::Serialize)]
+            struct Data<'a> {
+                key: &'a str,
+                ping: &'a str,
+                lifetime: Lifetime,
+                labels: &'a str,
+                value: &'a Metric,
+            }
+            let data = Data {
+                key,
+                ping: &storage_name,
+                lifetime: Lifetime::Ping,
+                labels,
+                value,
+            };
+            println!("{}", serde_json::to_string(&data).unwrap());
+        }
+    }
+
     /// Persists `Lifetime::Ping` data to disk.
     ///
     /// Does nothing in case there is nothing to persist.

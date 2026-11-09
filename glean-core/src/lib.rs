@@ -35,7 +35,8 @@ use uuid::Uuid;
 use metrics::RemoteSettingsConfig;
 
 mod common_metric_data;
-mod core;
+#[allow(missing_docs)]
+pub mod core;
 mod core_metrics;
 mod database;
 mod debug;
@@ -67,7 +68,7 @@ mod util;
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
 mod fd_logger;
 
-pub use crate::common_metric_data::{CommonMetricData, Lifetime, MetricLabel};
+pub use crate::common_metric_data::{CommonMetricData, CommonMetricDataInternal, Lifetime, MetricLabel};
 pub use crate::core::Glean;
 pub use crate::core_metrics::{AttributionMetrics, ClientInfoMetrics, DistributionMetrics};
 use crate::database::StoredSubmittedPingHandler;
@@ -1458,7 +1459,9 @@ pub fn glean_test_destroy_glean(clear_stores: bool, data_path: Option<String>) {
             // We need to flush the ping lifetime data before a full shutdown.
             glean
                 .storage_opt()
-                .map(|storage| storage.persist_ping_lifetime_data())
+                .map(|storage| {
+                    _ = storage.persist_ping_lifetime_data();
+                })
                 .is_some()
         })
         .unwrap_or(false);
