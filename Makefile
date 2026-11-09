@@ -129,14 +129,7 @@ check-bans:  ## Check for any banned crates
 check: check-licenses check-bans
 
 audit:  ## Run cargo-audit
-	# Explanation for ignored issues:
-	#  * RUSTSEC-2026-0204: Invalid pointer dereference in fmt::Pointer impl for Atomic and Shared when the underlying pointer is invalid
-	#                       not exposed to user code, we use only file paths in rkv. 
-	#  * RUSTSEC-2025-0141: Bincode is unmaintained
-	#                       The crate is not broken. We're migrating away from it though.
-	#  * RUSTSEC-2024-0421: `idna` accepts Punycode labels that do not produce any non-ASCII when decoded.
-	#                       Transitive dependency of jsonschema-valid->url. Only used in testing with known endpoints.
-	cargo audit --ignore RUSTSEC-2024-0421 --ignore RUSTSEC-2025-0141 --ignore RUSTSEC-2024-0421
+	cargo audit
 
 .PHONY: check-licenses check-bans check audit
 

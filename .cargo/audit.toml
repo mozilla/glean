@@ -1,0 +1,15 @@
+[advisories]
+ignore = [
+  # idna
+  # `idna` accepts Punycode labels that do not produce any non-ASCII when decoded.
+  # Transitive dependency of jsonschema-valid->url. Only used in testing with known endpoints.
+  "RUSTSEC-2024-0421",
+  # bincode
+  # Bincode is unmaintained
+  # The crate is not broken. We're migrating away from it though.
+  "RUSTSEC-2025-0141" ,
+  # crossbeam-epoch
+  # Invalid pointer dereference in fmt::Pointer impl for Atomic and Shared when the underlying pointer is invalid.
+  # Not exposed to user code, we use only file paths in rkv.
+  "RUSTSEC-2026-0204",
+]
