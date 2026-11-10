@@ -44,7 +44,7 @@ impl ConnectionOpener for Schema {
             -- we unconditionally want write-ahead-logging mode
             PRAGMA journal_mode = WAL;
             -- Sync at the most criticial moments, but not with every write
-            PRAGMA synchronous = NORMAL;
+            PRAGMA synchronous = off;
             -- limit size of the journal. TODO(bug 2049290): value currently arbitrary.
             -- needs refinement.
             PRAGMA journal_size_limit = 512000; -- 512 KB.
