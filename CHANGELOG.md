@@ -7,6 +7,7 @@
 * Android
   * BUGFIX: Ensure start/stop for a timing distribution don't throw an exception when called before initialize ([#3778](https://github.com/mozilla/glean/pull/3778))
   * Updated Kotlin to 2.4.21
+  * Updated to Android Gradle Plugin 9.5.1 and Gradle 9.9.1
 
 # v71.1.0 (2026-11-16)
 

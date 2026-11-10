@@ -144,8 +144,8 @@ subprojects {
                 targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
             }
         }
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-            kotlinOptions.allWarningsAsErrors = true
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            compilerOptions.allWarningsAsErrors = true
             compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
         }
     }

@@ -8,7 +8,6 @@
 import groovy.json.JsonOutput
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 android {
@@ -101,13 +100,6 @@ dependencies {
         artifact {
             type = "jar"
         }
-    }
-}
-
-// Referenced by name so `cargoBuild` does not have to exist yet.
-tasks.configureEach { task ->
-    if (task.name.startsWith("merge") && task.name.endsWith("JniLibFolders")) {
-        task.dependsOn("cargoBuild")
     }
 }
 
