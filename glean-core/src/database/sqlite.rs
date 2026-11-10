@@ -1098,14 +1098,17 @@ impl Database {
         let clear_sql = "DELETE FROM telemetry";
         let res = self.conn.write(|tx| {
             let mut stmt = tx.prepare_cached(clear_sql)?;
-            stmt.execute(lifetimes)?;
-            tx.execute_one("VACUUM")?;
+            stmt.execute([])?;
 
             Ok::<(), rusqlite::Error>(())
         });
 
         if let Err(err) = res {
             log::warn!("Could not clear store for all lifetimes: {err:?}");
+        }
+
+        if let Err(err) = self.conn.lock().execute_one("VACUUM") {
+            log::warn!("Could not VACUUM after clearing stores: {err:?}");
         }
 
         if self.delay_ping_lifetime_io {
