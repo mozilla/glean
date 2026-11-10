@@ -10,7 +10,6 @@ import javax.inject.Inject
 import org.gradle.process.ExecOperations
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
 apply plugin: 'kotlinx-serialization'
 
@@ -92,15 +91,14 @@ afterEvaluate {
                 html.required = true
             }
 
-            def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
-                              '**/*Test*.*', 'android/**/*.*', '**/*$[0-9].*']
-            def kotlinDebugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
-            def javaDebugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+            def fileFilter = ['**/*Test*.*', '**/*$[0-9].*']
             def mainSrc = "$project.projectDir/src/main/java"
 
             sourceDirectories.from = files([mainSrc])
-            classDirectories.from = files([kotlinDebugTree, javaDebugTree])
-            executionData.from = fileTree(dir: project.buildDir, includes: [
+            classDirectories.from = tasks.named("compileDebugKotlin").flatMap { it.destinationDirectory }.map {
+                it.asFileTree.matching { exclude fileFilter }
+            }
+            executionData.from = fileTree(dir: layout.buildDirectory, includes: [
                     'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
             ])
         }
