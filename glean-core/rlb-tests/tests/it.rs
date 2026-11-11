@@ -5,8 +5,40 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::thread;
 
+use assert_cmd::assert::Assert;
 use assert_cmd::{Command, cargo_bin, cargo_bin_cmd};
+
+/// Log the command status, stdout and stderr output
+/// when this is dropped while panicking.
+///
+/// This ensures we get the output of the command launched when an assertion in the test triggers.
+struct LogOnPanic(Assert);
+
+impl Drop for LogOnPanic {
+    fn drop(&mut self) {
+        if thread::panicking() {
+            let output = self.0.get_output();
+            let status = output.status;
+            let stdout = String::from_utf8(output.stdout.clone()).unwrap();
+            let stderr = String::from_utf8(output.stderr.clone()).unwrap();
+            eprintln!(
+                "\nlast command run:\nstatus: {status}\nstdout:{stdout}\n\nstderr:\n{stderr}"
+            );
+        }
+    }
+}
+
+trait AssertExt {
+    fn log_on_panic(self) -> LogOnPanic;
+}
+
+impl AssertExt for Assert {
+    fn log_on_panic(self) -> LogOnPanic {
+        LogOnPanic(self)
+    }
+}
 
 fn collect_files(path: &Path) -> Vec<PathBuf> {
     fs::read_dir(path)
@@ -19,10 +51,11 @@ fn collect_files(path: &Path) -> Vec<PathBuf> {
 fn shutdown_blocking() {
     let tempdir = tempfile::tempdir().unwrap();
 
-    cargo_bin_cmd!("long-running")
+    let _drop = cargo_bin_cmd!("long-running")
         .arg(tempdir.path())
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&tempdir.path().join("pending_pings"));
     assert_eq!(1, entries.len());
@@ -32,10 +65,11 @@ fn shutdown_blocking() {
 fn thread_crashing() {
     let tempdir = tempfile::tempdir().unwrap();
 
-    cargo_bin_cmd!("crashing-threads")
+    let _drop = cargo_bin_cmd!("crashing-threads")
         .arg(tempdir.path())
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&tempdir.path().join("pending_pings"));
 
@@ -48,11 +82,12 @@ fn delayed_ping_data() {
     let tempdir = tempfile::tempdir().unwrap();
 
     // First run "crashes" -> no increment stored
-    cargo_bin_cmd!("delayed-ping-data")
+    let _drop = cargo_bin_cmd!("delayed-ping-data")
         .arg(tempdir.path())
         .arg("accumulate_one_and_pretend_crash")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let sent_pings_dir = tempdir.path().join("sent_pings");
 
@@ -61,21 +96,23 @@ fn delayed_ping_data() {
 
     // Second run increments and orderly shuts down -> increment flushed to disk.
     // No ping is sent.
-    cargo_bin_cmd!("delayed-ping-data")
+    let _drop = cargo_bin_cmd!("delayed-ping-data")
         .arg(tempdir.path())
         .arg("accumulate_ten_and_orderly_shutdown")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&sent_pings_dir);
     assert_eq!(0, entries.len());
 
     // Third run sends the ping.
-    cargo_bin_cmd!("delayed-ping-data")
+    let _drop = cargo_bin_cmd!("delayed-ping-data")
         .arg(tempdir.path())
         .arg("submit_ping")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&sent_pings_dir);
     assert_eq!(1, entries.len());
@@ -124,7 +161,7 @@ fn mps_delay() {
         .arg(exe)
         .arg(tempdir.path())
         .arg("init");
-    cmd.assert().success();
+    cmd.assert().success().log_on_panic();
 
     let pings = collect_files(&sent_pings_dir);
     assert_eq!(0, pings.len());
@@ -138,7 +175,7 @@ fn mps_delay() {
         .arg(exe)
         .arg(tempdir.path())
         .arg("second");
-    cmd.assert().success();
+    cmd.assert().success().log_on_panic();
 
     let pings = collect_files(&sent_pings_dir);
     assert_eq!(1, pings.len());
@@ -152,7 +189,7 @@ fn mps_delay() {
         .arg(exe)
         .arg(tempdir.path())
         .arg("third");
-    cmd.assert().success();
+    cmd.assert().success().log_on_panic();
 
     let pings = collect_files(&sent_pings_dir);
     assert_eq!(1, pings.len());
@@ -164,32 +201,35 @@ fn ping_lifetime_flush() {
     let sent_pings_dir = tempdir.path().join("sent_pings");
 
     // First run "crashes" -> no increment stored
-    cargo_bin_cmd!("ping-lifetime-flush")
+    let _drop = cargo_bin_cmd!("ping-lifetime-flush")
         .arg(tempdir.path())
         .arg("accumulate_one_and_pretend_crash")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let pings = collect_files(&sent_pings_dir);
     assert_eq!(0, pings.len());
 
     // Second run increments, waits, increments -> increment flushed to disk.
     // No ping is sent.
-    cargo_bin_cmd!("ping-lifetime-flush")
+    let _drop = cargo_bin_cmd!("ping-lifetime-flush")
         .arg(tempdir.path())
         .arg("accumulate_ten_and_wait")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let pings = collect_files(&sent_pings_dir);
     assert_eq!(0, pings.len());
 
     // Third run sends the ping.
-    cargo_bin_cmd!("ping-lifetime-flush")
+    let _drop = cargo_bin_cmd!("ping-lifetime-flush")
         .arg(tempdir.path())
         .arg("submit_ping")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&sent_pings_dir);
     assert_eq!(1, entries.len());
@@ -204,11 +244,12 @@ fn pending_gets_removed() {
     let tempdir = tempfile::tempdir().unwrap();
     let pending_pings_dir = tempdir.path().join("pending_pings");
 
-    cargo_bin_cmd!("pending-gets-removed")
+    let _drop = cargo_bin_cmd!("pending-gets-removed")
         .arg(tempdir.path())
         .arg("1")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let expected = ["validation", "nofollows", "health"]
         .into_iter()
@@ -229,21 +270,23 @@ fn pending_gets_removed() {
     }
     assert_eq!(expected, found);
 
-    cargo_bin_cmd!("pending-gets-removed")
+    let _drop = cargo_bin_cmd!("pending-gets-removed")
         .arg(tempdir.path())
         .arg("2")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
     let entries = collect_files(&pending_pings_dir);
     assert_eq!(1, entries.len());
     let payload = fs::read_to_string(&entries[0]).unwrap();
     assert!(payload.contains("/nofollows/"));
 
-    cargo_bin_cmd!("pending-gets-removed")
+    let _drop = cargo_bin_cmd!("pending-gets-removed")
         .arg(tempdir.path())
         .arg("3")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
     let entries = collect_files(&pending_pings_dir);
     assert_eq!(0, entries.len());
 }
@@ -253,11 +296,12 @@ fn enabled_pings() {
     let tempdir = tempfile::tempdir().unwrap();
     let sent_pings_dir = tempdir.path().join("sent_pings");
 
-    cargo_bin_cmd!("enabled-pings")
+    let _drop = cargo_bin_cmd!("enabled-pings")
         .arg(tempdir.path())
         .arg("default")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
     let entries = collect_files(&sent_pings_dir);
     assert_eq!(1, entries.len());
     let payload = fs::read_to_string(&entries[0]).unwrap();
@@ -265,11 +309,12 @@ fn enabled_pings() {
 
     let tempdir = tempfile::tempdir().unwrap();
     let sent_pings_dir = tempdir.path().join("sent_pings");
-    cargo_bin_cmd!("enabled-pings")
+    let _drop = cargo_bin_cmd!("enabled-pings")
         .arg(tempdir.path())
         .arg("enable-both")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
     let expected = ["one", "two"]
         .into_iter()
         .map(|s| s.to_string())
@@ -292,11 +337,12 @@ fn enabled_pings() {
 
     let tempdir = tempfile::tempdir().unwrap();
     let sent_pings_dir = tempdir.path().join("sent_pings");
-    cargo_bin_cmd!("enabled-pings")
+    let _drop = cargo_bin_cmd!("enabled-pings")
         .arg(tempdir.path())
         .arg("enable-only-two")
         .assert()
-        .success();
+        .success()
+        .log_on_panic();
 
     let entries = collect_files(&sent_pings_dir);
     assert_eq!(1, entries.len());
