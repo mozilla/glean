@@ -60,15 +60,20 @@ Before submitting a PR:
 - Your code must run and pass all the automated tests before you submit your PR for review.
 - "Work in progress" pull requests are allowed to be submitted, but should be clearly labeled as such and should not be merged until all tests pass and the code has been reviewed.
 - For changes to Rust code
-  - `make test-rust` produces no test failures
+  - `make test-rust` runs without test failures
   - `make lint-rust` runs without emitting any warnings or errors.
   - `make fmt-rust` should be used to format your changed Rust code.
 - For changes to Kotlin code
-  - `make test-kotlin` runs without emitting any warnings or errors.
-  - `make ktlint` runs without emitting any warnings.
+  - `make test-kotlin` runs without test failures.
+  - `make lint-kotlin` runs without emitting any warnings or errors.
+  - `make fmt-kotlin` should be used to format your changed Kotlin code.
 - For changes to Swift code
-  - `make test-swift` (or running tests in Xcode) runs without emitting any warnings or errors.
-  - `make swiftlint` runs without emitting any warnings or errors.
+  - `make test-swift` (or running tests in Xcode) runs without test failures.
+  - `make lint-swift` runs without emitting any warnings or errors.
+- For changes to Python code
+  - `make test-rust` produces no test failures.
+  - `make lint-python` runs without emitting any warnings or errors.
+  - `make fmt-python` should be used to format your changed Python code.
 - Your patch should include new tests that cover your changes. It is your and your reviewer's responsibility to ensure your patch includes adequate tests.
 
 When submitting a PR:
