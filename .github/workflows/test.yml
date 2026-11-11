@@ -780,6 +780,29 @@ jobs:
           echo "::add-matcher::.github/ktlint.json"
           ./gradlew --no-daemon lint ktlint detekt
 
+  lint-swift:
+    runs-on: ubuntu-latest
+    needs: [decide-runs]
+    if: needs.decide-runs.outputs.swift-changed == 'true'
+    steps:
+      - *checkout
+
+      - name: Set up swiftlint
+        env:
+          SWIFTLINT: "ghcr.io/realm/swiftlint:0.65.1"
+        run: |
+          docker pull $SWIFTLINT
+
+          mkdir -p "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/bin" >> $GITHUB_PATH
+
+          printf 'exec docker run -v `pwd`:`pwd` -w `pwd` %s $*' "$SWIFTLINT" > $RUNNER_TEMP/bin/swiftlint
+          chmod +x $RUNNER_TEMP/bin/swiftlint
+
+      - name: Lint Swift
+        run: |
+          make lint-swift
+
   fmt-rust:
     runs-on: ubuntu-latest
     needs: [decide-runs]
@@ -823,6 +846,7 @@ jobs:
       - lint-python
       - lint-rust
       - lint-schema
+      - lint-swift
       - lint-yaml
       - packaging-python-aarch64
       - spelling
