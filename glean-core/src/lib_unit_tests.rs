@@ -239,6 +239,7 @@ fn experimentation_id_is_set_correctly() {
         session_inactivity_timeout_ms: 1_800_000,
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: false,
+        flows: vec![],
     })
     .unwrap();
 
@@ -252,6 +253,71 @@ fn experimentation_id_is_set_correctly() {
     } else {
         panic!("The experimentation id must not be `None`");
     }
+}
+
+#[test]
+fn flow_registry_is_built_from_configuration() {
+    use crate::flows::{FlowDefinition, FlowRole};
+
+    let t = tempfile::tempdir().unwrap();
+    let cfg = InternalConfiguration {
+        data_path: t.path().display().to_string(),
+        application_id: GLOBAL_APPLICATION_ID.into(),
+        language_binding_name: "Rust".into(),
+        upload_enabled: true,
+        max_events: None,
+        delay_ping_lifetime_io: false,
+        app_build: "Unknown".into(),
+        use_core_mps: false,
+        trim_data_to_registered_pings: false,
+        log_level: None,
+        rate_limit: None,
+        enable_event_timestamps: true,
+        experimentation_id: None,
+        enable_internal_pings: true,
+        ping_schedule: Default::default(),
+        ping_lifetime_threshold: 0,
+        ping_lifetime_max_time: 0,
+        max_pending_pings_count: None,
+        max_pending_pings_directory_size: None,
+        session_mode: crate::session::SessionMode::Auto,
+        session_sample_rate: 1.0,
+        session_inactivity_timeout_ms: 1_800_000,
+        events_ping_acceleration_factor: None,
+        enable_store_submitted_pings: false,
+        flows: vec![FlowDefinition {
+            name: "onboarding".into(),
+            events: [
+                ("onboarding.started".to_string(), FlowRole::Start),
+                ("onboarding.finished".to_string(), FlowRole::End),
+            ]
+            .into(),
+            auto_close_timeout_ms: None,
+            disabled: false,
+        }],
+    };
+
+    // The registry has to be in place before `Glean::new()` restores session
+    // state, so it is built in `new_for_subprocess()`, which `new()` calls
+    // first. Subprocesses record events too, so they need it as well.
+    let subprocess = Glean::new_for_subprocess(&cfg, false).unwrap();
+    assert!(subprocess.flow_registry.find("onboarding").is_some());
+    drop(subprocess);
+
+    let glean = Glean::new(cfg).unwrap();
+    let onboarding = glean.flow_registry.find("onboarding").unwrap();
+    let started = glean
+        .flow_registry
+        .lookup("onboarding.started")
+        .expect("entry event should be indexed");
+    assert_eq!(vec![onboarding], started.starts);
+}
+
+#[test]
+fn no_flows_configured_gives_an_empty_registry() {
+    let (glean, _t) = new_glean(None);
+    assert!(glean.flow_registry.is_empty());
+    assert!(glean.flow_registry.lookup("onboarding.started").is_none());
 }
 
 #[test]

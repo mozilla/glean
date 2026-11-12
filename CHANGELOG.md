@@ -3,6 +3,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...main)
 
 * General
+  * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
   * Fixed a race between initialization and `shutdown()` that could crash with "No database found" when recording the `pre_init` health ping or `glean.error.preinit_tasks_overflow`. Both are now recorded on the dispatcher as the final pre-init task, so shutdown waits for them before closing the database ([bug 2072668](https://bugzilla.mozilla.org/show_bug.cgi?id=2072668))
   * Increase the length limit for each `client_info.attribution` field from 255 to 512 bytes ([bug 2079526](https://bugzilla.mozilla.org/show_bug.cgi?id=2079526))
   * In SQLite mode: Replace in-memory table with the old `BTreeMap`-powered in-memory cache ([#3664](https://github.com/mozilla/glean/pull/3664))

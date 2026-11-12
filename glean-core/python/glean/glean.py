@@ -244,6 +244,7 @@ class Glean:
             session_sample_rate=configuration.session_sample_rate,
             session_inactivity_timeout_ms=configuration.session_inactivity_timeout_ms,
             events_ping_acceleration_factor=configuration.events_ping_acceleration_factor,
+            flows=configuration.flows,
         )
 
         _uniffi.glean_initialize(cfg, client_info, callbacks)

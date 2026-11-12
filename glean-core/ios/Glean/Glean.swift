@@ -218,7 +218,8 @@ public final class Glean: @unchecked Sendable {
             sessionMode: configuration.sessionMode,
             sessionSampleRate: configuration.sessionSampleRate,
             sessionInactivityTimeoutMs: configuration.sessionInactivityTimeoutMs,
-            eventsPingAccelerationFactor: configuration.eventsPingAccelerationFactor
+            eventsPingAccelerationFactor: configuration.eventsPingAccelerationFactor,
+            flows: configuration.flows
         )
         let clientInfo = getClientInfo(configuration, buildInfo: buildInfo)
         let callbacks = OnGleanEventsImpl(glean: self)
