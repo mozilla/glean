@@ -22,6 +22,9 @@ public struct Configuration {
     let httpClient: PingUploader
     let maxPendingPingsCount: UInt64?
     let maxPendingPingsDirectorySize: UInt64?
+    let maxRecoverableFailures: UInt32?
+    let maxWaitAttempts: UInt32?
+    let maxPingBodySize: UInt64?
     let eventsPingAccelerationFactor: UInt32?
 
     struct Constants {
@@ -52,6 +55,12 @@ public struct Configuration {
     ///   When exceeded, the oldest pings are deleted. Defaults to 500.
     ///   * maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
     ///   When exceeded, the oldest pings are deleted. Defaults to 50 MB.
+    ///   * maxRecoverableFailures The maximum recoverable failures allowed per uploading window.
+    ///   Default: `3`.
+    ///   * maxWaitAttempts The maximum of `.wait` responses a user may get in a row when
+    ///   calling `get_upload_task`. Default: `3`.
+    ///   * maxPingBodySize The maximum size in bytes a ping body may have to be eligible for upload.
+    ///   Default: 1 MB.
     ///   * sessionMode How Glean manages session boundaries. Default: `.auto`.
     ///   * sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
     ///   * sessionInactivityTimeoutMs Inactivity timeout (ms) before AUTO-mode
@@ -73,6 +82,9 @@ public struct Configuration {
         pingSchedule: [String: [String]] = [:],
         maxPendingPingsCount: UInt64? = nil,
         maxPendingPingsDirectorySize: UInt64? = nil,
+        maxRecoverableFailures: UInt32? = nil,
+        maxWaitAttempts: UInt32? = nil,
+        maxPingBodySize: UInt64? = nil,
         sessionMode: SessionMode = .auto,
         sessionSampleRate: Double = 1.0,
         sessionInactivityTimeoutMs: UInt64 = 1_800_000,
@@ -93,6 +105,9 @@ public struct Configuration {
         self.pingSchedule = pingSchedule
         self.maxPendingPingsCount = maxPendingPingsCount
         self.maxPendingPingsDirectorySize = maxPendingPingsDirectorySize
+        self.maxRecoverableFailures = maxRecoverableFailures
+        self.maxWaitAttempts = maxWaitAttempts
+        self.maxPingBodySize = maxPingBodySize
         self.sessionMode = sessionMode
         self.sessionSampleRate = sessionSampleRate
         self.sessionInactivityTimeoutMs = sessionInactivityTimeoutMs

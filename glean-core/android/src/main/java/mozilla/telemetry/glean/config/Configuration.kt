@@ -35,6 +35,11 @@ import mozilla.telemetry.glean.net.PingUploader
  *           When this limit is exceeded, the oldest pings are deleted. Defaults to 500.
  * @property maxPendingPingsDirectorySize The maximum size in bytes of the pending pings directory.
  *           When this limit is exceeded, the oldest pings are deleted. Defaults to 50 MB.
+ * @property max_recoverable_failures The maximum recoverable failures allowed per uploading window. Defaults to 3.
+ * @property max_wait_attempts The maximum of `Wait` responses a user may get in a row when calling `get_upload_task`.
+ *           Defaults to 3.
+ * @property max_ping_body_size The maximum size in bytes a ping body may have to be eligible for upload.
+ *           Defaults to 1 MB.
  * @property sessionMode How Glean manages session boundaries. Default: [SessionMode.AUTO].
  * @property sessionSampleRate Session sampling rate (0.0–1.0). Default: `1.0`.
  * @property sessionInactivityTimeoutMs Inactivity timeout (milliseconds) before AUTO-mode
@@ -62,6 +67,9 @@ data class Configuration
         val pingSchedule: Map<String, List<String>> = emptyMap(),
         val maxPendingPingsCount: Long? = null,
         val maxPendingPingsDirectorySize: Long? = null,
+        val maxRecoverableFailures: Int? = null,
+        val maxWaitAttempts: Int? = null,
+        val maxPingBodySize: Long? = null,
         val sessionMode: SessionMode = SessionMode.AUTO,
         val sessionSampleRate: Double = 1.0,
         val sessionInactivityTimeoutMs: Long = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
