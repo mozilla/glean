@@ -59,6 +59,10 @@ pub struct Configuration {
     pub ping_lifetime_threshold: usize,
     /// After what time to auto-flush. 0 disables it.
     pub ping_lifetime_max_time: Duration,
+    /// Maximum number of pending pings on disk. Overrides the default when set.
+    pub max_pending_pings_count: Option<u64>,
+    /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
+    pub max_pending_pings_directory_size: Option<u64>,
     /// Session management mode. Default: `Auto`.
     pub session_mode: SessionMode,
     /// Session sampling rate (0.0–1.0). Default: `1.0`.
@@ -125,6 +129,10 @@ pub struct Builder {
     pub ping_lifetime_threshold: usize,
     /// After what time to auto-flush. 0 disables it.
     pub ping_lifetime_max_time: Duration,
+    /// Maximum number of pending pings on disk. Overrides the default when set.
+    pub max_pending_pings_count: Option<u64>,
+    /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
+    pub max_pending_pings_directory_size: Option<u64>,
     /// Session management mode. Default: `Auto`.
     pub session_mode: SessionMode,
     /// Session sampling rate (0.0–1.0). Default: `1.0`.
@@ -162,6 +170,8 @@ impl Builder {
             ping_schedule: HashMap::new(),
             ping_lifetime_threshold: 0,
             ping_lifetime_max_time: Duration::ZERO,
+            max_pending_pings_count: None,
+            max_pending_pings_directory_size: None,
             session_mode: SessionMode::Auto,
             session_sample_rate: 1.0,
             session_inactivity_timeout: Duration::from_secs(30 * 60),
@@ -190,6 +200,8 @@ impl Builder {
             ping_schedule: self.ping_schedule,
             ping_lifetime_threshold: self.ping_lifetime_threshold,
             ping_lifetime_max_time: self.ping_lifetime_max_time,
+            max_pending_pings_count: self.max_pending_pings_count,
+            max_pending_pings_directory_size: self.max_pending_pings_directory_size,
             session_mode: self.session_mode,
             session_sample_rate: self.session_sample_rate,
             session_inactivity_timeout: self.session_inactivity_timeout,
