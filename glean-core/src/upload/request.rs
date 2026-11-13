@@ -61,7 +61,7 @@ pub struct Builder {
     path: Option<String>,
     body: Option<Vec<u8>>,
     headers: HeaderMap,
-    body_max_size: usize,
+    body_max_size: u64,
     body_has_info_sections: Option<bool>,
     ping_name: Option<String>,
     uploader_capabilities: Option<Vec<String>>,
@@ -69,7 +69,7 @@ pub struct Builder {
 
 impl Builder {
     /// Creates a new builder for a PingRequest.
-    pub fn new(language_binding_name: &str, body_max_size: usize) -> Self {
+    pub fn new(language_binding_name: &str, body_max_size: u64) -> Self {
         let mut headers = HashMap::new();
         headers.insert(
             "X-Telemetry-Agent".to_string(),
@@ -185,7 +185,7 @@ impl Builder {
             .body
             .expect("body must be set before attempting to build PingRequest");
 
-        if body.len() > self.body_max_size {
+        if body.len() > self.body_max_size as usize {
             return Err(ErrorKind::PingBodyOverflow(body.len()).into());
         }
 
@@ -241,7 +241,7 @@ impl PingRequest {
     /// * `language_binding_name` - The name of the language used by the binding that instantiated this Glean instance.
     ///                             This is used to build the X-Telemetry-Agent header value.
     /// * `body_max_size` - The maximum size in bytes the compressed ping body may have to be eligible for upload.
-    pub fn builder(language_binding_name: &str, body_max_size: usize) -> Builder {
+    pub fn builder(language_binding_name: &str, body_max_size: u64) -> Builder {
         Builder::new(language_binding_name, body_max_size)
     }
 
