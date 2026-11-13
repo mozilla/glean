@@ -1731,6 +1731,7 @@ fn different_http_error_codes_are_handled() {
             sender: s,
             next_result: next_result_rx,
         })
+        .with_max_recoverable_failures(u32::MAX)
         .build();
 
     glean_core::glean_set_test_mode(true);
