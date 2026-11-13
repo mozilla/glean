@@ -236,6 +236,15 @@ impl Glean {
         if let Some(n) = cfg.max_pending_pings_directory_size {
             upload_manager.set_max_pending_pings_directory_size(n);
         }
+        if let Some(n) = cfg.max_recoverable_failures {
+            upload_manager.set_max_recoverable_failures(n);
+        }
+        if let Some(n) = cfg.max_wait_attempts {
+            upload_manager.set_max_wait_attempts(n);
+        }
+        if let Some(n) = cfg.max_ping_body_size {
+            upload_manager.set_max_ping_body_size(n);
+        }
 
         // We only scan the pending ping directories when calling this from a subprocess,
         // when calling this from ::new we need to scan the directories after dealing with the upload state.
@@ -611,6 +620,9 @@ impl Glean {
             ping_lifetime_max_time: 0,
             max_pending_pings_count: None,
             max_pending_pings_directory_size: None,
+            max_recoverable_failures: None,
+            max_wait_attempts: None,
+            max_ping_body_size: None,
             session_mode: SessionMode::Auto,
             session_sample_rate: 1.0,
             session_inactivity_timeout_ms: 1_800_000,

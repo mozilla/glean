@@ -63,6 +63,12 @@ pub struct Configuration {
     pub max_pending_pings_count: Option<u64>,
     /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
     pub max_pending_pings_directory_size: Option<u64>,
+    /// The maximum recoverable failures allowed per uploading window.
+    pub max_recoverable_failures: Option<u32>,
+    /// The maximum of `Wait` responses a user may get in a row when calling `get_upload_task`.
+    pub max_wait_attempts: Option<u32>,
+    /// The maximum size in bytes a ping body may have to be eligible for upload.
+    pub max_ping_body_size: Option<u64>,
     /// Session management mode. Default: `Auto`.
     pub session_mode: SessionMode,
     /// Session sampling rate (0.0–1.0). Default: `1.0`.
@@ -133,6 +139,12 @@ pub struct Builder {
     pub max_pending_pings_count: Option<u64>,
     /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
     pub max_pending_pings_directory_size: Option<u64>,
+    /// The maximum recoverable failures allowed per uploading window.
+    pub max_recoverable_failures: Option<u32>,
+    /// The maximum of `Wait` responses a user may get in a row when calling `get_upload_task`.
+    pub max_wait_attempts: Option<u32>,
+    /// The maximum size in bytes a ping body may have to be eligible for upload.
+    pub max_ping_body_size: Option<u64>,
     /// Session management mode. Default: `Auto`.
     pub session_mode: SessionMode,
     /// Session sampling rate (0.0–1.0). Default: `1.0`.
@@ -172,6 +184,9 @@ impl Builder {
             ping_lifetime_max_time: Duration::ZERO,
             max_pending_pings_count: None,
             max_pending_pings_directory_size: None,
+            max_recoverable_failures: None,
+            max_wait_attempts: None,
+            max_ping_body_size: None,
             session_mode: SessionMode::Auto,
             session_sample_rate: 1.0,
             session_inactivity_timeout: Duration::from_secs(30 * 60),
@@ -202,6 +217,9 @@ impl Builder {
             ping_lifetime_max_time: self.ping_lifetime_max_time,
             max_pending_pings_count: self.max_pending_pings_count,
             max_pending_pings_directory_size: self.max_pending_pings_directory_size,
+            max_recoverable_failures: self.max_recoverable_failures,
+            max_wait_attempts: self.max_wait_attempts,
+            max_ping_body_size: self.max_ping_body_size,
             session_mode: self.session_mode,
             session_sample_rate: self.session_sample_rate,
             session_inactivity_timeout: self.session_inactivity_timeout,
@@ -303,6 +321,36 @@ impl Builder {
     /// After what time to auto-flush. 0 disables it.
     pub fn with_ping_lifetime_max_time(mut self, value: Duration) -> Self {
         self.ping_lifetime_max_time = value;
+        self
+    }
+
+    /// Maximum number of pending pings on disk.
+    pub fn with_max_pending_pings_count(mut self, value: u64) -> Self {
+        self.max_pending_pings_count = Some(value);
+        self
+    }
+
+    /// Maximum size in bytes of the pending pings directory.
+    pub fn with_max_pending_pings_directory_size(mut self, value: u64) -> Self {
+        self.max_pending_pings_directory_size = Some(value);
+        self
+    }
+
+    /// The maximum recoverable failures allowed per uploading window.
+    pub fn with_max_recoverable_failures(mut self, value: u32) -> Self {
+        self.max_recoverable_failures = Some(value);
+        self
+    }
+
+    /// The maximum of `Wait` responses a user may get in a row when calling `get_upload_task`.
+    pub fn with_max_wait_attempts(mut self, value: u32) -> Self {
+        self.max_wait_attempts = Some(value);
+        self
+    }
+
+    /// The maximum size in bytes a ping body may have to be eligible for upload.
+    pub fn with_max_ping_body_size(mut self, value: u64) -> Self {
+        self.max_ping_body_size = Some(value);
         self
     }
 

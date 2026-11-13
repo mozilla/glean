@@ -9,6 +9,7 @@
   * The uploader treats HTTP codes 408 Request Timeout and 429 Too Many Requests as recoverable errors (pings will be
     retried on next submit) ([#3724](https://github.com/mozilla/glean/pull/3724))
   * Always set `first_run_date` when missing at initialization (and `client_info.os`) to ensure pings are always schema-conform ([#3608](https://github.com/mozilla/glean/pull/3608))
+  * BREAKING CHANGE: Expose `max_recoverable_failures`, `max_wait_attempts` and `max_ping_body_size` as configurable options ([#3771](https://github.com/mozilla/glean/pull/3771))
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
   * Glean is now built with JDK 25. Its Android libraries and the Glean Gradle plugin still target Java 17 ([bug 1785929](https://bugzilla.mozilla.org/show_bug.cgi?id=1785929))

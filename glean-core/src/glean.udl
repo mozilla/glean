@@ -140,6 +140,9 @@ dictionary InternalConfiguration {
     u64 ping_lifetime_max_time; // in millis
     u64? max_pending_pings_count;
     u64? max_pending_pings_directory_size;
+    u32? max_recoverable_failures;
+    u32? max_wait_attempts;
+    u64? max_ping_body_size;
     SessionMode session_mode;
     f64 session_sample_rate; // Must be in [0.0, 1.0]; values outside are clamped.
     u64 session_inactivity_timeout_ms; // Milliseconds; 0 means sessions never time out.

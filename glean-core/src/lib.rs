@@ -177,6 +177,13 @@ pub struct InternalConfiguration {
     pub max_pending_pings_count: Option<u64>,
     /// Maximum size in bytes of the pending pings directory. Overrides the default when set.
     pub max_pending_pings_directory_size: Option<u64>,
+    /// The maximum recoverable failures allowed per uploading window.
+    pub max_recoverable_failures: Option<u32>,
+    /// The maximum of [`PingUploadTask::Wait`](crate::PingUploadTask::Wait) responses a user may get in a row
+    /// when calling [`get_upload_task`](crate::Glean::get_upload_task).
+    pub max_wait_attempts: Option<u32>,
+    /// The maximum size in bytes a ping body may have to be eligible for upload.
+    pub max_ping_body_size: Option<u64>,
     /// Session management mode. Default: `Auto`.
     pub session_mode: session::SessionMode,
     /// The fraction of sessions to sample (0.0–1.0). Default: `1.0` (all sessions).

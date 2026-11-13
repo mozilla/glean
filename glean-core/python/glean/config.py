@@ -42,6 +42,9 @@ class Configuration:
         enable_internal_pings: bool = True,
         max_pending_pings_count: Optional[int] = None,
         max_pending_pings_directory_size: Optional[int] = None,
+        max_recoverable_failures: Optional[int] = None,
+        max_wait_attempts: Optional[int] = None,
+        max_ping_body_size: Optional[int] = None,
         session_mode: SessionMode = SessionMode.AUTO,
         session_sample_rate: float = 1.0,
         session_inactivity_timeout_ms: int = DEFAULT_SESSION_INACTIVITY_TIMEOUT_MS,
@@ -70,6 +73,12 @@ class Configuration:
             max_pending_pings_directory_size (int): Optional. The maximum size in
                 bytes of the pending pings directory. When exceeded, the oldest pings
                 are deleted. Defaults to 50 MB.
+            max_recoverable_failures (int): Optional. The maximum recoverable failures
+                allowed per uploading window. Defaults to 3.
+            max_wait_attempts (int): Optional. The maximum of `Wait` responses a user may get
+                in a row when calling `get_upload_task`. Defaults to 3.
+            max_ping_body_size (int): The maximum size in bytes a ping body may have to be
+                eligible for upload. Optional. Defaults to 1 MB.
             session_mode (SessionMode): How Glean manages session boundaries.
                 Default: `SessionMode.AUTO`.
             session_sample_rate (float): Session sampling rate (0.0–1.0).
@@ -93,6 +102,9 @@ class Configuration:
         self._enable_internal_pings = enable_internal_pings
         self._max_pending_pings_count = max_pending_pings_count
         self._max_pending_pings_directory_size = max_pending_pings_directory_size
+        self._max_recoverable_failures = max_recoverable_failures
+        self._max_wait_attempts = max_wait_attempts
+        self._max_ping_body_size = max_ping_body_size
         self._session_mode = session_mode
         self._session_sample_rate = session_sample_rate
         self._session_inactivity_timeout_ms = session_inactivity_timeout_ms
@@ -151,6 +163,21 @@ class Configuration:
     def max_pending_pings_directory_size(self) -> Optional[int]:
         """The maximum size in bytes of the pending pings directory."""
         return self._max_pending_pings_directory_size
+
+    @property
+    def max_recoverable_failures(self) -> Optional[int]:
+        """The maximum recoverable failures allowed per uploading window."""
+        return self._max_recoverable_failures
+
+    @property
+    def max_wait_attempts(self) -> Optional[int]:
+        """The maximum of `Wait` responses a user may get in a row when calling `get_upload_task`"""
+        return self._max_wait_attempts
+
+    @property
+    def max_ping_body_size(self) -> Optional[int]:
+        """The maximum size in bytes a ping body may have to be eligible for upload"""
+        return self._max_ping_body_size
 
     @property
     def ping_uploader(self) -> net.BaseUploader:
