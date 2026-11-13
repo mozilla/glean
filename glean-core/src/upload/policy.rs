@@ -8,7 +8,7 @@ use malloc_size_of_derive::MallocSizeOf;
 
 const MAX_RECOVERABLE_FAILURES: u32 = 3;
 const MAX_WAIT_ATTEMPTS: u32 = 3;
-const MAX_PING_BODY_SIZE: usize = 1024 * 1024; // 1 MB
+const MAX_PING_BODY_SIZE: u64 = 1024 * 1024; // 1 MB
 
 // Directory safety limit for managing pending pings, along with `MAX_PENDING_PINGS_COUNT`.
 // The default of 50MB is sized more for outage survival than normal day-to-day ping volumes.
@@ -31,7 +31,7 @@ pub struct Policy {
     /// Limiting this is necessary to avoid infinite loops on requesting upload tasks.
     max_wait_attempts: Option<u32>,
     /// The maximum size in bytes a ping body may have to be eligible for upload.
-    max_ping_body_size: Option<usize>,
+    max_ping_body_size: Option<u64>,
     /// The maximum size in byte the pending pings directory may have on disk.
     max_pending_pings_directory_size: Option<u64>,
     /// The maximum number of pending pings on disk.
@@ -58,7 +58,6 @@ impl Policy {
         }
     }
 
-    #[cfg(test)]
     pub fn set_max_recoverable_failures(&mut self, v: Option<u32>) {
         self.max_recoverable_failures = v;
     }
@@ -70,20 +69,18 @@ impl Policy {
         }
     }
 
-    #[cfg(test)]
     pub fn set_max_wait_attempts(&mut self, v: Option<u32>) {
         self.max_wait_attempts = v;
     }
 
-    pub fn max_ping_body_size(&self) -> usize {
+    pub fn max_ping_body_size(&self) -> u64 {
         match &self.max_ping_body_size {
             Some(v) => *v,
-            None => usize::MAX,
+            None => u64::MAX,
         }
     }
 
-    #[cfg(test)]
-    pub fn set_max_ping_body_size(&mut self, v: Option<usize>) {
+    pub fn set_max_ping_body_size(&mut self, v: Option<u64>) {
         self.max_ping_body_size = v;
     }
 
@@ -94,15 +91,15 @@ impl Policy {
         }
     }
 
+    pub fn set_max_pending_pings_directory_size(&mut self, v: Option<u64>) {
+        self.max_pending_pings_directory_size = v;
+    }
+
     pub fn max_pending_pings_count(&self) -> u64 {
         match &self.max_pending_pings_count {
             Some(v) => *v,
             None => u64::MAX,
         }
-    }
-
-    pub fn set_max_pending_pings_directory_size(&mut self, v: Option<u64>) {
-        self.max_pending_pings_directory_size = v;
     }
 
     pub fn set_max_pending_pings_count(&mut self, v: Option<u64>) {
