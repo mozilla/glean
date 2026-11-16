@@ -6,7 +6,6 @@ plugins {
     id 'java'
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'maven-publish'
 }
 
 group = "org.mozilla.telemetry.glean-gradle-plugin"
