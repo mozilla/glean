@@ -64,6 +64,8 @@ Following are some guidelines to ensure compatibility with mozilla-central:
 
 In case of uncertainty defer a decision to :janerik or :chutten.
 
+See also the guidelines on [reviewing Dependabot pull request](../dependabot.md).
+
 #### Manual dependency updates
 
 You can manually check for outdated dependencies using [cargo-outdated].
