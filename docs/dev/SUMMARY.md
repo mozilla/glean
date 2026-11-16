@@ -5,6 +5,8 @@
 - [Release process](cut-a-new-release.md)
 - [Contributing](contributing.md)
     - [Code coverage](code_coverage.md)
+- [Code Review](code_review.md)
+    - [Reviewing Dependabot PRs](dependabot.md)
 - [Developing documentation](docs.md)
 - [Upgrading glean_parser](upgrading-glean-parser.md)
 - [Android bindings](android/index.md)

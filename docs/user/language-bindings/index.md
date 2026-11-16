@@ -60,7 +60,7 @@ The Kotlin SDK can also be used from Java.
 
 [maven]: https://maven.mozilla.org/?prefix=maven2
 
-See [Android](android/) for more on integrating Glean on Android.
+See [Android](android/index.md) for more on integrating Glean on Android.
 
 ### Swift
 
