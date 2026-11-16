@@ -52,7 +52,7 @@ allprojects {
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
 
 // Avoid Gradle namespace collision.  This is here, rather than in `buildscript
@@ -61,13 +61,6 @@ import com.sun.jna.Platform as DefaultPlatform
 
 //  application-services has hooks to download external dependencies here. This
 //  has been removed since `glean-core` doesn't have any external dependencies for now.
-
-Properties localProperties = null
-if (file('local.properties').canRead()) {
-    localProperties = new Properties()
-    localProperties.load(file('local.properties').newDataInputStream())
-    logger.lifecycle('Local configuration: loaded local.properties')
-}
 
 // Default to debug builds, but force release builds on CI
 ext.cargoProfile = "debug"
@@ -156,18 +149,18 @@ subprojects {
         repositories {
             maven {
                 name = "rootProjectBuildDir"
-                url = "file://${project.rootProject.buildDir}/maven"
+                url = rootProject.layout.buildDirectory.dir("maven")
             }
             maven {
                 name = "projectBuildDir"
-                url = "file://${project.buildDir}/maven"
+                url = layout.buildDirectory.dir("maven")
             }
         }
     }
 }
 
 detekt {
-    source.from(files("${projectDir}/glean-core", "${projectDir}/samples/android", "buildSrc"))
+    source.from(files("${projectDir}/glean-core", "${projectDir}/samples/android"))
     config.from(files("${projectDir}/.detekt.yml"))
     buildUponDefaultConfig = true
     reports {
@@ -198,14 +191,14 @@ task ktlint(type: JavaExec, group: "verification") {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
-    args "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
+    args "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "!**/build/**"
 }
 
 task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
-    args "-F", "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "buildSrc/**/*.kt", "!**/build/**"
+    args "-F", "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "!**/build/**"
     jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED") // workaround for java.lang.ExceptionInInitializerError
 }
 
