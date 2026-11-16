@@ -79,10 +79,6 @@ criteria = "safe-to-deploy"
 version = "2.9.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.fsevent-sys]]
-version = "4.1.0"
-criteria = "safe-to-run"
-
 [[exemptions.getrandom]]
 version = "0.2.8"
 criteria = "safe-to-deploy"
@@ -152,7 +148,7 @@ version = "1.2.4"
 criteria = "safe-to-run"
 
 [[exemptions.notify]]
-version = "8.2.0"
+version = "8.2.1"
 criteria = "safe-to-run"
 
 [[exemptions.notify-types]]
@@ -162,6 +158,10 @@ criteria = "safe-to-run"
 [[exemptions.num_cpus]]
 version = "1.15.0"
 criteria = "safe-to-deploy"
+
+[[exemptions.objc2-core-services]]
+version = "0.3.2"
+criteria = "safe-to-run"
 
 [[exemptions.once_cell]]
 version = "1.17.1"
@@ -273,10 +273,6 @@ version = "0.48.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.windows-sys]]
-version = "0.60.2"
-criteria = "safe-to-run"
-
-[[exemptions.windows-sys]]
 version = "0.61.2"
 criteria = "safe-to-run"
 
@@ -284,42 +280,18 @@ criteria = "safe-to-run"
 version = "0.48.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.windows_aarch64_msvc]]
-version = "0.53.1"
-criteria = "safe-to-run"
-
 [[exemptions.windows_i686_gnu]]
 version = "0.48.5"
 criteria = "safe-to-deploy"
-
-[[exemptions.windows_i686_gnu]]
-version = "0.53.1"
-criteria = "safe-to-run"
-
-[[exemptions.windows_i686_gnullvm]]
-version = "0.53.1"
-criteria = "safe-to-run"
 
 [[exemptions.windows_i686_msvc]]
 version = "0.48.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.windows_i686_msvc]]
-version = "0.53.1"
-criteria = "safe-to-run"
-
 [[exemptions.windows_x86_64_gnu]]
 version = "0.48.5"
 criteria = "safe-to-deploy"
 
-[[exemptions.windows_x86_64_gnu]]
-version = "0.53.1"
-criteria = "safe-to-run"
-
 [[exemptions.windows_x86_64_msvc]]
 version = "0.48.5"
 criteria = "safe-to-deploy"
-
-[[exemptions.windows_x86_64_msvc]]
-version = "0.53.1"
-criteria = "safe-to-run"

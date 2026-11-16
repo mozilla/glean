@@ -152,8 +152,8 @@ Services.fog.updateAttribution(
 
 #### Limits
 
-* Each `AttributionMetrics` field inherits the limits of a `string` metric.
-{{#include ../../_includes/string-limits.md}}
+* Each `AttributionMetrics` field must not exceed 512 bytes of UTF-8.
+  Longer values are truncated at a UTF-8 code point boundary.
 
 #### Recorded errors
 

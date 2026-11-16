@@ -582,6 +582,16 @@ who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-run"
 delta = "0.13.0 -> 0.13.4"
 
+[[audits.pulldown-cmark]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.13.4 -> 0.13.5"
+
+[[audits.pulldown-cmark]]
+who = "Jan-Erik Rediger <jrediger@mozilla.com>"
+criteria = "safe-to-run"
+delta = "0.13.5 -> 0.13.6"
+
 [[audits.quote]]
 who = "Jan-Erik Rediger <jrediger@mozilla.com>"
 criteria = "safe-to-deploy"
@@ -1072,3 +1082,9 @@ criteria = "safe-to-deploy"
 user-id = 6743 # Ed Page (epage)
 start = "2023-02-22"
 end = "2026-06-10"
+
+[[trusted.xshell-venv]]
+criteria = "safe-to-deploy"
+user-id = 48 # Jan-Erik Rediger (badboy)
+start = "2022-04-26"
+end = "2027-11-04"

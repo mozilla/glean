@@ -40,6 +40,8 @@ def get_upload_failure_metric():
         ),
         labels=[
             "status_code_4xx",
+            "status_code_408",
+            "status_code_429",
             "status_code_5xx",
             "status_code_unknown",
             "unrecoverable",

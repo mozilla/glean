@@ -15,7 +15,7 @@ use glean_core::{
 
 pub fn dispatcher_benchmark(c: &mut Criterion) {
     // Ensure dispatcher has been created and is usable.
-    dispatcher::flush_init().unwrap();
+    dispatcher::flush_init(|_| {}).unwrap();
 
     // An empty function has size 0. Putting that on the queue should be quick.
     c.bench_function("empty fn", |b| {

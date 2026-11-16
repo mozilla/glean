@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.SimpleTimeZone
 import java.util.concurrent.TimeUnit as AndroidTimeUnit
 
 @Suppress("TopLevelPropertyNaming")
@@ -68,7 +69,23 @@ internal fun getISOTimeString(
 ): String {
     val dateFormat = SimpleDateFormat(DATE_FORMAT_PATTERNS[truncateTo], Locale.US)
     dateFormat.setTimeZone(calendar.getTimeZone())
-    val timeString = StringBuilder(dateFormat.format(calendar.getTime()))
+    var time = calendar.time
+
+    // A day string parses back to midnight at its offset. Format the start of the day with the
+    // offset that makes it read 00:00, so it parses back to the same local day even when DST
+    // changes later that day or skips midnight.
+    if (truncateTo == TimeUnit.DAY) {
+        val start = (calendar.clone() as Calendar).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+        }
+        val wallClockMs = AndroidTimeUnit.HOURS.toMillis(start.get(Calendar.HOUR_OF_DAY).toLong()) +
+            AndroidTimeUnit.MINUTES.toMillis(start.get(Calendar.MINUTE).toLong())
+        val offsetMs = calendar.timeZone.getOffset(start.timeInMillis) - wallClockMs.toInt()
+        dateFormat.setTimeZone(SimpleTimeZone(offsetMs, ""))
+        time = start.time
+    }
+    val timeString = StringBuilder(dateFormat.format(time))
 
     // Due to limitations of SDK version 21, there isn't a way to properly output the time
     // offset with a ':' character:

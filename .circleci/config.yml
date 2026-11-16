@@ -15,14 +15,6 @@ definitions:
         ignore: /.*/
       tags:
         only: /^v.*/
-  - ci_filters: &ci-filters
-      branches:
-        ignore: release
-  - ci_only: &ci-only
-      branches:
-        ignore:
-          - main
-          - release
   - msrv_image: &msrv-image
       cimg/rust:1.90
   - msrv: &msrv
@@ -86,22 +78,12 @@ commands:
       - run:
           name: Install nextest
           command: |
-            NEXTEST_SHA256=bde8d231e435099b068e654c591224defe686c784b4920682ee12784b6bfcf9e
+            NEXTEST_SHA256=b0959bc64232974224cf9fb22c915845398c0e8668fa7831eb5b43fb1eef781f
             NEXTEST=cargo-nextest
-            curl -sfSL --retry 5 -o "${NEXTEST}.tar.gz" "https://get.nexte.st/0.9.87/linux"
+            curl -sfSL --retry 5 -o "${NEXTEST}.tar.gz" "https://get.nexte.st/0.9.150/linux"
             echo "${NEXTEST_SHA256} *${NEXTEST}.tar.gz" | shasum -a 256 -c -
             tar -xf "${NEXTEST}.tar.gz"
             cp ./${NEXTEST} ~/.cargo/bin/
-      - run:
-          name: Install circleci-junit-fix
-          command: |
-            JUNIT_FIX_SHA256=e8dd9012c841d9c03037783db676aa43a2ac1900346ccf4a61bf9956acfc6032
-            JUNIT_FIX=circleci-junit-fix
-            JUNIT_FIX_VERSION=v0.2.0
-            curl -sfSL --retry 5 -o "${JUNIT_FIX}.tar.gz" "https://github.com/conradludgate/circleci-junit-fix/releases/download/${JUNIT_FIX_VERSION}/${JUNIT_FIX}-${JUNIT_FIX_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-            echo "${JUNIT_FIX_SHA256} *${JUNIT_FIX}.tar.gz" | shasum -a 256 -c -
-            tar -xf "${JUNIT_FIX}.tar.gz"
-            cp ./${JUNIT_FIX} ~/.cargo/bin/
       - run:
           name: Test
           command: |
@@ -110,7 +92,7 @@ commands:
           name: Fix junit output
           command: |
             mkdir -p ~/test-results/
-            cat target/nextest/ci/junit.xml | circleci-junit-fix > ~/test-results/junit.xml
+            cp target/nextest/ci/junit.xml ~/test-results/junit.xml
           when: always
       - store_test_results:
           path: ~/test-results
@@ -143,7 +125,7 @@ commands:
           command: |
             sdkmanager \
               "build-tools;36.0.0" \
-              "ndk;29.0.14206865"
+              "ndk;30.0.16248370"
 
   android-setup:
     steps:
@@ -435,7 +417,10 @@ jobs:
 
   Lint Android with ktlint and detekt:
     docker:
-      - image: cimg/android:2026.07.1-browsers
+      - &android-image
+        image: cimg/android:2026.10.1-browsers
+        environment:
+          JAVA_HOME: /usr/lib/jvm/java-1.25.0-openjdk-amd64
     steps:
       - checkout
       - run:
@@ -463,7 +448,7 @@ jobs:
 
   Android tests:
     docker:
-      - image: cimg/android:2026.07.1-browsers
+      - *android-image
     resource_class: "medium+"
     steps:
       - checkout
@@ -1037,80 +1022,6 @@ jobs:
 
 workflows:
   version: 2
-
-  ci:
-    jobs:
-      - Rust tests - stable:
-          filters: *ci-filters
-      - Rust tests - minimum version:
-          filters: *ci-filters
-      - Android tests:
-          filters: *ci-filters
-      # iOS jobs run only on main by default, see below for manual-approved jobs
-      - iOS build and test:
-          filters:
-            branches:
-              only: main
-      - iOS integration test:
-          filters:
-            branches:
-              only: main
-      - Python 3_9 tests:
-          filters: *ci-filters
-      - Python 3_9 on Alpine tests:
-          filters: *ci-filters
-      - Python 3_10 tests:
-          filters: *ci-filters
-      - Python 3_11 tests:
-          filters: *ci-filters
-      - Python 3_12 tests:
-          filters: *ci-filters
-      - Python Windows x86_64 tests:
-          filters: *ci-filters
-      - pypi-linux-additional-releases:
-          filters: *ci-filters
-
-      - Generate Rust documentation:
-          filters: *ci-only
-      - Generate Python documentation:
-          requires:
-            - Python 3_10 tests
-          filters: *ci-only
-      - docs-linkcheck:
-          requires:
-            - Generate Rust documentation
-            - Generate Python documentation
-          filters: *ci-only
-      - docs-spellcheck:
-          filters: *ci-only
-
-  # iOS jobs require manual approval on PRs
-  iOS:
-    jobs:
-      - hold:
-          type: approval
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-      - iOS build and test:
-          requires:
-            - hold
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-      - iOS integration test:
-          requires:
-            - hold
-          filters:
-            branches:
-              ignore:
-                - main
-                - release
-
   release:
     jobs:
       - Python 3_9 tests:

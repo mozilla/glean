@@ -6,10 +6,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
-kotlin {
-    jvmToolchain(rootProject.ext.build.jvmTargetCompatibility)
-}
-
 android {
     namespace = "org.mozilla.samples.gleancore"
 
