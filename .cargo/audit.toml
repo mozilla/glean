@@ -12,8 +12,4 @@ ignore = [
   # Invalid pointer dereference in fmt::Pointer impl for Atomic and Shared when the underlying pointer is invalid.
   # Not exposed to user code, we use only file paths in rkv.
   "RUSTSEC-2026-0204",
-  # libsqlite3-sys
-  # `libsqlite3-sys` via C SQLite CVE-2026-119375.
-  # We need to coordinate an update of rusqlite/libsqlite3-sys with appservices/m-c.
-  "RUSTSEC-2026-0459",
 ]

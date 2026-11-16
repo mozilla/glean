@@ -132,7 +132,7 @@ version = "0.8.6"
 criteria = "safe-to-deploy"
 
 [[exemptions.libsqlite3-sys]]
-version = "0.26.0"
+version = "0.39.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.memchr]]
