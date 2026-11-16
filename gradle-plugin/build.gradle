@@ -37,8 +37,8 @@ if (project.name == 'glean-gradle-plugin') {
 
                     licenses {
                         license {
-                            name = properties.libLicense
-                            url = properties.libLicenseUrl
+                            name = providers.gradleProperty("libLicense").get()
+                            url = providers.gradleProperty("libLicenseUrl").get()
                         }
                     }
 
@@ -50,9 +50,9 @@ if (project.name == 'glean-gradle-plugin') {
                     }
 
                     scm {
-                        connection = properties.libVcsUrl
-                        developerConnection = properties.libVcsUrl
-                        url = properties.libUrl
+                        connection = providers.gradleProperty("libVcsUrl").get()
+                        developerConnection = providers.gradleProperty("libVcsUrl").get()
+                        url = providers.gradleProperty("libUrl").get()
                     }
                 }
             }
