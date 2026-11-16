@@ -714,7 +714,7 @@ impl PingUploadManager {
     ///
     /// # Returns
     ///
-    /// The next [`PingUploadTask`](enum.PingUploadTask.html).
+    /// The next [`PingUploadTask`].
     pub fn get_upload_task(&self, glean: &Glean, log_ping: bool) -> PingUploadTask {
         let task = self.get_upload_task_internal(glean, log_ping);
 
