@@ -17,16 +17,31 @@ import mozilla.telemetry.glean.testing.ErrorType
  * allowing developers to record values that were previously registered in the metrics.yaml file.
  */
 class TimingDistributionMetricType : HistogramBase {
+    // We want lazy initialization so that `accumulateSingleSample` can be put on the dispatcher before Glean is
+    // initialized.
+    // We need eager initialization for a labeled metric.
+    // Thus we keep values passed in the constructor and all access to the underlying metric is gated by `getInner`
+    // below, which ensures lazy initialization in the former case.
     lateinit var inner: TimingDistributionMetric
 
+    var meta: CommonMetricData? = null
+    var timeUnit: TimeUnit? = null
+
     constructor(meta: CommonMetricData, timeUnit: TimeUnit) {
-        Dispatchers.Delayed.launch {
-            inner = TimingDistributionMetric(meta, timeUnit)
-        }
+        this.meta = meta
+        this.timeUnit = timeUnit
     }
 
     constructor(metric: TimingDistributionMetric) {
         inner = metric
+    }
+
+    internal fun getInner(): TimingDistributionMetric {
+        if (!this::inner.isInitialized) {
+            inner = TimingDistributionMetric(meta!!, timeUnit!!)
+        }
+
+        return inner
     }
 
     /**
@@ -34,21 +49,21 @@ class TimingDistributionMetricType : HistogramBase {
      *
      * @return a timer ID to use with `stopAndAccumulate` or `cancel`
      */
-    fun start() = inner.start()
+    fun start() = getInner().start()
 
     /**
      * Stops tracking time for the provided metric and associated timer id and accumulates the sample to the metric.
      *
      * @param timerId A timer ID from a previous `start()` call
      */
-    fun stopAndAccumulate(timerId: GleanTimerId) = inner.stopAndAccumulate(timerId)
+    fun stopAndAccumulate(timerId: GleanTimerId) = getInner().stopAndAccumulate(timerId)
 
     /**
      * Aborts a previous `start()` call.
      *
      * @param timerId A timer ID from a previous `start()` call
      */
-    fun cancel(timerId: GleanTimerId) = inner.cancel(timerId)
+    fun cancel(timerId: GleanTimerId) = getInner().cancel(timerId)
 
     /**
      * Accumulates precisely one signed sample to the metric.
@@ -57,7 +72,7 @@ class TimingDistributionMetricType : HistogramBase {
      */
     fun accumulateSingleSample(sample: Long) {
         Dispatchers.Delayed.launch {
-            inner.accumulateSingleSample(sample)
+            getInner().accumulateSingleSample(sample)
         }
     }
 
@@ -68,7 +83,7 @@ class TimingDistributionMetricType : HistogramBase {
      */
     override fun accumulateSamples(samples: List<Long>) {
         Dispatchers.Delayed.launch {
-            inner.accumulateSamples(samples)
+            getInner().accumulateSamples(samples)
         }
     }
 
@@ -102,7 +117,7 @@ class TimingDistributionMetricType : HistogramBase {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @JvmOverloads
-    fun testGetValue(pingName: String? = null) = inner.testGetValue(pingName)
+    fun testGetValue(pingName: String? = null) = getInner().testGetValue(pingName)
 
     /**
      * Returns the number of errors recorded for the given metric.
@@ -111,5 +126,5 @@ class TimingDistributionMetricType : HistogramBase {
      * @return the number of errors recorded for the metric.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun testGetNumRecordedErrors(error: ErrorType) = inner.testGetNumRecordedErrors(error)
+    fun testGetNumRecordedErrors(error: ErrorType) = getInner().testGetNumRecordedErrors(error)
 }

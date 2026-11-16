@@ -211,9 +211,11 @@ class TimingDistributionMetricTypeTest {
             timeUnit = TimeUnit.SECOND,
         )
 
-        assertThrows(UninitializedPropertyAccessException::class.java) {
-            val timerId = metric.start()
-        }
+        val timerId = metric.start()
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
+        metric.stopAndAccumulate(timerId)
+
+        assertTrue(metric.testGetValue()!!.sum >= 0)
     }
 
     @Test
@@ -232,10 +234,11 @@ class TimingDistributionMetricTypeTest {
             timeUnit = TimeUnit.SECOND,
         )
 
-        assertThrows(UninitializedPropertyAccessException::class.java) {
-            val timerId = metric.start()
-            metric.stopAndAccumulate(timerId)
-        }
+        val timerId = metric.start()
+        metric.stopAndAccumulate(timerId)
+        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
+
+        assertTrue(metric.testGetValue()!!.sum >= 0)
     }
 
     @Test
