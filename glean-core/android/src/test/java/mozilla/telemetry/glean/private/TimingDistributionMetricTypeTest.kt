@@ -7,6 +7,7 @@ package mozilla.telemetry.glean.private
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mozilla.telemetry.glean.Dispatchers
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.GleanBuildInfo
 import mozilla.telemetry.glean.GleanTimerId
@@ -196,46 +197,45 @@ class TimingDistributionMetricTypeTest {
 
     @Test
     fun `Starting a timer before initialization doesn't crash`() {
-        Glean.testDestroyGleanHandle()
+        Glean.testDestroyGleanHandle(true)
+        Dispatchers.Delayed.reset()
 
         val metric = TimingDistributionMetricType(
             CommonMetricData(
-                disabled = false,
                 category = "telemetry",
+                name = "timingdist1",
                 lifetime = Lifetime.PING,
-                name = "timing_distribution_samples",
-                sendInPings = listOf("store1"),
+                sendInPings = listOf("metrics"),
+                disabled = false,
             ),
             timeUnit = TimeUnit.SECOND,
         )
 
-        val timerId = metric.start()
-        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
-        metric.stopAndAccumulate(timerId)
-
-        assertTrue(metric.testGetValue()!!.sum >= 0)
+        assertThrows(UninitializedPropertyAccessException::class.java) {
+            val timerId = metric.start()
+        }
     }
 
     @Test
     fun `Starting and stopping a timer before initialization doesn't crash`() {
-        Glean.testDestroyGleanHandle()
+        Glean.testDestroyGleanHandle(true)
+        Dispatchers.Delayed.reset()
 
         val metric = TimingDistributionMetricType(
             CommonMetricData(
-                disabled = false,
                 category = "telemetry",
+                name = "timingdist2",
                 lifetime = Lifetime.PING,
-                name = "timing_distribution_samples",
-                sendInPings = listOf("store1"),
+                sendInPings = listOf("metrics"),
+                disabled = false,
             ),
             timeUnit = TimeUnit.SECOND,
         )
 
-        val timerId = metric.start()
-        metric.stopAndAccumulate(timerId)
-        Glean.initialize(context, true, buildInfo = GleanBuildInfo.buildInfo)
-
-        assertTrue(metric.testGetValue()!!.sum >= 0)
+        assertThrows(UninitializedPropertyAccessException::class.java) {
+            val timerId = metric.start()
+            metric.stopAndAccumulate(timerId)
+        }
     }
 
     @Test

@@ -102,6 +102,19 @@ internal object Dispatchers {
         }
 
         /**
+         * Clear the queue and reset the dispatcher back to queue all tasks.
+         *
+         * This should be called by tests that need to test this behavior specifically.
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        fun reset() {
+            synchronized(this) {
+                taskQueue.clear()
+                queueInitialTasks.set(true)
+            }
+        }
+
+        /**
          * Helper function to add task to queue.
          */
         @Synchronized
