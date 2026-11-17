@@ -1,5 +1,7 @@
 # Working on unreleased Glean code in mozilla-central
 
+<!-- toc -->
+
 > **Note**: This guide is for mozilla-central Android builds. If you only need to replace the Glean Rust parts, refer to [Developing with a local Glean build](https://firefox-source-docs.mozilla.org/toolkit/components/glean/dev/local_glean.html) in the Firefox Source Docs.
 
 > **Note**: This guide only refers to building Fenix. It should work similarly for Focus Android.
@@ -88,7 +90,36 @@ In `mozilla-central`:
 Now you can build Fenix or Focus, for example with `./mach gradle fenix:assembleFenixDebug`.
 After changes in the Glean repository publish a new package using `./gradlew publishToMavenLocal` and rebuild Fenix.
 
+## Try runs with released versions of Glean
+
+If you want to test out a new Glean release, especially a new major Glean version,
+which also requires changes in application-services follow this process.
+
+1. [Release Glean as usual](../cut-a-new-release.md)
+1. [Update the Glean SDK in mozilla-central](https://firefox-source-docs.mozilla.org/toolkit/components/glean/dev/updating_sdk.html)
+   ```
+   ./mach update-glean 72.0.0
+   ```
+   and follow the printed steps.
+1. Apply any required changes to how the Glean API is used in `third_party/application-services`.
+   Any changes will need to be contributed to [mozilla/application-services](https://github.com/mozilla/application-services) before this Glean release can land in mozilla-central.
+1. Select the `appservices-in-tree` tasks from a full fuzzy try (with duplicates):
+   ```
+   ./mach try fuzzy --full --include-duplicates
+   ```
+   e.g. `test-apk-fenix-debug-appservices-in-tree`
+   You can select the Fenix specific ones in a single command with:
+   ```
+   ./mach try fuzzy --full --include-duplicates -q "'fenix 'appservices-in-tree"
+   ```
+   (Add `--no-push` to see which tasks this will launch)
+1. In the treeherder job overview toggle Tier 3 jobs, so the launched tasks are visible.
+   Any Tier 1/2 Android tasks might fail due to Glean version mismatches. This is expected.
+
 ## Try runs with development versions of Glean
+
+> **Note**: This approach is hacky and might not work as expected or might require additional changes in other related
+> Gradle build files.
 
 Publish Glean to the local maven repository as above.
 
