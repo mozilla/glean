@@ -16,6 +16,10 @@ ignore = [
   # `libsqlite3-sys` via C SQLite CVE-2026-119375.
   # We need to coordinate an update of rusqlite/libsqlite3-sys with appservices/m-c.
   "RUSTSEC-2026-0459",
+  # basic-toml
+  # basic-toml is unmaintained.
+  # Transitive dependency, already replaced upstream and waiting for a release.
+  "RUSTSEC-2026-0374",
   # chrono
   # chrono is unmaintained.
   # We do still use it, with no immediate requirement to switch away.
