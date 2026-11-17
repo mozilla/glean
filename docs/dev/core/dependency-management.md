@@ -82,5 +82,5 @@ cargo update
 ```
 
 [Dependabot]: https://dependabot.com/
-[updating-sdk]: https://firefox-source-docs.mozilla.org/toolkit/components/glean/updating_sdk.html
+[updating-sdk]: https://firefox-source-docs.mozilla.org/toolkit/components/glean/dev/updating_sdk.html
 [cargo-outdated]: https://crates.io/crates/cargo-outdated
