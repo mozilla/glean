@@ -182,35 +182,15 @@ mod unix {
         permissions.set_readonly(true);
         fs::set_permissions(&path, permissions).unwrap();
 
-        let cfg = glean_core::InternalConfiguration {
-            data_path: path.display().to_string(),
-            application_id: GLOBAL_APPLICATION_ID.into(),
-            language_binding_name: "Rust".into(),
-            upload_enabled: true,
-            max_events: None,
-            delay_ping_lifetime_io: false,
-            app_build: "Unknown".into(),
-            use_core_mps: false,
-            trim_data_to_registered_pings: false,
-            log_level: None,
-            rate_limit: None,
-            enable_event_timestamps: false,
-            experimentation_id: None,
-            enable_internal_pings: true,
-            ping_schedule: Default::default(),
-            ping_lifetime_threshold: 0,
-            ping_lifetime_max_time: 0,
-            max_pending_pings_count: None,
-            max_pending_pings_directory_size: None,
-            session_mode: glean_core::SessionMode::Auto,
-            session_sample_rate: 1.0,
-            session_inactivity_timeout_ms: 1_800_000,
-            events_ping_acceleration_factor: None,
-            enable_store_submitted_pings: true,
-            flows: vec![],
-        };
-        let glean = Glean::new(cfg);
-        assert!(glean.is_err());
+        let (glean, _temp) = new_glean(Some(temp));
+
+        let client_id = clientid_metric().get_value(&glean, None);
+        assert!(client_id.is_some());
+
+        let load_error = load_error_metric().get_value(&glean, None).unwrap();
+        assert!(load_error.starts_with("sql error:"));
+
+        fs::set_permissions(&path, original_permissions).unwrap();
     }
 }
 

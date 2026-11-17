@@ -255,32 +255,61 @@ pub fn sqlite_open(path: &Path) -> std::result::Result<(Connection, LoadState), 
     // properly.
     match Connection::new::<Schema>(path) {
         Err(e @ SchemaError::UnsupportedSchemaVersion(_)) => Err(e.into()),
-        Err(e @ SchemaError::Sqlite(SqlError::SqliteFailure(err, _))) => {
-            match err.code {
-                ErrorCode::PermissionDenied => Err(e.into()),
-                ErrorCode::NotADatabase => {
-                    log::debug!("sqlite failed: not a database. starting from scratch.");
-                    fs::remove_file(path).map_err(OpenError::RecoveryError)?;
-                    // Now try again, we only handle that error once.
-                    let conn = Connection::new::<Schema>(path)?;
-                    Ok((conn, LoadState::Err(OpenError::Corrupt)))
-                }
-                ErrorCode::CannotOpen => {
-                    log::debug!("sqlite failed: cannot open. starting from scratch.");
-                    fs::remove_file(path).map_err(OpenError::RecoveryError)?;
-                    // Now try again, we only handle that error once.
-                    let conn = Connection::new::<Schema>(path)?;
-                    Ok((conn, LoadState::Err(OpenError::Corrupt)))
-                }
-                _ => Err(e.into()),
+        Err(e @ SchemaError::Sqlite(SqlError::SqliteFailure(err, _))) => match err.code {
+            ErrorCode::PermissionDenied
+            | ErrorCode::CannotOpen
+            | ErrorCode::ReadOnly
+            | ErrorCode::SystemIoFailure
+            | ErrorCode::DiskFull => {
+                log::debug!("sqlite failed: filesystem error ({err:?}). using in-memory database.");
+                let conn = Connection::new_in_memory::<Schema>()?;
+                Ok((conn, LoadState::Err(e.into())))
             }
-        }
+            ErrorCode::NotADatabase | ErrorCode::DatabaseCorrupt => {
+                log::debug!("sqlite failed: not a database. starting from scratch.");
+                match fs::remove_file(path) {
+                    Ok(()) => match Connection::new::<Schema>(path) {
+                        Ok(conn) => Ok((conn, LoadState::Err(OpenError::Corrupt))),
+                        Err(err) => {
+                            log::debug!(
+                                    "sqlite failed: could not recreate database. using in-memory database."
+                                );
+                            let conn = Connection::new_in_memory::<Schema>()?;
+                            Ok((conn, LoadState::Err(err.into())))
+                        }
+                    },
+                    Err(err) => {
+                        log::debug!(
+                                "sqlite failed: could not remove corrupt database. using in-memory database."
+                            );
+                        let conn = Connection::new_in_memory::<Schema>()?;
+                        Ok((conn, LoadState::Err(OpenError::RecoveryError(err))))
+                    }
+                }
+            }
+            _ => Err(e.into()),
+        },
         Err(err @ SchemaError::Sqlite(SqlError::SqlInputError { .. })) => {
             log::debug!("sqlite failed: schema migration failed. starting from scratch.");
-            fs::remove_file(path).map_err(OpenError::RecoveryError)?;
-            // Now try again, we only handle that error once.
-            let conn = Connection::new::<Schema>(path)?;
-            Ok((conn, LoadState::Err(err.into())))
+            match fs::remove_file(path) {
+                Ok(()) => match Connection::new::<Schema>(path) {
+                    Ok(conn) => Ok((conn, LoadState::Err(err.into()))),
+                    Err(retry_err) => {
+                        log::debug!(
+                            "sqlite failed: could not recreate database. using in-memory database."
+                        );
+                        let conn = Connection::new_in_memory::<Schema>()?;
+                        Ok((conn, LoadState::Err(retry_err.into())))
+                    }
+                },
+                Err(io_err) => {
+                    log::debug!(
+                        "sqlite failed: could not remove database. using in-memory database."
+                    );
+                    let conn = Connection::new_in_memory::<Schema>()?;
+                    Ok((conn, LoadState::Err(OpenError::RecoveryError(io_err))))
+                }
+            }
         }
         other => {
             let conn = other?;
@@ -304,7 +333,12 @@ impl Database {
         log::debug!("Database path: {:?}", path.display());
         let file_size = database_size(&path);
 
-        fs::create_dir_all(&path)?;
+        if let Err(e) = fs::create_dir_all(&path) {
+            log::warn!(
+                "Failed to create database directory at '{}': {e:?}",
+                path.display()
+            );
+        }
         let store_path = path.join(DEFAULT_DATABASE_FILE_NAME);
         let (conn, load_state) = sqlite_open(&store_path)?;
 

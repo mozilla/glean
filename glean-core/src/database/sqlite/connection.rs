@@ -85,6 +85,14 @@ impl Connection {
         Ok(Self::with_connection(conn))
     }
 
+    /// Opens a connection to an in-memory database.
+    pub fn new_in_memory<O>() -> Result<Self, O::Error>
+    where
+        O: ConnectionOpener,
+    {
+        Self::new::<O>(Path::new(":memory:"))
+    }
+
     fn with_connection(conn: rusqlite::Connection) -> Self {
         Self {
             conn: Mutex::new(conn),
