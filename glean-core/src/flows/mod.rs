@@ -1181,6 +1181,7 @@ mod test {
         let old_session = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "alpha", "started");
         glean.handle_client_inactive();
+        // Comfortably outlast the 1ms inactivity timeout.
         std::thread::sleep(std::time::Duration::from_millis(5));
 
         // The timeout is noticed here, ending the old session and starting a new one.
