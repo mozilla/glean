@@ -9,8 +9,10 @@
 buildscript {
     ext.build = [
         ndkVersion: "30.0.16248370", // Keep it in sync in TC Dockerfile.
-        compileSdkVersion: 36,
-        targetSdkVersion: 36,
+        compileSdkMajorVersion: 37,
+        compileSdkMinorVersion: 2,
+        targetSdkVersion: 37,
+        buildToolsVersion: "37.0.0", // Keep it in sync in TC Dockerfile.
         minSdkVersion: 26,
         jvmTargetCompatibility: 17,
     ]
@@ -115,6 +117,7 @@ subprojects {
     afterEvaluate {
         if (it.hasProperty('android')) {
             android {
+                buildToolsVersion = rootProject.ext.build.buildToolsVersion
                 compileOptions {
                     sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
                     targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
