@@ -13,11 +13,12 @@
 use std::collections::btree_map::Entry;
 use std::collections::{BTreeMap, HashMap};
 
-use chrono::Utc;
 use malloc_size_of_derive::MallocSizeOf;
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 
 use crate::common_metric_data::CommonMetricDataInternal;
+use crate::metrics::{EventMetric, MetricType};
 use crate::session::EventSessionContext;
 use crate::{CommonMetricData, Glean, Lifetime};
 
@@ -200,8 +201,8 @@ pub(crate) struct FlowState {
 impl FlowState {
     /// Opens an instance of `flow`, unless one is already active.
     ///
-    /// An entry event recorded while its flow is active does nothing: the
-    /// active instance is kept, not replaced.
+    /// Opening an already-open flow does nothing: the existing active
+    /// instance is kept, not replaced.
     fn open(&mut self, flow: FlowId) {
         if let Entry::Vacant(entry) = self.active.entry(flow) {
             entry.insert(self.next_seq);
@@ -245,13 +246,15 @@ impl FlowEndReason<'_> {
 
 /// Looks up the flows an event metric's recording can affect.
 ///
+/// Takes the `EventMetric` itself, rather than its metadata, because flows are
+/// built from events: `in_session` is not limited to event metrics, but only
+/// an event's recording may open, tag, or close an instance.
+///
 /// Returns `None` unless the metric is in-session and a session is active,
 /// since instances only exist within a session: an event recorded between
 /// sessions neither opens an instance nor is tagged.
-pub(crate) fn lookup<'a>(
-    glean: &'a Glean,
-    meta: &CommonMetricDataInternal,
-) -> Option<&'a EventFlows> {
+pub(crate) fn lookup<'a>(glean: &'a Glean, metric: &EventMetric) -> Option<&'a EventFlows> {
+    let meta = metric.meta();
     if !meta.inner.in_session || !glean.session_manager().is_active() {
         return None;
     }
@@ -298,7 +301,7 @@ pub(crate) fn active_entries(glean: &Glean, event_flows: &EventFlows) -> Vec<Flo
 pub(crate) fn close_instances(
     glean: &Glean,
     event_flows: &EventFlows,
-    meta: &CommonMetricDataInternal,
+    metric: &EventMetric,
 ) -> bool {
     if event_flows.ends.is_empty() {
         return false;
@@ -315,7 +318,7 @@ pub(crate) fn close_instances(
         return false;
     }
 
-    let terminating_event = meta.base_identifier();
+    let terminating_event = metric.meta().base_identifier();
     let mut submitted = false;
     for (flow, seq) in closed {
         submitted |= record_flow_end(
@@ -329,6 +332,19 @@ pub(crate) fn close_instances(
     }
     submitted
 }
+
+/// The metadata `glean.flow_end` is recorded with, built once rather than on
+/// every call, since a session ending can close many instances at once.
+static FLOW_END_META: Lazy<CommonMetricDataInternal> = Lazy::new(|| {
+    CommonMetricData {
+        name: "flow_end".into(),
+        category: "glean".into(),
+        send_in_pings: vec!["events".into()],
+        lifetime: Lifetime::Ping,
+        ..Default::default()
+    }
+    .into()
+});
 
 /// Records a `glean.flow_end` event.
 ///
@@ -345,14 +361,6 @@ pub(crate) fn record_flow_end(
     flow_seq: u64,
     reason: FlowEndReason,
 ) -> bool {
-    let meta = CommonMetricData {
-        name: "flow_end".into(),
-        category: "glean".into(),
-        send_in_pings: vec!["events".into()],
-        lifetime: Lifetime::Ping,
-        ..Default::default()
-    };
-
     let mut extra = HashMap::new();
     extra.insert("flow_name".to_string(), flow_name.to_string());
     extra.insert("flow_seq".to_string(), flow_seq.to_string());
@@ -373,18 +381,11 @@ pub(crate) fn record_flow_end(
             glean.session_manager().compute_event_context()
         }
     };
-    // Wall-clock time, matching `EventMetric::record`. The event's main
-    // timestamp stays on the monotonic clock.
-    if glean.with_timestamps() {
-        extra.insert(
-            "glean_timestamp".to_string(),
-            Utc::now().timestamp_millis().to_string(),
-        );
-    }
+    glean.maybe_inject_glean_timestamp(&mut extra);
 
     glean.event_storage().record(
         glean,
-        &meta.into(),
+        &FLOW_END_META,
         crate::get_timestamp_ms(),
         Some(extra),
         ctx,
@@ -395,9 +396,9 @@ pub(crate) fn record_flow_end(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::metrics::EventMetric;
     use crate::session::SessionMode;
     use crate::{CommonMetricData, InternalConfiguration, Lifetime};
+    use chrono::Utc;
 
     fn definition(name: &str, events: &[(&str, FlowRole)]) -> FlowDefinition {
         FlowDefinition {

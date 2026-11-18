@@ -1580,7 +1580,10 @@ impl Glean {
     ///
     /// Uses the wall clock, matching `EventMetric::record`. The event's main
     /// `timestamp` stays on the monotonic clock.
-    fn maybe_inject_glean_timestamp(&self, extra: &mut std::collections::HashMap<String, String>) {
+    pub(crate) fn maybe_inject_glean_timestamp(
+        &self,
+        extra: &mut std::collections::HashMap<String, String>,
+    ) {
         if self.with_timestamps {
             let precise_timestamp = Utc::now().timestamp_millis() as u64;
             extra.insert("glean_timestamp".to_string(), precise_timestamp.to_string());

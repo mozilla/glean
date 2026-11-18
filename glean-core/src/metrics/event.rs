@@ -174,7 +174,7 @@ impl EventMetric {
         // Flow boundaries are handled while this event is recorded. Coming after
         // `should_record()` and extra validation, an event that isn't recorded
         // never opens or closes an instance.
-        let event_flows = flows::lookup(glean, &self.meta);
+        let event_flows = flows::lookup(glean, self);
 
         // 1. Open any instance this event starts, so it is tagged with it below.
         if let Some(event_flows) = event_flows {
@@ -200,7 +200,7 @@ impl EventMetric {
         // 4. Close any instance this event ends, recording `glean.flow_end` after
         //    the event so it takes the higher `session.event_seq`.
         if let Some(event_flows) = event_flows {
-            submitted |= flows::close_instances(glean, event_flows, &self.meta);
+            submitted |= flows::close_instances(glean, event_flows, self);
         }
 
         submitted
