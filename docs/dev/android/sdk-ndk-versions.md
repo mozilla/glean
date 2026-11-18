@@ -2,9 +2,9 @@
 
 The Glean SDK implementation requires the following Android SDK/NDK tooling:
 
-* SDK API 35
-    * Look for `android-35` in the SDK manager
-    * or install with: `sdkmanager --verbose "platforms;android-35"`
+* SDK API 37.2
+    * Look for `android-37.2` in the SDK manager
+    * or install with: `sdkmanager --verbose "platforms;android-37.2"`
 * Android Command line tools
     * Download link: <https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip>
 * NDK r30
@@ -23,7 +23,7 @@ All locations need to be updated on upgrades:
         * `sdkmanager 'build-tools;36.0.0'`
         * `image: circleci/android:2025.10.1-browsers`
     * `taskcluster/docker/linux/Dockerfile`.
-        * `ENV ANDROID_BUILD_TOOLS "36.0.0"`
+        * `ENV ANDROID_BUILD_TOOLS "37.0.0"`
         * `ENV ANDROID_TOOLS_VERSION "16111833"`
-        * `ENV ANDROID_PLATFORM_VERSION "36"`
+        * `ENV ANDROID_PLATFORM_VERSION "37.2"`
         * `ENV ANDROID_NDK_VERSION "30.0.16248370"`

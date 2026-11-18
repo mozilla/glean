@@ -14,7 +14,7 @@ android {
     namespace = "mozilla.telemetry.glean_native"
 
     ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdk = rootProject.ext.build.compileSdkVersion
+    compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
 
     defaultConfig {
         minSdk = rootProject.ext.build['minSdkVersion']
