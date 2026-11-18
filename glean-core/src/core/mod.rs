@@ -201,7 +201,7 @@ pub struct Glean {
     pub(crate) with_timestamps: bool,
     pub(crate) ping_schedule: HashMap<String, Vec<String>>,
     pub(crate) flow_registry: FlowRegistry,
-    #[ignore_malloc_size_of = "small, and behind a lock"]
+    #[ignore_malloc_size_of = "TODO: Expose flow state memory allocations (bug 1960592)"]
     pub(crate) flow_state: Mutex<FlowState>,
     #[ignore_malloc_size_of = "TODO: Expose session memory allocations (bug 2043355)"]
     pub(crate) session_manager: SessionManager,
