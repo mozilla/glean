@@ -22,36 +22,13 @@ dependencies {
     implementation localGroovy()
 }
 
+apply from: "$rootDir/publish.gradle"
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        maven(MavenPublication) { publication ->
             from components.java
-            pom {
-                groupId = rootProject.ext.library.groupId
-                artifactId = project.ext.artifactId
-                description = project.ext.description
-                version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
-
-                licenses {
-                    license {
-                        name = providers.gradleProperty("libLicense").get()
-                        url = providers.gradleProperty("libLicenseUrl").get()
-                    }
-                }
-
-                developers {
-                    developer {
-                        name = 'Mozilla Glean Team'
-                        email = 'glean-team@mozilla.com'
-                    }
-                }
-
-                scm {
-                    connection = providers.gradleProperty("libVcsUrl").get()
-                    developerConnection = providers.gradleProperty("libVcsUrl").get()
-                    url = providers.gradleProperty("libUrl").get()
-                }
-            }
+            configurePom(publication, project.ext.artifactId)
         }
     }
 }
