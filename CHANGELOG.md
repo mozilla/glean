@@ -9,6 +9,7 @@
   * Updated Kotlin to 2.4.21
   * Updated to Android Gradle Plugin 9.5.1 and Gradle 9.9.1
   * Updated Android SDK target to version 37. Apps using Glean now need to compile against Android SDK 37.2 or newer
+  * The Glean Gradle plugin's metrics docs task works with the Gradle configuration cache and prints `glean_parser`'s output as it runs. A failed metrics code or docs generation now fails with the standard Gradle task error instead of a Glean-specific message
 
 # v71.1.0 (2026-11-16)
 

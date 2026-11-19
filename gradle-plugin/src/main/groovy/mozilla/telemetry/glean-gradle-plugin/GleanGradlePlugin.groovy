@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -261,16 +260,6 @@ except:
                         args file.path
                     }
                 }
-
-                // Only show the output if something went wrong.
-                ignoreExitValue = true
-                standardOutput = System.out
-                errorOutput = System.err
-                doLast {
-                    if (executionResult.get().exitValue != 0) {
-                        throw new GradleException("Glean code generation failed.\n\n${standardOutput.toString()}")
-                    }
-                }
             }
 
             TaskProvider<Exec> generateGleanMetricsDocs = project.tasks.register("${TASK_NAME_PREFIX}DocsFor${variant.name.capitalize()}", Exec) {
@@ -330,18 +319,8 @@ except:
                     // Add the potential 'metrics.yaml' files at evaluation-time, rather than
                     // configuration-time. Otherwise the Gradle build will fail.
                     inputs.files.filter { it.exists() }.forEach{ file ->
-                        project.logger.lifecycle("Glean SDK - generating docs for ${file.path} in $gleanDocsDirectory")
+                        logger.lifecycle("Glean SDK - generating docs for ${file.path} in $gleanDocsDirectory")
                         args file.path
-                    }
-                }
-
-                // Only show the output if something went wrong.
-                ignoreExitValue = true
-                standardOutput = new ByteArrayOutputStream()
-                errorOutput = standardOutput
-                doLast {
-                    if (executionResult.get().exitValue != 0) {
-                        throw new GradleException("Glean documentation generation failed.\n\n${standardOutput.toString()}")
                     }
                 }
             }
@@ -497,7 +476,7 @@ except:
 
         setupExtractMetricsFromAARTasks(project)
 
-        project.configurations.all {
+        project.configurations.configureEach {
             resolutionStrategy.capabilitiesResolution.withCapability("org.mozilla.telemetry:glean-native") {
                 def toBeSelected = candidates.find { it.id instanceof ModuleComponentIdentifier && it.id.module.contains('geckoview') }
                 if (toBeSelected != null) {
