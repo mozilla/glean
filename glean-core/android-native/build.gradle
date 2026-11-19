@@ -125,50 +125,22 @@ artifacts {
 apply from: "$rootDir/publish.gradle"
 ext.configurePublish()
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Publish a second package named `glean-native-forUnitTests` to Maven with the
-            // `forUnitTests` output.  This contains the same content as our `forUnitTests`
-            // configuration. Publishing it allows the android-components code to depend on it.
-            forUnitTests(MavenPublication) {
-                artifact packageLibsForTest
-                artifact file("${rootProject.projectDir}/DEPENDENCIES.md"), {
-                    extension = "LICENSES.md"
-                }
-                pom {
-                    groupId = rootProject.ext.library.groupId
-                    artifactId = "${project.ext.artifactId}-forUnitTests"
-                    description = project.ext.description
-                    // For mavenLocal publishing workflow, increment the version number every publish.
-                    version = rootProject.ext.library.version + (rootProject.hasProperty('local') ? '-' + rootProject.property('local') : '')
-                    packaging = "jar"
-
-                    licenses {
-                        license {
-                            name = libLicense
-                            url = libLicenseUrl
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            name = 'Sync Team'
-                            email = 'sync-team@mozilla.com'
-                        }
-                    }
-
-                    scm {
-                        connection = libVcsUrl
-                        developerConnection = libVcsUrl
-                        url = libUrl
-                    }
-                }
-
-                // This is never the publication we want to use when publishing a
-                // parent project with us as a child `project()` dependency.
-                alias = true
+publishing {
+    publications {
+        // Publish a second package named `glean-native-forUnitTests` to Maven with the
+        // `forUnitTests` output.  This contains the same content as our `forUnitTests`
+        // configuration. Publishing it allows the android-components code to depend on it.
+        forUnitTests(MavenPublication) { publication ->
+            artifact packageLibsForTest
+            artifact file("${rootProject.projectDir}/DEPENDENCIES.md"), {
+                extension = "LICENSES.md"
             }
+            configurePom(publication, "${project.ext.artifactId}-forUnitTests")
+            pom.packaging = "jar"
+
+            // This is never the publication we want to use when publishing a
+            // parent project with us as a child `project()` dependency.
+            alias = true
         }
     }
 }
