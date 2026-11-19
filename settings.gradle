@@ -13,6 +13,14 @@ buildscript {
 }
 rootProject.name = "glean"
 
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 def setupProject(name, projectProps) {
     def path = projectProps.path
     def description = projectProps.description
