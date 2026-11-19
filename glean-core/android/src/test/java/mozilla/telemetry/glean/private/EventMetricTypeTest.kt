@@ -320,7 +320,7 @@ class EventMetricTypeTest {
         assertEquals("POST", request.method)
         val applicationId = "mozilla-telemetry-glean-test"
         assert(
-            request.path!!.startsWith("/submit/$applicationId/events/"),
+            request.target.startsWith("/submit/$applicationId/events/"),
         )
         val pingJsonData = request.getPlainBody()
         val pingJson = JSONObject(pingJsonData)

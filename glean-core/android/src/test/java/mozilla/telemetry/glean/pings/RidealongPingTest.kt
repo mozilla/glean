@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.scheduler
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mockwebserver3.MockWebServer
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
@@ -14,7 +15,6 @@ import mozilla.telemetry.glean.private.PingType
 import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -46,7 +46,7 @@ class RidealongPingTest {
 
     @After
     fun teardown() {
-        server.shutdown()
+        server.close()
     }
 
     @Test
@@ -81,11 +81,11 @@ class RidealongPingTest {
         triggerWorkManager(context)
 
         var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        var docType = request.path!!.split("/")[3]
+        var docType = request.target.split("/")[3]
         assertEquals("baseline", docType)
 
         request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        docType = request.path!!.split("/")[3]
+        docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
     }
 }

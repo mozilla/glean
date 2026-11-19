@@ -163,10 +163,10 @@ class GleanDebugActivityTest {
         val request = server.takeRequest(10L, TimeUnit.SECONDS)!!
 
         assertTrue(
-            request.requestUrl!!.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics"),
+            request.url.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics"),
         )
 
-        server.shutdown()
+        server.close()
     }
 
     @Test
@@ -218,14 +218,14 @@ class GleanDebugActivityTest {
 
         assertTrue(
             "Request path must be correct",
-            request.requestUrl!!.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics"),
+            request.url.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test/metrics"),
         )
 
         // resetGlean doesn't actually reset the debug view tag,
         // so we might have a tag from other tests here.
         assertNotEquals("inv@lid_id", request.headers.get("X-Debug-ID"))
 
-        server.shutdown()
+        server.close()
     }
 
     @Test
@@ -277,13 +277,13 @@ class GleanDebugActivityTest {
 
             assertTrue(
                 "Request path must be correct",
-                request.requestUrl!!.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test"),
+                request.url.encodedPath.startsWith("/submit/mozilla-telemetry-glean-test"),
             )
 
             assertEquals(expectedTags, request.headers.get("X-Source-Tags"))
         }
 
-        server.shutdown()
+        server.close()
     }
 
     @Ignore("Fails with robolectric 4.5.1 - see bug 1698471")

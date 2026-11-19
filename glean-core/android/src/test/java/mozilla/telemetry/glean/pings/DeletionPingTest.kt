@@ -73,7 +73,7 @@ class DeletionPingTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 
@@ -99,7 +99,7 @@ class DeletionPingTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("deletion-request", docType)
 
         // File is deleted afterwards.
@@ -157,8 +157,8 @@ class DeletionPingTest {
         triggerWorkManager(context)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        var docType = request.path!!.split("/")[3]
-        var docId = request.path!!.split("/")[5]
+        var docType = request.target.split("/")[3]
+        var docId = request.target.split("/")[5]
         assertEquals("Should have received a deletion-request ping", "deletion-request", docType)
         assertEquals("Should be the manually constructed ping", deletionPingId, docId)
 
@@ -193,10 +193,10 @@ class DeletionPingTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("deletion-request", docType)
 
-        val body = decompressGZIP(request.body.readByteArray())
+        val body = decompressGZIP(request.body!!.toByteArray())
 
         // Parse the body back into JSON
         val deletionPing = JSONObject(body)

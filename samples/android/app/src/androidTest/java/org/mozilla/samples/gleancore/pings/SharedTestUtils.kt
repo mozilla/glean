@@ -4,16 +4,13 @@
 
 package org.mozilla.samples.gleancore.pings
 
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.RecordedRequest
 import mozilla.telemetry.glean.utils.decompressGZIP
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.ByteArrayInputStream
 import java.util.concurrent.TimeUnit
-import java.util.zip.GZIPInputStream
 
 /**
  * Create a mock webserver that accepts all requests and replies with "OK".
@@ -23,20 +20,12 @@ internal fun createMockWebServer(): MockWebServer {
     val server = MockWebServer()
     server.dispatcher = (
         object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse().setBody("OK")
+            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse(body = "OK")
         }
     )
+    server.start()
     return server
 }
-
-/**
- * Decompress the GZIP returned by the glean-core layer.
- *
- * @param data the gzipped [ByteArray] to decompress
- * @return a [String] containing the uncompressed data.
- */
-fun decompressGZIP(data: ByteArray): String =
-    GZIPInputStream(ByteArrayInputStream(data)).bufferedReader().use(BufferedReader::readText)
 
 /**
  * Convenience method to get the body of a request as a String.
@@ -46,11 +35,10 @@ fun decompressGZIP(data: ByteArray): String =
  * @return a [String] containing the body of the request.
  */
 fun RecordedRequest.getPlainBody(): String =
-    if (this.getHeader("Content-Encoding") == "gzip") {
-        val bodyInBytes = this.body.readByteArray()
-        decompressGZIP(bodyInBytes)
+    if (this.headers["Content-Encoding"] == "gzip") {
+        decompressGZIP(this.body!!.toByteArray())
     } else {
-        this.body.readUtf8()
+        this.body!!.utf8()
     }
 
 /**
@@ -70,7 +58,7 @@ fun waitForPingContent(
     @Suppress("LoopWithTooManyJumpStatements")
     for (ignored in 1..maxAttempts) {
         val request = server.takeRequest(20L, TimeUnit.SECONDS) ?: break
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         if (pingName == docType) {
             parsedPayload = JSONObject(request.getPlainBody())
             if (pingReason == null) {

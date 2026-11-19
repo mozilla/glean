@@ -6,10 +6,9 @@ package mozilla.telemetry.glean.net
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import mozilla.telemetry.glean.config.Configuration
+import mozilla.telemetry.glean.getMockWebServer
 import mozilla.telemetry.glean.getPlainBody
 import mozilla.telemetry.glean.utils.argumentCaptor
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -131,8 +130,7 @@ class HttpURLConnectionUploaderTest {
 
     @Test
     fun `upload() correctly uploads the ping data`() {
-        val server = MockWebServer()
-        server.enqueue(MockResponse().setBody("OK"))
+        val server = getMockWebServer()
 
         val testConfig = testDefaultConfig.copy(
             serverEndpoint = "http://" + server.hostName + ":" + server.port,
@@ -151,11 +149,11 @@ class HttpURLConnectionUploaderTest {
         assertNotNull(client.upload(capableRequest))
 
         val request = server.takeRequest()
-        assertEquals(testPath, request.path)
+        assertEquals(testPath, request.target)
         assertEquals("POST", request.method)
         assertEquals(testPing, request.getPlainBody())
 
-        server.shutdown()
+        server.close()
     }
 
     @Test
@@ -167,8 +165,7 @@ class HttpURLConnectionUploaderTest {
 
     @Test
     fun `upload() must not transmit any cookie`() {
-        val server = MockWebServer()
-        server.enqueue(MockResponse().setBody("OK"))
+        val server = getMockWebServer()
 
         val testConfig = testDefaultConfig.copy(
             serverEndpoint = "http://localhost:" + server.port,
@@ -214,7 +211,7 @@ class HttpURLConnectionUploaderTest {
         assertNotNull(client.upload(capableRequest))
 
         val request = server.takeRequest()
-        assertEquals(testPath, request.path)
+        assertEquals(testPath, request.target)
         assertEquals("POST", request.method)
         assertEquals(testPing, request.getPlainBody())
         assertTrue(request.headers.values("Cookie").isEmpty())
@@ -223,7 +220,7 @@ class HttpURLConnectionUploaderTest {
         assertEquals(1, cookieManager.cookieStore.cookies.size)
         assertEquals("cookie-time2", cookieManager.cookieStore.cookies[0].name)
 
-        server.shutdown()
+        server.close()
     }
 
     @Test

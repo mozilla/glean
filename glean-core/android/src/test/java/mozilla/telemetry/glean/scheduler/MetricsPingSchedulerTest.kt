@@ -331,7 +331,7 @@ class MetricsPingSchedulerTest {
 
             // Fetch the ping from the server and decode its JSON body.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -353,7 +353,7 @@ class MetricsPingSchedulerTest {
                 metricsJson.getJSONObject("ping_info").getString("reason"),
             )
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 
@@ -592,7 +592,7 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -629,7 +629,7 @@ class MetricsPingSchedulerTest {
                 testExperiment.getString("branch"),
             )
         } finally {
-            server.shutdown()
+            server.close()
 
             // Reset Glean.
             Glean.testDestroyGleanHandle()
@@ -801,7 +801,7 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -815,7 +815,7 @@ class MetricsPingSchedulerTest {
                 metricsJsonData.contains(expectedValue),
             )
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 
@@ -880,7 +880,7 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -904,7 +904,7 @@ class MetricsPingSchedulerTest {
                 testMetric.testGetValue(),
             )
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 
@@ -997,7 +997,7 @@ class MetricsPingSchedulerTest {
 
             // Wait for the metrics ping to be received.
             val request = server.takeRequest(20L, AndroidTimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'metrics' ping", "metrics", docType)
 
             val metricsJsonData = request.getPlainBody()
@@ -1011,7 +1011,7 @@ class MetricsPingSchedulerTest {
                 metricsJsonData.contains(expectedValue),
             )
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 }
