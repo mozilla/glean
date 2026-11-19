@@ -20,9 +20,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = "https://plugins.gradle.org/m2/"
-        }
+        gradlePluginPortal()
     }
     dependencies {
         // NOTE: Do not place your application dependencies here; they belong
@@ -93,7 +91,6 @@ ext.rustTargets = [
 
 // Generate libs for our current platform so we can run unit tests.
 switch (DefaultPlatform.RESOURCE_PREFIX) {
-    case 'darwin':
     case 'darwin-x86-64':
         ext.nativeRustTarget = 'darwin-x86-64'
         break
