@@ -24,7 +24,7 @@ def setupProject(name, projectProps) {
 
     // project(...) gives us a skeleton project that we can't set ext.* on
     gradle.beforeProject { project ->
-        // However, the "afterProject" listener iterates over every project and gives us the actual project
+        // However, the "beforeProject" listener iterates over every project and gives us the actual project
         // So, once we filter for the project we care about, we can set whatever we want
         if (project.name == name) {
             project.ext.description = description
@@ -48,7 +48,7 @@ gradle.projectsLoaded { ->
     gradle.rootProject.ext.library = [
         // You can use -Plocal=true to help with mavenLocal publishing workflow.
         // It makes a fake version number that's smaller than any published version,
-        // which can be depended on specifically by the ./build-scripts/substitute-local-appservices.gradle
+        // which can be depended on specifically by the ./build-scripts/substitute-local-glean.gradle
         // but which is unlikely to be depended on by accident otherwise.
         version: gradle.rootProject.hasProperty('local') ? '0.0.1-SNAPSHOT' : buildconfig.libraryVersion,
         groupId: buildconfig.groupId,
