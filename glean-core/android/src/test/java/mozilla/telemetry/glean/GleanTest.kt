@@ -85,7 +85,7 @@ class GleanTest {
         assertEquals(1, server.requestCount)
 
         var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        var docType = request.path!!.split("/")[3]
+        var docType = request.target.split("/")[3]
         assertEquals("baseline", docType)
     }
 
@@ -107,7 +107,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
-        assertEquals(request!!.getHeader("X-Debug-ID"), "this-ping-is-tagged")
+        assertEquals(request!!.headers["X-Debug-ID"], "this-ping-is-tagged")
     }
 
     @Test
@@ -244,7 +244,7 @@ class GleanTest {
 
             for (ignored in 1..5) {
                 val request = server.takeRequest(5L, TimeUnit.SECONDS)!!
-                val docType = request.path!!.split("/")[3]
+                val docType = request.target.split("/")[3]
 
                 val json = JSONObject(request.getPlainBody())
                 checkPingSchema(json)
@@ -288,7 +288,7 @@ class GleanTest {
                 }
             }
         } finally {
-            server.shutdown()
+            server.close()
             lifecycleRegistry.removeObserver(gleanLifecycleObserver)
         }
     }
@@ -318,11 +318,11 @@ class GleanTest {
             // Session recovery emits a session_end event for the previous abnormal session,
             // which is flushed as an events ping before the dirty_startup baseline ping.
             var request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-            var docType = request.path!!.split("/")[3]
+            var docType = request.target.split("/")[3]
             assertEquals("The first ping must be the session-recovery 'events' ping", "events", docType)
 
             request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-            docType = request.path!!.split("/")[3]
+            docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             var baselineJson = JSONObject(request.getPlainBody())
@@ -330,12 +330,12 @@ class GleanTest {
             checkPingSchema(baselineJson)
 
             request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-            docType = request.path!!.split("/")[3]
+            docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
             baselineJson = JSONObject(request.getPlainBody())
             assertEquals("active", baselineJson.getJSONObject("ping_info")["reason"])
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 
@@ -558,7 +558,7 @@ class GleanTest {
 
         // Validate the received data.
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals(pingName, docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -757,7 +757,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 
@@ -817,7 +817,7 @@ class GleanTest {
             triggerWorkManager(context)
 
             val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-            val docType = request.path!!.split("/")[3]
+            val docType = request.target.split("/")[3]
             assertEquals("The received ping must be a 'baseline' ping", "baseline", docType)
 
             val baselineJson = JSONObject(request.getPlainBody())
@@ -828,7 +828,7 @@ class GleanTest {
             val appLifetimeStringMetrics = appLifetimeMetricsObject.getJSONObject("string")
             assertEquals("HELLOOOOO!", appLifetimeStringMetrics.get("telemetry.app_lifetime"))
         } finally {
-            server.shutdown()
+            server.close()
         }
     }
 
@@ -852,7 +852,7 @@ class GleanTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        assertEquals(request.getHeader("X-Debug-ID"), "valid-tag")
+        assertEquals(request.headers["X-Debug-ID"], "valid-tag")
     }
 
     @Ignore("Bug 1685273: Frequent intermittent failures")
@@ -931,7 +931,7 @@ class GleanTest {
 
         // Validate the received data.
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("deletion-request", docType)
     }
 
@@ -978,7 +978,7 @@ class GleanTest {
         val request = server.takeRequest(20L, TimeUnit.SECONDS)
         val expected = Date()
 
-        val dateHeader = request!!.getHeader("Date")!!
+        val dateHeader = request!!.headers["Date"]!!
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
         dateFormat.timeZone = TimeZone.getTimeZone("GMT")
         val dateParsed = dateFormat.parse(dateHeader)!!

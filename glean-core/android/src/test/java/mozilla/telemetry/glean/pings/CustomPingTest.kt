@@ -5,6 +5,7 @@
 package mozilla.telemetry.glean.scheduler
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import mockwebserver3.MockWebServer
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.delayMetricsPing
 import mozilla.telemetry.glean.getContext
@@ -21,7 +22,6 @@ import mozilla.telemetry.glean.resetGlean
 import mozilla.telemetry.glean.testing.GleanTestRule
 import mozilla.telemetry.glean.triggerWorkManager
 import mozilla.telemetry.glean.utils.tryGetLong
-import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -56,7 +56,7 @@ class CustomPingTest {
 
     @After
     fun teardown() {
-        server.shutdown()
+        server.close()
     }
 
     @Test
@@ -91,7 +91,7 @@ class CustomPingTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
     }
 
@@ -131,7 +131,7 @@ class CustomPingTest {
 
         // Receive the first ping.
         var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        var docType = request.path!!.split("/")[3]
+        var docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
 
         // Not much data in these pings,
@@ -143,7 +143,7 @@ class CustomPingTest {
 
         // Receive the second ping.
         request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        docType = request.path!!.split("/")[3]
+        docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
 
         pingJson = JSONObject(request.getPlainBody())
@@ -222,7 +222,7 @@ class CustomPingTest {
         var request = server.takeRequest(2L, TimeUnit.SECONDS)!!
         // Assert we only got the one:
         assertNull(server.takeRequest(2L, TimeUnit.SECONDS))
-        var docType = request.path!!.split("/")[3]
+        var docType = request.target.split("/")[3]
         assertEquals(pingName, docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -266,7 +266,7 @@ class CustomPingTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(2L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
 
         // Now disable the custom ping using Server Knobs

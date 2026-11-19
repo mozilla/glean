@@ -15,22 +15,21 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.RecordedRequest
 import mozilla.telemetry.glean.config.Configuration
 import mozilla.telemetry.glean.private.TimeUnit
 import mozilla.telemetry.glean.scheduler.MetricsPingScheduler
 import mozilla.telemetry.glean.scheduler.PingUploadWorker
 import mozilla.telemetry.glean.utils.decompressGZIP
 import mozilla.telemetry.glean.utils.getISOTimeString
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
 import org.junit.Assert
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.robolectric.shadows.ShadowLog
-import java.io.ByteArrayInputStream
 import java.util.Calendar
 import java.util.TimeZone
 import java.util.UUID
@@ -218,9 +217,10 @@ internal fun getMockWebServer(): MockWebServer {
     val server = MockWebServer()
     server.dispatcher = (
         object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse().setBody("OK")
+            override fun dispatch(request: RecordedRequest): MockResponse = MockResponse(body = "OK")
         }
     )
+    server.start()
     return server
 }
 
@@ -232,11 +232,10 @@ internal fun getMockWebServer(): MockWebServer {
  * @return a [String] containing the body of the request.
  */
 fun RecordedRequest.getPlainBody(): String =
-    if (this.getHeader("Content-Encoding") == "gzip") {
-        val bodyInBytes = ByteArrayInputStream(this.body.readByteArray()).readBytes()
-        decompressGZIP(bodyInBytes)
+    if (this.headers["Content-Encoding"] == "gzip") {
+        decompressGZIP(this.body!!.toByteArray())
     } else {
-        this.body.readUtf8()
+        this.body!!.utf8()
     }
 
 /**
@@ -318,7 +317,7 @@ fun waitForPingContent(
     @Suppress("LoopWithTooManyJumpStatements")
     for (ignored in 1..maxAttempts) {
         val request = server.takeRequest(20L, java.util.concurrent.TimeUnit.SECONDS) ?: break
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         if (pingName == docType) {
             parsedPayload = JSONObject(request.getPlainBody())
             if (pingReason == null) {

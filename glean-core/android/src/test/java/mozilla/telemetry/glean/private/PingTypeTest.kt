@@ -89,7 +89,7 @@ class PingTypeTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom", docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -207,7 +207,7 @@ class PingTypeTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom_ping", docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -259,7 +259,7 @@ class PingTypeTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom-ping", docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -311,7 +311,7 @@ class PingTypeTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom", docType)
 
         val pingJson = JSONObject(request.getPlainBody())
@@ -366,7 +366,7 @@ class PingTypeTest {
         triggerWorkManager(context)
 
         val request = server.takeRequest(20L, TimeUnit.SECONDS)!!
-        val docType = request.path!!.split("/")[3]
+        val docType = request.target.split("/")[3]
         assertEquals("custom", docType)
 
         val pingJson = JSONObject(request.getPlainBody())
