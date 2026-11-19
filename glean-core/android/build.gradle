@@ -79,37 +79,32 @@ android {
 }
 
 
-afterEvaluate {
-    if (project.hasProperty("coverage")) {
-        jacoco {
-          toolVersion = libs.versions.jacoco
+if (project.hasProperty("coverage")) {
+    jacoco {
+      toolVersion = libs.versions.jacoco.get()
+    }
+
+    def jacocoTestReport = tasks.register("jacocoTestReport", JacocoReport) {
+        reports {
+            xml.required = true
+            html.required = true
         }
 
-        task jacocoTestReport(type: JacocoReport) {
-            reports {
-                xml.required = true
-                html.required = true
-            }
-
-            def fileFilter = ['**/*Test*.*', '**/*$[0-9].*']
-            def mainSrc = "$project.projectDir/src/main/java"
-
-            sourceDirectories.from = files([mainSrc])
-            classDirectories.from = tasks.named("compileDebugKotlin").flatMap { it.destinationDirectory }.map {
-                it.asFileTree.matching { exclude fileFilter }
-            }
-            executionData.from = fileTree(dir: layout.buildDirectory, includes: [
-                    'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
-            ])
+        sourceDirectories.from = files("src/main/java")
+        classDirectories.from = tasks.named("compileDebugKotlin").flatMap { it.destinationDirectory }.map {
+            it.asFileTree.matching { exclude '**/*Test*.*', '**/*$[0-9].*' }
         }
+        executionData.from = fileTree(dir: layout.buildDirectory, includes: [
+                'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+        ])
+    }
 
-        tasks.withType(Test) {
-          jacoco.includeNoLocationClasses = true
-          // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
-          jacoco.excludes = ['jdk.internal.*']
+    tasks.withType(Test).configureEach {
+      jacoco.includeNoLocationClasses = true
+      // See https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+      jacoco.excludes = ['jdk.internal.*']
 
-          finalizedBy jacocoTestReport
-        }
+      finalizedBy jacocoTestReport
     }
 }
 

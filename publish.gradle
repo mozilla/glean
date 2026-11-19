@@ -67,15 +67,13 @@ ext.configurePublish = {
         }
     }
 
-    task checkMavenArtifacts
+    def checkMavenArtifacts = tasks.register("checkMavenArtifacts")
 
     if (isNative) {
-        publishing.publications.withType(MavenPublication).each {publication ->
-            def checkFileTask = task "checkFilesForMavenArtifact-${publication.artifactId}"(type: Exec) {
-                dependsOn("publish")
-                commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory.get().asFile, publication.artifactId
-            }
-            checkMavenArtifacts.dependsOn(checkFileTask)
+        def checkFileTask = tasks.register("checkFilesForMavenArtifact-${theArtifactId}", Exec) {
+            dependsOn("publish")
+            commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory.get().asFile, theArtifactId
         }
+        checkMavenArtifacts.configure { dependsOn(checkFileTask) }
     }
 }

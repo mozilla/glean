@@ -53,7 +53,7 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.layout.buildDirectory
 }
 
@@ -190,14 +190,16 @@ dependencies {
     }
 }
 
-task ktlint(type: JavaExec, group: "verification") {
+tasks.register("ktlint", JavaExec) {
+    group = "verification"
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
     args "${projectDir}/glean-core/**/*.kt", "${projectDir}/samples/android/**/*.kt", "!**/build/**"
 }
 
-task ktlintFormat(type: JavaExec, group: "formatting") {
+tasks.register("ktlintFormat", JavaExec) {
+    group = "formatting"
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     mainClass.set("com.pinterest.ktlint.Main")
@@ -210,6 +212,6 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
 // This shells out to a python script that tries to detect whether the working directory has changed since the last
 // time it was run, and it so then it shells out to `./gradlew publishToMavenLocal -Plocal=<timestamp>` to publish
 // a new version of of the code with an auto-incrementing version number.
-task autoPublishForLocalDevelopment(type: Exec) {
+tasks.register("autoPublishForLocalDevelopment", Exec) {
   commandLine "./build-scripts/publish_to_maven_local_if_modified.py"
 }
