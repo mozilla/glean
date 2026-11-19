@@ -19,9 +19,6 @@ All locations need to be updated on upgrades:
     * this file (`docs/dev/core/internal/sdk-ndk-versions.md`)
     * `dev/android/setup-android-build-environment.md`
 * CI configuration
-    * `.circleci/config.yml`
-        * `sdkmanager 'build-tools;36.0.0'`
-        * `image: circleci/android:2025.10.1-browsers`
     * `taskcluster/docker/linux/Dockerfile`.
         * `ENV ANDROID_BUILD_TOOLS "36.0.0"`
         * `ENV ANDROID_TOOLS_VERSION "16111833"`

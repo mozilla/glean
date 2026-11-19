@@ -1,9 +1,9 @@
 # How the Glean CI works
 
-Current build status: [![Build Status](https://img.shields.io/circleci/build/github/mozilla/glean/main)](https://circleci.com/gh/mozilla/glean)
+Current build status: [![Test](https://github.com/mozilla/glean/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/mozilla/glean/actions/workflows/test.yml?query=branch%3Amain)
 
-The `mozilla/glean` repository uses both [CircleCI] and [TaskCluster] to run tests on each Pull Request,
-each merge to the `main` branch and on releases.
+The `mozilla/glean` repository uses [GitHub Actions] and [TaskCluster] to run tests on each Pull Request and each merge to the `main` branch.
+Releases are built on [TaskCluster] and [CircleCI].
 
 ## Which tasks we run
 
@@ -11,16 +11,17 @@ each merge to the `main` branch and on releases.
 
 For each opened pull request we run a number of checks to ensure consistent formatting, no lint failures and that tests across all language bindings pass.
 These checks are required to pass before a Pull Request is merged.
-This includes by default the following tasks:
+This includes the following tasks:
 
-On CircleCI:
+On GitHub Actions:
 
-* Formatting & lints for Rust, Kotlin, Swift & Python
-* Consistency checks for generated header files, license checks across dependencies and a schema check
-* Builds & tests for Rust, Kotlin, Python & C#
-    * The Python language bindings are build for multiple platforms and Python versions
-* Documentation generation for all languages and the book, including spell check & link check
-* By default no Swift/iOS tests are launched. These can be run manually. See below.
+* Formatting & lints for Rust, Kotlin, Swift, Python & YAML
+* License checks across dependencies, a schema check and a check of the internal metrics documentation
+* Builds & tests for Rust, Kotlin, Swift & Python
+* Documentation generation for Rust, Python and the book, including spell check & link check
+
+Each task only runs when the pull request changes files it covers, as listed in `.github/changed-files.yaml`.
+Changes to `.github/workflows/test.yml` run all of them.
 
 On TaskCluster:
 
@@ -28,33 +29,10 @@ On TaskCluster:
 
 For all tasks you can always find the full log and generated artifacts by following the "Details" links on each task.
 
-#### iOS tests on Pull Request
-
-Due to the long runtime and costs iOS tests are not run by default on Pull Requests.
-Admins of the `mozilla/glean` repository can run them on demand.
-
-Admins can leave a comment with the following content on an open PR:
-
-```
-/run-ios
-```
-
-Alternatively:
-
-1. On an open pull request find the job titled "ci/circleci: iOS/hold".
-1. Click "Details" to get to Circle CI.
-1. Click on the "hold" task, then approve it.
-1. The iOS tasks will now run.
-
 ### Merge to `main`
 
-Current build status: [![Build Status](https://img.shields.io/circleci/build/github/mozilla/glean/main)](https://circleci.com/gh/mozilla/glean)
-
-When pull requests are merged to the `main` branch we run the same checks as we do on pull requests.
-Additionally we run the following tasks:
-
-* Documentation deployment
-* iOS build, unit & integration test
+When pull requests are merged to the `main` branch we run all of the pull request checks, regardless of which files changed.
+Additionally we deploy the documentation.
 
 If you notice that they fail please take a look and [open a bug][newbugzilla] to investigate build failures.
 
@@ -87,21 +65,11 @@ On release the full TaskCluster suite takes up to 30 minutes to run.
 
 ## Special behavior
 
-### Documentation-only changes
-
-Documentation is deployed from CI, we therefore need it to run on documentation changes.
-However, some of the long-running code tests can be skipped.
-For that add the following literal string to the last commit message of your pull request:
-
-```
-[doc only]
-```
-
 ### Skipping CI completely
 
 It is possible to completely skip running CI checks on a pull request.
 
-To skip tasks on CircleCI include the following literal string in the commit message.  
+To skip tasks on GitHub Actions include the following literal string in the commit message.  
 To skip tasks on TaskCluster add the following to the title of your pull request.
 
 ```
@@ -128,6 +96,7 @@ The `Decision Task` will spawn `module-build-glean` and `module-build-glean-grad
 When they finish you will find the generated files under `Artifacts` on TaskCluster.
 
 [CircleCI]: https://circleci.com
+[GitHub Actions]: https://docs.github.com/actions
 [TaskCluster]: https://taskcluster.net/
 [newbugzilla]: https://bugzilla.mozilla.org/enter_bug.cgi?product=Data+Platform+and+Tools&component=Glean%3A+SDK&priority=P3&status_whiteboard=%5Btelemetry%3Aglean-rs%3Am%3F%5D
 [glean-releases]: https://github.com/mozilla/glean/releases

@@ -17,8 +17,6 @@ definitions:
         only: /^v.*/
   - msrv_image: &msrv-image
       cimg/rust:1.90
-  - msrv: &msrv
-      "1.90"
   # Used when running against latest stable Rust
   - rust_image: &rust-image
       cimg/rust:1.94.1
@@ -56,58 +54,6 @@ commands:
             rustup default <<parameters.rust-version>>
             rustc --version
 
-  test-rust:
-    parameters:
-      rust-version:
-        type: string
-        default: "stable"
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - setup-rust-toolchain:
-          rust-version: <<parameters.rust-version>>
-      - run:
-          name: Install required Python dependencies
-          command: |
-            sudo apt update
-            sudo apt install --yes --no-install-recommends \
-              python3-pip \
-              python3.10-venv \
-              faketime
-
-      - run:
-          name: Install nextest
-          command: |
-            NEXTEST_SHA256=b0959bc64232974224cf9fb22c915845398c0e8668fa7831eb5b43fb1eef781f
-            NEXTEST=cargo-nextest
-            curl -sfSL --retry 5 -o "${NEXTEST}.tar.gz" "https://get.nexte.st/0.9.150/linux"
-            echo "${NEXTEST_SHA256} *${NEXTEST}.tar.gz" | shasum -a 256 -c -
-            tar -xf "${NEXTEST}.tar.gz"
-            cp ./${NEXTEST} ~/.cargo/bin/
-      - run:
-          name: Test
-          command: |
-            cargo nextest run --workspace --profile ci
-      - run:
-          name: Fix junit output
-          command: |
-            mkdir -p ~/test-results/
-            cp target/nextest/ci/junit.xml ~/test-results/junit.xml
-          when: always
-      - store_test_results:
-          path: ~/test-results
-      - run:
-          name: Run Rust sample
-          command: |
-            cargo run -p sample
-      - run:
-          name: Run glean-sym sample
-          command: |
-            pip install uv
-            cd samples/glean-sym-test
-            make run
-            make run-noop
-
   install-rustup:
     steps:
       - run:
@@ -117,31 +63,6 @@ commands:
           name: Setup custom environment variables
           command: |
             echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
-
-  install-android-ndk:
-    steps:
-      - run:
-          name: Install missing Android SDK & NDK
-          command: |
-            sdkmanager \
-              "build-tools;36.0.0" \
-              "ndk;30.0.16248370"
-
-  android-setup:
-    steps:
-      - install-rustup
-      - setup-rust-toolchain:
-          rust-version: stable
-      - install-android-ndk
-      - run:
-          name: Install required Python dependencies
-          command: |
-            sudo apt update
-            sudo apt install --yes --no-install-recommends python3-venv
-      - run:
-          name: Restrict to Linux builds only
-          command: |
-            echo "rust.targets=linux-x86-64" > local.properties
 
   test-python:
     steps:
@@ -181,24 +102,6 @@ commands:
           name: Build Windows wheel
           command: |
             make build-python-wheel GLEAN_BUILD_TARGET=x86_64-pc-windows-gnu
-
-  install-python-windows-deps:
-    steps:
-      - run:
-          name: Set up dependencies for Python for Windows
-          command: |
-            echo "export WINEDEBUG=-all" >> $BASH_ENV
-            wget https://bootstrap.pypa.io/pip/3.9/get-pip.py
-            $WINPYTHON get-pip.py
-            echo "import site" >> winpython/python39._pth
-            echo "import sys; sys.path.insert(0, '')" >> winpython/sitecustomize.py
-            # The Windows-Python-installed-inside-Wine thing can't actually build wheels,
-            # so just install all of the wheels that were created as part of creating the
-            # environment on the host system before attempting to install everything in
-            # requirements_dev.txt
-            find ~/.cache/pip -name "*.whl" -exec $WINPYTHON -m pip install {} \;
-            $WINPYTHON -m pip install -r glean-core/python/requirements_dev.txt --no-warn-script-location
-            $WINPYTHON -m pip install target/wheels/*.whl --no-warn-script-location
 
   install-mingw:
     steps:
@@ -243,151 +146,7 @@ commands:
 
 jobs:
   ###########################################################################
-  # Project-level
-
-  License check:
-    docker:
-      - image: *rust-image
-    steps:
-      - checkout
-      - run:
-          name: Install cargo-deny
-          command: |
-            DENY_VERSION=0.14.20
-            DENY="cargo-deny-${DENY_VERSION}-x86_64-unknown-linux-musl"
-            DENY_SHA256=1c9f8cfc23647346f1aa7ba0ed3167191f3198aba3dc5a957fda6f85a82fc424
-            curl -sfSL --retry 5 -O "https://github.com/EmbarkStudios/cargo-deny/releases/download/${DENY_VERSION}/${DENY}.tar.gz"
-            echo "${DENY_SHA256} *${DENY}.tar.gz" | shasum -a 256 -c -
-            tar -xvf "${DENY}.tar.gz"
-            mv "${DENY}/cargo-deny" ~/.cargo/bin/cargo-deny
-            chmod +x ~/.cargo/bin/cargo-deny
-      - run:
-          name: Run license check
-          command: cargo deny check licenses
-      - run:
-          name: Run dependency ban check
-          command: cargo deny check bans
-
-  Check vendored schema:
-    docker:
-      - image: *rust-image
-    steps:
-      - checkout
-      - run:
-          name: Check vendored schema for upstream updates
-          command: |
-            bin/update-schema.sh HEAD
-            if ! git diff --exit-code HEAD -- glean.1.schema.json; then
-              echo "===================================="
-              echo "Latest schema from upstream changed."
-              echo "Please regenerate the file using:"
-              echo "    bin/update-schema.sh latest"
-              echo "Commit the modified files and push."
-              echo "===================================="
-              exit 1
-            fi
-
-  Lint YAML with yamllint:
-    docker:
-      - image: cimg/python:3.9
-    steps:
-      - checkout
-      - run: pip install yamllint
-      - run: make lint-yaml
-
-  ###########################################################################
   # Rust / C / FFI
-
-  Check Rust formatting:
-    docker:
-      - image: *msrv-image
-    steps:
-      - checkout
-      - run: rustup component add rustfmt
-      - run: rustfmt --version
-      - run: cargo fmt -- --check
-
-  Lint Rust with clippy:
-    docker:
-      - image: *msrv-image
-    steps:
-      - checkout
-      - run: rustup component add clippy
-      - run: cargo clippy --version
-      - run:
-          name: Install required Python dependencies
-          command: |
-            sudo apt update
-            sudo apt install --yes --no-install-recommends \
-              python3.10-venv
-      - run:
-          name: Clippy
-          command: make lint-rust
-
-  Rust tests - stable:
-    docker:
-      - image: *rust-image
-    resource_class: "medium+"
-    steps:
-      - test-rust
-      # RLB Windows compile test
-      - install-mingw
-      - run:
-          name: Compile benchmarks
-          command: |
-            # Only compile them, don't run them
-            cargo benchmark --no-run --locked
-      - run:
-          name: Check RLB on Windows x86_64
-          command: |
-            cargo check -p glean --examples --tests --target x86_64-pc-windows-gnu
-
-  Rust tests - beta:
-    docker:
-      - image: *rust-image
-    steps:
-      - test-rust:
-          rust-version: "beta"
-
-  Rust tests - minimum version:
-    docker:
-      - image: *msrv-image
-    resource_class: "medium+"
-    steps:
-      - test-rust:
-          rust-version: *msrv
-
-  Generate Rust documentation:
-    docker:
-      - image: *msrv-image
-    steps:
-      - checkout
-      - run:
-          name: Version information
-          command: rustc --version; cargo --version; rustup --version
-      - run:
-          name: Install mdbook-dtmo
-          command: |
-              MDBOOK_VERSION=0.15.2
-              MDBOOK="mdbook-dtmo-${MDBOOK_VERSION}-x86_64-unknown-linux-musl.tar.gz"
-              MDBOOK_SHA256=87f5cb874faadc745f033b646d358669b172edf19d2ca0a4e291a9c627e52e13
-              curl -sfSL --retry 5 -O "https://github.com/badboy/mdbook-dtmo/releases/download/${MDBOOK_VERSION}/${MDBOOK}"
-              echo "${MDBOOK_SHA256} *${MDBOOK}" | shasum -a 256 -c -
-              tar -xvf "${MDBOOK}"
-              # We rename it to mdbook here, so other tools keep working as expected
-              mv mdbook-dtmo ~/.cargo/bin/mdbook
-              mdbook --version
-      - run:
-          name: Build Rust documentation
-          command: bin/build-rust-docs.sh
-      - persist_to_workspace:
-          root: build/
-          paths:
-            - docs/book
-            - docs/dev
-            - docs/docs
-            - docs/shared
-            - docs/index.html
 
   Publish Rust crates:
     docker:
@@ -413,110 +172,7 @@ jobs:
             cargo publish --verbose
 
   ###########################################################################
-  # Android / Kotlin / Java
-
-  Lint Android with ktlint and detekt:
-    docker:
-      - &android-image
-        image: cimg/android:2026.10.1-browsers
-        environment:
-          JAVA_HOME: /usr/lib/jvm/java-1.25.0-openjdk-amd64
-    steps:
-      - checkout
-      - run:
-          name: Check if Kotlin files have been touched
-          command: |
-            DEFAULT_BRANCH=main
-            COMMIT_RANGE="${DEFAULT_BRANCH}...${CIRCLE_SHA1}"
-            echo "commit range: ${COMMIT_RANGE}"
-            echo "Changed files:"
-            changed_files=$(git diff --name-only $COMMIT_RANGE)
-            echo "$changed_files"
-
-            if echo "$changed_files" | grep -E '.kt$'; then
-              changed_kotlin_count=$(echo "$changed_files" | grep -E '.kt$' -c)
-              echo "Count of changed kotlin files: $changed_kotlin_count"
-            else
-              echo "No Kotlin files touched. No need for linting."
-              circleci-agent step halt
-            fi
-
-      - android-setup
-      - run: ./gradlew --no-daemon lint
-      - run: ./gradlew --no-daemon ktlint
-      - run: ./gradlew --no-daemon detekt
-
-  Android tests:
-    docker:
-      - *android-image
-    resource_class: "medium+"
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - android-setup
-      - run:
-          name: Remove coredump file restriction
-          command: |
-            # tell the operating system to remove the file size limit on core dump files
-            ulimit -c unlimited
-      - run:
-          name: Android tests
-          command: ./gradlew --no-daemon :glean:testDebugUnitTest
-          environment:
-            GRADLE_OPTS: -Xmx2048m
-            TARGET_CFLAGS: -DNDEBUG
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/test-results/junit/
-            mkdir -p ~/test-results/tests/
-            cp -a glean-core/android/build/reports/tests ~/test-results/
-            find glean-core/android/build -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-          when: always
-      - store_artifacts:
-          path: ~/test-results/tests
-          destination: test-results
-      - run:
-          name: Detect and gather coredump files
-          command: |
-            mkdir -p ~/coredumps
-            # Try to copy the core file from a default location. Don't fail if it doesn't exist.
-            cp -a glean-core/android/core ~/coredumps || true
-            # The JVM/Gradle might also produce a log file named like "hs_err_pid3247.log", let's copy that as well
-            find . -type f -name "hs_*.log" | xargs -I% cp -a % ~/coredumps/%
-      - store_artifacts:
-          path: ~/coredumps
-          destination: coredumps
-      - store_test_results:
-          path: ~/test-results
-      - run:
-          name: Build Android Sample App
-          command: |
-            ./gradlew :glean-sample-app:assembleAndroidTest
-          environment:
-            GRADLE_OPTS: -Xmx2048m
-            TARGET_CFLAGS: -DNDEBUG
-
-  ###########################################################################
   # Swift / iOS / macOS
-
-  Check Swift formatting:
-    macos:
-      xcode: "26.6"
-    resource_class: "m4pro.medium"
-    steps:
-      - checkout
-      - run:
-          name: Install lint tools
-          command: |
-            export HOMEBREW_NO_AUTO_UPDATE=1
-            export HOMEBREW_NO_INSTALL_CLEANUP=1
-            brew install swiftlint
-      - run:
-          name: Run swiftlint
-          command: |
-            swiftlint version
-            swiftlint --strict
 
   iOS build and test:
     macos:
@@ -607,51 +263,6 @@ jobs:
           paths:
             - Glean.xcframework.zip
 
-  iOS integration test:
-    macos:
-      xcode: "26.6"
-    resource_class: "m4pro.medium"
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - install-rustup
-      - setup-rust-toolchain
-      - run:
-          name: Setup build environment
-          command: |
-            set -x
-            rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
-
-            # For some reason everything works fine if we use the host clang,
-            # not the Xcode-bundled clang.
-            echo '[target.aarch64-apple-darwin]' >> ~/.cargo/config.toml
-            echo 'linker = "/usr/bin/cc"' >> ~/.cargo/config.toml
-
-            # List available devices -- allows us to see what's there
-            DEVICES=$(xcrun xctrace list devices 2>&1)
-            echo "$DEVICES"
-            # Pick a device and start it
-            UUID=$(echo "$DEVICES" | grep --max-count=1 'iPhone 17 Simulator (26' | awk -F'[()]' '{print $4}')
-            xcrun simctl boot "$UUID"
-      - run:
-          name: Build XCFramework archive
-          command: |
-            bash bin/build-xcframework.sh
-      - run:
-          name: Build sample app
-          command: |
-            bin/iosbuild build sample
-      - store_artifacts:
-          path: raw_sample_xcodebuild.log
-          destination: raw_sample_xcodebuild.log
-      - run:
-          name: Run sample app tests
-          command: |
-            bin/iosbuild test sample
-      - store_artifacts:
-          path: raw_sample_xcodetest.log
-          destination: raw_sample_xcodetest.log
-
   iOS Framework release:
     macos:
       xcode: "26.6"
@@ -683,16 +294,6 @@ jobs:
   ###########################################################################
   # Python
 
-  Lint Python:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - install-rustup
-      - run:
-          name: Python lints
-          command: make lint-python
-
   Python 3_9 tests:
     docker:
       - image: cimg/python:3.9
@@ -700,98 +301,6 @@ jobs:
       - checkout
       - skip-if-doc-only
       - test-python
-
-  Python 3_9 on Alpine tests:
-    docker:
-      - image: python:3.9-alpine
-    shell: /bin/sh -leo pipefail
-    environment:
-      - BASH_ENV: /etc/profile
-    steps:
-      - run:
-          name: Install dependencies
-          command: |
-            apk add curl git gcc musl-dev libffi-dev openssh-client make openssl-dev
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
-  Python 3_10 tests:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-      - persist_to_workspace:
-          root: .
-          paths: .venv3.10
-
-  Python 3_11 tests:
-    docker:
-      - image: cimg/python:3.11
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
-  Python 3_12 tests:
-    docker:
-      - image: cimg/python:3.12
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - test-python
-
-  Python Windows x86_64 tests:
-    docker:
-      - image: cimg/python:3.9
-    steps:
-      - checkout
-      - skip-if-doc-only
-      - build-windows-x86_64-wheel
-      - run:
-          name: Install Wine
-          command: |
-            sudo apt install wine64
-      - run:
-          name: Install Python for Windows
-          command: |
-            wget https://www.python.org/ftp/python/3.9.13/python-3.9.13-embed-amd64.zip
-            mkdir winpython
-            unzip python-3.9.13-embed-amd64.zip -d winpython
-            rm python-3.9.13-embed-amd64.zip
-            echo "export WINPYTHON=\"wine64-stable winpython/python.exe\"" >> $BASH_ENV
-      - install-python-windows-deps
-      - run:
-          name: Build bcryptprimitives.dll shim
-          command: |
-            rustc tools/patches/bcryptprimitives.rs -Copt-level=3 -Clto=fat --out-dir wine_shims --target x86_64-pc-windows-gnu
-            # This preloads our bcryptprimitives shim.
-            shimpath='Z:/home/circleci/project/wine_shims/bcryptprimitives.dll'
-            echo "import ctypes; ctypes.cdll.LoadLibrary('$shimpath')" >> winpython/sitecustomize.py
-      - run:
-          name: Run tests
-          command: |
-            $WINPYTHON -m pytest -s glean-core/python/tests
-
-
-  Generate Python documentation:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - install-rustup
-      - setup-rust-toolchain
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Generate Python docs
-          command: |
-            make docs-python
-      - persist_to_workspace:
-          root: build/
-          paths: docs/python
 
   pypi-source-release:
     docker:
@@ -964,58 +473,6 @@ jobs:
           command: |
             # Upload to GitHub
             ./ghr -replace ${CIRCLE_TAG} target/wheels
-
-  ###########################################################################
-  # Docs
-
-  Docs internal metrics check:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - run:
-          name: Internal metrics docs consistency check
-          command: |
-            make docs-metrics
-            if ! git diff --exit-code HEAD -- docs/user/user/collected-metrics/metrics.md; then
-              echo "=================================================="
-              echo "metrics.md is different from what's stored in git."
-              echo "Please regenerate the file using:"
-              echo "    make docs-metrics"
-              echo "Commit the modified file and push."
-              echo "=================================================="
-              exit 1
-            fi
-
-  docs-linkcheck:
-    docker:
-      - image: cimg/node:22.6
-    steps:
-      - checkout
-      - run:
-          name: Install linkchecker
-          command: npm install link-checker
-      - attach_workspace:
-          at: build/
-      - run:
-          name: Check internal documentation links
-          command: |
-            make linkcheck-raw
-
-  docs-spellcheck:
-    docker:
-      - image: cimg/base:2022.03
-    steps:
-      - checkout
-      - run:
-          name: Upgrade packages
-          command: sudo apt update
-      - run:
-          name: Install aspell
-          command: sudo apt install aspell aspell-en
-      - run:
-          name: Check documentation spelling
-          command: bin/spellcheck.sh list
 
 ###########################################################################
 # Workflows

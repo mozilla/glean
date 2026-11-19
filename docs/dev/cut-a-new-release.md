@@ -89,7 +89,6 @@ When CI has finished and is green for your specific release branch, you are read
 6. Merge the Pull Request opened previously.
     * This is important so that no changes are lost.
     * If this PR is "trivial" (no bugfixes or merge conflicts of note from earlier steps) you may land it without review.
-    * There is a separate CircleCI task for the release branch, ensure that it also completes.
 7. Once the above pull request lands, delete the specific release branch.
 8. Pick a song and post a link in the team chat. Add it to the [Release playlist](https://docs.google.com/document/d/17-7J8q4u1GGQ2dAR8jNXMydu2ptHFv6IgSYyMAAMRFg/edit).
 9. Post a message to [#glean:mozilla.org](https://chat.mozilla.org/#/room/#glean:mozilla.org) announcing the new release.
@@ -120,7 +119,6 @@ If the latest released version requires a bug fix, a hotfix branch is used.
 5. Fix the bug and commit the fix in one or more separate commits.
 6. Push your bug fixes and create a pull request against the hotfix branch: <https://github.com/mozilla/glean/compare/hotfix-v25.0.1...your-name:bugfix?expand=1>
 7. When that pull request lands, wait for CI to finish on that branch and ensure it's green:
-    * <https://circleci.com/gh/mozilla/glean/tree/hotfix-v25.0.1>
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 
 ### Finish a hotfix branch
@@ -173,7 +171,6 @@ If you need to release a hotfix for a previously released version (that is: not 
 3. Fix the bug and commit the fix in one or more separate commits into your hotfix branch.
 4. Push your bug fixes and create a pull request against the support branch: <https://github.com/mozilla/glean/compare/support/v24.0...your-name:hotfix-v24.0.1?expand=1>
 5. When that pull request lands, wait for CI to finish on that branch and ensure it's green:
-    * <https://circleci.com/gh/mozilla/glean/tree/support/v24.0>
     * You can find the TaskCluster task on the corresponding commit. See [How to find TaskCluster tasks](ci.md#how-to-find-taskcluster-tasks) for details.
 
 ### Finish a support branch

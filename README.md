@@ -5,7 +5,7 @@
 [![glean-core on crates.io](https://img.shields.io/crates/v/glean-core.svg)](https://crates.io/crates/glean-core)
 [![License: MPL-2.0](https://img.shields.io/crates/l/glean-core)](https://github.com/mozilla/glean/blob/main/LICENSE)
 [![The Glean SDK book](https://img.shields.io/badge/Docs-Glean%20SDK-brightgreen)][book]
-[![Build Status](https://img.shields.io/circleci/build/github/mozilla/glean/main)](https://circleci.com/gh/mozilla/glean)
+[![Test](https://github.com/mozilla/glean/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/mozilla/glean/actions/workflows/test.yml?query=branch%3Amain)
 
 ## Documentation
 
