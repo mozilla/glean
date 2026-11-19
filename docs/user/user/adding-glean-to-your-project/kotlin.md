@@ -9,8 +9,7 @@ Currently, this SDK only supports the Android platform.
 ## Setting up the dependency
 
 The Glean Kotlin SDK is published on [maven.mozilla.org](https://maven.mozilla.org/).
-To use it, you need to add the following to your project's top-level build file,
-in the `allprojects` block (see e.g. [Glean SDK's own `build.gradle`](https://github.com/mozilla/glean/blob/main/build.gradle)):
+To use it, you need to add the following to your project's repositories:
 
 ```Groovy
 repositories {
