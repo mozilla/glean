@@ -124,7 +124,7 @@ def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
 
     from extractLibJniDispatch
     from layout.buildDirectory.dir("rustJniLibs/desktop")
-    dependsOn tasks["cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}"]
+    dependsOn("cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}")
 }
 
 def copyGleanNative = tasks.register("copyGleanNative", Copy) {
@@ -149,7 +149,7 @@ afterEvaluate {
             // `forUnitTests` output.  This contains the same content as our `forUnitTests`
             // configuration. Publishing it allows the android-components code to depend on it.
             forUnitTests(MavenPublication) {
-                artifact tasks['packageLibsForTest']
+                artifact packageLibsForTest
                 artifact file("${rootProject.projectDir}/DEPENDENCIES.md"), {
                     extension = "LICENSES.md"
                 }
