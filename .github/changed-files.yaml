@@ -9,10 +9,21 @@ docs:
   - "**/*.md"
 
 kotlin:
-  - "**/*.kt"
   - "**/*.gradle"
-  - "gradle-wrapper/**"
-  - "**/*.groovy"
+  - "gradle.properties"
+  - "gradle/**"
+  - ".buildconfig.yml"
+  - ".detekt.yml"
+  - ".editorconfig"
+  - "glean.1.schema.json"
+  - "glean-core/metrics.yaml"
+  - "glean-core/pings.yaml"
+  - "glean-core/src/glean.udl"
+  - "glean-core/uniffi.toml"
+  - "glean-core/android/**"
+  - "glean-core/android-native/**"
+  - "gradle-plugin/**"
+  - "samples/android/**"
 
 metrics:
   - "glean-core/**/pings.yaml"
