@@ -52,7 +52,7 @@ android {
             }
 
             maxHeapSize = "1024m"
-            jvmArgs "--enable-native-access=ALL-UNNAMED"
+            jvmArgs "--enable-native-access=ALL-UNNAMED", "-javaagent:${configurations.mockitoAgent.asPath}"
         }
 
         unitTests {
@@ -99,6 +99,9 @@ configurations {
     gleanNative {
         canBeConsumed = false
     }
+    mockitoAgent {
+        canBeConsumed = false
+    }
 }
 
 dependencies {
@@ -130,6 +133,9 @@ dependencies {
     compileOnly libs.test.work
 
     testImplementation libs.mockito
+    mockitoAgent(libs.mockito) {
+        transitive = false
+    }
     testImplementation libs.mockwebserver
     testImplementation libs.robolectric
     testImplementation libs.test.core
