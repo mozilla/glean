@@ -107,7 +107,7 @@ def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
 
     from extractLibJniDispatch
     from layout.buildDirectory.dir("rustJniLibs/desktop")
-    dependsOn("cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}")
+    dependsOn(tasks.named { it ==~ /cargoBuild(Darwin|Linux|Win32).*/ })
 }
 
 def copyGleanNative = tasks.register("copyGleanNative", Copy) {
