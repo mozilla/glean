@@ -8,7 +8,7 @@ If you need to replace the Glean Gradle Plugin used by any component in mozilla-
 1. In your Glean repository increment the version number in `.buildconfig.yml` to something unused:
 
    ```yaml
-   libraryVersion: 70.0.0
+   libraryVersion: 99.0.0
    ```
 
 1. Build the Glean Gradle plugin and publish the plugin locally:
@@ -17,19 +17,31 @@ If you need to replace the Glean Gradle Plugin used by any component in mozilla-
    ./gradlew glean-gradle-plugin:publishToMavenLocal
    ```
 
-1. In your `mozilla-central` checkout, add the following line in `mobile/android/fenix/settings.gradle` file in the `pluginManagement` block:
+1. In your `mozilla-central` checkout, give the plugin its own version in `gradle/libs.versions.toml`.
+   Keep the `glean` version unchanged, so the Glean library and the `verifyGleanVersion` check are unaffected:
+
+   ```toml
+   mozilla-glean-gradle-plugin = { module = "org.mozilla.telemetry:glean-gradle-plugin", version = "99.0.0" }
+   ```
+
+1. Create a Gradle init script, for example `mavenlocal.gradle` outside the checkout, that adds `mavenLocal()` to the repositories every build script loads its plugins from:
 
    ```gradle
-   mavenLocal()
+   allprojects {
+       buildscript {
+           repositories {
+               mavenLocal()
+           }
+       }
+   }
    ```
 
-1. Use the new version number where the plugin is imported in `mobile/android/fenix/build.gradle`:
+1. Build Fenix with the init script:
 
    ```
-   classpath "org.mozilla.telemetry:glean-gradle-plugin:70.0.0"
+   ./mach gradle --init-script /path/to/mavenlocal.gradle buildEnvironment fenix:assembleDebug
    ```
 
-   This might need to be applied to the top-level `build.gradle` and other `build.gradle` files under `mobile/android` to apply to all components.
-
+   The `buildEnvironment` output lists the plugin version in use.
 
 Building Fenix will now use your locally published Glean Gradle Plugin.
