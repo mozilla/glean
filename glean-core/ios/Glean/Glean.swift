@@ -681,7 +681,7 @@ public final class Glean: @unchecked Sendable {
     /// PUBLIC TEST ONLY FUNCTION.
     ///
     /// Returns the current distribution metrics.
-    public func testGetAttribution() -> DistributionMetrics {
+    public func testGetDistribution() -> DistributionMetrics {
         gleanTestGetDistribution()
     }
 }
