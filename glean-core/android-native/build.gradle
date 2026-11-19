@@ -21,21 +21,6 @@ android {
         targetSdk = rootProject.ext.build['targetSdkVersion']
     }
 
-    buildTypes {
-        debug {
-            // Export our rules in debug, as a consumer might still enable proguard/r8
-            consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
-        }
-
-        release {
-            consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
-        }
-
-        withoutLib {
-            initWith release
-        }
-    }
-
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 }
