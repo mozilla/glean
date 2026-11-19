@@ -1269,6 +1269,18 @@ impl Glean {
     ///
     /// * `cfg` - The stringified JSON representation of a `RemoteSettingsConfig` object
     pub fn apply_server_knobs_config(&self, cfg: RemoteSettingsConfig) {
+        // Disabling a flow's entry or exit event leaves the flow unable to open
+        // or to record `exit`, which reads as abandonment with nothing erroring.
+        for (event, flows) in
+            flows::boundary_events_disabled(&self.flow_registry, &cfg.metrics_enabled)
+        {
+            log::warn!(
+                "Server Knobs disable `{event}`, an entry or exit event of flow(s) {}. \
+                 Those flows can no longer open or end conclusively.",
+                flows.join(", ")
+            );
+        }
+
         let config_value = {
             // Hold the lock while merging config and serializing, then release
             // before performing IO in set_sync.
@@ -1283,6 +1295,12 @@ impl Glean {
             remote_settings_config
                 .pings_enabled
                 .extend(cfg.pings_enabled);
+
+            // Merge the existing flow configuration with the supplied one.
+            // Takes effect the next time an entry event would open an instance.
+            remote_settings_config
+                .flows_enabled
+                .extend(cfg.flows_enabled);
 
             remote_settings_config.event_threshold = cfg.event_threshold;
 
