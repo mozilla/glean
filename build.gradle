@@ -109,38 +109,48 @@ ext.rustTargets += ext.nativeRustTarget
 subprojects {
     apply plugin: 'maven-publish'
 
-
-    // Kotlin settings applicable to all modules.
-    afterEvaluate {
-        if (it.hasProperty('android')) {
-            android {
-                buildToolsVersion = rootProject.ext.build.buildToolsVersion
-                compileOptions {
-                    sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
-                    targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
-                }
-
-                buildFeatures {
-                    buildConfig = true
-                }
-
-                publishing {
-                    singleVariant('release') {
-                        withSourcesJar()
-                    }
-                }
-            }
-        }
-        pluginManager.withPlugin('java') {
-            java {
+    // Settings shared by all modules.
+    pluginManager.withPlugin('com.android.base') {
+        android {
+            buildToolsVersion = rootProject.ext.build.buildToolsVersion
+            compileOptions {
                 sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
                 targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
             }
+
+            buildFeatures {
+                buildConfig = true
+            }
+
+            publishing {
+                singleVariant('release') {
+                    withSourcesJar()
+                }
+            }
         }
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            compilerOptions.allWarningsAsErrors = true
-            compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
+    }
+    pluginManager.withPlugin('com.android.library') {
+        android {
+            defaultConfig {
+                consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
+            }
+
+            buildTypes {
+                withoutLib {
+                    initWith release
+                }
+            }
         }
+    }
+    pluginManager.withPlugin('java') {
+        java {
+            sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+            targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
+        }
+    }
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        compilerOptions.allWarningsAsErrors = true
+        compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
     }
 
     // This allows to invoke Gradle like `./gradlew publishToRootProjectBuildDir` (equivalent to
