@@ -586,6 +586,18 @@ impl PingUploadManager {
         self.policy.set_max_pending_pings_directory_size(Some(n));
     }
 
+    pub(crate) fn set_max_recoverable_failures(&mut self, n: u32) {
+        self.policy.set_max_recoverable_failures(Some(n));
+    }
+
+    pub(crate) fn set_max_wait_attempts(&mut self, n: u32) {
+        self.policy.set_max_wait_attempts(Some(n));
+    }
+
+    pub(crate) fn set_max_ping_body_size(&mut self, n: u64) {
+        self.policy.set_max_ping_body_size(Some(n));
+    }
+
     /// Reads a ping file, creates a `PingRequest` and adds it to the queue.
     ///
     /// Duplicate requests won't be added.
@@ -2018,12 +2030,12 @@ mod test {
     }
 
     #[test]
-    fn maximum_wait_attemps_is_enforced() {
+    fn maximum_wait_attempts_is_enforced() {
         let (glean, dir) = new_glean(None);
 
         let mut upload_manager = PingUploadManager::no_policy(dir.path());
 
-        // Define a max_wait_attemps policy, this is disabled for tests by default.
+        // Define a max_wait_attempts policy, this is disabled for tests by default.
         let max_wait_attempts = 3;
         upload_manager
             .policy
