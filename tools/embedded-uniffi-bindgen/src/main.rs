@@ -33,6 +33,7 @@ fn gen_bindings(
         format: false,
         crate_filter: crate_name,
         metadata_no_deps: false,
+        ..Default::default()
     };
     generate(opts)
 }

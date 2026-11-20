@@ -1,8 +1,8 @@
 [licenses]
 allow = [
     "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
     "BSD-2-Clause",
-    "ISC",
     "MIT",
     "MPL-2.0",
     "Unicode-3.0",
@@ -22,6 +22,8 @@ skip = [
     # rusqlite@v0.37.0 -> hashlink@v0.10 -> hashbrown@v0.15.4
     # This is overriden in m-c
     { name = "hashbrown", version = "0.15.4" },
+    # uniffi_core@v0.3x -> async-trait@v0.1.92 -> syn@v3.0.10
+    { name = "syn",  version = "3.0.10" },
 ]
 
 # Avoid certain crates
