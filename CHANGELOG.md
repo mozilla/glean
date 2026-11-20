@@ -4,13 +4,21 @@
 
 * General
   * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
-  * Updated to `glean_parser` v22.1.0 ([#](https://github.com/mozilla/glean/issues/))
 * Android
   * BUGFIX: Ensure start/stop for a timing distribution don't throw an exception when called before initialize ([#3778](https://github.com/mozilla/glean/pull/3778))
   * Updated Kotlin to 2.4.21
   * Updated to Android Gradle Plugin 9.5.1 and Gradle 9.9.1
   * Updated Android SDK target to version 37. Apps using Glean now need to compile against Android SDK 37.2 or newer
   * The Glean Gradle plugin's metrics docs task works with the Gradle configuration cache and prints `glean_parser`'s output as it runs. A failed metrics code or docs generation now fails with the standard Gradle task error instead of a Glean-specific message
+
+# v71.2.0 (2026-11-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...v71.2.0)
+
+* General
+  * Updated to `glean_parser` v22.1.0 ([#](https://github.com/mozilla/glean/issues/))
+* Rust
+  * (Semi-breaking change) Support external backup of the `client_id` ([bug 2093447](https://bugzilla.mozilla.org/show_bug.cgi?id=2093447))
 
 # v71.1.0 (2026-11-16)
 

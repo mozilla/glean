@@ -856,7 +856,7 @@ mod test {
     fn glean_with_flows(flows: Vec<FlowDefinition>) -> (Glean, tempfile::TempDir) {
         let dir = tempfile::tempdir().unwrap();
         let cfg = test_cfg(&dir, flows);
-        (Glean::new(cfg).unwrap(), dir)
+        (Glean::new(cfg, None).unwrap(), dir)
     }
 
     fn test_cfg(dir: &tempfile::TempDir, flows: Vec<FlowDefinition>) -> InternalConfiguration {
@@ -1343,7 +1343,7 @@ mod test {
         let dir = tempfile::tempdir().unwrap();
         let mut cfg = test_cfg(&dir, vec![onboarding()]);
         cfg.enable_event_timestamps = true;
-        let mut glean = Glean::new(cfg).unwrap();
+        let mut glean = Glean::new(cfg, None).unwrap();
         glean.session_start();
 
         let before = Utc::now().timestamp_millis();
@@ -1375,7 +1375,7 @@ mod test {
         let mut cfg = test_cfg(&dir, vec![onboarding()]);
         // session_start, started, dismissed, and then flow_end fills the store.
         cfg.max_events = Some(4);
-        let mut glean = Glean::new(cfg).unwrap();
+        let mut glean = Glean::new(cfg, None).unwrap();
         glean.session_start();
 
         assert!(!record(&glean, "onboarding", "started"));
@@ -1516,7 +1516,7 @@ mod test {
         let mut cfg = test_cfg(&dir, two_flows());
         cfg.session_mode = SessionMode::Auto;
         cfg.session_inactivity_timeout_ms = 1;
-        let mut glean = Glean::new(cfg).unwrap();
+        let mut glean = Glean::new(cfg, None).unwrap();
 
         glean.handle_client_active();
         let old_session = glean.session_manager().session_id().unwrap().to_string();
@@ -1757,7 +1757,7 @@ mod test {
         let mut cfg = test_cfg(&dir, timed_flows());
         cfg.session_mode = SessionMode::Auto;
         cfg.session_inactivity_timeout_ms = 30 * 60 * 1000;
-        let mut glean = Glean::new(cfg).unwrap();
+        let mut glean = Glean::new(cfg, None).unwrap();
 
         glean.handle_client_active();
         record_now(&glean, "onboarding", "started");
@@ -1786,7 +1786,7 @@ mod test {
         let mut cfg = test_cfg(&dir, timed_flows());
         cfg.session_mode = SessionMode::Auto;
         cfg.session_inactivity_timeout_ms = 30 * 60 * 1000;
-        let mut glean = Glean::new(cfg).unwrap();
+        let mut glean = Glean::new(cfg, None).unwrap();
 
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
@@ -1843,7 +1843,7 @@ mod test {
     /// Drops `glean` and starts a new instance on the same data directory.
     fn restart(glean: Glean, cfg: InternalConfiguration) -> Glean {
         drop(glean);
-        Glean::new(cfg).unwrap()
+        Glean::new(cfg, None).unwrap()
     }
 
     fn active_seqs(glean: &Glean) -> Vec<(String, u64)> {
@@ -1912,7 +1912,7 @@ mod test {
     #[test]
     fn clean_restart_restores_instances_and_the_counter() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "alpha", "started");
@@ -1945,7 +1945,7 @@ mod test {
     #[test]
     fn instance_of_an_unregistered_flow_is_discarded_on_restore_without_a_flow_end() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         record_now(&glean, "alpha", "started");
         record_now(&glean, "zeta", "started");
@@ -1974,7 +1974,7 @@ mod test {
     #[test]
     fn instance_of_a_now_disabled_flow_is_restored() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         record_now(&glean, "alpha", "started");
         glean.handle_client_inactive();
@@ -1989,7 +1989,7 @@ mod test {
     #[test]
     fn instance_that_expired_while_not_running_is_closed_on_restore() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, timed_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, timed_flows()), None).unwrap();
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "onboarding", "started");
@@ -2017,7 +2017,7 @@ mod test {
     #[test]
     fn dirty_restart_closes_persisted_instances_as_abnormal_before_session_end() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         // Active, and never goes inactive: the dirty flag stays set.
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
@@ -2055,7 +2055,7 @@ mod test {
     #[test]
     fn dirty_restart_of_an_inactive_session_closes_instances_as_abnormal() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "alpha", "started");
@@ -2077,7 +2077,7 @@ mod test {
     #[test]
     fn dirty_restart_skips_instances_of_unregistered_flows() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "alpha", "started");
@@ -2099,7 +2099,7 @@ mod test {
     #[test]
     fn session_abandoned_on_mode_change_closes_instances_as_abnormal() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         let session_id = glean.session_manager().session_id().unwrap().to_string();
         record_now(&glean, "alpha", "started");
@@ -2125,7 +2125,7 @@ mod test {
     #[test]
     fn instances_of_a_session_that_was_not_resumed_are_discarded() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, two_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, two_flows()), None).unwrap();
         glean.handle_client_active();
         record_now(&glean, "alpha", "started");
         // No inactive_since is recorded, so the session can't be resumed, but
@@ -2142,7 +2142,7 @@ mod test {
     #[test]
     fn instances_of_a_session_resumed_as_sampled_out_are_discarded() {
         let dir = tempfile::tempdir().unwrap();
-        let mut glean = Glean::new(auto_cfg(&dir, timed_flows())).unwrap();
+        let mut glean = Glean::new(auto_cfg(&dir, timed_flows()), None).unwrap();
         glean.handle_client_active();
         record_now(&glean, "onboarding", "started");
         glean.handle_client_inactive();

@@ -209,7 +209,7 @@ mod unix {
             enable_store_submitted_pings: true,
             flows: vec![],
         };
-        let glean = Glean::new(cfg);
+        let glean = Glean::new(cfg, None);
         assert!(glean.is_err());
     }
 }
@@ -259,7 +259,7 @@ fn database_externally_locked() {
         enable_store_submitted_pings: true,
         flows: vec![],
     };
-    let glean = Glean::new(cfg);
+    let glean = Glean::new(cfg, None);
     assert!(glean.is_err());
 }
 

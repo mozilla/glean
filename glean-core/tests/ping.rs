@@ -392,7 +392,7 @@ fn clearing_storage_by_prefix_doesnt_clear_unrelated_delayed_ping_io() {
         enable_store_submitted_pings: false,
         flows: vec![],
     };
-    let mut glean = glean_core::Glean::new(cfg).unwrap();
+    let mut glean = glean_core::Glean::new(cfg, None).unwrap();
 
     let prefix = String::from("prefix");
     let other = format!("{prefix}-other");

@@ -129,7 +129,7 @@ fn main() {
         os_version: None,
     };
 
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     metrics::boo.add(1);
 

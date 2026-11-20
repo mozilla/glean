@@ -157,7 +157,7 @@ fn main() {
             );
 
             let cfg = get_config(&data_path, true);
-            glean::initialize(cfg, client_info);
+            glean::initialize(cfg, client_info, None);
 
             // Wait for init to finish.
             let _ = metrics::boo.test_get_value(None);
@@ -176,7 +176,7 @@ fn main() {
             );
 
             let cfg = get_config(&data_path, false);
-            glean::initialize(cfg, client_info);
+            glean::initialize(cfg, client_info, None);
 
             // Wait for init to finish.
             let _ = metrics::boo.test_get_value(None);
@@ -205,7 +205,7 @@ fn main() {
             );
 
             let cfg = get_config(&data_path, false);
-            glean::initialize(cfg, client_info);
+            glean::initialize(cfg, client_info, None);
 
             pings::nofollows.set_enabled(false);
 
