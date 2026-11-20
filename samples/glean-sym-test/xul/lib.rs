@@ -105,7 +105,7 @@ unsafe extern "C" fn startup(path: *const c_char) {
     };
 
     _ = &*glean_metrics::prototype;
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     glean_metrics::test_metrics::sample_counter.add(1);
 }

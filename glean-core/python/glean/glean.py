@@ -246,7 +246,7 @@ class Glean:
             events_ping_acceleration_factor=configuration.events_ping_acceleration_factor,
         )
 
-        _uniffi.glean_initialize(cfg, client_info, callbacks)
+        _uniffi.glean_initialize(cfg, client_info, callbacks, None)
         cls._initialized = True
 
     @classmethod

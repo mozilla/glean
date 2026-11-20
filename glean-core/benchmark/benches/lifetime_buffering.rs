@@ -39,7 +39,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
         };
-        let glean = Glean::new(cfg).unwrap();
+        let glean = Glean::new(cfg, None).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
             name: "counter".into(),
@@ -88,7 +88,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
         };
-        let glean = Glean::new(cfg).unwrap();
+        let glean = Glean::new(cfg, None).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
             name: "counter".into(),
@@ -137,7 +137,7 @@ pub fn delay_io_benchmark(c: &mut Criterion) {
             events_ping_acceleration_factor: None,
             enable_store_submitted_pings: false,
         };
-        let glean = Glean::new(cfg).unwrap();
+        let glean = Glean::new(cfg, None).unwrap();
 
         let metric = CounterMetric::new(CommonMetricData {
             name: "counter".into(),

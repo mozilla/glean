@@ -279,7 +279,7 @@ open class GleanInternalAPI internal constructor() {
             )
             val clientInfo = getClientInfo(configuration, buildInfo)
             val callbacks = OnGleanEventsImpl(this@GleanInternalAPI)
-            gleanInitialize(cfg, clientInfo, callbacks)
+            gleanInitialize(cfg, clientInfo, callbacks, null)
         }
     }
 

@@ -93,7 +93,7 @@ pub fn metric_dispatcher_benchmark(c: &mut Criterion) {
     };
     let client_info = ClientInfoMetrics::unknown();
 
-    glean_initialize(cfg, client_info, Box::new(Callbacks));
+    glean_initialize(cfg, client_info, Box::new(Callbacks), None);
     join_init();
 
     c.bench_function("counter.add", |b| {
