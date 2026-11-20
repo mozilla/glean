@@ -114,7 +114,7 @@ dependencies {
     api project(":glean-native")
 
     gleanNative project("path": ":glean-native", "configuration": "gleanNative")
-    implementation project("path": ":glean-native", "configuration": "forUnitTests")
+    testImplementation project("path": ":glean-native", "configuration": "forUnitTests")
 
     implementation libs.androidx.annotation
     implementation libs.androidx.lifecycle.common
