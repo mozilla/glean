@@ -2,6 +2,9 @@
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...main)
 
+* General
+  * Updated to `glean_parser` v22.1.0 ([#](https://github.com/mozilla/glean/issues/))
+
 # v71.1.0 (2026-11-16)
 
 [Full changelog](https://github.com/mozilla/glean/compare/v71.0.0...v71.1.0)

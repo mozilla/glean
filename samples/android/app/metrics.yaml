@@ -67,7 +67,6 @@ test:
     description: |
       Testing StringList ping
     send_in_pings:
-      - test-string-list
       - sample
     lifetime: user
     bugs:
@@ -88,7 +87,6 @@ test:
     description: |
       Testing counter
     send_in_pings:
-      - test-string-list
       - sample
     lifetime: user
     bugs:
