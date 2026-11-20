@@ -21,6 +21,8 @@ dylib:
     send_in_pings:
       - prototype
       - services-info
+    no_lint:
+      - UNKNOWN_PING_REFERENCED
 
   timing:
     type: timing_distribution
@@ -36,6 +38,8 @@ dylib:
     send_in_pings:
       - prototype
       - services-info
+    no_lint:
+      - UNKNOWN_PING_REFERENCED
 
   data:
     type: string
@@ -51,6 +55,8 @@ dylib:
     send_in_pings:
       - prototype
       - services-info
+    no_lint:
+      - UNKNOWN_PING_REFERENCED
 
   event:
     type: event
@@ -66,6 +72,8 @@ dylib:
     send_in_pings:
       - prototype
       - services-info
+    no_lint:
+      - UNKNOWN_PING_REFERENCED
 
   event_with_extras:
     type: event
@@ -81,6 +89,8 @@ dylib:
     send_in_pings:
       - prototype
       - services-info
+    no_lint:
+      - UNKNOWN_PING_REFERENCED
     extra_keys:
       is_set:
         type: boolean
