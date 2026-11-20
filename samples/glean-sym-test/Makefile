@@ -13,11 +13,23 @@ help:
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: run
-run:  ## Run the sample app
+run: .venv/bin/python3 ## Run the sample app
 	cargo build --locked --features active
-	env $(LIB_PATH_NAME)=target/debug RUST_LOG=uv=error,debug uv run pytest --capture=no app.py
+	env \
+		LD_LIBRARY_PATH=target/debug \
+		$(LIB_PATH_NAME)=target/debug \
+		RUST_LOG=debug \
+		.venv/bin/python3 -m pytest --capture=no app.py
 
 .PHONY: run-noop
-run-noop:  ## Run the sample app, but with glean-sym in noop mode
+run-noop: .venv/bin/python3  ## Run the sample app, but with glean-sym in noop mode
 	cargo build --locked
-	env GLEAN_NOOP=1 $(LIB_PATH_NAME)=target/debug RUST_LOG=uv=error,debug uv run pytest --capture=no app.py
+	env \
+		GLEAN_NOOP=1 \
+		LD_LIBRARY_PATH=target/debug \
+		$(LIB_PATH_NAME)=target/debug \
+		RUST_LOG=debug \
+		.venv/bin/python3 -m pytest --capture=no app.py
+
+.venv/bin/python3:
+	uv sync
