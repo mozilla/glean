@@ -40,7 +40,7 @@ fn new_glean_delayed_io() -> (Glean, tempfile::TempDir) {
         events_ping_acceleration_factor: None,
         enable_store_submitted_pings: false,
     };
-    let mut glean = Glean::new(cfg).unwrap();
+    let mut glean = Glean::new(cfg, None).unwrap();
     _ = new_test_ping(&mut glean, "store1");
 
     (glean, dir)

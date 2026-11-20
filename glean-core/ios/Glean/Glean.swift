@@ -225,7 +225,7 @@ public final class Glean: @unchecked Sendable {
 
         pingUploadScheduler = PingUploadScheduler(configuration: configuration)
 
-        gleanInitialize(cfg, clientInfo, callbacks)
+        gleanInitialize(cfg, clientInfo, callbacks, nil)
     }
 
     /// Initialize the core metrics internally managed by Glean (e.g. client id).

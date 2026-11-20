@@ -136,7 +136,7 @@ fn main() {
         os_version: None,
     };
 
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     match &*state {
         "accumulate_one_and_pretend_crash" => {

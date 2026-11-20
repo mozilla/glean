@@ -1415,6 +1415,31 @@ glean.health:
       - io
       - not-found
 
+  backup_client_id_status:
+    type: labeled_counter
+    lifetime: ping
+    description: |
+      Count of different states that happened when using the external backup client_id value.
+    notification_emails:
+      - glean-team@mozilla.com
+      - chutten@mozilla.com
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2093447
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2093447
+    data_sensitivity:
+      - technical
+    expires: never
+    send_in_pings:
+      - health
+    labels:
+      - none
+      - parse
+      - c0ffee
+      - match
+      - mismatch
+      - backup_only
+
 glean.migration:
   failed_metrics:
     type: counter

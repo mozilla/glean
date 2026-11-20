@@ -126,7 +126,7 @@ fn main() {
         os_version: None,
     };
 
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     glean_metrics::sample_boolean.set(true);
 
