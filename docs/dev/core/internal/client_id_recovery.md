@@ -56,6 +56,29 @@ flowchart TD
     Z(normal operation)
 ```
 
+An embedder may optionally supply an `ExternalBackup` during Glean initialization.
+In that case, these further steps and reporting will occur:
+
+```mermaid
+flowchart TD
+    O("attempt to load ID from client_id.txt and db") --> A
+    A["(j) load backup ID from ExternalBackup"] --> B
+    B{"ExternalBackup and backup ID exist?"}
+    B -->|no| C
+    B -->|yes| E
+    C["choose or generate ID as normal"] --> D
+    D["store ID in ExternalBackup"] --> Z
+    E{"backup ID is..."}
+    E -->|invalid| C
+    E -->|c0ffee| C
+    E -->|mismatch with chosen ID| D
+    E -->|same as chosen ID| Z
+    E --> F
+    F["no chosen ID but valid backup ID"] --> G
+    G["(k) store backup ID to db, client_id.txt"] --> Z
+    Z(resume operation)
+```
+
 ## `client_id.txt` use by embedding applications
 
 We make no guarantees about the specific format or contents of `client_id.txt`.

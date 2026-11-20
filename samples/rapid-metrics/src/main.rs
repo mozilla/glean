@@ -116,7 +116,7 @@ fn main() {
 
     _ = &*glean_metrics::prototype;
     _ = &*glean_metrics::usage_reporting;
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     _ = glean_metrics::test_metrics::sample_boolean.test_get_value(None);
 
