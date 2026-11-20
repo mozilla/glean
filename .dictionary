@@ -1,4 +1,4 @@
-personal_ws-1.1 en 339 utf-8
+personal_ws-1.1 en 340 utf-8
 AAR
 AARs
 ABI
@@ -180,6 +180,7 @@ distribution's
 docstrings
 dokka
 dropdown
+embedder
 enqueue
 enqueued
 enum

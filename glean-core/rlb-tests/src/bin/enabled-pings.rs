@@ -163,7 +163,7 @@ fn main() {
         os_version: None,
     };
 
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     // Wait for init to finish,
     // otherwise we might be to quick with calling `shutdown`.

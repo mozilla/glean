@@ -48,7 +48,7 @@ fn main() {
     };
 
     _ = &*glean_metrics::prototype;
-    glean::initialize(cfg, client_info);
+    glean::initialize(cfg, client_info, None);
 
     if verify {
         println!("Verifying metric values...");

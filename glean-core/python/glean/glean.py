@@ -247,7 +247,7 @@ class Glean:
             flows=configuration.flows,
         )
 
-        _uniffi.glean_initialize(cfg, client_info, callbacks)
+        _uniffi.glean_initialize(cfg, client_info, callbacks, None)
         cls._initialized = True
 
     @classmethod

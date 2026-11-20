@@ -78,7 +78,7 @@ pub fn new_glean_with_upload(
         enable_store_submitted_pings: false,
         flows: vec![],
     };
-    let mut glean = Glean::new(cfg).unwrap();
+    let mut glean = Glean::new(cfg, None).unwrap();
 
     // store{1,2} is used throughout tests
     _ = new_test_ping(&mut glean, "store1");
@@ -117,7 +117,7 @@ pub fn new_glean_delayed_io() -> (Glean, tempfile::TempDir) {
         enable_store_submitted_pings: false,
         flows: vec![],
     };
-    let mut glean = Glean::new(cfg).unwrap();
+    let mut glean = Glean::new(cfg, None).unwrap();
     _ = new_test_ping(&mut glean, "store1");
 
     (glean, dir)
