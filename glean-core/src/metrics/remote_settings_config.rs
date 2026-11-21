@@ -35,6 +35,16 @@ pub struct RemoteSettingsConfig {
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub pings_enabled: HashMap<String, bool>,
 
+    /// This is a `HashMap` consisting of flow names as keys and boolean
+    /// values representing an override for the `disabled` property of the
+    /// flow, inverted as for `metrics_enabled`. A flow absent from the map
+    /// keeps its `flows.yaml` setting.
+    ///
+    /// The override is consulted only when an entry event would open an
+    /// instance. Changing it never closes an instance that is already open.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub flows_enabled: HashMap<String, bool>,
+
     /// The threshold of events that will be buffered before an events ping is
     /// collected and submitted.
     /// It overrides the value configured at initialization time.
