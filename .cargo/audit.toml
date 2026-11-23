@@ -28,4 +28,8 @@ ignore = [
   # humantime is unmaintained
   # Transitive dependency still in use, with no immediate requirement to switch away.
   "RUSTSEC-2026-0542",
+  # url
+  # Stack overflow in `Url::origin()` on nested `blob:` URLs
+  # Transitive dependency. The broken code is currently not used in our source tree (across dependencies).
+  "RUSTSEC-2026-0592"
 ]
