@@ -52,7 +52,7 @@ aspell_args="--lang en_US --mode=markdown"
 # aspell repeatedly modifies personal dictionary for some purpose,
 # so we should use a copy of our dictionary
 mkdir -p "/tmp/ci"
-dict_path="/tmp/$dict_filename"
+dict_path="/tmp/ci/$(basename $dict_filename)"
 
 if [[ "$1" == "list" ]]; then
     mode="list"
