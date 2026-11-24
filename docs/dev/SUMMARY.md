@@ -3,6 +3,7 @@
 - [Testing](testing.md)
 - [Continuous Integration](ci.md)
 - [Release process](cut-a-new-release.md)
+    - [Breaking Changes](breaking_changes.md)
 - [Contributing](contributing.md)
     - [Code coverage](code_coverage.md)
 - [Code Review](code_review.md)
