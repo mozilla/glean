@@ -1,6 +1,6 @@
 # Client ID recovery
 
-Currently (2025-10-31, Glean v66) we see some unexplained Glean SDK database resets.
+The Glean SDK can detect external database resets.
 These are noticeable in data as client ID regenerations:
 A client application with telemetry enabled, which previously already sent data,
 regenerates its client ID on initialize and thus looks like a new client.
