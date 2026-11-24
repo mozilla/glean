@@ -66,9 +66,19 @@ test: test-rust
 test-rust: ## Run Rust tests for glean-core and glean-ffi
 ifeq (, $(shell command -v cargo-nextest))
 	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+	cargo test --all $(addprefix --target ,$(GLEAN_BUILD_TARGET)) --features sqlite
 else
 	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET))
+	cargo nextest run --all $(addprefix --target ,$(GLEAN_BUILD_TARGET)) --features sqlite
 endif
+	# We want this to run _after_ the above tests, not before, that's why it's not a dependency of the task
+	$(MAKE) test-glean-sym
+
+test-glean-sym:  # Run the glean-sym tests
+	cd samples/glean-sym-test && make run
+	cd samples/glean-sym-test && make run-noop
+
+.PHONY: test-glean-sym
 
 test-rust-with-logs: ## Run all Rust tests with debug logging and single-threaded
 	RUST_LOG=glean,glean_core cargo test --all -- --nocapture --test-threads=1 $(addprefix --target ,$(GLEAN_BUILD_TARGET))
