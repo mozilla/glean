@@ -1572,7 +1572,7 @@ pub fn glean_test_get_distribution() -> DistributionMetrics {
 }
 
 #[cfg(all(not(target_os = "android"), not(target_os = "ios")))]
-static FD_LOGGER: OnceCell<fd_logger::FdLogger> = OnceCell::new();
+static FD_LOGGER: OnceCell<Option<fd_logger::FdLogger>> = OnceCell::new();
 
 /// Initialize the logging system to send JSON messages to a file descriptor
 /// (Unix) or file handle (Windows).
@@ -1599,11 +1599,13 @@ pub fn glean_enable_logging_to_fd(fd: u64) {
         // the writing side of the pipe as the `fd` parameter. Log messages are
         // written as JSON to the file descriptor.
         let logger = FD_LOGGER.get_or_init(|| fd_logger::FdLogger::new(fd));
-        // Set the level so everything goes through to the language
-        // binding side where it will be filtered by the language
-        // binding's logging system.
-        if log::set_logger(logger).is_ok() {
-            log::set_max_level(log::LevelFilter::Debug);
+        if let Some(logger) = logger {
+            // Set the level so everything goes through to the language
+            // binding side where it will be filtered by the language
+            // binding's logging system.
+            if log::set_logger(logger).is_ok() {
+                log::set_max_level(log::LevelFilter::Debug);
+            }
         }
     }
 }

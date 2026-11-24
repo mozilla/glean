@@ -36,21 +36,50 @@ struct FdLoggingRecord {
     target: String,
 }
 
+/// Obtain a `File` from a raw handle.
+///
+/// # Safety
+///
+/// The safety requirements of [`File::from_raw_handle`] apply:
+///
+/// The handled passed in must:
+///
+/// * be an owned handle; in particular it must be open
+/// * be a handle for a resource that may be freed via `CloseHandle`
+///
+/// # Returns
+///
+/// Some file valid for use.
 #[cfg(target_os = "windows")]
-unsafe fn get_file_from_fd(fd: u64) -> File {
-    File::from_raw_handle(fd as *mut c_void)
+unsafe fn get_file_from_fd(handle: u64) -> Option<File> {
+    Some(File::from_raw_handle(handle as *mut c_void))
 }
 
+/// Obtain a `File` from a raw file descriptor.
+///
+/// # Safety
+///
+/// The safety requirements of [`File::from_raw_handle`] apply:
+///
+/// The `fd` passed in must be an owned file descriptor; in particular, it must be open.
+///
+/// # Returns
+///
+/// Some file valid for use or `None` if the passed `fd` cannot represent a file descriptor.
 #[cfg(not(target_os = "windows"))]
-unsafe fn get_file_from_fd(fd: u64) -> File {
-    File::from_raw_fd(fd as i32)
+unsafe fn get_file_from_fd(fd: u64) -> Option<File> {
+    if let Ok(raw_fd) = i32::try_from(fd) {
+        Some(File::from_raw_fd(raw_fd))
+    } else {
+        None
+    }
 }
 
 impl FdLogger {
-    pub unsafe fn new(fd: u64) -> Self {
-        FdLogger {
-            file: RwLock::new(get_file_from_fd(fd)),
-        }
+    pub unsafe fn new(fd: u64) -> Option<Self> {
+        Some(FdLogger {
+            file: RwLock::new(get_file_from_fd(fd)?),
+        })
     }
 }
 
@@ -72,11 +101,8 @@ impl log::Log for FdLogger {
             message: record.args().to_string(),
             target: record.target().to_string(),
         };
-        let _ = writeln!(
-            self.file.write().unwrap(),
-            "{}",
-            serde_json::to_string(&payload).unwrap()
-        );
+        let mut file = self.file.write().unwrap(); // safe unwrap, only error case is poisoning
+        let _ = serde_json::to_writer(&mut *file, &payload);
     }
 
     fn flush(&self) {
