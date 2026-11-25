@@ -16,7 +16,7 @@
 [Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...v71.2.0)
 
 * General
-  * Updated to `glean_parser` v22.1.0 ([#](https://github.com/mozilla/glean/issues/))
+  * Updated to `glean_parser` v22.1.0 ([#3802](https://github.com/mozilla/glean/pull/3802))
 * Rust
   * (Semi-breaking change) Support external backup of the `client_id` ([bug 2093447](https://bugzilla.mozilla.org/show_bug.cgi?id=2093447))
 
