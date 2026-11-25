@@ -1,6 +1,6 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v71.2.0...main)
 
 * General
   * Accept flow definitions through the configuration and build the event-to-flow index at init. Flows have no effect on recording yet ([bug 2077136](https://bugzilla.mozilla.org/show_bug.cgi?id=2077136))
