@@ -1,6 +1,6 @@
 [package]
 name = "glean-sym"
-version = "71.1.0"
+version = "71.2.0"
 authors = ["The Glean Team <glean-team@mozilla.com>"]
 description = "A Rust API on top of the Glean UniFFI C FFI"
 repository = "https://github.com/mozilla/glean"

@@ -1,6 +1,10 @@
 # Unreleased changes
 
-[Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...main)
+[Full changelog](https://github.com/mozilla/glean/compare/v71.2.0...main)
+
+# v71.2.0 (2026-11-25)
+
+[Full changelog](https://github.com/mozilla/glean/compare/v71.1.0...v71.2.0)
 
 * General
   * Updated to `glean_parser` v22.1.0 ([#](https://github.com/mozilla/glean/issues/))
