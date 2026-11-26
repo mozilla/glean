@@ -114,12 +114,6 @@ subprojects {
             defaultConfig {
                 consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
             }
-
-            buildTypes {
-                withoutLib {
-                    initWith release
-                }
-            }
         }
     }
     pluginManager.withPlugin('java') {
