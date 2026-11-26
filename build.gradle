@@ -77,20 +77,9 @@ ext.rustTargets = [
 ]
 
 // Generate libs for our current platform so we can run unit tests.
-switch (DefaultPlatform.RESOURCE_PREFIX) {
-    case 'darwin-x86-64':
-        ext.nativeRustTarget = 'darwin-x86-64'
-        break
-    case 'darwin-aarch64':
-        ext.nativeRustTarget = 'darwin-aarch64'
-        break
-    case 'linux-x86-64':
-        ext.nativeRustTarget = 'linux-x86-64'
-        break
-    case 'win32-x86-64':
-        ext.nativeRustTarget = 'win32-x86-64-gnu'
-        break
-}
+// rust-android-gradle names the desktop targets after JNA's resource prefixes, except on Windows, where the
+// name also picks the GNU or MSVC toolchain.
+ext.nativeRustTarget = DefaultPlatform.RESOURCE_PREFIX == 'win32-x86-64' ? 'win32-x86-64-gnu' : DefaultPlatform.RESOURCE_PREFIX
 ext.rustTargets += ext.nativeRustTarget
 
 subprojects {
