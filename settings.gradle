@@ -37,8 +37,6 @@ def setupProject(name, projectProps) {
         if (project.name == name) {
             project.ext.description = description
             project.ext.artifactId = artifactId
-            // Expose the rest of the project properties, mostly for validation reasons.
-            project.ext.configProps = projectProps
         }
     }
 }

@@ -49,9 +49,6 @@ tasks.register("clean", Delete) {
 // { ... }`, to avoid issues with importing.
 import com.sun.jna.Platform as DefaultPlatform
 
-//  application-services has hooks to download external dependencies here. This
-//  has been removed since `glean-core` doesn't have any external dependencies for now.
-
 // Default to debug builds, but force release builds on CI
 ext.cargoProfile = "debug"
 // Additionally, we require `--locked` in CI, but not for local builds.
@@ -140,7 +137,6 @@ subprojects {
     }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         compilerOptions.allWarningsAsErrors = true
-        compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
     }
 
     // This allows to invoke Gradle like `./gradlew publishToRootProjectBuildDir` (equivalent to
