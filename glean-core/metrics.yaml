@@ -1471,6 +1471,15 @@ glean.health:
     lifetime: ping
     description: |
       Count of different states that happened when using the external backup client_id value.
+
+      The possible states:
+
+        - `none`: No client ID stored in the backup
+        - `parse`: The stored backup cannot be parsed as a UUID
+        - `c0ffee`: The stored backup is the c0ffee client ID
+        - `match`: The client ID in the backup matches the one in the Glean database
+        - `mismatch`: The client ID in the backup is different from the one in the Glean database
+        - `backup_only`: A valid client ID is stored in the backup, but no client ID stored in the Glean database
     notification_emails:
       - glean-team@mozilla.com
       - chutten@mozilla.com
