@@ -28,13 +28,7 @@ ext.gleanNamespace = "mozilla.telemetry.glean"
 android {
     namespace = "mozilla.telemetry.glean"
 
-    ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
-
     defaultConfig {
-        minSdk = rootProject.ext.build['minSdkVersion']
-        targetSdk = rootProject.ext.build['targetSdkVersion']
-
         // Carefully escape the string here so it will support `\` in
         // Windows paths correctly.
         buildConfigField("String", "GLEAN_PING_SCHEMA_PATH", JsonOutput.toJson(GLEAN_PING_SCHEMA_PATH.path))

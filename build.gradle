@@ -99,7 +99,15 @@ subprojects {
     // Settings shared by all modules.
     pluginManager.withPlugin('com.android.base') {
         android {
+            ndkVersion = rootProject.ext.build.ndkVersion
+            compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
             buildToolsVersion = rootProject.ext.build.buildToolsVersion
+
+            defaultConfig {
+                minSdk = rootProject.ext.build.minSdkVersion
+                targetSdk = rootProject.ext.build.targetSdkVersion
+            }
+
             compileOptions {
                 sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
                 targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
