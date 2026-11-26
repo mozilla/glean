@@ -9,7 +9,10 @@
   * Updated Kotlin to 2.4.21
   * Updated to Android Gradle Plugin 9.5.1 and Gradle 9.9.1
   * Updated Android SDK target to version 37. Apps using Glean now need to compile against Android SDK 37.2 or newer
+  * BREAKING CHANGE: Expose `max_recoverable_failures`, `max_wait_attempts` and `max_ping_body_size` as configurable options ([#3771](https://github.com/mozilla/glean/pull/3771))
   * The Glean Gradle plugin's metrics docs task works with the Gradle configuration cache and prints `glean_parser`'s output as it runs. A failed metrics code or docs generation now fails with the standard Gradle task error instead of a Glean-specific message
+* Rust
+  * Expose `max_pending_pings_count` and `max_pending_pings_directory_size` as configuration options ([#3771](https://github.com/mozilla/glean/pull/3771))
 
 # v71.2.0 (2026-11-25)
 
@@ -31,13 +34,10 @@
   * The uploader treats HTTP codes 408 Request Timeout and 429 Too Many Requests as recoverable errors (pings will be
     retried on next submit) ([#3724](https://github.com/mozilla/glean/pull/3724))
   * Always set `first_run_date` when missing at initialization (and `client_info.os`) to ensure pings are always schema-conform ([#3608](https://github.com/mozilla/glean/pull/3608))
-  * BREAKING CHANGE: Expose `max_recoverable_failures`, `max_wait_attempts` and `max_ping_body_size` as configurable options ([#3771](https://github.com/mozilla/glean/pull/3771))
 * Android
   * Adjust "metrics" ping scheduling across DST timezone changes to identify the correct "today" ([#3733](https://github.com/mozilla/glean/pull/3733))
   * Glean is now built with JDK 25. Its Android libraries and the Glean Gradle plugin still target Java 17 ([bug 1785929](https://bugzilla.mozilla.org/show_bug.cgi?id=1785929))
   * Updated NDK to r30 ([#3728](https://github.com/mozilla/glean/pull/3728))
-* Rust
-  * Expose `max_pending_pings_count` and `max_pending_pings_directory_size` as configuration options ([#3771](https://github.com/mozilla/glean/pull/3771))
 
 # v71.0.0 (2026-10-22)
 
