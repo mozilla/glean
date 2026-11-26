@@ -102,10 +102,6 @@ subprojects {
                 targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
             }
 
-            buildFeatures {
-                buildConfig = true
-            }
-
             publishing {
                 singleVariant('release') {
                     withSourcesJar()

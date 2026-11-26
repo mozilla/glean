@@ -20,6 +20,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        // The Glean Gradle plugin's generated GleanBuildInfo reads the app's version from BuildConfig.
+        buildConfig = true
     }
 }
 

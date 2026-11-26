@@ -28,6 +28,10 @@ ext.gleanNamespace = "mozilla.telemetry.glean"
 android {
     namespace = "mozilla.telemetry.glean"
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         // Carefully escape the string here so it will support `\` in
         // Windows paths correctly.
