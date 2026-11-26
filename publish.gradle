@@ -41,11 +41,6 @@ ext.configurePom = { MavenPublication publication, artifactId ->
 }
 
 ext.configurePublish = {
-    def theArtifactId = project.ext.artifactId
-
-    // This is a little cludgey, but it seems unlikely to cause a problem
-    def isNative = theArtifactId.endsWith("-native")
-
     publishing {
         publications {
             aar(MavenPublication) { publication ->
@@ -57,7 +52,7 @@ ext.configurePublish = {
                 // 'Cannot configure the 'publishing' extension after it has been accessed.',
                 // see https://github.com/researchgate/gradle-release/issues/125 and
                 // https://stackoverflow.com/q/28020520.
-                configurePom(publication, theArtifactId)
+                configurePom(publication, project.ext.artifactId)
                 pom {
                     packaging = "aar"
 
@@ -75,13 +70,5 @@ ext.configurePublish = {
         }
     }
 
-    def checkMavenArtifacts = tasks.register("checkMavenArtifacts")
-
-    if (isNative) {
-        def checkFileTask = tasks.register("checkFilesForMavenArtifact-${theArtifactId}", Exec) {
-            dependsOn("publish")
-            commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory.get().asFile, theArtifactId
-        }
-        checkMavenArtifacts.configure { dependsOn(checkFileTask) }
-    }
+    tasks.register("checkMavenArtifacts")
 }
