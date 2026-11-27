@@ -555,6 +555,7 @@ mod test {
         let config = RemoteSettingsConfig {
             metrics_enabled,
             pings_enabled,
+            flows_enabled: Default::default(),
             event_threshold: Some(41),
             session_sample_rate: None,
             events_ping_acceleration_factor: Some(5),

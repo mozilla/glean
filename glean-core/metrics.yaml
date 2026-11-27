@@ -406,10 +406,11 @@ glean.internal.metrics:
     description: |
       The Server Knobs configuration applied via applyServerKnobsConfig.
       This contains the complete configuration including metrics_enabled,
-      pings_enabled, and event_threshold settings that control metric
-      recording behavior through remote configuration.
+      pings_enabled, flows_enabled, and event_threshold settings that control
+      metric recording behavior through remote configuration.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=2007406
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=2077144
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=2007406
     data_sensitivity:
@@ -435,6 +436,16 @@ glean.internal.metrics:
           description: |
             Map of ping names to boolean values indicating whether
             the ping is enabled.
+          properties:
+            key:
+              type: string
+            value:
+              type: boolean
+        flows_enabled:
+          type: object
+          description: |
+            Map of flow names to boolean values indicating whether
+            the flow is enabled.
           properties:
             key:
               type: string
