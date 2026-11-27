@@ -258,6 +258,10 @@ impl Glean {
             let _scanning_thread = upload_manager.scan_pending_pings_directories(false);
         }
 
+        // Built before the metrics, since the registered flow names are the
+        // static label set of `glean.flows_not_started`.
+        let flow_registry = FlowRegistry::new(&cfg.flows);
+
         let start_time = local_now_with_offset();
         let mut this = Self {
             upload_enabled: cfg.upload_enabled,
@@ -266,7 +270,7 @@ impl Glean {
             data_store: None,
             event_data_store,
             core_metrics: CoreMetrics::new(),
-            additional_metrics: AdditionalMetrics::new(),
+            additional_metrics: AdditionalMetrics::new(flow_registry.names()),
             database_metrics: DatabaseMetrics::new(),
             health_metrics: HealthMetrics::new(),
             internal_pings: InternalPings::new(cfg.enable_internal_pings),
@@ -288,7 +292,7 @@ impl Glean {
             // Built here, rather than applied after init like pre-init ping
             // registration, because `Glean::new()` restores persisted session
             // state (and with it, flow instances) before it returns.
-            flow_registry: FlowRegistry::new(&cfg.flows),
+            flow_registry,
             flow_state: Mutex::new(FlowState::default()),
             // The SessionManager is deliberately left in its default (hollow)
             // state for subprocesses. `restore_session_state_from_storage()`

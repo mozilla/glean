@@ -182,6 +182,11 @@ impl FlowRegistry {
         &self.flows[id.0]
     }
 
+    /// The registered flows' names, in name order.
+    pub(crate) fn names(&self) -> impl Iterator<Item = &str> {
+        self.flows.iter().map(|flow| flow.name.as_str())
+    }
+
     /// Finds a registered flow by name.
     pub(crate) fn find(&self, name: &str) -> Option<FlowId> {
         self.flows
@@ -338,20 +343,7 @@ pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
     if would_open.is_empty() {
         return;
     }
-    let to_open: Vec<FlowId> = {
-        let remote = glean.remote_settings_config.lock().unwrap();
-        would_open
-            .into_iter()
-            .filter(|flow| {
-                let flow = glean.flow_registry.flow(*flow);
-                remote
-                    .flows_enabled
-                    .get(&flow.name)
-                    .copied()
-                    .unwrap_or(!flow.disabled)
-            })
-            .collect()
-    };
+    let to_open = enabled(glean, would_open);
     if to_open.is_empty() {
         return;
     }
@@ -365,6 +357,48 @@ pub(crate) fn open_instances(glean: &Glean, event_flows: &EventFlows) {
     }
     if opened {
         persist(glean, &state);
+    }
+}
+
+/// Filters `flows` down to those that are enabled: by their `flows_enabled`
+/// Server Knobs override if they have one, and otherwise by `flows.yaml`.
+fn enabled(glean: &Glean, flows: Vec<FlowId>) -> Vec<FlowId> {
+    let remote = glean.remote_settings_config.lock().unwrap();
+    flows
+        .into_iter()
+        .filter(|flow| {
+            let flow = glean.flow_registry.flow(*flow);
+            remote
+                .flows_enabled
+                .get(&flow.name)
+                .copied()
+                .unwrap_or(!flow.disabled)
+        })
+        .collect()
+}
+
+/// Counts, in `glean.flows_not_started`, each enabled flow an event would
+/// have opened had a session been active.
+///
+/// Only applies to an in-session event recorded while no session is active.
+/// A disabled flow is not counted, since no instance was lost to timing.
+pub(crate) fn count_not_started(glean: &Glean, metric: &EventMetric) {
+    let meta = metric.meta();
+    if !meta.inner.in_session || glean.session_manager().is_active() {
+        return;
+    }
+    let Some(event_flows) = glean.flow_registry.lookup_metric(meta) else {
+        return;
+    };
+    if event_flows.starts.is_empty() {
+        return;
+    }
+    for flow in enabled(glean, event_flows.starts.clone()) {
+        glean
+            .additional_metrics
+            .flows_not_started
+            .get(&glean.flow_registry.flow(flow).name)
+            .add_sync(glean, 1);
     }
 }
 
@@ -2377,5 +2411,89 @@ mod test {
             ],
             boundary_events_disabled(&registry, &metrics_enabled)
         );
+    }
+
+    // -----------------------------------------------------------------------
+    // glean.flows_not_started
+    // -----------------------------------------------------------------------
+
+    fn not_started(glean: &Glean, flow: &str) -> Option<i32> {
+        glean
+            .additional_metrics
+            .flows_not_started
+            .get(flow)
+            .get_value(glean, "metrics")
+    }
+
+    #[test]
+    fn entry_event_without_a_session_counts_its_flow_as_not_started() {
+        let (glean, _t) = glean_with_flows(two_flows());
+
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "alpha", "started");
+
+        assert_eq!(Some(2), not_started(&glean, "alpha"));
+        assert_eq!(None, not_started(&glean, "zeta"));
+        assert!(active_seqs(&glean).is_empty());
+    }
+
+    #[test]
+    fn entry_event_in_a_session_is_not_counted() {
+        let (mut glean, _t) = glean_with_flows(two_flows());
+        glean.session_start();
+
+        record_now(&glean, "alpha", "started");
+        // Already active: an entry event that opens nothing isn't counted either.
+        record_now(&glean, "alpha", "started");
+
+        assert_eq!(None, not_started(&glean, "alpha"));
+    }
+
+    #[test]
+    fn non_entry_events_without_a_session_are_not_counted() {
+        let (glean, _t) = glean_with_flows(two_flows());
+
+        record_now(&glean, "app", "card_shown");
+        record_now(&glean, "alpha", "finished");
+
+        assert_eq!(None, not_started(&glean, "alpha"));
+    }
+
+    #[test]
+    fn disabled_flow_is_not_counted_as_not_started() {
+        let mut flows = two_flows();
+        flows[0].disabled = true;
+        let (glean, _t) = glean_with_flows(flows);
+        set_flows_enabled(&glean, &[("zeta", false)]);
+
+        record_now(&glean, "alpha", "started");
+        record_now(&glean, "zeta", "started");
+
+        assert_eq!(None, not_started(&glean, "alpha"));
+        assert_eq!(None, not_started(&glean, "zeta"));
+    }
+
+    #[test]
+    fn labels_are_the_registered_flow_names_beyond_the_dynamic_label_cap() {
+        // More flows than the 16 dynamic labels allowed, none collapsing into
+        // `__other__`.
+        let flows: Vec<FlowDefinition> = (0..20)
+            .map(|i| {
+                definition(
+                    &format!("flow_{i:02}"),
+                    &[(&format!("flow_{i:02}.started"), FlowRole::Start)],
+                )
+            })
+            .collect();
+        let (glean, _t) = glean_with_flows(flows);
+
+        for i in 0..20 {
+            record_now(&glean, &format!("flow_{i:02}"), "started");
+        }
+
+        for i in 0..20 {
+            assert_eq!(Some(1), not_started(&glean, &format!("flow_{i:02}")));
+        }
+        assert_eq!(None, not_started(&glean, "__other__"));
     }
 }

@@ -163,6 +163,9 @@ impl EventMetric {
         // `should_record()` and extra validation, an event that isn't recorded
         // never opens or closes an instance.
         let event_flows = flows::lookup(glean, self);
+        if event_flows.is_none() {
+            flows::count_not_started(glean, self);
+        }
         let mut submitted = false;
 
         // 1. Close any expired instance of this event's flows, so the event isn't

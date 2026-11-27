@@ -51,6 +51,10 @@ pub struct AdditionalMetrics {
     /// The total number of sessions started during the current metrics ping
     /// window, regardless of sampling outcome.
     pub sessions_seen: CounterMetric,
+
+    /// Counts entry events recorded while no session was active, keyed by the
+    /// flow that therefore couldn't open.
+    pub flows_not_started: LabeledMetric<CounterMetric>,
 }
 
 impl CoreMetrics {
@@ -135,7 +139,9 @@ impl CoreMetrics {
 }
 
 impl AdditionalMetrics {
-    pub fn new() -> AdditionalMetrics {
+    /// `flow_names` are the registered flows, which form the static label set
+    /// of `glean.flows_not_started`.
+    pub fn new<'a>(flow_names: impl Iterator<Item = &'a str>) -> AdditionalMetrics {
         AdditionalMetrics {
             io_errors: CounterMetric::new(CommonMetricData {
                 name: "io".into(),
@@ -212,6 +218,23 @@ impl AdditionalMetrics {
                 lifetime: Lifetime::Ping,
                 ..Default::default()
             }),
+
+            flows_not_started: LabeledMetric::<CounterMetric>::new(
+                LabeledMetricData::Common {
+                    cmd: CommonMetricData {
+                        name: "flows_not_started".into(),
+                        category: "glean".into(),
+                        send_in_pings: vec!["metrics".into()],
+                        lifetime: Lifetime::Ping,
+                        ..Default::default()
+                    },
+                },
+                Some(
+                    flow_names
+                        .map(|name| Cow::Owned(name.to_string()))
+                        .collect(),
+                ),
+            ),
 
             server_knobs_config: ObjectMetric::new(CommonMetricData {
                 name: "server_knobs_config".into(),
