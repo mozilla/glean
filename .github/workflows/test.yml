@@ -837,7 +837,7 @@ jobs:
     needs: [decide-runs]
     permissions:
       security-events: write # required for uploading code scanning alerts
-    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@838591432e264476b97a8ff18549a0e9bdb0dcea # 2026-07-27
+    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@e9f3e1160146ff2bad75433503e410d71835de80 # 2026-11-20
 
   report-result:
     runs-on: ubuntu-latest
