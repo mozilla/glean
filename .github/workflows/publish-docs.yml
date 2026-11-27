@@ -9,16 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@a75363d06101555fc97c6c7e1e65670b99104d98 # 1.96
+      - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-      - uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
+      - uses: Swatinem/rust-cache@v2.9.3
         with:
           cache-bin: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.13'
 
@@ -39,7 +39,7 @@ jobs:
 
       - name: Upload static files as artifact
         id: deployment
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: build/docs/
 
@@ -57,4 +57,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        uses: actions/deploy-pages@v5.0.1
