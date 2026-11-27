@@ -8,13 +8,8 @@ apply plugin: 'kotlinx-serialization'
 android {
     namespace = "org.mozilla.samples.gleancore"
 
-    ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
-
     defaultConfig {
         applicationId "org.mozilla.samples.gleancore"
-        minSdk = rootProject.ext.build['minSdkVersion']
-        targetSdk = rootProject.ext.build['targetSdkVersion']
         // Keep the version in sync with gleanExpireByVersion which is
         // set below, near the end of the file.
         versionCode 1
@@ -25,6 +20,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        // The Glean Gradle plugin's generated GleanBuildInfo reads the app's version from BuildConfig.
+        buildConfig = true
     }
 }
 

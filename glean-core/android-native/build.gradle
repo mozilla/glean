@@ -13,14 +13,6 @@ apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 android {
     namespace = "mozilla.telemetry.glean_native"
 
-    ndkVersion = rootProject.ext.build.ndkVersion
-    compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
-
-    defaultConfig {
-        minSdk = rootProject.ext.build['minSdkVersion']
-        targetSdk = rootProject.ext.build['targetSdkVersion']
-    }
-
     // Uncomment to include debug symbols in native library builds.
     // packagingOptions { doNotStrip "**/*.so" }
 }
@@ -70,8 +62,6 @@ configurations {
     // Stores the JNA jar file
     jna {
         canBeConsumed = false
-        canBeResolved = true
-        canBeDeclared = true
     }
     // Native Glean library, this is the one compatible with the user's local machine.  We use it
     // to run uniffi-bindgen against.
@@ -79,11 +69,7 @@ configurations {
 }
 
 dependencies {
-    jna(libs.jna) {
-        artifact {
-            type = "jar"
-        }
-    }
+    jna libs.jna
 }
 
 // Extract JNI dispatch libraries from the JAR into a directory, so that we can then package them
@@ -99,7 +85,7 @@ def extractLibJniDispatch = tasks.register("extractLibJniDispatch", Copy) {
     from(zipTree(jnaJar)) {
         include "**/libjnidispatch.*"
     }
-    into layout.buildDirectory.dir("libjnidispatch").get()
+    into layout.buildDirectory.dir("libjnidispatch")
 }
 
 def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
@@ -110,20 +96,22 @@ def packageLibsForTest = tasks.register("packageLibsForTest", Jar) {
     dependsOn(tasks.named { it ==~ /cargoBuild(Darwin|Linux|Win32).*/ })
 }
 
-def copyGleanNative = tasks.register("copyGleanNative", Copy) {
-    from layout.buildDirectory.dir("rustJniLibs/desktop")
-    into layout.buildDirectory.dir("gleanNative")
-    dependsOn("cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}")
-}
-
 artifacts {
     // Connect task output to configurations
     forUnitTests(packageLibsForTest)
-    gleanNative(copyGleanNative)
+    gleanNative(layout.buildDirectory.dir("rustJniLibs/desktop")) {
+        builtBy "cargoBuild${rootProject.ext.nativeRustTarget.capitalize()}"
+    }
 }
 
 apply from: "$rootDir/publish.gradle"
 ext.configurePublish()
+
+def checkFilesForMavenArtifact = tasks.register("checkFilesForMavenArtifact-${project.ext.artifactId}", Exec) {
+    dependsOn("publish")
+    commandLine "${rootProject.projectDir}/bin/check-artifact.sh", project.layout.buildDirectory.get().asFile, project.ext.artifactId
+}
+tasks.named("checkMavenArtifacts") { dependsOn(checkFilesForMavenArtifact) }
 
 publishing {
     publications {

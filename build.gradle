@@ -49,9 +49,6 @@ tasks.register("clean", Delete) {
 // { ... }`, to avoid issues with importing.
 import com.sun.jna.Platform as DefaultPlatform
 
-//  application-services has hooks to download external dependencies here. This
-//  has been removed since `glean-core` doesn't have any external dependencies for now.
-
 // Default to debug builds, but force release builds on CI
 ext.cargoProfile = "debug"
 // Additionally, we require `--locked` in CI, but not for local builds.
@@ -80,20 +77,9 @@ ext.rustTargets = [
 ]
 
 // Generate libs for our current platform so we can run unit tests.
-switch (DefaultPlatform.RESOURCE_PREFIX) {
-    case 'darwin-x86-64':
-        ext.nativeRustTarget = 'darwin-x86-64'
-        break
-    case 'darwin-aarch64':
-        ext.nativeRustTarget = 'darwin-aarch64'
-        break
-    case 'linux-x86-64':
-        ext.nativeRustTarget = 'linux-x86-64'
-        break
-    case 'win32-x86-64':
-        ext.nativeRustTarget = 'win32-x86-64-gnu'
-        break
-}
+// rust-android-gradle names the desktop targets after JNA's resource prefixes, except on Windows, where the
+// name also picks the GNU or MSVC toolchain.
+ext.nativeRustTarget = DefaultPlatform.RESOURCE_PREFIX == 'win32-x86-64' ? 'win32-x86-64-gnu' : DefaultPlatform.RESOURCE_PREFIX
 ext.rustTargets += ext.nativeRustTarget
 
 subprojects {
@@ -102,14 +88,18 @@ subprojects {
     // Settings shared by all modules.
     pluginManager.withPlugin('com.android.base') {
         android {
+            ndkVersion = rootProject.ext.build.ndkVersion
+            compileSdk { version = release(rootProject.ext.build.compileSdkMajorVersion) { minorApiLevel = rootProject.ext.build.compileSdkMinorVersion } }
             buildToolsVersion = rootProject.ext.build.buildToolsVersion
+
+            defaultConfig {
+                minSdk = rootProject.ext.build.minSdkVersion
+                targetSdk = rootProject.ext.build.targetSdkVersion
+            }
+
             compileOptions {
                 sourceCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
                 targetCompatibility = JavaVersion.toVersion(rootProject.ext.build.jvmTargetCompatibility)
-            }
-
-            buildFeatures {
-                buildConfig = true
             }
 
             publishing {
@@ -124,12 +114,6 @@ subprojects {
             defaultConfig {
                 consumerProguardFiles "$projectDir/proguard-rules-consumer.pro"
             }
-
-            buildTypes {
-                withoutLib {
-                    initWith release
-                }
-            }
         }
     }
     pluginManager.withPlugin('java') {
@@ -140,7 +124,6 @@ subprojects {
     }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         compilerOptions.allWarningsAsErrors = true
-        compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("${rootProject.ext.build.jvmTargetCompatibility}")
     }
 
     // This allows to invoke Gradle like `./gradlew publishToRootProjectBuildDir` (equivalent to
