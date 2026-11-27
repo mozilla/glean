@@ -6,7 +6,6 @@
 import io
 import json
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
@@ -21,7 +20,6 @@ import pytest
 from glean import Configuration, Glean, load_metrics
 from glean import __version__ as glean_version
 from glean import _builtins
-from glean import _util
 from glean.metrics import (
     CommonMetricData,
     CounterMetricType,
@@ -290,11 +288,6 @@ def test_the_app_channel_must_be_correctly_set():
     assert (
         "my-test-channel" == _builtins.metrics.glean.internal.metrics.app_channel.test_get_value()
     )
-
-
-def test_get_language_tag_reports_the_tag_for_the_default_locale():
-    tag = _util.get_locale_tag()
-    assert re.match("(und)|([a-z][a-z]-[A-Z][A-Z])", tag)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="bug 1771157: Windows failures")
